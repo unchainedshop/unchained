@@ -155,15 +155,17 @@ export const configureEnrollmentsModule = async ({
     params: { enrollmentContext?: any; orderIdForFirstPeriod?: string },
     requestContext: Context
   ) => {
-    const nextStatus = await findNextStatus(enrollment, requestContext);
+    let status = await findNextStatus(enrollment, requestContext);
 
-    if (nextStatus === EnrollmentStatus.ACTIVE) {
-      await reactivateEnrollment(enrollment, params, requestContext);
+    if (status === EnrollmentStatus.ACTIVE) {
+      const nextEnrollment = await reactivateEnrollment(enrollment, params, requestContext);
+      status = await findNextStatus(nextEnrollment, requestContext);
     }
+
 
     return await updateStatus(
       enrollment._id,
-      { status: nextStatus, info: 'enrollment processed' },
+      { status, info: 'enrollment processed' },
       requestContext
     );
   };

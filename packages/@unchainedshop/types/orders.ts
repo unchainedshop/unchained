@@ -1,3 +1,4 @@
+import { Locale } from 'locale';
 import { Context } from './api';
 import {
   Address,
@@ -132,7 +133,7 @@ export interface OrderProcessing {
     requestContext: Context
   ) => Promise<Order>;
   processOrder: OrderContextParams<OrderTransactionContext>;
-  sendOrderConfirmationToCustomer: OrderContextParams<{ locale: string }>;
+  sendOrderConfirmationToCustomer: OrderContextParams<{ locale: Locale }>;
 }
 
 export interface OrderMutations {

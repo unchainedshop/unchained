@@ -246,7 +246,7 @@ export const configureOrderModuleProcessing = ({
       );
       updatedOrder = await modules.orders.sendOrderConfirmationToCustomer(
         updatedOrder,
-        { locale: locale.language },
+        { locale },
         requestContext
       );
       updatedOrder = await modules.orders.ensureCartForUser(
@@ -293,7 +293,7 @@ export const configureOrderModuleProcessing = ({
       );
       updatedOrder = await modules.orders.sendOrderConfirmationToCustomer(
         updatedOrder,
-        { locale: locale.language },
+        { locale },
         requestContext
       );
 
@@ -378,9 +378,12 @@ export const configureOrderModuleProcessing = ({
       return await updateCalculation(toCartId, requestContext);
     },
 
-    processOrder: async (order, params, requestContext) => {
+    processOrder: async (initialOrder, params, requestContext) => {
       const { modules, userId } = requestContext;
-      const nextStatus = await findNextStatus(order, requestContext);
+
+      const orderId = initialOrder._id;
+      let order = initialOrder;
+      let nextStatus = await findNextStatus(order, requestContext);
       if (nextStatus === OrderStatus.PENDING) {
         // auto charge during transition to pending
         const orderPayment = await modules.orders.payments.findOrderPayment({
@@ -404,8 +407,9 @@ export const configureOrderModuleProcessing = ({
         );
       }
 
+      order = await modules.orders.findOrder({ orderId })
+      nextStatus = await findNextStatus(order, requestContext);
       if (nextStatus === OrderStatus.CONFIRMED) {
-        const orderId = order._id;
         const orderDelivery = await modules.orders.deliveries.findDelivery({
           orderDeliveryId: order.deliveryId,
         });
@@ -413,7 +417,7 @@ export const configureOrderModuleProcessing = ({
           // we have to stop here shortly to complete the confirmation
           // before auto delivery is started, else we have no chance to create
           // documents and numbers that are needed for delivery
-          const newConfirmedOrder = await updateStatus(
+          const order = await updateStatus(
             orderId,
             {
               status: OrderStatus.CONFIRMED,
@@ -425,7 +429,7 @@ export const configureOrderModuleProcessing = ({
           await modules.orders.deliveries.send(
             orderDelivery,
             {
-              order: newConfirmedOrder,
+              order,
               deliveryContext: params.deliveryContext,
             },
             requestContext
@@ -453,7 +457,7 @@ export const configureOrderModuleProcessing = ({
 
             if (filteredProductOrderPositions.length > 0) {
               await modules.enrollments.createFromCheckout(
-                newConfirmedOrder,
+                order,
                 {
                   items: filteredProductOrderPositions,
                   context: {
@@ -499,6 +503,8 @@ export const configureOrderModuleProcessing = ({
             );
           })
         );
+
+        nextStatus = await findNextStatus(order, requestContext);
 
         // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
         // do live stock stuff

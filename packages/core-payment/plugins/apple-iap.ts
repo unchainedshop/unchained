@@ -117,7 +117,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         const orderPayment =
           await modules.orders.payments.findOrderPaymentByContextData({
             context: {
-              '.meta.transactionIdentifier': latestTransaction.transaction_id,
+              transactionIdentifier: latestTransaction.transaction_id,
             },
           });
 
@@ -164,8 +164,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         const originalOrderPayment =
           await modules.orders.payments.findOrderPaymentByContextData({
             context: {
-              'meta.transactionIdentifier':
-                latestTransaction.original_transaction_id,
+              transactionIdentifier: latestTransaction.original_transaction_id,
             },
           });
         if (!originalOrderPayment)
@@ -298,6 +297,7 @@ const AppleIAP: IPaymentAdapter = {
       // eslint-disable-next-line
       async register() {
         const { receiptData } = params.context.transactionContext;
+
         const response = await verifyReceipt({
           receiptData,
           password: APPLE_IAP_SHARED_SECRET,
@@ -328,8 +328,9 @@ const AppleIAP: IPaymentAdapter = {
 
       // eslint-disable-next-line
       async charge() {
-        const result = params.context.transactionContext;
-        const { transactionIdentifier } = result?.meta || {};
+        const { transactionIdentifier, paymentCredentials, receiptData } =
+          params.context.transactionContext || {};
+
         const { order } = params.context;
 
         if (!transactionIdentifier) {
@@ -338,7 +339,6 @@ const AppleIAP: IPaymentAdapter = {
           );
         }
 
-        const { paymentCredentials, receiptData } = result;
         const receiptResponse =
           receiptData &&
           (await verifyReceipt({
@@ -398,6 +398,14 @@ const AppleIAP: IPaymentAdapter = {
               transactionIdentifier,
             })
           ).length > 0;
+
+        console.log(
+          'DUPLICATE TRANSACTION',
+          transactionIdentifier,
+          await modules.payment.appleTransactions.findTransactions({
+            transactionIdentifier,
+          })
+        );
 
         if (transactionAlreadyProcessed)
           throw new Error('Apple IAP Plugin: Transaction already processed');

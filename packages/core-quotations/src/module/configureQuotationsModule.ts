@@ -156,13 +156,15 @@ export const configureQuotationsModule = async ({
   };
 
   const processQuotation = async (
-    quotation: Quotation,
+    initialQuotation: Quotation,
     params: { quotationContext?: any },
     requestContext: Context
   ) => {
     const { modules, userId } = requestContext;
 
-    const nextStatus = await findNextStatus(quotation, requestContext);
+    const quotationId = initialQuotation._id
+    let quotation = initialQuotation
+    let nextStatus = await findNextStatus(quotation, requestContext);
     const director = QuotationDirector.actions({ quotation }, requestContext);
 
     if (
@@ -171,17 +173,28 @@ export const configureQuotationsModule = async ({
     ) {
       await director.submitRequest(params.quotationContext);
     }
+
+    quotation = await modules.quotations.findQuotation({ quotationId });
+    nextStatus = await findNextStatus(quotation, requestContext);
     if (nextStatus !== QuotationStatus.PROCESSING) {
       await director.verifyRequest(params.quotationContext);
     }
+
+    quotation = await modules.quotations.findQuotation({ quotationId });
+    nextStatus = await findNextStatus(quotation, requestContext);
     if (nextStatus === QuotationStatus.REJECTED) {
       await director.rejectRequest(params.quotationContext);
     }
+
+    quotation = await modules.quotations.findQuotation({ quotationId });
+    nextStatus = await findNextStatus(quotation, requestContext);
     if (nextStatus === QuotationStatus.PROPOSED) {
       const proposal = await director.quote();
-      return modules.quotations.updateProposal(quotation._id, proposal, userId);
+      quotation = await modules.quotations.updateProposal(quotation._id, proposal, userId);
+      nextStatus = await findNextStatus(quotation, requestContext);
     }
 
+    
     return await updateStatus(
       quotation._id,
       { status: nextStatus, info: 'quotation processed' },

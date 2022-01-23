@@ -172,7 +172,7 @@ describe('Plugins: Apple IAP Payments', () => {
       });
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
-    it.only('checkout with stored receipt in credentials', async () => {
+    it('checkout with stored receipt in credentials', async () => {
       const { data: { updateOrderPaymentGeneric, checkoutCart } = {} } =
         await graphqlFetch({
           query: /* GraphQL */ `

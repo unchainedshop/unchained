@@ -165,35 +165,36 @@ export const configureOrderPaymentsModule = ({
       { transactionContext, order },
       requestContext
     ) => {
+      const { modules, services } = requestContext;
+
       if (
-        requestContext.modules.orders.payments.normalizedStatus(
-          orderPayment
-        ) !== OrderPaymentStatus.OPEN
-      )
+        modules.orders.payments.normalizedStatus(orderPayment) !==
+        OrderPaymentStatus.OPEN
+      ) {
         return orderPayment;
+      }
 
       const paymentProvider =
-        await requestContext.modules.payment.paymentProviders.findProvider({
+        await modules.payment.paymentProviders.findProvider({
           paymentProviderId: orderPayment.paymentProviderId,
         });
 
       const paymentProviderId = paymentProvider._id;
 
-      const arbitraryResponseData =
-        await requestContext.services.payment.charge(
-          {
-            paymentProviderId,
-            paymentContext: {
-              order,
-              orderPayment,
-              transactionContext: {
-                ...(transactionContext || {}),
-                ...(orderPayment.context || {}),
-              },
+      const arbitraryResponseData = await services.payment.charge(
+        {
+          paymentProviderId,
+          paymentContext: {
+            order,
+            orderPayment,
+            transactionContext: {
+              ...(transactionContext || {}),
+              ...(orderPayment.context || {}),
             },
           },
-          requestContext
-        );
+        },
+        requestContext
+      );
 
       if (arbitraryResponseData) {
         return await updateStatus(
@@ -269,7 +270,7 @@ export const configureOrderPaymentsModule = ({
     ) => {
       log(`OrderPayment ${orderPaymentId} -> Update Context`, {
         orderId,
-        context
+        context,
       });
 
       const selector = buildFindByIdSelector(orderPaymentId);

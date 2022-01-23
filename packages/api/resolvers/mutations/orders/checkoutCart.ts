@@ -20,13 +20,7 @@ export default async function checkoutCart(
 
   const cart = await getOrderCart({ orderId }, context);
 
-  return await modules.orders.checkout(
-    cart,
-    transactionContext,
-    context
-  );
-
-  /* try {
+  try {
     return await modules.orders.checkout(cart, transactionContext, context);
   } catch (error) {
     log(error.message, { userId, orderId: cart._id, level: LogLevel.Error });
@@ -37,5 +31,5 @@ export default async function checkoutCart(
       ...transactionContext,
       detailMessage: error.message,
     });
-  }*/
+  }
 }

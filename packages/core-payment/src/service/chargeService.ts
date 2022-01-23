@@ -31,7 +31,9 @@ export const chargeService: ChargeService = async (
   );
 
   if (!result) return false;
+
   const { credentials, ...strippedResult } = result;
+
   if (credentials) {
     await modules.payment.paymentCredentials.upsertCredentials({
       userId,
