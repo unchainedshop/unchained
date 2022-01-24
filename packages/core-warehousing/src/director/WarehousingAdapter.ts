@@ -2,10 +2,10 @@ import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { WarehousingError } from './WarehousingError';
 
-export const WarehousingAdapter: IWarehousingAdapter = {
-  key: '',
-  label: '',
-  version: '',
+export const WarehousingAdapter: Omit<
+  IWarehousingAdapter,
+  'key' | 'label' | 'version'
+> = {
   orderIndex: 0,
 
   typeSupported: () => {

@@ -1,14 +1,17 @@
 import { Context } from './api';
 import { User, UserProfile } from './user';
 import { User as AccountsUser } from '@accounts/types';
+import { Address } from './common';
 
 export interface UserData {
   email?: string;
   guest?: boolean;
   initialPassword?: boolean;
+  lastBillingAddress: User['lastBillingAddress'];
   password: string | null;
   plainPassword?: string;
   profile?: UserProfile;
+  roles?: Array<string>;
   username?: string;
 }
 

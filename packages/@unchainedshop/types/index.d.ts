@@ -51,7 +51,13 @@ import {
   IEnrollmentDirector,
 } from './enrollments';
 import { EventDirector, EventsModule } from './events';
-import { FileDirector, FileServices, FilesModule } from './files';
+import {
+  FileDirector,
+  FileServices,
+  FilesModule,
+  IFileAdapter,
+  IFileDirector,
+} from './files';
 import {
   FiltersModule,
   FilterType as FilterTypeType,
@@ -65,10 +71,7 @@ import {
   LogOptions,
   Transports,
 } from './logs';
-import {
-  MessagingModule,
-  IMessagingDirector,
-} from './messaging';
+import { MessagingModule, IMessagingDirector } from './messaging';
 import {
   OrderServices,
   OrdersModule,
@@ -286,19 +289,9 @@ declare module 'meteor/unchained:events' {
   const subscribe: EventDirector['subscribe'];
 }
 
-declare module 'meteor/unchained:director-file-upload' {
-  const setFileUploadAdapter: FileDirector['setFileUploadAdapter'];
-  const getFileUploadAdapter: FileDirector['getFileUploadAdapter'];
-
-  const composeFileName: FileDirector['composeFileName'];
-  const createSignedURL: FileDirector['createSignedURL'];
-
-  const registerFileUploadCallback: FileDirector['registerFileUploadCallback'];
-  const getFileUploadCallback: FileDirector['getFileUploadCallback'];
-
-  const removeFiles: FileDirector['removeFiles'];
-  const uploadFileFromStream: FileDirector['uploadFileFromStream'];
-  const uploadFileFromURL: FileDirector['uploadFileFromStream'];
+declare module 'meteor/unchained:core-file-upload' {
+  const FileAdapter: Omit<IFileAdapter, 'key' | 'lable' | 'version'>;
+  const FileDirector: IFileDirector;
 }
 
 /*
@@ -537,6 +530,8 @@ declare module 'meteor/unchained:api' {
     apolloGraphQLServer: ApolloServer;
     bulkImportServer: any;
   };
+
+  function hashPassword(password: string): string;
 }
 
 declare module 'meteor/unchained:mongodb' {

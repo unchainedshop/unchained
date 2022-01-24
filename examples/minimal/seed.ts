@@ -27,14 +27,14 @@ export default async (unchainedApi: Context) => {
     }
     const adminId = await modules.accounts.createUser(
       {
-        username: "admin",
-        roles: ["admin"],
         email: "admin@unchained.local",
-        password: seedPassword ? hashPassword(seedPassword) : undefined,
-        initialPassword: seedPassword ? true : undefined,
-        profile: { address: {} },
         guest: false,
+        initialPassword: seedPassword ? true : undefined,
         lastBillingAddress: {},
+        password: seedPassword ? hashPassword(seedPassword) : undefined,
+        profile: { address: {} },
+        roles: ["admin"],
+        username: "admin",
       },
       { skipMessaging: true }
     );
@@ -93,7 +93,7 @@ export default async (unchainedApi: Context) => {
       )
     );
 
-    const deliveryProviderId = await modules.delivery.create(
+    const deliveryProvider = await modules.delivery.create(
       {
         adapterKey: "shop.unchained.delivery.send-message",
         type: DeliveryProviderType.SHIPPING,
@@ -116,11 +116,8 @@ export default async (unchainedApi: Context) => {
       },
       adminId
     );
-    const deliveryProvider = await modules.delivery.findProvider({
-      deliveryProviderId,
-    });
 
-    const paymentProviderId = await modules.payment.paymentProviders.create(
+    const paymentProvider = await modules.payment.paymentProviders.create(
       {
         adapterKey: "shop.unchained.invoice",
         type: PaymentProviderType.INVOICE,
@@ -130,18 +127,15 @@ export default async (unchainedApi: Context) => {
       },
       adminId
     );
-    const paymentProvider = await modules.payment.paymentProviders.findProvider(
-      { paymentProviderId }
-    );
 
     logger.log(`
       initialized database with
       \ncountries: ${countries.join(",")}
       \ncurrencies: ${currencies.map((c) => c.isoCode).join(",")}
       \nlanguages: ${languages.join(",")}
-      \ndeliveryProvider: ${deliveryProviderId} (${
+      \ndeliveryProvider: ${deliveryProvider._id} (${
       deliveryProvider.adapterKey
-    })\npaymentProvider: ${paymentProviderId} (${paymentProvider.adapterKey})
+    })\npaymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
       \nuser: admin@unchained.local / ${seedPassword}`);
   } catch (e) {
     logger.error(e);

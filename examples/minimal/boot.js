@@ -15,7 +15,7 @@ import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
 // import 'meteor/unchained:core-payment/plugins/datatrans-v2';
 import 'meteor/unchained:core-payment/plugins/paypal-checkout';
 import 'meteor/unchained:core-payment/plugins/apple-iap';
-// import 'meteor/unchained:core-payment/plugins/stripe';
+import 'meteor/unchained:core-payment/plugins/stripe';
 import 'meteor/unchained:core-payment/plugins/stripe-charges';
 import 'meteor/unchained:core-payment/plugins/bity';
 import 'meteor/unchained:core-orders/plugins/order-items';
@@ -35,7 +35,9 @@ import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
-import 'meteor/unchained:core-files-next/plugins/minio-webhook';
+
+import 'meteor/unchained:core-file-upload/plugins/minio-adapter';
+import 'meteor/unchained:core-file-upload/plugins/minio-webhook';
 
 import 'meteor/unchained:events/plugins/node-event-emitter';
 

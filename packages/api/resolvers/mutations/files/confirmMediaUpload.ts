@@ -1,7 +1,6 @@
-import { log } from 'meteor/unchained:logger';
-
-import { UserNotFoundError } from '../../../errors';
 import { Context, Root } from '@unchainedshop/types/api';
+import { log } from 'meteor/unchained:logger';
+import { UserNotFoundError } from '../../../errors';
 
 export default async function confirmMediaUpload(
   root: Root,
@@ -15,8 +14,8 @@ export default async function confirmMediaUpload(
   if (!(await modules.users.userExists({ userId })))
     throw new UserNotFoundError({ userId });
 
-  return await services.linkMedia(
-    { externalId: mediaUploadTicketId, size, type },
+  return await services.files.linkFile(
+    { fileId: mediaUploadTicketId, size, type },
     context
   );
 }

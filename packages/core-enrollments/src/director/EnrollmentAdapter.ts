@@ -18,11 +18,10 @@ const periodForReferenceDate = (
   };
 };
 
-export const EnrollmentAdapter: IEnrollmentAdapter = {
-  key: '',
-  label: '',
-  version: '',
-
+export const EnrollmentAdapter: Omit<
+  IEnrollmentAdapter,
+  'key' | 'label' | 'version'
+> = {
   isActivatedFor: () => {
     return false;
   },

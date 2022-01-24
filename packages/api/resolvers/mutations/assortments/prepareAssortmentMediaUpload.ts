@@ -8,7 +8,7 @@ export default async function prepareAssortmentMediaUpload(
 ) {
   log('mutation prepareAssortmentMediaUpload', { mediaName, userId });
 
-  return await modules.files.createSignedURL(
+  const preparedFile = await modules.files.createSignedURL(
     {
       directoryName: 'assortment-media',
       fileName: mediaName,
@@ -25,4 +25,6 @@ export default async function prepareAssortmentMediaUpload(
       );
     }
   );
+
+  return preparedFile;
 }

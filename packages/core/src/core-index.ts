@@ -84,8 +84,6 @@ export const initCore = async ({
   const warehousing = await configureWarehousingModule({ db });
   const worker = await configureWorkerModule({ db });
 
-  
-
   return {
     db,
     modules: {

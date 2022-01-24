@@ -58,7 +58,8 @@ export const configureDeliveryModule = async ({
     requestContext: Context
   ) => {
     const provider = await DeliveryProviders.findOne(
-      generateDbFilterById(deliveryProviderId)
+      generateDbFilterById(deliveryProviderId),
+      {}
     );
 
     return DeliveryDirector.actions(provider, deliveryContext, requestContext);

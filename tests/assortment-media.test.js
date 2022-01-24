@@ -1,33 +1,41 @@
-import FormData from 'form-data';
+import FormData from "form-data";
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   uploadFormData,
   uploadToMinio,
-} from './helpers';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
-import { PngAssortmentMedia, SimpleAssortment } from './seeds/assortments';
+} from "./helpers";
+import { ADMIN_TOKEN, USER_TOKEN } from "./seeds/users";
+import { PngAssortmentMedia, SimpleAssortment } from "./seeds/assortments";
 
 let graphqlFetch;
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const assortmentMediaFile = fs.createReadStream(
-  path.resolve(__dirname, `./assets/image.jpg`),
+  path.resolve(__dirname, `./assets/image.jpg`)
 );
 
-describe('AssortmentMedia', () => {
+const assortmentMediaFile2 = fs.createReadStream(
+  path.resolve(__dirname, `./assets/image.jpg`)
+);
+
+const assortmentMediaFile3 = fs.createReadStream(
+  path.resolve(__dirname, `./assets/contract.pdf`)
+);
+
+describe("AssortmentMedia", () => {
   beforeAll(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
-  describe('Mutation.addAssortmentMedia for admin user should', () => {
-    it('upload assortment media correctly', async () => {
+  describe("Mutation.addAssortmentMedia for admin user should", () => {
+    it("upload assortment media correctly", async () => {
       const body = new FormData();
       body.append(
-        'operations',
+        "operations",
         JSON.stringify({
           query: `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
@@ -48,21 +56,21 @@ describe('AssortmentMedia', () => {
             assortmentId: SimpleAssortment[0]._id,
             media: null,
           },
-        }),
+        })
       );
 
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', assortmentMediaFile);
+      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
+      body.append("1", assortmentMediaFile);
       const {
         data: { addAssortmentMedia },
       } = await uploadFormData({ token: ADMIN_TOKEN, body });
-      expect(addAssortmentMedia?.file.name).toEqual('image.jpg');
-    }, 99999);
+      expect(addAssortmentMedia?.file.name).toEqual("image.jpg");
+    }, 20000);
 
-    it('return AssortmentNotFoundError when passed non existing assortment ID', async () => {
+    it("return AssortmentNotFoundError when passed non existing assortment ID", async () => {
       const body = new FormData();
       body.append(
-        'operations',
+        "operations",
         JSON.stringify({
           query: `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
@@ -72,23 +80,23 @@ describe('AssortmentMedia', () => {
           }
         `,
           variables: {
-            assortmentId: 'non-existing-id',
+            assortmentId: "non-existing-id",
             media: null,
           },
-        }),
+        })
       );
 
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', assortmentMediaFile);
+      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
+      body.append("1", assortmentMediaFile);
       const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
 
-      expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
+      expect(errors[0]?.extensions?.code).toEqual("AssortmentNotFoundError");
     });
 
-    it('return InvalidIdError when passed Invalid assortment ID', async () => {
+    it("return InvalidIdError when passed Invalid assortment ID", async () => {
       const body = new FormData();
       body.append(
-        'operations',
+        "operations",
         JSON.stringify({
           query: `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
@@ -98,25 +106,25 @@ describe('AssortmentMedia', () => {
           }
         `,
           variables: {
-            assortmentId: '',
+            assortmentId: "",
             media: null,
           },
-        }),
+        })
       );
 
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', assortmentMediaFile);
+      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
+      body.append("1", assortmentMediaFile);
       const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
     });
   });
 
-  describe('Mutation.addAssortmentMedia for normal user should', () => {
-    it('return NoPermissionError', async () => {
+  describe("Mutation.addAssortmentMedia for normal user should", () => {
+    it("return NoPermissionError", async () => {
       const body = new FormData();
       body.append(
-        'operations',
+        "operations",
         JSON.stringify({
           query: `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
@@ -129,21 +137,21 @@ describe('AssortmentMedia', () => {
             assortmentId: SimpleAssortment[0]._id,
             media: null,
           },
-        }),
+        })
       );
 
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', assortmentMediaFile);
+      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
+      body.append("1", assortmentMediaFile);
       const { errors } = await uploadFormData({ token: USER_TOKEN, body });
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      expect(errors[0]?.extensions?.code).toEqual("NoPermissionError");
     });
   });
 
-  describe('Mutation.addAssortmentMedia for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
+  describe("Mutation.addAssortmentMedia for anonymous user should", () => {
+    it("return NoPermissionError", async () => {
       const body = new FormData();
       body.append(
-        'operations',
+        "operations",
         JSON.stringify({
           query: `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
@@ -156,21 +164,21 @@ describe('AssortmentMedia', () => {
             assortmentId: SimpleAssortment[0]._id,
             media: null,
           },
-        }),
+        })
       );
 
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', assortmentMediaFile);
+      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
+      body.append("1", assortmentMediaFile);
       const { errors } = await uploadFormData({
         body,
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
+      expect(errors[0]?.extensions?.code).toEqual("NoPermissionError");
     });
   });
 
-  describe('Mutation.prepareAssortmentMediaUpload for admin user should', () => {
-    it('return a sign PUT url for media upload', async () => {
+  describe("Mutation.prepareAssortmentMediaUpload for admin user should", () => {
+    it("return a sign PUT url for media upload", async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
@@ -190,14 +198,14 @@ describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: "test-media",
           assortmentId: SimpleAssortment[0]._id,
         },
       });
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
-    }, 99999);
+    }, 20000);
 
-    it('upload to minio successfully', async () => {
+    it("upload to minio successfully", async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
@@ -217,20 +225,20 @@ describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: "test-media",
           assortmentId: SimpleAssortment[0]._id,
         },
       });
 
       await uploadToMinio(
-        assortmentMediaFile,
-        prepareAssortmentMediaUpload.putURL,
+        assortmentMediaFile2,
+        prepareAssortmentMediaUpload.putURL
       );
 
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
-    }, 99999);
+    }, 20000);
 
-    it('link uploaded media file with assortment media successfully', async () => {
+    it("link uploaded media file with assortment media successfully", async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
@@ -250,14 +258,14 @@ describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          mediaName: 'test-media',
+          mediaName: "test-media",
           assortmentId: SimpleAssortment[0]._id,
         },
       });
 
       await uploadToMinio(
-        assortmentMediaFile,
-        prepareAssortmentMediaUpload.putURL,
+        assortmentMediaFile3,
+        prepareAssortmentMediaUpload.putURL
       );
 
       const {
@@ -284,19 +292,22 @@ describe('AssortmentMedia', () => {
         variables: {
           mediaUploadTicketId: prepareAssortmentMediaUpload._id,
           size: 8000,
-          type: 'image/jpg',
+          type: "image/jpg",
         },
       });
+
+      console.log("CONFIRM MEDIA LINK COMPLETED");
+
       expect(confirmMediaUpload).toMatchObject({
         _id: prepareAssortmentMediaUpload._id,
-        name: 'test-media',
-        type: 'image/jpg',
+        name: "test-media",
+        type: "image/jpg",
         size: 8000,
       });
-    });
+    }, 20000);
   });
 
-  describe('mutation.reorderAssortmentMedia for admin user should', () => {
+  describe("mutation.reorderAssortmentMedia for admin user should", () => {
     it("update assortment media sortkey successfuly when provided valid media ID", async () => {
       const { data: { reorderAssortmentMedia } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -329,7 +340,7 @@ describe('AssortmentMedia', () => {
       expect(reorderAssortmentMedia[0].sortKey).toEqual(11);
     });
 
-    it('skiped any passed sort key passed with in-valid media ID', async () => {
+    it("skiped any passed sort key passed with in-valid media ID", async () => {
       const {
         data: { reorderAssortmentMedia },
       } = await graphqlFetch({
@@ -353,7 +364,7 @@ describe('AssortmentMedia', () => {
         variables: {
           sortKeys: [
             {
-              assortmentMediaId: 'invalid-media-id',
+              assortmentMediaId: "invalid-media-id",
               sortKey: 10,
             },
           ],
@@ -363,8 +374,8 @@ describe('AssortmentMedia', () => {
     });
   });
 
-  describe('mutation.reorderAssortmentMedia for anonymous user should', () => {
-    it('return error', async () => {
+  describe("mutation.reorderAssortmentMedia for anonymous user should", () => {
+    it("return error", async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -391,8 +402,8 @@ describe('AssortmentMedia', () => {
     });
   });
 
-  describe('mutation.updateAssortmentMediaTexts for admin user should', () => {
-    it('update assortment media text successfuly when provided valid media ID', async () => {
+  describe("mutation.updateAssortmentMediaTexts for admin user should", () => {
+    it("update assortment media text successfuly when provided valid media ID", async () => {
       const { data: { updateAssortmentMediaTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
@@ -413,22 +424,22 @@ describe('AssortmentMedia', () => {
         variables: {
           assortmentMediaId: PngAssortmentMedia._id,
           texts: {
-            locale: 'en',
-            title: 'english title',
-            subtitle: 'english title subtitle',
+            locale: "en",
+            title: "english title",
+            subtitle: "english title subtitle",
           },
         },
       });
 
       expect(updateAssortmentMediaTexts[0]._id).not.toBe(null);
       expect(updateAssortmentMediaTexts[0]).toMatchObject({
-        locale: 'en',
-        title: 'english title',
-        subtitle: 'english title subtitle',
+        locale: "en",
+        title: "english title",
+        subtitle: "english title subtitle",
       });
     });
 
-    it('return not found error when passed non existing media ID', async () => {
+    it("return not found error when passed non existing media ID", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
@@ -444,20 +455,20 @@ describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          assortmentMediaId: 'invalid-media-id',
+          assortmentMediaId: "invalid-media-id",
           texts: {
-            locale: 'en',
-            title: 'english title',
-            subtitle: 'english title subtitle',
+            locale: "en",
+            title: "english title",
+            subtitle: "english title subtitle",
           },
         },
       });
       expect(errors[0]?.extensions?.code).toEqual(
-        'AssortmentMediaNotFoundError',
+        "AssortmentMediaNotFoundError"
       );
     });
 
-    it('return error when passed invalid media ID', async () => {
+    it("return error when passed invalid media ID", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
@@ -473,20 +484,20 @@ describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          assortmentMediaId: '',
+          assortmentMediaId: "",
           texts: {
-            locale: 'en',
-            title: 'english title',
-            subtitle: 'english title subtitle',
+            locale: "en",
+            title: "english title",
+            subtitle: "english title subtitle",
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
     });
   });
 
-  describe('mutation.updateAssortmentMediaTexts for anonymous user should', () => {
-    it('return error', async () => {
+  describe("mutation.updateAssortmentMediaTexts for anonymous user should", () => {
+    it("return error", async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -509,9 +520,9 @@ describe('AssortmentMedia', () => {
         variables: {
           assortmentMediaId: PngAssortmentMedia._id,
           texts: {
-            locale: 'en',
-            title: 'english title',
-            subtitle: 'english title subtitle',
+            locale: "en",
+            title: "english title",
+            subtitle: "english title subtitle",
           },
         },
       });
@@ -520,8 +531,8 @@ describe('AssortmentMedia', () => {
     });
   });
 
-  describe('mutation.removeAssortmentMedia for admin user should', () => {
-    it('remove assortment media successfuly when provided valid media ID', async () => {
+  describe("mutation.removeAssortmentMedia for admin user should", () => {
+    it("remove assortment media successfuly when provided valid media ID", async () => {
       // eslint-disable-next-line no-unused-vars
 
       await graphqlFetch({
@@ -568,7 +579,7 @@ describe('AssortmentMedia', () => {
       expect(errors.length).toEqual(1);
     }, 99999);
 
-    it('return not found error when passed non existing assortmentMediaId', async () => {
+    it("return not found error when passed non existing assortmentMediaId", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
@@ -578,16 +589,16 @@ describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          assortmentMediaId: 'non-existing-id',
+          assortmentMediaId: "non-existing-id",
         },
       });
 
       expect(errors[0]?.extensions?.code).toEqual(
-        'AssortmentMediaNotFoundError',
+        "AssortmentMediaNotFoundError"
       );
     });
 
-    it('return error when passed invalid assortmentMediaId', async () => {
+    it("return error when passed invalid assortmentMediaId", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
@@ -597,16 +608,16 @@ describe('AssortmentMedia', () => {
           }
         `,
         variables: {
-          assortmentMediaId: '',
+          assortmentMediaId: "",
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
     });
   });
 
-  describe('mutation.removeAssortmentMedia for anonymous user should', () => {
-    it('return error', async () => {
+  describe("mutation.removeAssortmentMedia for anonymous user should", () => {
+    it("return error", async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({

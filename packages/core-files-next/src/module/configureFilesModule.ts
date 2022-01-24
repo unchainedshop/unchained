@@ -9,7 +9,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
-import FileUpload from 'meteor/unchained:director-file-upload';
+import { FileDirector } from 'meteor/unchained:core-file-upload';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
 
@@ -20,7 +20,7 @@ const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
   expires: meta.expiryDate || fileData.expiryDate,
   name: fileData.fileName,
   size: fileData.size,
-  tpye: fileData.type,
+  type: fileData.type || undefined,
   url: fileData.url,
   meta,
 });
@@ -31,6 +31,16 @@ export const configureFilesModule = async ({
   registerEvents(FILE_EVENTS);
 
   const Files = await MediaObjectsCollection(db);
+
+  const getFileAdapter = () => {
+    const adapters = FileDirector.getAdapters();
+    if (adapters.length === 0) throw Error('No file adapter found.');
+
+    // For now we return the first file upload adapter without further filter options
+    return adapters[0];
+  };
+
+  const fileUploadAdapter = getFileAdapter();
 
   const mutations = generateDbMutations<File>(
     Files,
@@ -88,17 +98,26 @@ export const configureFilesModule = async ({
       userId,
       uploadFileCallback
     ) => {
-      const uploadFileData = await FileUpload.createSignedURL({
+      const { url: putURL, ...preparedFileData } =
+        await fileUploadAdapter.createSignedURL({
+          directoryName,
+          fileName,
+        });
+
+      const fileData = getFileFromFileData(preparedFileData, meta);
+      const fileId = await mutations.create(fileData, userId);
+
+      FileDirector.registerFileUploadCallback(
         directoryName,
-        fileName,
-      });
-      const file = getFileFromFileData(uploadFileData, meta);
+        uploadFileCallback
+      );
 
-      const fileId = await mutations.create(file, userId);
-
-      FileUpload.registerFileUploadCallback(directoryName, uploadFileCallback);
-
-      return await Files.findOne(generateDbFilterById(fileId));
+      return {
+        _id: fileId,
+        expires: fileData.expires,
+        externalId: fileData.externalId,
+        putURL,
+      };
     },
 
     removeFiles: async ({ externalFileIds, excludedFileIds }) => {
@@ -131,9 +150,11 @@ export const configureFilesModule = async ({
         },
       });
 
-      const idList = await files.map(FileUpload.composeFileName).toArray();
+      const idList = await files
+        .map(fileUploadAdapter.composeFileName)
+        .toArray();
 
-      await FileUpload.removeFiles(idList);
+      await fileUploadAdapter.removeFiles(idList);
 
       const deletedFilesResult = await Files.deleteMany(selector);
 
@@ -141,27 +162,27 @@ export const configureFilesModule = async ({
     },
 
     uploadFileFromStream: async ({ directoryName, rawFile, meta }, userId) => {
-      const uploadFileData = await FileUpload.uploadFileFromStream(
+      const uploadFileData = await fileUploadAdapter.uploadFileFromStream(
         directoryName,
         rawFile
       );
-      const file = getFileFromFileData(uploadFileData, meta);
+      const fileData = getFileFromFileData(uploadFileData, meta);
 
-      const fileId = await mutations.create(file, userId);
+      const fileId = await mutations.create(fileData, userId);
 
-      return await Files.findOne(generateDbFilterById(fileId));
+      return await Files.findOne(generateDbFilterById(fileId), {});
     },
 
     uploadFileFromURL: async (directoryName, fileInput, meta, userId) => {
-      const uploadFileData = await FileUpload.uploadFileFromURL(
+      const uploadFileData = await fileUploadAdapter.uploadFileFromURL(
         directoryName,
         fileInput
       );
-      const file = getFileFromFileData(uploadFileData, meta);
+      const fileData = getFileFromFileData(uploadFileData, meta);
 
-      const fileId = await mutations.create(file, userId);
+      const fileId = await mutations.create(fileData, userId);
 
-      return await Files.findOne(generateDbFilterById(fileId));
+      return await Files.findOne(generateDbFilterById(fileId), {});
     },
   };
 };

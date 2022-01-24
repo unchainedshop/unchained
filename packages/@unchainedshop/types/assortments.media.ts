@@ -92,14 +92,3 @@ export type AssortmentMediaModule = {
     ) => Promise<AssortmentMediaText>;
   };
 };
-
-type HelperType<P, T> = (
-  assortmentMedia: AssortmentMedia,
-  params: P,
-  context: Context
-) => T;
-
-export interface AssortmentMediaHelperTypes {
-  texts: HelperType<{ forceLocale?: string }, Promise<AssortmentMediaText>>;
-  file: HelperType<any, Promise<File>>;
-}

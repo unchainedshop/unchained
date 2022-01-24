@@ -55,6 +55,7 @@ unchained:core-currencies@1.0.0-beta15
 unchained:core-delivery@1.0.0-beta15
 unchained:core-enrollments@1.0.0-beta15
 unchained:core-events@1.0.0-beta15
+unchained:core-file-upload@1.0.0-beta15
 unchained:core-files-next@1.0.0-beta15
 unchained:core-filters@1.0.0-beta15
 unchained:core-languages@1.0.0-beta15
@@ -66,7 +67,6 @@ unchained:core-quotations@1.0.0-beta15
 unchained:core-users@1.0.0-beta15
 unchained:core-warehousing@1.0.0-beta15
 unchained:core-worker@1.0.0-beta15
-unchained:director-file-upload@1.0.0-beta15
 unchained:events@1.0.0-beta15
 unchained:logger@1.0.0-beta15
 unchained:mongodb@1.0.0-beta15

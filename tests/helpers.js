@@ -133,11 +133,15 @@ export const uploadFormData = async ({ token = '', body }) => {
 
 export const uploadToMinio = async (file, url) => {
   const response = await fetch(url, {
-    method: 'PUT',
+    method: "PUT",
     body: file,
+    headers: {
+      "Content-Length": file.bytesRead,
+    },
   });
   if (response.ok) {
     return Promise.resolve({});
   }
+  console.log('RESPONSE', response.error, response.status)
   return Promise.reject(new Error('error'));
 };

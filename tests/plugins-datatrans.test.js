@@ -7,7 +7,7 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 let db;
 let graphqlFetch;
 
-describe('Plugins: Datatrans Payments', () => {
+xdescribe('Plugins: Datatrans Payments', () => {
   const merchantId = '1100004624';
   const amount = '20000';
   const currency = 'CHF';

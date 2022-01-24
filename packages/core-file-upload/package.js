@@ -1,7 +1,7 @@
 Package.describe({
-  name: 'unchained:director-file-upload',
+  name: 'unchained:core-file-upload',
   version: '1.0.0-beta15',
-  summary: 'Unchained Engine: File Upload Director',
+  summary: 'Unchained Engine: Core File Upload',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
@@ -27,7 +27,7 @@ Package.onTest((api) => {
   api.use('typescript');
 
   api.use('unchained:mongodb@1.0.0-beta15');
-  api.use('unchained:director-file-upload@1.0.0-beta15');
+  api.use('unchained:core-file-upload@1.0.0-beta15');
 
   api.mainModule('tests/file-upload-index.test.ts');
 });

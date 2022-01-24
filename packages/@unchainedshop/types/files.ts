@@ -1,7 +1,8 @@
 import { Context } from './api';
 import {
-  Filter,
   FindOptions,
+  IBaseAdapter,
+  IBaseDirector,
   ModuleMutations,
   TimestampFields,
   _ID,
@@ -45,7 +46,12 @@ export type FilesModule = ModuleMutations<File> & {
     },
     userId: string,
     uploadFileCallback: UploadFileCallback
-  ) => Promise<File | null>;
+  ) => Promise<{
+    _id: _ID;
+    expires?: Date;
+    externalId: string;
+    putURL: string;
+  } | null>;
   removeFiles: (params: {
     externalFileIds?: string | Array<string>;
     excludedFileIds?: Array<_ID>;
@@ -67,12 +73,12 @@ export type FilesModule = ModuleMutations<File> & {
  */
 
 export type LinkFileService = (
-  params: { externalId: string; size: number; type: string },
+  params: { fileId: string; size: number; type: string },
   context: Context
 ) => Promise<File>;
 
 export interface FileServices {
-  linkFileService: LinkFileService;
+  linkFile: LinkFileService;
 }
 
 /*
@@ -90,7 +96,7 @@ export interface UploadFileData {
   url: string;
 }
 
-export interface FileAdapter {
+export interface IFileAdapter extends IBaseAdapter {
   composeFileName: (file: File) => string;
   createSignedURL: (data: {
     directoryName: string;
@@ -109,12 +115,10 @@ export interface FileAdapter {
 
 type UploadFileCallback = (file: File) => Promise<void>;
 
-export interface FileDirector extends FileAdapter {
-  setFileUploadAdapter(adapter: FileAdapter): void;
-  getFileUploadAdapter(): FileAdapter;
+export type IFileDirector = IBaseDirector<IFileAdapter> & {
   registerFileUploadCallback: (
     directoryName: string,
     callback: UploadFileCallback
   ) => void;
   getFileUploadCallback: (directoryName: string) => UploadFileCallback;
-}
+};

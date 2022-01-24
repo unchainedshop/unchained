@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import hashPassword from '../../../hashPassword';
+import { hashPassword } from '../../../hashPassword';
 import { UserData } from '@unchainedshop/types/accounts';
 
 export default async function enrollUser(
@@ -25,5 +25,5 @@ export default async function enrollUser(
     skipMessaging: !!mappedUserData.password,
   });
 
-  return await modules.users.findUser({ userId })
+  return await modules.users.findUser({ userId });
 }

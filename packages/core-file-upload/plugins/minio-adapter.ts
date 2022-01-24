@@ -1,5 +1,5 @@
-import { File, FileAdapter } from '@unchainedshop/types/files';
-import { setFileUploadAdapter } from 'meteor/unchained:director-file-upload';
+import { File, IFileAdapter } from '@unchainedshop/types/files';
+import { FileAdapter, FileDirector } from 'meteor/unchained:core-file-upload';
 import crypto from 'crypto';
 import https from 'https';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -112,7 +112,13 @@ const bufferToStream = (buffer: any) => {
 
 const getExpiryDate = () => new Date(new Date().getTime() + PUT_URL_EXPIRY);
 
-export const MinioAdapter: FileAdapter = {
+export const MinioAdapter: IFileAdapter = {
+  key: 'shop.unchained.file-upload-plugin.minio',
+  label: 'Uploads files into an S3 bucket using minio',
+  version: '1.0',
+
+  ...FileAdapter,
+
   // Returns the file name with extension from its ID and url bucket name is included in the ID on insert operation
   composeFileName: (file: File) => {
     return decodeURIComponent(file.externalId).concat(
@@ -215,4 +221,4 @@ export const MinioAdapter: FileAdapter = {
   },
 };
 
-setFileUploadAdapter(MinioAdapter);
+FileDirector.registerAdapter(MinioAdapter);

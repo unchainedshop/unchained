@@ -77,7 +77,10 @@ export const configureProductMediaModule = async ({
   return {
     // Queries
     findProductMedia: async ({ productMediaId }) => {
-      return await ProductMedia.findOne(generateDbFilterById(productMediaId));
+      return await ProductMedia.findOne(
+        generateDbFilterById(productMediaId),
+        {}
+      );
     },
 
     findProductMedias: async ({ productId, tags, offset, limit }, options) => {
@@ -116,6 +119,7 @@ export const configureProductMediaModule = async ({
       const productMediaId = await mutations.create(
         {
           tags: [],
+          authorId: userId,
           ...doc,
           sortKey,
         },
@@ -123,7 +127,8 @@ export const configureProductMediaModule = async ({
       );
 
       const productMedia = await ProductMedia.findOne(
-        generateDbFilterById(productMediaId)
+        generateDbFilterById(productMediaId),
+        {}
       );
 
       emit('PRODUCT_ADD_MEDIA', {
@@ -169,7 +174,7 @@ export const configureProductMediaModule = async ({
       const selector = generateDbFilterById(productMediaId);
       const modifier = { $set: doc };
       await ProductMedia.updateOne(selector, modifier);
-      return await ProductMedia.findOne(selector);
+      return await ProductMedia.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {

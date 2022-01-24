@@ -49,6 +49,7 @@ export const configureAssortmentMediaModule = async ({
       assortmentMediaId,
       locale,
     };
+    const textId = generateDbObjectId();
     const updsertResult = await AssortmentMediaTexts.updateOne(
       selector,
       {
@@ -58,7 +59,7 @@ export const configureAssortmentMediaModule = async ({
           ...text,
         },
         $setOnInsert: {
-          _id: generateDbObjectId(),
+          _id: textId,
           created: new Date(),
           createdBy: userId,
           assortmentMediaId,
@@ -71,9 +72,10 @@ export const configureAssortmentMediaModule = async ({
     );
 
     return await AssortmentMediaTexts.findOne(
-      updsertResult.upsertedId
-        ? { _id: updsertResult.upsertedId._id }
-        : selector
+      updsertResult.upsertedCount === 0
+        ? generateDbFilterById(textId)
+        : selector,
+      {}
     );
   };
 
@@ -81,7 +83,8 @@ export const configureAssortmentMediaModule = async ({
     // Queries
     findAssortmentMedia: async ({ assortmentMediaId }) => {
       return await AssortmentMedia.findOne(
-        generateDbFilterById(assortmentMediaId)
+        generateDbFilterById(assortmentMediaId),
+        {}
       );
     },
 
@@ -124,6 +127,7 @@ export const configureAssortmentMediaModule = async ({
       const assortmentMediaId = await mutations.create(
         {
           tags: [],
+          authorId: userId,
           ...doc,
           sortKey,
         },
@@ -131,7 +135,8 @@ export const configureAssortmentMediaModule = async ({
       );
 
       const assortmentMedia = await AssortmentMedia.findOne(
-        generateDbFilterById(assortmentMediaId)
+        generateDbFilterById(assortmentMediaId),
+        {}
       );
 
       emit('ASSORTMENT_ADD_MEDIA', {
@@ -177,7 +182,7 @@ export const configureAssortmentMediaModule = async ({
       const selector = generateDbFilterById(assortmentMediaId);
       const modifier = { $set: doc };
       await AssortmentMedia.updateOne(selector, modifier);
-      return await AssortmentMedia.findOne(selector);
+      return await AssortmentMedia.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {
