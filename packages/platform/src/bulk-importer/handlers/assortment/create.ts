@@ -4,6 +4,7 @@ import upsertAssortmentProducts from './upsertAssortmentProducts';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
 import upsertAssortmentFilters from './upsertAssortmentFilters';
 import { Context } from '@unchainedshop/types/api';
+import { assortmentsSettings } from 'meteor/unchained:utils';
 
 export default async function createAssortment(
   payload: any,
@@ -93,4 +94,11 @@ export default async function createAssortment(
     { media: media || [], assortmentId: _id, authorId },
     unchainedAPI
   );
+
+  return {
+    entity: 'ASSORTMENT',
+    operation: 'create',
+    _id,
+    success: true,
+  }
 }

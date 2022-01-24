@@ -11,4 +11,11 @@ export default async function removeProduct(
 
   // Use service services.product.removeProduct
   await modules.products.delete(_id, userId);
+
+  return {
+    entity: 'PRODUCT',
+    operation: 'remove',
+    _id,
+    success: true,
+  };
 }

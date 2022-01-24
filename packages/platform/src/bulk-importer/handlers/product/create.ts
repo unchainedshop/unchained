@@ -73,4 +73,11 @@ export default async function createProduct(
     { media: media || [], productId: _id, authorId },
     unchainedAPI
   );
+
+  return {
+    entity: 'PRODUCT',
+    operation: 'create',
+    _id,
+    success: true,
+  };
 }

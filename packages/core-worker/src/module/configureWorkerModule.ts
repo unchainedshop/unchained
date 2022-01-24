@@ -67,7 +67,7 @@ const buildQuerySelector = ({
     ),
   };
 
-  let query: Filter<Work> = statusQuery.$or.length > 0 ? statusQuery : {};
+  let query: Query = statusQuery.$or.length > 0 ? statusQuery : {};
 
   query.$and = [
     selectTypes?.length > 0 && { type: { $in: selectTypes } },
@@ -133,7 +133,7 @@ export const configureWorkerModule = async ({
       userId
     );
 
-    const work = await WorkQueue.findOne(generateDbFilterById(workId));
+    const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
     log(`Finished work ${workId}`, {
       level: LogLevel.Verbose,
@@ -156,7 +156,8 @@ export const configureWorkerModule = async ({
 
     findWork: async ({ workId, originalWorkId }) => {
       return await WorkQueue.findOne(
-        workId ? generateDbFilterById(workId) : { originalWorkId }
+        workId ? generateDbFilterById(workId) : { originalWorkId },
+        {}
       );
     },
 
@@ -207,9 +208,9 @@ export const configureWorkerModule = async ({
       { type, input, priority = 0, scheduled, originalWorkId, retries = 20 },
       userId
     ) => {
-      // if (!WorkerDirector.getAdapter(type)) {
-      //   throw new Error(`No plugin registered for type ${type}`);
-      // }
+      if (!WorkerDirector.getAdapter(type)) {
+        throw new Error(`No plugin registered for type ${type}`);
+      }
 
       const created = new Date();
       const workId = await mutations.create(
@@ -232,7 +233,7 @@ export const configureWorkerModule = async ({
         { userId }
       );
 
-      const work = await WorkQueue.findOne(generateDbFilterById(workId));
+      const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
       WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work, userId });
 
@@ -338,7 +339,7 @@ export const configureWorkerModule = async ({
 
       await mutations.delete(workId, userId);
 
-      const work = await WorkQueue.findOne(generateDbFilterById(workId));
+      const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
       WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work, userId });
 

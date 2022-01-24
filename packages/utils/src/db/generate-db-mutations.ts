@@ -27,7 +27,7 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       values.created = new Date();
       values.createdBy = userId;
       schema.validate(values);
-      values._id = generateDbObjectId();
+      values._id = doc._id || generateDbObjectId();
 
       const result = await collection.insertOne(values);
       /* @ts-ignore */
@@ -40,6 +40,7 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           checkId(_id);
 
           let modifier: any;
+
           /* @ts-ignore */
           if (doc.$set) {
             const values = schema.clean(doc, { isModifier: true });

@@ -37,7 +37,6 @@ const checkAction = async (
   
   const keyText = key && key !== '' ? ` in "${key}"` : '';
 
-  console.log('ERROR', context.userId, action, key)
   throw new NoPermissionError({
     userId: context.userId,
     action,

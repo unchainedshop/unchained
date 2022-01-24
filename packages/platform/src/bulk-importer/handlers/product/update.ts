@@ -62,4 +62,11 @@ export default async function createProduct(
     logger.debug('replace product media', media);
     await upsertMedia({ media, productId: _id, authorId }, unchainedAPI);
   }
+
+  return {
+    entity: 'PRODUCT',
+    operation: 'update',
+    _id,
+    success: true,
+  };
 }

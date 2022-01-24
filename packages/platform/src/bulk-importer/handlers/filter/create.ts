@@ -61,4 +61,11 @@ export default async function createFilter(
     { authorId },
     unchainedAPI
   );
+
+  return {
+    entity: 'FILTER',
+    operation: 'create',
+    _id,
+    success: true,
+  };
 }

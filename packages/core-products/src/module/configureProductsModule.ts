@@ -190,7 +190,7 @@ export const configureProductsModule = async ({
       const selector = productId
         ? generateDbFilterById(productId)
         : { slugs: slug };
-      return await Products.findOne(selector);
+      return await Products.findOne(selector, {});
     },
 
     findProducts: async ({ limit, offset, ...query }) => {
@@ -357,7 +357,6 @@ export const configureProductsModule = async ({
 
       const productId = await mutations.create(
         {
-          created: new Date(),
           type: ProductTypes[type],
           status: InternalProductStatus.DRAFT,
           sequence: sequence ?? (await Products.find({}).count()) + 10,
@@ -367,7 +366,12 @@ export const configureProductsModule = async ({
         userId
       );
 
-      const product = await Products.findOne(generateDbFilterById(productId));
+      const product = await Products.findOne(
+        generateDbFilterById(productId),
+        {}
+      );
+
+      console.log('CREATE PRODUCT', product, productData)
 
       if (locale) {
         productTexts.upsertLocalizedText(
@@ -401,7 +405,12 @@ export const configureProductsModule = async ({
     },
 
     delete: async (productId, userId) => {
-      const product = await Products.findOne(generateDbFilterById(productId));
+      const product = await Products.findOne(
+        generateDbFilterById(productId),
+        {}
+      );
+
+      console.log('PRODUCT', product, productId);
 
       if (product.status !== InternalProductStatus.DRAFT) {
         throw new Error(`Invalid status', ${product.status}`);
@@ -503,7 +512,10 @@ export const configureProductsModule = async ({
 
       removeBundleItem: async (productId, index, userId) => {
         // TODO: There has to be a better MongoDB way to do this!
-        const product = await Products.findOne(generateDbFilterById(productId));
+        const product = await Products.findOne(
+          generateDbFilterById(productId),
+          {}
+        );
 
         const { bundleItems = [] } = product;
         const removedItems = bundleItems.splice(index, 1);

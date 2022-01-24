@@ -31,6 +31,7 @@ const upsertAsset = async (
     if (!assetObject) throw new Error('Media not created');
     return assetObject;
   } catch (e) {
+    console.error('FILE ERROR', e)
     await modules.files.update(fileId, { fileName, url, ...assetData }, userId);
     return modules.files.findFile({ fileId });
   }

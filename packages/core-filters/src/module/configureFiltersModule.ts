@@ -181,8 +181,8 @@ export const configureFiltersModule = async ({
     filter: Filter,
     requestContext: Context
   ) => {
-    if (!filter) return
-    
+    if (!filter) return;
+
     log(`Filters: Rebuilding ${filter.key}`, { level: LogLevel.Verbose });
 
     const { productIds, allProductIds } = await buildProductIdMap(
@@ -222,7 +222,9 @@ export const configureFiltersModule = async ({
     const filters = await Filters.find(selector || {}).toArray();
 
     await Promise.all(
-      filters.map(async (filter) => await invalidateProductIdCache(filter, requestContext))
+      filters.map(
+        async (filter) => await invalidateProductIdCache(filter, requestContext)
+      )
     );
   };
 
@@ -380,7 +382,7 @@ export const configureFiltersModule = async ({
       const filter = await Filters.findOne(generateDbFilterById(filterId));
 
       if (!options?.skipInvalidation) {
-        invalidateProductIdCache(filter, requestContext);
+        await invalidateProductIdCache(filter, requestContext);
       }
 
       emit('FILTER_UPDATE', { filter });

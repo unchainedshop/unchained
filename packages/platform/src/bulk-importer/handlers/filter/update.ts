@@ -27,7 +27,7 @@ export default async function updateFilter(
 
   if (content || options) {
     if (!filter)
-      throw new Error(`Can't update non-existing filter ${filter._id}`);
+      throw new Error(`Can't update non-existing filter ${_id}`);
   }
 
   if (content) {
@@ -39,4 +39,11 @@ export default async function updateFilter(
     logger.debug('replace localized content for filter options', content);
     await upsertFilterOptionContent({ options, filter }, { authorId }, unchainedAPI);
   }
+
+  return {
+    entity: 'FILTER',
+    operation: 'update',
+    _id,
+    success: true,
+  };
 }

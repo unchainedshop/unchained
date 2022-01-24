@@ -49,6 +49,7 @@ export const BulkImportWorker: IWorkerAdapter<any, {}> = {
       } = rawPayload.payloadId ? await unpackPayload(rawPayload) : rawPayload;
 
       if (!events?.length) throw new Error('No events submitted');
+
       const bulkImporter = createBulkImporter(
         {
           logger,
@@ -57,12 +58,13 @@ export const BulkImportWorker: IWorkerAdapter<any, {}> = {
         },
         requestContext
       );
-      for (let i = 0, len = events.length; i < len; i += 1) {
-        // eslint-disable-next-line
-        await bulkImporter.prepare(events[i]);
-      }
+      let i = 0;
+      await Promise.all(
+        events.map(async (event) => await bulkImporter.prepare(event))
+      );
       const [result, error] = await bulkImporter.execute();
       await bulkImporter.invalidateCaches(requestContext);
+
       if (error) {
         return {
           success: false,

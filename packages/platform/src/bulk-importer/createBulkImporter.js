@@ -12,28 +12,28 @@ const runPrepareAsync = async (
   context,
   requestContext
 ) => {
+  let entityOperation;
   switch (entity) {
     case 'ASSORTMENT':
-      return AssortmentHandlers[operation]?.(
-        event.payload,
-        context,
-        requestContext
-      );
+      entityOperation = AssortmentHandlers[operation];
+      break;
     case 'PRODUCT':
-      return ProductHandlers[operation]?.(
-        event.payload,
-        context,
-        requestContext
-      );
+      entityOperation = ProductHandlers[operation];
+      break;
     case 'FILTER':
-      return FilterHandlers[operation]?.(
-        event.payload,
-        context,
-        requestContext
-      );
+      entityOperation = FilterHandlers[operation];
+      break;
     default:
       throw new Error(`Entity ${event.entity} unknown`);
   }
+
+  if (typeof entityOperation !== 'function') {
+    throw new Error(
+      `Operation ${operation} for entity ${event.entity} unknown`
+    );
+  }
+
+  return await entityOperation(event.payload, context, requestContext);
 };
 
 export const createBucket = (bucketName) => {
@@ -51,12 +51,12 @@ export const createBulkImporter = (options, requestContext) => {
   const preparationIssues = [];
   const { logger } = options;
 
-  function bulk(Collection) {
+  const bulk = (Collection) => {
     const raw = Collection.rawCollection();
     bulkOperations[raw.namespace.collection] =
       Collection.rawCollection().initializeOrderedBulkOp();
     return bulkOperations[raw.namespace.collection];
-  }
+  };
 
   const context = {
     ...options,
@@ -68,9 +68,10 @@ export const createBulkImporter = (options, requestContext) => {
   );
 
   return {
-    async prepare(event) {
+    prepare: async (event) => {
       const entity = event.entity.toUpperCase();
       const operation = event.operation.toLowerCase();
+
       if (!allowedOperations.includes(operation)) {
         throw new Error(`Operation ${event.operation} unknown`);
       }
@@ -96,6 +97,7 @@ export const createBulkImporter = (options, requestContext) => {
         logger.verbose(
           `${operation} ${entity} ${event.payload._id} [FAILED]: ${e.message}`
         );
+        console.error('ERROR', e)
         preparationIssues.push({
           operation,
           entity,
@@ -109,11 +111,11 @@ export const createBulkImporter = (options, requestContext) => {
         });
       }
     },
-    async execute() {
+    execute: async () => {
       logger.info(
         `Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`
       );
-      const operationResults = Promise.all(
+      const operationResults = await Promise.all(
         Object.values(bulkOperations).map((o) => o.execute())
       );
       if (preparationIssues?.length) {
@@ -122,10 +124,22 @@ export const createBulkImporter = (options, requestContext) => {
         );
         const errors = {};
         errors.preparationIssues = preparationIssues;
-        return [operationResults, errors];
+        return [
+          operationResults.reduce(
+            (currentResults, result) => ({ ...currentResults, ...result }),
+            {}
+          ),
+          errors,
+        ];
       }
       logger.info(`Import finished without errors`);
-      return [operationResults, null];
+      return [
+        operationResults.reduce(
+          (currentResults, result) => ({ ...currentResults, ...result }),
+          {}
+        ),
+        null,
+      ];
     },
     async invalidateCaches(requestContext) {
       await requestContext.modules.assortments.invalidateCache();

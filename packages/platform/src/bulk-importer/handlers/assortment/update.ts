@@ -85,4 +85,11 @@ export default async function updateAssortment(
       unchainedAPI
     );
   }
+
+  return {
+    entity: 'ASSORTMENT',
+    operation: 'update',
+    _id,
+    success: true,
+  };
 }
