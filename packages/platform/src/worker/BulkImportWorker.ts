@@ -59,9 +59,11 @@ export const BulkImportWorker: IWorkerAdapter<any, {}> = {
         requestContext
       );
       let i = 0;
-      await Promise.all(
-        events.map(async (event) => await bulkImporter.prepare(event))
-      );
+      await events.reduce(async (currentEventPromise, nextEvent) => {
+        await currentEventPromise;
+        return bulkImporter.prepare(nextEvent);
+      }, Promise.resolve());
+
       const [result, error] = await bulkImporter.execute();
       await bulkImporter.invalidateCaches(requestContext);
 

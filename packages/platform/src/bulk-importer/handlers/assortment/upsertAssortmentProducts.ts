@@ -15,11 +15,17 @@ const upsert = async (
       `Can't link non-existing product ${assortmentProduct.productId}`
     );
   }
+  console.log('UPSERT ASSORTMENT PRODUCT', assortmentProduct);
   try {
-    return await modules.assortments.products.create(assortmentProduct, {
-      skipInvalidation: true,
-    });
+    return await modules.assortments.products.create(
+      assortmentProduct,
+      {
+        skipInvalidation: true,
+      },
+      userId
+    );
   } catch (e) {
+    console.log('ERROR', e);
     await modules.assortments.products.update(
       assortmentProduct._id,
       assortmentProduct
@@ -52,6 +58,7 @@ export default async (
       _id: { $nin: assortmentProductIds },
       assortmentId,
     },
-    { skipInvalidation: true }
+    { skipInvalidation: true },
+    userId
   );
 };

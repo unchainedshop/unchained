@@ -71,7 +71,7 @@ export const createBulkImporter = (options, requestContext) => {
     prepare: async (event) => {
       const entity = event.entity.toUpperCase();
       const operation = event.operation.toLowerCase();
-
+      
       if (!allowedOperations.includes(operation)) {
         throw new Error(`Operation ${event.operation} unknown`);
       }
@@ -97,7 +97,6 @@ export const createBulkImporter = (options, requestContext) => {
         logger.verbose(
           `${operation} ${entity} ${event.payload._id} [FAILED]: ${e.message}`
         );
-        console.error('ERROR', e)
         preparationIssues.push({
           operation,
           entity,

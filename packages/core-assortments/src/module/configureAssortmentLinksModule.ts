@@ -34,7 +34,8 @@ export const configureAssortmentLinksModule = ({
       return await AssortmentLinks.findOne(
         assortmentLinkId
           ? generateDbFilterById(assortmentLinkId)
-          : { parentAssortmentId, childAssortmentId }
+          : { parentAssortmentId, childAssortmentId },
+        {}
       );
     },
 
@@ -62,7 +63,7 @@ export const configureAssortmentLinksModule = ({
 
     // Mutations
     create: async (doc, options, userId) => {
-      const { parentAssortmentId, childAssortmentId, ...rest } = doc;
+      const { _id, parentAssortmentId, childAssortmentId, ...rest } = doc;
 
       const selector = {
         ...(doc._id ? generateDbFilterById(doc._id) : {}),
@@ -76,7 +77,7 @@ export const configureAssortmentLinksModule = ({
         ...rest,
       };
       const $setOnInsert: any = {
-        _id: generateDbObjectId(),
+        _id: doc._id || generateDbObjectId(),
         parentAssortmentId,
         childAssortmentId,
         created: new Date(),
@@ -105,7 +106,7 @@ export const configureAssortmentLinksModule = ({
         }
       );
 
-      const assortmentLink = await AssortmentLinks.findOne(selector);
+      const assortmentLink = await AssortmentLinks.findOne(selector, {});
 
       emit('ASSORTMENT_ADD_LINK', { assortmentLink });
 
@@ -121,7 +122,7 @@ export const configureAssortmentLinksModule = ({
       const selector = generateDbFilterById(assortmentLinkId);
       const modifier = { $set: doc };
       await AssortmentLinks.updateOne(selector, modifier);
-      return await AssortmentLinks.findOne(selector);
+      return await AssortmentLinks.findOne(selector, {});
     },
 
     delete: async (assortmentLinkId, options) => {

@@ -67,21 +67,20 @@ export const configureAssortmentProductsModule = ({
 
     // Mutations
     create: async (doc: AssortmentProduct, options, userId) => {
-      const { assortmentId, productId, ...rest } = doc;
+      const { _id, assortmentId, productId, ...rest } = doc;
 
       const selector = {
         ...(doc._id ? generateDbFilterById(doc._id) : {}),
         productId,
         assortmentId,
       };
-
       const $set: any = {
         updated: new Date(),
         updatedBy: userId,
         ...rest,
       };
       const $setOnInsert: any = {
-        _id: generateDbObjectId(),
+        _id: _id || generateDbObjectId(),
         productId,
         assortmentId,
         created: new Date(),
@@ -99,12 +98,16 @@ export const configureAssortmentProductsModule = ({
         $set.sortKey = doc.sortKey;
       }
 
-      await AssortmentProducts.updateOne(selector, {
-        $set,
-        $setOnInsert,
-      });
+      await AssortmentProducts.updateOne(
+        selector,
+        {
+          $set,
+          $setOnInsert,
+        },
+        { upsert: true }
+      );
 
-      const assortmentProduct = await AssortmentProducts.findOne(selector);
+      const assortmentProduct = await AssortmentProducts.findOne(selector, {});
 
       emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
@@ -122,7 +125,7 @@ export const configureAssortmentProductsModule = ({
         projection: { _id: 1, assortmentId: 1 },
       });
 
-      if (!assortmentProduct) return []
+      if (!assortmentProduct) return [];
 
       AssortmentProducts.deleteOne(selector);
 
@@ -137,7 +140,6 @@ export const configureAssortmentProductsModule = ({
       }
 
       return [assortmentProduct];
-      
     },
 
     deleteMany: async (selector, options) => {
@@ -168,7 +170,7 @@ export const configureAssortmentProductsModule = ({
       const selector = generateDbFilterById(assortmentProductId);
       const modifier = { $set: doc };
       await AssortmentProducts.updateOne(selector, modifier);
-      return await AssortmentProducts.findOne(selector);
+      return await AssortmentProducts.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {

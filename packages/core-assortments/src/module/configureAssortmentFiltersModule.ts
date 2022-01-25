@@ -2,7 +2,7 @@ import {
   AssortmentFilter,
   AssortmentsModule,
 } from '@unchainedshop/types/assortments';
-import { Collection, Filter, Query } from '@unchainedshop/types/common';
+import { Collection, Query } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   generateDbFilterById,
@@ -25,7 +25,8 @@ export const configureAssortmentFiltersModule = ({
   return {
     findFilter: async ({ assortmentFilterId }) => {
       return await AssortmentFilters.findOne(
-        generateDbFilterById(assortmentFilterId)
+        generateDbFilterById(assortmentFilterId),
+        {}
       );
     },
 
@@ -46,10 +47,10 @@ export const configureAssortmentFiltersModule = ({
       return await filters.toArray();
     },
     create: async (doc: AssortmentFilter, userId) => {
-      const { assortmentId, filterId, ...rest } = doc;
+      const { _id, assortmentId, filterId, ...rest } = doc;
 
       const selector = {
-        ...(doc._id ? generateDbFilterById(doc._id) : {}),
+        ...(_id ? generateDbFilterById(_id) : {}),
         filterId,
         assortmentId,
       };
@@ -60,7 +61,7 @@ export const configureAssortmentFiltersModule = ({
         ...rest,
       };
       const $setOnInsert: any = {
-        _id: generateDbObjectId(),
+        _id: _id || generateDbObjectId(),
         filterId,
         assortmentId,
         created: new Date(),
@@ -87,7 +88,7 @@ export const configureAssortmentFiltersModule = ({
         { upsert: true }
       );
 
-      const assortmentFilter = await AssortmentFilters.findOne(selector);
+      const assortmentFilter = await AssortmentFilters.findOne(selector, {});
 
       emit('ASSORTMENT_ADD_FILTER', { assortmentFilter });
 
@@ -131,7 +132,7 @@ export const configureAssortmentFiltersModule = ({
       const selector = generateDbFilterById(assortmentFilterId);
       const modifier = { $set: doc };
       await AssortmentFilters.updateOne(selector, modifier);
-      return await AssortmentFilters.findOne(selector);
+      return await AssortmentFilters.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {

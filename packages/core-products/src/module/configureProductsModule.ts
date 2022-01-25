@@ -5,7 +5,6 @@ import {
   ModuleMutations,
   Query,
 } from '@unchainedshop/types/common';
-import { query } from '@unchainedshop/types/node_modules/winston';
 import {
   Product,
   ProductQuery,
@@ -13,9 +12,9 @@ import {
 } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
+  findPreservingIds,
   generateDbFilterById,
   generateDbMutations,
-  findPreservingIds,
 } from 'meteor/unchained:utils';
 import { ProductsCollection } from '../db/ProductsCollection';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
@@ -371,8 +370,6 @@ export const configureProductsModule = async ({
         {}
       );
 
-      console.log('CREATE PRODUCT', product, productData)
-
       if (locale) {
         productTexts.upsertLocalizedText(
           productId,
@@ -409,8 +406,6 @@ export const configureProductsModule = async ({
         generateDbFilterById(productId),
         {}
       );
-
-      console.log('PRODUCT', product, productId);
 
       if (product.status !== InternalProductStatus.DRAFT) {
         throw new Error(`Invalid status', ${product.status}`);

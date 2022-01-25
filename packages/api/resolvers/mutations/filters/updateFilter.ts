@@ -6,8 +6,10 @@ import { Filter } from '@unchainedshop/types/filters';
 export default async function updateFilter(
   root: Root,
   { filter, filterId }: { filter: Filter; filterId: string },
-  { modules, userId }: Context
+  context: Context
 ) {
+  const { modules, userId } = context
+
   log(`mutation updateFilter ${filterId}`, { userId });
 
   if (!filterId) throw new InvalidIdError({ filterId });
@@ -15,5 +17,5 @@ export default async function updateFilter(
   if (!(await modules.filters.filterExists({ filterId })))
     throw new FilterNotFoundError({ filterId });
 
-  return await modules.filters.update(filterId, filter, userId);
+  return await modules.filters.update(filterId, filter, context);
 }

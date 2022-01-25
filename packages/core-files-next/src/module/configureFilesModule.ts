@@ -179,7 +179,6 @@ export const configureFilesModule = async ({
         fileInput
       );
 
-      console.log('FILE DATA', uploadFileData)
       const fileData = getFileFromFileData(uploadFileData, meta);
 
       const fileId = await mutations.create(fileData, userId);
