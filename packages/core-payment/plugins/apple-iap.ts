@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { match } from 'assert';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
@@ -117,7 +118,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         const orderPayment =
           await modules.orders.payments.findOrderPaymentByContextData({
             context: {
-              transactionIdentifier: latestTransaction.transaction_id,
+              'meta.transactionIdentifier': latestTransaction.transaction_id,
             },
           });
 
@@ -164,7 +165,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         const originalOrderPayment =
           await modules.orders.payments.findOrderPaymentByContextData({
             context: {
-              transactionIdentifier: latestTransaction.original_transaction_id,
+              'meta.transactionIdentifier': latestTransaction.original_transaction_id,
             },
           });
         if (!originalOrderPayment)
@@ -328,16 +329,18 @@ const AppleIAP: IPaymentAdapter = {
 
       // eslint-disable-next-line
       async charge() {
-        const { transactionIdentifier, paymentCredentials, receiptData } =
-          params.context.transactionContext || {};
-
         const { order } = params.context;
+        const { meta, paymentCredentials, receiptData } =
+          params.context.transactionContext || {};
+        const { transactionIdentifier } = meta || {};
+        console.log('TRANSACTION IDENTIFIER', meta);
 
         if (!transactionIdentifier) {
           throw new Error(
             'Apple IAP Plugin: You have to set the transaction id on the order payment'
           );
         }
+        
 
         const receiptResponse =
           receiptData &&
@@ -383,11 +386,17 @@ const AppleIAP: IPaymentAdapter = {
 
         const [[productId, quantity]] = items;
 
-        const orderMatchesTransaction =
+        console.log(
+          'MATCHED TRANSACTION',
+          productId,
+          quantity,
+          matchedTransaction
+        );
+        const isMatchesTransaction =
           parseInt(matchedTransaction.quantity, 10) === quantity &&
           matchedTransaction.product_id === productId; // eslint-disable-line
 
-        if (!orderMatchesTransaction)
+        if (!isMatchesTransaction)
           throw new Error(
             'Apple IAP Plugin: Product in order does not match transaction'
           );
@@ -400,7 +409,7 @@ const AppleIAP: IPaymentAdapter = {
           ).length > 0;
 
         console.log(
-          'DUPLICATE TRANSACTION',
+          'HAS DUPLICATE TRANSACTION',
           transactionIdentifier,
           await modules.payment.appleTransactions.findTransactions({
             transactionIdentifier,

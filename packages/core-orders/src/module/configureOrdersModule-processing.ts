@@ -44,10 +44,10 @@ export const configureOrderModuleProcessing = ({
     }).toArray();
 
   const findOrderDelivery = async (order: Order) =>
-    await OrderDeliveries.findOne(generateDbFilterById(order.deliveryId));
+    await OrderDeliveries.findOne(generateDbFilterById(order.deliveryId), {});
 
   const findOrderPayment = async (order: Order) =>
-    await OrderPayments.findOne(generateDbFilterById(order.paymentId));
+    await OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
 
   const missingInputDataForCheckout = async (order: Order) => {
     const errors = [];
@@ -185,18 +185,24 @@ export const configureOrderModuleProcessing = ({
   ): Promise<OrderStatus | null> => {
     let status = order.status;
 
-    if (status === OrderStatus.OPEN || !status) {
+    if (status === null /* OrderStatus.OPEN */ || !status) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
         emit('ORDER_CHECKOUT', { order });
         status = OrderStatus.PENDING;
       }
     }
+    console.log('IS PENDING', status);
     if (status === OrderStatus.PENDING) {
+      console.log(
+        'IS AUTO CONFIRM ENABLE',
+        await isAutoConfirmationEnabled(order, requestContext)
+      );
       if (await isAutoConfirmationEnabled(order, requestContext)) {
         emit('ORDER_CONFIRMED', { order });
         status = OrderStatus.CONFIRMED;
       }
     }
+    console.log('IS CONFIRMED', status);
     if (status === OrderStatus.CONFIRMED) {
       const isFullfilled = await isAutoFullfillmentEnabled(
         order,
@@ -236,6 +242,7 @@ export const configureOrderModuleProcessing = ({
         params.orderContext,
         requestContext
       );
+
       updatedOrder = await modules.orders.processOrder(
         updatedOrder,
         {
@@ -384,6 +391,7 @@ export const configureOrderModuleProcessing = ({
       const orderId = initialOrder._id;
       let order = initialOrder;
       let nextStatus = await findNextStatus(order, requestContext);
+
       if (nextStatus === OrderStatus.PENDING) {
         // auto charge during transition to pending
         const orderPayment = await modules.orders.payments.findOrderPayment({
@@ -392,7 +400,7 @@ export const configureOrderModuleProcessing = ({
 
         await modules.orders.payments.charge(
           orderPayment,
-          { order, transactionContext: params.transactionContext },
+          { order, transactionContext: params.paymentContext },
           requestContext
         );
         await modules.users.updateLastBillingAddress(
@@ -407,7 +415,7 @@ export const configureOrderModuleProcessing = ({
         );
       }
 
-      order = await modules.orders.findOrder({ orderId })
+      order = await modules.orders.findOrder({ orderId });
       nextStatus = await findNextStatus(order, requestContext);
       if (nextStatus === OrderStatus.CONFIRMED) {
         const orderDelivery = await modules.orders.deliveries.findDelivery({
