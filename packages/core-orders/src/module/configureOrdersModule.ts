@@ -45,10 +45,10 @@ export const configureOrdersModule = async ({
     }).toArray();
 
   const findOrderDelivery = async (order: Order) =>
-    await OrderDeliveries.findOne(generateDbFilterById(order.deliveryId));
+    await OrderDeliveries.findOne(generateDbFilterById(order.deliveryId), {});
 
   const findOrderPayment = async (order: Order) =>
-    await OrderPayments.findOne(generateDbFilterById(order.paymentId));
+    await OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
 
   const findNewOrderNumber = async (order: Order) => {
     let orderNumber = null;
@@ -74,7 +74,7 @@ export const configureOrdersModule = async ({
     requestContext
   ) => {
     const selector = generateDbFilterById(orderId);
-    const order = await Orders.findOne(selector);
+    const order = await Orders.findOne(selector, {});
 
     if (order.status === status) return order;
 
@@ -121,7 +121,7 @@ export const configureOrdersModule = async ({
 
     await Orders.updateOne(selector, modifier);
 
-    return await Orders.findOne(selector);
+    return await Orders.findOne(selector, {});
   };
 
   const updateDiscounts = async (order: Order, requestContext: Context) => {
@@ -247,7 +247,8 @@ export const configureOrdersModule = async ({
           (supportedPaymentProvider) => {
             return paymentCredentials.some((paymentCredential) => {
               return (
-                supportedPaymentProvider._id === paymentCredential.paymentProviderId
+                supportedPaymentProvider._id ===
+                paymentCredential.paymentProviderId
               );
             });
           }
@@ -279,7 +280,7 @@ export const configureOrdersModule = async ({
   ) => {
     const { modules } = requestContext;
     const selector = generateDbFilterById(orderId);
-    const order = await Orders.findOne(selector);
+    const order = await Orders.findOne(selector, {});
 
     await updateDiscounts(order, requestContext);
 
@@ -331,7 +332,7 @@ export const configureOrdersModule = async ({
       },
     });
 
-    return await Orders.findOne(selector);
+    return await Orders.findOne(selector, {});
   };
 
   const orderQueries = configureOrdersModuleQueries({ Orders });

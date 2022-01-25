@@ -33,7 +33,7 @@ export default async function addCartProduct(
 
   const order = await getOrderCart({ orderId, user }, context);
 
-  return await modules.orders.positions.create(
+  const orderPosition = await modules.orders.positions.create(
     {
       quantity,
       configuration,
@@ -41,4 +41,6 @@ export default async function addCartProduct(
     { order, product },
     context
   );
+  
+  return orderPosition
 }

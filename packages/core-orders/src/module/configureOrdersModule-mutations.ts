@@ -73,7 +73,7 @@ export const configureOrderModuleMutations = ({
         userId
       );
 
-      const order = await Orders.findOne(generateDbFilterById(orderId));
+      const order = await Orders.findOne(generateDbFilterById(orderId), {});
       emit('ORDER_CREATE', { order });
       return order;
     },
