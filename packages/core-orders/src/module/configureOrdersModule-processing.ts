@@ -191,18 +191,14 @@ export const configureOrderModuleProcessing = ({
         status = OrderStatus.PENDING;
       }
     }
-    console.log('IS PENDING', status);
+    
     if (status === OrderStatus.PENDING) {
-      console.log(
-        'IS AUTO CONFIRM ENABLE',
-        await isAutoConfirmationEnabled(order, requestContext)
-      );
       if (await isAutoConfirmationEnabled(order, requestContext)) {
         emit('ORDER_CONFIRMED', { order });
         status = OrderStatus.CONFIRMED;
       }
     }
-    console.log('IS CONFIRMED', status);
+    
     if (status === OrderStatus.CONFIRMED) {
       const isFullfilled = await isAutoFullfillmentEnabled(
         order,

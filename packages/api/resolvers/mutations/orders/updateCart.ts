@@ -37,24 +37,24 @@ export default async function updateCart(
   let order = await getOrderCart({ orderId, user }, context);
 
   if (meta) {
-    order = await modules.orders.updateContext(orderId, meta, context);
+    order = await modules.orders.updateContext(order._id, meta, context);
   }
 
   if (billingAddress) {
     order = await modules.orders.updateBillingAddress(
-      orderId,
+      order._id,
       billingAddress,
       context
     );
   }
 
   if (contact) {
-    order = await modules.orders.updateContact(orderId, contact, context);
+    order = await modules.orders.updateContact(order._id, contact, context);
   }
 
   if (paymentProviderId) {
     order = await modules.orders.setPaymentProvider(
-      orderId,
+      order._id,
       paymentProviderId,
       context
     );
@@ -62,7 +62,7 @@ export default async function updateCart(
 
   if (deliveryProviderId) {
     order = await modules.orders.setDeliveryProvider(
-      orderId,
+      order._id,
       deliveryProviderId,
       context
     );

@@ -333,7 +333,6 @@ const AppleIAP: IPaymentAdapter = {
         const { meta, paymentCredentials, receiptData } =
           params.context.transactionContext || {};
         const { transactionIdentifier } = meta || {};
-        console.log('TRANSACTION IDENTIFIER', meta);
 
         if (!transactionIdentifier) {
           throw new Error(
@@ -386,12 +385,6 @@ const AppleIAP: IPaymentAdapter = {
 
         const [[productId, quantity]] = items;
 
-        console.log(
-          'MATCHED TRANSACTION',
-          productId,
-          quantity,
-          matchedTransaction
-        );
         const isMatchesTransaction =
           parseInt(matchedTransaction.quantity, 10) === quantity &&
           matchedTransaction.product_id === productId; // eslint-disable-line
@@ -407,14 +400,6 @@ const AppleIAP: IPaymentAdapter = {
               transactionIdentifier,
             })
           ).length > 0;
-
-        console.log(
-          'HAS DUPLICATE TRANSACTION',
-          transactionIdentifier,
-          await modules.payment.appleTransactions.findTransactions({
-            transactionIdentifier,
-          })
-        );
 
         if (transactionAlreadyProcessed)
           throw new Error('Apple IAP Plugin: Transaction already processed');

@@ -13,7 +13,7 @@
     "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
     "Marco Wettstein <maw@panter.ch>",
     "Simon Emanuel Schmid <simon@unchained.shop> (https://unchained.shop)",
-    "Mikael Araya Mengistu <mikael@unchained.shop> (https://unchained.shop)"
+    "Mikael Araya Mengistu <mikael@unchainewd.shop> (https://unchained.shop)"
   ],
   "bugs": {
     "url": "https://github.com/unchainedshop/unchained/issues"
@@ -26,7 +26,7 @@
     "test:ci": "npm run test:integration && npm run test:packages",
     "test:integration": "jest --ci --runInBand --detectOpenHandles --forceExit tests/*",
     "test:packages": "jest --ci --runInBand --detectOpenHandles --forceExit packages/*",
-    "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --no-watchman tests",
+    "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --no-watchman --verbose tests/**",
     "dev": "run-p --print-label dev:*",
     "dev:minimal": "cd examples/minimal && npm run dev",
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",

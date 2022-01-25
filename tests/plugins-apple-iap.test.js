@@ -90,7 +90,7 @@ describe("Plugins: Apple IAP Payments", () => {
     });
   });
 
-  describe.only("Mutation.registerPaymentCredentials (Apple IAP)", () => {
+  describe("Mutation.registerPaymentCredentials (Apple IAP)", () => {
     it("store the receipt as payment credentials", async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -209,12 +209,9 @@ describe("Plugins: Apple IAP Payments", () => {
         status: "CONFIRMED",
       });
     }, 10000);
-    
+
     it("checking out again with the same transaction should fail", async () => {
-      const {
-        errors,
-        data,
-      } = await graphqlFetch({
+      const { errors, data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkout(
             $paymentContext: JSON
@@ -248,7 +245,6 @@ describe("Plugins: Apple IAP Payments", () => {
         },
       });
 
-      console.log("RETURNED ERROR", errors, data?.checkoutCart);
       expect(errors?.[0].extensions.code).toEqual("OrderCheckoutError");
     });
   });
