@@ -91,7 +91,7 @@ Collections.AssortmentLinks.removeLinks = (
 
 2. Naming for class constructor in Directors and Adapters for now 'actions'. Better suggestion?
 
-3. Is product-discount type used (in api/resolvers/types/product-discount.js)
+3. Is product-discount type used (in api/resolvers/types/product-discount.js)? --> For VeloPlus for 10% day / Black Friday
 
 4. Order Payment: core-orders/order-payments/helpers --> markPaid and api/resolvers/mutations/payOrder: Different check for status
   if (payment.status !== OrderPaymentStatus.OPEN && order.confirmed)  vs
@@ -100,36 +100,37 @@ What happens if the first one passes and the second not?
 
 5. Does the user object exists in the requestContext? So far I used the userId exclusively and fetched the user if needed on the fly.
 
-6. configureOrdersModule --> ensureCartForUser: Can we apply the same logic as for the api --> getOrderCart function?
+6. configureOrdersModule --> ensureCartForUser: Can we apply the same logic as for the api --> getOrderCart function? --> Checked by Pascal
 
-7. OrderDiscountable does not seem to be resolved correctly.
+7. (OrderDiscountable does not seem to be resolved correctly.)
 
-8. Is the function addDiscount in order helpers used somewhere?
+8. Is the function addDiscount in order helpers used somewhere? --> Resolved
 
-9. Enrollments/helpers addEnrollmentPeriod: OrderId is not defined in db schema but filled in the helper method.
+9. Enrollments/helpers addEnrollmentPeriod: OrderId is not defined in db schema but filled in the helper method. --> Resolved
 
-10. Orders/helpers: generateFromCheckout: order.meta does not exist on Order. Leave empty? or context?
+10. Orders/helpers: generateFromCheckout: order.meta does not exist on Order. Leave empty? or context? --> Error: Map meta to context
 
-11. FilterDirector: What are the options? Could not find a call that provides options and thus I would remove this parameter (except in other implementations it is used)
+11. FilterDirector: What are the options? Could not find a call that provides options and thus I would remove this parameter (except in other implementations it is used) --> Leave open as OPEN ISSUE
 
-12. Filters --> Helper: Delete Filter should also delete the FilterTexts of this filter, right? (Similar to assortments)
+12. Filters --> Helper: Delete Filter should also delete the FilterTexts of this filter, right? (Similar to assortments) --> Bug: Delete filter texts as well
 
-13. Media created with core-documents director can also be deleted? (e.g. Quotation Proposal)
+13. Media created with core-documents director can also be deleted? (e.g. Quotation Proposal) --> Yes, delete as well!
 
-14. Quotations --> helpers: documents still required (after deletion of core-documents)?
+14. Quotations --> helpers: documents still required (after deletion of core-documents)? --> No! Not required!
 
-15. In roles/loggedIn there is a check for the ProductReviews userId but there is no userId on the ProductsReview schema. What is the right check here? (AuthorId or add a userId)?
+15. In roles/loggedIn there is a check for the ProductReviews userId but there is no userId on the ProductsReview schema. What is the right check here? (AuthorId or add a userId)? --> Bug: Use autherId
 
-17. Npm package: later is deprecated and should be replaced with https://www.npmjs.com/package/@breejs/later
+17. Npm package: later is deprecated and should be replaced with https://www.npmjs.com/package/@breejs/later --> Leave open as OPEN ISSUE
 
-18. BaseWorker: line 61: Does that work wiht [0]? As far as I could see in the code the schedules need to be strings. But well, it is not really clear to me how this later works...
+18. BaseWorker: line 61: Does that work wiht [0]? As far as I could see in the code the schedules need to be strings. But well, it is not really clear to me how this later works... --> 
+Leave as is and leave as OPEN ISSUE
 
-19. Roles: Fetch user in roles.ts -> userHasPermission might be unnecessary as the user is set as soon as a user logs in and we have a userId. Is that correct?
+19. Roles: Fetch user in roles.ts -> userHasPermission might be unnecessary as the user is set as soon as a user logs in and we have a userId. Is that correct? --> Check with tests if okay, remove otherwise leave as is. Leave as OPEN ISSUE
 
-20. Pattern for Collections used in dedicated plugins (e.g. AppleTransactions, Bity). Create in core (see bity plugin) or provide db in context (see apple-iap plugin)
-
+20. Pattern for Collections used in dedicated plugins (e.g. AppleTransactions, Bity). Create in core (see bity plugin) or provide db in context (see apple-iap plugin) --> Provide as custome module
 
 
 OPEN TASKS:
-- Migration in assortments
+- Migration in assortments --> Leave as OPEN ISSUE / keep migrationRepository
+- DatatransV2 Plugin --> Leave for Pascal
 - Prettier configuration not adapted (Semi: false, printWidth)

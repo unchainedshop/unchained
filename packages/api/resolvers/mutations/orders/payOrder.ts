@@ -26,7 +26,7 @@ export default async function payOrder(root: Root, { orderId }: { orderId: strin
     orderPaymentId: order.paymentId,
   });
 
-  if (modules.orders.payments.normalizedStatus(payment) !== OrderPaymentStatus.OPEN && order.confirmed) {
+  if (modules.orders.payments.normalizedStatus(payment) !== OrderPaymentStatus.OPEN) {
     throw new OrderWrongPaymentStatusError({
       status: payment.status,
     });

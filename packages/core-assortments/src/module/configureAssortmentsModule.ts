@@ -147,7 +147,7 @@ export const configureAssortmentsModule = async ({
 
   const invalidateProductIdCache = async (
     assortment: Assortment,
-    options: { skipUpstreamTraversal: boolean } = {
+    cacheOptions: { skipUpstreamTraversal: boolean } = {
       skipUpstreamTraversal: false,
     },
     userId?: string,
@@ -171,7 +171,7 @@ export const configureAssortmentsModule = async ({
 
     let updateCount = updatedResult.modifiedCount;
 
-    if (options.skipUpstreamTraversal) return updateCount;
+    if (cacheOptions.skipUpstreamTraversal) return updateCount;
 
     const filteredLinkedAssortments = linkedAssortments.filter(
       ({ childAssortmentId }) => childAssortmentId === assortment._id,
@@ -182,7 +182,7 @@ export const configureAssortmentsModule = async ({
         const parent = await Assortments.findOne(generateDbFilterById(parentAssortmentId));
 
         if (parent) {
-          updateCount += await invalidateProductIdCache(parent, options, userId);
+          updateCount += await invalidateProductIdCache(parent, cacheOptions, userId);
         }
         return true;
       }),
@@ -230,7 +230,7 @@ export const configureAssortmentsModule = async ({
 
   return {
     // Queries
-    findAssortment: async ({ assortmentId, slug, ...rest }) => {
+    findAssortment: async ({ assortmentId, slug }) => {
       let selector: Query = {};
 
       if (assortmentId) {
@@ -424,8 +424,6 @@ export const configureAssortmentsModule = async ({
       });
       emit('ASSORTMENT_SET_BASE', { assortmentId });
     },
-
-    createBreadcrumbs: () => {},
 
     search: {
       findFilteredAssortments: async ({ limit, offset, assortmentIds, assortmentSelector, sort }) => {

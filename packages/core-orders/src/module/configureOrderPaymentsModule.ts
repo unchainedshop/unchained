@@ -202,7 +202,7 @@ export const configureOrderPaymentsModule = ({
     markAsPaid: async (orderPayment, meta, userId) => {
       if (orderPayment.status !== null /* OrderPaymentStatus.OPEN */) return;
 
-      updateStatus(
+      await updateStatus(
         orderPayment._id,
         {
           status: OrderPaymentStatus.PAID,

@@ -64,6 +64,13 @@ export type AssortmentQuery = {
   tags?: Array<string>;
 };
 
+export interface AssortmentPathLink {
+  assortmentId: string;
+  assortmentSlug: string;
+  assortmentTexts: AssortmentText;
+  link: AssortmentLink;
+}
+
 export type AssortmentsModule = {
   // Queries
   assortmentExists: (query: { assortmentId?: string; slug?: string }) => Promise<boolean>;
@@ -95,8 +102,6 @@ export type AssortmentsModule = {
 
   // Mutations
   create: (doc: Assortment & { title: string; locale: string }, userId: string) => Promise<string>;
-
-  createBreadcrumbs: (userId?: string) => void;
 
   update: (assortmentId: string, doc: Assortment, userId: string) => Promise<string>;
 
@@ -306,13 +311,6 @@ export type AssortmentsModule = {
     deleteMany: (assortmentId: string, userId?: string) => Promise<number>;
   };
 };
-
-export interface AssortmentPathLink {
-  assortmentId: string;
-  assortmentSlug: string;
-  assortmentTexts: AssortmentText;
-  link: AssortmentLink;
-}
 
 /*
  * Settings
