@@ -40,7 +40,29 @@
     ],
     "no-shadow": [
       "warn",
-      { "builtinGlobals": false, "hoist": "functions", "allow": ["DeliveryProviderType", "LogLevel"] }
+      {
+        "builtinGlobals": false,
+        "hoist": "functions",
+        "allow": [
+          "DeliveryError",
+          "DeliveryPricingRowCategory",
+          "DeliveryProviderType",
+          "EnrollmentStatus",
+          "FilterType",
+          "LogLevel",
+          "OrderDeliveryStatus",
+          "OrderPaymentStatus",
+          "OrderStatus",
+          "PaymentError",
+          "PaymentProviderType",
+          "ProductStatus",
+          "QuotationError",
+          "QuotationStatus",
+          "WarehousingError",
+          "WarehousingProviderType",
+          "WorkStatus"
+        ]
+      }
     ],
     "no-unused-vars": "off",
     "import/no-extraneous-dependencies": [0],

@@ -284,7 +284,7 @@ export const configureOrderPositionsModule = ({
 
     addProductItem: async (orderPosition, { order, product }, requestContext) => {
       const { modules } = requestContext;
-      const { configuration, context, orderId: positionOrderId, quantity, ...scope } = orderPosition;
+      const { configuration, orderId: positionOrderId, quantity, ...scope } = orderPosition;
       const orderId = order._id || positionOrderId;
 
       // Resolve product

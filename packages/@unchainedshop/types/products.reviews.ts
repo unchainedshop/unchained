@@ -1,4 +1,3 @@
-import { Context } from './api';
 import { TimestampFields, _ID } from './common';
 
 export enum ProductReviewVoteType {

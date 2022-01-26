@@ -1,5 +1,5 @@
-import { Collection, Query } from '@unchainedshop/types/common';
-import { Filter, SearchQuery } from '@unchainedshop/types/filters';
+import { Collection } from '@unchainedshop/types/common';
+import { Filter } from '@unchainedshop/types/filters';
 import { Context } from 'vm';
 import { intersectSet } from '../utils/intersectSet';
 import { FilterProductIds, SearchConfiguration } from './search';

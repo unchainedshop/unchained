@@ -1,5 +1,4 @@
 import { Context } from '@unchainedshop/types/api';
-import { Modules } from '@unchainedshop/types/modules';
 import { IWorker, WorkerSchedule } from '@unchainedshop/types/worker';
 import later from 'later';
 import { BaseWorker } from './BaseWorker';

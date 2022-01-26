@@ -64,6 +64,22 @@ export interface DeliveryContext {
 
 export type DeliveryAdapterContext = DeliveryContext & Context;
 
+export interface DeliveryLocation {
+  _id: string;
+  name: string;
+  address: {
+    addressLine: string;
+    addressLine2?: string;
+    postalCode: string;
+    countryCode: string;
+    city: string;
+  };
+  geoPoint: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
 interface DeliveryAdapterActions {
   configurationError: () => DeliveryError;
   estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number>;
@@ -88,22 +104,6 @@ export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
     requestContext: Context,
   ) => DeliveryAdapterActions;
 };
-
-export interface DeliveryLocation {
-  _id: string;
-  name: string;
-  address: {
-    addressLine: string;
-    addressLine2?: string;
-    postalCode: string;
-    countryCode: string;
-    city: string;
-  };
-  geoPoint: {
-    latitude: number;
-    longitude: number;
-  };
-}
 
 /*
  * Module

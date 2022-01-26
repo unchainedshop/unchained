@@ -177,9 +177,7 @@ export const configureFiltersModule = async ({
 
     const filters = await Filters.find(selector || {}).toArray();
 
-    await Promise.all(
-      filters.map(async (filter) => await invalidateProductIdCache(filter, requestContext)),
-    );
+    await Promise.all(filters.map((filter) => invalidateProductIdCache(filter, requestContext)));
   };
 
   const filterSearch = configureFilterSearchModule({
@@ -188,16 +186,15 @@ export const configureFiltersModule = async ({
   });
 
   const filterTexts = configureFilterTextsModule({
-    Filters,
     FilterTexts,
   });
 
   // TODO: Move somewhere else
-  // if (!skipInvalidationOnStartup) {
-  //   Meteor.defer(() => {
-  //     invalidateCache({});
-  //   });
-  // }
+  if (!skipInvalidationOnStartup) {
+    //   Meteor.defer(() => {
+    //     invalidateCache({});
+    //   });
+  }
 
   /*
    * Filter

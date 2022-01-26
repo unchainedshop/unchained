@@ -1,6 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
 import { Collection } from '@unchainedshop/types/common';
-import { Filter, FiltersModule, FilterText } from '@unchainedshop/types/filters';
+import { Filter, FiltersModule } from '@unchainedshop/types/filters';
 import { Product } from '@unchainedshop/types/products';
 import { FilterDirector } from '../director/FilterDirector';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch';
@@ -15,7 +14,6 @@ import { resolveSortStage } from '../search/resolveSortStage';
 import {
   FilterProductIds,
   SearchAssortmentConfiguration,
-  SearchConfiguration,
   SearchProductConfiguration,
 } from '../search/search';
 
@@ -59,7 +57,7 @@ export const configureFilterSearchModule = ({
         totalAssortments: totalAssormentCount,
         assortmentsCount: totalAssormentCount,
         assortments: async ({ offset, limit }) =>
-          await modules.assortments.search.findFilteredAssortments({
+          modules.assortments.search.findFilteredAssortments({
             limit,
             offset,
             assortmentIds: totalAssortmentIds,
@@ -157,29 +155,29 @@ export const configureFilterSearchModule = ({
 
       return {
         totalProducts: async () =>
-          await countProducts({
+          countProducts({
             productSelector,
             productIds: filterActions.aggregateProductIds({
               productIds: totalProductIds,
             }),
           }),
         productsCount: async () =>
-          await countProducts({
+          countProducts({
             productSelector,
             productIds: totalProductIds,
           }),
         filteredProducts: async () =>
-          await countProducts({
+          countProducts({
             productSelector,
             productIds: aggregatedProductIds,
           }),
         filteredProductsCount: async () =>
-          await countProducts({
+          countProducts({
             productSelector,
             productIds: filteredProductIds,
           }),
         products: async ({ offset, limit }) =>
-          await modules.products.search.findFilteredProducts({
+          modules.products.search.findFilteredProducts({
             limit,
             offset,
             productIds: aggregatedProductIds,

@@ -1,11 +1,9 @@
 import { Collection, ModuleMutations } from '@unchainedshop/types/common';
-import { LogLevel, log } from 'meteor/unchained:logger';
 import { Order, OrderMutations, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
-import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
-import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
+import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrdersSchema } from '../db/OrdersSchema';
 
@@ -19,19 +17,15 @@ const ORDER_EVENTS: string[] = [
 
 export const configureOrderModuleMutations = ({
   Orders,
-  OrderPositions,
   OrderDeliveries,
   OrderPayments,
-  OrderDiscounts,
   initProviders,
   updateStatus,
   updateCalculation,
 }: {
   Orders: Collection<Order>;
-  OrderPositions: Collection<OrderPosition>;
   OrderDeliveries: Collection<OrderDelivery>;
   OrderPayments: Collection<OrderPayment>;
-  OrderDiscounts: Collection<OrderDiscount>;
   initProviders: OrdersModule['initProviders'];
   updateStatus: OrdersModule['updateStatus'];
   updateCalculation: OrdersModule['updateCalculation'];
@@ -81,7 +75,7 @@ export const configureOrderModuleMutations = ({
         status: { $eq: null }, // Null equals OrderStatus.OPEN
       }).toArray();
 
-      await Promise.all(orders.map(async (order) => await initProviders(order, requestContext)));
+      await Promise.all(orders.map((order) => initProviders(order, requestContext)));
     },
 
     setDeliveryProvider: async (orderId, deliveryProviderId, requestContext) => {

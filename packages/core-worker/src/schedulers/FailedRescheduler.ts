@@ -1,4 +1,3 @@
-import { Modules } from '@unchainedshop/types/modules';
 import { IScheduler, Work } from '@unchainedshop/types/worker';
 import { log } from 'meteor/unchained:logger';
 import { WorkerDirector } from '../director/WorkerDirector';

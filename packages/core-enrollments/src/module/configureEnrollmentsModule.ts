@@ -33,17 +33,16 @@ export const configureEnrollmentsModule = async ({
     EnrollmentsSchema,
   ) as ModuleMutations<Enrollment>;
 
-  const findNewEnrollmentNumber = async (enrollment: Enrollment): Promise<string> => {
-    let enrollmentNumber: string = null;
-    let index = 0;
-    while (!enrollmentNumber) {
-      const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
-      if ((await Enrollments.find({ enrollmentNumber: newHashID }, { limit: 1 }).count()) === 0) {
-        enrollmentNumber = newHashID;
-      }
-      index += 1;
+  const findNewEnrollmentNumber = async (enrollment: Enrollment, index = 0): Promise<string> => {
+    // let enrollmentNumber: string = null;
+    // while (!enrollmentNumber) {
+    const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
+    if ((await Enrollments.find({ enrollmentNumber: newHashID }, { limit: 1 }).count()) === 0) {
+      return newHashID;
     }
-    return enrollmentNumber;
+    return findNewEnrollmentNumber(enrollment, index + 1);
+    // }
+    // return enrollmentNumber;
   };
 
   const findNextStatus = async (
@@ -114,11 +113,7 @@ export const configureEnrollmentsModule = async ({
     return updatedEnrollment;
   };
 
-  const reactivateEnrollment = async (
-    enrollment: Enrollment,
-    params: { enrollmentContext?: any; orderIdForFirstPeriod?: string },
-    requestContext: Context,
-  ) => {
+  const reactivateEnrollment = async (enrollment: Enrollment) => {
     return enrollment;
   };
 
@@ -144,11 +139,11 @@ export const configureEnrollmentsModule = async ({
   ) => {
     const { modules, userId } = requestContext;
 
-    const user = await modules.users.findUser({
-      userId: enrollment.userId,
-    });
-    const locale = modules.users.userLocale(user, requestContext);
-    const reason = 'new_enrollment';
+    // const user = await modules.users.findUser({
+    //   userId: enrollment.userId,
+    // });
+    // const locale = modules.users.userLocale(user, requestContext);
+    // const reason = "new_enrollment";
 
     const director = await EnrollmentDirector.actions({ enrollment }, requestContext);
     const period = await director.nextPeriod();

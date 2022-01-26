@@ -37,13 +37,8 @@ const generateOrder = async (
 
   if (orderProducts) {
     await Promise.all(
-      orderProducts.map(
-        async ({ orderPosition, product }) =>
-          await modules.orders.positions.addProductItem(
-            orderPosition,
-            { order, product },
-            requestContext,
-          ),
+      orderProducts.map(({ orderPosition, product }) =>
+        modules.orders.positions.addProductItem(orderPosition, { order, product }, requestContext),
       ),
     );
   } else {

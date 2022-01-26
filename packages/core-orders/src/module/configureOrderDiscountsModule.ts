@@ -189,12 +189,13 @@ export const configureOrderDiscountsModule = ({
           requestContext.userId,
         );
 
-        let reservedDiscount: OrderDiscount;
-        reservedDiscount = await reserveDiscount(newDiscount, requestContext).catch(async (error) => {
-          // Rollback
-          await deleteDiscount(newDiscount._id, requestContext);
-          throw error;
-        });
+        const reservedDiscount = await reserveDiscount(newDiscount, requestContext).catch(
+          async (error) => {
+            // Rollback
+            await deleteDiscount(newDiscount._id, requestContext);
+            throw error;
+          },
+        );
 
         await updateCalculation(orderId, requestContext);
 

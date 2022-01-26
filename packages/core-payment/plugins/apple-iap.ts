@@ -1,6 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import { match } from 'assert';
 import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
@@ -63,7 +62,7 @@ const fixPeriods = async (
   const adjustedEnrollmentPeriods = relevantTransactions
     .map((transaction) => {
       return {
-        isTrial: transaction.is_trial_period === 'true', // eslint-disable-line
+        isTrial: transaction.is_trial_period === "true", // eslint-disable-line
         start: new Date(parseInt(transaction.purchase_date_ms, 10)),
         end: new Date(parseInt(transaction.expires_date_ms, 10)),
         orderId: transaction.transaction_id === transactionId ? orderId : null,
@@ -80,13 +79,12 @@ const fixPeriods = async (
   );
 
   return Promise.all(
-    adjustedEnrollmentPeriods.map(
-      async (period) =>
-        await requestContext.modules.enrollments.addEnrollmentPeriod(
-          enrollmentId,
-          period,
-          requestContext.userId,
-        ),
+    adjustedEnrollmentPeriods.map((period) =>
+      requestContext.modules.enrollments.addEnrollmentPeriod(
+        enrollmentId,
+        period,
+        requestContext.userId,
+      ),
     ),
   );
 };

@@ -30,16 +30,16 @@ export const configureOrderModuleProcessing = ({
   registerEvents(ORDER_PROCESSING_EVENTS);
 
   const findOrderPositions = async (order: Order) =>
-    await OrderPositions.find({
+    OrderPositions.find({
       orderId: order._id,
       quantity: { $gt: 0 },
     }).toArray();
 
   const findOrderDelivery = async (order: Order) =>
-    await OrderDeliveries.findOne(generateDbFilterById(order.deliveryId), {});
+    OrderDeliveries.findOne(generateDbFilterById(order.deliveryId), {});
 
   const findOrderPayment = async (order: Order) =>
-    await OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
+    OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
 
   const missingInputDataForCheckout = async (order: Order) => {
     const errors = [];

@@ -35,28 +35,28 @@ export const configureOrdersModule = async ({
   const OrderPositions = await OrderPositionsCollection(db);
 
   const findOrderPositions = async (order: Order) =>
-    await OrderPositions.find({
+    OrderPositions.find({
       orderId: order._id,
       quantity: { $gt: 0 },
     }).toArray();
 
   const findOrderDelivery = async (order: Order) =>
-    await OrderDeliveries.findOne(generateDbFilterById(order.deliveryId), {});
+    OrderDeliveries.findOne(generateDbFilterById(order.deliveryId), {});
 
   const findOrderPayment = async (order: Order) =>
-    await OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
+    OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
 
-  const findNewOrderNumber = async (order: Order) => {
-    let orderNumber = null;
-    let i = 0;
-    while (!orderNumber) {
-      const newHashID = ordersSettings.orderNumberHashFn(order, i);
-      if ((await Orders.find({ orderNumber: newHashID }, { limit: 1 }).count()) === 0) {
-        orderNumber = newHashID;
-      }
-      i += 1;
+  const findNewOrderNumber = async (order: Order, index = 0) => {
+    // let orderNumber = null;
+    // let i = 0;
+    // while (!orderNumber) {
+    const newHashID = ordersSettings.orderNumberHashFn(order, index);
+    if ((await Orders.find({ orderNumber: newHashID }, { limit: 1 }).count()) === 0) {
+      return newHashID;
     }
-    return orderNumber;
+    return findNewOrderNumber(order, index + 1);
+    // }
+    // return orderNumber;
   };
 
   const updateStatus: OrdersModule['updateStatus'] = async (
@@ -148,16 +148,15 @@ export const configureOrdersModule = async ({
     await Promise.all(
       systemDiscounts
         .filter((key) => currentDiscountKeys.indexOf(key) === -1)
-        .map(
-          async (discountKey) =>
-            await modules.orders.discounts.create(
-              {
-                orderId,
-                discountKey,
-                trigger: OrderDiscountTrigger.SYSTEM,
-              },
-              requestContext.userId,
-            ),
+        .map((discountKey) =>
+          modules.orders.discounts.create(
+            {
+              orderId,
+              discountKey,
+              trigger: OrderDiscountTrigger.SYSTEM,
+            },
+            requestContext.userId,
+          ),
         ),
     );
   };
@@ -203,8 +202,6 @@ export const configureOrdersModule = async ({
       return provider._id === paymentProviderId;
     });
     if (supportedPaymentProviders.length > 0 && !isAlreadyInitializedWithSupportedProvider) {
-      let isOrderUpdated = false;
-
       const paymentCredentials = await modules.payment.paymentCredentials.findPaymentCredentials(
         { userId: order.userId, isPreferred: true },
         {
@@ -254,9 +251,8 @@ export const configureOrdersModule = async ({
 
     const orderPositions = await findOrderPositions(order);
     const updatedOrderPositions = await Promise.all(
-      orderPositions.map(
-        async (orderPosition) =>
-          await modules.orders.positions.updateCalculation(orderPosition, requestContext),
+      orderPositions.map((orderPosition) =>
+        modules.orders.positions.updateCalculation(orderPosition, requestContext),
       ),
     );
 
@@ -266,12 +262,11 @@ export const configureOrdersModule = async ({
     await modules.orders.payments.updateCalculation(orderPayment, requestContext);
 
     await Promise.all(
-      updatedOrderPositions.map(
-        async (orderPosition) =>
-          await modules.orders.positions.updateScheduling(
-            { order, orderDelivery, orderPosition },
-            requestContext,
-          ),
+      updatedOrderPositions.map((orderPosition) =>
+        modules.orders.positions.updateScheduling(
+          { order, orderDelivery, orderPosition },
+          requestContext,
+        ),
       ),
     );
 
@@ -304,9 +299,7 @@ export const configureOrdersModule = async ({
   const orderMutations = configureOrderModuleMutations({
     Orders,
     OrderDeliveries,
-    OrderDiscounts,
     OrderPayments,
-    OrderPositions,
     initProviders,
     updateCalculation,
     updateStatus,

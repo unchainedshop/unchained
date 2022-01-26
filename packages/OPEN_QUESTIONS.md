@@ -132,5 +132,6 @@ Leave as is and leave as OPEN ISSUE
 
 OPEN TASKS:
 - Migration in assortments --> Leave as OPEN ISSUE / keep migrationRepository
+- Invalidate cache for Filters on startup (configureFilterMOdule)
 - DatatransV2 Plugin --> Leave for Pascal
 - Prettier configuration not adapted (Semi: false, printWidth)

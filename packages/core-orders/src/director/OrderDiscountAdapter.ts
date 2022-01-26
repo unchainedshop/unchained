@@ -34,7 +34,9 @@ export const OrderDiscountAdapter: Omit<IDiscountAdapter, 'key' | 'label' | 'ver
     },
 
     // return void, allows you to free up any reservations in backend systems
-    release: async () => {},
+    release: async () => {
+      return null;
+    },
 
     // return true if a discount is valid to be part of the order.
     // if you return false, this discount will

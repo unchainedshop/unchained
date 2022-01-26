@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries';
 import { Modules } from '@unchainedshop/types/modules';
 import LRU from 'lru-cache';

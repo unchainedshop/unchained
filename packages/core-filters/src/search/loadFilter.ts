@@ -1,8 +1,8 @@
 import { Context } from '@unchainedshop/types/api';
-import { Filter, FilterAdapterActions, SearchFilterQuery } from '@unchainedshop/types/filters';
+import { Filter, FilterAdapterActions } from '@unchainedshop/types/filters';
 import { FilterType } from '../db/FilterType';
 import { intersectSet } from '../utils/intersectSet';
-import { CleanedSearchQuery, FilterProductIds } from './search';
+import { FilterProductIds } from './search';
 
 const findLoadedOptions = async (
   filter: Filter,

@@ -183,7 +183,7 @@ export const configureOrderPaymentsModule = ({
       return deletedCount;
     },
 
-    logEvent: async (orderPaymentId, event, userId) => {
+    logEvent: async (orderPaymentId, event) => {
       const date = new Date();
       const modifier = {
         $push: {

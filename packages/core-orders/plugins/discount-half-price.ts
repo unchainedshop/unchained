@@ -31,7 +31,7 @@ const HalfPrice: IDiscountAdapter = {
       return !!isUserEligibleForHalfPrice;
     },
 
-    isValidForCodeTriggering: async ({ code }) => {
+    isValidForCodeTriggering: async () => {
       return false;
     },
 
