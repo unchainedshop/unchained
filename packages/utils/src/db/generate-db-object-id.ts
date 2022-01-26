@@ -7,7 +7,7 @@ import crypto from 'crypto';
  * @locus Anywhere
  * @param {Number} n Length of the string
  */
-export const generateDbObjectId = (digits: number = 24): string => {
+export const generateDbObjectId = (digits = 24): string => {
   const numBytes = Math.ceil(digits / 2);
   let bytes;
   // Try to get cryptographically strong randomness. Fall back to

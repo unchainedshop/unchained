@@ -1,5 +1,8 @@
 import {
-  BasePricingAdapterContext, IBasePricingSheet, IPricingAdapter, PricingCalculation
+  BasePricingAdapterContext,
+  IBasePricingSheet,
+  IPricingAdapter,
+  PricingCalculation,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BasePricingSheet } from './BasePricingSheet';

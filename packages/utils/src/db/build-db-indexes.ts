@@ -31,7 +31,10 @@ export const buildDbIndexes = async <T extends Document>(
       );
 
       if (rebuildErrors.length) {
-        log('Error building indexes', { level: LogLevel.Error, ...rebuildErrors });
+        log('Error building indexes', {
+          level: LogLevel.Error,
+          ...rebuildErrors,
+        });
         success = false;
       }
     }

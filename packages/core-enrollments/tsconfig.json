@@ -4,5 +4,5 @@
     "noEmit": true,
     "types": ["node", "mocha"]
   },
-  "include": ["src", "tests", "plugins", "worker"]
+  "include": ["src", "tests", "plugins", "workers"]
 }

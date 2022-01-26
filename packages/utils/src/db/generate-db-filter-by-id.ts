@@ -10,7 +10,7 @@ export const generateId = (id: unknown): ObjectId =>
 export const generateDbFilterById = (
   id: unknown,
   query: Query = {}
-): Filter<{ _id?: _ID, [x: string]: any }> => {
+): Filter<{ _id?: _ID; [x: string]: any }> => {
   const _id = id;
   return { _id, ...query };
 };

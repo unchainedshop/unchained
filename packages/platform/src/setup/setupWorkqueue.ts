@@ -1,21 +1,10 @@
 import { Context } from '@unchainedshop/types/api';
 import { WorkerSchedule } from '@unchainedshop/types/worker';
 import {
-  WorkerDirector,
   EventListenerWorker,
-  IntervalWorker,
   FailedRescheduler,
+  IntervalWorker,
 } from 'meteor/unchained:core-worker';
-
-export const workerTypeDefs = () => {
-  return [
-    /* GraphQL */ `
-    extend enum WorkType {
-      ${WorkerDirector.getActivePluginTypes().join(',')}
-    }
-  `,
-  ];
-};
 
 export interface SetupWorkqueueOptions {
   batchCount?: number;

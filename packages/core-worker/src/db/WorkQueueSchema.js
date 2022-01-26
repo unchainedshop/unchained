@@ -21,4 +21,3 @@ export const WorkQueueSchema = new SimpleSchema(
   },
   { requiredByDefault: false }
 );
-

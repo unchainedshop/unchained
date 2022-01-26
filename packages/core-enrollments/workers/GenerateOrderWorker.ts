@@ -1,15 +1,15 @@
-import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
-import {
-  EnrollmentStatus,
-  EnrollmentDirector,
-} from 'meteor/unchained:core-enrollments';
-import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { Product } from '@unchainedshop/types/products';
 import { Context } from '@unchainedshop/types/api';
 import { Enrollment } from '@unchainedshop/types/enrollments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
+import { Product } from '@unchainedshop/types/products';
+import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import {
+  EnrollmentDirector,
+  enrollmentsSettings,
+  EnrollmentStatus,
+} from 'meteor/unchained:core-enrollments';
+import { WorkerAdapter, WorkerDirector } from 'meteor/unchained:core-worker';
 
-// async generateOrder({ products, orderContext, ...configuration }) {
 const generateOrder = async (
   enrollment: Enrollment,
   params: {
@@ -91,7 +91,7 @@ const generateOrder = async (
   return order;
 };
 
-const GenerateEnrollmentOrdersWorker: IWorkerAdapter<any, any> = {
+const GenerateOrderWorker: IWorkerAdapter<any, any> = {
   ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.generate-enrollment-orders',
@@ -164,6 +164,13 @@ const GenerateEnrollmentOrdersWorker: IWorkerAdapter<any, any> = {
   },
 };
 
-WorkerDirector.registerAdapter(GenerateEnrollmentOrdersWorker);
+WorkerDirector.registerAdapter(GenerateOrderWorker);
 
-export default GenerateEnrollmentOrdersWorker;
+export const configureGenerateOrderAutoscheduling = () => {
+  if (enrollmentsSettings.autoSchedulingSchedule) {
+    WorkerDirector.configureAutoscheduling(GenerateOrderWorker, {
+      schedule: enrollmentsSettings.autoSchedulingSchedule,
+      input: enrollmentsSettings.autoSchedulingInput,
+    });
+  }
+};

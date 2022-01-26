@@ -1,21 +1,22 @@
 import { UnchainedCoreOptions } from '@unchainedshop/types/api';
 import { startAPIServer } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
-import 'meteor/unchained:core-messaging/plugins/MessageWorker';
 import { initDb } from 'meteor/unchained:mongodb';
 import { BulkImportPayloads } from './bulk-importer/createBulkImporter';
-import { generateEventTypeDefs } from './generateRegisteredEvents';
+import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
 import { interceptEmails } from './interceptEmails';
 import { runMigrations } from './migrations/runMigrations';
 import { setupAccounts, SetupAccountsOptions } from './setup/setupAccounts';
 import { setupCarts, SetupCartsOptions } from './setup/setupCarts';
 import { MessageTypes, setupTemplates } from './setup/setupTemplates';
-import {
-  setupWorkqueue,
-  SetupWorkqueueOptions,
-  workerTypeDefs,
-} from './setup/setupWorkqueue';
+import { setupWorkqueue, SetupWorkqueueOptions } from './setup/setupWorkqueue';
+import { generateWorkerTypeDefs } from './setup/generateWorkTypeDefs';
+import { setupAutoScheduling } from './setup/setupAutoScheduling';
+
+// Workers
 import './worker/BulkImportWorker';
+import 'meteor/unchained:core-enrollments/workers/GenerateOrderWorker';
+import 'meteor/unchained:core-messaging/workers/MessageWorker';
 
 export { MessageTypes };
 
@@ -88,7 +89,7 @@ export const startPlatform = async (
   // Combine type defs for graphQL schema
   const typeDefs = [
     ...generateEventTypeDefs(),
-    ...workerTypeDefs(),
+    ...generateWorkerTypeDefs(),
     ...additionalTypeDefs,
   ];
 
@@ -102,6 +103,8 @@ export const startPlatform = async (
     const handlers = setupWorkqueue(options.workQueueOptions, unchainedAPI);
     handlers.forEach((handler) => queueWorkers.push(handler));
     await setupCarts(options.workQueueOptions, unchainedAPI);
+
+    setupAutoScheduling();
   }
 
   return unchainedAPI;

@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common';
 import { Language } from '@unchainedshop/types/languages';
-import { buildDbIndexes } from 'meteor/unchained:utils'
+import { buildDbIndexes } from 'meteor/unchained:utils';
 
 export const LanguagesCollection = async (db: Db) => {
   const Languages = db.collection<Language>('languages');

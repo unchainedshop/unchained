@@ -29,5 +29,5 @@ export const OrdersCollection = async (db: Db) => {
     },
   ]);
 
-  return Orders
+  return Orders;
 };

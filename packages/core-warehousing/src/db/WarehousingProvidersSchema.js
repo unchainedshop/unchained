@@ -14,4 +14,3 @@ export const WarehousingProvidersSchema = new SimpleSchema(
   },
   { requiredByDefault: false }
 );
-

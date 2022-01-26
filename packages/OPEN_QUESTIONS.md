@@ -127,3 +127,9 @@ What happens if the first one passes and the second not?
 19. Roles: Fetch user in roles.ts -> userHasPermission might be unnecessary as the user is set as soon as a user logs in and we have a userId. Is that correct?
 
 20. Pattern for Collections used in dedicated plugins (e.g. AppleTransactions, Bity). Create in core (see bity plugin) or provide db in context (see apple-iap plugin)
+
+
+
+OPEN TASKS:
+- Migration in assortments
+- Prettier configuration not adapted (Semi: false, printWidth)
