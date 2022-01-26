@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import clone from 'lodash.clone';
-import { Context } from '@unchainedshop/types/api';
-import { has } from './utils/has';
-import { isFunction } from './utils/isFunction';
+import { Meteor } from "meteor/meteor";
+import clone from "lodash.clone";
+import { Context } from "@unchainedshop/types/api";
+import { has } from "./utils/has";
+import { isFunction } from "./utils/isFunction";
 
 interface RoleInterface {
   name: string;
@@ -21,16 +21,28 @@ interface RolesInterface {
   helpers: string[];
   registerAction(name: string): void;
   registerHelper(name: string): void;
-  getUserRoles(context: Context, roles: Array<string>, includeSpecial: boolean): string[];
+  getUserRoles(
+    context: Context,
+    roles: Array<string>,
+    includeSpecial: boolean
+  ): string[];
   allow(
     context: Context,
     roles: Array<string>,
     action: string,
-    args: CheckPermissionArgs,
+    args: CheckPermissionArgs
   ): Promise<boolean>;
-  userHasPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<boolean>;
+  userHasPermission(
+    context: Context,
+    action: string,
+    args: CheckPermissionArgs
+  ): Promise<boolean>;
   addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
-  checkPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<void | never>;
+  checkPermission(
+    context: Context,
+    action: string,
+    args: CheckPermissionArgs
+  ): Promise<void | never>;
   adminRole?: RoleInterface;
   loggedInRole?: RoleInterface;
   allRole?: RoleInterface;
@@ -63,13 +75,13 @@ export const Roles: RolesInterface = {
    */
   getUserRoles(context, roles, includeSpecial) {
     if (includeSpecial) {
-      roles.push('__all__');
+      roles.push("__all__");
       if (!context.userId) {
-        roles.push('__notLoggedIn__');
+        roles.push("__notLoggedIn__");
       } else {
-        roles.push('__loggedIn__');
-        if (!roles.includes('admin')) {
-          roles.push('__notAdmin__');
+        roles.push("__loggedIn__");
+        if (!roles.includes("admin")) {
+          roles.push("__notAdmin__");
         }
       }
     }
@@ -83,41 +95,47 @@ export const Roles: RolesInterface = {
   async allow(context, roles, action, [obj, params]) {
     const userRoles = Roles.getUserRoles(context, roles, true);
 
-    return userRoles.reduce(async (roleIsAllowedPromise: Promise<boolean>, role) => {
-      const roleIsAllowed = await roleIsAllowedPromise;
+    return userRoles.reduce(
+      async (roleIsAllowedPromise: Promise<boolean>, role) => {
+        const roleIsAllowed = await roleIsAllowedPromise;
 
-      if (roleIsAllowed) return true;
+        if (roleIsAllowed) return true;
 
-      if (Roles.roles[role] && Roles.roles[role].allowRules && Roles.roles[role].allowRules[action]) {
-        return Roles.roles[role].allowRules[action].reduce(
-          async (rulesIsAllowedPromise: Promise<boolean>, allowFn: any) => {
-            const ruleIsAllowed = await rulesIsAllowedPromise;
-            if (ruleIsAllowed) return true;
+        if (
+          Roles.roles[role] &&
+          Roles.roles[role].allowRules &&
+          Roles.roles[role].allowRules[action]
+        ) {
+          return Roles.roles[role].allowRules[action].reduce(
+            async (rulesIsAllowedPromise: Promise<boolean>, allowFn: any) => {
+              const ruleIsAllowed = await rulesIsAllowedPromise;
+              if (ruleIsAllowed) return true;
 
-            return allowFn(obj, params, context);
-          },
-          Promise.resolve(false),
-        );
-      }
+              return allowFn(obj, params, context);
+            },
+            Promise.resolve(false)
+          );
+        }
 
-      return roleIsAllowed;
-    }, Promise.resolve(false));
+        return roleIsAllowed;
+      },
+      Promise.resolve(false)
+    );
   },
 
   /**
    * To check if a user has permisisons to execute an action
    */
   userHasPermission: async (context, action, args) => {
-    const user =
-      context.user ||
-      // TODO: Check with Pascal. Not sure this is needed, as it might be, that if there is a userId then the user is set as well
-      (context.userId &&
-        (await context.modules.users.findUser(
-          { userId: context.userId },
-          { projection: { roles: 1 } },
-        )));
+    // const user =
+    //   context.user ||
+    //   (context.userId &&
+    //     (await context.modules.users.findUser(
+    //       { userId: context.userId },
+    //       { projection: { roles: 1 } }
+    //     )));
 
-    const roles = Array.isArray(user?.roles) ? user.roles : [];
+    const roles = Array.isArray(context.user?.roles) ? context.user.roles : [];
 
     const allows = await Roles.allow(context, roles, action, args);
     return allows === true;
@@ -141,7 +159,10 @@ export const Roles: RolesInterface = {
    */
   async checkPermission(context, action, args) {
     if (!(await Roles.userHasPermission(context, action, args))) {
-      throw new Meteor.Error('unauthorized', 'The user has no permission to perform this action');
+      throw new Meteor.Error(
+        "unauthorized",
+        "The user has no permission to perform this action"
+      );
     }
   },
 };
@@ -155,7 +176,8 @@ export class Role implements RoleInterface {
   helpers: { [name: string]: any };
 
   constructor(public name: string) {
-    if (has(Roles.roles, name)) throw new Error(`"${name}" role is already defined`);
+    if (has(Roles.roles, name))
+      throw new Error(`"${name}" role is already defined`);
 
     this.allowRules = {};
     this.helpers = {};
@@ -209,12 +231,12 @@ export class Role implements RoleInterface {
 /**
  * The admin role, who recives the default actions.
  */
-Roles.adminRole = new Role('admin');
+Roles.adminRole = new Role("admin");
 /**
  * All the logged in users users
  */
-Roles.loggedInRole = new Role('__loggedIn__');
+Roles.loggedInRole = new Role("__loggedIn__");
 /**
  * Always, no exception
  */
-Roles.allRole = new Role('__all__');
+Roles.allRole = new Role("__all__");

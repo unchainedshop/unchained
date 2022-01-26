@@ -1,13 +1,13 @@
-import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
-import { log, LogLevel } from 'meteor/unchained:logger';
-import { v4 as uuidv4 } from 'uuid';
-import { accountsSettings } from '../accounts-settings';
-import { accountsServer } from '../accounts/accountsServer';
-import { accountsPassword } from '../accounts/accountsPassword';
-import { dbManager } from '../accounts/dbManager';
-import { evaluateContext } from './utils/evaluateContext';
-import { filterContext } from './utils/filterContext';
-import { hashPassword } from './utils/hashPassword';
+import { AccountsModule } from "@unchainedshop/types/accounts";
+import { log, LogLevel } from "meteor/unchained:logger";
+import { v4 as uuidv4 } from "uuid";
+import { accountsSettings } from "../accounts-settings";
+import { accountsPassword } from "../accounts/accountsPassword";
+import { accountsServer } from "../accounts/accountsServer";
+import { dbManager } from "../accounts/dbManager";
+import { evaluateContext } from "./utils/evaluateContext";
+import { filterContext } from "./utils/filterContext";
+import { hashPassword } from "./utils/hashPassword";
 
 export const configureAccountsModule = async (): Promise<AccountsModule> => {
   return {
@@ -19,7 +19,9 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
 
       const autoMessagingEnabled = options.skipMessaging
         ? false
-        : accountsSettings.autoMessagingAfterUserCreation && !!userData.email && !!userId;
+        : accountsSettings.autoMessagingAfterUserCreation &&
+          !!userData.email &&
+          !!userId;
 
       if (autoMessagingEnabled) {
         if (userData.password === undefined) {
@@ -32,34 +34,45 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     },
 
     // Email
-    addEmail: (userId, email) => accountsPassword.addEmail(userId, email, false),
-    removeEmail: (userId, email) => accountsPassword.removeEmail(userId, email),
+    addEmail: (userId, email) =>
+      accountsPassword.addEmail(userId, email, false),
+    removeEmail: async (userId, email) =>
+      accountsPassword.removeEmail(userId, email),
     updateEmail: async (userId, email, user) => {
-      log('user.updateEmail is deprecated, please use user.addEmail and user.removeEmail', {
-        level: LogLevel.Warning,
-      });
+      log(
+        "user.updateEmail is deprecated, please use user.addEmail and user.removeEmail",
+        {
+          level: LogLevel.Warning,
+        }
+      );
 
       await accountsPassword.addEmail(userId, email, false);
       await Promise.all(
         (user.emails || [])
-          .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
-          .map(({ address }) => accountsPassword.removeEmail(userId, address)),
+          .filter(
+            ({ address }) => address.toLowerCase() !== email.toLowerCase()
+          )
+          .map(({ address }) => accountsPassword.removeEmail(userId, address))
       );
     },
 
-    findUnverifiedUserByToken: (token) => dbManager.findUserByEmailVerificationToken(token),
+    findUnverifiedUserByToken: async (token) =>
+      dbManager.findUserByEmailVerificationToken(token),
 
-    sendVerificationEmail: accountsPassword.sendVerificationEmail,
-    sendEnrollmentEmail: accountsPassword.sendEnrollmentEmail,
-    verifyEmail: accountsPassword.verifyEmail,
+    sendVerificationEmail: async (email) =>
+      accountsPassword.sendVerificationEmail(email),
+    sendEnrollmentEmail: async (email) =>
+      accountsPassword.sendEnrollmentEmail(email),
+    verifyEmail: async (token) => accountsPassword.verifyEmail(token),
 
     // Autentication
     createLoginToken: async (userId, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
 
-      const { user: tokenUser, token: loginToken } = await accountsServer.loginWithUser(userId);
+      const { user: tokenUser, token: loginToken } =
+        await accountsServer.loginWithUser(userId);
 
-      await accountsServer.getHooks().emit('LoginTokenCreated', {
+      await accountsServer.getHooks().emit("LoginTokenCreated", {
         userId: tokenUser,
         connection: context,
         service: null,
@@ -72,18 +85,16 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
       };
     },
 
-    createHashLoginToken: (loginToken) => accountsServer.hashLoginToken(loginToken),
+    createHashLoginToken: (loginToken) =>
+      accountsServer.hashLoginToken(loginToken),
 
     loginWithService: async (params, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
 
-      const { user: tokenUser, token: loginToken } = await accountsServer.loginWithService(
-        params.service,
-        params,
-        context,
-      );
+      const { user: tokenUser, token: loginToken } =
+        await accountsServer.loginWithService(params.service, params, context);
 
-      await accountsServer.getHooks().emit('LoginTokenCreated', {
+      await accountsServer.getHooks().emit("LoginTokenCreated", {
         userId: tokenUser._id,
         user: tokenUser,
         connection: context,
@@ -113,11 +124,14 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
 
     // User management
     setUsername: (_id, username) => dbManager.setUsername(_id, username),
-    setPassword: async (userId, { newPassword: newHashedPassword, newPlainPassword }) => {
+    setPassword: async (
+      userId,
+      { newPassword: newHashedPassword, newPlainPassword }
+    ) => {
       const newPassword =
         newHashedPassword ||
         (newPlainPassword && hashPassword(newPlainPassword)) ||
-        uuidv4().split('-').pop();
+        uuidv4().split("-").pop();
 
       await accountsPassword.setPassword(userId, newPassword);
     },
@@ -129,7 +143,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
         newPlainPassword,
         oldPassword: oldHashedPassword,
         oldPlainPassword,
-      },
+      }
     ) => {
       const newPassword = newHashedPassword || hashPassword(newPlainPassword);
       const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
@@ -138,7 +152,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
         .changePassword(userId, oldPassword, newPassword)
         .then(() => true) // Map null to success
         .catch((error: Error) => {
-          log('Error while changing password', {
+          log("Error while changing password", {
             level: LogLevel.Error,
             ...error,
           });
@@ -151,7 +165,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
         .sendResetPasswordEmail(email)
         .then(() => true) // Map null to success
         .catch((error: Error) => {
-          log('Error while sending reset password', {
+          log("Error while sending reset password", {
             level: LogLevel.Error,
             ...error,
             email,
@@ -159,7 +173,10 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
           return false;
         }),
 
-    resetPassword: async ({ newPassword: newHashedPassword, newPlainPassword, token }, context) => {
+    resetPassword: async (
+      { newPassword: newHashedPassword, newPlainPassword, token },
+      context
+    ) => {
       const user = await dbManager.findUserByResetPasswordToken(token);
 
       const newPassword = newHashedPassword || hashPassword(newPlainPassword);
@@ -175,7 +192,11 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     },
 
     enableTOTP: async (userId, secret, code) => {
-      await accountsPassword.twoFactor.set(userId, { base32: secret } as any, code);
+      await accountsPassword.twoFactor.set(
+        userId,
+        { base32: secret } as any,
+        code
+      );
       return true;
     },
 
