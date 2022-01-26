@@ -18,10 +18,7 @@ import seedBookmarks from './seeds/bookmark';
 import seedEnrollment from './seeds/enrollments';
 import seedWorkQueue from './seeds/work';
 
-Collection.prototype.findOrInsertOne = async function findOrInsertOne(
-  doc,
-  ...args
-) {
+Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...args) {
   try {
     const { insertedId } = await this.insertOne(doc, ...args);
     return this.findOne({ _id: insertedId }, ...args);
@@ -40,8 +37,7 @@ export const disconnect = async () => {
 
 export const connect = async () => {
   if (connection && connection.isConnected) return;
-  const connectionUri =
-    (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
+  const connectionUri = (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
   connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -135,9 +131,13 @@ export const uploadToMinio = async (file, url) => {
   const response = await fetch(url, {
     method: 'PUT',
     body: file,
+    headers: {
+      'Content-Length': file.bytesRead,
+    },
   });
   if (response.ok) {
     return Promise.resolve({});
   }
+  console.log('RESPONSE', response.error, response.status);
   return Promise.reject(new Error('error'));
 };

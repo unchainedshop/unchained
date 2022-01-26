@@ -1,7 +1,7 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { processRequest } from 'graphql-upload';
 import { WebApp } from 'meteor/webapp';
-import { log } from 'meteor/unchained:logger';
+import { log, LogLevel } from 'meteor/unchained:logger';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
@@ -27,7 +27,7 @@ const logGraphQLServerError = (error) => {
       ...rest
     } = error;
     log(`${message} ${extensions && extensions.code}`, {
-      level: 'error',
+      level: LogLevel.Error,
       ...extensions,
       ...rest,
     });
@@ -70,12 +70,7 @@ export default (options) => {
     engine: APOLLO_ENGINE_KEY
       ? {
           apiKey: APOLLO_ENGINE_KEY,
-          privateVariables: [
-            'email',
-            'plainPassword',
-            'oldPlainPassword',
-            'newPlainPassword',
-          ],
+          privateVariables: ['email', 'plainPassword', 'oldPlainPassword', 'newPlainPassword'],
           ...engine,
         }
       : undefined,
@@ -110,9 +105,7 @@ export default (options) => {
     },
   });
 
-  WebApp.connectHandlers.use(
-    handleUploads({ maxFileSize: 10000000, maxFiles: 10 })
-  );
+  WebApp.connectHandlers.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
   WebApp.connectHandlers.use(async (req, res, ...rest) => {
     const resolvedContext = await context({ req, res });
     req.unchainedContext = resolvedContext;

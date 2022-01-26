@@ -4,10 +4,4 @@ import product from './product';
 import bundleProduct from './bundle-product';
 import planProduct from './plan-product';
 
-export default [
-  ...product,
-  ...configurableProduct,
-  ...simpleProduct,
-  ...bundleProduct,
-  ...planProduct,
-];
+export default [...product, ...configurableProduct, ...simpleProduct, ...bundleProduct, ...planProduct];

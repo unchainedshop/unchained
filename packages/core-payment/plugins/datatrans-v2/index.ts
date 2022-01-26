@@ -1,36 +1,24 @@
-import {
-  PaymentDirector,
-  PaymentAdapter,
-  PaymentError,
-} from 'meteor/unchained:core-payment';
+import { PaymentAdapter, PaymentError, registerAdapter } from 'meteor/unchained:core-payment';
 import { createLogger } from 'meteor/unchained:logger';
-import roundedAmountFromOrder from './roundedAmountFromOrder';
 import createDatatransAPI from './api';
-import parseRegistrationData from './parseRegistrationData';
-import './middleware';
-
 import type {
-  ResponseError,
-  InitResponseSuccess,
-  ValidateResponseSuccess,
-  StatusResponseSuccess,
-  AuthorizeResponseSuccess,
   AuthorizeAuthenticatedResponseSuccess,
+  AuthorizeResponseSuccess,
+  InitResponseSuccess,
+  ResponseError,
+  StatusResponseSuccess,
+  ValidateResponseSuccess,
 } from './api/types';
+import './middleware';
+import parseRegistrationData from './parseRegistrationData';
+import roundedAmountFromOrder from './roundedAmountFromOrder';
 
 const logger = createLogger('unchained:core-payment:datatrans');
 
 // v2
-const { DATATRANS_SECRET, DATATRANS_SIGN_KEY, DATATRANS_API_ENDPOINT } =
-  process.env;
+const { DATATRANS_SECRET, DATATRANS_SIGN_KEY, DATATRANS_API_ENDPOINT } = process.env;
 
-const newDatatransError = ({
-  code,
-  message,
-}: {
-  code: string;
-  message: string;
-}) => {
+const newDatatransError = ({ code, message }: { code: string; message: string }) => {
   const error = new Error(message);
   error.name = `DATATRANS_${code}`;
   return error;
@@ -60,11 +48,8 @@ class Datatrans extends PaymentAdapter {
     return type === 'GENERIC';
   }
 
-  getMerchantId() {
-    return this.config.reduce((current, item) => {
-      if (item.key === 'merchantId') return item.value;
-      return current;
-    }, null);
+  getMerchantId(): string | undefined {
+    return this.config.find((item) => item.key === 'merchantId')?.value;
   }
 
   shouldSettleInUnchained() {
@@ -81,9 +66,7 @@ class Datatrans extends PaymentAdapter {
   }[] {
     return this.config.flatMap((item) => {
       if (item.key === 'marketplaceSplit') {
-        const [subMerchantId, amount, comission] = item.value
-          .split(';')
-          .map((f) => f.trim());
+        const [subMerchantId, amount, comission] = item.value.split(';').map((f) => f.trim());
         return [
           {
             subMerchantId,
@@ -118,22 +101,19 @@ class Datatrans extends PaymentAdapter {
     return createDatatransAPI(
       DATATRANS_API_ENDPOINT || 'https://api.sandbox.datatrans.com',
       this.getMerchantId(),
-      DATATRANS_SECRET
+      DATATRANS_SECRET,
     );
   }
 
-  async sign({ transactionContext } = {}) {
-    const { useSecureFields = false, ...additionalInitPayload } =
-      transactionContext || {};
+  async sign(context: any = {}) {
+    const { useSecureFields = false, ...additionalInitPayload } = context.transactionContext || {};
 
     const { orderPayment, paymentProviderId, userId } = this.context;
     const order = orderPayment?.order();
     const refno = orderPayment ? orderPayment._id : paymentProviderId;
     const refno2 = userId;
 
-    const price: { amount?: number; currency?: string } = order
-      ? roundedAmountFromOrder(order)
-      : {};
+    const price: { amount?: number; currency?: string } = order ? roundedAmountFromOrder(order) : {};
 
     if (useSecureFields) {
       const result = await this.api.secureFields({
@@ -213,12 +193,7 @@ class Datatrans extends PaymentAdapter {
     return (result as AuthorizeResponseSuccess).transactionId;
   }
 
-  async authorizeAuthenticated({
-    transactionId,
-    refno,
-    refno2,
-    extensions,
-  }): Promise<string> {
+  async authorizeAuthenticated({ transactionId, refno, refno2, extensions }): Promise<string> {
     const { order } = this.context;
     const { currency, amount } = roundedAmountFromOrder(order);
     const result = await this.api.authorizeAuthenticated({
@@ -231,38 +206,29 @@ class Datatrans extends PaymentAdapter {
       autoSettle: false,
     });
     throwIfResponseError(result);
-    return (result as AuthorizeAuthenticatedResponseSuccess)
-      .acquirerAuthorizationCode;
+    return (result as AuthorizeAuthenticatedResponseSuccess).acquirerAuthorizationCode;
   }
 
   isTransactionAmountValid(transaction: StatusResponseSuccess): boolean {
     const { order } = this.context;
     const { currency, amount } = roundedAmountFromOrder(order);
-    if (
-      transaction.currency !== currency ||
-      (transaction.detail.authorize as any)?.amount !== amount
-    ) {
+    if (transaction.currency !== currency || (transaction.detail.authorize as any)?.amount !== amount) {
       logger.verbose(
         `currency: ${transaction.currency} === ${currency} => ${
           transaction.currency !== currency
-        }, amount: ${
-          (transaction.detail.authorize as any)?.amount
-        } === ${amount} => ${
+        }, amount: ${(transaction.detail.authorize as any)?.amount} === ${amount} => ${
           (transaction.detail.authorize as any)?.amount !== amount
-        }`
+        }`,
       );
       return false;
     }
     return true;
   }
 
-  checkIfTransactionAmountValid(
-    transactionId: string,
-    transaction: StatusResponseSuccess
-  ): void {
+  checkIfTransactionAmountValid(transactionId: string, transaction: StatusResponseSuccess): void {
     if (!this.isTransactionAmountValid(transaction)) {
       logger.error(
-        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`
+        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`,
       );
       throw newDatatransError({
         code: `YOU_HAVE_TO_PAY_THE_FULL_AMOUNT_DUDE`,
@@ -309,7 +275,7 @@ class Datatrans extends PaymentAdapter {
   }) {
     if (!rawTransactionId && !paymentCredentials) {
       logger.warn(
-        'Datatrans Plugin: Not trying to charge because of missing payment authorization response, return false to provide later'
+        'Datatrans Plugin: Not trying to charge because of missing payment authorization response, return false to provide later',
       );
       return false;
     }
@@ -329,7 +295,7 @@ class Datatrans extends PaymentAdapter {
 
     if (status === 'canceled' || status === 'failed') {
       logger.error(
-        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} has invalid status`
+        `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} has invalid status`,
       );
       throw newDatatransError({
         code: `STATUS_${status.toUpperCase()}`,
@@ -349,7 +315,7 @@ class Datatrans extends PaymentAdapter {
         status = 'authorized';
       } else {
         logger.error(
-          `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not authorized yet`
+          `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not authorized yet`,
         );
         throw newDatatransError({
           code: `STATUS_${status.toUpperCase()}`,
@@ -405,7 +371,7 @@ class Datatrans extends PaymentAdapter {
       } catch (e) {
         // Don't throw further, we don't want to lose cart/settlement links
         logger.warn(
-          `Datatrans Plugin: Existing Transaction could not be retrieved with ID ${transactionId}`
+          `Datatrans Plugin: Existing Transaction could not be retrieved with ID ${transactionId}`,
         );
       }
       return {
@@ -421,13 +387,12 @@ class Datatrans extends PaymentAdapter {
       status === 'challenge_ongoing' ||
       status === 'transmitted'
     ) {
-      logger.warn(
-        `Datatrans Plugin: Transaction ID ${transactionId} in transit with status ${status}`
-      );
+      logger.warn(`Datatrans Plugin: Transaction ID ${transactionId} in transit with status ${status}`);
       return false;
     }
     return false;
   }
 }
 
-PaymentDirector.registerAdapter(Datatrans);
+/* @ts-ignore */
+registerAdapter(Datatrans);

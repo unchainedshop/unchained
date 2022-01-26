@@ -6,7 +6,7 @@ let graphqlFetch;
 describe('Order: Management', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch();
   });
 
   describe('Mutation.removeOrder', () => {

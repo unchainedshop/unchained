@@ -13,7 +13,6 @@ Npm.depends({
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('promise');
   api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');

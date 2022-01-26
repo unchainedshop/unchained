@@ -6,7 +6,7 @@ describe('setup warehousing providers', () => {
 
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch();
   });
 
   describe('Mutation.createWarehousingProvider', () => {

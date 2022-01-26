@@ -7,32 +7,29 @@ Package.describe({
 });
 
 Npm.depends({
+  'lru-cache': '6.0.0',
+  'simpl-schema': '1.12.0',
   hashids: '2.2.1',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('mongo');
-  api.use('promise');
-  api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.2.1');
+  api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:events@1.0.0-beta15');
 
-  api.use('unchained:core-files-next@1.0.0-beta15');
-  api.use('unchained:core-users@1.0.0-beta15');
-  api.use('unchained:core-pricing@1.0.0-beta15');
-  api.use('unchained:core-warehousing@1.0.0-beta15');
-  api.use('unchained:core-countries@1.0.0-beta15');
-  api.use('unchained:core-assortments@1.0.0-beta15');
-
-  api.mainModule('products.js', 'server');
+  api.mainModule('src/products-index.ts', 'server');
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
+  api.use('typescript');
+
+  api.use('unchained:mongodb');
   api.use('unchained:core-products');
-  api.mainModule('products-tests.js');
+
+  api.mainModule('tests/products-index.test.ts');
 });

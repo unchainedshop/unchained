@@ -5,22 +5,16 @@ const { NODE_ENV } = process.env;
 
 const maxAge = NODE_ENV === 'production' ? 1000 * 30 : -1; // 5 seconds or 1 second
 
-const textCache = new LRU({
-  max: 50000,
-  maxAge,
-});
+const textCache = new LRU({ max: 50000, maxAge });
 
 const extendSelectorWithLocale = (selector, locale) => {
   const localeSelector = {
     locale: { $in: [locale.normalized, locale.language] },
   };
-  return {
-    ...localeSelector,
-    ...selector,
-  };
+  return { ...localeSelector, ...selector };
 };
 
-const findLocalizedText = (collection, selector, locale) => {
+const findLocalizedText = async (collection, selector, locale) => {
   const cacheKey = JSON.stringify({
     n: collection._name, // eslint-disable-line
     s: selector,
@@ -28,19 +22,18 @@ const findLocalizedText = (collection, selector, locale) => {
   });
 
   const cachedText = textCache.get(cacheKey);
+
   if (cachedText) return cachedText;
 
-  const exactTranslation = collection.findOne(
-    extendSelectorWithLocale(selector, locale)
-  );
+  const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale));
   if (exactTranslation) {
     textCache.set(cacheKey, exactTranslation);
     return exactTranslation;
   }
 
   if (systemLocale.normalized !== locale.normalized) {
-    const fallbackTranslation = collection.findOne(
-      extendSelectorWithLocale(selector, systemLocale)
+    const fallbackTranslation = await collection.findOne(
+      extendSelectorWithLocale(selector, systemLocale),
     );
     if (fallbackTranslation) {
       textCache.set(cacheKey, fallbackTranslation);
@@ -48,7 +41,7 @@ const findLocalizedText = (collection, selector, locale) => {
     }
   }
 
-  const foundText = collection.findOne(selector);
+  const foundText = await collection.findOne(selector);
   textCache.set(cacheKey, foundText);
   return foundText;
 };

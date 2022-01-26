@@ -7,7 +7,6 @@ Package.describe({
 });
 
 Npm.depends({
-  redis: '3.0.2',
   'simpl-schema': '1.12.0',
 });
 
@@ -27,8 +26,8 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb@1.0.0-beta15');
-  api.use('unchained:core-events@1.0.0-beta15');
+  api.use('unchained:mongodb');
+  api.use('unchained:core-events');
 
   api.mainModule('test/events-index.test.ts');
 });

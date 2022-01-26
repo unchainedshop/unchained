@@ -28,8 +28,8 @@ const ASSORTMENT_EVENTS = [
 ];
 
 export default (options, { migrationRepository }) => {
-  settings.load(options);
+  // settings.load(options);
   addMigrations(migrationRepository);
-  createIndexes();
-  registerEvents(ASSORTMENT_EVENTS);
+  // createIndexes();
+  // registerEvents(ASSORTMENT_EVENTS);
 };

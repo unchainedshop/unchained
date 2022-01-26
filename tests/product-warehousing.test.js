@@ -11,7 +11,7 @@ let graphqlFetch;
 describe('ProductsWarehousing', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.updateProductWarehousing should for admin user', () => {
@@ -156,7 +156,7 @@ describe('ProductsWarehousing', () => {
 
   describe('mutation.updateProductWarehousing for anonymous user', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation UpdateProductWarehousing(

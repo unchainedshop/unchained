@@ -1,115 +1,129 @@
-import User from './user';
-import LoginMethodResponse from './login-method-response';
-import Product from './product';
-import Color from './color';
-import SimpleProduct from './simple-product';
-import ConfigurableProduct from './configurable-product';
-import PlanProduct from './plan-product';
-import BundleProduct from './bundle-product';
-import ProductBundleItem from './product-bundle-item';
-import ProductMedia from './product-media';
-import Dispatch from './dispatch';
-import Stock from './stock';
-import ProductDiscount from './product-discount';
-import ProductVariationOption from './product-variation-option';
-import ProductVariation from './product-variation';
-import ProductVariationAssignment from './product-variation-assignment';
-import ProductVariationAssignmentVector from './product-variation-assignment-vector';
-import ProductAssortmentPath from './product-assortment-path';
-import Order from './order';
-import OrderDiscount from './order-discount';
-import OrderDiscountable from './order-discountable';
-import OrderGlobalDiscount from './order-global-discount';
-import OrderItem from './order-item';
-import OrderItemDiscount from './order-item-discount';
-import OrderDelivery from './order-delivery';
-import OrderDeliveryDiscount from './order-delivery-discount';
-import OrderDeliveryShipping from './order-delivery-shipping';
-import OrderDeliveryPickUp from './order-delivery-pickup';
-import OrderPayment from './order-payment';
-import OrderPaymentDiscount from './order-payment-discount';
-import OrderPaymentCard from './order-payment-card';
-import OrderPaymentGeneric from './order-payment-generic';
-import OrderPaymentInvoice from './order-payment-invoice';
-import PaymentProvider from './payment-provider';
-import DeliveryProvider from './delivery-provider';
-import WarehousingProvider from './warehousing-provider';
-import Dimensions from './dimensions';
-import Language from './language';
-import Shop from './shop';
-import Country from './country';
-import Assortment from './assortment';
-import AssortmentPathLink from './assortment-path-link';
-import Filter from './filter';
-import FilterOption from './filter-option';
-import LoadedFilter from './loaded-filter';
-import LoadedFilterOption from './loaded-filter-option';
-import Quotation from './quotation';
-import Price from './price';
-import EnrollmentPayment from './enrollment-payment';
-import EnrollmentDelivery from './enrollment-delivery';
-import EnrollmentPeriod from './enrollment-period';
-import EnrollmentPlan from './enrollment-plan';
-import Enrollment from './enrollment';
-import Bookmark from './bookmark';
-import ProductCatalogPrice from './product-catalog-price';
-import AssortmentMedia from './assortment-media';
+import { Assortment } from './assortment/assortment-types';
+import { AssortmentFilter } from './assortment/assortment-filter-types';
+import { AssortmentLink } from './assortment/assortment-link-types';
+import { AssortmentMedia } from './assortment/assortment-media-types';
+import { AssortmentPathLink } from './assortment/assortment-path-link-types';
+import { AssortmentProduct } from './assortment/assortment-product-types';
+import { Bookmark } from './bookmark-types';
+import { BundleProduct } from './product/product-bundle-types';
+import { Color } from './color-types';
+import { ConfigurableProduct } from './product/product-configurable-types';
+import { Country } from './country-types';
+import { DeliveryProvider } from './delivery-provider-types';
+import { Dimensions } from './dimensions-types';
+import { Dispatch } from './dispatch-types';
+import { Enrollment } from './enrollment/enrollment-types';
+import { EnrollmentDelivery } from './enrollment/enrollment-delivery-types';
+import { EnrollmentPayment } from './enrollment/enrollment-payment-types';
+import { EnrollmentPeriod } from './enrollment/enrollment-period-types';
+import { EnrollmentPlan } from './enrollment/enrollment-plan-tyes';
+import { Filter } from './filter/filter-types';
+import { FilterOption } from './filter/filter-option-types';
+import { Language } from './language-types';
+import { LoadedFilter } from './filter/loaded-filter-types';
+import { LoadedFilterOption } from './filter/loaded-filter-option-types';
+import { LoginMethodResponse } from './login-method-response-types';
+import { Order } from './order/order-types';
+import { OrderDelivery } from './order/order-delivery-types';
+import { OrderDeliveryDiscount } from './order/order-delivery-discount-types';
+import { OrderDeliveryPickUp } from './order/order-delivery-pickup-types';
+import { OrderDeliveryShipping } from './order/order-delivery-shipping-types';
+import { OrderDiscount } from './order/order-discount-types';
+import { OrderDiscountable } from './order/order-discountable-types';
+import { OrderGlobalDiscount } from './order/order-global-discount-types';
+import { OrderItem } from './order/order-item-types';
+import { OrderItemDiscount } from './order/order-item-discount-types';
+import { OrderPayment } from './order/order-payment-types';
+import { OrderPaymentCard } from './order/order-payment-card-types';
+import { OrderPaymentDiscount } from './order/order-payment-discount-types';
+import { OrderPaymentGeneric } from './order/order-payment-generic-types';
+import { OrderPaymentInvoice } from './order/order-payment-invoice-types';
+import { PaymentCredentials } from './payment/payment-credentials-types';
+import { PaymentProvider } from './payment/payment-provider-types';
+import { PlanProduct } from './product/product-plan-types';
+import { Price } from './price-types';
+import { Product } from './product/product-types';
+import { ProductAssortmentPath } from './product/product-assortment-path-types';
+import { ProductBundleItem } from './product/product-bundle-item-types';
+import { ProductCatalogPrice } from './product/product-catalog-price-types';
+import { ProductDiscount } from './product/product-discount';
+import { ProductMedia } from './product/product-media-types';
+import { ProductReview } from './product/product-review-types';
+import { ProductVariation } from './product/product-variation-types';
+import { ProductVariationAssignment } from './product/product-variation-assignment-types';
+import { ProductVariationAssignmentVector } from './product/product-variation-assignment-vector';
+import { ProductVariationOption } from './product/product-variation-option-types';
+import { Quotation } from './quotation-types';
+import { Shop } from './shop-types';
+import { SimpleProduct } from './product/product-simple-types';
+import { Stock } from './stock-types';
+import { User } from './user-types';
+import { WarehousingProvider } from './warehousing-provider-types';
+import { Work } from './work-types';
 
-export default {
+const types = {
+  Assortment,
+  AssortmentFilter,
+  AssortmentLink,
   AssortmentMedia,
-  ProductCatalogPrice,
-  User,
-  LoginMethodResponse,
-  Shop,
-  Country,
-  Language,
-  Color,
-  Order,
+  AssortmentPathLink,
+  AssortmentProduct,
   Bookmark,
-  PaymentProvider,
+  BundleProduct,
+  Color,
+  ConfigurableProduct,
+  Country,
   DeliveryProvider,
-  WarehousingProvider,
   Dimensions,
   Dispatch,
-  Stock,
+  Enrollment,
+  EnrollmentDelivery,
+  EnrollmentPayment,
+  EnrollmentPeriod,
+  EnrollmentPlan,
+  Filter,
+  FilterOption,
+  Language,
+  LoadedFilter,
+  LoadedFilterOption,
+  LoginMethodResponse,
+  Order,
+  OrderDelivery,
+  OrderDeliveryDiscount,
+  OrderDeliveryPickUp,
+  OrderDeliveryShipping,
   OrderDiscount,
   OrderDiscountable,
   OrderGlobalDiscount,
   OrderItem,
   OrderItemDiscount,
-  OrderDelivery,
-  OrderDeliveryDiscount,
-  OrderDeliveryShipping,
-  OrderDeliveryPickUp,
   OrderPayment,
-  OrderPaymentDiscount,
-  OrderPaymentInvoice,
-  OrderPaymentGeneric,
   OrderPaymentCard,
+  OrderPaymentDiscount,
+  OrderPaymentGeneric,
+  OrderPaymentInvoice,
+  PaymentCredentials,
+  PaymentProvider,
+  PlanProduct,
+  Price,
   Product,
-  ProductDiscount,
-  ProductMedia,
-  ProductVariation,
-  ProductVariationOption,
-  ProductVariationAssignment,
-  ProductVariationAssignmentVector,
   ProductAssortmentPath,
   ProductBundleItem,
-  SimpleProduct,
-  PlanProduct,
-  ConfigurableProduct,
-  BundleProduct,
-  Assortment,
-  AssortmentPathLink,
-  Filter,
-  FilterOption,
-  LoadedFilter,
-  LoadedFilterOption,
+  ProductCatalogPrice,
+  ProductDiscount,
+  ProductMedia,
+  ProductReview,
+  ProductVariation,
+  ProductVariationAssignment,
+  ProductVariationAssignmentVector,
+  ProductVariationOption,
   Quotation,
-  Price,
-  EnrollmentPayment,
-  EnrollmentDelivery,
-  EnrollmentPeriod,
-  EnrollmentPlan,
-  Enrollment,
+  Shop,
+  SimpleProduct,
+  Stock,
+  User,
+  WarehousingProvider,
+  Work,
 };
+
+export default types;

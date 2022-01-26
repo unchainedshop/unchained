@@ -7,6 +7,7 @@ import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import {
   PlanProduct,
   SimpleProduct,
+  SimpleProductDraft,
   ProxySimpleProduct1,
   UnpublishedProduct,
   ProxyProduct,
@@ -20,8 +21,8 @@ let graphqlFetchAsAnonymousUser;
 describe('Products', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
@@ -320,7 +321,7 @@ describe('Products', () => {
   });
 
   describe('Mutation.removeProduct should', () => {
-    it('remove product completly when passed valid product ID ', async () => {
+    it('remove product completely when passed valid product ID ', async () => {
       const { data: { removeProduct } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation RemoveProduct($productId: ID!) {
@@ -332,7 +333,7 @@ describe('Products', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct._id,
+          productId: SimpleProductDraft._id,
         },
       });
 
@@ -351,7 +352,7 @@ describe('Products', () => {
           }
         `,
         variables: {
-          productId: SimpleProduct._id,
+          productId: SimpleProductDraft._id,
         },
       });
       expect(errors.length).toBe(1);
@@ -1315,7 +1316,7 @@ describe('Products', () => {
         },
       });
 
-      expect(productsCount).toEqual(12);
+      expect(productsCount).toEqual(13);
     });
   });
 
@@ -2021,8 +2022,8 @@ describe('Products', () => {
     });
   });
 
-  describe('query.products.catalogPriceRange should', () => {
-    it('return minimum and maximum catalog price range of a configurable product', async () => {
+  describe("query.products.catalogPriceRange should", () => {
+    it("return minimum and maximum catalog price range of a configurable product", async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -2057,23 +2058,24 @@ describe('Products', () => {
           productId: ProxyProduct._id,
         },
       });
+
       expect(product.catalogPriceRange).toMatchObject({
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 500000,
-          currency: 'CHF',
+          currency: "CHF",
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 30000000,
-          currency: 'CHF',
+          currency: "CHF",
         },
       });
     });
 
-    it('return minimum and maximum catalog price range of a configurable product based on quantity argument', async () => {
+    it("return minimum and maximum catalog price range of a configurable product based on quantity argument", async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -2113,18 +2115,18 @@ describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 400000,
-          currency: 'CHF',
+          currency: "CHF",
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 75000000,
-          currency: 'CHF',
+          currency: "CHF",
         },
       });
     });
 
-    it('return minimum and maximum catalog price range of a configurable product based on vector argument', async () => {
+    it("return minimum and maximum catalog price range of a configurable product based on vector argument", async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -2164,13 +2166,13 @@ describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 500000,
-          currency: 'CHF',
+          currency: "CHF",
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 1500000,
-          currency: 'CHF',
+          currency: "CHF",
         },
       });
     });

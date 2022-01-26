@@ -22,28 +22,16 @@ useMiddlewareWithCurrentContext(
   postUrl,
   bodyParser.text({
     type: 'application/json',
-  })
+  }),
 );
 
-useMiddlewareWithCurrentContext(
-  cancelUrl,
-  bodyParser.urlencoded({ extended: false })
-);
+useMiddlewareWithCurrentContext(cancelUrl, bodyParser.urlencoded({ extended: false }));
 
-useMiddlewareWithCurrentContext(
-  errorUrl,
-  bodyParser.urlencoded({ extended: false })
-);
+useMiddlewareWithCurrentContext(errorUrl, bodyParser.urlencoded({ extended: false }));
 
-useMiddlewareWithCurrentContext(
-  successUrl,
-  bodyParser.urlencoded({ extended: false })
-);
+useMiddlewareWithCurrentContext(successUrl, bodyParser.urlencoded({ extended: false }));
 
-useMiddlewareWithCurrentContext(
-  returnUrl,
-  bodyParser.urlencoded({ extended: false })
-);
+useMiddlewareWithCurrentContext(returnUrl, bodyParser.urlencoded({ extended: false }));
 
 useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
   const signature = req.headers['datatrans-signature'];
@@ -58,35 +46,28 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
     })(timestamp, req.body);
 
     if (hash !== comparableSignature) {
-      logger.error(
-        `Datatrans Plugin: Hash mismatch: ${signature} / ${comparableSignature}`,
-        req.body
-      );
+      logger.error(`Datatrans Plugin: Hash mismatch: ${signature} / ${comparableSignature}`, req.body);
       res.writeHead(403);
       res.end('Hash mismatch');
       return;
     }
 
     console.log(req.body);
-    const transaction: StatusResponseSuccess = JSON.parse(
-      req.body
-    ) as StatusResponseSuccess;
+    const transaction: StatusResponseSuccess = JSON.parse(req.body) as StatusResponseSuccess;
 
     if (transaction.status === 'authorized') {
       const userId = transaction.refno2;
 
       try {
         if (transaction.type === 'card_check') {
-          const paymentCredentials =
-            PaymentCredentials.registerPaymentCredentials({
-              paymentProviderId: transaction.refno,
-              paymentContext: { transactionId: transaction.transactionId },
-              userId,
-            });
-          logger.info(
-            `Datatrans Webhook: Unchained registered payment credentials for ${userId}`,
-            { userId }
-          );
+          const paymentCredentials = PaymentCredentials.registerPaymentCredentials({
+            paymentProviderId: transaction.refno,
+            paymentContext: { transactionId: transaction.transactionId },
+            userId,
+          });
+          logger.info(`Datatrans Webhook: Unchained registered payment credentials for ${userId}`, {
+            userId,
+          });
           res.writeHead(200);
           res.end(JSON.stringify(paymentCredentials));
           return;
@@ -99,18 +80,14 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
             paymentContext: { transactionId: transaction.transactionId },
           });
           res.writeHead(200);
-          logger.info(
-            `Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-            { orderId: order._id }
-          );
+          logger.info(`Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {
+            orderId: order._id,
+          });
           res.end(JSON.stringify(order));
           return;
         }
       } catch (e) {
-        logger.error(
-          `Datatrans Webhook: Unchained rejected to checkout with message`,
-          e
-        );
+        logger.error(`Datatrans Webhook: Unchained rejected to checkout with message`, e);
         res.writeHead(500);
         res.end(JSON.stringify(e));
         return;
@@ -155,7 +132,7 @@ useMiddlewareWithCurrentContext(returnUrl, async (req, res) => {
   if (req.method === 'GET') {
     const { datatransTrxId } = req.query;
     res.end(
-      `Secure Fields Payment authenticated\nTransaction ID: ${datatransTrxId}\nNeeds authorization`
+      `Secure Fields Payment authenticated\nTransaction ID: ${datatransTrxId}\nNeeds authorization`,
     );
   }
   res.writeHead(404);

@@ -1,7 +1,7 @@
 // copied from https://github.com/orangecms/jest-meteor-stubs/blob/master/lib/meteor/meteor.js
-const { Mongo } = require('./mongo');
+import { Mongo } from './mongo';
 
-const Meteor = {
+export const Meteor = {
   isServer: true,
   loginWithPassword: jest.fn(),
   loginWithFacebook: jest.fn(),
@@ -17,5 +17,3 @@ const Meteor = {
   wrapAsync: jest.fn(),
   Error: jest.fn(Error),
 };
-
-module.exports = { Meteor };

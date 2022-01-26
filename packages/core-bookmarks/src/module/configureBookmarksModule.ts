@@ -1,64 +1,46 @@
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { Bookmark, BookmarksModule } from 'unchained-core-types/bookmarks';
-import { ModuleInput } from 'unchained-core-types/common';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { BookmarksCollection } from '../db/BookmarksCollection';
 import { BookmarkSchema } from '../db/BookmarksSchema';
 
-const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_REMOVE'];
+const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARKS_UPDATE', 'BOOKMARK_REMOVE'];
 
 export const configureBookmarksModule = async ({
   db,
-}: ModuleInput): Promise<BookmarksModule> => {
+}: ModuleInput<Record<string, never>>): Promise<BookmarksModule> => {
   registerEvents(BOOKMARK_EVENTS);
 
   const Bookmarks = await BookmarksCollection(db);
 
-  const mutations = generateDbMutations<Bookmark>(Bookmarks, BookmarkSchema);
+  const mutations = generateDbMutations<Bookmark>(
+    Bookmarks,
+    BookmarkSchema,
+  ) as ModuleMutations<Bookmark>;
 
   return {
-    findByUserId: async (userId) => Bookmarks.find({ userId }).toArray(),
+    // Queries
+    findByUserId: async (userId) => Bookmarks.find({ userId, deleted: null }).toArray(),
     findByUserIdAndProductId: async ({ userId, productId }) =>
-      Bookmarks.findOne({ userId, productId }),
+      Bookmarks.findOne({ userId, productId, deleted: null }),
     findById: async (bookmarkId) => {
       let bookmark: Bookmark;
       if (bookmarkId) {
-        const filter = generateDbFilterById(bookmarkId);
-        bookmark = await Bookmarks.findOne({ _id: filter._id });
+        const filter = generateDbFilterById(bookmarkId, { deleted: null });
+        bookmark = await Bookmarks.findOne(filter);
       }
       return bookmark;
     },
+
     find: async (query) => Bookmarks.find(query).toArray(),
-    replaceUserId: async (fromUserId, toUserId) => {
-      const result = await Bookmarks.updateMany(
-        { userId: fromUserId },
-        {
-          $set: {
-            userId: toUserId,
-          },
-        }
-      );
-      return result.upsertedCount;
-    },
-    removeById: async (bookmarkId) => {
-      const deletedCount = await mutations.delete(bookmarkId);
-      emit('BOOKMARK_REMOVE', { bookmarkId });
-      return deletedCount;
-    },
-    create: async (doc: Bookmark, userId?: string) => {
-      const bookmarkId = await mutations.create(doc, userId);
-      emit('BOOKMARK_CREATE', { bookmarkId });
-      return bookmarkId;
-    },
+
     existsByUserIdAndProductId: async ({ productId, userId }) => {
       let selector = {};
       if (productId && userId) {
-        selector = { userId, productId };
+        selector = { userId, productId, deleted: null };
       } else if (userId) {
-        selector = { userId };
+        selector = { userId, deleted: null };
       }
       const bookmarkCount = await Bookmarks.find(selector, {
         limit: 1,
@@ -66,7 +48,50 @@ export const configureBookmarksModule = async ({
 
       return !!bookmarkCount;
     },
-    update: mutations.update,
-    delete: mutations.delete,
+
+    // Mutations
+    replaceUserId: async (fromUserId, toUserId, userId) => {
+      const result = await Bookmarks.updateMany(
+        { userId: fromUserId, deleted: null },
+        {
+          $set: {
+            userId: toUserId,
+            updated: new Date(),
+            updatedBy: userId,
+          },
+        },
+      );
+      return result.upsertedCount;
+    },
+
+    deleteByUserId: async (toUserId, userId) => {
+      const result = await Bookmarks.updateMany(
+        { userId: toUserId },
+        {
+          $set: {
+            deleted: new Date(),
+            deletedBy: userId,
+          },
+        },
+      );
+
+      return result.modifiedCount;
+    },
+
+    create: async (doc: Bookmark, userId: string) => {
+      const bookmarkId = await mutations.create(doc, userId);
+      emit('BOOKMARK_CREATE', { bookmarkId });
+      return bookmarkId;
+    },
+    update: async (_id: string, doc: Bookmark, userId: string) => {
+      const bookmarkId = await mutations.update(_id, doc, userId);
+      emit('BOOKMARK_UPDATE', { bookmarkId });
+      return bookmarkId;
+    },
+    delete: async (bookmarkId, userId) => {
+      const deletedCount = await mutations.delete(bookmarkId, userId);
+      emit('BOOKMARK_REMOVE', { bookmarkId });
+      return deletedCount;
+    },
   };
 };

@@ -8,11 +8,7 @@ import settle from './settle';
 import cancel from './cancel';
 import authorizeAuthenticated from './authorizeAuthenticated';
 
-export default function createDatatransAPI(
-  endpoint: string,
-  merchantId: string,
-  secret: string
-) {
+export default function createDatatransAPI(endpoint: string, merchantId: string, secret: string) {
   const fetchDatatrans = makeFetcher(endpoint, merchantId, secret);
   return {
     fetchDatatrans,

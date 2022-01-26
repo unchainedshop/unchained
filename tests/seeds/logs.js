@@ -54,8 +54,7 @@ export const logs = [
     _id: 'o6vcNwXHchZjvFoTN',
     created: 1590673938902,
     level: 'error',
-    message:
-      'The user "" has no permission to perform the action "viewLogs" NoPermissionError',
+    message: 'The user "" has no permission to perform the action "viewLogs" NoPermissionError',
     user: null,
     order: null,
   },
@@ -184,8 +183,7 @@ export const logs = [
     _id: 'y9rF3ryZwbNBgZZvs',
     created: 1590673478484,
     level: 'info',
-    message:
-      'shop.unchained.worker.event-listener -> Initialized: bionic:EVENT_LISTENER',
+    message: 'shop.unchained.worker.event-listener -> Initialized: bionic:EVENT_LISTENER',
     user: null,
     order: null,
   },
@@ -247,8 +245,7 @@ export const logs = [
     _id: 'HbJtA8K5xBqfJTLgq',
     created: 1590673477764,
     level: 'info',
-    message:
-      'QuotationDirector -> Registered shop.unchained.quotations.manual 1.0 (Manual Offerings)',
+    message: 'QuotationDirector -> Registered shop.unchained.quotations.manual 1.0 (Manual Offerings)',
     user: null,
     order: null,
   },
@@ -337,8 +334,7 @@ export const logs = [
     _id: 'q3AwoaTENW7PAw6bc',
     created: 1590673477747,
     level: 'info',
-    message:
-      'PaymentDirector -> Registered shop.unchained.apple-iap 1.0 (Apple In-App-Purchase)',
+    message: 'PaymentDirector -> Registered shop.unchained.apple-iap 1.0 (Apple In-App-Purchase)',
     user: null,
     order: null,
   },
@@ -346,8 +342,7 @@ export const logs = [
     _id: 'pAZg9LWPfYgYWF7n3',
     created: 1590673477746,
     level: 'info',
-    message:
-      'PaymentDirector -> Registered shop.unchained.datatrans 1.0 (Datatrans)',
+    message: 'PaymentDirector -> Registered shop.unchained.datatrans 1.0 (Datatrans)',
     user: null,
     order: null,
   },
@@ -364,8 +359,7 @@ export const logs = [
     _id: 'wEggWiaiRPwxmdCsv',
     created: 1590673477742,
     level: 'info',
-    message:
-      'PaymentDirector -> Registered shop.unchained.invoice 1.0 (Invoice (manually))',
+    message: 'PaymentDirector -> Registered shop.unchained.invoice 1.0 (Invoice (manually))',
     user: null,
     order: null,
   },
@@ -373,8 +367,7 @@ export const logs = [
     _id: '2g3uf9MHrhM9XJmSM',
     created: 1590673477741,
     level: 'info',
-    message:
-      'DocumentDirector -> Registered shop.unchained.smallinvoice 1.0 (Smallinvoice)',
+    message: 'DocumentDirector -> Registered shop.unchained.smallinvoice 1.0 (Smallinvoice)',
     user: null,
     order: null,
   },
@@ -382,8 +375,7 @@ export const logs = [
     _id: 'aSva6s4mj7gQvJ5wd',
     created: 1590673477740,
     level: 'info',
-    message:
-      'DiscountDirector -> Registered shop.unchained.discount.100-off 1.0 (100 Off)',
+    message: 'DiscountDirector -> Registered shop.unchained.discount.100-off 1.0 (100 Off)',
     user: null,
     order: null,
   },
@@ -391,8 +383,7 @@ export const logs = [
     _id: '5WvxjqfQZpxqjD7wb',
     created: 1590673477738,
     level: 'info',
-    message:
-      'DiscountDirector -> Registered shop.unchained.discount.half-price-manual 1.0 (Half Price)',
+    message: 'DiscountDirector -> Registered shop.unchained.discount.half-price-manual 1.0 (Half Price)',
     user: null,
     order: null,
   },
@@ -409,8 +400,7 @@ export const logs = [
     _id: '5QwABQmvioTd5gJjP',
     created: 1590673477736,
     level: 'info',
-    message:
-      'DeliveryDirector -> Registered shop.unchained.stores 1.0 (Manual Pickup)',
+    message: 'DeliveryDirector -> Registered shop.unchained.stores 1.0 (Manual Pickup)',
     user: null,
     order: null,
   },
@@ -427,8 +417,7 @@ export const logs = [
     _id: '9djXAp2zmbEHRQNG2',
     created: 1590673477732,
     level: 'info',
-    message:
-      'DeliveryDirector -> Registered shop.unchained.pick-mup 1.0 (Migros Pick M Up)',
+    message: 'DeliveryDirector -> Registered shop.unchained.pick-mup 1.0 (Migros Pick M Up)',
     user: null,
     order: null,
   },
@@ -436,8 +425,7 @@ export const logs = [
     _id: 'L6TfdA7qyv6gcEoAE',
     created: 1590673477730,
     level: 'info',
-    message:
-      'DeliveryDirector -> Registered shop.unchained.post 1.0 (Post (Manual))',
+    message: 'DeliveryDirector -> Registered shop.unchained.post 1.0 (Post (Manual))',
     user: null,
     order: null,
   },
@@ -843,8 +831,7 @@ export const logs = [
     _id: 'h3Ees2ceYfYeu4yHb',
     created: 1590612006924,
     level: 'info',
-    message:
-      'shop.unchained.worker.event-listener -> Initialized: bionic:EVENT_LISTENER',
+    message: 'shop.unchained.worker.event-listener -> Initialized: bionic:EVENT_LISTENER',
     user: null,
     order: null,
   },
@@ -897,8 +884,7 @@ export const logs = [
     _id: '7g6KdtRJ4iQZZhHSb',
     created: 1590611921038,
     level: 'info',
-    message:
-      'QuotationDirector -> Registered shop.unchained.quotations.manual 1.0 (Manual Offerings)',
+    message: 'QuotationDirector -> Registered shop.unchained.quotations.manual 1.0 (Manual Offerings)',
     user: null,
     order: null,
   },

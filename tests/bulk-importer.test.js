@@ -8,7 +8,7 @@ let graphqlFetch;
 describe('Bulk Importer', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Import Products', () => {
@@ -30,30 +30,30 @@ describe('Bulk Importer', () => {
           input: {
             events: [
               {
-                entity: 'PRODUCT',
-                operation: 'CREATE',
+                entity: "PRODUCT",
+                operation: "CREATE",
                 payload: {
-                  _id: 'A',
+                  _id: "A",
                   specification: {
-                    tags: ['nice'],
-                    type: 'SimpleProduct',
-                    published: '2020-01-01T00:00Z',
+                    tags: ["nice"],
+                    type: "SimpleProduct",
+                    published: "2020-01-01T00:00Z",
                     commerce: {
-                      salesUnit: 'ST',
-                      salesQuantityPerUnit: '1',
-                      defaultOrderQuantity: '6',
+                      salesUnit: "ST",
+                      salesQuantityPerUnit: "1",
+                      defaultOrderQuantity: "6",
                       pricing: [
                         {
                           isTaxable: true,
                           isNetPrice: true,
-                          countryCode: 'CH',
-                          currencyCode: 'CHF',
+                          countryCode: "CH",
+                          currencyCode: "CHF",
                           amount: 10000,
                         },
                       ],
                     },
                     warehousing: {
-                      baseUnit: 'ST',
+                      baseUnit: "ST",
                       dimensions: {
                         weightInGram: 0,
                         heightInMillimeters: 0,
@@ -64,26 +64,26 @@ describe('Bulk Importer', () => {
                     variationResolvers: [
                       {
                         vector: {
-                          color: 'red',
+                          color: "red",
                         },
-                        productId: 'B',
+                        productId: "B",
                       },
                     ],
                     plan: {
-                      billingInterval: 'DAY',
+                      billingInterval: "DAY",
                       billingIntervalCount: 1,
-                      usageCalculationType: 'METERED',
-                      trialInterval: 'DAY',
+                      usageCalculationType: "METERED",
+                      trialInterval: "DAY",
                       trialIntervalCount: 1,
                     },
                     bundleItems: [
                       {
-                        productId: 'c',
+                        productId: "c",
                         quantity: 1,
                         configuration: [
                           {
-                            key: 'greeting',
-                            value: 'For my Darling',
+                            key: "greeting",
+                            value: "For my Darling",
                           },
                         ],
                       },
@@ -91,53 +91,53 @@ describe('Bulk Importer', () => {
                     meta: {},
                     content: {
                       de: {
-                        vendor: 'Herstellername',
-                        brand: 'Marke',
-                        title: 'Produktname',
-                        slug: 'produktname',
-                        subtitle: 'Short description',
-                        description: 'Long description',
-                        labels: ['Neu'],
+                        vendor: "Herstellername",
+                        brand: "Marke",
+                        title: "Produktname",
+                        slug: "produktname",
+                        subtitle: "Short description",
+                        description: "Long description",
+                        labels: ["Neu"],
                       },
                     },
                   },
                   media: [
                     {
-                      _id: 'product-a-format',
+                      _id: "product-a-format",
                       asset: {
-                        _id: 'format-v1',
-                        fileName: 'format-jpeg.jpg',
-                        url: 'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
+                        _id: "format-v1",
+                        fileName: "test-image.png",
+                        url: "https://dummyimage.com/600x400/000/fff&text=Create+Product",
                       },
-                      tags: ['big'],
+                      tags: ["big"],
                       meta: {},
                       content: {
                         de: {
-                          title: 'Produktname',
-                          subtitle: 'Short description',
+                          title: "Produktname",
+                          subtitle: "Short description",
                         },
                       },
                     },
                   ],
                   variations: [
                     {
-                      key: 'color',
-                      type: 'COLOR',
+                      key: "color",
+                      type: "COLOR",
                       options: [
                         {
-                          value: 'ff0000',
+                          value: "ff0000",
                           content: {
                             de: {
-                              title: 'Rot',
-                              subtitle: '',
+                              title: "Rot",
+                              subtitle: "",
                             },
                           },
                         },
                       ],
                       content: {
                         de: {
-                          title: 'Farbe',
-                          subtitle: 'Farbvariante',
+                          title: "Farbe",
+                          subtitle: "Farbvariante",
                         },
                       },
                     },
@@ -145,45 +145,45 @@ describe('Bulk Importer', () => {
                 },
               },
               {
-                entity: 'PRODUCT',
-                operation: 'UPDATE',
+                entity: "PRODUCT",
+                operation: "UPDATE",
                 payload: {
-                  _id: 'A',
+                  _id: "A",
                   specification: {
-                    tags: ['awesome'],
+                    tags: ["awesome"],
                     meta: {
                       something: 1,
                     },
                   },
                   media: [
                     {
-                      _id: 'product-a-format',
+                      _id: "product-a-format",
                       asset: {
-                        _id: 'format-v1',
-                        fileName: 'format-jpeg.jpg',
-                        url: 'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
+                        _id: "format-v1",
+                        fileName: "test-image-updated.png",
+                        url: "https://dummyimage.com/300x300/e2e2e2/040&text=Update+Product",
                       },
-                      tags: ['big'],
+                      tags: ["big"],
                       meta: {},
                       content: {
                         de: {
-                          title: 'Produktname',
-                          subtitle: 'Short description',
+                          title: "Produktname",
+                          subtitle: "Short description",
                         },
                       },
                     },
                     {
-                      _id: 'product-a-meteor',
+                      _id: "product-a-meteor",
                       asset: {
-                        _id: 'meteor',
-                        fileName: 'meteor-will-never-die.svg',
-                        url: 'https://docs.meteor.com/images/logo-coralspace-left.svg',
+                        _id: "meteor",
+                        fileName: "meteor-will-never-die.svg",
+                        url: "https://docs.meteor.com/images/logo-coralspace-left.svg",
                       },
-                      tags: ['small'],
+                      tags: ["small"],
                       meta: {},
                       content: {
                         de: {
-                          title: 'Will Meteor die?',
+                          title: "Will Meteor die?",
                         },
                       },
                     },
@@ -191,10 +191,10 @@ describe('Bulk Importer', () => {
                 },
               },
               {
-                entity: 'PRODUCT',
-                operation: 'REMOVE',
+                entity: "PRODUCT",
+                operation: "REMOVE",
                 payload: {
-                  _id: 'A',
+                  _id: "A",
                 },
               },
               {
@@ -249,7 +249,7 @@ describe('Bulk Importer', () => {
       }, 3000);
 
       expect(result).toBe(true);
-    });
+    }, 10000);
   });
 
   describe('Import Filters', () => {
@@ -346,7 +346,7 @@ describe('Bulk Importer', () => {
       }, 3000);
 
       expect(result).toBe(true);
-    });
+    }, 10000);
   });
 
   describe('Import Assortments', () => {
@@ -526,6 +526,6 @@ describe('Bulk Importer', () => {
       );
 
       expect(productLinkHasBeenReplaced).toBe(true);
-    });
+    }, 10000);
   });
 });

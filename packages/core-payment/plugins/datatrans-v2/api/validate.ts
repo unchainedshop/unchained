@@ -1,12 +1,6 @@
-import type {
-  FetchDatatransFn,
-  ValidateRequestPayload,
-  ValidateResponse,
-} from './types';
+import type { FetchDatatransFn, ValidateRequestPayload, ValidateResponse } from './types';
 
-export default async function validate(
-  payload: ValidateRequestPayload
-): Promise<ValidateResponse> {
+export default async function validate(payload: ValidateRequestPayload): Promise<ValidateResponse> {
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
 
   const reqBody = {

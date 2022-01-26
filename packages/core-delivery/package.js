@@ -6,27 +6,29 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  'simpl-schema': '1.12.0',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('mongo');
-  api.use('promise');
-  api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.2.1');
+  api.use('typescript');
 
+  api.use('unchained:logger@1.0.0-beta15');
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:events@1.0.0-beta15');
-  api.use('unchained:logger@1.0.0-beta15');
 
-  api.use('unchained:core-pricing@1.0.0-beta15');
-  api.use('unchained:core-countries@1.0.0-beta15');
-  api.use('unchained:core-worker@1.0.0-beta15');
-
-  api.mainModule('delivery.js', 'server');
+  api.mainModule('src/delivery-index.ts', 'server');
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
+  api.use('typescript');
+
+  api.use('unchained:mongodb');
   api.use('unchained:core-delivery');
-  api.mainModule('delivery-tests.js');
+
+  api.mainModule('tests/delivery-index.test.ts');
 });

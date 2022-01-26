@@ -29,8 +29,8 @@
   },
   "devDependencies": {
     "@types/node": "^16.7.10",
+    "@unchainedshop/types": "^0.9.0",
     "chai": "^4.3.4",
-    "typescript": "^4.4.4",
-    "unchained-core-types": "^1.0.5"
+    "typescript": "^4.4.4"
   }
 }

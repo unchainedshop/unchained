@@ -1,53 +1,47 @@
-import getUserContext, { UnchainedServerUserContext } from './user-context';
-import getLocaleContext, {
-  UnchainedServerLocaleContext,
-} from './locale-context';
-
-import createGraphQLServer from './createGraphQLServer';
+import {
+  UnchainedAPI,
+  UnchainedLoaders,
+  UnchainedLocaleContext,
+  UnchainedServerOptions,
+  UnchainedUserContext,
+} from '@unchainedshop/types/api';
+import { IncomingMessage } from 'http';
+import { WebApp } from 'meteor/webapp';
 import createBulkImportServer from './createBulkImportServer';
+import createGraphQLServer from './createGraphQLServer';
+import instantiateLoaders from './loaders';
+import { getLocaleContext } from './locale-context';
 import { configureRoles } from './roles';
+import { getUserContext } from './user-context';
 
-import hashPassword from './hashPassword';
-import getCart from './getCart';
-import instantiateLoaders, { UnchainedServerLoaders } from './loaders';
-
-export { hashPassword, getCart };
-export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
+export { hashPassword } from './hashPassword';
+export * as roles from './roles';
 
-export interface UnchainedAPI {
-  version: string;
-}
-
-export type UnchainedServerContext = UnchainedServerLocaleContext &
-  UnchainedServerUserContext &
-  UnchainedServerLoaders &
+export type UnchainedServerContext = UnchainedLocaleContext &
+  UnchainedUserContext &
+  UnchainedLoaders &
   UnchainedAPI;
-
-export interface UnchainedServerOptions {
-  unchained: UnchainedAPI;
-  bulkImporter: any;
-  rolesOptions: any;
-  context: any;
-}
 
 const UNCHAINED_API_VERSION = '1.0.0-beta15'; // eslint-disable-line
 
-export const createContextResolver =
-  (unchained: UnchainedAPI) =>
+const createContextResolver =
+  (unchainedAPI: UnchainedAPI) =>
   // eslint-disable-next-line
   async ({ req, res, ...apolloContext }): Promise<UnchainedServerContext> => {
-    const loaders = await instantiateLoaders(req, unchained);
+    const loaders = await instantiateLoaders(req, unchainedAPI);
     // const intermediateContext: Partial<UnchainedServerContext> = {
     //   ...unchained,
     //   ...loaders,
     // };
-    const userContext = await getUserContext(req /* intermediateContext */);
-    const localeContext = await getLocaleContext(req);
+
+    const userContext = await getUserContext(req, unchainedAPI);
+    const localeContext = await getLocaleContext(req, unchainedAPI);
+
     return {
       ...apolloContext,
-      ...unchained,
+      ...unchainedAPI,
       ...loaders,
       ...userContext,
       ...localeContext,
@@ -57,17 +51,17 @@ export const createContextResolver =
 
 let context;
 
-const startUnchainedServer = (options: UnchainedServerOptions) => {
+export const startAPIServer = (options: UnchainedServerOptions) => {
   const {
-    unchained,
-    rolesOptions,
+    unchainedAPI,
+    rolesOptions = {},
     context: customContext,
     ...apolloServerOptions
   } = options || {};
 
   configureRoles(rolesOptions);
 
-  const contextResolver = createContextResolver(unchained);
+  const contextResolver = createContextResolver(unchainedAPI);
 
   context = customContext
     ? ({ req, res }) => {
@@ -93,11 +87,12 @@ const startUnchainedServer = (options: UnchainedServerOptions) => {
 const getCurrentContextResolver = () => context;
 
 export const useMiddlewareWithCurrentContext = (path, middleware) => {
-  WebApp.connectHandlers.use(path, async (req, res, ...rest) => {
-    const currentContextResolver = getCurrentContextResolver();
-    req.unchainedContext = await currentContextResolver({ req, res });
-    return middleware(req, res, ...rest);
-  });
+  WebApp.connectHandlers.use(
+    path,
+    async (req: IncomingMessage & { unchainedContext?: UnchainedAPI }, res, ...rest) => {
+      const currentContextResolver = getCurrentContextResolver();
+      req.unchainedContext = await currentContextResolver({ req, res });
+      return middleware(req, res, ...rest);
+    },
+  );
 };
-
-export default startUnchainedServer;

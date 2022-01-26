@@ -30,11 +30,7 @@ export default [
       Return total number of published products filtered either by tags or explicit slugs
       If a slug is provided
       """
-      productsCount(
-        tags: [String!]
-        slugs: [String!]
-        includeDrafts: Boolean = false
-      ): Int!
+      productsCount(tags: [String!], slugs: [String!], includeDrafts: Boolean = false): Int!
 
       """
       Simple list of published products filtered either by tags or explicit slugs
@@ -84,11 +80,7 @@ export default [
       """
       Get all languages
       """
-      languages(
-        limit: Int = 50
-        offset: Int = 0
-        includeInactive: Boolean = false
-      ): [Language]!
+      languages(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Language]!
 
       """
       Get a specific language
@@ -98,11 +90,7 @@ export default [
       """
       Get all countries
       """
-      countries(
-        limit: Int = 50
-        offset: Int = 0
-        includeInactive: Boolean = false
-      ): [Country!]!
+      countries(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Country!]!
 
       """
       Returns total number of countries
@@ -122,11 +110,7 @@ export default [
       """
       Get all currencies
       """
-      currencies(
-        limit: Int = 50
-        offset: Int = 0
-        includeInactive: Boolean = false
-      ): [Currency!]!
+      currencies(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Currency!]!
 
       """
       Get a specific currency by ID
@@ -161,9 +145,7 @@ export default [
       """
       Get all warehousing providers, optionally filtered by type
       """
-      warehousingProviders(
-        type: WarehousingProviderType
-      ): [WarehousingProvider!]!
+      warehousingProviders(type: WarehousingProviderType): [WarehousingProvider!]!
 
       """
       Get a specific warehousing provider by ID
@@ -173,9 +155,7 @@ export default [
       """
       Get all warehousing interfaces filtered by type
       """
-      warehousingInterfaces(
-        type: WarehousingProviderType!
-      ): [WarehousingInterface!]!
+      warehousingInterfaces(type: WarehousingProviderType!): [WarehousingInterface!]!
 
       """
       Returns total number of payment providers, optionally filtered by type
@@ -257,17 +237,12 @@ export default [
       """
       Localization: Media title/subtitle of a media that is attached to a assortment
       """
-      translatedAssortmentMediaTexts(
-        assortmentMediaId: ID!
-      ): [AssortmentMediaTexts!]!
+      translatedAssortmentMediaTexts(assortmentMediaId: ID!): [AssortmentMediaTexts!]!
 
       """
       Localization: Filters and Filter Options
       """
-      translatedFilterTexts(
-        filterId: ID!
-        filterOptionValue: String
-      ): [FilterTexts!]!
+      translatedFilterTexts(filterId: ID!, filterOptionValue: String): [FilterTexts!]!
 
       """
       Returns total number of filters
@@ -277,11 +252,7 @@ export default [
       """
       Get all filters
       """
-      filters(
-        limit: Int = 10
-        offset: Int = 0
-        includeInactive: Boolean = false
-      ): [Filter!]!
+      filters(limit: Int = 10, offset: Int = 0, includeInactive: Boolean = false): [Filter!]!
 
       """
       Get a specific filter by ID
@@ -394,9 +365,7 @@ export default [
       """
       Sign a generic payment provider for registration
       """
-      signPaymentProviderForCredentialRegistration(
-        paymentProviderId: ID!
-      ): String
+      signPaymentProviderForCredentialRegistration(paymentProviderId: ID!): String
         @deprecated(
           reason: "Has been deprecated and will be removed on future releases, use mutation.signPaymentProviderForCredentialRegistration instead"
         )

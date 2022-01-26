@@ -1,13 +1,13 @@
 import coinbase from 'coinbase-commerce-node';
 
 import {
-  PaymentDirector,
+  registerAdapter,
   PaymentAdapter,
   PaymentError,
+  paymentLogger,
 } from 'meteor/unchained:core-payment';
 
-import { OrderPricingSheet } from 'meteor/unchained:core-pricing';
-import logger from '../logger';
+import { OrderPricingSheet } from 'meteor/unchained:director-pricing';
 
 const { COINBASE_COMMERCE_KEY } = process.env;
 
@@ -82,10 +82,10 @@ class Coinbase extends PaymentAdapter {
       };
 
       const checkout = await coinbase.resources.Checkout.create(config);
-      logger.info('Coinbase Plugin: Signed', checkout.id);
+      paymentLogger.info('Coinbase Plugin: Signed', checkout.id);
       return checkout.id;
     } catch (e) {
-      logger.warn('Coinbase Plugin: Charge failed', e);
+      paymentLogger.warn('Coinbase Plugin: Charge failed', e);
       throw e;
     }
   }
@@ -99,21 +99,19 @@ class Coinbase extends PaymentAdapter {
       clientObj.setRequestTimeout(10000);
       const charge = await coinbase.resources.Charge.retrieve(chargeCode);
 
-      const completed = !!charge.timeline.find(
-        (statusUpdate) => statusUpdate.status === 'COMPLETED'
-      );
+      const completed = !!charge.timeline.find((statusUpdate) => statusUpdate.status === 'COMPLETED');
 
       if (completed) {
-        logger.info('Coinbase Plugin: Charged successfully', charge);
+        paymentLogger.info('Coinbase Plugin: Charged successfully', charge);
         return charge;
       }
-      logger.warn('Coinbase Plugin: Charge not completed', charge);
+      paymentLogger.warn('Coinbase Plugin: Charge not completed', charge);
       throw new Error('Charge not completed');
     } catch (e) {
-      logger.warn('Coinbase Plugin: Charge failed', e);
+      paymentLogger.warn('Coinbase Plugin: Charge failed', e);
       throw e;
     }
   }
 }
 
-PaymentDirector.registerAdapter(Coinbase);
+registerAdapter(Coinbase);

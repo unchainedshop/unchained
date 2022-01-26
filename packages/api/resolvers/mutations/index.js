@@ -1,148 +1,148 @@
 import { actions } from '../../roles';
 import { checkResolver as acl } from '../../acl';
-import loginWithPassword from './loginWithPassword';
-import loginAsGuest from './loginAsGuest';
-import logout from './logout';
-import logoutAllSessions from './logoutAllSessions';
-import buildSecretTOTPAuthURL from './buildSecretTOTPAuthURL';
-import enableTOTP from './enableTOTP';
-import disableTOTP from './disableTOTP';
-import changePassword from './changePassword';
-import createUser from './createUser';
-import verifyEmail from './verifyEmail';
-import sendVerificationEmail from './sendVerificationEmail';
-import sendEnrollmentEmail from './sendEnrollmentEmail';
-import addAssortmentMedia from './addAssortmentMedia';
-import forgotPassword from './forgotPassword';
-import resetPassword from './resetPassword';
-import updateEmail from './updateEmail';
-import addEmail from './addEmail';
-import removeEmail from './removeEmail';
-import updateUserAvatar from './updateUserAvatar';
-import updateUserProfile from './updateUserProfile';
-import setUserTags from './setUserTags';
-import createLanguage from './createLanguage';
-import updateLanguage from './updateLanguage';
-import removeLanguage from './removeLanguage';
-import createCountry from './createCountry';
-import updateCountry from './updateCountry';
-import removeCountry from './removeCountry';
-import createCurrency from './createCurrency';
-import updateCurrency from './updateCurrency';
-import removeCurrency from './removeCurrency';
-import createProduct from './createProduct';
-import publishProduct from './publishProduct';
-import removeProduct from './removeProduct';
-import unpublishProduct from './unpublishProduct';
-import updateProduct from './updateProduct';
-import updateProductTexts from './updateProductTexts';
-import updateProductMediaTexts from './updateProductMediaTexts';
-import createProductVariation from './createProductVariation';
-import createProductBundleItem from './createProductBundleItem';
-import removeBundleItem from './removeBundleItem';
-import createProductVariationOption from './createProductVariationOption';
-import removeProductVariation from './removeProductVariation';
-import updateProductVariationTexts from './updateProductVariationTexts';
-import removeProductVariationOption from './removeProductVariationOption';
-import confirmMediaUpload from './confirmMediaUpload';
-import addProductMedia from './addProductMedia';
-import removeProductMedia from './removeProductMedia';
-import reorderProductMedia from './reorderProductMedia';
-import updateProductCommerce from './updateProductCommerce';
-import updateProductWarehousing from './updateProductWarehousing';
-import updateProductSupply from './updateProductSupply';
-import updateProductPlan from './updateProductPlan';
-import addProductAssignment from './addProductAssignment';
-import removeProductAssignment from './removeProductAssignment';
-import createCart from './createCart';
-import addCartProduct from './addCartProduct';
-import addMultipleCartProducts from './addMultipleCartProducts';
-import addCartDiscount from './addCartDiscount';
-import addCartQuotation from './addCartQuotation';
-import updateCart from './updateCart';
-import emptyCart from './emptyCart';
-import updateCartItem from './updateCartItem';
-import removeCartItem from './removeCartItem';
-import removeCartDiscount from './removeCartDiscount';
-import removeOrder from './removeOrder';
-import setOrderPaymentProvider from './setOrderPaymentProvider';
-import setOrderDeliveryProvider from './setOrderDeliveryProvider';
-import confirmOrder from './confirmOrder';
-import payOrder from './payOrder';
-import deliverOrder from './deliverOrder';
-import createPaymentProvider from './createPaymentProvider';
-import updatePaymentProvider from './updatePaymentProvider';
-import removePaymentProvider from './removePaymentProvider';
-import createDeliveryProvider from './createDeliveryProvider';
-import updateDeliveryProvider from './updateDeliveryProvider';
-import removeDeliveryProvider from './removeDeliveryProvider';
-import createWarehousingProvider from './createWarehousingProvider';
-import updateWarehousingProvider from './updateWarehousingProvider';
-import removeWarehousingProvider from './removeWarehousingProvider';
-import setPassword from './setPassword';
-import setRoles from './setRoles';
-import setUsername from './setUsername';
-import enrollUser from './enrollUser';
-import checkoutCart from './checkoutCart';
-import createFilter from './createFilter';
-import updateFilter from './updateFilter';
-import createFilterOption from './createFilterOption';
-import removeFilter from './removeFilter';
-import updateFilterTexts from './updateFilterTexts';
-import removeFilterOption from './removeFilterOption';
-import createAssortment from './createAssortment';
-import updateAssortment from './updateAssortment';
-import setBaseAssortment from './setBaseAssortment';
-import removeAssortment from './removeAssortment';
-import updateAssortmentTexts from './updateAssortmentTexts';
-import addAssortmentProduct from './addAssortmentProduct';
-import removeAssortmentProduct from './removeAssortmentProduct';
-import reorderAssortmentProducts from './reorderAssortmentProducts';
-import addAssortmentLink from './addAssortmentLink';
-import removeAssortmentLink from './removeAssortmentLink';
-import reorderAssortmentLinks from './reorderAssortmentLinks';
-import addAssortmentFilter from './addAssortmentFilter';
-import removeAssortmentFilter from './removeAssortmentFilter';
-import reorderAssortmentFilters from './reorderAssortmentFilters';
-import createProductReview from './createProductReview';
-import updateProductReview from './updateProductReview';
-import removeProductReview from './removeProductReview';
-import addProductReviewVote from './addProductReviewVote';
-import removeProductReviewVote from './removeProductReviewVote';
-import requestQuotation from './requestQuotation';
-import rejectQuotation from './rejectQuotation';
-import verifyQuotation from './verifyQuotation';
-import makeQuotationProposal from './makeQuotationProposal';
-import bookmark from './bookmark';
-import createBookmark from './createBookmark';
-import removeBookmark from './removeBookmark';
-import addWork from './addWork';
-import allocateWork from './allocateWork';
-import finishWork from './finishWork';
-import removeWork from './removeWork';
-import doWork from './doWork';
-import heartbeat from './heartbeat';
-import createEnrollment from './createEnrollment';
-import terminateEnrollment from './terminateEnrollment';
-import activateEnrollment from './activateEnrollment';
-import updateEnrollment from './updateEnrollment';
-import registerPaymentCredentials from './registerPaymentCredentials';
-import markPaymentCredentialsPreferred from './markPaymentCredentialsPreferred';
-import removePaymentCredentials from './removePaymentCredentials';
-import updateOrderDeliveryShipping from './updateOrderDeliveryShipping';
-import updateOrderDeliveryPickUp from './updateOrderDeliveryPickUp';
-import updateOrderPaymentGeneric from './updateOrderPaymentGeneric';
-import updateOrderPaymentCard from './updateOrderPaymentCard';
-import updateOrderPaymentInvoice from './updateOrderPaymentInvoice';
-import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
-import signPaymentProviderForCheckout from './signPaymentProviderForCheckout';
+import loginWithPassword from './accounts/loginWithPassword';
+import loginAsGuest from './accounts/loginAsGuest';
+import logout from './accounts/logout';
+import logoutAllSessions from './accounts/logoutAllSessions';
+import buildSecretTOTPAuthURL from './accounts/buildSecretTOTPAuthURL';
+import enableTOTP from './accounts/enableTOTP';
+import disableTOTP from './accounts/disableTOTP';
+import changePassword from './accounts/changePassword';
+import createUser from './accounts/createUser';
+import verifyEmail from './accounts/verifyEmail';
+import sendVerificationEmail from './accounts/sendVerificationEmail';
+import sendEnrollmentEmail from './accounts/sendEnrollmentEmail';
+import addAssortmentMedia from './assortments/addAssortmentMedia';
+import forgotPassword from './accounts/forgotPassword';
+import resetPassword from './accounts/resetPassword';
+import updateEmail from './accounts/updateEmail';
+import addEmail from './accounts/addEmail';
+import removeEmail from './accounts/removeEmail';
+import updateUserAvatar from './users/updateUserAvatar';
+import updateUserProfile from './users/updateUserProfile';
+import setUserTags from './users/setUserTags';
+import createLanguage from './languages/createLanguage';
+import updateLanguage from './languages/updateLanguage';
+import removeLanguage from './languages/removeLanguage';
+import createCountry from './countries/createCountry';
+import updateCountry from './countries/updateCountry';
+import removeCountry from './countries/removeCountry';
+import createCurrency from './currencies/createCurrency';
+import updateCurrency from './currencies/updateCurrency';
+import removeCurrency from './currencies/removeCurrency';
+import createProduct from './products/createProduct';
+import publishProduct from './products/publishProduct';
+import removeProduct from './products/removeProduct';
+import unpublishProduct from './products/unpublishProduct';
+import updateProduct from './products/updateProduct';
+import updateProductTexts from './products/updateProductTexts';
+import updateProductMediaTexts from './products/updateProductMediaTexts';
+import createProductVariation from './products/createProductVariation';
+import createProductBundleItem from './products/createProductBundleItem';
+import removeBundleItem from './products/removeBundleItem';
+import createProductVariationOption from './products/createProductVariationOption';
+import removeProductVariation from './products/removeProductVariation';
+import updateProductVariationTexts from './products/updateProductVariationTexts';
+import removeProductVariationOption from './products/removeProductVariationOption';
+import confirmMediaUpload from './files/confirmMediaUpload';
+import addProductMedia from './products/addProductMedia';
+import removeProductMedia from './products/removeProductMedia';
+import reorderProductMedia from './products/reorderProductMedia';
+import updateProductCommerce from './products/updateProductCommerce';
+import updateProductWarehousing from './products/updateProductWarehousing';
+import updateProductSupply from './products/updateProductSupply';
+import updateProductPlan from './products/updateProductPlan';
+import addProductAssignment from './products/addProductAssignment';
+import removeProductAssignment from './products/removeProductAssignment';
+import createCart from './orders/createCart';
+import addCartProduct from './orders/addCartProduct';
+import addMultipleCartProducts from './orders/addMultipleCartProducts';
+import addCartDiscount from './orders/addCartDiscount';
+import addCartQuotation from './orders/addCartQuotation';
+import updateCart from './orders/updateCart';
+import emptyCart from './orders/emptyCart';
+import updateCartItem from './orders/updateCartItem';
+import removeCartItem from './orders/removeCartItem';
+import removeCartDiscount from './orders/removeCartDiscount';
+import removeOrder from './orders/removeOrder';
+import setOrderPaymentProvider from './orders/setOrderPaymentProvider';
+import setOrderDeliveryProvider from './orders/setOrderDeliveryProvider';
+import confirmOrder from './orders/confirmOrder';
+import payOrder from './orders/payOrder';
+import deliverOrder from './orders/deliverOrder';
+import createPaymentProvider from './payment/createPaymentProvider';
+import updatePaymentProvider from './payment/updatePaymentProvider';
+import removePaymentProvider from './payment/removePaymentProvider';
+import createDeliveryProvider from './delivery/createDeliveryProvider';
+import updateDeliveryProvider from './delivery/updateDeliveryProvider';
+import removeDeliveryProvider from './delivery/removeDeliveryProvider';
+import createWarehousingProvider from './warehousing/createWarehousingProvider';
+import updateWarehousingProvider from './warehousing/updateWarehousingProvider';
+import removeWarehousingProvider from './warehousing/removeWarehousingProvider';
+import setPassword from './accounts/setPassword';
+import setRoles from './users/setRoles';
+import setUsername from './accounts/setUsername';
+import enrollUser from './accounts/enrollUser';
+import checkoutCart from './orders/checkoutCart';
+import createFilter from './filters/createFilter';
+import updateFilter from './filters/updateFilter';
+import createFilterOption from './filters/createFilterOption';
+import removeFilter from './filters/removeFilter';
+import updateFilterTexts from './filters/updateFilterTexts';
+import removeFilterOption from './filters/removeFilterOption';
+import createAssortment from './assortments/createAssortment';
+import updateAssortment from './assortments/updateAssortment';
+import setBaseAssortment from './assortments/setBaseAssortment';
+import removeAssortment from './assortments/removeAssortment';
+import updateAssortmentTexts from './assortments/updateAssortmentTexts';
+import addAssortmentProduct from './assortments/addAssortmentProduct';
+import removeAssortmentProduct from './assortments/removeAssortmentProduct';
+import reorderAssortmentProducts from './assortments/reorderAssortmentProducts';
+import addAssortmentLink from './assortments/addAssortmentLink';
+import removeAssortmentLink from './assortments/removeAssortmentLink';
+import reorderAssortmentLinks from './assortments/reorderAssortmentLinks';
+import addAssortmentFilter from './assortments/addAssortmentFilter';
+import removeAssortmentFilter from './assortments/removeAssortmentFilter';
+import reorderAssortmentFilters from './assortments/reorderAssortmentFilters';
+import createProductReview from './products/createProductReview';
+import updateProductReview from './products/updateProductReview';
+import removeProductReview from './products/removeProductReview';
+import addProductReviewVote from './products/addProductReviewVote';
+import removeProductReviewVote from './products/removeProductReviewVote';
+import requestQuotation from './quotations/requestQuotation';
+import rejectQuotation from './quotations/rejectQuotation';
+import verifyQuotation from './quotations/verifyQuotation';
+import makeQuotationProposal from './quotations/makeQuotationProposal';
+import bookmark from './bookmarks/bookmark';
+import createBookmark from './bookmarks/createBookmark';
+import removeBookmark from './bookmarks/removeBookmark';
+import addWork from './worker/addWork';
+import allocateWork from './worker/allocateWork';
+import finishWork from './worker/finishWork';
+import removeWork from './worker/removeWork';
+import doWork from './worker/doWork';
+import heartbeat from './users/heartbeat';
+import createEnrollment from './enrollments/createEnrollment';
+import terminateEnrollment from './enrollments/terminateEnrollment';
+import activateEnrollment from './enrollments/activateEnrollment';
+import updateEnrollment from './enrollments/updateEnrollment';
+import registerPaymentCredentials from './payment/registerPaymentCredentials';
+import markPaymentCredentialsPreferred from './payment/markPaymentCredentialsPreferred';
+import removePaymentCredentials from './payment/removePaymentCredentials';
+import updateOrderDeliveryShipping from './orders/updateOrderDeliveryShipping';
+import updateOrderDeliveryPickUp from './orders/updateOrderDeliveryPickUp';
+import updateOrderPaymentGeneric from './orders/updateOrderPaymentGeneric';
+import updateOrderPaymentCard from './orders/updateOrderPaymentCard';
+import updateOrderPaymentInvoice from './orders/updateOrderPaymentInvoice';
+import signPaymentProviderForCredentialRegistration from './payment/signPaymentProviderForCredentialRegistration';
+import signPaymentProviderForCheckout from './orders/signPaymentProviderForCheckout';
 import pageView from './pageView';
-import reorderAssortmentMedia from './reorderAssortmentMedia';
-import removeAssortmentMedia from './removeAssortmentMedia';
-import updateAssortmentMediaTexts from './updateAssortmentMediaTexts';
-import prepareProductMediaUpload from './prepareProductMediaUpload';
-import prepareAssortmentMediaUpload from './prepareAssortmentMediaUpload';
-import prepareUserAvatarUpload from './prepareUserAvatarUpload';
+import reorderAssortmentMedia from './assortments/reorderAssortmentMedia';
+import removeAssortmentMedia from './assortments/removeAssortmentMedia';
+import updateAssortmentMediaTexts from './assortments/updateAssortmentMediaTexts';
+import prepareProductMediaUpload from './products/prepareProductMediaUpload';
+import prepareAssortmentMediaUpload from './assortments/prepareAssortmentMediaUpload';
+import prepareUserAvatarUpload from './users/prepareUserAvatarUpload';
 
 export default {
   logout,
@@ -172,15 +172,11 @@ export default {
   setUsername: acl(actions.manageUsers)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
   enrollUser: acl(actions.manageUsers)(enrollUser),
-  registerPaymentCredentials: acl(actions.registerPaymentCredentials)(
-    registerPaymentCredentials
-  ),
+  registerPaymentCredentials: acl(actions.registerPaymentCredentials)(registerPaymentCredentials),
   markPaymentCredentialsPreferred: acl(actions.managePaymentCredentials)(
-    markPaymentCredentialsPreferred
+    markPaymentCredentialsPreferred,
   ),
-  removePaymentCredentials: acl(actions.managePaymentCredentials)(
-    removePaymentCredentials
-  ),
+  removePaymentCredentials: acl(actions.managePaymentCredentials)(removePaymentCredentials),
 
   createLanguage: acl(actions.manageLanguages)(createLanguage),
   updateLanguage: acl(actions.manageLanguages)(updateLanguage),
@@ -199,30 +195,20 @@ export default {
   updateProductMediaTexts: acl(actions.manageProducts)(updateProductMediaTexts),
   addProductMedia: acl(actions.manageProducts)(addProductMedia),
   confirmMediaUpload: acl(actions.manageProducts)(confirmMediaUpload),
-  prepareProductMediaUpload: acl(actions.manageProducts)(
-    prepareProductMediaUpload
-  ),
+  prepareProductMediaUpload: acl(actions.manageProducts)(prepareProductMediaUpload),
   reorderProductMedia: acl(actions.manageProducts)(reorderProductMedia),
   removeProductMedia: acl(actions.manageProducts)(removeProductMedia),
   updateProductCommerce: acl(actions.manageProducts)(updateProductCommerce),
-  updateProductWarehousing: acl(actions.manageProducts)(
-    updateProductWarehousing
-  ),
+  updateProductWarehousing: acl(actions.manageProducts)(updateProductWarehousing),
   updateProductSupply: acl(actions.manageProducts)(updateProductSupply),
   updateProductPlan: acl(actions.manageProducts)(updateProductPlan),
   removeProductVariation: acl(actions.manageProducts)(removeProductVariation),
-  updateProductVariationTexts: acl(actions.manageProducts)(
-    updateProductVariationTexts
-  ),
-  removeProductVariationOption: acl(actions.manageProducts)(
-    removeProductVariationOption
-  ),
+  updateProductVariationTexts: acl(actions.manageProducts)(updateProductVariationTexts),
+  removeProductVariationOption: acl(actions.manageProducts)(removeProductVariationOption),
   createProductVariation: acl(actions.manageProducts)(createProductVariation),
   createProductBundleItem: acl(actions.manageProducts)(createProductBundleItem),
   removeBundleItem: acl(actions.manageProducts)(removeBundleItem),
-  createProductVariationOption: acl(actions.manageProducts)(
-    createProductVariationOption
-  ),
+  createProductVariationOption: acl(actions.manageProducts)(createProductVariationOption),
   addProductAssignment: acl(actions.manageProducts)(addProductAssignment),
   removeProductAssignment: acl(actions.manageProducts)(removeProductAssignment),
 
@@ -243,21 +229,11 @@ export default {
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
-  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(
-    updateOrderDeliveryShipping
-  ),
-  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(
-    updateOrderDeliveryPickUp
-  ),
-  updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(
-    updateOrderPaymentGeneric
-  ),
-  updateOrderPaymentCard: acl(actions.updateOrderPayment)(
-    updateOrderPaymentCard
-  ),
-  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(
-    updateOrderPaymentInvoice
-  ),
+  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(updateOrderDeliveryShipping),
+  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(updateOrderDeliveryPickUp),
+  updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(updateOrderPaymentGeneric),
+  updateOrderPaymentCard: acl(actions.updateOrderPayment)(updateOrderPaymentCard),
+  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(updateOrderPaymentInvoice),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
@@ -268,35 +244,17 @@ export default {
   activateEnrollment: acl(actions.updateEnrollment)(activateEnrollment),
   updateEnrollment: acl(actions.updateEnrollment)(updateEnrollment),
 
-  createPaymentProvider: acl(actions.managePaymentProviders)(
-    createPaymentProvider
-  ),
-  updatePaymentProvider: acl(actions.managePaymentProviders)(
-    updatePaymentProvider
-  ),
-  removePaymentProvider: acl(actions.managePaymentProviders)(
-    removePaymentProvider
-  ),
+  createPaymentProvider: acl(actions.managePaymentProviders)(createPaymentProvider),
+  updatePaymentProvider: acl(actions.managePaymentProviders)(updatePaymentProvider),
+  removePaymentProvider: acl(actions.managePaymentProviders)(removePaymentProvider),
 
-  createDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    createDeliveryProvider
-  ),
-  updateDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    updateDeliveryProvider
-  ),
-  removeDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    removeDeliveryProvider
-  ),
+  createDeliveryProvider: acl(actions.manageDeliveryProviders)(createDeliveryProvider),
+  updateDeliveryProvider: acl(actions.manageDeliveryProviders)(updateDeliveryProvider),
+  removeDeliveryProvider: acl(actions.manageDeliveryProviders)(removeDeliveryProvider),
 
-  createWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    createWarehousingProvider
-  ),
-  updateWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    updateWarehousingProvider
-  ),
-  removeWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    removeWarehousingProvider
-  ),
+  createWarehousingProvider: acl(actions.manageWarehousingProviders)(createWarehousingProvider),
+  updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
+  removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
 
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),
@@ -307,47 +265,29 @@ export default {
 
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   addAssortmentMedia: acl(actions.manageAssortments)(addAssortmentMedia),
-  prepareAssortmentMediaUpload: acl(actions.manageAssortments)(
-    prepareAssortmentMediaUpload
-  ),
+  prepareAssortmentMediaUpload: acl(actions.manageAssortments)(prepareAssortmentMediaUpload),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
   setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
-  reorderAssortmentMedia: acl(actions.manageAssortments)(
-    reorderAssortmentMedia
-  ),
+  reorderAssortmentMedia: acl(actions.manageAssortments)(reorderAssortmentMedia),
   removeAssortmentMedia: acl(actions.manageAssortments)(removeAssortmentMedia),
-  updateAssortmentMediaTexts: acl(actions.manageAssortments)(
-    updateAssortmentMediaTexts
-  ),
+  updateAssortmentMediaTexts: acl(actions.manageAssortments)(updateAssortmentMediaTexts),
   updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
   addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),
-  removeAssortmentProduct: acl(actions.manageAssortments)(
-    removeAssortmentProduct
-  ),
-  reorderAssortmentProducts: acl(actions.manageAssortments)(
-    reorderAssortmentProducts
-  ),
+  removeAssortmentProduct: acl(actions.manageAssortments)(removeAssortmentProduct),
+  reorderAssortmentProducts: acl(actions.manageAssortments)(reorderAssortmentProducts),
   addAssortmentLink: acl(actions.manageAssortments)(addAssortmentLink),
   removeAssortmentLink: acl(actions.manageAssortments)(removeAssortmentLink),
-  reorderAssortmentLinks: acl(actions.manageAssortments)(
-    reorderAssortmentLinks
-  ),
+  reorderAssortmentLinks: acl(actions.manageAssortments)(reorderAssortmentLinks),
   addAssortmentFilter: acl(actions.manageAssortments)(addAssortmentFilter),
-  removeAssortmentFilter: acl(actions.manageAssortments)(
-    removeAssortmentFilter
-  ),
-  reorderAssortmentFilters: acl(actions.manageAssortments)(
-    reorderAssortmentFilters
-  ),
+  removeAssortmentFilter: acl(actions.manageAssortments)(removeAssortmentFilter),
+  reorderAssortmentFilters: acl(actions.manageAssortments)(reorderAssortmentFilters),
 
   createProductReview: acl(actions.reviewProduct)(createProductReview),
   updateProductReview: acl(actions.updateProductReview)(updateProductReview),
   removeProductReview: acl(actions.updateProductReview)(removeProductReview),
   addProductReviewVote: acl(actions.voteProductReview)(addProductReviewVote),
-  removeProductReviewVote: acl(actions.voteProductReview)(
-    removeProductReviewVote
-  ),
+  removeProductReviewVote: acl(actions.voteProductReview)(removeProductReviewVote),
 
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),
   rejectQuotation: acl(actions.answerQuotation)(rejectQuotation),
@@ -363,10 +303,10 @@ export default {
   finishWork: acl(actions.manageWorker)(finishWork),
   removeWork: acl(actions.manageWorker)(removeWork),
   doWork: acl(actions.manageWorker)(doWork),
-  signPaymentProviderForCredentialRegistration: acl(
-    actions.registerPaymentCredentials
-  )(signPaymentProviderForCredentialRegistration),
+  signPaymentProviderForCredentialRegistration: acl(actions.registerPaymentCredentials)(
+    signPaymentProviderForCredentialRegistration,
+  ),
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
-    signPaymentProviderForCheckout
+    signPaymentProviderForCheckout,
   ),
 };

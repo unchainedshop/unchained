@@ -1,9 +1,9 @@
-import { createLogger } from 'meteor/unchained:logger';
 import {
   ContextNormalizerFunction,
   EmitAdapter,
-  EventDirectorType,
-} from './events.types';
+  EventDirector as IEventDirector,
+} from '@unchainedshop/types/events';
+import { createLogger } from 'meteor/unchained:logger';
 
 const logger = createLogger('unchained:events');
 
@@ -26,7 +26,7 @@ let Adapter: EmitAdapter; // Public (customizable)
 let HistoryAdapter: EmitAdapter; // (Per default: Core-events adapter to write into DB)
 let ContextNormalizer = defaultNormalizer;
 
-export const EventDirector: EventDirectorType = {
+export const EventDirector: IEventDirector = {
   registerEvents: (events: string[]): void => {
     if (events.length) {
       events.forEach((e) => RegisteredEventsSet.add(e));
@@ -71,9 +71,7 @@ export const EventDirector: EventDirectorType = {
       context: extractedContext,
     });
 
-    logger.verbose(
-      `EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`
-    );
+    logger.verbose(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
   },
 
   subscribe: (eventName: string, callBack: () => void): void => {

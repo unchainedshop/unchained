@@ -1,0 +1,1 @@
+export { startPlatform } from './startPlatform';

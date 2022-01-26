@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
   minio: '7.0.18',
   'mime-types': '2.1.32',
+  'simpl-schema': '1.12.0',
 });
 
 Package.onUse(function (api) {
@@ -17,13 +18,19 @@ Package.onUse(function (api) {
   api.use('typescript');
 
   api.use('unchained:logger@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta15');
+  api.use('unchained:core-file-upload@1.0.0-beta15');
 
-  api.mainModule('index.ts', 'server');
+  api.mainModule('src/files-next-index.ts', 'server');
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
-  api.use('tinytest');
-  api.use('unchained:core-files-next');
-  api.mainModule('core-files-next-tests.js');
+  api.use('typescript');
+
+  api.use('unchained:mongodb@1.0.0-beta15');
+  api.use('unchained:core-files-next@1.0.0-beta15');
+
+  api.mainModule('tests/files-next-index.test.ts');
 });

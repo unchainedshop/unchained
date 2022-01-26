@@ -1,5 +1,9 @@
 module.exports = {
-  testPathIgnorePatterns: ["<rootDir>/examples/", "<rootDir>/docs", "<rootDir>/packages"],
+  testPathIgnorePatterns: [
+    "<rootDir>/examples/",
+    "<rootDir>/docs",
+    "<rootDir>/packages",
+  ],
   transform: {
     "^.+\\.jsx?$": "babel-jest",
     "^.+\\.ts?$": "ts-jest",
@@ -8,8 +12,8 @@ module.exports = {
   globalSetup: "./tests/jest-global-setup.js",
   globalTeardown: "./tests/jest-global-teardown.js",
   moduleNameMapper: {
-    "^meteor/unchained:core-users$":
-      "<rootDir>/tests/jest-meteor-stubs/core-users",
+    "^/UsersCollection.ts?$":
+      "<rootDir>/tests/jest-meteor-stubs/users-collection.js",
     "^lodash.clone$": "<rootDir>/tests/jest-meteor-stubs/lodash-clone",
     "^meteor/meteor$": "<rootDir>/tests/jest-meteor-stubs/meteor",
   },

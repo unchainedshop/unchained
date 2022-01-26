@@ -14,9 +14,9 @@ let graphqlFetchAsAnonymousUser;
 describe('Order: Deliveries', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
+    graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   describe('Mutation.setOrderDeliveryProvider for admin user', () => {
@@ -48,6 +48,7 @@ describe('Order: Deliveries', () => {
             deliveryProviderId: SendMailDeliveryProvider._id,
           },
         });
+
       expect(setOrderDeliveryProvider).toMatchObject({
         _id: SimpleOrder._id,
         delivery: {

@@ -1,25 +1,18 @@
-import { Modules } from 'unchained-core-types';
-
-export type MigrateBookmarksService = (
-  params: {
-    fromUserId: string;
-    toUserId: string;
-    mergeBookmarks: () => void;
-  },
-  context: { modules: Modules }
-) => Promise<void>;
+import { MigrateBookmarksService } from '@unchainedshop/types/bookmarks';
 
 export const migrateBookmarksService: MigrateBookmarksService = async (
-  { fromUserId, toUserId, mergeBookmarks },
-  { modules }
+  { fromUserId, toUserId, shouldMergeBookmarks },
+  { modules, userId },
 ) => {
   const fromBookmarks = await modules.bookmarks.find({ userId: fromUserId });
   if (!fromBookmarks) {
     // No bookmarks no copy needed
-    return;
+    return null;
   }
-  if (!mergeBookmarks) {
-    await modules.bookmarks.removeById(toUserId);
+  if (!shouldMergeBookmarks) {
+    await modules.bookmarks.deleteByUserId(toUserId, userId);
   }
-  await modules.bookmarks.replaceUserId(fromUserId, toUserId);
+  await modules.bookmarks.replaceUserId(fromUserId, toUserId, userId);
+
+  return null;
 };

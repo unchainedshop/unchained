@@ -1,49 +1,37 @@
-import {
-  createLogger as createWinstonLogger,
-  format,
-  transports,
-} from 'winston';
+import { createLogger as createWinstonLogger, format, transports } from 'winston';
 import stringify from 'safe-stable-stringify';
 import TransportStream from 'winston-transport';
 import { LogLevel } from './logger.types';
 
-const {
-  DEBUG = '',
-  LOG_LEVEL = LogLevel.Info,
-  UNCHAINED_LOG_FORMAT = 'unchained',
-} = process.env;
+const { DEBUG = '', LOG_LEVEL = LogLevel.Info, UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
 
 const { combine, label, timestamp, colorize, printf, json } = format;
 
 const debugStringContainsModule = (debugString: string, moduleName: string) => {
   if (!debugString) return false;
-  const loggingMatched = debugString
-    .split(',')
-    .reduce((accumulator: any, name: string) => {
-      if (accumulator === false) return accumulator;
-      const nameRegex = name
-        .replace(new RegExp('-', 'i'), '\\-?')
-        .replace(new RegExp(':*', 'i'), '\\:?*')
-        .replace(/\*/i, '.*');
-      const regExp = new RegExp(`^${nameRegex}$`, 'm');
-      if (regExp.test(moduleName)) {
-        if (name.slice(0, 1) === '-') {
-          // explicitly disable
-          return false;
-        }
-        return true;
+  const loggingMatched = debugString.split(',').reduce((accumulator: any, name: string) => {
+    if (accumulator === false) return accumulator;
+    const nameRegex = name
+      .replace(new RegExp('-', 'i'), '\\-?')
+      .replace(new RegExp(':*', 'i'), '\\:?*')
+      .replace(/\*/i, '.*');
+    const regExp = new RegExp(`^${nameRegex}$`, 'm');
+    if (regExp.test(moduleName)) {
+      if (name.slice(0, 1) === '-') {
+        // explicitly disable
+        return false;
       }
-      return accumulator;
-    }, undefined);
+      return true;
+    }
+    return accumulator;
+  }, undefined);
   return loggingMatched || false;
 };
 
-const myFormat = printf(
-  ({ level, message, label: _label, timestamp: _timestamp, ...rest }) => {
-    const otherPropsString = stringify(rest);
-    return `${_timestamp} [${_label}] ${level}: ${message} ${otherPropsString}`;
-  }
-);
+const myFormat = printf(({ level, message, label: _label, timestamp: _timestamp, ...rest }) => {
+  const otherPropsString = stringify(rest);
+  return `${_timestamp} [${_label}] ${level}: ${message} ${otherPropsString}`;
+});
 
 const UnchainedLogFormats = {
   unchained: (moduleName: string) =>
@@ -53,18 +41,13 @@ const UnchainedLogFormats = {
 
 if (!UnchainedLogFormats[UNCHAINED_LOG_FORMAT.toLowerCase()]) {
   throw new Error(
-    `UNCHAINED_LOG_FORMAT is invalid, use one of ${Object.keys(
-      UnchainedLogFormats
-    ).join(',')}`
+    `UNCHAINED_LOG_FORMAT is invalid, use one of ${Object.keys(UnchainedLogFormats).join(',')}`,
   );
 }
 
 export { transports, format };
 
-export const createLogger = (
-  moduleName: string,
-  moreTransports: Array<TransportStream> = []
-) => {
+export const createLogger = (moduleName: string, moreTransports: Array<TransportStream> = []) => {
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   return createWinstonLogger({
     transports: [

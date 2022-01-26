@@ -216,8 +216,8 @@ export const AssortmentFilters = [
     _id: 'assortment-filter-1',
     sortKey: 1,
     tags: ['assortment-filter-1'],
-    assortment: SimpleAssortment[1],
-    filter: MultiChoiceFilter,
+    assortmentId: SimpleAssortment[1]._id,
+    filterId: MultiChoiceFilter._id,
   },
 ];
 
@@ -238,8 +238,7 @@ export const PngMedia = {
 
 export const PngAssortmentMedia = {
   _id: 'assortment-png',
-  mediaId:
-    'assortment-media%2Fa027f61adea23c0f3a89799b632afe19327767a72c925af434bb9aea346d7836',
+  mediaId: 'assortment-media%2Fa027f61adea23c0f3a89799b632afe19327767a72c925af434bb9aea346d7836',
   tags: [],
   sortKey: 1,
   assortmentId: 'simple-assortment',
@@ -272,12 +271,8 @@ export default async function seedAssortments(db) {
   await db.collection('assortment_products').findOrInsertOne(AssortmentProduct);
   await db.collection('assortment_filters').insertMany(AssortmentFilters);
   await db.collection('assortment_media').findOrInsertOne(PngAssortmentMedia);
-  await db
-    .collection('assortment_media_texts')
-    .findOrInsertOne(GermanPngAssortmentMediaText);
-  await db
-    .collection('assortment_media_texts')
-    .findOrInsertOne(FrenchPngAssortmentMediaText);
+  await db.collection('assortment_media_texts').findOrInsertOne(GermanPngAssortmentMediaText);
+  await db.collection('assortment_media_texts').findOrInsertOne(FrenchPngAssortmentMediaText);
 
   await db.collection('media_objects').findOrInsertOne(PngMedia);
 }

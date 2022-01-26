@@ -11,7 +11,7 @@ let graphqlFetch;
 describe('ProductsCommerce', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.updateProductCommerce for admin user should ', () => {
@@ -147,7 +147,7 @@ describe('ProductsCommerce', () => {
 
   describe('mutation.updateProductCommerce for anonymous user', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation UpdateProductCommerce(

@@ -16,7 +16,7 @@
     "prettier/prettier": [
       "error",
       {
-        "printWidth": 80,
+        "printWidth": 105,
         "semi": true,
         "trailingComma": "all",
         "singleQuote": true,
@@ -28,6 +28,7 @@
       {
         "allow": [
           "_id",
+          "_cachedProductIds",
           "__MONGO_URI__",
           "__MONGO_DB_NAME__",
           "__SUBPROCESS_METEOR__",
@@ -38,15 +39,10 @@
     "no-unused-vars": "off",
     "no-shadow": [
       "warn",
-      { "builtinGlobals": false, "hoist": "functions", "allow": [] }
+      { "builtinGlobals": false, "hoist": "functions", "allow": ["DeliveryProviderType"] }
     ],
     "import/no-mutable-exports": "off",
-    "import/prefer-default-export": 0,
-    "@typescript-eslint/no-unused-vars": "warn",
-    "@typescript-eslint/no-empty-function": "warn",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-var-requires": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "import/prefer-default-export": 0
   },
   "overrides": [
     {
@@ -55,14 +51,15 @@
       "rules": {
         "no-shadow": [
           "warn",
-          { "builtinGlobals": false, "hoist": "functions", "allow": [] }
+          { "builtinGlobals": false, "hoist": "functions", "allow": ["DeliveryProviderType"] }
         ],
         "import/no-mutable-exports": "off",
         "import/prefer-default-export": "off",
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/explicit-module-boundary-types": "error",
         "@typescript-eslint/no-var-requires": "error",
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/ban-ts-comment": "off"
       }
     }
   ]

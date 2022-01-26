@@ -8,7 +8,6 @@ Package.describe({
 
 Npm.depends({
   'safe-stable-stringify': '1.1.0',
-  'simpl-schema': '1.12.0',
   winston: '3.3.3',
   'winston-transport': '4.4.0',
 });

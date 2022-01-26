@@ -27,11 +27,7 @@ export default [
       isRoot: Boolean
       sequence: Int!
       tags: [String!]
-      media(
-        limit: Int = 10
-        offset: Int = 0
-        tags: [String!]
-      ): [AssortmentMedia!]!
+      media(limit: Int = 10, offset: Int = 0, tags: [String!]): [AssortmentMedia!]!
       texts(forceLocale: String): AssortmentTexts
       productAssignments: [AssortmentProduct!]
       filterAssignments: [AssortmentFilter!]

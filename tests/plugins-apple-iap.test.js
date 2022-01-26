@@ -1,9 +1,9 @@
-import fetch from 'isomorphic-unfetch';
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN } from './seeds/users';
-import { SimplePaymentProvider } from './seeds/payments';
-import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
-import { SimpleProduct, PlanProduct } from './seeds/products';
+import fetch from "isomorphic-unfetch";
+import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers";
+import { USER_TOKEN } from "./seeds/users";
+import { SimplePaymentProvider } from "./seeds/payments";
+import { SimpleOrder, SimplePosition, SimplePayment } from "./seeds/orders";
+import { SimpleProduct, PlanProduct } from "./seeds/products";
 
 import {
   receiptData,
@@ -11,87 +11,87 @@ import {
   singleItemTransactionIdentifier,
   subscriptionProductId,
   subscriptionTransactionIdentifier,
-} from './seeds/apple-iap-receipt';
-import initialBuy from './seeds/apple-iap-initial-buy';
-import didRecover from './seeds/apple-iap-did-recover';
-import didChangeRenewalStatus from './seeds/apple-iap-did-change-renewal-status';
-import { AllEnrollmentIds } from './seeds/enrollments';
+} from "./seeds/apple-iap-receipt";
+import initialBuy from "./seeds/apple-iap-initial-buy";
+import didRecover from "./seeds/apple-iap-did-recover";
+import didChangeRenewalStatus from "./seeds/apple-iap-did-change-renewal-status";
+import { AllEnrollmentIds } from "./seeds/enrollments";
 
 let db;
 let graphqlFetch;
 
-describe('Plugins: Apple IAP Payments', () => {
+describe("Plugins: Apple IAP Payments", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
-    await db.collection('products').findOrInsertOne({
+    await db.collection("products").findOrInsertOne({
       ...SimpleProduct,
       _id: singleItemProductId,
     });
 
-    await db.collection('products').findOrInsertOne({
+    await db.collection("products").findOrInsertOne({
       ...PlanProduct,
       _id: subscriptionProductId,
     });
 
     // Add a iap provider
-    await db.collection('payment-providers').findOrInsertOne({
+    await db.collection("payment-providers").findOrInsertOne({
       ...SimplePaymentProvider,
-      _id: 'iap-payment-provider',
-      adapterKey: 'shop.unchained.apple-iap',
-      type: 'GENERIC',
+      _id: "iap-payment-provider",
+      adapterKey: "shop.unchained.apple-iap",
+      type: "GENERIC",
     });
 
     // Add a demo order ready to checkout
-    await db.collection('order_payments').findOrInsertOne({
+    await db.collection("order_payments").findOrInsertOne({
       ...SimplePayment,
-      _id: 'iap-payment',
-      paymentProviderId: 'iap-payment-provider',
-      orderId: 'iap-order',
+      _id: "iap-payment",
+      paymentProviderId: "iap-payment-provider",
+      orderId: "iap-order",
     });
 
-    await db.collection('order_positions').findOrInsertOne({
+    await db.collection("order_positions").findOrInsertOne({
       ...SimplePosition,
-      _id: 'iap-order-position',
-      orderId: 'iap-order',
+      _id: "iap-order-position",
+      orderId: "iap-order",
       quantity: 1,
       productId: singleItemProductId,
     });
 
-    await db.collection('orders').findOrInsertOne({
+    await db.collection("orders").findOrInsertOne({
       ...SimpleOrder,
-      _id: 'iap-order',
-      orderNumber: 'iap',
-      paymentId: 'iap-payment',
+      _id: "iap-order",
+      orderNumber: "iap",
+      paymentId: "iap-payment",
     });
 
     // Add a second demo order ready to checkout
-    await db.collection('order_payments').findOrInsertOne({
+    await db.collection("order_payments").findOrInsertOne({
       ...SimplePayment,
-      _id: 'iap-payment2',
-      paymentProviderId: 'iap-payment-provider',
-      orderId: 'iap-order2',
+      _id: "iap-payment2",
+      paymentProviderId: "iap-payment-provider",
+      orderId: "iap-order2",
     });
 
-    await db.collection('order_positions').findOrInsertOne({
+    await db.collection("order_positions").findOrInsertOne({
       ...SimplePosition,
-      _id: 'iap-order-position2',
-      orderId: 'iap-order2',
+      _id: "iap-order-position2",
+      orderId: "iap-order2",
       quantity: 1,
       productId: subscriptionProductId,
     });
 
-    await db.collection('orders').findOrInsertOne({
+    await db.collection("orders").findOrInsertOne({
       ...SimpleOrder,
-      _id: 'iap-order2',
-      orderNumber: 'iap2',
-      paymentId: 'iap-payment2',
+      _id: "iap-order2",
+      orderNumber: "iap2",
+      paymentId: "iap-payment2",
     });
   });
 
-  describe('Mutation.registerPaymentCredentials (Apple IAP)', () => {
-    it('store the receipt as payment credentials', async () => {
+  describe("Mutation.registerPaymentCredentials (Apple IAP)", () => {
+    it("store the receipt as payment credentials", async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation registerPaymentCredentials(
@@ -112,16 +112,16 @@ describe('Plugins: Apple IAP Payments', () => {
           paymentContext: {
             receiptData,
           },
-          paymentProviderId: 'iap-payment-provider',
+          paymentProviderId: "iap-payment-provider",
         },
       });
       expect(data?.registerPaymentCredentials).toMatchObject({
         isValid: true,
         isPreferred: true,
       });
-    });
+    }, 10000);
 
-    it('return not found error when passed non existing paymentProviderId', async () => {
+    it("return not found error when passed non existing paymentProviderId", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation registerPaymentCredentials(
@@ -140,15 +140,15 @@ describe('Plugins: Apple IAP Payments', () => {
           paymentContext: {
             receiptData,
           },
-          paymentProviderId: 'non-existing',
+          paymentProviderId: "non-existing",
         },
       });
       expect(errors[0]?.extensions?.code).toEqual(
-        'PaymentProviderNotFoundError',
+        "PaymentProviderNotFoundError"
       );
     });
 
-    it('return error when passed invalid paymentProviderId', async () => {
+    it("return error when passed invalid paymentProviderId", async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation registerPaymentCredentials(
@@ -167,12 +167,12 @@ describe('Plugins: Apple IAP Payments', () => {
           paymentContext: {
             receiptData,
           },
-          paymentProviderId: '',
+          paymentProviderId: "",
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
+      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
     });
-    it('checkout with stored receipt in credentials', async () => {
+    it("checkout with stored receipt in credentials", async () => {
       const { data: { updateOrderPaymentGeneric, checkoutCart } = {} } =
         await graphqlFetch({
           query: /* GraphQL */ `
@@ -195,22 +195,23 @@ describe('Plugins: Apple IAP Payments', () => {
             }
           `,
           variables: {
-            orderPaymentId: 'iap-payment',
-            orderId: 'iap-order',
+            orderPaymentId: "iap-payment",
+            orderId: "iap-order",
             meta: {
               transactionIdentifier: singleItemTransactionIdentifier,
             },
           },
         });
       expect(updateOrderPaymentGeneric).toMatchObject({
-        status: 'OPEN',
+        status: "OPEN",
       });
       expect(checkoutCart).toMatchObject({
-        status: 'CONFIRMED',
+        status: "CONFIRMED",
       });
-    });
-    it('checking out again with the same transaction should fail', async () => {
-      const { errors } = await graphqlFetch({
+    }, 10000);
+
+    it("checking out again with the same transaction should fail", async () => {
+      const { errors, data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkout(
             $paymentContext: JSON
@@ -233,20 +234,23 @@ describe('Plugins: Apple IAP Payments', () => {
           }
         `,
         variables: {
-          paymentProviderId: 'iap-payment-provider',
+          paymentProviderId: "iap-payment-provider",
           productId: singleItemProductId,
           paymentContext: {
             receiptData,
-            meta: { transactionIdentifier: singleItemTransactionIdentifier },
+            meta: {
+              transactionIdentifier: singleItemTransactionIdentifier,
+            },
           },
         },
       });
-      expect(errors?.[0].extensions.code).toEqual('OrderCheckoutError');
+
+      expect(errors?.[0].extensions.code).toEqual("OrderCheckoutError");
     });
   });
 
-  describe('Apple Store Server Notifications', () => {
-    it('notification_type = INITIAL_BUY', async () => {
+  describe("Apple Store Server Notifications", () => {
+    it("notification_type = INITIAL_BUY", async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
           mutation prepareCart(
@@ -278,9 +282,9 @@ describe('Plugins: Apple IAP Payments', () => {
           }
         `,
         variables: {
-          paymentProviderId: 'iap-payment-provider',
-          orderPaymentId: 'iap-payment2',
-          orderId: 'iap-order2',
+          paymentProviderId: "iap-payment-provider",
+          orderPaymentId: "iap-payment2",
+          orderId: "iap-order2",
           meta: {
             transactionIdentifier: subscriptionTransactionIdentifier,
           },
@@ -288,51 +292,51 @@ describe('Plugins: Apple IAP Payments', () => {
         },
       });
 
-      const result = await fetch('http://localhost:3000/graphql/apple-iap', {
-        method: 'POST',
+      const result = await fetch("http://localhost:3000/graphql/apple-iap", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(initialBuy),
       });
       expect(result.status).toBe(200);
       const order = await db
-        .collection('orders')
-        .findOne({ _id: 'iap-order2' });
-      expect(order.status).toBe('CONFIRMED');
+        .collection("orders")
+        .findOne({ _id: "iap-order2" });
+      expect(order.status).toBe("CONFIRMED");
     });
-    it('notification_type = DID_RECOVER should just store the current receipt', async () => {
-      const result = await fetch('http://localhost:3000/graphql/apple-iap', {
-        method: 'POST',
+    it("notification_type = DID_RECOVER should just store the current receipt", async () => {
+      const result = await fetch("http://localhost:3000/graphql/apple-iap", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(didRecover),
       });
       expect(result.status).toBe(200);
-      const enrollment = await db.collection('enrollments').findOne({
+      const enrollment = await db.collection("enrollments").findOne({
         _id: {
           $nin: AllEnrollmentIds,
         },
       });
-      expect(enrollment?.status).toBe('ACTIVE');
+      expect(enrollment?.status).toBe("ACTIVE");
     });
 
-    it('notification_type = DID_CHANGE_RENEWAL_STATUS should terminate enrollment', async () => {
-      const result = await fetch('http://localhost:3000/graphql/apple-iap', {
-        method: 'POST',
+    it("notification_type = DID_CHANGE_RENEWAL_STATUS should terminate enrollment", async () => {
+      const result = await fetch("http://localhost:3000/graphql/apple-iap", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(didChangeRenewalStatus),
       });
       expect(result.status).toBe(200);
-      const enrollment = await db.collection('enrollments').findOne({
+      const enrollment = await db.collection("enrollments").findOne({
         _id: {
           $nin: AllEnrollmentIds,
         },
       });
-      expect(enrollment?.status).toBe('TERMINATED');
+      expect(enrollment?.status).toBe("TERMINATED");
     });
   });
 });

@@ -1,14 +1,11 @@
-import { accountsServer } from 'meteor/unchained:core-accountsjs';
-import { Users } from 'meteor/unchained:core-users';
+import { UnchainedAPI, UnchainedUserContext } from '@unchainedshop/types/api';
+import { Request } from 'express';
 import { check } from 'meteor/check';
 
-export interface UnchainedServerUserContext {
-  userId?: string;
-  user?: any;
-  loginToken?: string;
-}
-
-export default async (req): Promise<UnchainedServerUserContext> => {
+export const getUserContext = async (
+  req: Request,
+  unchainedAPI: UnchainedAPI,
+): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
   if (req.cookies.meteor_login_token) {
@@ -28,9 +25,9 @@ export default async (req): Promise<UnchainedServerUserContext> => {
     check(loginToken, String);
 
     // the hashed token is the key to find the possible current user in the db
-    const hashedToken = accountsServer.hashLoginToken(loginToken); // eslint-disable-line
+    const hashedToken = unchainedAPI.modules.accounts.createHashLoginToken(loginToken);
 
-    const currentUser = Users.findUser({
+    const currentUser = await unchainedAPI.modules.users.findUser({
       hashedToken,
     });
 
@@ -39,7 +36,7 @@ export default async (req): Promise<UnchainedServerUserContext> => {
       // find the right login token corresponding, the current user may have
       // several sessions logged on different browsers / computers
       const tokenInformation = currentUser.services.resume.loginTokens.find(
-        (tokenInfo) => tokenInfo.hashedToken === hashedToken
+        (tokenInfo) => tokenInfo.hashedToken === hashedToken,
       ); // eslint-disable-line
 
       // true if the token is expired

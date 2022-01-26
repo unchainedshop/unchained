@@ -9,24 +9,20 @@ dotenv.load();
 const startAndWaitForMeteor = async () => {
   return new Promise((resolve, reject) => {
     try {
-      global.__SUBPROCESS_METEOR__ = spawn(
-        'meteor',
-        ['--no-release-check', `--no-lint`],
-        {
-          detached: true,
-          cwd: `${process.cwd()}/examples/minimal`,
-          env: {
-            ...process.env,
-            NODE_ENV: 'development',
-            METEOR_PACKAGE_DIRS: '../../packages',
-            UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
-            DATATRANS_SECRET: 'secret',
-            DATATRANS_SIGN_KEY: '1337',
-            DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
-            APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
-          },
+      global.__SUBPROCESS_METEOR__ = spawn('meteor', ['--no-release-check', `--no-lint`], {
+        detached: true,
+        cwd: `${process.cwd()}/examples/minimal`,
+        env: {
+          ...process.env,
+          NODE_ENV: 'development',
+          METEOR_PACKAGE_DIRS: '../../packages',
+          UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
+          DATATRANS_SECRET: 'secret',
+          DATATRANS_SIGN_KEY: '1337',
+          DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
+          APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
         },
-      );
+      });
       global.__SUBPROCESS_METEOR__.stdout.on('data', (data) => {
         const dataAsString = `${data}`;
         if (process.env.DEBUG) {

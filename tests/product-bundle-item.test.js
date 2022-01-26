@@ -15,7 +15,7 @@ let graphqlFetch;
 describe('ProductBundleItem', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.createProductBundleItem for admin user should', () => {
@@ -206,7 +206,7 @@ describe('ProductBundleItem', () => {
 
   describe('mutation.createProductBundleItem for anonymous user should', () => {
     it('return error', async () => {
-      const graphQlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphQlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphQlAnonymousFetch({
         query: /* GraphQL */ `
           mutation CreateProductBundleItem(
@@ -342,7 +342,7 @@ describe('ProductBundleItem', () => {
 
   describe('mutation.removeBundleItem for anonymous user should', () => {
     it('return error', async () => {
-      const graphQlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphQlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphQlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveBundleItem($productId: ID!, $index: Int!) {

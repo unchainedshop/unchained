@@ -1,71 +1,69 @@
 import { actions } from '../../roles';
 import { checkResolver as acl } from '../../acl';
 
-import me from './me';
-import user from './user';
-import users from './users';
-import usersCount from './usersCount';
-import product from './product';
-import products from './products';
-import productCatalogPrices from './productCatalogPrices';
-import languages from './languages';
-import language from './language';
-import countriesCount from './countriesCount';
-import countries from './countries';
-import country from './country';
-import currenciesCount from './currenciesCount';
-import currencies from './currencies';
-import currency from './currency';
-import translatedProductTexts from './translatedProductTexts';
-import translatedProductMediaTexts from './translatedProductMediaTexts';
-import translatedProductVariationTexts from './translatedProductVariationTexts';
-import paymentProviders from './paymentProviders';
-import paymentProvider from './paymentProvider';
-import paymentInterfaces from './paymentInterfaces';
-import deliveryProvidersCount from './deliveryProvidersCount';
-import deliveryProviders from './deliveryProviders';
-import deliveryProvider from './deliveryProvider';
-import deliveryInterfaces from './deliveryInterfaces';
-import warehousingProviders from './warehousingProviders';
-import warehousingProvider from './warehousingProvider';
-import warehousingInterfaces from './warehousingInterfaces';
-import orders from './orders';
-import order from './order';
-import assortment from './assortment';
-import assortments from './assortments';
-import assortmentsCount from './assortmentsCount';
-import translatedAssortmentMediaTexts from './translatedAssortmentMediaTexts';
-import events from './events';
-import event from './event';
-import filter from './filter';
-import filters from './filters';
-import translatedAssortmentTexts from './translatedAssortmentTexts';
-import translatedFilterTexts from './translatedFilterTexts';
-// import logs from './logs';
+import activeWorkTypes from './worker/activeWorkTypes';
+import assortment from './assortments/assortment';
+import assortments from './assortments/assortments';
+import assortmentsCount from './assortments/assortmentsCount';
+import countries from './countries/countries';
+import countriesCount from './countries/countriesCount';
+import country from './countries/country';
+import currencies from './currencies/currencies';
+import currenciesCount from './currencies/currenciesCount';
+import currency from './currencies/currency';
+import deliveryInterfaces from './delivery/deliveryInterfaces';
+import deliveryProvider from './delivery/deliveryProvider';
+import deliveryProviders from './delivery/deliveryProviders';
+import deliveryProvidersCount from './delivery/deliveryProvidersCount';
+import enrollment from './enrollments/enrollment';
+import enrollments from './enrollments/enrollments';
+import enrollmentsCount from './enrollments/enrollmentsCount';
+import event from './events/event';
+import events from './events/events';
+import eventsCount from './events/eventsCounts';
+import filter from './filters/filter';
+import filters from './filters/filters';
+import filtersCount from './filters/filtersCount';
+import language from './languages/language';
+import languages from './languages/languages';
+import languagesCount from './languages/languagesCount';
+import me from './users/me';
+import order from './orders/order';
+import orders from './orders/orders';
+import ordersCount from './orders/ordersCount';
+import paymentInterfaces from './payment/paymentInterfaces';
+import paymentProvider from './payment/paymentProvider';
+import paymentProviders from './payment/paymentProviders';
+import paymentProvidersCount from './payment/paymentProvidersCount';
+import product from './products/product';
+import productCatalogPrices from './products/productCatalogPrices';
+import productReview from './products/productReview';
+import productReviews from './products/productReviews';
+import productReviewsCount from './products/productReviewsCount';
+import products from './products/products';
+import productsCount from './products/productsCount';
+import quotation from './quotations/quotation';
+import quotations from './quotations/quotations';
+import quotationsCount from './quotations/quotationsCount';
+import searchAssortments from './filters/searchAssortments';
+import searchProducts from './filters/searchProducts';
 import shopInfo from './shopInfo';
-import productReview from './productReview';
-import productReviews from './productReviews';
-import quotation from './quotation';
-import quotations from './quotations';
-import searchProducts from './search-products';
-import searchAssortments from './search-assortments';
-import workQueue from './workQueue';
-import activeWorkTypes from './activeWorkTypes';
-import enrollment from './enrollment';
-import enrollments from './enrollments';
-import work from './work';
-import signPaymentProviderForCredentialRegistration from './signPaymentProviderForCredentialRegistration';
-import filtersCount from './filtersCount';
-import languagesCount from './languagesCount';
-// import logsCount from './logsCount';
-import ordersCount from './ordersCount';
-import productsCount from './productsCount';
-import quotationsCount from './quotationsCount';
-import enrollmentsCount from './enrollmentsCount';
-import warehousingProvidersCount from './warehousingProvidersCount';
-import paymentProvidersCount from './paymentProvidersCount';
-import productReviewsCount from './productReviewsCount';
-import eventsCount from './eventsCounts';
+import signPaymentProviderForCredentialRegistration from './payment/signPaymentProviderForCredentialRegistration';
+import translatedAssortmentMediaTexts from './assortments/translatedAssortmentMediaTexts';
+import translatedAssortmentTexts from './assortments/translatedAssortmentTexts';
+import translatedFilterTexts from './filters/translatedFilterTexts';
+import translatedProductMediaTexts from './products/translatedProductMediaTexts.ts';
+import translatedProductTexts from './products/translatedProductTexts';
+import translatedProductVariationTexts from './products/translatedProductVariationTexts';
+import user from './users/user';
+import users from './users/users';
+import usersCount from './users/usersCount';
+import warehousingInterfaces from './warehousing/warehousingInterfaces';
+import warehousingProvider from './warehousing/warehousingProvider';
+import warehousingProviders from './warehousing/warehousingProviders';
+import warehousingProvidersCount from './warehousing/warehousingProvidersCount';
+import work from './worker/work';
+import workQueue from './worker/workQueue';
 
 export default {
   me,
@@ -86,54 +84,32 @@ export default {
   currencies: acl(actions.viewCurrencies)(currencies),
   currency: acl(actions.viewCurrency)(currency),
   paymentProviders: acl(actions.viewPaymentProviders)(paymentProviders),
-  paymentProvidersCount: acl(actions.viewPaymentProviders)(
-    paymentProvidersCount
-  ),
+  paymentProvidersCount: acl(actions.viewPaymentProviders)(paymentProvidersCount),
   paymentProvider: acl(actions.viewPaymentProvider)(paymentProvider),
   paymentInterfaces: acl(actions.viewPaymentInterfaces)(paymentInterfaces),
-  deliveryProvidersCount: acl(actions.viewDeliveryProviders)(
-    deliveryProvidersCount
-  ),
+  deliveryProvidersCount: acl(actions.viewDeliveryProviders)(deliveryProvidersCount),
   deliveryProviders: acl(actions.viewDeliveryProviders)(deliveryProviders),
   deliveryProvider: acl(actions.viewDeliveryProvider)(deliveryProvider),
   deliveryInterfaces: acl(actions.viewDeliveryInterfaces)(deliveryInterfaces),
-  warehousingProvidersCount: acl(actions.viewWarehousingProviders)(
-    warehousingProvidersCount
-  ),
-  warehousingProviders: acl(actions.viewWarehousingProviders)(
-    warehousingProviders
-  ),
-  warehousingProvider: acl(actions.viewWarehousingProvider)(
-    warehousingProvider
-  ),
-  warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(
-    warehousingInterfaces
-  ),
+  warehousingProvidersCount: acl(actions.viewWarehousingProviders)(warehousingProvidersCount),
+  warehousingProviders: acl(actions.viewWarehousingProviders)(warehousingProviders),
+  warehousingProvider: acl(actions.viewWarehousingProvider)(warehousingProvider),
+  warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(warehousingInterfaces),
   translatedProductTexts: acl(actions.viewTranslations)(translatedProductTexts),
-  translatedProductMediaTexts: acl(actions.viewTranslations)(
-    translatedProductMediaTexts
-  ),
-  translatedProductVariationTexts: acl(actions.viewTranslations)(
-    translatedProductVariationTexts
-  ),
+  translatedProductMediaTexts: acl(actions.viewTranslations)(translatedProductMediaTexts),
+  translatedProductVariationTexts: acl(actions.viewTranslations)(translatedProductVariationTexts),
   ordersCount: acl(actions.viewOrders)(ordersCount),
   orders: acl(actions.viewOrders)(orders),
   order: acl(actions.viewOrder)(order),
   assortmentsCount: acl(actions.viewAssortments)(assortmentsCount),
   assortments: acl(actions.viewAssortments)(assortments),
-  translatedAssortmentMediaTexts: acl(actions.viewAssortment)(
-    translatedAssortmentMediaTexts
-  ),
+  translatedAssortmentMediaTexts: acl(actions.viewAssortment)(translatedAssortmentMediaTexts),
   assortment: acl(actions.viewAssortment)(assortment),
   filtersCount: acl(actions.viewFilters)(filtersCount),
   filters: acl(actions.viewFilters)(filters),
   filter: acl(actions.viewFilter)(filter),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
-  // logsCount: acl(actions.viewLogs)(logsCount),
-  // logs: acl(actions.viewLogs)(logs),
-  translatedAssortmentTexts: acl(actions.manageAssortments)(
-    translatedAssortmentTexts
-  ),
+  translatedAssortmentTexts: acl(actions.manageAssortments)(translatedAssortmentTexts),
   translatedFilterTexts: acl(actions.manageFilters)(translatedFilterTexts),
   productReview: acl(actions.manageProductReviews)(productReview),
   productReviews: acl(actions.manageProductReviews)(productReviews),
@@ -151,9 +127,9 @@ export default {
   enrollmentsCount: acl(actions.viewEnrollments)(enrollmentsCount),
 
   work: acl(actions.manageWorker)(work),
-  signPaymentProviderForCredentialRegistration: acl(
-    actions.registerPaymentCredentials
-  )(signPaymentProviderForCredentialRegistration),
+  signPaymentProviderForCredentialRegistration: acl(actions.registerPaymentCredentials)(
+    signPaymentProviderForCredentialRegistration,
+  ),
   event: acl(actions.viewEvent)(event),
   events: acl(actions.viewEvents)(events),
   eventsCount: acl(actions.viewEvents)(eventsCount),

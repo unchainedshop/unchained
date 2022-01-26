@@ -1,6 +1,7 @@
 import { LoggerOptions } from 'winston';
 
 export enum LogLevel {
+  Verbose = 'verbose',
   Info = 'info',
   Debug = 'debug',
   Error = 'error',

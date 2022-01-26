@@ -16,11 +16,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:core-users@1.0.0-beta15');
-
-  api.addFiles(['helpers.ts', 'roles.ts'], 'server');
-
-  api.mainModule('index.ts');
+  api.mainModule('src/roles-index.ts');
 });
 
 Package.onTest((api) => {

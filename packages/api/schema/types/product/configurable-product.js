@@ -97,10 +97,7 @@ export default [
       """
       Reduced list of possible products by key/value combinations
       """
-      products(
-        vectors: [ProductAssignmentVectorInput!]
-        includeInactive: Boolean = false
-      ): [Product!]
+      products(vectors: [ProductAssignmentVectorInput!], includeInactive: Boolean = false): [Product!]
 
       """
       Product's variations (keys) and their options (values)
@@ -110,9 +107,7 @@ export default [
       """
       Complete assignment matrix
       """
-      assignments(
-        includeInactive: Boolean = false
-      ): [ProductVariationAssignment!]!
+      assignments(includeInactive: Boolean = false): [ProductVariationAssignment!]!
     }
   `,
 ];

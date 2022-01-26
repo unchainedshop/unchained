@@ -9,7 +9,5 @@ export const SimpleWarehousingProvider = {
 };
 
 export default async function seedWarehousings(db) {
-  await chainedUpsert(db)
-    .upsert('warehousing-providers', SimpleWarehousingProvider)
-    .resolve();
+  await chainedUpsert(db).upsert('warehousing-providers', SimpleWarehousingProvider).resolve();
 }

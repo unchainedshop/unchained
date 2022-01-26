@@ -103,9 +103,7 @@ export const AllEnrollmentIds = [
 export default async function seedEnrollment(db) {
   await db.collection('enrollments').findOrInsertOne(ActiveEnrollment);
   await db.collection('enrollments').findOrInsertOne(InitialEnrollment);
-  await db
-    .collection('enrollments')
-    .findOrInsertOne(InitialEnrollmentWithWrongPlan);
+  await db.collection('enrollments').findOrInsertOne(InitialEnrollmentWithWrongPlan);
   await db.collection('enrollments').findOrInsertOne(expiredEnrollment);
   await db.collection('enrollments').findOrInsertOne(TerminatedEnrollment);
 }

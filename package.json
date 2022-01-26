@@ -13,7 +13,7 @@
     "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
     "Marco Wettstein <maw@panter.ch>",
     "Simon Emanuel Schmid <simon@unchained.shop> (https://unchained.shop)",
-    "Mikael Araya Mengistu <mikael@unchained.shop> (https://unchained.shop)"
+    "Mikael Araya Mengistu <mikael@unchainewd.shop> (https://unchained.shop)"
   ],
   "bugs": {
     "url": "https://github.com/unchainedshop/unchained/issues"
@@ -48,6 +48,7 @@
     "@types/simpl-schema": "^1.12.0",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^4.33.0",
+    "@unchainedshop/types": "^0.10.1",
     "apollo-upload-client": "^16.0.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.0.6",

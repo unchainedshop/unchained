@@ -7,30 +7,29 @@ Package.describe({
 });
 
 Npm.depends({
+  locale: '0.1.0',
   uuid: '7.0.1',
+  'simpl-schema': '1.12.0',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('mongo');
-  api.use('promise');
-  api.use('dburles:collection-helpers@1.1.0');
-  api.use('aldeed:collection2@3.2.1');
+  api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:logger@1.0.0-beta15');
 
-  api.use('unchained:core-accountsjs@1.0.0-beta15');
-  api.use('unchained:core-languages@1.0.0-beta15');
-  api.use('unchained:core-countries@1.0.0-beta15');
-  api.use('unchained:core-files-next@1.0.0-beta15');
-
-  api.mainModule('users.js', 'server');
+  api.mainModule('src/users-index.ts', 'server');
 });
 
 Package.onTest((api) => {
+  api.use('meteortesting:mocha');
   api.use('ecmascript');
-  api.use('unchained:core-users');
-  api.mainModule('users-tests.js');
+  api.use('typescript');
+
+  api.use('unchained:mongodb@1.0.0-beta15');
+  api.use('unchained:core-users@1.0.0-beta15');
+
+  api.mainModule('tests/users-index.test.ts');
 });

@@ -14,14 +14,12 @@ const incrementSuffixedSlug = (slugIncludingSuffix, delimiter = DELIMITER) => {
 };
 
 export default (checkSlugIsUniqueFn, { slugify = defaultSlugify } = {}) => {
-  const findUnusedSlug = ({ title, existingSlug, newSlug }) => {
+  const findUnusedSlug = async ({ title, existingSlug, newSlug }) => {
     const slug = newSlug || existingSlug || `${slugify(title)}`;
-    if (!checkSlugIsUniqueFn(slug)) {
+    if (!(await checkSlugIsUniqueFn(slug))) {
       const isSlugAlreadySuffixed = !!newSlug;
       return findUnusedSlug({
-        newSlug: isSlugAlreadySuffixed
-          ? incrementSuffixedSlug(slug)
-          : addSuffixToSlug(slug),
+        newSlug: isSlugAlreadySuffixed ? incrementSuffixedSlug(slug) : addSuffixToSlug(slug),
       });
     }
     return slug;

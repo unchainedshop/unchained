@@ -7,15 +7,21 @@ Package.describe({
 });
 
 Npm.depends({
-  '@accounts/database-manager': '0.29.0',
-  '@accounts/mongo': '0.29.0',
-  '@accounts/password': '0.29.0',
-  '@accounts/server': '0.29.0',
+  '@accounts/database-manager': '0.33.1',
+  '@accounts/mongo': '0.33.5',
+  '@accounts/password': '0.32.1',
+  '@accounts/server': '0.33.1',
   '@graphql-modules/core': '0.7.17',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.2');
+
   api.use('ecmascript');
-  api.mainModule('index.js');
+  api.use('typescript');
+  api.use('mongo');
+
+  api.use('unchained:core-worker');
+
+  api.mainModule('src/accounts-index.ts');
 });

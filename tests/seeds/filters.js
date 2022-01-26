@@ -51,11 +51,7 @@ const MultiChoiceFilterOptions = [
 
 export default async function seedFilters(db) {
   await db.collection('filters').findOrInsertOne(MultiChoiceFilter);
-  await db
-    .collection('filter_texts')
-    .findOrInsertOne(GermanMultiChoiceFilterText);
-  await db
-    .collection('filter_texts')
-    .findOrInsertOne(FrenchMultiChoiceFilterText);
+  await db.collection('filter_texts').findOrInsertOne(GermanMultiChoiceFilterText);
+  await db.collection('filter_texts').findOrInsertOne(FrenchMultiChoiceFilterText);
   await db.collection('filter_options').insertMany(MultiChoiceFilterOptions);
 }

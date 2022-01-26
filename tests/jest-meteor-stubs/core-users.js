@@ -4,10 +4,7 @@ import 'sinon-mongo';
 const Users = sinon.mongo.collection({
   update: sinon
     .stub()
-    .withArgs(
-      { _id: 'user' },
-      { $addToSet: { roles: { $each: ['test_role'] } } },
-    )
+    .withArgs({ _id: 'user' }, { $addToSet: { roles: { $each: ['test_role'] } } })
     .returns({ ok: 1, nModified: 1, n: 1 }),
 });
 

@@ -1,17 +1,18 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleProduct } from './seeds/products';
+import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers";
+import { SimpleProduct } from "./seeds/products";
 
 let db;
 let graphqlFetch;
+let orderId;
 
-describe('Cart Checkout Flow', () => {
+describe("Cart Checkout Flow", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch();
   });
 
-  describe('Mutation.createCart', () => {
-    it('create a cart with a specific order number', async () => {
+  describe("Mutation.createCart", () => {
+    it("create a cart with a specific order number", async () => {
       const { data: { createCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -23,15 +24,15 @@ describe('Cart Checkout Flow', () => {
         `,
       });
       expect(createCart).toMatchObject({
-        orderNumber: 'wishlist',
+        orderNumber: "wishlist",
       });
+
+      orderId = createCart._id;
     });
   });
 
-  describe('Mutation.addCartProduct', () => {
-    it('add a product to the cart', async () => {
-      const Orders = db.collection('orders');
-      const order = Orders.findOne({ orderNumber: 'wishlist' });
+  describe("Mutation.addCartProduct", () => {
+    it("add a product to the cart", async () => {
       const { data: { addCartProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct(
@@ -51,7 +52,7 @@ describe('Cart Checkout Flow', () => {
         `,
         variables: {
           productId: SimpleProduct._id,
-          orderId: order._id,
+          orderId,
           quantity: 1,
         },
       });
@@ -61,10 +62,8 @@ describe('Cart Checkout Flow', () => {
     });
   });
 
-  describe('Mutation.updateCart', () => {
-    it('update the billingAddress', async () => {
-      const Orders = db.collection('orders');
-      const order = Orders.findOne({ orderNumber: 'wishlist' });
+  describe("Mutation.updateCart", () => {
+    it("update the billingAddress", async () => {
       const { data: { updateCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCart($billingAddress: AddressInput, $orderId: ID) {
@@ -72,32 +71,37 @@ describe('Cart Checkout Flow', () => {
               _id
               billingAddress {
                 firstName
+                lastName
+                postalCode
+                city
               }
             }
           }
         `,
         variables: {
-          orderId: order._id,
+          orderId,
           billingAddress: {
-            firstName: 'Hallo',
-            lastName: 'Velo',
-            addressLine: 'Strasse 1',
-            addressLine2: 'Postfach',
-            postalCode: '8000',
-            city: 'Zürich',
+            firstName: "Hallo",
+            lastName: "Velo",
+            addressLine: "Strasse 1",
+            addressLine2: "Postfach",
+            postalCode: "8000",
+            city: "Zürich",
           },
         },
       });
+
       expect(updateCart).toMatchObject({
         billingAddress: {
-          firstName: 'Hallo',
+          firstName: "Hallo",
+          lastName: "Velo",
+          postalCode: "8000",
+          city: "Zürich",
         },
       });
     });
 
-    it('update the contact', async () => {
-      const Orders = db.collection('orders');
-      const order = Orders.findOne({ orderNumber: 'wishlist' });
+    it("update the contact", async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation updateCart(
@@ -115,30 +119,28 @@ describe('Cart Checkout Flow', () => {
           }
         `,
         variables: {
-          orderId: order._id,
+          orderId,
           contact: {
-            emailAddress: 'hello@unchained.shop',
-            telNumber: '+41999999999',
+            emailAddress: "hello@unchained.shop",
+            telNumber: "+41999999999",
           },
           meta: {
-            hi: 'there',
+            hi: "there",
           },
         },
       });
+
       expect(data?.updateCart).toMatchObject({
         contact: {
-          emailAddress: 'hello@unchained.shop',
-          telNumber: '+41999999999',
+          emailAddress: "hello@unchained.shop",
+          telNumber: "+41999999999",
         },
       });
     });
   });
 
-  describe('Mutation.checkoutCart', () => {
-    it('checkout the cart with invoice', async () => {
-      const Orders = db.collection('orders');
-      const order = Orders.findOne({ orderNumber: 'wishlist' });
-
+  describe("Mutation.checkoutCart", () => {
+    it("checkout the cart with invoice", async () => {
       const { data: { checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkoutCart($orderId: ID) {
@@ -150,14 +152,33 @@ describe('Cart Checkout Flow', () => {
           }
         `,
         variables: {
-          orderId: order._id,
+          orderId,
         },
       });
 
       expect(checkoutCart).toMatchObject({
-        orderNumber: 'wishlist',
-        status: 'CONFIRMED',
+        orderNumber: "wishlist",
+        status: "CONFIRMED",
       });
+    });
+
+    it("return error if trying to checkout the cart with invoice again", async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation checkoutCart($orderId: ID) {
+            checkoutCart(orderId: $orderId) {
+              _id
+              orderNumber
+              status
+            }
+          }
+        `,
+        variables: {
+          orderId,
+        },
+      });
+
+      expect(errors[0].extensions.code).toEqual("OrderWrongStatusError");
     });
   });
 });

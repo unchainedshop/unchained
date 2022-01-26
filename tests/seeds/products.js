@@ -33,6 +33,41 @@ export const SimpleProduct = {
   },
 };
 
+export const SimpleProductDraft = {
+  _id: 'simpleproduct_draft',
+  created: new Date('2019-07-30T09:23:26.253+0000'),
+  type: 'SIMPLE_PRODUCT',
+  status: null,
+  sequence: 0,
+  authorId: 'admin',
+  slugs: ['old-slug-de', 'slug-de', 'slug-fr'],
+  updated: new Date('2019-09-10T14:29:37.015+0000'),
+  published: new Date('2019-07-30T09:23:57.329+0000'),
+  warehousing: {
+    sku: 'SKU',
+    baseUnit: 'ST',
+  },
+  tags: ['tag-1', 'tag-2', 'highlight', 'test-tag'],
+  commerce: {
+    pricing: [
+      {
+        amount: 10000,
+        maxQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  supply: {
+    weightInGram: 1570,
+    heightInMillimeters: 250,
+    lengthInMillimeters: 300,
+    widthInMillimeters: 400,
+  },
+};
+
 export const ConfigurableProduct = {
   _id: 'configurable-product-id',
   created: new Date('2019-07-30T09:23:26.253+0000'),
@@ -193,8 +228,7 @@ export const JpegMedia = {
 
 export const JpegProductMedia = {
   _id: 'jpeg-product',
-  mediaId:
-    'product-media%2Fe1674b3a9b69990d532d247382207005a276bb859a22829777ecaa5d6d3d036d',
+  mediaId: 'product-media%2Fe1674b3a9b69990d532d247382207005a276bb859a22829777ecaa5d6d3d036d',
   tags: [],
   sortKey: 1,
   productId: 'simpleproduct',
@@ -563,6 +597,7 @@ export default async function seedProducts(db) {
     .collection('products')
     .insertMany([
       SimpleProduct,
+      SimpleProductDraft,
       UnpublishedProduct,
       SimpleProductBundle,
       ConfigurableProduct,
@@ -580,17 +615,11 @@ export default async function seedProducts(db) {
   await db.collection('product_texts').findOrInsertOne(GermanProductText);
   await db.collection('product_texts').findOrInsertOne(FrenchProductText);
   await db.collection('product_media').findOrInsertOne(JpegProductMedia);
-  await db
-    .collection('product_media_texts')
-    .findOrInsertOne(GermanJpegProductMediaText);
-  await db
-    .collection('product_media_texts')
-    .findOrInsertOne(FrenchJpegProductMediaText);
+  await db.collection('product_media_texts').findOrInsertOne(GermanJpegProductMediaText);
+  await db.collection('product_media_texts').findOrInsertOne(FrenchJpegProductMediaText);
 
   await db.collection('media_objects').findOrInsertOne(JpegMedia);
   await db.collection('product_texts').findOrInsertOne(GermanPlanProductText);
   await db.collection('product_variations').insertMany(ProductVariations);
-  await db
-    .collection('product_variation_texts')
-    .insertMany(ProductVariationTexts);
+  await db.collection('product_variation_texts').insertMany(ProductVariationTexts);
 }

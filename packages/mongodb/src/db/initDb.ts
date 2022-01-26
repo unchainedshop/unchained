@@ -21,8 +21,7 @@ const initDb = (): Db => {
   log('Dabase successfully initialised', { color: LogTextColor.Crimson });
   return db
   */
-  return MongoInternals.defaultRemoteCollectionDriver().mongo
-    .db as unknown as Db;
+  return MongoInternals.defaultRemoteCollectionDriver().mongo.db as unknown as Db;
 };
 
 export { initDb };

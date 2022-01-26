@@ -16,11 +16,17 @@ const path = require('path');
 const productMediaFile = fs.createReadStream(
   path.resolve(__dirname, `./assets/image.jpg`),
 );
+const productMediaFile2 = fs.createReadStream(
+  path.resolve(__dirname, `./assets/image.jpg`)
+);
+const productMediaFile3 = fs.createReadStream(
+  path.resolve(__dirname, `./assets/contract.pdf`)
+);
 
 describe('ProductsVariation', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.addProductMedia for admin user should', () => {
@@ -58,7 +64,7 @@ describe('ProductsVariation', () => {
       } = await uploadFormData({ token: ADMIN_TOKEN, body });
 
       expect(addProductMedia?.file.name).toEqual('image.jpg');
-    }, 99999);
+    }, 10000);
 
     it('return ProductNotFoundError when passed non existing product ID', async () => {
       const body = new FormData();
@@ -139,7 +145,7 @@ describe('ProductsVariation', () => {
         },
       });
       expect(prepareProductMediaUpload.putURL).not.toBe(null);
-    }, 99999);
+    }, 10000);
 
     it('upload to minio successfully', async () => {
       const {
@@ -166,10 +172,10 @@ describe('ProductsVariation', () => {
         },
       });
 
-      await uploadToMinio(productMediaFile, prepareProductMediaUpload.putURL);
+      await uploadToMinio(productMediaFile2, prepareProductMediaUpload.putURL);
 
       expect(prepareProductMediaUpload.putURL).not.toBe(null);
-    }, 99999);
+    }, 10000);
 
     it('link uploaded media file with product media successfully', async () => {
       const {
@@ -196,10 +202,10 @@ describe('ProductsVariation', () => {
             productId: SimpleProduct._id,
           },
         },
-        99999,
+        10000,
       );
 
-      await uploadToMinio(productMediaFile, prepareProductMediaUpload.putURL);
+      await uploadToMinio(productMediaFile3, prepareProductMediaUpload.putURL);
 
       const {
         data: { confirmMediaUpload },
@@ -364,7 +370,7 @@ describe('ProductsVariation', () => {
 
   describe('mutation.reorderProductMedia for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -484,7 +490,7 @@ describe('ProductsVariation', () => {
 
   describe('mutation.updateProductMediaTexts for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -561,7 +567,7 @@ describe('ProductsVariation', () => {
       });
 
       expect(errors.length).toEqual(1);
-    }, 99999);
+    }, 10000);
 
     it('return not found error when passed non existing productMediaId', async () => {
       const { errors } = await graphqlFetch({
@@ -600,7 +606,7 @@ describe('ProductsVariation', () => {
 
   describe('mutation.removeProductMedia for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

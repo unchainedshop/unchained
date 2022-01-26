@@ -2,6 +2,7 @@
   "name": "@unchained/api",
   "version": "1.0.0-beta15",
   "scripts": {
+    "link:core": "npm link @unchainedshop/types",
     "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
@@ -23,9 +24,20 @@
     "apollo-server-express": "^2.25.2"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/locale": "^0.1.1",
+    "@unchainedshop/types": "^0.9.1",
     "apollo-server-express": "^2.25.2",
     "chai": "^4.3.4",
-    "cross-env": "^7.0.3",
-    "unchained-core-types": "^1.0.10"
+    "cross-env": "^7.0.3"
+  },
+  "dependencies": {
+    "accounting": "0.4.1",
+    "body-parser": "1.19.0",
+    "dataloader": "2.0.0",
+    "graphql-scalars": "1.9.0",
+    "locale": "0.1.0",
+    "lodash.isnumber": "3.0.3",
+    "lru-cache": "6.0.0"
   }
 }

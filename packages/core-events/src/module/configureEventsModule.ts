@@ -1,7 +1,6 @@
-import { generateDbMutations } from 'meteor/unchained:utils';
-import { Filter } from 'unchained-core-types';
-import { ModuleInput } from 'unchained-core-types/common';
-import { Event, EventsModule } from 'unchained-core-types/events';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { ModuleInput, Filter } from '@unchainedshop/types/common';
+import { Event, EventsModule } from '@unchainedshop/types/events';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
@@ -15,14 +14,14 @@ const buildFindSelector = ({ type }: FindQuery) => {
 
 export const configureEventsModule = async ({
   db,
-}: ModuleInput): Promise<EventsModule> => {
+}: ModuleInput<Record<string, never>>): Promise<EventsModule> => {
   const Events = await EventsCollection(db);
 
   configureEventHistoryAdapter(Events);
 
   return {
     findEvent: async ({ eventId, ...rest }, options) => {
-      const selector = eventId ? { _id: eventId } : rest;
+      const selector = eventId ? generateDbFilterById(eventId) : rest;
       if (!Object.keys(selector)?.length) return null;
       return Events.findOne(selector as unknown as Filter<Event>, options);
     },
@@ -33,7 +32,7 @@ export const configureEventsModule = async ({
       sort = {
         created: -1,
       },
-      query,
+      ...query
     }) => {
       const events = Events.find(buildFindSelector(query as FindQuery), {
         skip: offset,

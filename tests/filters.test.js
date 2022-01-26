@@ -13,9 +13,9 @@ let graphqlFetchAsNormalUser;
 describe('Filters', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
+    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
   describe('Query.filters for admin user should', () => {
@@ -220,7 +220,7 @@ describe('Filters', () => {
 
   describe('Query.Filters for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const {
         data: { filters },
       } = await graphqlAnonymousFetch({
@@ -246,7 +246,7 @@ describe('Filters', () => {
   });
 
   describe('mutation.updateFilterTexts for admin user should', () => {
-    it('update filter texts successfuly when passed valid filter ID', async () => {
+    it('update filter texts successfully when passed valid filter ID', async () => {
       const {
         data: { updateFilterTexts },
       } = await graphqlFetch({
@@ -429,6 +429,7 @@ describe('Filters', () => {
           },
         },
       });
+
       expect(createFilter).toMatchObject({
         isActive: false,
         texts: {
@@ -592,7 +593,7 @@ describe('Filters', () => {
 
   describe('mutation.updateFilter for anonymous User', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation UpdateFilter($filter: UpdateFilterInput!, $filterId: ID!) {
@@ -702,7 +703,7 @@ describe('Filters', () => {
 
   describe('mutation.removeFilter for anonymous User', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveFilter($filterId: ID!) {
