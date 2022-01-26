@@ -1,5 +1,4 @@
 import { Context } from '@unchainedshop/types/api';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
@@ -18,28 +17,21 @@ interface OrderPaymentDiscountHelperTypes {
 }
 
 export const OrderPaymentDiscount: OrderPaymentDiscountHelperTypes = {
-  _id(obj) {
-    return `${obj.item._id}:${obj.discountId}`;
-  },
+  _id: (obj) => `${obj.item._id}:${obj.discountId}`,
 
-  async orderDiscount(obj, _, { modules }) {
-    return modules.orders.discounts.findOrderDiscount({
+  orderDiscount: (obj, _, { modules }) =>
+    modules.orders.discounts.findOrderDiscount({
       discountId: obj.discountId,
-    });
-  },
+    }),
 
-  total(obj) {
-    return {
-      _id: crypto
-        .createHash('sha256')
-        .update(
-          [`${obj.item._id}-${obj.discountId}`, obj.amount, obj.currency].join(
-            ''
-          )
-        )
-        .digest('hex'),
-      amount: obj.amount,
-      currency: obj.currency,
-    };
-  },
+  total: (obj) => ({
+    _id: crypto
+      .createHash('sha256')
+      .update(
+        [`${obj.item._id}-${obj.discountId}`, obj.amount, obj.currency].join('')
+      )
+      .digest('hex'),
+    amount: obj.amount,
+    currency: obj.currency,
+  }),
 };

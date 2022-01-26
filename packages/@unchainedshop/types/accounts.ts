@@ -1,7 +1,6 @@
 import { User as AccountsUser } from '@accounts/types';
 import { Context } from './api';
 import { User, UserProfile } from './user';
-import { Address } from './common';
 
 export interface UserData {
   email?: string;

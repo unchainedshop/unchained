@@ -1,11 +1,10 @@
 import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
-import { Locale, Locales } from 'locale';
 import SimpleSchema from 'simpl-schema';
 import {
   AccountsModule,
   AccountsSettings,
-  AccountsSettingsOptions
+  AccountsSettingsOptions,
 } from './accounts';
 import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettingsOptions } from './assortments';
@@ -19,12 +18,14 @@ import {
   IBaseAdapter,
   IBaseDirector,
   Indexes,
+  Locale,
+  Locales,
   ModuleCreateMutation,
   ModuleInput,
   ModuleMutations,
   Query,
   TimestampFields,
-  _ID
+  _ID,
 } from './common';
 import { CountriesModule, Country, CountryServices } from './countries';
 import { CurrenciesModule } from './currencies';
@@ -34,13 +35,13 @@ import {
   DeliveryProviderType as DeliveryProviderTypeType,
   DeliverySettingsOptions,
   IDeliveryAdapter,
-  IDeliveryDirector
+  IDeliveryDirector,
 } from './delivery';
 import {
   DeliveryPricingCalculation,
   IDeliveryPricingAdapter,
   IDeliveryPricingDirector,
-  IDeliveryPricingSheet
+  IDeliveryPricingSheet,
 } from './delivery.pricing';
 import { IDiscountAdapter, IDiscountDirector } from './discount';
 import {
@@ -48,41 +49,42 @@ import {
   EnrollmentsSettingsOptions,
   EnrollmentStatus as EnrollmentStatusType,
   IEnrollmentAdapter,
-  IEnrollmentDirector
+  IEnrollmentDirector,
 } from './enrollments';
 import { EventDirector, EventsModule } from './events';
 import {
   FileServices,
   FilesModule,
   IFileAdapter,
-  IFileDirector
+  IFileDirector,
 } from './files';
 import {
   FiltersModule,
   FilterType as FilterTypeType,
   IFilterAdapter,
-  IFilterDirector
+  IFilterDirector,
 } from './filters';
 import { LanguagesModule } from './languages';
 import {
   Logger,
   LogLevel as LogLevelType,
   LogOptions,
-  Transports
+  Transports,
 } from './logs';
 import { IMessagingDirector, MessagingModule } from './messaging';
 import {
   OrderServices,
   OrdersModule,
   OrdersSettingsOptions,
-  OrderStatus as OrderStatusType
+  OrderStatus as OrderStatusType,
 } from './orders';
 import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries';
 import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments';
 import {
   IOrderPricingAdapter,
   IOrderPricingDirector,
-  IOrderPricingSheet, OrderPricingCalculation
+  IOrderPricingSheet,
+  OrderPricingCalculation,
 } from './orders.pricing';
 import {
   IPaymentAdapter,
@@ -90,33 +92,34 @@ import {
   PaymentError as PaymentErrorType,
   PaymentModule,
   PaymentProvidersSettingsOptions,
-  PaymentProviderType as PaymentProviderTypeType
+  PaymentProviderType as PaymentProviderTypeType,
 } from './payments';
 import {
   IPaymentPricingAdapter,
   IPaymentPricingDirector,
   IPaymentPricingSheet,
-  PaymentPricingCalculation
+  PaymentPricingCalculation,
 } from './payments.pricing';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
   IBasePricingDirector,
-  IPricingAdapter, IPricingSheet,
+  IPricingAdapter,
+  IPricingSheet,
   PricingCalculation,
-  PricingSheetParams
+  PricingSheetParams,
 } from './pricing';
 import {
   ProductServices,
   ProductsModule,
   ProductStatus as ProductStatusType,
-  ProductType
+  ProductType,
 } from './products';
 import {
   IProductPricingAdapter,
   IProductPricingDirector,
   IProductPricingSheet,
-  ProductPricingCalculation
+  ProductPricingCalculation,
 } from './products.pricing';
 import {
   IQuotationAdapter,
@@ -124,7 +127,7 @@ import {
   QuotationError as QuotationErrorType,
   QuotationsModule,
   QuotationsSettingsOptions,
-  QuotationStatus as QuotationStatusType
+  QuotationStatus as QuotationStatusType,
 } from './quotations';
 import { UserServices, UsersModule } from './user';
 import {
@@ -132,7 +135,7 @@ import {
   IWarehousingDirector,
   WarehousingError as WarehousingErrorType,
   WarehousingModule,
-  WarehousingProviderType as WarehousingProviderTypeType
+  WarehousingProviderType as WarehousingProviderTypeType,
 } from './warehousing';
 import {
   IScheduler,
@@ -141,7 +144,7 @@ import {
   IWorkerDirector,
   WorkerModule,
   WorkerSchedule,
-  WorkStatus as WorkerStatusType
+  WorkStatus as WorkerStatusType,
 } from './worker';
 
 declare module 'meteor/unchained:utils' {

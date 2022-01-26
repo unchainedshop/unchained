@@ -1,5 +1,4 @@
 import { DeliveryProvider } from './delivery';
-import { Discount } from './discount';
 import { Order } from './orders';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';

@@ -161,10 +161,10 @@ export type IWorker<P extends { workerId: string }> = {
     params: P,
     requestContext: Context
   ) => {
-    autorescheduleTypes: (params: {
+    autorescheduleTypes: (options: {
       referenceDate: Date;
     }) => Promise<Array<Work>>;
-    process: (params: {
+    process: (options: {
       maxWorkItemCount?: number;
       referenceDate?: Date;
     }) => Promise<void>;

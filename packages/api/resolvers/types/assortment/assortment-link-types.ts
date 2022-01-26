@@ -3,7 +3,6 @@ import {
   Assortment,
   AssortmentLink as AssortmentLinkType,
 } from '@unchainedshop/types/assortments';
-import { Product } from '@unchainedshop/types/products';
 
 type HelperType<T> = (
   assortmentLink: AssortmentLinkType,
@@ -17,14 +16,13 @@ type AssortmentLinkHelperTypes = {
 };
 
 export const AssortmentLink: AssortmentLinkHelperTypes = {
-  child: async (obj, _, { modules }) => {
-    return modules.assortments.findAssortment({
+  child: (obj, _, { modules }) =>
+    modules.assortments.findAssortment({
       assortmentId: obj.childAssortmentId,
-    });
-  },
-  parent: async (obj, _, { modules }) => {
-    return modules.assortments.findAssortment({
+    }),
+
+  parent: (obj, _, { modules }) =>
+    modules.assortments.findAssortment({
       assortmentId: obj.parentAssortmentId,
-    });
-  },
+    }),
 };

@@ -1,10 +1,10 @@
 import {
+  FindOptions,
   ModuleCreateMutation,
   Query,
+  Sort,
   TimestampFields,
   _ID,
-  FindOptions,
-  Sort,
 } from './common';
 
 export type Event = {

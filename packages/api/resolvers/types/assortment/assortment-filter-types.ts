@@ -17,18 +17,13 @@ type AssortmentFilterHelperTypes = {
 };
 
 export const AssortmentFilter: AssortmentFilterHelperTypes = {
-  assortment: async (obj, _, { modules }) => {
-    const assortment = await modules.assortments.findAssortment({
+  assortment: (obj, _, { modules }) =>
+    modules.assortments.findAssortment({
       assortmentId: obj.assortmentId,
-    });
+    }),
 
-    console.log('ASSORTMENT-TYPE', assortment, obj);
-    return assortment;
-  },
-
-  filter: async (obj, _, { modules }) => {
-    return modules.filters.findFilter({
+  filter: (obj, _, { modules }) =>
+    modules.filters.findFilter({
       filterId: obj.filterId,
-    });
-  },
+    }),
 };

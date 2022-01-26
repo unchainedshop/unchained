@@ -1,7 +1,7 @@
 import { Schemas } from 'meteor/unchained:utils';
 import SimpleSchema from 'simpl-schema';
 
-export const AssortmentMediaSchema = new SimpleSchema(
+export const AssortmentMediasSchema = new SimpleSchema(
   {
     mediaId: { type: String, required: true },
     assortmentId: { type: String, required: true },

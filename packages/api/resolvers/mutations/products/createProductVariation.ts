@@ -1,8 +1,5 @@
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  ProductVariation,
-  ProductVariationType,
-} from '@unchainedshop/types/products.variations';
+import { ProductVariationType } from '@unchainedshop/types/products.variations';
 import { ProductTypes } from 'meteor/unchained:core-products';
 import { log } from 'meteor/unchained:logger';
 import {

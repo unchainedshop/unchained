@@ -61,7 +61,7 @@ export const configureAssortmentProductsModule = ({
       return AssortmentProducts.find(selector, {
         projection: { productId: 1 },
       })
-        .map(({ productId }) => productId)
+        .map((product) => product.productId)
         .toArray();
     },
 

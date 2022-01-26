@@ -6,13 +6,13 @@ import { Db } from '@unchainedshop/types/common';
 import { buildDbIndexes } from 'meteor/unchained:utils';
 
 export const AssortmentMediaCollection = async (db: Db) => {
-  const AssortmentMedia = db.collection<AssortmentMedia>('assortment_media');
+  const AssortmentMedias = db.collection<AssortmentMedia>('assortment_media');
   const AssortmentMediaTexts = db.collection<AssortmentMediaText>(
     'assortment_media_texts'
   );
 
   // Assortment Indexes
-  await buildDbIndexes(AssortmentMedia, [
+  await buildDbIndexes(AssortmentMedias, [
     { index: { mediaId: 1 } },
     { index: { assortmentId: 1 } },
     { index: { tags: 1 } },
@@ -25,7 +25,7 @@ export const AssortmentMediaCollection = async (db: Db) => {
   ]);
 
   return {
-    AssortmentMedia,
+    AssortmentMedias,
     AssortmentMediaTexts,
   };
 };

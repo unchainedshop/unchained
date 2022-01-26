@@ -32,6 +32,8 @@ export type {
   UpdateFilter as Update,
 };
 
+export type _ID = string;
+
 export type Query = { [x: string]: any };
 
 export type Indexes<T extends Document> = Array<{
@@ -43,7 +45,7 @@ export type Indexes<T extends Document> = Array<{
  * Module
  */
 
-export interface ModuleInput<Options extends {}> {
+export interface ModuleInput<Options extends Record<string, any>> {
   db: Db;
   options?: Options;
 }
@@ -70,8 +72,6 @@ export interface ModuleMutationsWithReturnDoc<T> {
 /*
  * Data definitions
  */
-
-export type _ID = string;
 
 export type Configuration = Array<{ key: string; value: string }>;
 

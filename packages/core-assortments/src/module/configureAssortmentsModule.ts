@@ -156,7 +156,6 @@ export const configureAssortmentsModule = async ({
       const productAssignments = await findProductAssignments(assortment);
       return productAssignments.map(({ productId }) => productId);
     }
-    // eslint-disable-next-line
     if (
       assortmentsSettings.zipTree &&
       (!assortment._cachedProductIds || forceLiveCollection)
@@ -170,7 +169,7 @@ export const configureAssortmentsModule = async ({
       );
       return [...assortmentSet];
     }
-    return assortment._cachedProductIds; // eslint-disable-line
+    return assortment._cachedProductIds;
   };
 
   const invalidateProductIdCache = async (
@@ -185,7 +184,6 @@ export const configureAssortmentsModule = async ({
       forceLiveCollection: true,
     });
 
-    // eslint-disable-next-line
     if (eqSet(new Set(productIds), new Set(assortment._cachedProductIds))) {
       return 0;
     }

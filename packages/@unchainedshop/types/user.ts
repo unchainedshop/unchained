@@ -1,12 +1,12 @@
-import { Locale } from 'locale';
 import { Context } from './api';
 import {
   Address,
   Contact,
-  TimestampFields,
-  _ID,
-  Update,
   FindOptions,
+  Locale,
+  TimestampFields,
+  Update,
+  _ID,
 } from './common';
 import { Country } from './countries';
 import { File } from './files';

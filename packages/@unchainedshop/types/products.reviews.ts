@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { ModuleMutations, TimestampFields, _ID } from './common';
+import { TimestampFields, _ID } from './common';
 
 export enum ProductReviewVoteType {
   UPVOTE = 'UPVOTE',
@@ -89,11 +89,3 @@ export type ProductReviewsModule = {
     ) => Promise<ProductReview>;
   };
 };
-
-type HelperType<P, T> = (
-  productReview: ProductReview,
-  params: P,
-  context: Context
-) => T;
-
-export interface ProductReviewHelperTypes {}

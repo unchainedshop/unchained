@@ -1,4 +1,4 @@
-import { ModuleMutations, Query, TimestampFields, _ID } from './common';
+import { ModuleMutations, TimestampFields, _ID } from './common';
 
 export type Currency = {
   _id?: _ID;

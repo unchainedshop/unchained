@@ -1,6 +1,5 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { log } from 'meteor/unchained:logger';
-import type { UnchainedServerContext } from '../../api';
 
 export default function shopInfo(
   root: Root,

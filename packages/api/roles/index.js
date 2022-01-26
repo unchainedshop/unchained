@@ -113,8 +113,8 @@ const configureRoles = ({ additionalRoles = {} }) => {
 
 const checkUserHasPermission = Roles.userHasPermission;
 
-const updateUserRole = async (context, roleName) =>
-  await Roles.addUserToRoles(context, roles[roleName].name);
+const updateUserRole = (context, roleName) =>
+  Roles.addUserToRoles(context, roles[roleName].name);
 
 export {
   allRoles,

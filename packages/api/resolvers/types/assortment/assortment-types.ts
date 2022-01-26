@@ -70,7 +70,7 @@ export interface AssortmentHelperTypes {
 }
 
 export const Assortment: AssortmentHelperTypes = {
-  async assortmentPaths(obj, _, { modules }) {
+  assortmentPaths: (obj, _, { modules }) => {
     return modules.assortments.breadcrumbs({
       assortmentId: obj._id,
     });

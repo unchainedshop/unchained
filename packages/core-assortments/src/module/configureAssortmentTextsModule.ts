@@ -65,7 +65,7 @@ export const configureAssortmentTextsModule = ({
         created: new Date(),
         createdBy: userId,
         assortmentId,
-        locale,
+        locale: locale || textLocale,
       },
     };
 

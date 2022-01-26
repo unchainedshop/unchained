@@ -1,13 +1,12 @@
 import { Context } from './api';
 import { Assortment } from './assortments';
 import {
-  Query,
-  TimestampFields,
-  Update,
-  _ID,
   FindOptions,
   IBaseAdapter,
   IBaseDirector,
+  Query,
+  TimestampFields,
+  _ID,
 } from './common';
 import { Product } from './products';
 

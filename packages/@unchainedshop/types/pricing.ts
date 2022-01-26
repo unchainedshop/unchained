@@ -1,12 +1,12 @@
-import { OrderDiscount } from './orders.discounts';
 import { Context } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
 import { Discount } from './discount';
 import { Order } from './orders';
-import { User } from './user';
 import { OrderDelivery } from './orders.deliveries';
+import { OrderDiscount } from './orders.discounts';
 import { OrderPayment } from './orders.payments';
 import { OrderPosition } from './orders.positions';
+import { User } from './user';
 
 export interface BasePricingAdapterContext extends Context {
   order: Order;

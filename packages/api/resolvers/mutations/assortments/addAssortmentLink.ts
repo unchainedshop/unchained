@@ -1,10 +1,6 @@
-import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  AssortmentFilter,
-  AssortmentLink,
-} from '@unchainedshop/types/assortments';
-
+import { AssortmentLink } from '@unchainedshop/types/assortments';
+import { log } from 'meteor/unchained:logger';
 import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function addAssortmentLink(

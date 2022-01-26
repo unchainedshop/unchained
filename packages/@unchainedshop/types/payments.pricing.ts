@@ -1,5 +1,5 @@
-import { OrderPayment } from './orders.payments';
 import { Order } from './orders';
+import { OrderPayment } from './orders.payments';
 import { PaymentProvider } from './payments';
 import {
   BasePricingAdapterContext,

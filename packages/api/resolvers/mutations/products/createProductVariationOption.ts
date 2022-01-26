@@ -1,7 +1,6 @@
-import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductVariationOption } from '@unchainedshop/types/products.variations';
-import { ProductVariationNotFoundError, InvalidIdError } from '../../../errors';
+import { log } from 'meteor/unchained:logger';
+import { InvalidIdError, ProductVariationNotFoundError } from '../../../errors';
 
 export default async function createProductVariationOption(
   root: Root,

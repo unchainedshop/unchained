@@ -1,10 +1,10 @@
-import { Locale } from 'locale';
 import { Context } from './api';
 import {
   Address,
   Contact,
   FindOptions,
   LogFields,
+  Locale,
   TimestampFields,
   _ID,
 } from './common';

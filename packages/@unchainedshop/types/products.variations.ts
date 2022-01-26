@@ -1,9 +1,6 @@
-import { Locale } from 'locale';
 import { Context } from './api';
-import { TimestampFields, _ID } from './common';
+import { Locale, TimestampFields, _ID } from './common';
 import { Product, ProductAssignment, ProductConfiguration } from './products';
-import { ProductPricingContext } from './products.pricing';
-import { ProductReview } from './products.reviews';
 
 export enum ProductVariationType {
   COLOR = 'COLOR',

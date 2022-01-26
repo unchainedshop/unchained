@@ -1,11 +1,8 @@
 import { ProductVariationAssignmentVectorHelperTypes } from '@unchainedshop/types/products.variations';
-import { builtinModules } from 'module';
 
 export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorHelperTypes =
   {
-    _id: ({ product, key, value }) => {
-      return `${product._id}:${key}=${value}}`;
-    },
+    _id: ({ product, key, value }) => `${product._id}:${key}=${value}}`,
 
     option: async (obj, _, { modules }) => {
       const productVariation =
@@ -15,9 +12,8 @@ export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorH
       return modules.products.variations.option(productVariation, obj.value);
     },
 
-    variation: async (obj, _, { modules }) => {
-      return modules.products.variations.findProductVariation({
+    variation: (obj, _, { modules }) =>
+      modules.products.variations.findProductVariation({
         productVariationId: obj.key,
-      });
-    },
+      }),
   };

@@ -23,19 +23,18 @@ type QuotationHelperTypes = {
 };
 
 export const Quotation: QuotationHelperTypes = {
-  country: async (obj, _, { modules }) => {
-    return modules.countries.findCountry({ isoCode: obj.countryCode });
-  },
+  country: async (obj, _, { modules }) =>
+    modules.countries.findCountry({ isoCode: obj.countryCode }),
 
-  currency: async (obj, _, { modules }) => {
-    return modules.currencies.findCurrency({ isoCode: obj.currency });
-  },
+  currency: async (obj, _, { modules }) =>
+    modules.currencies.findCurrency({ isoCode: obj.currency }),
 
-  documents: async (obj, { type }, { modules }) => {
-    return modules.files.findFilesByMetaData(
+  documents: (obj, { type }, { modules }) =>
+    modules.files.findFilesByMetaData(
       {
         meta: {
           quotationId: obj._id,
+          type,
         },
       },
       {
@@ -43,26 +42,20 @@ export const Quotation: QuotationHelperTypes = {
           'meta.date': -1,
         },
       }
-    );
-  },
+    ),
 
-  isExpired: (obj, { referenceDate }, { modules }) => {
-    return modules.quotations.isExpired(obj, { referenceDate });
-  },
+  isExpired: (obj, { referenceDate }, { modules }) =>
+    modules.quotations.isExpired(obj, { referenceDate }),
 
-  product: async (obj, _, { modules }) => {
-    return modules.products.findProduct({
+  product: (obj, _, { modules }) =>
+    modules.products.findProduct({
       productId: obj.productId,
-    });
-  },
+    }),
 
-  status: (obj, _, { modules }) => {
-    return modules.quotations.normalizedStatus(obj);
-  },
+  status: (obj, _, { modules }) => modules.quotations.normalizedStatus(obj),
 
-  user: async (obj, _, { modules }) => {
-    return modules.users.findUser({
+  user: (obj, _, { modules }) =>
+    modules.users.findUser({
       userId: obj.userId,
-    });
-  },
+    }),
 };

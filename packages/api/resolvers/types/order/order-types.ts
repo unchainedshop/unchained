@@ -39,74 +39,57 @@ interface OrderHelperTypes {
 }
 
 export const Order: OrderHelperTypes = {
-  supportedDeliveryProviders: async (obj, _, context) => {
-    const providers = await context.modules.delivery.findSupported(
+  supportedDeliveryProviders: (obj, _, context) =>
+    context.modules.delivery.findSupported(
       {
         order: obj,
       },
       context
-    );
+    ),
 
-    return providers;
-  },
-
-  supportedPaymentProviders: async (obj, _, context) => {
-    return context.modules.payment.paymentProviders.findSupported(
+  supportedPaymentProviders: (obj, _, context) =>
+    context.modules.payment.paymentProviders.findSupported(
       {
         order: obj,
       },
       context
-    );
-  },
+    ),
 
-  currency: async (obj, _, { modules }) => {
-    return modules.currencies.findCurrency({ isoCode: obj.currency });
-  },
+  currency: (obj, _, { modules }) =>
+    modules.currencies.findCurrency({ isoCode: obj.currency }),
+  country: (obj, _, { modules }) =>
+    modules.countries.findCountry({ isoCode: obj.countryCode }),
 
-  country: async (obj, _, { modules }) => {
-    return modules.countries.findCountry({ isoCode: obj.countryCode });
-  },
+  discounts: (obj, _, { modules }) =>
+    modules.orders.discounts.findOrderDiscounts({ orderId: obj._id }),
 
-  discounts: async (obj, _, { modules }) => {
-    return modules.orders.discounts.findOrderDiscounts({
-      orderId: obj._id,
-    });
-  },
-
-  documents: async (obj, { type }, { modules }) => {
-    return modules.files.findFilesByMetaData(
+  documents: (obj, { type }, { modules }) =>
+    modules.files.findFilesByMetaData(
       { meta: { orderId: obj._id, type } },
       { sort: { 'meta.data': -1 } }
-    );
-  },
+    ),
 
-  delivery: async (obj, _, { modules }) => {
-    return modules.orders.deliveries.findDelivery({
+  delivery: (obj, _, { modules }) =>
+    modules.orders.deliveries.findDelivery({
       orderDeliveryId: obj.deliveryId,
-    });
-  },
+    }),
 
-  enrollment: async (obj, _, { modules }) => {
-    return modules.enrollments.findEnrollment({
+  enrollment: (obj, _, { modules }) =>
+    modules.enrollments.findEnrollment({
       orderId: obj._id,
-    });
-  },
+    }),
 
-  items: async (obj, _, { modules }) => {
-    return modules.orders.positions.findOrderPositions({
+  items: (obj, _, { modules }) =>
+    modules.orders.positions.findOrderPositions({
       orderId: obj._id,
-    });
-  },
+    }),
 
-  payment: async (obj, _, { modules }) => {
-    return modules.orders.payments.findOrderPayment({
+  payment: (obj, _, { modules }) =>
+    modules.orders.payments.findOrderPayment({
       orderPaymentId: obj.paymentId,
-    });
-  },
+    }),
 
-  status: (obj, _, { modules }) => {
-    return modules.orders.normalizedStatus(obj);
-  },
+  status: (obj, _, { modules }) => modules.orders.normalizedStatus(obj),
 
   total: async (obj, params: { category: string }, { modules }) => {
     const price = modules.orders
@@ -122,9 +105,8 @@ export const Order: OrderHelperTypes = {
     };
   },
 
-  user: async (obj, _, { modules }) => {
-    return modules.users.findUser({
+  user: (obj, _, { modules }) =>
+    modules.users.findUser({
       userId: obj.userId,
-    });
-  },
+    }),
 };

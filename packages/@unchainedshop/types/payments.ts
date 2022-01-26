@@ -1,22 +1,20 @@
-import { UpdateFilter } from 'mongodb';
 import { Context } from './api';
 import {
   FindOptions,
   IBaseAdapter,
   IBaseDirector,
-  ModuleMutations,
   ModuleMutationsWithReturnDoc,
   Query,
   TimestampFields,
   _ID,
 } from './common';
-import { User } from './user';
 import { Order } from './orders';
 import { OrderPayment } from './orders.payments';
 import {
-  PaymentPricingContext,
   PaymentPricingCalculation,
+  PaymentPricingContext,
 } from './payments.pricing';
+import { User } from './user';
 
 export enum PaymentProviderType {
   CARD = 'CARD',

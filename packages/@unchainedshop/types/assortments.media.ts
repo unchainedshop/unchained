@@ -1,7 +1,4 @@
-import { FindOptions } from 'mongodb';
-import { Context } from './api';
-import { TimestampFields, _ID } from './common';
-import { File } from './files';
+import { FindOptions, TimestampFields, _ID } from './common';
 
 export type AssortmentMedia = {
   _id?: _ID;

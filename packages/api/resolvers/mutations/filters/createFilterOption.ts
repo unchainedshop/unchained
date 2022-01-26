@@ -1,6 +1,5 @@
+import { Context, Root } from '@unchainedshop/types/api';
 import { log } from 'meteor/unchained:logger';
-import { Root, Context } from '@unchainedshop/types/api';
-import { FilterOption } from '@unchainedshop/types/filters';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function createFilterOption(
@@ -8,7 +7,7 @@ export default async function createFilterOption(
   params: { filterId: string; option: { value: string; title: string } },
   context: Context
 ) {
-  const { modules, localeContext, userId } = context;
+  const { modules, userId } = context;
   const { filterId, option } = params;
 
   log(`mutation createFilterOption ${filterId}`, { userId });

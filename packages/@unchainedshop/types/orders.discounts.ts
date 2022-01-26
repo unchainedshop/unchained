@@ -1,9 +1,7 @@
-import { Order } from './orders';
 import { Context } from './api';
 import { FindOptions, TimestampFields, _ID } from './common';
 import { DiscountAdapterActions, DiscountConfiguration } from './discount';
 import { OrderPrice } from './orders.pricing';
-import { PricingCalculation } from './pricing';
 
 export enum OrderDiscountTrigger {
   USER = 'USER',

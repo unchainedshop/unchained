@@ -1,6 +1,5 @@
-import { log } from 'meteor/unchained:logger';
-import { Country } from '@unchainedshop/types/countries';
 import { Context, Root } from '@unchainedshop/types/api';
+import { log } from 'meteor/unchained:logger';
 import { CountryNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function removeCountry(

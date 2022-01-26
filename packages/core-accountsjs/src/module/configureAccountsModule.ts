@@ -14,8 +14,7 @@ import { hashPassword } from './utils/hashPassword';
 
 export const configureAccountsModule = async (): Promise<AccountsModule> => {
   return {
-    emit: async (event, meta) =>
-      await accountsServer.getHooks().emit(event, meta),
+    emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
 
     // Mutations
     createUser: async (userData, options = {}) => {
@@ -38,10 +37,9 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     },
 
     // Email
-    addEmail: async (userId, email) =>
-      await accountsPassword.addEmail(userId, email, false),
-    removeEmail: async (userId, email) =>
-      await accountsPassword.removeEmail(userId, email),
+    addEmail: (userId, email) =>
+      accountsPassword.addEmail(userId, email, false),
+    removeEmail: (userId, email) => accountsPassword.removeEmail(userId, email),
     updateEmail: async (userId, email, user) => {
       log(
         'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
@@ -58,15 +56,12 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
       );
     },
 
-    findUnverifiedUserByToken: async (token) =>
-      await dbManager.findUserByEmailVerificationToken(token),
+    findUnverifiedUserByToken: (token) =>
+      dbManager.findUserByEmailVerificationToken(token),
 
-    sendVerificationEmail: async (email) =>
-      await accountsPassword.sendVerificationEmail(email),
-    sendEnrollmentEmail: async (email) =>
-      await accountsPassword.sendEnrollmentEmail(email),
-
-    verifyEmail: async (token) => await accountsPassword.verifyEmail(token),
+    sendVerificationEmail: accountsPassword.sendVerificationEmail,
+    sendEnrollmentEmail: accountsPassword.sendEnrollmentEmail,
+    verifyEmail: accountsPassword.verifyEmail,
 
     // Autentication
     createLoginToken: async (userId, rawContext) => {
@@ -126,8 +121,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     },
 
     // User management
-    setUsername: async (_id, username) =>
-      await dbManager.setUsername(_id, username),
+    setUsername: (_id, username) => dbManager.setUsername(_id, username),
     setPassword: async (
       userId,
       { newPassword: newHashedPassword, newPlainPassword }
@@ -164,8 +158,8 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
         });
       return success;
     },
-    sendResetPasswordEmail: async (email) =>
-      await accountsPassword
+    sendResetPasswordEmail: (email) =>
+      accountsPassword
         .sendResetPasswordEmail(email)
         .then(() => true) // Map null to success
         .catch((error: Error) => {

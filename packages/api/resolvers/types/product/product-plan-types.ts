@@ -42,7 +42,7 @@ export const PlanProduct: PlanProductHelperTypes = {
     );
   },
 
-  simulatedDiscounts: async (obj, { quantity }, requestContext) => {
+  simulatedDiscounts: async () => {
     // const { modules, countryContext } = requestContext;
     // return modules.products.prices.userDiscounts(
     //   {

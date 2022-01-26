@@ -1,6 +1,7 @@
 import { createLogger } from 'meteor/unchained:logger';
-import { Context } from '@unchainedshop/types/api';
+import { Context, UnchainedAPI } from '@unchainedshop/types/api';
 import { WebApp } from 'meteor/webapp';
+import { IncomingMessage } from 'http';
 import { checkAction } from './acl';
 import { actions } from './roles';
 
@@ -69,10 +70,12 @@ const bulkImportMiddleware = async (req, res) => {
 
 export default (options) => {
   const { context } = options || {};
-  WebApp.connectHandlers.use(BULK_IMPORT_API_PATH, async (req, res) => {
-    const resolvedContext = await context({ req, res });
-    /* @ts-ignore */
-    req.unchainedContext = resolvedContext as Context;
-    bulkImportMiddleware(req, res);
-  });
+  WebApp.connectHandlers.use(
+    BULK_IMPORT_API_PATH,
+    async (req: IncomingMessage & { unchainedContext?: UnchainedAPI }, res) => {
+      const resolvedContext = await context({ req, res });
+      req.unchainedContext = resolvedContext as Context;
+      bulkImportMiddleware(req, res);
+    }
+  );
 };

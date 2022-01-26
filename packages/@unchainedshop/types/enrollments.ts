@@ -1,4 +1,3 @@
-import { Locale } from 'locale';
 import { Context } from './api';
 import {
   Address,

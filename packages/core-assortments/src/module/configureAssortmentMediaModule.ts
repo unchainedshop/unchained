@@ -16,8 +16,8 @@ import {
   generateDbMutations,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
-import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection';
-import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema';
+import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
+import { AssortmentMediasSchema } from '../db/AssortmentMediasSchema';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',
@@ -31,12 +31,12 @@ export const configureAssortmentMediaModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<AssortmentMediaModule> => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
 
-  const { AssortmentMedia, AssortmentMediaTexts } =
+  const { AssortmentMedias, AssortmentMediaTexts } =
     await AssortmentMediaCollection(db);
 
   const mutations = generateDbMutations<AssortmentMedia>(
-    AssortmentMedia,
-    AssortmentMediaSchema
+    AssortmentMedias,
+    AssortmentMediasSchema
   ) as ModuleMutations<AssortmentMedia>;
 
   const upsertLocalizedText = async (
@@ -82,7 +82,7 @@ export const configureAssortmentMediaModule = async ({
   return {
     // Queries
     findAssortmentMedia: async ({ assortmentMediaId }) => {
-      return AssortmentMedia.findOne(
+      return AssortmentMedias.findOne(
         generateDbFilterById(assortmentMediaId),
         {}
       );
@@ -97,7 +97,7 @@ export const configureAssortmentMediaModule = async ({
         selector.tags = { $all: tags };
       }
 
-      const mediaList = AssortmentMedia.find(selector, {
+      const mediaList = AssortmentMedias.find(selector, {
         skip: offset,
         limit,
         sort: { sortKey: 1 },
@@ -113,7 +113,7 @@ export const configureAssortmentMediaModule = async ({
 
       if (!sortKey) {
         // Get next sort key
-        const lastAssortmentMedia = (await AssortmentMedia.findOne(
+        const lastAssortmentMedia = (await AssortmentMedias.findOne(
           {
             assortmentId: doc.assortmentId,
           },
@@ -134,7 +134,7 @@ export const configureAssortmentMediaModule = async ({
         userId
       );
 
-      const assortmentMedia = await AssortmentMedia.findOne(
+      const assortmentMedia = await AssortmentMedias.findOne(
         generateDbFilterById(assortmentMediaId),
         {}
       );
@@ -149,7 +149,7 @@ export const configureAssortmentMediaModule = async ({
     delete: async (assortmentMediaId) => {
       const selector = generateDbFilterById(assortmentMediaId);
 
-      const deletedResult = await AssortmentMedia.deleteOne(selector);
+      const deletedResult = await AssortmentMedias.deleteOne(selector);
 
       emit('ASSORTMENT_REMOVE_MEDIA', {
         assortmentMediaId,
@@ -173,7 +173,7 @@ export const configureAssortmentMediaModule = async ({
         selector._id = { $nin: excludedAssortmentMediaIds };
       }
 
-      const deletedResult = await AssortmentMedia.deleteMany(selector);
+      const deletedResult = await AssortmentMedias.deleteMany(selector);
       return deletedResult.deletedCount;
     },
 
@@ -181,14 +181,14 @@ export const configureAssortmentMediaModule = async ({
     update: async (assortmentMediaId, doc) => {
       const selector = generateDbFilterById(assortmentMediaId);
       const modifier = { $set: doc };
-      await AssortmentMedia.updateOne(selector, modifier);
-      return AssortmentMedia.findOne(selector, {});
+      await AssortmentMedias.updateOne(selector, modifier);
+      return AssortmentMedias.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedAssortmentMediaIds = await Promise.all(
         sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
-          await AssortmentMedia.updateOne(
+          await AssortmentMedias.updateOne(
             generateDbFilterById(assortmentMediaId),
             {
               $set: {
@@ -203,7 +203,7 @@ export const configureAssortmentMediaModule = async ({
         })
       );
 
-      const assortmentMedias = await AssortmentMedia.find({
+      const assortmentMedias = await AssortmentMedias.find({
         _id: { $in: changedAssortmentMediaIds },
       }).toArray();
 
@@ -249,8 +249,6 @@ export const configureAssortmentMediaModule = async ({
             )
           )
         );
-
-        console.log('MEDIA_TEXTS', texts, mediaTexts);
 
         emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
           assortmentMediaId,

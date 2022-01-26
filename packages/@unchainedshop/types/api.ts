@@ -1,5 +1,4 @@
-import { Locale } from 'locale';
-import { Db } from 'mongodb';
+import { Db, Locale } from './common';
 import { AccountsSettingsOptions } from './accounts';
 import { AssortmentsSettingsOptions } from './assortments';
 import { DeliverySettingsOptions } from './delivery';

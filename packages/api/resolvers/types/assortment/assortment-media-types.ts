@@ -17,14 +17,12 @@ export interface AssortmentMediaHelperTypes {
 }
 
 export const AssortmentMedia: AssortmentMediaHelperTypes = {
-  texts: async (obj, { forceLocale }, { modules, localeContext }) => {
-    return modules.assortments.media.texts.findLocalizedMediaText({
+  texts: (obj, { forceLocale }, { modules, localeContext }) =>
+    modules.assortments.media.texts.findLocalizedMediaText({
       assortmentMediaId: obj._id,
       locale: forceLocale || localeContext.normalized,
-    });
-  },
+    }),
 
-  file: async (obj, _, { modules }) => {
-    return modules.files.findFile({ fileId: obj.mediaId });
-  },
+  file: (obj, _, { modules }) =>
+    modules.files.findFile({ fileId: obj.mediaId }),
 };

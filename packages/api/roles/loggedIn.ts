@@ -1,4 +1,4 @@
-import { Context, Root, UnchainedAPI } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api';
 import { User } from '@unchainedshop/types/user';
 
 export const loggedIn = (role: any, actions: Record<string, string>) => {

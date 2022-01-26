@@ -1,6 +1,5 @@
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
-import { OrderPosition } from './orders.positions';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,

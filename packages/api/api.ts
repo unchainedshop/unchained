@@ -1,25 +1,23 @@
 import {
-  Context,
   UnchainedAPI,
   UnchainedLoaders,
   UnchainedLocaleContext,
   UnchainedServerOptions,
   UnchainedUserContext,
 } from '@unchainedshop/types/api';
-import { getUserContext } from './user-context';
-import { getLocaleContext } from './locale-context';
-
-import createGraphQLServer from './createGraphQLServer';
+import { IncomingMessage } from 'http';
+import { WebApp } from 'meteor/webapp';
 import createBulkImportServer from './createBulkImportServer';
-import { configureRoles } from './roles';
-
-// import getCart from './getCart';
+import createGraphQLServer from './createGraphQLServer';
 import instantiateLoaders from './loaders';
+import { getLocaleContext } from './locale-context';
+import { configureRoles } from './roles';
+import { getUserContext } from './user-context';
 
-export { hashPassword } from './hashPassword';
-export * as roles from './roles';
 export * as acl from './acl';
 export * as errors from './errors';
+export { hashPassword } from './hashPassword';
+export * as roles from './roles';
 
 export type UnchainedServerContext = UnchainedLocaleContext &
   UnchainedUserContext &
@@ -89,10 +87,16 @@ export const startAPIServer = (options: UnchainedServerOptions) => {
 const getCurrentContextResolver = () => context;
 
 export const useMiddlewareWithCurrentContext = (path, middleware) => {
-  /* @ts-ignore */
-  WebApp.connectHandlers.use(path, async (req, res, ...rest) => {
-    const currentContextResolver = getCurrentContextResolver();
-    req.unchainedContext = await currentContextResolver({ req, res });
-    return middleware(req, res, ...rest);
-  });
+  WebApp.connectHandlers.use(
+    path,
+    async (
+      req: IncomingMessage & { unchainedContext?: UnchainedAPI },
+      res,
+      ...rest
+    ) => {
+      const currentContextResolver = getCurrentContextResolver();
+      req.unchainedContext = await currentContextResolver({ req, res });
+      return middleware(req, res, ...rest);
+    }
+  );
 };

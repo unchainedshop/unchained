@@ -1,9 +1,6 @@
-import { Locale } from 'locale';
 import { Context } from './api';
 import {
-  Address,
   Configuration,
-  Contact,
   FindOptions,
   IBaseAdapter,
   IBaseDirector,
@@ -11,9 +8,6 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { Order } from './orders';
-import { OrderPosition } from './orders.positions';
-import { Product, ProductPlan } from './products';
 
 export enum QuotationStatus {
   REQUESTED = 'REQUESTED',

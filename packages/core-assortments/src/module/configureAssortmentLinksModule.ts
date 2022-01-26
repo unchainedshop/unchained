@@ -63,10 +63,15 @@ export const configureAssortmentLinksModule = ({
 
     // Mutations
     create: async (doc, options, userId) => {
-      const { _id, parentAssortmentId, childAssortmentId, ...rest } = doc;
+      const {
+        _id: assortmentLinkId,
+        parentAssortmentId,
+        childAssortmentId,
+        ...rest
+      } = doc;
 
       const selector = {
-        ...(doc._id ? generateDbFilterById(doc._id) : {}),
+        ...(assortmentLinkId ? generateDbFilterById(assortmentLinkId) : {}),
         parentAssortmentId,
         childAssortmentId,
       };
@@ -77,7 +82,7 @@ export const configureAssortmentLinksModule = ({
         ...rest,
       };
       const $setOnInsert: any = {
-        _id: doc._id || generateDbObjectId(),
+        _id: assortmentLinkId || generateDbObjectId(),
         parentAssortmentId,
         childAssortmentId,
         created: new Date(),

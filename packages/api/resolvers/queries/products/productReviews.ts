@@ -11,7 +11,7 @@ export default async function productReviews(
   },
   { modules, userId }: Context
 ) {
-  const { limit, offset, sort, queryString } = params;
+  const { limit, offset, queryString } = params;
 
   log(`query productReviews: ${limit} ${offset} ${queryString || ''}`, {
     userId,

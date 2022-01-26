@@ -23,6 +23,8 @@ export type File = {
  * Module
  */
 
+type UploadFileCallback = (file: File) => Promise<void>;
+
 export type FilesModule = ModuleMutations<File> & {
   // Query
   findFile: (
@@ -112,8 +114,6 @@ export interface IFileAdapter extends IBaseAdapter {
     file: { fileLink: string; fileName: string }
   ) => Promise<UploadFileData | null>;
 }
-
-type UploadFileCallback = (file: File) => Promise<void>;
 
 export type IFileDirector = IBaseDirector<IFileAdapter> & {
   registerFileUploadCallback: (

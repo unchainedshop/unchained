@@ -2,10 +2,9 @@ import { Context } from '@unchainedshop/types/api';
 import { Country } from '@unchainedshop/types/countries';
 import { Currency } from '@unchainedshop/types/currencies';
 import {
-  EnrollmentPlan,
   Enrollment as EnrollmentType,
+  EnrollmentPlan,
 } from '@unchainedshop/types/enrollments';
-import { Product } from '@unchainedshop/types/products';
 import { User } from '@unchainedshop/types/user';
 
 type HelperType<P, T> = (
@@ -35,16 +34,11 @@ export const Enrollment: EnrollmentHelperTypes = {
     };
   },
 
-  user: async (obj, _, { modules }) => {
-    return modules.users.findUser({
-      userId: obj.userId,
-    });
-  },
+  country: (obj, _, { modules }) =>
+    modules.countries.findCountry({ isoCode: obj.countryCode }),
 
-  country: async (obj, _, { modules }) => {
-    return modules.countries.findCountry({ isoCode: obj.countryCode });
-  },
-  currency: async (obj, _, { modules }) => {
-    return modules.currencies.findCurrency({ isoCode: obj.currencyCode });
-  },
+  currency: (obj, _, { modules }) =>
+    modules.currencies.findCurrency({ isoCode: obj.currencyCode }),
+
+  user: (obj, _, { modules }) => modules.users.findUser({ userId: obj.userId }),
 };

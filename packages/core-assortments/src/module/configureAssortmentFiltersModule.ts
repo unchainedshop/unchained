@@ -157,12 +157,6 @@ export const configureAssortmentFiltersModule = ({
         _id: { $in: changedAssortmentFilterIds },
       }).toArray();
 
-      console.log(
-        'ASSORMTENT_FILTER_IDS',
-        changedAssortmentFilterIds,
-        assortmentFilters
-      );
-
       emit('ASSORTMENT_REORDER_FILTERS', { assortmentFilters });
 
       return assortmentFilters;
