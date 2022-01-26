@@ -1,4 +1,3 @@
-import { PaymentAdapter as IPaymentAdapter } from '@unchainedshop/types/payments';
 import { PaymentAdapter, PaymentError, registerAdapter } from 'meteor/unchained:core-payment';
 import { createLogger } from 'meteor/unchained:logger';
 import createDatatransAPI from './api';

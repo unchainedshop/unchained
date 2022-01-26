@@ -247,7 +247,7 @@ export const configureProductsModule = async ({
 
     resolveOrderableProduct: async (product, { configuration }, requestContext) => {
       const { modules } = requestContext;
-      const productId = product._id;
+      const productId = product._id as string;
 
       checkIsActive(product, requestContext);
 
@@ -278,7 +278,7 @@ export const configureProductsModule = async ({
       return product;
     },
 
-    prices: configureProductPricesModule({ Products, proxyProducts }),
+    prices: configureProductPricesModule({ proxyProducts }),
 
     // Product adapter
     calculate: async (pricingContext, requestContext) => {
@@ -296,7 +296,7 @@ export const configureProductsModule = async ({
       if (productData._id) {
         // Remove deleted product by _id before creating a new one.
         await deleteProductsPermanently({
-          productId: productData._id,
+          productId: productData._id as string,
         });
       }
 
@@ -382,6 +382,7 @@ export const configureProductsModule = async ({
         const modifier = {
           $set: {
             updated: new Date(),
+            updatedBy: userId,
           },
           $push: {
             'proxy.assignments': {
@@ -424,7 +425,7 @@ export const configureProductsModule = async ({
 
     bundleItems: {
       addBundleItem: async (productId, doc, userId) => {
-        const result = await Products.updateOne(generateDbFilterById(productId), {
+        await Products.updateOne(generateDbFilterById(productId), {
           $set: {
             updated: new Date(),
             updatedBy: userId,

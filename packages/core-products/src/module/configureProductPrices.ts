@@ -1,4 +1,3 @@
-import { Collection } from '@unchainedshop/types/common';
 import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/types/products';
 import crypto from 'crypto';
 import { ProductPricingDirector } from '../director/ProductPricingDirector';
@@ -6,10 +5,8 @@ import { getPriceLevels } from './utils/getPriceLevels';
 import { getPriceRange } from './utils/getPriceRange';
 
 export const configureProductPricesModule = ({
-  Products,
   proxyProducts,
 }: {
-  Products: Collection<Product>;
   proxyProducts: (
     product: Product,
     vectors: Array<ProductConfiguration>,
@@ -152,7 +149,7 @@ export const configureProductPricesModule = ({
       if (!filteredPrices.length) return null;
 
       const { minPrice, maxPrice } = getPriceRange({
-        productId: product._id,
+        productId: product._id as string,
         prices: filteredPrices,
       });
 
@@ -204,7 +201,7 @@ export const configureProductPricesModule = ({
       if (!filteredPrices.length) return null;
 
       const { minPrice, maxPrice } = getPriceRange({
-        productId: product._id,
+        productId: product._id as string,
         prices: filteredPrices,
       });
 

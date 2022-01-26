@@ -220,7 +220,7 @@ export const configureOrderModuleProcessing = ({
     },
 
     confirm: async (order, params, requestContext) => {
-      const { modules, localeContext, userId } = requestContext;
+      const { modules, localeContext } = requestContext;
       const orderId = order._id;
 
       if (order.status !== OrderStatus.PENDING) return order;

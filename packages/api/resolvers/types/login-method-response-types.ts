@@ -6,7 +6,7 @@ export const LoginMethodResponse = {
     const user = (await modules.users.findUser({ userId: id })) as User & {
       _inLoginMethodResponse: boolean;
     };
-    user._inLoginMethodResponse = true;
+    user._inLoginMethodResponse = true; // eslint-disable-line
 
     return user;
   },

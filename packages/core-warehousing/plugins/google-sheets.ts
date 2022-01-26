@@ -34,11 +34,11 @@ const downloadSpreadsheet = async () => {
   }
 };
 
-const updateGoogleCache = async () => {
+const updateGoogleCache = async (cache) => {
   try {
     const sheet = await downloadSpreadsheet();
     if (sheet) {
-      googleCache.set('tables', sheet);
+      cache.set('tables', sheet);
       return sheet;
     }
   } catch (e) {
@@ -51,18 +51,18 @@ const googleCache = new LRU({
   max: 500,
   maxAge, // 1 second in dev
   stale: true,
-  dispose() {
-    updateGoogleCache();
+  dispose: () => {
+    updateGoogleCache(googleCache);
   },
 });
 
-updateGoogleCache();
+updateGoogleCache(googleCache);
 
 const getRows = async (name: string) => {
   const cachedTables = googleCache.get('tables');
   let tables = cachedTables;
   if (!cachedTables) {
-    tables = await updateGoogleCache();
+    tables = await updateGoogleCache(googleCache);
   }
   if (!tables || !tables[name] || !tables[name].rows) return [];
   return tables[name].rows;

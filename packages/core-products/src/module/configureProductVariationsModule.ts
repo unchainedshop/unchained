@@ -246,18 +246,17 @@ export const configureProductVariationsModule = async ({
       // Mutations
       updateVariationTexts: async (productVariationId, texts, productVariationOptionValue, userId) => {
         const productVariationTexts = await Promise.all(
-          texts.map(
-            async ({ locale, ...text }) =>
-              await upsertLocalizedText(
-                {
-                  ...text,
-                  authorId: userId,
-                  locale,
-                  productVariationId,
-                  productVariationOptionValue,
-                },
-                userId,
-              ),
+          texts.map(({ locale, ...text }) =>
+            upsertLocalizedText(
+              {
+                ...text,
+                authorId: userId,
+                locale,
+                productVariationId,
+                productVariationOptionValue,
+              },
+              userId,
+            ),
           ),
         );
 
@@ -276,7 +275,7 @@ export const configureProductVariationsModule = async ({
         text,
         userId,
       ) =>
-        await upsertLocalizedText(
+        upsertLocalizedText(
           {
             productVariationId,
             productVariationOptionValue,

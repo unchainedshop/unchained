@@ -19,7 +19,7 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "scripts": {
-    "lint": "eslint packages tests --fix --ext=js --ext=ts",
+    "lint": "eslint packages tests --fix --ext=js --ext=ts --quiet",
     "pretest": "npm run lint --silent && npm run typecheck",
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
     "test": "jest --runInBand --detectOpenHandles --forceExit tests/*",

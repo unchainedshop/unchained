@@ -160,7 +160,7 @@ const Stripe: IPaymentAdapter = {
   },
 
   actions: (params) => {
-    const { modules, userId } = params.context;
+    const { modules } = params.context;
 
     const adapterActions = {
       ...PaymentAdapter.actions(params),

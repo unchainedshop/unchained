@@ -1,4 +1,4 @@
-import { Db, _ID } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common';
 import { AppleTransaction } from '@unchainedshop/types/payments';
 import { buildDbIndexes } from 'meteor/unchained:utils';
 

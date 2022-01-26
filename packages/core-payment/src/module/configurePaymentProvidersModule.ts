@@ -95,9 +95,7 @@ export const configurePaymentProvidersModule = (
 
     findInterfaces: ({ type }) => {
       return PaymentDirector.getAdapters()
-        .filter((Adapter) => {
-          Adapter.typeSupported(type);
-        })
+        .filter((Adapter) => Adapter.typeSupported(type))
         .map((Adapter) => ({
           _id: Adapter.key,
           label: Adapter.label,

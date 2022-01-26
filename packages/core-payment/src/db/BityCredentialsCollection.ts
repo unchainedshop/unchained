@@ -1,4 +1,4 @@
-import { Db, _ID } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common';
 import { BityCredentials } from '@unchainedshop/types/payments';
 
 export const BityCredentialsCollection = (db: Db) => {

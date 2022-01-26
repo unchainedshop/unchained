@@ -53,7 +53,7 @@ export const configureProductTextsModule = ({
     const slug = await makeSlug({
       slug: textSlug,
       title,
-      productId,
+      productId: productId || textProductId,
     });
 
     const modifier: any = {
@@ -67,8 +67,8 @@ export const configureProductTextsModule = ({
         _id: generateDbObjectId(),
         created: new Date(),
         createdBy: userId,
-        productId,
-        locale,
+        productId: productId || textProductId,
+        locale: locale || textLocale,
       },
     };
 

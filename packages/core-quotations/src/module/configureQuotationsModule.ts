@@ -39,17 +39,17 @@ export const configureQuotationsModule = async ({
     QuotationsSchema,
   ) as ModuleMutations<Quotation>;
 
-  const findNewQuotationNumber = async (quotation: Quotation): Promise<string> => {
-    let quotationNumber = null;
-    let i = 0;
-    while (!quotationNumber) {
-      const newHashID = quotationsSettings.quotationNumberHashFn(quotation, i);
-      if ((await Quotations.find({ quotationNumber: newHashID }, { limit: 1 }).count()) === 0) {
-        quotationNumber = newHashID;
-      }
-      i += 1;
+  const findNewQuotationNumber = async (quotation: Quotation, index = 0) => {
+    // let quotationNumber = null;
+    // let i = 0;
+    // while (!quotationNumber) {
+    const newHashID = quotationsSettings.quotationNumberHashFn(quotation, index);
+    if ((await Quotations.find({ quotationNumber: newHashID }, { limit: 1 }).count()) === 0) {
+      return newHashID;
     }
-    return quotationNumber;
+    return findNewQuotationNumber(quotation, index + 1);
+    // }
+    // return quotationNumber;
   };
 
   const findNextStatus = async (
@@ -103,7 +103,7 @@ export const configureQuotationsModule = async ({
         }
         /* @ts-ignore */
         modifier.$set.expires = date;
-      case QuotationStatus.PROCESSING:
+      case QuotationStatus.PROCESSING: // eslint-disable-line
         if (!quotation.quotationNumber) {
           /* @ts-ignore */
           modifier.$set.quotationNumber = findNewQuotationNumber(quotation);
@@ -234,6 +234,7 @@ export const configureQuotationsModule = async ({
       const quotations = Quotations.find(buildFindSelector(query), {
         limit,
         skip: offset,
+        ...options,
       });
 
       return quotations.toArray();
