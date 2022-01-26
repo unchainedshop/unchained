@@ -20,5 +20,5 @@ export const OrderPaymentsSchema = new SimpleSchema(
     ...Schemas.logFields,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

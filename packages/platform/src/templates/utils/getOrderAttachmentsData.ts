@@ -4,7 +4,7 @@ import { Order } from '@unchainedshop/types/orders';
 export const getOrderAttachmentsData = async (
   order: Order,
   params: { fileType: string },
-  { modules }: Context
+  { modules }: Context,
 ) => {
   const orderId = order._id;
   const attachments = [];
@@ -13,21 +13,21 @@ export const getOrderAttachmentsData = async (
     {
       meta: { orderId: order._id, type: params.fileType },
     },
-    { limit: 1 }
+    { limit: 1 },
   );
   attachments.concat(orderFiles);
   const payment = await modules.orders.payments.findOrderPayment(
     {
       orderPaymentId: order.paymentId,
     },
-    { limit: 1 }
+    { limit: 1 },
   );
   if (modules.orders.payments.isBlockingOrderFullfillment(payment)) {
     const invoices = await modules.files.findFilesByMetaData(
       {
         meta: { orderId, type: 'INVOICE' },
       },
-      { limit: 1 }
+      { limit: 1 },
     );
     attachments.concat(invoices);
   } else {
@@ -35,7 +35,7 @@ export const getOrderAttachmentsData = async (
       {
         meta: { orderId, type: 'RECEIPT' },
       },
-      { limit: 1 }
+      { limit: 1 },
     );
     attachments.concat(receipts);
   }

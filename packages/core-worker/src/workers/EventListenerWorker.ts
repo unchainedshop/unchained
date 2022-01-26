@@ -7,8 +7,7 @@ export const EventListenerWorker: IWorker<{ workerId: string }> = {
   ...BaseWorker,
 
   key: 'shop.unchained.worker.event-listener',
-  label:
-    'Allocates work on events. This worker does not make sense on multiple containers.',
+  label: 'Allocates work on events. This worker does not make sense on multiple containers.',
   version: '1.0',
   type: 'EVENT_LISTENER',
 
@@ -18,7 +17,7 @@ export const EventListenerWorker: IWorker<{ workerId: string }> = {
 
     const baseWorkerActions = BaseWorker.actions(
       { workerId, worker: EventListenerWorker },
-      requestContext
+      requestContext,
     );
     return {
       ...baseWorkerActions,

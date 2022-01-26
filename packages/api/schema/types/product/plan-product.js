@@ -44,11 +44,7 @@ export default [
       texts(forceLocale: String): ProductTexts
       catalogPrice(quantity: Int = 1, currency: String): Price
       leveledCatalogPrices(currency: String): [PriceLevel!]!
-      simulatedPrice(
-        currency: String
-        useNetPrice: Boolean = false
-        quantity: Int = 1
-      ): Price
+      simulatedPrice(currency: String, useNetPrice: Boolean = false, quantity: Int = 1): Price
       simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(

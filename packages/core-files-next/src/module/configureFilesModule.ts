@@ -1,14 +1,7 @@
-import {
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { File, FilesModule, UploadFileData } from '@unchainedshop/types/files';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { FileDirector } from 'meteor/unchained:core-file-upload';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
@@ -42,17 +35,11 @@ export const configureFilesModule = async ({
 
   const fileUploadAdapter = getFileAdapter();
 
-  const mutations = generateDbMutations<File>(
-    Files,
-    MediaObjectsSchema
-  ) as ModuleMutations<File>;
+  const mutations = generateDbMutations<File>(Files, MediaObjectsSchema) as ModuleMutations<File>;
 
   return {
     findFile: async ({ fileId, externalId }, options) => {
-      return Files.findOne(
-        fileId ? generateDbFilterById(fileId) : { externalId },
-        options
-      );
+      return Files.findOne(fileId ? generateDbFilterById(fileId) : { externalId }, options);
     },
 
     findFilesByMetaData: async ({ meta }, options) => {
@@ -68,7 +55,7 @@ export const configureFilesModule = async ({
                 [`meta.${key}`]: meta[key],
               }
             : currentSelector,
-        {}
+        {},
       );
 
       const files = Files.find(selector, options);
@@ -93,24 +80,16 @@ export const configureFilesModule = async ({
     },
 
     // Plugin
-    createSignedURL: async (
-      { directoryName, fileName, meta },
-      userId,
-      uploadFileCallback
-    ) => {
-      const { url: putURL, ...preparedFileData } =
-        await fileUploadAdapter.createSignedURL({
-          directoryName,
-          fileName,
-        });
+    createSignedURL: async ({ directoryName, fileName, meta }, userId, uploadFileCallback) => {
+      const { url: putURL, ...preparedFileData } = await fileUploadAdapter.createSignedURL({
+        directoryName,
+        fileName,
+      });
 
       const fileData = getFileFromFileData(preparedFileData, meta);
       const fileId = await mutations.create(fileData, userId);
 
-      FileDirector.registerFileUploadCallback(
-        directoryName,
-        uploadFileCallback
-      );
+      FileDirector.registerFileUploadCallback(directoryName, uploadFileCallback);
 
       return {
         _id: fileId,
@@ -121,18 +100,10 @@ export const configureFilesModule = async ({
     },
 
     removeFiles: async ({ externalFileIds, excludedFileIds }) => {
-      if (
-        externalFileIds &&
-        typeof externalFileIds !== 'string' &&
-        !Array.isArray(externalFileIds)
-      )
-        throw Error(
-          'Media id/s to be removed not provided as a string or array'
-        );
+      if (externalFileIds && typeof externalFileIds !== 'string' && !Array.isArray(externalFileIds))
+        throw Error('Media id/s to be removed not provided as a string or array');
 
-      const selector: Query = excludedFileIds
-        ? { _id: { $nin: excludedFileIds } }
-        : {};
+      const selector: Query = excludedFileIds ? { _id: { $nin: excludedFileIds } } : {};
 
       if (externalFileIds) {
         if (typeof externalFileIds === 'string') {
@@ -150,9 +121,7 @@ export const configureFilesModule = async ({
         },
       });
 
-      const idList = await files
-        .map(fileUploadAdapter.composeFileName)
-        .toArray();
+      const idList = await files.map(fileUploadAdapter.composeFileName).toArray();
 
       await fileUploadAdapter.removeFiles(idList);
 
@@ -162,10 +131,7 @@ export const configureFilesModule = async ({
     },
 
     uploadFileFromStream: async ({ directoryName, rawFile, meta }, userId) => {
-      const uploadFileData = await fileUploadAdapter.uploadFileFromStream(
-        directoryName,
-        rawFile
-      );
+      const uploadFileData = await fileUploadAdapter.uploadFileFromStream(directoryName, rawFile);
       const fileData = getFileFromFileData(uploadFileData, meta);
 
       const fileId = await mutations.create(fileData, userId);
@@ -174,10 +140,7 @@ export const configureFilesModule = async ({
     },
 
     uploadFileFromURL: async (directoryName, fileInput, meta, userId) => {
-      const uploadFileData = await fileUploadAdapter.uploadFileFromURL(
-        directoryName,
-        fileInput
-      );
+      const uploadFileData = await fileUploadAdapter.uploadFileFromURL(directoryName, fileInput);
 
       const fileData = getFileFromFileData(uploadFileData, meta);
 

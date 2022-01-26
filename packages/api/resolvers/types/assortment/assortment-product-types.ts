@@ -5,11 +5,7 @@ import {
 } from '@unchainedshop/types/assortments';
 import { Product } from '@unchainedshop/types/products';
 
-type HelperType<T> = (
-  assortmentProduct: AssortmentProductType,
-  _: never,
-  context: Context
-) => T;
+type HelperType<T> = (assortmentProduct: AssortmentProductType, _: never, context: Context) => T;
 
 type AssortmentProductHelperTypes = {
   assortment: HelperType<Promise<Assortment>>;

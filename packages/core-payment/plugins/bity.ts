@@ -10,11 +10,7 @@ import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 /* @ts-ignore */
 import bodyParser from 'body-parser';
-import {
-  acl,
-  roles,
-  useMiddlewareWithCurrentContext,
-} from 'meteor/unchained:api';
+import { acl, roles, useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 /* @ts-ignore */
@@ -85,17 +81,13 @@ const upsertBityCredentials = async (user, context: Context) => {
     expires: user.expires,
   };
 
-  await context.modules.payment.bityCredentials.upsertCredentials(
-    doc,
-    context.userId
-  );
+  await context.modules.payment.bityCredentials.upsertCredentials(doc, context.userId);
 };
 
 const getTokenFromDb = async (bityAuth, context: Context) => {
-  const credentials =
-    await context.modules.payment.bityCredentials.findBityCredentials({
-      externalId: `${BITY_CLIENT_ID}-${BITY_OAUTH_REDIRECT_URI}-${BITY_OAUTH_STATE}`,
-    });
+  const credentials = await context.modules.payment.bityCredentials.findBityCredentials({
+    externalId: `${BITY_CLIENT_ID}-${BITY_OAUTH_REDIRECT_URI}-${BITY_OAUTH_STATE}`,
+  });
   if (!credentials?.data) return null;
 
   const iv = Buffer.from(credentials.data.iv, 'hex');
@@ -111,12 +103,7 @@ const getTokenFromDb = async (bityAuth, context: Context) => {
   decrypted = Buffer.concat([decrypted, decipher.final()]);
   const data = JSON.parse(decrypted.toString());
 
-  const token = bityAuth.createToken(
-    data.access_token,
-    data.refresh_token,
-    data.token_type,
-    { data }
-  );
+  const token = bityAuth.createToken(data.access_token, data.refresh_token, data.token_type, { data });
   return token;
 };
 
@@ -133,17 +120,11 @@ const signPayload = (...args) => {
   const resultString = args.filter(Boolean).join('');
   const signKeyInBytes = Buffer.from(BITY_CLIENT_ID, 'hex');
 
-  const signedString = crypto
-    .createHmac('sha256', signKeyInBytes)
-    .update(resultString)
-    .digest('hex');
+  const signedString = crypto.createHmac('sha256', signKeyInBytes).update(resultString).digest('hex');
   return signedString;
 };
 
-const bityExchangeFetch = async (
-  params: { path: string; data?: any },
-  context: Context
-) => {
+const bityExchangeFetch = async (params: { path: string; data?: any }, context: Context) => {
   const body = params.data && JSON.stringify(params.data);
   const doFetch = async () => {
     const response = await fetch(`${BITY_API_ENDPOINT}${params.path}`, {
@@ -170,7 +151,7 @@ const createBityOrder = async (data: any, context: Context) => {
       path: '/v2/orders',
       data,
     },
-    context
+    context,
   );
 
   if (response?.status !== 201) {
@@ -191,7 +172,7 @@ const estimateBityOrder = async (data: any, context: Context) => {
       path: '/v2/orders/estimate',
       data,
     },
-    context
+    context,
   );
 
   if (response?.status !== 200) {
@@ -303,9 +284,7 @@ const Bity: IPaymentAdapter = {
 
       sign: async (transactionContext = {}) => {
         // Signing the order will estimate a new order in bity and sign it with private data
-        paymentLogger.info(
-          `Bity Plugin: Sign ${JSON.stringify(transactionContext)}`
-        );
+        paymentLogger.info(`Bity Plugin: Sign ${JSON.stringify(transactionContext)}`);
 
         const { orderPayment } = params.context;
 
@@ -316,9 +295,7 @@ const Bity: IPaymentAdapter = {
           calculation: order.calculation,
           currency: order.currency,
         });
-        const totalAmount =
-          Math.round(pricing?.total({ useNetPrice: false }).amount / 10 || 0) *
-          10;
+        const totalAmount = Math.round(pricing?.total({ useNetPrice: false }).amount / 10 || 0) * 10;
 
         const payload = await estimateBityOrder(
           {
@@ -330,14 +307,14 @@ const Bity: IPaymentAdapter = {
               currency: 'BTC',
             },
           },
-          params.context
+          params.context,
         );
 
         const signature = signPayload(
           JSON.stringify(payload),
           order._id,
           totalAmount,
-          BITY_CLIENT_SECRET
+          BITY_CLIENT_SECRET,
         );
 
         return JSON.stringify({
@@ -358,20 +335,18 @@ const Bity: IPaymentAdapter = {
           Math.round(
             pricing?.total({
               useNetPrice: false,
-            }).amount / 10 || 0
+            }).amount / 10 || 0,
           ) * 10;
 
         const signature = signPayload(
           JSON.stringify(bityPayload),
           order._id,
           totalAmount,
-          BITY_CLIENT_SECRET
+          BITY_CLIENT_SECRET,
         );
         if (bitySignature !== signature) {
           paymentLogger.warn(
-            `Bity Plugin: Signature Mismatch ${JSON.stringify(
-              bityPayload
-            )} ${bitySignature}`
+            `Bity Plugin: Signature Mismatch ${JSON.stringify(bityPayload)} ${bitySignature}`,
           );
           throw new Error('Signature Mismatch');
         }
@@ -396,7 +371,7 @@ const Bity: IPaymentAdapter = {
               },
             },
           },
-          params.context
+          params.context,
         );
 
         paymentLogger.info(`Bity Plugin: Prepared Bity Order`, path);
@@ -405,9 +380,7 @@ const Bity: IPaymentAdapter = {
         const bityOrder = await response?.json();
         if (!bityOrder) {
           paymentLogger.warn(
-            `Bity Plugin: Bity Order not found ${JSON.stringify(
-              path
-            )} ${bitySignature}`
+            `Bity Plugin: Bity Order not found ${JSON.stringify(path)} ${bitySignature}`,
           );
           throw new Error('Bity Order not Found');
         }
@@ -417,7 +390,7 @@ const Bity: IPaymentAdapter = {
           {
             bityOrder,
           },
-          params.context
+          params.context,
         );
 
         return false;

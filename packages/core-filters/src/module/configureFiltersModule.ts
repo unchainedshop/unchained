@@ -1,21 +1,9 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  Filter as DbFilter,
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from '@unchainedshop/types/common';
-import {
-  Filter,
-  FilterCache,
-  FiltersModule,
-} from '@unchainedshop/types/filters';
+import { Filter as DbFilter, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Filter, FilterCache, FiltersModule } from '@unchainedshop/types/filters';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import util from 'util';
 import zlib from 'zlib';
 import { FilterType } from '../db/FilterType';
@@ -46,27 +34,21 @@ export const configureFiltersModule = async ({
 
   const { Filters, FilterTexts } = await FiltersCollection(db);
 
-  const mutations = generateDbMutations<Filter>(
-    Filters,
-    FiltersSchema
-  ) as ModuleMutations<Filter>;
+  const mutations = generateDbMutations<Filter>(Filters, FiltersSchema) as ModuleMutations<Filter>;
 
   const findProductIds = async (
     filter: Filter,
     { value }: { value?: boolean | string },
-    requestContext: Context
+    requestContext: Context,
   ) => {
     const { modules } = requestContext;
-    const director = FilterDirector.actions(
-      { filter, searchQuery: {} },
-      requestContext
-    );
+    const director = FilterDirector.actions({ filter, searchQuery: {} }, requestContext);
     const selector = await director.transformProductSelector(
       modules.products.search.buildActiveStatusFilter(),
       {
         key: filter.key,
         value,
-      }
+      },
     );
 
     if (!selector) return [];
@@ -89,20 +71,13 @@ export const configureFiltersModule = async ({
         false: await findProductIds(filter, { value: false }, requestContext),
       };
     } else {
-      cache.productIds = await (filter.options || []).reduce(
-        async (accumulatorPromise, option) => {
-          const accumulator = await accumulatorPromise;
-          return {
-            ...accumulator,
-            [option]: await findProductIds(
-              filter,
-              { value: option },
-              requestContext
-            ),
-          };
-        },
-        Promise.resolve({})
-      );
+      cache.productIds = await (filter.options || []).reduce(async (accumulatorPromise, option) => {
+        const accumulator = await accumulatorPromise;
+        return {
+          ...accumulator,
+          [option]: await findProductIds(filter, { value: option }, requestContext),
+        };
+      }, Promise.resolve({}));
     }
 
     return cache;
@@ -131,7 +106,7 @@ export const configureFiltersModule = async ({
           ...accumulator,
           [key]: value,
         }),
-        {}
+        {},
       ),
     };
     //   filter._isCacheTransformed = true;
@@ -142,11 +117,8 @@ export const configureFiltersModule = async ({
 
   const filterProductIds = async (
     filter: Filter,
-    {
-      values,
-      forceLiveCollection,
-    }: { values: Array<string>; forceLiveCollection?: boolean },
-    requestContext: Context
+    { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
+    requestContext: Context,
   ) => {
     const getProductIds =
       (!forceLiveCollection && (await cache(filter))) ||
@@ -157,11 +129,7 @@ export const configureFiltersModule = async ({
     if (filter.type === FilterType.SWITCH) {
       const [stringifiedBoolean] = values;
       if (stringifiedBoolean !== undefined) {
-        if (
-          !stringifiedBoolean ||
-          stringifiedBoolean === 'false' ||
-          stringifiedBoolean === '0'
-        ) {
+        if (!stringifiedBoolean || stringifiedBoolean === 'false' || stringifiedBoolean === '0') {
           return productIds.false;
         }
         return productIds.true;
@@ -170,25 +138,18 @@ export const configureFiltersModule = async ({
     }
 
     const reducedByValues = values.reduce((accumulator, value) => {
-      const additionalValues =
-        value === undefined ? allProductIds : productIds[value];
+      const additionalValues = value === undefined ? allProductIds : productIds[value];
       return [...accumulator, ...(additionalValues || [])];
     }, []);
     return reducedByValues;
   };
 
-  const invalidateProductIdCache = async (
-    filter: Filter,
-    requestContext: Context
-  ) => {
+  const invalidateProductIdCache = async (filter: Filter, requestContext: Context) => {
     if (!filter) return;
 
     log(`Filters: Rebuilding ${filter.key}`, { level: LogLevel.Verbose });
 
-    const { productIds, allProductIds } = await buildProductIdMap(
-      filter,
-      requestContext
-    );
+    const { productIds, allProductIds } = await buildProductIdMap(filter, requestContext);
     const cache: FilterCache = {
       allProductIds,
       productIds: Object.values(productIds).flatMap((ids) => ids),
@@ -196,9 +157,7 @@ export const configureFiltersModule = async ({
 
     const gzip = util.promisify(zlib.gzip);
     const compressedCache =
-      allProductIds.length > MAX_UNCOMPRESSED_FILTER_PRODUCTS
-        ? await gzip(JSON.stringify(cache))
-        : null;
+      allProductIds.length > MAX_UNCOMPRESSED_FILTER_PRODUCTS ? await gzip(JSON.stringify(cache)) : null;
 
     await Filters.updateOne(generateDbFilterById(filter._id), {
       $set: {
@@ -211,10 +170,7 @@ export const configureFiltersModule = async ({
     });
   };
 
-  const invalidateCache = async (
-    selector: DbFilter<Filter>,
-    requestContext: Context
-  ) => {
+  const invalidateCache = async (selector: DbFilter<Filter>, requestContext: Context) => {
     log('Filters: Start invalidating filter caches', {
       level: LogLevel.Verbose,
     });
@@ -222,9 +178,7 @@ export const configureFiltersModule = async ({
     const filters = await Filters.find(selector || {}).toArray();
 
     await Promise.all(
-      filters.map(
-        async (filter) => await invalidateProductIdCache(filter, requestContext)
-      )
+      filters.map(async (filter) => await invalidateProductIdCache(filter, requestContext)),
     );
   };
 
@@ -282,7 +236,7 @@ export const configureFiltersModule = async ({
     create: async (
       { locale, title, type, isActive = false, authorId, ...filterData },
       requestContext,
-      options
+      options,
     ) => {
       const { userId } = requestContext;
 
@@ -294,7 +248,7 @@ export const configureFiltersModule = async ({
           authorId,
           ...filterData,
         },
-        userId
+        userId,
       );
 
       const filter = await Filters.findOne(generateDbFilterById(filterId));
@@ -304,7 +258,7 @@ export const configureFiltersModule = async ({
           { filterId },
           locale,
           { filterId, title, authorId, locale },
-          userId
+          userId,
         );
       }
 
@@ -334,7 +288,7 @@ export const configureFiltersModule = async ({
         { filterId, filterOptionValue: value },
         localeContext.language,
         { title, authorId: userId, filterId, filterOptionValue: value },
-        userId
+        userId,
       );
 
       return Filters.findOne(selector);
@@ -345,9 +299,7 @@ export const configureFiltersModule = async ({
 
       await filterTexts.deleteMany(filterId, userId);
 
-      const deletedResult = await Filters.deleteOne(
-        generateDbFilterById(filterId)
-      );
+      const deletedResult = await Filters.deleteOne(generateDbFilterById(filterId));
 
       if (deletedResult.deletedCount === 1 && !options?.skipInvalidation) {
         // Invalidate all filters

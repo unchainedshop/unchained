@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function work(
   root: Root,
   { workId }: { workId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query work ${workId}`, { userId });
 

@@ -5,16 +5,10 @@ import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async (
   root: Root,
-  {
-    paymentProviderId,
-    ...paymentProvider
-  }: { paymentProviderId: string } & PaymentProvider,
-  { modules, userId }: Context
+  { paymentProviderId, ...paymentProvider }: { paymentProviderId: string } & PaymentProvider,
+  { modules, userId }: Context,
 ) => {
-  log(
-    `mutation signPaymentProviderForCredentialRegistration ${paymentProviderId}`,
-    { userId }
-  );
+  log(`mutation signPaymentProviderForCredentialRegistration ${paymentProviderId}`, { userId });
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
   if (

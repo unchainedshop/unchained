@@ -6,7 +6,7 @@ import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors';
 export default async function updateProductReview(
   root: Root,
   params: { productReviewId: string; productReview: ProductReview },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { productReviewId, productReview } = params;
 
@@ -17,9 +17,5 @@ export default async function updateProductReview(
   if (!(await modules.products.reviews.reviewExists({ productReviewId })))
     throw new ProductReviewNotFoundError({ productReviewId });
 
-  return modules.products.reviews.update(
-    productReviewId,
-    productReview,
-    userId
-  );
+  return modules.products.reviews.update(productReviewId, productReview, userId);
 }

@@ -32,9 +32,7 @@ export const DeliveryPricingAdapter: IPricingAdapter<
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>
-          basePricingAdapter.log(
-            `Delivery Calculation -> ${category} ${amount}`
-          )
+          basePricingAdapter.log(`Delivery Calculation -> ${category} ${amount}`),
         );
         return resultRaw;
       },

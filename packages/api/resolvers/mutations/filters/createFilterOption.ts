@@ -5,7 +5,7 @@ import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 export default async function createFilterOption(
   root: Root,
   params: { filterId: string; option: { value: string; title: string } },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
   const { filterId, option } = params;

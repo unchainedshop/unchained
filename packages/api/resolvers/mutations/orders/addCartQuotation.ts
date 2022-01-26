@@ -18,7 +18,7 @@ export default async function addCartQuotation(
     quantity: number;
     configuration: Configuration;
   },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
   const { orderId, quotationId, quantity, configuration } = params;
@@ -27,7 +27,7 @@ export default async function addCartQuotation(
     `mutation addCartQuotation ${quotationId} ${quantity} ${
       configuration ? JSON.stringify(configuration) : ''
     }`,
-    { userId, orderId }
+    { userId, orderId },
   );
 
   if (!quotationId) throw new InvalidIdError({ quotationId });
@@ -48,15 +48,14 @@ export default async function addCartQuotation(
     productId: quotation.productId,
   });
 
-  const quotationConfiguration =
-    await modules.quotations.transformItemConfiguration(
-      quotation,
-      {
-        quantity,
-        configuration,
-      },
-      context
-    );
+  const quotationConfiguration = await modules.quotations.transformItemConfiguration(
+    quotation,
+    {
+      quantity,
+      configuration,
+    },
+    context,
+  );
 
   return modules.orders.positions.addProductItem(
     {
@@ -65,6 +64,6 @@ export default async function addCartQuotation(
       quotationId,
     },
     { order, product },
-    context
+    context,
   );
 }

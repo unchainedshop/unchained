@@ -63,35 +63,27 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
 }
 
-export type IPricingSheet<Calculation extends PricingCalculation> =
-  IBasePricingSheet<Calculation> & {
-    feeSum: () => number;
-    discountSum: (discountId: string) => number;
-    discountPrices: (explicitDiscountId?: string) => Array<PricingDiscount>;
+export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricingSheet<Calculation> & {
+  feeSum: () => number;
+  discountSum: (discountId: string) => number;
+  discountPrices: (explicitDiscountId?: string) => Array<PricingDiscount>;
 
-    addDiscount: (params: {
-      amount: number;
-      isTaxable: boolean;
-      isNetPrice: boolean;
-      discountId: string;
-      meta?: any;
-    }) => void;
-    addFee: (params: {
-      amount: number;
-      isTaxable: boolean;
-      isNetPrice: boolean;
-      meta?: any;
-    }) => void;
-    addTax: (params: { amount: number; rate: number; meta?: any }) => void;
+  addDiscount: (params: {
+    amount: number;
+    isTaxable: boolean;
+    isNetPrice: boolean;
+    discountId: string;
+    meta?: any;
+  }) => void;
+  addFee: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta?: any }) => void;
+  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
 
-    getFeeRows: () => Array<Calculation>;
-    getDiscountRows: (discountId: string) => Array<Calculation>;
-    getTaxRows: () => Array<Calculation>;
-  };
+  getFeeRows: () => Array<Calculation>;
+  getDiscountRows: (discountId: string) => Array<Calculation>;
+  getTaxRows: () => Array<Calculation>;
+};
 
-export interface IPricingAdapterActions<
-  Calculation extends PricingCalculation
-> {
+export interface IPricingAdapterActions<Calculation extends PricingCalculation> {
   calculate: () => Promise<Array<Calculation>>;
   resultSheet: () => IBasePricingSheet<Calculation>;
 }
@@ -99,7 +91,7 @@ export interface IPricingAdapterActions<
 export type IPricingAdapter<
   PricingContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  Sheet extends IBasePricingSheet<Calculation>
+  Sheet extends IBasePricingSheet<Calculation>,
 > = IBaseAdapter & {
   orderIndex: number;
 
@@ -119,15 +111,12 @@ export type IPricingDirector<
   PricingContext extends BasePricingContext,
   PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  Adapter extends IBaseAdapter
+  Adapter extends IBaseAdapter,
 > = IBaseDirector<Adapter> & {
-  buildPricingContext: (
-    context: any,
-    requestContext: Context
-  ) => Promise<PricingAdapterContext>;
+  buildPricingContext: (context: any, requestContext: Context) => Promise<PricingAdapterContext>;
   actions: (
     pricingContext: PricingContext,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<IPricingAdapterActions<Calculation>>;
   getCalculation: () => Array<Calculation>;
   getContext: () => PricingAdapterContext | null;
@@ -137,7 +126,7 @@ export type IBasePricingDirector<
   PricingContext extends BasePricingContext,
   PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  Adapter extends IBaseAdapter
+  Adapter extends IBaseAdapter,
 > = Omit<
   IPricingDirector<PricingContext, PricingAdapterContext, Calculation, Adapter>,
   'actions' | 'buildPricingContext'
@@ -145,9 +134,6 @@ export type IBasePricingDirector<
   actions: (
     pricingContext: PricingContext,
     requestContext: Context,
-    buildPricingContext: (
-      context: any,
-      requestContext: Context
-    ) => Promise<PricingAdapterContext>
+    buildPricingContext: (context: any, requestContext: Context) => Promise<PricingAdapterContext>,
   ) => Promise<IPricingAdapterActions<Calculation>>;
 };

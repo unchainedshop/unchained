@@ -1,19 +1,11 @@
 import { ModuleInput } from '@unchainedshop/types/common';
 import { LanguagesModule, Language } from '@unchainedshop/types/languages';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbMutations,
-  generateDbFilterById,
-  systemLocale,
-} from 'meteor/unchained:utils';
+import { generateDbMutations, generateDbFilterById, systemLocale } from 'meteor/unchained:utils';
 import { LanguagesCollection } from '../db/LanguagesCollection';
 import { LanguagesSchema } from '../db/LanguagesSchema';
 
-const LANGUAGE_EVENTS: string[] = [
-  'LANGUAGE_CREATE',
-  'LANGUAGE_UPDATE',
-  'LANGUAGE_REMOVE',
-];
+const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 
 type FindQuery = {
   includeInactive?: boolean;
@@ -35,9 +27,7 @@ export const configureLanguagesModule = async ({
 
   return {
     findLanguage: async ({ languageId, isoCode }) => {
-      return Languages.findOne(
-        languageId ? generateDbFilterById(languageId) : { isoCode }
-      );
+      return Languages.findOne(languageId ? generateDbFilterById(languageId) : { isoCode });
     },
 
     findLanguages: async ({ limit, offset, includeInactive }, options) => {
@@ -55,10 +45,7 @@ export const configureLanguagesModule = async ({
     },
 
     languageExists: async ({ languageId }) => {
-      const languageCount = await Languages.find(
-        { _id: languageId },
-        { limit: 1 }
-      ).count();
+      const languageCount = await Languages.find({ _id: languageId }, { limit: 1 }).count();
       return !!languageCount;
     },
 
@@ -73,7 +60,7 @@ export const configureLanguagesModule = async ({
           isoCode: doc.isoCode.toLowerCase(),
           isActive: true,
         },
-        userId
+        userId,
       );
       emit('LANGUAGE_CREATE', { languageId });
       return languageId;
@@ -85,7 +72,7 @@ export const configureLanguagesModule = async ({
           ...doc,
           isoCode: doc.isoCode.toLowerCase(),
         },
-        userId
+        userId,
       );
       emit('LANGUAGE_UPDATE', { languageId });
       return languageId;

@@ -6,7 +6,7 @@ import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeProductReviewVote(
   root: Root,
   params: { productReviewId: string; type: ProductReviewVoteType },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { productReviewId, type } = params;
 
@@ -19,9 +19,5 @@ export default async function removeProductReviewVote(
   });
   if (!productReview) throw new ProductReviewNotFoundError({ productReviewId });
 
-  return modules.products.reviews.votes.removeVote(
-    productReviewId,
-    { type, userId },
-    userId
-  );
+  return modules.products.reviews.votes.removeVote(productReviewId, { type, userId }, userId);
 }

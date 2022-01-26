@@ -1,10 +1,6 @@
 import { AddressSchema } from './schemas/AddressSchema';
 import { ContactSchema } from './schemas/ContactSchema';
-import {
-  timestampFields,
-  contextFields,
-  logFields,
-} from './schemas/commonSchemaFields';
+import { timestampFields, contextFields, logFields } from './schemas/commonSchemaFields';
 import { UserSchema } from './schemas/UsersSchema';
 
 export { default as findLocalizedText } from './find-localized-text';

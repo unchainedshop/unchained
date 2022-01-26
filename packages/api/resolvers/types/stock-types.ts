@@ -22,7 +22,7 @@ export const Stock = {
           params.referenceDate,
           params.country,
           params.userId || 'ANONYMOUS',
-        ].join('')
+        ].join(''),
       )
       .digest('hex'),
 };

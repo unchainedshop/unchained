@@ -1,20 +1,10 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  Collection,
-  Filter,
-  ModuleMutations,
-} from '@unchainedshop/types/common';
+import { Collection, Filter, ModuleMutations } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
-import {
-  OrderDiscount,
-  OrderDiscountsModule,
-} from '@unchainedshop/types/orders.discounts';
+import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector';
@@ -45,13 +35,10 @@ export const configureOrderDiscountsModule = ({
 
   const mutations = generateDbMutations<OrderDiscount>(
     OrderDiscounts,
-    OrderDiscountsSchema
+    OrderDiscountsSchema,
   ) as ModuleMutations<OrderDiscount>;
 
-  const getAdapter = async (
-    orderDiscount: OrderDiscount,
-    requestContext: Context
-  ) => {
+  const getAdapter = async (orderDiscount: OrderDiscount, requestContext: Context) => {
     const order = await requestContext.modules.orders.findOrder({
       orderId: orderDiscount.orderId,
     });
@@ -62,31 +49,19 @@ export const configureOrderDiscountsModule = ({
     return adapter;
   };
 
-  const createDiscount: OrderDiscountsModule['create'] = async (
-    doc,
-    userId
-  ) => {
+  const createDiscount: OrderDiscountsModule['create'] = async (doc, userId) => {
     const normalizedTrigger = doc.trigger || OrderDiscountTrigger.USER;
 
-    log(
-      `Create Order Discount: ${doc.discountKey} with trigger ${normalizedTrigger}`,
-      { orderId: doc.orderId }
-    );
+    log(`Create Order Discount: ${doc.discountKey} with trigger ${normalizedTrigger}`, {
+      orderId: doc.orderId,
+    });
 
-    const discountId = await mutations.create(
-      { ...doc, trigger: normalizedTrigger },
-      userId
-    );
-    const discount = await OrderDiscounts.findOne(
-      buildFindByIdSelector(discountId)
-    );
+    const discountId = await mutations.create({ ...doc, trigger: normalizedTrigger }, userId);
+    const discount = await OrderDiscounts.findOne(buildFindByIdSelector(discountId));
     return discount;
   };
 
-  const deleteDiscount: OrderDiscountsModule['delete'] = async (
-    orderDiscountId,
-    requestContext
-  ) => {
+  const deleteDiscount: OrderDiscountsModule['delete'] = async (orderDiscountId, requestContext) => {
     const selector = buildFindByIdSelector(orderDiscountId);
     const discount = await OrderDiscounts.findOne(selector);
 
@@ -109,11 +84,7 @@ export const configureOrderDiscountsModule = ({
     return discount;
   };
 
-  const updateDiscount: OrderDiscountsModule['update'] = async (
-    orderDiscountId,
-    doc,
-    userId
-  ) => {
+  const updateDiscount: OrderDiscountsModule['update'] = async (orderDiscountId, doc, userId) => {
     await mutations.update(orderDiscountId, doc, userId);
 
     const selector = buildFindByIdSelector(orderDiscountId);
@@ -122,10 +93,7 @@ export const configureOrderDiscountsModule = ({
     return discount;
   };
 
-  const reserveDiscount = async (
-    orderDiscount: OrderDiscount,
-    requestContext: Context
-  ) => {
+  const reserveDiscount = async (orderDiscount: OrderDiscount, requestContext: Context) => {
     const adapter = await getAdapter(orderDiscount, requestContext);
     if (!adapter) return null;
 
@@ -133,42 +101,26 @@ export const configureOrderDiscountsModule = ({
       code: orderDiscount.code,
     });
 
-    return updateDiscount(
-      orderDiscount._id,
-      reservation,
-      requestContext.userId
-    );
+    return updateDiscount(orderDiscount._id, reservation, requestContext.userId);
   };
 
-  const grabDiscount = async (
-    { code, orderId }: OrderDiscount,
-    requestContext: Context
-  ) => {
+  const grabDiscount = async ({ code, orderId }: OrderDiscount, requestContext: Context) => {
     log(`OrderDiscounts -> Try to grab ${code}`, { orderId });
 
     const existingDiscount = await OrderDiscounts.findOne({ code, orderId });
 
-    if (existingDiscount)
-      throw new Error(OrderDiscountErrorCode.CODE_ALREADY_PRESENT);
+    if (existingDiscount) throw new Error(OrderDiscountErrorCode.CODE_ALREADY_PRESENT);
 
     const discount = await OrderDiscounts.findOne({ code, orderId: null });
     if (!discount) return null;
 
     const discountId = discount._id;
     try {
-      const updatedDiscount = await updateDiscount(
-        discountId,
-        { orderId },
-        requestContext.userId
-      );
+      const updatedDiscount = await updateDiscount(discountId, { orderId }, requestContext.userId);
       return reserveDiscount(updatedDiscount, requestContext);
     } catch (error) {
       // Rollback
-      await updateDiscount(
-        discountId,
-        { orderId: discount.orderId },
-        requestContext.userId
-      );
+      await updateDiscount(discountId, { orderId: discount.orderId }, requestContext.userId);
 
       throw error;
     }
@@ -204,11 +156,7 @@ export const configureOrderDiscountsModule = ({
     },
 
     // Adapter
-    configurationForPricingAdapterKey: async (
-      orderDiscount,
-      adapterKey,
-      requestContext
-    ) => {
+    configurationForPricingAdapterKey: async (orderDiscount, adapterKey, requestContext) => {
       const adapter = await getAdapter(orderDiscount, requestContext);
       if (!adapter) return null;
 
@@ -227,10 +175,7 @@ export const configureOrderDiscountsModule = ({
       if (fetchedDiscount) return fetchedDiscount;
 
       const order = await requestContext.modules.orders.findOrder({ orderId });
-      const director = OrderDiscountDirector.actions(
-        { order, orderDiscount: doc },
-        requestContext
-      );
+      const director = OrderDiscountDirector.actions({ order, orderDiscount: doc }, requestContext);
       const discountKey = await director.resolveDiscountKeyFromStaticCode({
         code,
       });
@@ -241,14 +186,11 @@ export const configureOrderDiscountsModule = ({
             ...doc,
             discountKey,
           },
-          requestContext.userId
+          requestContext.userId,
         );
 
         let reservedDiscount: OrderDiscount;
-        reservedDiscount = await reserveDiscount(
-          newDiscount,
-          requestContext
-        ).catch(async (error) => {
+        reservedDiscount = await reserveDiscount(newDiscount, requestContext).catch(async (error) => {
           // Rollback
           await deleteDiscount(newDiscount._id, requestContext);
           throw error;

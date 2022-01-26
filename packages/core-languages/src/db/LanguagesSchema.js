@@ -8,5 +8,5 @@ export const LanguagesSchema = new SimpleSchema(
     authorId: { type: String, required: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

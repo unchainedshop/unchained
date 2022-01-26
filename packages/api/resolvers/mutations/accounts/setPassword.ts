@@ -5,7 +5,7 @@ import { UserNotFoundError, InvalidIdError } from '../../../errors';
 export default async function setPassword(
   root: Root,
   params: { newPassword: string; newPlainPassword: string; userId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const normalizedUserId = params.userId || userId;
 

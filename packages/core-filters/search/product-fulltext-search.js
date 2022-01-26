@@ -1,12 +1,6 @@
 import { FilterDirector } from 'meteor/unchained:core-filters';
 
-export default ({
-  query,
-  filterSelector,
-  productSelector,
-  sortStage,
-  ...options
-}) => {
+export default ({ query, filterSelector, productSelector, sortStage, ...options }) => {
   const director = new FilterDirector({
     query,
     ...options,

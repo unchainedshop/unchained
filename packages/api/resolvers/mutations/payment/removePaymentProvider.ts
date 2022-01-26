@@ -5,7 +5,7 @@ import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors';
 export default async (
   root: Root,
   { paymentProviderId }: { paymentProviderId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) => {
   log(`mutation removePaymentProvider ${paymentProviderId}`, { userId });
 

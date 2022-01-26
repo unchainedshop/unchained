@@ -22,10 +22,7 @@ export interface AccountsModule {
   emit: (event: string, meta: any) => Promise<void>;
 
   // Mutations
-  createUser: (
-    userData: UserData,
-    options: { skipMessaging?: boolean }
-  ) => Promise<string>;
+  createUser: (userData: UserData, options: { skipMessaging?: boolean }) => Promise<string>;
 
   // Email
   addEmail: (userId: string, email: string) => Promise<void>;
@@ -38,7 +35,7 @@ export interface AccountsModule {
   // Authentication
   createLoginToken: (
     userId: string,
-    context: Context
+    context: Context,
   ) => Promise<{
     id: string;
     token: string;
@@ -53,16 +50,13 @@ export interface AccountsModule {
           password: string;
           code?: string;
         },
-    context: Context
+    context: Context,
   ) => Promise<{
     id: string;
     token: string;
     tokenExpires: Date;
   }>;
-  logout: (
-    params: { token?: string },
-    context: Context
-  ) => Promise<{ success: boolean; error: any }>;
+  logout: (params: { token?: string }, context: Context) => Promise<{ success: boolean; error: any }>;
 
   // User Management
   setUsername: (userId: string, username: string) => Promise<void>;
@@ -71,7 +65,7 @@ export interface AccountsModule {
     params: {
       newPassword?: string;
       newPlainPassword?: string;
-    }
+    },
   ) => Promise<void>;
   changePassword: (
     userId: string,
@@ -80,21 +74,17 @@ export interface AccountsModule {
       newPlainPassword?: string;
       oldPassword?: string;
       oldPlainPassword?: string;
-    }
+    },
   ) => Promise<void>;
   resetPassword: (
     params: { newPassword?: string; newPlainPassword?: string; token: string },
-    context: Context
+    context: Context,
   ) => Promise<AccountsUser>;
   sendResetPasswordEmail: (email: string) => Promise<boolean>;
 
   // TOTP
   buildTOTPSecret: () => string;
-  enableTOTP: (
-    userId: string,
-    secret: string,
-    code: string
-  ) => Promise<boolean>;
+  enableTOTP: (userId: string, secret: string, code: string) => Promise<boolean>;
   disableTOTP: (userId: string, code: string) => Promise<boolean>;
 }
 

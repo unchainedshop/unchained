@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../../errors';
 export default async function updateEmail(
   root: Root,
   params: { email: string; userId?: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const normalizedUserId = params.userId || userId;
 

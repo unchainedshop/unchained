@@ -67,7 +67,7 @@ export type Enrollment = {
 export interface EnrollmentQueries {
   findEnrollment: (
     params: { enrollmentId?: string; orderId?: string },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Enrollment>;
   findEnrollments: (params: {
     status?: Array<EnrollmentStatus>;
@@ -82,10 +82,7 @@ export interface EnrollmentQueries {
 
 export interface EnrollmentTransformations {
   normalizedStatus: (enrollment: Enrollment) => string;
-  isExpired: (
-    enrollment: Enrollment,
-    params: { referenceDate?: Date }
-  ) => boolean;
+  isExpired: (enrollment: Enrollment, params: { referenceDate?: Date }) => boolean;
 }
 
 // Processing
@@ -93,7 +90,7 @@ export interface EnrollmentTransformations {
 type EnrollmentContextParams = (
   enrollment: Enrollment,
   params: { enrollmentContext?: any },
-  requestContext: Context
+  requestContext: Context,
 ) => Promise<Enrollment>;
 
 export interface EnrollmentProcessing {
@@ -121,7 +118,7 @@ export interface EnrollmentMutations {
   addEnrollmentPeriod: (
     enrollmentId: string,
     period: EnrollmentPeriod,
-    userId?: string
+    userId?: string,
   ) => Promise<Enrollment>;
 
   create: (doc: EnrollmentData, requestContext: Context) => Promise<Enrollment>;
@@ -138,7 +135,7 @@ export interface EnrollmentMutations {
         deliveryContext?: any;
       };
     },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Array<Enrollment>>;
 
   delete: (enrollmentId: string, userId?: string) => Promise<number>;
@@ -146,49 +143,41 @@ export interface EnrollmentMutations {
   removeEnrollmentPeriodByOrderId: (
     enrollmentId: string,
     orderId: string,
-    userId?: string
+    userId?: string,
   ) => Promise<Enrollment>;
 
   updateBillingAddress: (
     enrollmentId: string,
     billingAddress: Address,
-    userId?: string
+    userId?: string,
   ) => Promise<Enrollment>;
 
-  updateContact: (
-    enrollmentId: string,
-    contact: Contact,
-    userId?: string
-  ) => Promise<Enrollment>;
+  updateContact: (enrollmentId: string, contact: Contact, userId?: string) => Promise<Enrollment>;
 
-  updateContext: (
-    enrollmentId: string,
-    context: any,
-    userId?: string
-  ) => Promise<Enrollment>;
+  updateContext: (enrollmentId: string, context: any, userId?: string) => Promise<Enrollment>;
 
   updateDelivery: (
     enrollmentId: string,
     delivery: Enrollment['delivery'],
-    userId?: string
+    userId?: string,
   ) => Promise<Enrollment>;
 
   updatePayment: (
     enrollmentId: string,
     payment: Enrollment['payment'],
-    userId?: string
+    userId?: string,
   ) => Promise<Enrollment>;
 
   updatePlan: (
     enrollmentId: string,
     plan: EnrollmentPlan,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Enrollment>;
 
   updateStatus: (
     enrollmentId: string,
     params: { status: EnrollmentStatus; info?: string },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Enrollment>;
 }
 
@@ -212,10 +201,7 @@ export interface EnrollmentAdapterActions {
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
   nextPeriod: () => Promise<EnrollmentPeriod>;
-  shouldTriggerAction: (params: {
-    period: EnrollmentPeriod;
-    action?: any;
-  }) => Promise<boolean>;
+  shouldTriggerAction: (params: { period: EnrollmentPeriod; action?: any }) => Promise<boolean>;
 }
 
 export type IEnrollmentAdapter = IBaseAdapter & {
@@ -223,7 +209,7 @@ export type IEnrollmentAdapter = IBaseAdapter & {
 
   transformOrderItemToEnrollmentPlan: (
     orderPosition: OrderPosition,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<EnrollmentPlan>;
 
   actions: (params: EnrollmentContext & Context) => EnrollmentAdapterActions;
@@ -233,12 +219,12 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   transformOrderItemToEnrollment: (
     item: { orderPosition: OrderPosition; product: Product },
     doc: Omit<EnrollmentData, 'configuration' | 'productId' | 'quantity'>,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<EnrollmentData>;
 
   actions: (
     enrollmentContext: EnrollmentContext,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<EnrollmentAdapterActions>;
 };
 

@@ -8,10 +8,7 @@ import {
   DeliverySettingsOptions,
 } from '@unchainedshop/types/delivery';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection';
 import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema';
 import { deliverySettings } from '../delivery-settings';
@@ -49,18 +46,15 @@ export const configureDeliveryModule = async ({
 
   const mutations = generateDbMutations<DeliveryProvider>(
     DeliveryProviders,
-    DeliveryProvidersSchema
+    DeliveryProvidersSchema,
   ) as ModuleMutations<DeliveryProvider>;
 
   const getDeliveryAdapter = async (
     deliveryProviderId: string,
     deliveryContext: DeliveryContext,
-    requestContext: Context
+    requestContext: Context,
   ) => {
-    const provider = await DeliveryProviders.findOne(
-      generateDbFilterById(deliveryProviderId),
-      {}
-    );
+    const provider = await DeliveryProviders.findOne(generateDbFilterById(deliveryProviderId), {});
 
     return DeliveryDirector.actions(provider, deliveryContext, requestContext);
   };
@@ -68,31 +62,26 @@ export const configureDeliveryModule = async ({
   return {
     // Queries
     count: async (query) => {
-      const providerCount = await DeliveryProviders.find(
-        buildFindSelector(query)
-      ).count();
+      const providerCount = await DeliveryProviders.find(buildFindSelector(query)).count();
       return providerCount;
     },
 
     findProvider: async ({ deliveryProviderId, ...query }, options) => {
       return DeliveryProviders.findOne(
         deliveryProviderId ? generateDbFilterById(deliveryProviderId) : query,
-        options
+        options,
       );
     },
 
     findProviders: async (query, options) => {
-      const providers = DeliveryProviders.find(
-        buildFindSelector(query),
-        options
-      );
+      const providers = DeliveryProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },
 
     providerExists: async ({ deliveryProviderId }) => {
       const providerCount = await DeliveryProviders.find(
         generateDbFilterById(deliveryProviderId, { deleted: null }),
-        { limit: 1 }
+        { limit: 1 },
       ).count();
       return !!providerCount;
     },
@@ -119,7 +108,7 @@ export const configureDeliveryModule = async ({
           const director = DeliveryDirector.actions(
             provider,
             getDefaultContext({ order }),
-            requestContext
+            requestContext,
           );
           return director.isActive();
         })
@@ -131,11 +120,7 @@ export const configureDeliveryModule = async ({
     },
 
     isAutoReleaseAllowed: (deliveryProvider, requestContext) => {
-      const director = DeliveryDirector.actions(
-        deliveryProvider,
-        {},
-        requestContext
-      );
+      const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
 
       if (director.isAutoReleaseAllowed()) return false;
 
@@ -143,19 +128,12 @@ export const configureDeliveryModule = async ({
     },
 
     calculate: async (pricingContext, requestContext) => {
-      const pricing = await DeliveryPricingDirector.actions(
-        pricingContext,
-        requestContext
-      );
+      const pricing = await DeliveryPricingDirector.actions(pricingContext, requestContext);
       return pricing.calculate();
     },
 
     send: async (deliveryProviderId, deliveryContext, requestContext) => {
-      const adapter = await getDeliveryAdapter(
-        deliveryProviderId,
-        deliveryContext,
-        requestContext
-      );
+      const adapter = await getDeliveryAdapter(deliveryProviderId, deliveryContext, requestContext);
       adapter.send();
     },
 
@@ -169,12 +147,10 @@ export const configureDeliveryModule = async ({
           configuration: Adapter.initialConfiguration,
           ...doc,
         },
-        userId
+        userId,
       );
 
-      const deliveryProvider = await DeliveryProviders.findOne(
-        generateDbFilterById(deliveryProviderId)
-      );
+      const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(deliveryProviderId));
 
       emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
 
@@ -183,9 +159,7 @@ export const configureDeliveryModule = async ({
 
     update: async (_id: string, doc: DeliveryProvider, userId: string) => {
       await mutations.update(_id, doc, userId);
-      const deliveryProvider = await DeliveryProviders.findOne(
-        generateDbFilterById(_id)
-      );
+      const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id));
       emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
 
       return deliveryProvider;
@@ -193,9 +167,7 @@ export const configureDeliveryModule = async ({
 
     delete: async (_id, userId) => {
       await mutations.delete(_id, userId);
-      const deliveryProvider = await DeliveryProviders.findOne(
-        generateDbFilterById(_id)
-      );
+      const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id));
 
       emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
 

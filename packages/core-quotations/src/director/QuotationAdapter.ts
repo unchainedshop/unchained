@@ -3,10 +3,7 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 import { IQuotationAdapter } from '@unchainedshop/types/quotations';
 import { QuotationError } from './QuotationError';
 
-export const QuotationAdapter: Omit<
-  IQuotationAdapter,
-  'key' | 'label' | 'version'
-> = {
+export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'version'> = {
   orderIndex: 0,
 
   isActivatedFor: () => {

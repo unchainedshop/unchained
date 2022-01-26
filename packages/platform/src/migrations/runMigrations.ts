@@ -15,10 +15,7 @@ export const runMigrations = async ({
   const LastMigration = db.collection('last-migration');
 
   const findCurrentId = async () => {
-    const last = await LastMigration.findOne(
-      { category: 'unchained' },
-      { sort: { _id: -1 } }
-    );
+    const last = await LastMigration.findOne({ category: 'unchained' }, { sort: { _id: -1 } });
     const id = last ? last._id : 0;
     logger.verbose(`Most recent migration id: ${id}`);
     return id;
@@ -37,7 +34,7 @@ export const runMigrations = async ({
       },
       {
         upsert: true,
-      }
+      },
     );
     logger.verbose(`Migrated '${action}' to ${id}`);
     return id;
@@ -54,15 +51,11 @@ export const runMigrations = async ({
   const [lastMigrationId, operationCount] = await runner.run();
   if (operationCount !== null) {
     if (operationCount > 0) {
-      logger.info(
-        `All ${operationCount} migrations completed with most recent id: ${lastMigrationId}`
-      );
+      logger.info(`All ${operationCount} migrations completed with most recent id: ${lastMigrationId}`);
     } else {
       logger.info(`No migrations run, already at latest id: ${currentId}`);
     }
   } else {
-    logger.info(
-      `Some migrations failed, last successful id: ${lastMigrationId}`
-    );
+    logger.info(`Some migrations failed, last successful id: ${lastMigrationId}`);
   }
 };

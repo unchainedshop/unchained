@@ -1,10 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { Collection } from '@unchainedshop/types/common';
-import {
-  Filter,
-  FiltersModule,
-  FilterText,
-} from '@unchainedshop/types/filters';
+import { Filter, FiltersModule, FilterText } from '@unchainedshop/types/filters';
 import { Product } from '@unchainedshop/types/products';
 import { FilterDirector } from '../director/FilterDirector';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch';
@@ -31,22 +27,12 @@ export const configureFilterSearchModule = ({
   filterProductIds: FilterProductIds;
 }): FiltersModule['search'] => {
   return {
-    searchAssortments: async (
-      searchQuery,
-      { forceLiveCollection },
-      requestContext
-    ) => {
+    searchAssortments: async (searchQuery, { forceLiveCollection }, requestContext) => {
       const { modules } = requestContext;
-      const filterActions = FilterDirector.actions(
-        { searchQuery },
-        requestContext
-      );
+      const filterActions = FilterDirector.actions({ searchQuery }, requestContext);
 
       const query = cleanQuery(searchQuery);
-      const filterSelector = await resolveFilterSelector(
-        searchQuery,
-        filterActions
-      );
+      const filterSelector = await resolveFilterSelector(searchQuery, filterActions);
       const assortmentSelector = resolveAssortmentSelector(searchQuery);
       const sortStage = await resolveSortStage(searchQuery, filterActions);
 
@@ -60,7 +46,7 @@ export const configureFilterSearchModule = ({
 
       const totalAssortmentIds = await assortmentFulltextSearch(
         searchConfiguration,
-        filterActions
+        filterActions,
       )(query?.productIds);
 
       const totalAssormentCount = async () =>
@@ -83,27 +69,13 @@ export const configureFilterSearchModule = ({
       };
     },
 
-    searchProducts: async (
-      searchQuery,
-      { forceLiveCollection },
-      requestContext
-    ) => {
+    searchProducts: async (searchQuery, { forceLiveCollection }, requestContext) => {
       const { modules } = requestContext;
-      const filterActions = FilterDirector.actions(
-        { searchQuery },
-        requestContext
-      );
+      const filterActions = FilterDirector.actions({ searchQuery }, requestContext);
 
       const query = cleanQuery(searchQuery);
-      const filterSelector = await resolveFilterSelector(
-        searchQuery,
-        filterActions
-      );
-      const productSelector = await resolveProductSelector(
-        searchQuery,
-        filterActions,
-        requestContext
-      );
+      const filterSelector = await resolveFilterSelector(searchQuery, filterActions);
+      const productSelector = await resolveProductSelector(searchQuery, filterActions, requestContext);
       const sortStage = await resolveSortStage(searchQuery, filterActions);
 
       const searchConfiguration: SearchProductConfiguration = {
@@ -117,7 +89,7 @@ export const configureFilterSearchModule = ({
       const productIds = await query.productIds;
       const totalProductIds = await productFulltextSearch(
         searchConfiguration,
-        filterActions
+        filterActions,
       )(productIds);
 
       const findFilters = async () => {
@@ -136,7 +108,7 @@ export const configureFilterSearchModule = ({
           },
           {
             projection: { _id: 1 },
-          }
+          },
         );
         const relevantProductIds = relevantProducts.map(({ _id }) => _id);
 
@@ -152,9 +124,9 @@ export const configureFilterSearchModule = ({
               },
               filterProductIds,
               filterActions,
-              requestContext
+              requestContext,
             );
-          })
+          }),
         );
       };
 
@@ -175,7 +147,7 @@ export const configureFilterSearchModule = ({
         Filters,
         filterProductIds,
         searchConfiguration,
-        requestContext
+        requestContext,
       )(totalProductIds);
       const aggregatedProductIds = filterActions.aggregateProductIds({
         productIds: filteredProductIds,

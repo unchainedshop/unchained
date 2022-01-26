@@ -56,16 +56,13 @@ export interface QuotationItemConfiguration {
 // Queries
 
 export interface QuotationQueries {
-  findQuotation: (
-    query: { quotationId: string },
-    options?: FindOptions
-  ) => Promise<Quotation>;
+  findQuotation: (query: { quotationId: string }, options?: FindOptions) => Promise<Quotation>;
   findQuotations: (
     query: QuotationQuery & {
       limit?: number;
       offset?: number;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<Quotation>>;
   count: (query: QuotationQuery) => Promise<number>;
 }
@@ -73,10 +70,7 @@ export interface QuotationQueries {
 // Transformations
 
 export interface QuotationTransformations {
-  isExpired: (
-    quotation: Quotation,
-    params?: { referenceDate: Date }
-  ) => boolean;
+  isExpired: (quotation: Quotation, params?: { referenceDate: Date }) => boolean;
   isProposalValid: (quotation: Quotation) => boolean;
   normalizedStatus: (quotation: Quotation) => string;
 }
@@ -86,22 +80,18 @@ export interface QuotationTransformations {
 type QuotationContextParams = (
   quotation: Quotation,
   params: { quotationContext?: any },
-  requestContext: Context
+  requestContext: Context,
 ) => Promise<Quotation>;
 
 export interface QuotationProcessing {
-  fullfillQuotation: (
-    quotationId: string,
-    info: any,
-    requestContext: Context
-  ) => Promise<Quotation>;
+  fullfillQuotation: (quotationId: string, info: any, requestContext: Context) => Promise<Quotation>;
   proposeQuotation: QuotationContextParams;
   rejectQuotation: QuotationContextParams;
   verifyQuotation: QuotationContextParams;
   transformItemConfiguration: (
     quotation: Quotation,
     configuration: QuotationItemConfiguration,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<QuotationItemConfiguration>;
 }
 
@@ -116,22 +106,18 @@ export interface QuotationData {
 export interface QuotationMutations {
   create: (doc: QuotationData, requestContext: Context) => Promise<Quotation>;
 
-  updateContext: (
-    quotationId: string,
-    context: any,
-    userId?: string
-  ) => Promise<Quotation>;
+  updateContext: (quotationId: string, context: any, userId?: string) => Promise<Quotation>;
 
   updateProposal: (
     quotationId: string,
     proposal: QuotationProposal,
-    userId?: string
+    userId?: string,
   ) => Promise<Quotation>;
 
   updateStatus: (
     quotationId: string,
     params: { status: QuotationStatus; info?: string },
-    userId?: string
+    userId?: string,
   ) => Promise<Quotation>;
 }
 
@@ -156,24 +142,18 @@ export interface QuotationAdapterActions {
   verifyRequest: (requestContext?: any) => Promise<boolean>;
 
   transformItemConfiguration: (
-    params: QuotationItemConfiguration
+    params: QuotationItemConfiguration,
   ) => Promise<QuotationItemConfiguration>;
 }
 
 export type IQuotationAdapter = IBaseAdapter & {
   orderIndex: number;
-  isActivatedFor: (
-    quotationContext: QuotationContext,
-    requestContext: Context
-  ) => boolean;
+  isActivatedFor: (quotationContext: QuotationContext, requestContext: Context) => boolean;
   actions: (params: QuotationContext & Context) => QuotationAdapterActions;
 };
 
 export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
-  actions: (
-    quotationContext: QuotationContext,
-    requestContext: Context
-  ) => QuotationAdapterActions;
+  actions: (quotationContext: QuotationContext, requestContext: Context) => QuotationAdapterActions;
 };
 
 /*

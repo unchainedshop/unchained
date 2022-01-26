@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function country(
   root: Root,
   { countryId }: { countryId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query country ${countryId}`, { userId });
 

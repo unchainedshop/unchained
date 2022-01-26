@@ -5,7 +5,7 @@ import { InvalidIdError, WorkNotFoundOrWrongStatus } from '../../../errors';
 export default async function removeWork(
   root: Root,
   { workId }: { workId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation removeWork ${workId}`, {
     userId,

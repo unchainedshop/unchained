@@ -4,10 +4,7 @@ import { Currency } from '@unchainedshop/types/currencies';
 import { DeliveryProvider } from '@unchainedshop/types/delivery';
 import { Enrollment } from '@unchainedshop/types/enrollments';
 import { File } from '@unchainedshop/types/files';
-import {
-  Order as OrderType,
-  OrderDocumentType,
-} from '@unchainedshop/types/orders';
+import { Order as OrderType, OrderDocumentType } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
@@ -20,10 +17,7 @@ import crypto from 'crypto';
 type HelperType<P, T> = (order: OrderType, params: P, context: Context) => T;
 
 interface OrderHelperTypes {
-  supportedDeliveryProviders: HelperType<
-    never,
-    Promise<Array<DeliveryProvider>>
-  >;
+  supportedDeliveryProviders: HelperType<never, Promise<Array<DeliveryProvider>>>;
   supportedPaymentProviders: HelperType<never, Promise<Array<PaymentProvider>>>;
   currency: HelperType<never, Promise<Currency>>;
   country: HelperType<never, Promise<Country>>;
@@ -44,7 +38,7 @@ export const Order: OrderHelperTypes = {
       {
         order: obj,
       },
-      context
+      context,
     ),
 
   supportedPaymentProviders: (obj, _, context) =>
@@ -52,21 +46,18 @@ export const Order: OrderHelperTypes = {
       {
         order: obj,
       },
-      context
+      context,
     ),
 
-  currency: (obj, _, { modules }) =>
-    modules.currencies.findCurrency({ isoCode: obj.currency }),
-  country: (obj, _, { modules }) =>
-    modules.countries.findCountry({ isoCode: obj.countryCode }),
+  currency: (obj, _, { modules }) => modules.currencies.findCurrency({ isoCode: obj.currency }),
+  country: (obj, _, { modules }) => modules.countries.findCountry({ isoCode: obj.countryCode }),
 
-  discounts: (obj, _, { modules }) =>
-    modules.orders.discounts.findOrderDiscounts({ orderId: obj._id }),
+  discounts: (obj, _, { modules }) => modules.orders.discounts.findOrderDiscounts({ orderId: obj._id }),
 
   documents: (obj, { type }, { modules }) =>
     modules.files.findFilesByMetaData(
       { meta: { orderId: obj._id, type } },
-      { sort: { 'meta.data': -1 } }
+      { sort: { 'meta.data': -1 } },
     ),
 
   delivery: (obj, _, { modules }) =>

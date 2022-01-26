@@ -5,7 +5,7 @@ import { ProductMediaNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeProductMedia(
   root: Root,
   { productMediaId }: { productMediaId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation removeProductMedia ${productMediaId}`, { userId });
 

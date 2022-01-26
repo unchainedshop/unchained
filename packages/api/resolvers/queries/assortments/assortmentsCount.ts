@@ -9,13 +9,13 @@ export default async function assortmentsCount(
     includeInactive?: boolean;
     includeLeaves?: boolean;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(
-    `query assortmentsCount: ${
-      params.includeInactive ? 'includeInactive' : ''
-    } ${params.slugs?.join(',')}`,
-    { userId }
+    `query assortmentsCount: ${params.includeInactive ? 'includeInactive' : ''} ${params.slugs?.join(
+      ',',
+    )}`,
+    { userId },
   );
 
   return modules.assortments.count(params);

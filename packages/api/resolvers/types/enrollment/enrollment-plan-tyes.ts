@@ -2,11 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { EnrollmentPlan as EnrollmentPlanType } from '@unchainedshop/types/enrollments';
 import { Product } from '@unchainedshop/types/products';
 
-type HelperType<T> = (
-  enrollmentPlan: EnrollmentPlanType,
-  _: never,
-  context: Context
-) => T;
+type HelperType<T> = (enrollmentPlan: EnrollmentPlanType, _: never, context: Context) => T;
 
 type EnrollmentPlanHelperTypes = {
   product: HelperType<Promise<Product>>;

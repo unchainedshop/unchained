@@ -22,11 +22,7 @@ export interface BookmarksModule extends ModuleMutations<Bookmark> {
   findById: (bookmarkId: string) => Promise<Bookmark>;
   find: (query: Query) => Promise<Array<Bookmark>>;
   existsByUserIdAndProductId: (filter: UserProductFilter) => Promise<boolean>;
-  replaceUserId: (
-    fromUserId: string,
-    toUserId: string,
-    userId: string
-  ) => Promise<number>;
+  replaceUserId: (fromUserId: string, toUserId: string, userId: string) => Promise<number>;
   deleteByUserId: (toUserId: string, userId: string) => Promise<number>;
 }
 
@@ -40,7 +36,7 @@ export type MigrateBookmarksService = (
     toUserId: string;
     shouldMergeBookmarks: boolean;
   },
-  context: Context
+  context: Context,
 ) => Promise<void>;
 
 export interface BookmarkServices {

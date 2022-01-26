@@ -19,17 +19,13 @@ const baseDirector = BasePricingDirector<
 export const PaymentPricingDirector: IPaymentPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: async (
-    { item }: { item: OrderPayment },
-    requestContext
-  ) => {
+  buildPricingContext: async ({ item }: { item: OrderPayment }, requestContext) => {
     const order = await requestContext.modules.orders.findOrder({
       orderId: item.orderId,
     });
-    const provider =
-      await requestContext.modules.payment.paymentProviders.findProvider({
-        paymentProviderId: item.paymentProviderId,
-      });
+    const provider = await requestContext.modules.payment.paymentProviders.findProvider({
+      paymentProviderId: item.paymentProviderId,
+    });
     const user = await requestContext.modules.users.findUser({
       userId: order.userId,
     });
@@ -49,7 +45,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
     return baseDirector.actions(
       pricingContext,
       requestContext,
-      PaymentPricingDirector.buildPricingContext
+      PaymentPricingDirector.buildPricingContext,
     );
   },
 

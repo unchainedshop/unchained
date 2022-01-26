@@ -1,18 +1,11 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { CurrenciesModule, Currency } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbMutations,
-  generateDbFilterById,
-} from 'meteor/unchained:utils';
+import { generateDbMutations, generateDbFilterById } from 'meteor/unchained:utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
 import { CurrenciesSchema } from '../db/CurrenciesSchema';
 
-const CURRENCY_EVENTS: string[] = [
-  'CURRENCY_CREATE',
-  'CURRENCY_UPDATE',
-  'CURRENCY_REMOVE',
-];
+const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 
 type FindQuery = {
   includeInactive?: boolean;
@@ -32,24 +25,19 @@ export const configureCurrenciesModule = async ({
 
   const mutations = generateDbMutations<Currency>(
     Currencies,
-    CurrenciesSchema
+    CurrenciesSchema,
   ) as ModuleMutations<Currency>;
 
   return {
     findCurrency: async ({ currencyId, isoCode }) => {
-      return Currencies.findOne(
-        currencyId ? generateDbFilterById(currencyId) : { isoCode }
-      );
+      return Currencies.findOne(currencyId ? generateDbFilterById(currencyId) : { isoCode });
     },
 
     findCurrencies: async ({ limit, offset, includeInactive }) => {
-      const currencies = Currencies.find(
-        buildFindSelector({ includeInactive }),
-        {
-          skip: offset,
-          limit,
-        }
-      );
+      const currencies = Currencies.find(buildFindSelector({ includeInactive }), {
+        skip: offset,
+        limit,
+      });
       return currencies.toArray();
     },
 
@@ -59,17 +47,14 @@ export const configureCurrenciesModule = async ({
     },
 
     currencyExists: async ({ currencyId }) => {
-      const currencyCount = await Currencies.find(
-        { _id: currencyId },
-        { limit: 1 }
-      ).count();
+      const currencyCount = await Currencies.find({ _id: currencyId }, { limit: 1 }).count();
       return !!currencyCount;
     },
 
     create: async (doc: Currency, userId: string) => {
       const currencyId = await mutations.create(
         { ...doc, isoCode: doc.isoCode.toUpperCase(), isActive: true },
-        userId
+        userId,
       );
       emit('CURRENCY_CREATE', { currencyId });
       return currencyId;
@@ -81,7 +66,7 @@ export const configureCurrenciesModule = async ({
           ...doc,
           isoCode: doc.isoCode.toUpperCase(),
         },
-        userId
+        userId,
       );
       emit('CURRENCY_UPDATE', { currencyId });
       return currencyId;

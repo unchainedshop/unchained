@@ -2,12 +2,7 @@ import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
 import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders';
 import { generateDbFilterById } from 'meteor/unchained:utils';
 
-const buildFindSelector = ({
-  includeCarts,
-  status,
-  userId,
-  queryString,
-}: OrderQuery) => {
+const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: Query = {};
 
   if (userId) {
@@ -40,9 +35,7 @@ export const configureOrdersModuleQueries = ({
     },
 
     findOrder: async ({ orderId, orderNumber }, options) => {
-      const selector = orderId
-        ? generateDbFilterById(orderId)
-        : { orderNumber };
+      const selector = orderId ? generateDbFilterById(orderId) : { orderNumber };
 
       return Orders.findOne(selector, options);
     },

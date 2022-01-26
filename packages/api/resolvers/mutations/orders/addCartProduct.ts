@@ -11,7 +11,7 @@ import { getOrderCart } from '../utils/getOrderCart';
 export default async function addCartProduct(
   root: Root,
   { orderId, productId, quantity, configuration },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
 
@@ -19,7 +19,7 @@ export default async function addCartProduct(
     `mutation addCartProduct ${productId} ${quantity} ${
       configuration ? JSON.stringify(configuration) : ''
     }`,
-    { userId, orderId }
+    { userId, orderId },
   );
 
   if (!productId) throw new InvalidIdError({ productId });
@@ -39,7 +39,7 @@ export default async function addCartProduct(
       configuration,
     },
     { order, product },
-    context
+    context,
   );
 
   return orderPosition;

@@ -1,16 +1,12 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
-import {
-  OrderDeliveryNotFoundError,
-  InvalidIdError,
-  OrderDeliveryTypeError,
-} from '../../../errors';
+import { OrderDeliveryNotFoundError, InvalidIdError, OrderDeliveryTypeError } from '../../../errors';
 
 export default async function updateOrderDeliveryShipping(
   root: Root,
   params: { orderDeliveryId: string; address: any; meta: any },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
   const { orderDeliveryId, address, meta } = params;
@@ -39,6 +35,6 @@ export default async function updateOrderDeliveryShipping(
   return modules.orders.deliveries.updateDelivery(
     orderDeliveryId,
     { orderId: orderDelivery.orderId, context: { address, meta } },
-    context
+    context,
   );
 }

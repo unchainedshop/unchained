@@ -11,5 +11,5 @@ export const OrderDiscountsSchema = new SimpleSchema(
     ...Schemas.contextFields,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

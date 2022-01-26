@@ -1,10 +1,5 @@
 import SimpleSchema from 'simpl-schema';
-import {
-  Collection,
-  ModuleMutations,
-  ModuleCreateMutation,
-  _ID,
-} from '@unchainedshop/types/common';
+import { Collection, ModuleMutations, ModuleCreateMutation, _ID } from '@unchainedshop/types/common';
 import { checkId } from './check-id';
 import { generateDbObjectId } from './generate-db-object-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';
@@ -15,7 +10,7 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
   options?: {
     hasCreateOnly?: boolean;
     shouldReturnDocument?: boolean;
-  }
+  },
 ): ModuleMutations<T> | ModuleCreateMutation<T> => {
   if (!collection) throw new Error('Collection is missing');
   if (!schema) throw new Error('Schema is missing');

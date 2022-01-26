@@ -6,7 +6,7 @@ import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
 export default async function updateAssortment(
   root: Root,
   params: { assortment: Assortment; assortmentId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { assortment, assortmentId } = params;
 

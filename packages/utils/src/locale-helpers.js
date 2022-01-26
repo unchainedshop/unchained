@@ -2,9 +2,7 @@ import { Locales, Locale } from 'locale';
 
 const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH' } = process.env;
 
-export const systemLocale = new Locale(
-  `${UNCHAINED_LANG}-${UNCHAINED_COUNTRY}`
-);
+export const systemLocale = new Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNTRY}`);
 
 export const resolveBestSupported = (acceptLanguage, supportedLocales) => {
   const acceptLocale = new Locales(acceptLanguage);
@@ -37,9 +35,7 @@ export const resolveUserRemoteAddress = (req) => {
     req.connection.socket.remoteAddress;
 
   const remotePort =
-    req.connection?.remotePort ||
-    req.socket?.remotePort ||
-    req.connection?.socket?.remotePort;
+    req.connection?.remotePort || req.socket?.remotePort || req.connection?.socket?.remotePort;
 
   return { remoteAddress, remotePort };
 };

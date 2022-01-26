@@ -19,9 +19,7 @@ export default (checkSlugIsUniqueFn, { slugify = defaultSlugify } = {}) => {
     if (!(await checkSlugIsUniqueFn(slug))) {
       const isSlugAlreadySuffixed = !!newSlug;
       return findUnusedSlug({
-        newSlug: isSlugAlreadySuffixed
-          ? incrementSuffixedSlug(slug)
-          : addSuffixToSlug(slug),
+        newSlug: isSlugAlreadySuffixed ? incrementSuffixedSlug(slug) : addSuffixToSlug(slug),
       });
     }
     return slug;

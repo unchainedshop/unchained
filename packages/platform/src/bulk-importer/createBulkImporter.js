@@ -5,13 +5,7 @@ import * as ProductHandlers from './handlers/product';
 
 const allowedOperations = ['create', 'remove', 'update'];
 
-const runPrepareAsync = async (
-  entity,
-  operation,
-  event,
-  context,
-  requestContext
-) => {
+const runPrepareAsync = async (entity, operation, event, context, requestContext) => {
   let entityOperation;
   switch (entity) {
     case 'ASSORTMENT':
@@ -28,9 +22,7 @@ const runPrepareAsync = async (
   }
 
   if (typeof entityOperation !== 'function') {
-    throw new Error(
-      `Operation ${operation} for entity ${event.entity} unknown`
-    );
+    throw new Error(`Operation ${operation} for entity ${event.entity} unknown`);
   }
 
   return entityOperation(event.payload, context, requestContext);
@@ -40,7 +32,7 @@ export const createBucket = (bucketName) => {
   const options = { bucketName };
   return new MongoInternals.NpmModule.GridFSBucket(
     MongoInternals.defaultRemoteCollectionDriver().mongo.db,
-    options
+    options,
   );
 };
 
@@ -53,8 +45,7 @@ export const createBulkImporter = (options, requestContext) => {
 
   const bulk = (Collection) => {
     const raw = Collection.rawCollection();
-    bulkOperations[raw.namespace.collection] =
-      Collection.rawCollection().initializeOrderedBulkOp();
+    bulkOperations[raw.namespace.collection] = Collection.rawCollection().initializeOrderedBulkOp();
     return bulkOperations[raw.namespace.collection];
   };
 
@@ -64,7 +55,7 @@ export const createBulkImporter = (options, requestContext) => {
   };
 
   logger.info(
-    `Configure event import with options: createShouldUpsertIfIDExists=${options.createShouldUpsertIfIDExists}`
+    `Configure event import with options: createShouldUpsertIfIDExists=${options.createShouldUpsertIfIDExists}`,
   );
 
   return {
@@ -85,18 +76,10 @@ export const createBulkImporter = (options, requestContext) => {
       });
 
       try {
-        await runPrepareAsync(
-          entity,
-          operation,
-          event,
-          context,
-          requestContext
-        );
+        await runPrepareAsync(entity, operation, event, context, requestContext);
         logger.verbose(`${operation} ${entity} ${event.payload._id} [SUCCESS]`);
       } catch (e) {
-        logger.verbose(
-          `${operation} ${entity} ${event.payload._id} [FAILED]: ${e.message}`
-        );
+        logger.verbose(`${operation} ${entity} ${event.payload._id} [FAILED]: ${e.message}`);
         preparationIssues.push({
           operation,
           entity,
@@ -111,32 +94,22 @@ export const createBulkImporter = (options, requestContext) => {
       }
     },
     execute: async () => {
-      logger.info(
-        `Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`
-      );
-      const operationResults = await Promise.all(
-        Object.values(bulkOperations).map((o) => o.execute())
-      );
+      logger.info(`Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`);
+      const operationResults = await Promise.all(Object.values(bulkOperations).map((o) => o.execute()));
       if (preparationIssues?.length) {
         logger.error(
-          `${preparationIssues.length} issues occured while preparing events, import finished with errors`
+          `${preparationIssues.length} issues occured while preparing events, import finished with errors`,
         );
         const errors = {};
         errors.preparationIssues = preparationIssues;
         return [
-          operationResults.reduce(
-            (currentResults, result) => ({ ...currentResults, ...result }),
-            {}
-          ),
+          operationResults.reduce((currentResults, result) => ({ ...currentResults, ...result }), {}),
           errors,
         ];
       }
       logger.info(`Import finished without errors`);
       return [
-        operationResults.reduce(
-          (currentResults, result) => ({ ...currentResults, ...result }),
-          {}
-        ),
+        operationResults.reduce((currentResults, result) => ({ ...currentResults, ...result }), {}),
         null,
       ];
     },

@@ -12,7 +12,7 @@ export const AssortmentMediasSchema = new SimpleSchema(
     authorId: { type: String, required: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const AssortmentMediaTextsSchema = new SimpleSchema(
@@ -27,5 +27,5 @@ export const AssortmentMediaTextsSchema = new SimpleSchema(
     subtitle: String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

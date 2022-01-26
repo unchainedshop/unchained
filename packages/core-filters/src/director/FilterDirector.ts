@@ -1,9 +1,5 @@
 import { FindOptions, Query } from '@unchainedshop/types/common';
-import {
-  FilterAdapterActions,
-  IFilterAdapter,
-  IFilterDirector,
-} from '@unchainedshop/types/filters';
+import { FilterAdapterActions, IFilterAdapter, IFilterDirector } from '@unchainedshop/types/filters';
 import { BaseDirector } from 'meteor/unchained:utils';
 
 const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
@@ -15,17 +11,11 @@ export const FilterDirector: IFilterDirector = {
 
   actions: (filterContext, requestContext) => {
     const context = { ...filterContext, ...requestContext };
-    const adapters = baseDirector
-      .getAdapters()
-      .map((Adapter) => Adapter.actions(context));
+    const adapters = baseDirector.getAdapters().map((Adapter) => Adapter.actions(context));
 
     const reduceAdapters = <V>(
-      reducer: (
-        currentValue: Promise<V>,
-        adapter: FilterAdapterActions,
-        index: number
-      ) => Promise<V>,
-      initialValue: V
+      reducer: (currentValue: Promise<V>, adapter: FilterAdapterActions, index: number) => Promise<V>,
+      initialValue: V,
     ) => {
       if (adapters.length === 0) {
         return null;
@@ -39,29 +29,23 @@ export const FilterDirector: IFilterDirector = {
       aggregateProductIds: (params) => {
         const reducedProductIds = adapters.reduce(
           (productIds, adapter) => adapter.aggregateProductIds({ productIds }),
-          params.productIds
+          params.productIds,
         );
         return reducedProductIds;
       },
 
       searchAssortments: async (params) => {
-        return reduceAdapters<Array<string>>(
-          async (lastSearchPromise, adapter) => {
-            const assortmentIds = await lastSearchPromise;
-            return adapter.searchAssortments({ assortmentIds });
-          },
-          params.assortmentIds
-        );
+        return reduceAdapters<Array<string>>(async (lastSearchPromise, adapter) => {
+          const assortmentIds = await lastSearchPromise;
+          return adapter.searchAssortments({ assortmentIds });
+        }, params.assortmentIds);
       },
 
       searchProducts: async (params) => {
-        return reduceAdapters<Array<string>>(
-          async (lastSearchPromise, adapter) => {
-            const productIds = await lastSearchPromise;
-            return adapter.searchProducts({ productIds });
-          },
-          params.productIds
-        );
+        return reduceAdapters<Array<string>>(async (lastSearchPromise, adapter) => {
+          const productIds = await lastSearchPromise;
+          return adapter.searchProducts({ productIds });
+        }, params.productIds);
       },
 
       transformProductSelector: async (defaultSelector, options) => {
@@ -71,12 +55,9 @@ export const FilterDirector: IFilterDirector = {
       },
 
       transformSortStage: (defaultStage, options) => {
-        return reduceAdapters<FindOptions['sort']>(
-          async (lastSortStage, adapter) => {
-            return adapter.transformSortStage(await lastSortStage, options);
-          },
-          defaultStage || null
-        );
+        return reduceAdapters<FindOptions['sort']>(async (lastSortStage, adapter) => {
+          return adapter.transformSortStage(await lastSortStage, options);
+        }, defaultStage || null);
       },
 
       transformFilterSelector: async (defaultSelector) => {

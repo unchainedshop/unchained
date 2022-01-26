@@ -5,7 +5,7 @@ import { OrderNotFoundError, InvalidIdError } from '../../../errors';
 export default async function setOrderPaymentProvider(
   root: Root,
   params: { orderId: string; paymentProviderId: string },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
   const { orderId, paymentProviderId } = params;

@@ -19,5 +19,5 @@ export const WorkQueueSchema = new SimpleSchema(
     error: { type: Object, blackbox: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

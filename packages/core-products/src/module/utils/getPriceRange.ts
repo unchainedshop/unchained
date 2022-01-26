@@ -15,7 +15,7 @@ export const getPriceRange = (params: {
     {
       min: { ...params.prices[0] },
       max: { ...params.prices[0] },
-    }
+    },
   );
 
   return {
@@ -23,13 +23,7 @@ export const getPriceRange = (params: {
       _id: crypto
         .createHash('sha256')
         .update(
-          [
-            params.productId,
-            min?.isTaxable,
-            min?.isNetPrice,
-            min?.amount,
-            min?.currencyCode,
-          ].join('')
+          [params.productId, min?.isTaxable, min?.isNetPrice, min?.amount, min?.currencyCode].join(''),
         )
         .digest('hex'),
       isTaxable: !!min?.isTaxable,
@@ -41,13 +35,7 @@ export const getPriceRange = (params: {
       _id: crypto
         .createHash('sha256')
         .update(
-          [
-            params.productId,
-            max?.isTaxable,
-            max?.isNetPrice,
-            max?.amount,
-            max?.currencyCode,
-          ].join('')
+          [params.productId, max?.isTaxable, max?.isNetPrice, max?.amount, max?.currencyCode].join(''),
         )
         .digest('hex'),
       isTaxable: !!max?.isTaxable,

@@ -6,7 +6,7 @@ import { DeliverProviderNotFoundError, InvalidIdError } from '../../../errors';
 export default async function updateDeliveryProvider(
   root: Root,
   params: { deliveryProvider: DeliveryProvider; deliveryProviderId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { deliveryProvider, deliveryProviderId } = params;
 

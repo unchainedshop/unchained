@@ -1,8 +1,5 @@
 import { IDiscountAdapter } from '@unchainedshop/types/discount';
-import {
-  OrderDiscountDirector,
-  OrderDiscountAdapter,
-} from 'meteor/unchained:director-discounting';
+import { OrderDiscountDirector, OrderDiscountAdapter } from 'meteor/unchained:director-discounting';
 
 const HalfPrice: IDiscountAdapter = {
   ...OrderDiscountAdapter,
@@ -30,8 +27,7 @@ const HalfPrice: IDiscountAdapter = {
       const user = await context.modules.users.findUser({
         userId: order.userId,
       });
-      const isUserEligibleForHalfPrice =
-        user?.tags && user.tags.indexOf('half-price') !== -1;
+      const isUserEligibleForHalfPrice = user?.tags && user.tags.indexOf('half-price') !== -1;
       return !!isUserEligibleForHalfPrice;
     },
 

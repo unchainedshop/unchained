@@ -10,13 +10,7 @@ export const FailedRescheduler: IScheduler = {
   version: '1.0',
 
   actions: (requestContext) => {
-    const handleFinishedWork = ({
-      work,
-      userId,
-    }: {
-      work: Work;
-      userId: string;
-    }) => {
+    const handleFinishedWork = ({ work, userId }: { work: Work; userId: string }) => {
       if (!work.success && work.retries > 0) {
         const now = new Date();
         const workDelayMs = work.scheduled.getTime() - work.created.getTime();
@@ -31,9 +25,7 @@ export const FailedRescheduler: IScheduler = {
           /* @ts-ignore */
           `${FailedRescheduler.key} -> Reschedule failed work ${work._id} ${
             work.type
-          } for ${scheduled} (in ${Math.round(
-            workDelayMs / 1000
-          )}). Remaining retries: ${work.retries}`
+          } for ${scheduled} (in ${Math.round(workDelayMs / 1000)}). Remaining retries: ${work.retries}`,
         );
 
         requestContext.modules.worker.addWork(
@@ -45,7 +37,7 @@ export const FailedRescheduler: IScheduler = {
             retries: work.retries - 1,
             scheduled,
           },
-          userId
+          userId,
         );
       }
     };
@@ -56,10 +48,7 @@ export const FailedRescheduler: IScheduler = {
       },
 
       stop() {
-        WorkerDirector.events.off(
-          WorkerEventTypes.FINISHED,
-          handleFinishedWork
-        );
+        WorkerDirector.events.off(WorkerEventTypes.FINISHED, handleFinishedWork);
       },
     };
   },

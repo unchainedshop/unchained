@@ -3,14 +3,8 @@ import moment from 'moment';
 
 import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
 
-const periodForReferenceDate = (
-  referenceDate: Date,
-  intervalCount = 1,
-  interval = 'WEEK'
-) => {
-  const start = moment(referenceDate).startOf(
-    interval === 'HOUR' ? 'minute' : 'hour'
-  );
+const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEK') => {
+  const start = moment(referenceDate).startOf(interval === 'HOUR' ? 'minute' : 'hour');
   return {
     start: start.toDate(),
     /* @ts-ignore */
@@ -18,10 +12,7 @@ const periodForReferenceDate = (
   };
 };
 
-export const EnrollmentAdapter: Omit<
-  IEnrollmentAdapter,
-  'key' | 'label' | 'version'
-> = {
+export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'version'> = {
   isActivatedFor: () => {
     return false;
   },
@@ -54,11 +45,7 @@ export const EnrollmentAdapter: Omit<
 
         if (plan.trialIntervalCount && !enrollment?.periods?.length) {
           return {
-            ...periodForReferenceDate(
-              referenceDate,
-              plan.trialIntervalCount,
-              plan.trialInterval
-            ),
+            ...periodForReferenceDate(referenceDate, plan.trialIntervalCount, plan.trialInterval),
             isTrial: true,
           };
         }
@@ -73,11 +60,7 @@ export const EnrollmentAdapter: Omit<
         }, referenceDate);
 
         return {
-          ...periodForReferenceDate(
-            lastEnd,
-            plan.billingIntervalCount,
-            plan.billingInterval
-          ),
+          ...periodForReferenceDate(lastEnd, plan.billingIntervalCount, plan.billingInterval),
           isTrial: false,
         };
       },

@@ -7,10 +7,7 @@ import { IPricingAdapter } from '@unchainedshop/types/pricing';
 import { BasePricingAdapter } from 'meteor/unchained:utils';
 import { ProductPricingSheet } from './ProductPricingSheet';
 
-const basePricingAdapter = BasePricingAdapter<
-  ProductPricingAdapterContext,
-  ProductPricingCalculation
->();
+const basePricingAdapter = BasePricingAdapter<ProductPricingAdapterContext, ProductPricingCalculation>();
 
 export const ProductPricingAdapter: IPricingAdapter<
   ProductPricingAdapterContext,
@@ -36,9 +33,7 @@ export const ProductPricingAdapter: IPricingAdapter<
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>
-          basePricingAdapter.log(
-            `Product Item Calculation -> ${category} ${amount}`
-          )
+          basePricingAdapter.log(`Product Item Calculation -> ${category} ${amount}`),
         );
         return resultRaw;
       },

@@ -1,15 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  ProductNotFoundError,
-  ProductWrongStatusError,
-  InvalidIdError,
-} from '../../../errors';
+import { ProductNotFoundError, ProductWrongStatusError, InvalidIdError } from '../../../errors';
 
 export default async function unpublishProduct(
   root: Root,
   { productId }: { productId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation unpublishProduct ${productId}`, { userId });
 

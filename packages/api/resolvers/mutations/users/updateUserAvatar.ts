@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../../errors';
 export default async function updateUserAvatar(
   root: Root,
   params: { avatar: any; userId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const normalizedUserId = params.userId || userId;
 
@@ -20,7 +20,7 @@ export default async function updateUserAvatar(
       rawFile: params.avatar,
       meta: { userId: normalizedUserId },
     },
-    userId
+    userId,
   );
 
   return modules.users.updateAvatar(normalizedUserId, file._id, userId);

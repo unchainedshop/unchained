@@ -12,5 +12,5 @@ export const PaymentProvidersSchema = new SimpleSchema(
     'configuration.$.value': { type: String },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

@@ -1,13 +1,7 @@
 // This method splits the return data of alias registration to the important properties needed for validation and the additional data
 import crypto from 'crypto';
 
-export default function splitProperties({
-  objectKey,
-  payload,
-}: {
-  objectKey?: string;
-  payload: any;
-}): {
+export default function splitProperties({ objectKey, payload }: { objectKey?: string; payload: any }): {
   token?: string;
   info: any;
   _id?: string;

@@ -2,10 +2,7 @@ import { IDeliveryAdapter } from '@unchainedshop/types/delivery';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { DeliveryError } from './DeliveryError';
 
-export const DeliveryAdapter: Omit<
-  IDeliveryAdapter,
-  'key' | 'label' | 'version'
-> = {
+export const DeliveryAdapter: Omit<IDeliveryAdapter, 'key' | 'label' | 'version'> = {
   initialConfiguration: [],
 
   typeSupported: () => {

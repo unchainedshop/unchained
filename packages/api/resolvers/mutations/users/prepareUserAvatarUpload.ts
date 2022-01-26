@@ -4,7 +4,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function prepareUserAvatarUpload(
   root: Root,
   params: { mediaName: string; userId: string },
-  context: Context
+  context: Context,
 ) {
   const { modules, services, userId } = context;
   const normalizedUserId = params.userId || userId;
@@ -21,6 +21,6 @@ export default async function prepareUserAvatarUpload(
       meta: { userId: normalizedUserId },
     },
     userId,
-    (file) => services.users.updateUserAvatarAfterUpload({ file }, context)
+    (file) => services.users.updateUserAvatarAfterUpload({ file }, context),
   );
 }

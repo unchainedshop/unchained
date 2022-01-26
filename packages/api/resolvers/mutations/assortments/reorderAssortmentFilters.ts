@@ -4,7 +4,7 @@ import { Context, Root } from '@unchainedshop/types/api';
 export default async function reorderAssortmentFilters(
   root: Root,
   params: { sortKeys: Array<{ assortmentFilterId: string; sortKey: number }> },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation reorderAssortmentFilters', { modules, userId });
 

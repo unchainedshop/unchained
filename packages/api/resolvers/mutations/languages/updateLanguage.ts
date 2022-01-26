@@ -6,7 +6,7 @@ import { InvalidIdError, LanguageNotFoundError } from '../../../errors';
 export default async function updateLanguage(
   root: Root,
   { language, languageId }: { language: Language; languageId: string },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log(`mutation updateLanguage ${languageId}`, { userId });
 

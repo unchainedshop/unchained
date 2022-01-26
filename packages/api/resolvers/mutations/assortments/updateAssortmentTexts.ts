@@ -5,11 +5,8 @@ import { InvalidIdError, AssortmentNotFoundError } from '../../../errors';
 
 export default async function updateAssortmentTexts(
   root: Root,
-  {
-    texts,
-    assortmentId,
-  }: { texts: Array<AssortmentText>; assortmentId: string },
-  { modules, userId }: Context
+  { texts, assortmentId }: { texts: Array<AssortmentText>; assortmentId: string },
+  { modules, userId }: Context,
 ) {
   log(`mutation updateAssortmentTexts ${assortmentId}`, { modules, userId });
 

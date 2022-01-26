@@ -1,9 +1,5 @@
 import { Collection } from '@unchainedshop/types/common';
-import {
-  Product,
-  ProductsModule,
-  ProductText,
-} from '@unchainedshop/types/products';
+import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
@@ -45,7 +41,7 @@ export const configureProductTextsModule = ({
     productId: string,
     locale: string,
     text: ProductText,
-    userId?: string
+    userId?: string,
   ) => {
     const {
       slug: textSlug,
@@ -112,7 +108,7 @@ export const configureProductTextsModule = ({
           $pull: {
             slugs: slug,
           },
-        }
+        },
       );
     }
 
@@ -130,11 +126,7 @@ export const configureProductTextsModule = ({
     findLocalizedText: async ({ productId, locale }) => {
       const parsedLocale = new Locale(locale);
 
-      const text = await findLocalizedText<ProductText>(
-        ProductTexts,
-        { productId },
-        parsedLocale
-      );
+      const text = await findLocalizedText<ProductText>(ProductTexts, { productId }, parsedLocale);
 
       return text;
     },
@@ -146,7 +138,7 @@ export const configureProductTextsModule = ({
           projection: {
             productId: 1,
           },
-        }
+        },
       ).map(({ productId }) => productId);
 
       return productIds.toArray();
@@ -164,9 +156,9 @@ export const configureProductTextsModule = ({
                   ...text,
                   authorId: userId,
                 },
-                userId
-              )
-            )
+                userId,
+              ),
+            ),
           )
         : [];
 

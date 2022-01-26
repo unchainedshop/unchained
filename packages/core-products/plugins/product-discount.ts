@@ -1,15 +1,9 @@
-import {
-  Discount,
-  DiscountConfiguration,
-} from '@unchainedshop/types/orders.discounts';
+import { Discount, DiscountConfiguration } from '@unchainedshop/types/orders.discounts';
 import {
   IProductPricingAdapter,
   ProductPricingRowCategory,
 } from '@unchainedshop/types/products.pricing';
-import {
-  ProductPricingDirector,
-  ProductPricingAdapter,
-} from 'meteor/unchained:core-products';
+import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-products';
 
 const applyRate = (configuration: DiscountConfiguration, amount) => {
   const { rate, fixedRate } = configuration;
@@ -30,11 +24,7 @@ const ProductDiscount: IProductPricingAdapter = {
   actions: (params) => {
     const pricingAdapter = ProductPricingAdapter.actions(params);
 
-    const addDiscount = (
-      discount: Discount,
-      total: number,
-      isTaxable: boolean
-    ) => {
+    const addDiscount = (discount: Discount, total: number, isTaxable: boolean) => {
       const { configuration, discountId } = discount;
       const { isNetPrice = false, ...meta } = configuration;
       const amount = applyRate(configuration, total);

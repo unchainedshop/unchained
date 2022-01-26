@@ -1,10 +1,7 @@
 import { FilterAdapterActions } from '@unchainedshop/types/filters';
 
 export const assortmentFulltextSearch =
-  (
-    { filterSelector, assortmentSelector, sortStage },
-    filterActions: FilterAdapterActions
-  ) =>
+  ({ filterSelector, assortmentSelector, sortStage }, filterActions: FilterAdapterActions) =>
   async (assortmentIds: Array<string>) => {
     const foundAssortmentIds = await filterActions.searchAssortments(
       { assortmentIds },
@@ -12,7 +9,7 @@ export const assortmentFulltextSearch =
         filterSelector,
         assortmentSelector,
         sortStage,
-      }
+      },
     );
     return foundAssortmentIds || [];
   };

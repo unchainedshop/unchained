@@ -11,7 +11,7 @@ import {
 export default async function deliverOrder(
   root: Root,
   { orderId }: { orderId: string },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
   log('mutation deliverOrder', { orderId, userId });
@@ -30,8 +30,7 @@ export default async function deliverOrder(
   });
 
   if (
-    modules.orders.deliveries.normalizedStatus(orderDelivery) !==
-      OrderDeliveryStatus.OPEN &&
+    modules.orders.deliveries.normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN &&
     order.confirmed
   ) {
     throw new OrderWrongDeliveryStatusError({

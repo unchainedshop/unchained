@@ -1,11 +1,7 @@
-import {
-  PricingCalculation,
-  IBasePricingSheet,
-  PricingSheetParams,
-} from '@unchainedshop/types/pricing';
+import { PricingCalculation, IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const BasePricingSheet = <Calculation extends PricingCalculation>(
-  params: PricingSheetParams<Calculation>
+  params: PricingSheetParams<Calculation>,
 ): IBasePricingSheet<Calculation> => {
   const calculation = params.calculation || [];
 
@@ -26,11 +22,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
       return pricingSheet
         .filterBy(filter)
         .filter(Boolean)
-        .reduce(
-          (sum: number, calculationRow: Calculation) =>
-            sum + calculationRow.amount,
-          0
-        );
+        .reduce((sum: number, calculationRow: Calculation) => sum + calculationRow.amount, 0);
     },
 
     taxSum: () => {
@@ -48,9 +40,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     total: ({ category, useNetPrice }) => {
       if (!category) {
         return {
-          amount: Math.round(
-            useNetPrice ? pricingSheet.net() : pricingSheet.gross()
-          ),
+          amount: Math.round(useNetPrice ? pricingSheet.net() : pricingSheet.gross()),
           currency: params.currency,
         };
       }
@@ -66,11 +56,9 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
         (oldCalculation, filterKey) =>
           oldCalculation.filter(
             (row: Calculation) =>
-              !!row &&
-              (filter[filterKey] === undefined ||
-                row[filterKey] === filter[filterKey])
+              !!row && (filter[filterKey] === undefined || row[filterKey] === filter[filterKey]),
           ),
-        calculation
+        calculation,
       );
 
       return filteredCalculation;

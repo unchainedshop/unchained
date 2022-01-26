@@ -5,7 +5,7 @@ import { BookmarkNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeBookmark(
   root: Root,
   { bookmarkId }: { bookmarkId: string },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log('mutation removeBookmark', { bookmarkId, userId });
   if (!bookmarkId) throw new InvalidIdError({ bookmarkId });

@@ -3,11 +3,7 @@ import moment from 'moment';
 import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
 import { getOrderPositionsData } from './utils/getOrderPositionsData';
 
-const {
-  EMAIL_FROM,
-  EMAIL_WEBSITE_NAME = 'Unchained Webshop',
-  ROOT_URL,
-} = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Webshop', ROOT_URL } = process.env;
 
 const mjmlTemplate = `
 <mjml>
@@ -77,7 +73,7 @@ const textTemplate = `
 
 export const resolveForwardDeliveryTemplate: TemplateResolver = async (
   { config, locale, orderId, transactionContext },
-  context
+  context,
 ) => {
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
@@ -87,11 +83,7 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async (
   momentDate.locale('de-CH');
   const orderDate = momentDate.format('lll');
 
-  const attachments = await getOrderAttachmentsData(
-    order,
-    { fileType: 'DELIVERY_NOTE' },
-    context
-  );
+  const attachments = await getOrderAttachmentsData(order, { fileType: 'DELIVERY_NOTE' }, context);
 
   const address = transactionContext?.address || order.billingAddress;
   const configObject = config.reduce((acc, { key, value }) => {

@@ -4,11 +4,7 @@ import { Language } from '@unchainedshop/types/languages';
 import { checkAction } from '../../acl';
 import { allRoles, actions } from '../../roles';
 
-type HelperType<T> = (
-  root: never,
-  params: never,
-  context: Context
-) => Promise<T>;
+type HelperType<T> = (root: never, params: never, context: Context) => Promise<T>;
 
 interface ShopHelperTypes {
   _id: () => string;

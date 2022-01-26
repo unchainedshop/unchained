@@ -1,18 +1,11 @@
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { BookmarksCollection } from '../db/BookmarksCollection';
 import { BookmarkSchema } from '../db/BookmarksSchema';
 
-const BOOKMARK_EVENTS: string[] = [
-  'BOOKMARK_CREATE',
-  'BOOKMARKS_UPDATE',
-  'BOOKMARK_REMOVE',
-];
+const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARKS_UPDATE', 'BOOKMARK_REMOVE'];
 
 export const configureBookmarksModule = async ({
   db,
@@ -23,13 +16,12 @@ export const configureBookmarksModule = async ({
 
   const mutations = generateDbMutations<Bookmark>(
     Bookmarks,
-    BookmarkSchema
+    BookmarkSchema,
   ) as ModuleMutations<Bookmark>;
 
   return {
     // Queries
-    findByUserId: async (userId) =>
-      await Bookmarks.find({ userId, deleted: null }).toArray(),
+    findByUserId: async (userId) => await Bookmarks.find({ userId, deleted: null }).toArray(),
     findByUserIdAndProductId: async ({ userId, productId }) =>
       await Bookmarks.findOne({ userId, productId, deleted: null }),
     findById: async (bookmarkId) => {
@@ -67,7 +59,7 @@ export const configureBookmarksModule = async ({
             updated: new Date(),
             updatedBy: userId,
           },
-        }
+        },
       );
       return result.upsertedCount;
     },
@@ -80,7 +72,7 @@ export const configureBookmarksModule = async ({
             deleted: new Date(),
             deletedBy: userId,
           },
-        }
+        },
       );
 
       return result.modifiedCount;

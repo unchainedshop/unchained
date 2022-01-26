@@ -1,8 +1,5 @@
 import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
-import {
-  EnrollmentDirector,
-  EnrollmentAdapter,
-} from 'meteor/unchained:core-enrollments';
+import { EnrollmentDirector, EnrollmentAdapter } from 'meteor/unchained:core-enrollments';
 
 const rangeMatcher = (date = new Date()) => {
   const timestamp = date.getTime();
@@ -39,8 +36,7 @@ const LicensedEnrollments: IEnrollmentAdapter = {
 
       configurationForOrder: async (context) => {
         const { period } = context;
-        const beginningOfPeriod =
-          period.start.getTime() <= new Date().getTime();
+        const beginningOfPeriod = period.start.getTime() <= new Date().getTime();
         if (beginningOfPeriod) {
           return context;
         }

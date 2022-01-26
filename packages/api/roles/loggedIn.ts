@@ -5,53 +5,34 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isMyself = (
     user: User,
     foreignUser: { userId?: string } = {},
-    ownUser: { userId?: string } = {}
+    ownUser: { userId?: string } = {},
   ) => {
-    if (
-      user &&
-      user.username &&
-      user.services &&
-      user.emails &&
-      !foreignUser.userId
-    ) {
+    if (user && user.username && user.services && user.emails && !foreignUser.userId) {
       return user._id === ownUser.userId;
     }
     return foreignUser.userId === ownUser.userId || !foreignUser.userId;
   };
 
-  const isOwnedEmailAddress = (
-    obj: any,
-    params: { email?: string },
-    { user }: Context
-  ) => {
+  const isOwnedEmailAddress = (obj: any, params: { email?: string }, { user }: Context) => {
     return user?.emails?.some(
-      (emailRecord) =>
-        emailRecord.address?.toLowerCase() === params.email?.toLowerCase()
+      (emailRecord) => emailRecord.address?.toLowerCase() === params.email?.toLowerCase(),
     );
   };
 
-  const isOwnedOrder = async (
-    obj: any,
-    params: { orderId: string },
-    { modules, userId }: Context
-  ) => {
+  const isOwnedOrder = async (obj: any, params: { orderId: string }, { modules, userId }: Context) => {
     const order = await modules.orders.findOrder(
       { orderId: params.orderId },
       {
         projection: {
           userId: 1,
         },
-      }
+      },
     );
     if (!order) return true;
     return order.userId === userId;
   };
 
-  const isOwnedOrderOrCart = async (
-    obj: any,
-    params: { orderId?: string },
-    context: Context
-  ) => {
+  const isOwnedOrderOrCart = async (obj: any, params: { orderId?: string }, context: Context) => {
     if (params.orderId) {
       return isOwnedOrder(null, { orderId: params.orderId }, context);
     }
@@ -61,7 +42,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedEnrollment = async (
     obj: any,
     params: { enrollmentId: string },
-    { modules, userId }: Context
+    { modules, userId }: Context,
   ) => {
     const enrollment = await modules.enrollments.findEnrollment(
       { enrollmentId: params.enrollmentId },
@@ -69,24 +50,20 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
         projection: {
           userId: 1,
         },
-      }
+      },
     );
     if (!enrollment) return true;
     return enrollment.userId === userId;
   };
 
-  const isOwnedOrderPayment = async (
-    obj: any,
-    params: { orderPaymentId: string },
-    context: Context
-  ) => {
+  const isOwnedOrderPayment = async (obj: any, params: { orderPaymentId: string }, context: Context) => {
     const payment = await context.modules.orders.payments.findOrderPayment(
       { orderPaymentId: params.orderPaymentId },
       {
         projection: {
           orderId: 1,
         },
-      }
+      },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
@@ -98,7 +75,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedOrderDelivery = async (
     obj: any,
     params: { orderDeliveryId: string },
-    context: Context
+    context: Context,
   ) => {
     const delivery = await context.modules.orders.deliveries.findDelivery(
       { orderDeliveryId: params.orderDeliveryId },
@@ -106,7 +83,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
         projection: {
           orderId: 1,
         },
-      }
+      },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
@@ -115,18 +92,14 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return isOwnedOrder(null, { orderId }, context);
   };
 
-  const isOwnedOrderItem = async (
-    obj: any,
-    params: { itemId: string },
-    context: Context
-  ) => {
+  const isOwnedOrderItem = async (obj: any, params: { itemId: string }, context: Context) => {
     const item = await context.modules.orders.positions.findOrderPosition(
       { itemId: params.itemId },
       {
         projection: {
           orderId: 1,
         },
-      }
+      },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
@@ -135,18 +108,14 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return isOwnedOrder(null, { orderId }, context);
   };
 
-  const isOwnedOrderDiscount = async (
-    obj: any,
-    params: { discountId: string },
-    context: Context
-  ) => {
+  const isOwnedOrderDiscount = async (obj: any, params: { discountId: string }, context: Context) => {
     const discount = await context.modules.orders.discounts.findOrderDiscount(
       { discountId: params.discountId },
       {
         projection: {
           orderId: 1,
         },
-      }
+      },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
@@ -158,7 +127,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedProductReview = async (
     obj: any,
     params: { productReviewId: string },
-    context: Context
+    context: Context,
   ) => {
     const { productReviewId } = params;
     const { modules, userId } = context;
@@ -172,7 +141,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedQuotation = async (
     obj: any,
     { quotationId }: { quotationId: string },
-    { modules, userId }: Context
+    { modules, userId }: Context,
   ) => {
     const quotation = await modules.quotations.findQuotation(
       { quotationId },
@@ -180,7 +149,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
         projection: {
           userId: 1,
         },
-      }
+      },
     );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
@@ -191,7 +160,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedBookmark = async (
     obj: any,
     { bookmarkId }: { bookmarkId: string },
-    { userId, modules }: Context
+    { userId, modules }: Context,
   ) => {
     const bookmark = await modules.bookmarks.findById(bookmarkId);
     // return true if db entity not found in order
@@ -203,19 +172,18 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedPaymentCredential = async (
     obj: any,
     { paymentCredentialsId }: { paymentCredentialsId: string },
-    { modules, userId }: Context
+    { modules, userId }: Context,
   ) => {
-    const credentials =
-      await modules.payment.paymentCredentials.findPaymentCredential(
-        {
-          paymentCredentialsId,
+    const credentials = await modules.payment.paymentCredentials.findPaymentCredential(
+      {
+        paymentCredentialsId,
+      },
+      {
+        projection: {
+          userId: 1,
         },
-        {
-          projection: {
-            userId: 1,
-          },
-        }
-      );
+      },
+    );
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!credentials) return true;

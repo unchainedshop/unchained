@@ -12,5 +12,5 @@ export const MediaObjectsSchema = new SimpleSchema(
     url: { type: String },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

@@ -1,15 +1,8 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  Assortment,
-  AssortmentFilter as AssortmentFilterType,
-} from '@unchainedshop/types/assortments';
+import { Assortment, AssortmentFilter as AssortmentFilterType } from '@unchainedshop/types/assortments';
 import { Filter } from '@unchainedshop/types/filters';
 
-type HelperType<T> = (
-  assortmentFilter: AssortmentFilterType,
-  _: never,
-  context: Context
-) => T;
+type HelperType<T> = (assortmentFilter: AssortmentFilterType, _: never, context: Context) => T;
 
 type AssortmentFilterHelperTypes = {
   assortment: HelperType<Promise<Assortment>>;

@@ -6,8 +6,7 @@ export default (specification) => {
     ...productData
   } = specification;
 
-  const { dimensions: supply, ...warehousing } =
-    warehousingEmbeddedSupply || {};
+  const { dimensions: supply, ...warehousing } = warehousingEmbeddedSupply || {};
 
   const proxy = assignments ? { assignments } : undefined;
 

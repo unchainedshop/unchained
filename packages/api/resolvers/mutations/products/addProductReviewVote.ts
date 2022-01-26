@@ -6,7 +6,7 @@ import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors';
 export default async function addProductReviewVote(
   root: Root,
   params: { type: ProductReviewVoteType; meta?: any; productReviewId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { type, meta, productReviewId } = params;
   log(`mutation addProductReviewVote ${productReviewId}`, { userId });
@@ -18,9 +18,5 @@ export default async function addProductReviewVote(
   });
   if (!productReview) throw new ProductReviewNotFoundError({ productReviewId });
 
-  return modules.products.reviews.votes.addVote(
-    productReview,
-    { meta, type },
-    userId
-  );
+  return modules.products.reviews.votes.addVote(productReview, { meta, type }, userId);
 }

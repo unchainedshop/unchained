@@ -5,7 +5,7 @@ import { CountryNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeCountry(
   root: Root,
   { countryId }: { countryId: string },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log(`mutation removeCountry ${countryId}`, { userId });
 

@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 
 export const getUserContext = async (
   req: Request,
-  unchainedAPI: UnchainedAPI
+  unchainedAPI: UnchainedAPI,
 ): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
@@ -25,8 +25,7 @@ export const getUserContext = async (
     check(loginToken, String);
 
     // the hashed token is the key to find the possible current user in the db
-    const hashedToken =
-      unchainedAPI.modules.accounts.createHashLoginToken(loginToken);
+    const hashedToken = unchainedAPI.modules.accounts.createHashLoginToken(loginToken);
 
     const currentUser = await unchainedAPI.modules.users.findUser({
       hashedToken,
@@ -37,7 +36,7 @@ export const getUserContext = async (
       // find the right login token corresponding, the current user may have
       // several sessions logged on different browsers / computers
       const tokenInformation = currentUser.services.resume.loginTokens.find(
-        (tokenInfo) => tokenInfo.hashedToken === hashedToken
+        (tokenInfo) => tokenInfo.hashedToken === hashedToken,
       ); // eslint-disable-line
 
       // true if the token is expired

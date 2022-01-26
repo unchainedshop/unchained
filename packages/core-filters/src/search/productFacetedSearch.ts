@@ -8,16 +8,14 @@ export const productFacetedSearch = (
   Filters: Collection<Filter>,
   filterProductIds: FilterProductIds,
   searchConfiguration: SearchConfiguration,
-  requestContext: Context
+  requestContext: Context,
 ) => {
   const { query, filterSelector, forceLiveCollection } = searchConfiguration;
 
   return async (productIds: Array<string>) => {
     if (!query || query.length === 0) return productIds;
 
-    const filters = filterSelector
-      ? await Filters.find(filterSelector).toArray()
-      : [];
+    const filters = filterSelector ? await Filters.find(filterSelector).toArray() : [];
 
     const intersectedProductIds = await filters.reduce(
       async (productIdSetPromise: Promise<Set<string>>, filter) => {
@@ -31,12 +29,12 @@ export const productFacetedSearch = (
             values: query.filterQuery[filter.key],
             forceLiveCollection,
           },
-          requestContext
+          requestContext,
         );
 
         return intersectSet(productIdSet, new Set(filterOptionProductIds));
       },
-      Promise.resolve(new Set(productIds))
+      Promise.resolve(new Set(productIds)),
     );
 
     return [...intersectedProductIds];

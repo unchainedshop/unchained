@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function paymentProvider(
   root: Root,
   { paymentProviderId }: { paymentProviderId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query paymentProvider ${paymentProviderId}`, { userId });
 

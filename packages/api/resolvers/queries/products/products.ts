@@ -10,13 +10,13 @@ export default async function products(
     slugs?: Array<string>;
     tags?: Array<string>;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(
     `query products: ${params.limit} ${params.offset} ${
       params.includeDrafts ? 'includeDrafts' : ''
     } ${params.slugs?.join(',')}`,
-    { userId }
+    { userId },
   );
 
   return modules.products.findProducts(params);

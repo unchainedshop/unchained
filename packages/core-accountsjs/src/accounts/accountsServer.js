@@ -19,7 +19,7 @@ export class UnchainedAccountsServer extends AccountsServer {
             $or: [{ hashedToken: loginToken }, { token: loginToken }],
           },
         },
-      }
+      },
     );
   };
 
@@ -37,14 +37,11 @@ export class UnchainedAccountsServer extends AccountsServer {
       {
         $pull: {
           'services.resume.loginTokens': {
-            $or: [
-              { when: { $lt: oldestValidDate } },
-              { when: { $lt: +oldestValidDate } },
-            ],
+            $or: [{ when: { $lt: oldestValidDate } }, { when: { $lt: +oldestValidDate } }],
           },
         },
       },
-      { multi: true }
+      { multi: true },
     );
   }
 
@@ -53,13 +50,7 @@ export class UnchainedAccountsServer extends AccountsServer {
       this.options.loginExpirationInDays === null
         ? this.LOGIN_UNEXPIRING_TOKEN_DAYS
         : this.options.loginExpirationInDays;
-    return (
-      (loginExpirationInDays || this.DEFAULT_LOGIN_EXPIRATION_DAYS) *
-      24 *
-      60 *
-      60 *
-      1000
-    );
+    return (loginExpirationInDays || this.DEFAULT_LOGIN_EXPIRATION_DAYS) * 24 * 60 * 60 * 1000;
   }
 
   hashLoginToken = (stampedLoginToken) => {
@@ -91,7 +82,7 @@ export class UnchainedAccountsServer extends AccountsServer {
             $slice: -100,
           },
         },
-      }
+      },
     );
 
     // Take note we returen the stamped token but store the hashed on in the db
@@ -127,7 +118,7 @@ export const configureAccountServer = (requestContext) => {
     },
     {
       password: accountsPassword,
-    }
+    },
   );
 
   return accountsServer;

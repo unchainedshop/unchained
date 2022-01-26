@@ -33,30 +33,24 @@ const ZombieKillerWorker: IWorkerAdapter<
 
       // Remove unreferenced product media objects
       const products = await modules.products.findProducts({}, findId);
-      const deletedProductMediaCount =
-        await modules.products.media.deleteMediaFiles({
-          excludedProdcutIds: products.map(mapId),
-        });
+      const deletedProductMediaCount = await modules.products.media.deleteMediaFiles({
+        excludedProdcutIds: products.map(mapId),
+      });
 
       // Remove unreferenced assortment media objects
       const assortments = await modules.assortments.findAssortments({}, findId);
-      const deletedAssortmentMediaCount =
-        await modules.assortments.media.deleteMediaFiles({
-          excludedAssortmentIds: assortments.map(mapId),
-        });
+      const deletedAssortmentMediaCount = await modules.assortments.media.deleteMediaFiles({
+        excludedAssortmentIds: assortments.map(mapId),
+      });
 
       // Remove unreferenced product files
-      const productMediaFiles = await modules.products.media.findProductMedias(
-        {},
-        findFileId
-      );
+      const productMediaFiles = await modules.products.media.findProductMedias({}, findFileId);
       const deletedProductFileCount = await modules.files.removeFiles({
         excludedFileIds: productMediaFiles.map((m) => m.mediaId),
       });
 
       // Remove unreferended assortment files
-      const assortmentMediaFiles =
-        await modules.assortments.media.findAssortmentMedias({}, findFileId);
+      const assortmentMediaFiles = await modules.assortments.media.findAssortmentMedias({}, findFileId);
       const deletedAssortmentFileCount = await modules.files.removeFiles({
         excludedFileIds: assortmentMediaFiles.map((m) => m.mediaId),
       });

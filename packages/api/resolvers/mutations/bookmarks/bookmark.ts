@@ -1,15 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  InvalidIdError,
-  ProductNotFoundError,
-  BookmarkNotFoundError,
-} from '../../../errors';
+import { InvalidIdError, ProductNotFoundError, BookmarkNotFoundError } from '../../../errors';
 
 export default async function bookmark(
   root: Root,
   { productId, bookmarked }: { productId: string; bookmarked: string },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log('mutation bookmark', { productId, userId });
 
@@ -31,7 +27,7 @@ export default async function bookmark(
         productId,
         userId,
       },
-      userId
+      userId,
     );
 
     return modules.bookmarks.findById(bookmarkId);

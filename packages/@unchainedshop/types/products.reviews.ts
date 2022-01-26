@@ -33,16 +33,14 @@ export type ProductReviewQuery = {
 };
 export type ProductReviewsModule = {
   // Queries
-  findProductReview: (query: {
-    productReviewId: string;
-  }) => Promise<ProductReview>;
+  findProductReview: (query: { productReviewId: string }) => Promise<ProductReview>;
 
   findProductReviews: (
     query: ProductReviewQuery & {
       limit?: number;
       offset?: number;
       sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
-    }
+    },
   ) => Promise<Array<ProductReview>>;
 
   count: (query: ProductReviewQuery) => Promise<number>;
@@ -53,11 +51,7 @@ export type ProductReviewsModule = {
 
   delete: (productPreviewId: string, userId?: string) => Promise<number>;
 
-  update: (
-    productReviewId: string,
-    doc: ProductReview,
-    userId?: string
-  ) => Promise<ProductReview>;
+  update: (productReviewId: string, doc: ProductReview, userId?: string) => Promise<ProductReview>;
 
   /*
    * Product review votes
@@ -67,25 +61,14 @@ export type ProductReviewsModule = {
     // Queries
     userIdsThatVoted: (
       productReview: ProductReview,
-      query: { type: ProductReviewVoteType }
+      query: { type: ProductReviewVoteType },
     ) => Array<string>;
 
-    ownVotes: (
-      productReview: ProductReview,
-      query: { userId: string }
-    ) => Array<ProductVote>;
+    ownVotes: (productReview: ProductReview, query: { userId: string }) => Array<ProductVote>;
 
     // Mutations
-    addVote: (
-      productReview: ProductReview,
-      doc: ProductVote,
-      userId?: string
-    ) => Promise<ProductReview>;
+    addVote: (productReview: ProductReview, doc: ProductVote, userId?: string) => Promise<ProductReview>;
 
-    removeVote: (
-      productReviewId: string,
-      doc: ProductVote,
-      userId?: string
-    ) => Promise<ProductReview>;
+    removeVote: (productReviewId: string, doc: ProductVote, userId?: string) => Promise<ProductReview>;
   };
 };

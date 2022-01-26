@@ -31,5 +31,5 @@ export const QuotationsSchema = new SimpleSchema(
     ...Schemas.logFields,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

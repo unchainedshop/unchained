@@ -6,9 +6,7 @@ export const OrderPaymentsCollection = async (db: Db) => {
   const OrderPayments = db.collection<OrderPayment>('order_payments');
 
   // Order Indexes
-  await buildDbIndexes<OrderPayment>(OrderPayments, [
-    { index: { orderId: 1 } },
-  ]);
+  await buildDbIndexes<OrderPayment>(OrderPayments, [{ index: { orderId: 1 } }]);
 
   return OrderPayments;
 };

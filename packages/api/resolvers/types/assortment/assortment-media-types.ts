@@ -5,11 +5,7 @@ import {
 } from '@unchainedshop/types/assortments.media';
 import { File } from '@unchainedshop/types/files';
 
-type HelperType<P, T> = (
-  assortmentMedia: AssortmentMediaType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (assortmentMedia: AssortmentMediaType, params: P, context: Context) => T;
 
 export interface AssortmentMediaHelperTypes {
   texts: HelperType<{ forceLocale?: string }, Promise<AssortmentMediaText>>;
@@ -23,6 +19,5 @@ export const AssortmentMedia: AssortmentMediaHelperTypes = {
       locale: forceLocale || localeContext.normalized,
     }),
 
-  file: (obj, _, { modules }) =>
-    modules.files.findFile({ fileId: obj.mediaId }),
+  file: (obj, _, { modules }) => modules.files.findFile({ fileId: obj.mediaId }),
 };

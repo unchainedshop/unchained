@@ -5,7 +5,7 @@ import { CurrencyNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeCurrency(
   root: Root,
   { currencyId }: { currencyId: string },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log(`mutation removeCurrency ${currencyId}`, { userId });
 

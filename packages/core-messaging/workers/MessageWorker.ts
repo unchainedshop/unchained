@@ -1,8 +1,5 @@
 import { IWorkerAdapter, Work } from '@unchainedshop/types/worker';
-import {
-  MessagingDirector,
-  messagingLogger,
-} from 'meteor/unchained:core-messaging';
+import { MessagingDirector, messagingLogger } from 'meteor/unchained:core-messaging';
 import { WorkerAdapter, WorkerDirector } from 'meteor/unchained:core-worker';
 
 export const MessageWorker: IWorkerAdapter<
@@ -12,8 +9,7 @@ export const MessageWorker: IWorkerAdapter<
   ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.message',
-  label:
-    'Send Message by combining payload with a template and start concrete jobs',
+  label: 'Send Message by combining payload with a template and start concrete jobs',
   version: '1.0',
   type: 'MESSAGE',
 
@@ -26,7 +22,7 @@ export const MessageWorker: IWorkerAdapter<
           template,
           ...payload,
         },
-        requestContext
+        requestContext,
       );
 
       if (workConfigurations.length > 0) {
@@ -37,11 +33,11 @@ export const MessageWorker: IWorkerAdapter<
                 ...workConfiguration,
                 originalWorkId: workId,
               },
-              requestContext.userId
+              requestContext.userId,
             );
             delete work.input;
             return work;
-          })
+          }),
         );
         return { success: true, result: { forked } };
       }

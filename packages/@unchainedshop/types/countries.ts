@@ -13,16 +13,13 @@ type CountryQuery = {
   includeInactive?: boolean;
 };
 export type CountriesModule = ModuleMutations<Country> & {
-  findCountry: (params: {
-    countryId?: string;
-    isoCode?: string;
-  }) => Promise<Country>;
+  findCountry: (params: { countryId?: string; isoCode?: string }) => Promise<Country>;
   findCountries: (
     params: CountryQuery & {
       limit?: number;
       offset?: number;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<Country>>;
   count: (query: CountryQuery) => Promise<number>;
   countryExists: (params: { countryId: string }) => Promise<boolean>;
@@ -34,7 +31,7 @@ export type CountriesModule = ModuleMutations<Country> & {
 
 export type ResolveDefaultCurrencyCodeService = (
   params: { isoCode: string },
-  context: Context
+  context: Context,
 ) => Promise<string>;
 
 export interface CountryServices {

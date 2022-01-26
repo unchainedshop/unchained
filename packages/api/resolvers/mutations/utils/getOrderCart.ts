@@ -1,15 +1,8 @@
 import { Context } from '@unchainedshop/types/api';
 import { User } from '@unchainedshop/types/user';
-import {
-  UserNotFoundError,
-  OrderNotFoundError,
-  OrderWrongStatusError,
-} from '../../../errors';
+import { UserNotFoundError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors';
 
-export const getOrderCart = async (
-  params: { orderId?: string; user?: User },
-  context: Context
-) => {
+export const getOrderCart = async (params: { orderId?: string; user?: User }, context: Context) => {
   const { countryContext, modules, services, userId } = context;
   const { orderId } = params;
 
@@ -17,8 +10,7 @@ export const getOrderCart = async (
     const order = await modules.orders.findOrder({ orderId });
     if (!order) throw new OrderNotFoundError({ orderId });
 
-    if (!modules.orders.isCart(order))
-      throw new OrderWrongStatusError({ status: order.status });
+    if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
     return order;
   }
 
@@ -32,7 +24,7 @@ export const getOrderCart = async (
     {
       isoCode: countryContext,
     },
-    context
+    context,
   );
 
   return modules.orders.create(
@@ -49,6 +41,6 @@ export const getOrderCart = async (
             }
           : {}),
     },
-    userId
+    userId,
   );
 };

@@ -10,7 +10,7 @@ type HelperType<P, T> = (
     discountId: string;
   },
   params: P,
-  context: Context
+  context: Context,
 ) => T;
 
 interface OrderGlobalDiscountHelperTypes {
@@ -34,11 +34,7 @@ export const OrderGlobalDiscount: OrderGlobalDiscountHelperTypes = {
     return {
       _id: crypto
         .createHash('sha256')
-        .update(
-          [`${obj.order._id}:${obj.discountId}`, obj.amount, obj.currency].join(
-            ''
-          )
-        )
+        .update([`${obj.order._id}:${obj.discountId}`, obj.amount, obj.currency].join(''))
         .digest('hex'),
       amount: obj.amount,
       currency: obj.currency,

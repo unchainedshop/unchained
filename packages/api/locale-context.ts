@@ -21,16 +21,16 @@ const localeContextCache = new LRU({
 
 export const getLocaleContext = async (
   req: Request,
-  unchainedAPI: UnchainedAPI
+  unchainedAPI: UnchainedAPI,
 ): Promise<UnchainedLocaleContext> => {
   const languages = await unchainedAPI.modules.languages.findLanguages(
     { includeInactive: false },
-    { projection: { isoCode: 1, isActive: 1 } }
+    { projection: { isoCode: 1, isActive: 1 } },
   );
 
   const countries = await unchainedAPI.modules.countries.findCountries(
     { includeInactive: false },
-    { projection: { isoCode: 1, isActive: 1 } }
+    { projection: { isoCode: 1, isActive: 1 } },
   );
 
   const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
@@ -39,8 +39,7 @@ export const getLocaleContext = async (
   const userAgent = req.headers['user-agent'];
   const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
 
-  if (cachedContext)
-    return { remoteAddress, remotePort, userAgent, ...cachedContext };
+  if (cachedContext) return { remoteAddress, remotePort, userAgent, ...cachedContext };
 
   // return the parsed locale by bcp47 and
   // return the best resolved normalized locale by locale according to system-wide configuration
@@ -53,24 +52,17 @@ export const getLocaleContext = async (
     return accumulator.concat(added);
   }, []);
 
-  const supportedLocales = new Locales(
-    supportedLocaleStrings,
-    systemLocale.code
-  );
+  const supportedLocales = new Locales(supportedLocaleStrings, systemLocale.code);
 
-  const localeContext = resolveBestSupported(
-    req.headers['accept-language'],
-    supportedLocales
-  );
+  const localeContext = resolveBestSupported(req.headers['accept-language'], supportedLocales);
   const countryContext = resolveBestCountry(
     localeContext.country,
     req.headers['x-shop-country'],
-    countries
+    countries,
   );
-  log(
-    `Locale Context: Resolved ${localeContext.normalized} ${countryContext}`,
-    { level: LogLevel.Debug }
-  );
+  log(`Locale Context: Resolved ${localeContext.normalized} ${countryContext}`, {
+    level: LogLevel.Debug,
+  });
   const newContext: UnchainedLocaleContext = {
     localeContext,
     countryContext,

@@ -1,7 +1,4 @@
-import {
-  PlanProductHelperTypes,
-  ProductPrice,
-} from '@unchainedshop/types/products';
+import { PlanProductHelperTypes, ProductPrice } from '@unchainedshop/types/products';
 import { Product } from './product-types';
 
 export const PlanProduct: PlanProductHelperTypes = {
@@ -16,20 +13,16 @@ export const PlanProduct: PlanProductHelperTypes = {
         currency,
         quantity,
       },
-      requestContext
+      requestContext,
     );
   },
 
-  simulatedPrice: async (
-    obj,
-    { currency, quantity, useNetPrice },
-    requestContext
-  ) => {
+  simulatedPrice: async (obj, { currency, quantity, useNetPrice }, requestContext) => {
     const { countryContext, modules } = requestContext;
     return modules.products.prices.userPrice(
       obj,
       { quantity, currency, country: countryContext, useNetPrice },
-      requestContext
+      requestContext,
     );
   },
 
@@ -38,7 +31,7 @@ export const PlanProduct: PlanProductHelperTypes = {
     return modules.products.prices.catalogPricesLeveled(
       obj,
       { currency, country: countryContext },
-      requestContext
+      requestContext,
     );
   },
 

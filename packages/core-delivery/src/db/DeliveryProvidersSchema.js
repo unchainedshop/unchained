@@ -12,5 +12,5 @@ export const DeliveryProvidersSchema = new SimpleSchema(
     'configuration.$.value': { type: String },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

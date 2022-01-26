@@ -7,11 +7,7 @@ import {
 } from '@unchainedshop/types/products.reviews';
 import { User } from '@unchainedshop/types/user';
 
-type HelperType<P, T> = (
-  product: ProductReviewType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (product: ProductReviewType, params: P, context: Context) => T;
 
 export interface ProductReviewHelperTypes {
   author: HelperType<never, Promise<User>>;
@@ -33,7 +29,6 @@ export const ProductReview: ProductReviewHelperTypes = {
   },
 
   voteCount: (obj, { type }, { modules }) => {
-    return modules.products.reviews.votes.userIdsThatVoted(obj, { type })
-      .length;
+    return modules.products.reviews.votes.userIdsThatVoted(obj, { type }).length;
   },
 };

@@ -6,7 +6,7 @@ import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 export default async function updateProduct(
   root: Root,
   { product, productId }: { product: Product; productId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation updateProduct ${productId}`, { userId });
 

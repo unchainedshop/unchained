@@ -9,7 +9,7 @@ import { BasePricingSheet } from './BasePricingSheet';
 
 export const BasePricingAdapter = <
   Context extends BasePricingAdapterContext,
-  Calculation extends PricingCalculation
+  Calculation extends PricingCalculation,
 >(): IPricingAdapter<Context, Calculation, IBasePricingSheet<Calculation>> => ({
   key: '',
   label: '',

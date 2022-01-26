@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function filter(
   root: Root,
   { filterId }: { filterId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query filter ${filterId}`, { userId });
 

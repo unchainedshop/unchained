@@ -9,7 +9,7 @@ export default async function orders(
     includeCarts: boolean;
     queryString?: string;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { includeCarts, limit, offset, queryString } = params;
 

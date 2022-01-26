@@ -13,7 +13,7 @@ export default async function finishWork(
     success: boolean;
     worker: string;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { workId, error, finished, result, started, success, worker } = data;
 
@@ -33,7 +33,7 @@ export default async function finishWork(
       started,
       finished,
     },
-    userId
+    userId,
   );
 
   if (!work) throw new WorkNotFoundOrWrongStatus({ workId });

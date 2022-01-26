@@ -14,10 +14,7 @@ export default async function authorizeAuthenticated({
   };
 
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
-  const result = await fetchDatatrans(
-    `/v1/transactions/${transactionId}/authorize`,
-    reqBody
-  );
+  const result = await fetchDatatrans(`/v1/transactions/${transactionId}/authorize`, reqBody);
   const json = await result.json();
   return json;
 }

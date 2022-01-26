@@ -1,20 +1,13 @@
 import { Context } from '@unchainedshop/types/api';
 import { DeliveryProvider } from '@unchainedshop/types/delivery';
 import { Order } from '@unchainedshop/types/orders';
-import {
-  OrderPosition,
-  OrderPositionDiscount,
-} from '@unchainedshop/types/orders.positions';
+import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/types/orders.positions';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 import { Product } from '@unchainedshop/types/products';
 import { WarehousingProvider } from '@unchainedshop/types/warehousing';
 import crypto from 'crypto';
 
-type HelperType<P, T> = (
-  orderPosition: OrderPosition,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (orderPosition: OrderPosition, params: P, context: Context) => T;
 
 interface OrderItemHelperTypes {
   discounts: HelperType<never, Promise<Array<OrderPositionDiscount>>>;
@@ -37,20 +30,13 @@ interface OrderItemHelperTypes {
   unitPrice: HelperType<never, Promise<OrderPrice>>;
 }
 
-const getPricingSheet = async (
-  orderPosition: OrderPosition,
-  context: Context
-) => {
+const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
   const { modules } = context;
 
   const order = await modules.orders.findOrder({
     orderId: orderPosition.orderId,
   });
-  const pricingSheet = modules.orders.positions.pricingSheet(
-    orderPosition,
-    order.currency,
-    context
-  );
+  const pricingSheet = modules.orders.positions.pricingSheet(orderPosition, order.currency, context);
 
   return pricingSheet;
 };
@@ -101,7 +87,7 @@ export const OrderItem: OrderItemHelperTypes = {
           ...context,
           ...schedule,
         };
-      })
+      }),
     );
   },
 

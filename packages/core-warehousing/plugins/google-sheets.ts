@@ -8,8 +8,7 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 import LRU from 'lru-cache';
 import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 
-const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } =
-  process.env;
+const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } = process.env;
 
 const maxAge = NODE_ENV === 'production' ? 1000 * 60 * 60 : -1; // 1 hour or 1 second
 
@@ -69,11 +68,7 @@ const getRows = async (name: string) => {
   return tables[name].rows;
 };
 
-const getRemoteTime = async (
-  sku: string,
-  quantity: number,
-  selector: string
-) => {
+const getRemoteTime = async (sku: string, quantity: number, selector: string) => {
   const rows = await getRows('delivery');
   const resolvedRow = rows.reduce((result, row) => {
     const parsedQuantity = parseInt(row.Quantity.value, 10);
@@ -85,10 +80,9 @@ const getRemoteTime = async (
   }, null);
   if (!resolvedRow) return null;
   const time = parseInt(resolvedRow[selector].value, 10) || 0;
-  log(
-    `GoogleSheet: Resolve Time ${selector} (${quantity}) for ${sku}: ${time}`,
-    { level: LogLevel.Verbose }
-  );
+  log(`GoogleSheet: Resolve Time ${selector} (${quantity}) for ${sku}: ${time}`, {
+    level: LogLevel.Verbose,
+  });
   return time;
 };
 
@@ -148,11 +142,7 @@ const GoogleSheets: IWarehousingAdapter = {
         const { sku } = context.product.warehousing || {};
         if (!sku) return null;
         const selector = 'WAREHOUSE_HOURS';
-        const timeInHours = await getRemoteTime(
-          sku.toUpperCase(),
-          quantity,
-          selector
-        );
+        const timeInHours = await getRemoteTime(sku.toUpperCase(), quantity, selector);
         if (!timeInHours) return null;
         return timeInHours * 60 * 60 * 1000;
       },
@@ -163,11 +153,7 @@ const GoogleSheets: IWarehousingAdapter = {
         if (!sku) return null;
         const { type } = deliveryProvider;
         const selector = `DELIVERY_HOURS:${type}`;
-        const timeInHours = await getRemoteTime(
-          sku.toUpperCase(),
-          quantity,
-          selector
-        );
+        const timeInHours = await getRemoteTime(sku.toUpperCase(), quantity, selector);
         if (!timeInHours) return null;
         return timeInHours * 60 * 60 * 1000;
       },

@@ -1,7 +1,6 @@
 import * as R from 'ramda';
 
-const fillUp = (arr, size) =>
-  [...arr, ...new Array(size).fill(null)].slice(0, size);
+const fillUp = (arr, size) => [...arr, ...new Array(size).fill(null)].slice(0, size);
 
 const fillToSameLengthArray = (a, b) => {
   const length = Math.max(a.length, b.length);
@@ -23,10 +22,7 @@ const divideTreeByLevels = (array, level = 0) => {
     return acc;
   }, []);
 
-  return [
-    currentLevel.length && { level, items: currentLevel },
-    ...nextLevels,
-  ].filter(Boolean);
+  return [currentLevel.length && { level, items: currentLevel }, ...nextLevels].filter(Boolean);
 };
 
 const concatItemsByLevels = (levelArray) => {
@@ -36,7 +32,7 @@ const concatItemsByLevels = (levelArray) => {
         ...acc,
         [level]: [...(acc[level] || []), items],
       };
-    }, {})
+    }, {}),
   );
 };
 

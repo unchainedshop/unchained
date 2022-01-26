@@ -13,15 +13,12 @@ interface WorkerParams {
 }
 
 const defaultSchedule = later.parse.text(
-  NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds'
+  NODE_ENV !== 'production' ? 'every 2 seconds' : 'every 30 seconds',
 ) as WorkerSchedule;
 
 export const scheduleToInterval = (scheduleRaw: WorkerSchedule | string) => {
   const referenceDate = new Date(1000);
-  const schedule =
-    typeof scheduleRaw === 'string'
-      ? later.parse.text(scheduleRaw)
-      : scheduleRaw;
+  const schedule = typeof scheduleRaw === 'string' ? later.parse.text(scheduleRaw) : scheduleRaw;
   const [one, two] = later.schedule(schedule).next(2, referenceDate);
   const diff = new Date(two).getTime() - new Date(one).getTime();
   return Math.min(1000 * 60 * 60, diff); // at least once every hour!
@@ -35,14 +32,8 @@ export const IntervalWorker: IWorker<WorkerParams> = {
   version: '1.0',
   type: 'CRON',
 
-  actions: (
-    { workerId, batchCount = 0, schedule = defaultSchedule },
-    requestContext: Context
-  ) => {
-    const baseWorkerActions = BaseWorker.actions(
-      { workerId, worker: IntervalWorker },
-      requestContext
-    );
+  actions: ({ workerId, batchCount = 0, schedule = defaultSchedule }, requestContext: Context) => {
+    const baseWorkerActions = BaseWorker.actions({ workerId, worker: IntervalWorker }, requestContext);
 
     const intervalDelay = scheduleToInterval(schedule);
     let intervalHandle: NodeJS.Timer;

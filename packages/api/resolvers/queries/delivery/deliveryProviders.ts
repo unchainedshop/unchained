@@ -5,7 +5,7 @@ import { DeliveryProviderType } from '@unchainedshop/types/delivery';
 export default async function deliveryProviders(
   root: Root,
   { type }: { type: DeliveryProviderType },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query deliveryProviders ${type}`, { userId });
 

@@ -15,7 +15,7 @@ export interface SetupAccountsOptions {
 
 export const setupAccounts = (
   options: SetupAccountsOptions = { mergeUserCartsOnLogin: true },
-  unchainedAPI: Context
+  unchainedAPI: Context,
 ) => {
   const accountsServer = configureAccountServer(unchainedAPI);
 
@@ -36,7 +36,7 @@ export const setupAccounts = (
           password: null,
           initialPassword: true,
         },
-        {}
+        {},
       );
       return unchainedAPI.modules.users.findUser({
         userId: guestUserId,
@@ -46,14 +46,8 @@ export const setupAccounts = (
 
   accountsServer.on('LoginTokenCreated', async (props) => {
     const { userId, connection = {} } = props;
-    const {
-      userIdBeforeLogin,
-      countryContext,
-      remoteAddress,
-      remotePort,
-      userAgent,
-      normalizedLocale,
-    } = connection;
+    const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
+      connection;
 
     const context = {
       ...unchainedAPI,
@@ -76,7 +70,7 @@ export const setupAccounts = (
           countryContext,
           shouldMergeCarts: options.mergeUserCartsOnLogin,
         },
-        context
+        context,
       );
 
       await unchainedAPI.services.bookmarks.migrateBookmarks(
@@ -85,7 +79,7 @@ export const setupAccounts = (
           toUserId: userId,
           shouldMergeBookmarks: options.mergeUserCartsOnLogin,
         },
-        context
+        context,
       );
     }
 
@@ -95,7 +89,7 @@ export const setupAccounts = (
         user,
         countryContext,
       },
-      context
+      context,
     );
   });
 
@@ -107,15 +101,12 @@ export const setupAccounts = (
     await unchainedAPI.modules.users.updateInitialPassword(user, false);
   });
 
-  accountsServer.on(
-    'ValidateLogin',
-    async (params: { service: string; user: User }) => {
-      if (params.service !== 'guest' && params.user.guest) {
-        await unchainedAPI.modules.users.updateGuest(params.user, false);
-      }
-      return true;
+  accountsServer.on('ValidateLogin', async (params: { service: string; user: User }) => {
+    if (params.service !== 'guest' && params.user.guest) {
+      await unchainedAPI.modules.users.updateGuest(params.user, false);
     }
-  );
+    return true;
+  });
 
   return accountsServer;
 };

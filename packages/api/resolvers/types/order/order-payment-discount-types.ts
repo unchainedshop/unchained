@@ -7,7 +7,7 @@ import crypto from 'crypto';
 type HelperType<P, T> = (
   orderDelivery: OrderPrice & { discountId: string; item: OrderPayment },
   params: P,
-  context: Context
+  context: Context,
 ) => T;
 
 interface OrderPaymentDiscountHelperTypes {
@@ -27,9 +27,7 @@ export const OrderPaymentDiscount: OrderPaymentDiscountHelperTypes = {
   total: (obj) => ({
     _id: crypto
       .createHash('sha256')
-      .update(
-        [`${obj.item._id}-${obj.discountId}`, obj.amount, obj.currency].join('')
-      )
+      .update([`${obj.item._id}-${obj.discountId}`, obj.amount, obj.currency].join(''))
       .digest('hex'),
     amount: obj.amount,
     currency: obj.currency,

@@ -5,5 +5,5 @@ export const ContactSchema = new SimpleSchema(
     telNumber: String,
     emailAddress: String,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

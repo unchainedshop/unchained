@@ -9,7 +9,7 @@ export default async function updateFilterTexts(
     filterId: string;
     filterOptionValue?: string;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { texts, filterId, filterOptionValue } = params;
 
@@ -22,9 +22,5 @@ export default async function updateFilterTexts(
   const filter = await modules.filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
 
-  return modules.filters.texts.updateTexts(
-    { filterId, filterOptionValue },
-    texts,
-    userId
-  );
+  return modules.filters.texts.updateTexts({ filterId, filterOptionValue }, texts, userId);
 }

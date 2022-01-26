@@ -1,34 +1,24 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { PaymentProviderType } from 'meteor/unchained:core-payment';
-import {
-  OrderPaymentNotFoundError,
-  InvalidIdError,
-  OrderPaymentTypeError,
-} from '../../../errors';
+import { OrderPaymentNotFoundError, InvalidIdError, OrderPaymentTypeError } from '../../../errors';
 
 export default async function updateOrderPaymentGeneric(
   root: Root,
   { orderPaymentId, meta }: { orderPaymentId: string; meta?: any },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
-  log(
-    `mutation updateOrderPaymentGeneric ${orderPaymentId} ${JSON.stringify(
-      meta
-    )}`,
-    {
-      userId,
-    }
-  );
+  log(`mutation updateOrderPaymentGeneric ${orderPaymentId} ${JSON.stringify(meta)}`, {
+    userId,
+  });
 
   if (!orderPaymentId) throw new InvalidIdError({ orderPaymentId });
 
   const orderPayment = await modules.orders.payments.findOrderPayment({
     orderPaymentId,
   });
-  if (!orderPayment)
-    throw new OrderPaymentNotFoundError({ data: { orderPaymentId } });
+  if (!orderPayment) throw new OrderPaymentNotFoundError({ data: { orderPaymentId } });
 
   const provider = await modules.payment.paymentProviders.findProvider({
     paymentProviderId: orderPayment.paymentProviderId,
@@ -45,6 +35,6 @@ export default async function updateOrderPaymentGeneric(
   return modules.orders.payments.updateContext(
     orderPayment._id,
     { orderId: orderPayment.orderId, context: { meta } },
-    context
+    context,
   );
 }

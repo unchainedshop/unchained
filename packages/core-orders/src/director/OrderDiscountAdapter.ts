@@ -2,10 +2,7 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 
 import { IDiscountAdapter } from '@unchainedshop/types/discount';
 
-export const OrderDiscountAdapter: Omit<
-  IDiscountAdapter,
-  'key' | 'label' | 'version'
-> = {
+export const OrderDiscountAdapter: Omit<IDiscountAdapter, 'key' | 'label' | 'version'> = {
   orderIndex: 0,
 
   isManualAdditionAllowed: async () => {

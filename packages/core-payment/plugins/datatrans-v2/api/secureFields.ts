@@ -1,16 +1,12 @@
 // https://api-reference.datatrans.ch/#operation/init
 import getPaths from '../getPaths';
 
-import type {
-  FetchDatatransFn,
-  SecureFieldsRequestPayload,
-  SecureFieldsResponse,
-} from './types';
+import type { FetchDatatransFn, SecureFieldsRequestPayload, SecureFieldsResponse } from './types';
 
 const defaultRedirect = getPaths();
 
 export default async function secureFields(
-  payload: SecureFieldsRequestPayload
+  payload: SecureFieldsRequestPayload,
 ): Promise<SecureFieldsResponse> {
   const reqBody = {
     returnUrl: defaultRedirect.returnUrl,

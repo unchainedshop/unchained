@@ -8,21 +8,13 @@ import { Language } from '@unchainedshop/types/languages';
 import { Order } from '@unchainedshop/types/orders';
 import { PaymentCredentials } from '@unchainedshop/types/payments';
 import { Quotation } from '@unchainedshop/types/quotations';
-import {
-  Email,
-  User as UserType,
-  UserProfile,
-} from '@unchainedshop/types/user';
+import { Email, User as UserType, UserProfile } from '@unchainedshop/types/user';
 import { Locale } from 'locale';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { checkAction, checkTypeResolver } from '../../acl';
 import { actions } from '../../roles';
 
-type HelperType<P, T> = (
-  user: UserType,
-  params: P,
-  context: Context
-) => Promise<T>;
+type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
 
 export interface UserHelperTypes {
   _id: HelperType<any, boolean>;
@@ -62,19 +54,14 @@ const {
 } = actions as Record<string, string>;
 
 const getPrimaryEmail = (user: UserType) => {
-  return (user.emails || []).sort(
-    (left, right) => Number(right.verified) - Number(left.verified)
-  )?.[0];
+  return (user.emails || []).sort((left, right) => Number(right.verified) - Number(left.verified))?.[0];
 };
 
 export const User: UserHelperTypes = {
   _id: checkTypeResolver(viewUserPublicInfos, '_id'),
   email: checkTypeResolver(viewUserPrivateInfos, 'email'),
   emails: checkTypeResolver(viewUserPrivateInfos, 'emails'),
-  lastBillingAddress: checkTypeResolver(
-    viewUserPrivateInfos,
-    'lastBillingAddress'
-  ),
+  lastBillingAddress: checkTypeResolver(viewUserPrivateInfos, 'lastBillingAddress'),
   lastContact: checkTypeResolver(viewUserPrivateInfos, 'lastContact'),
   lastLogin: checkTypeResolver(viewUserPrivateInfos, 'lastLogin'),
   profile: checkTypeResolver(viewUserPrivateInfos, 'profile'),
@@ -86,8 +73,7 @@ export const User: UserHelperTypes = {
     await checkAction(context, viewUserPublicInfos, [user, params]);
 
     const { profile } = user;
-    if (profile && profile.displayName && profile.displayName !== '')
-      return profile.displayName;
+    if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
 
     const primaryEmail = getPrimaryEmail(user);
     return primaryEmail?.address || user._id;
@@ -99,22 +85,19 @@ export const User: UserHelperTypes = {
 
   isEmailVerified: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    log(
-      'user.isEmailVerified is deprecated, please use user.primaryEmail.verified',
-      { level: LogLevel.Warning }
-    );
+    log('user.isEmailVerified is deprecated, please use user.primaryEmail.verified', {
+      level: LogLevel.Warning,
+    });
     return !!getPrimaryEmail(user)?.verified;
   },
   isInitialPassword: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    const { password: { initial } = { initial: undefined } } =
-      user.services || {};
+    const { password: { initial } = { initial: undefined } } = user.services || {};
     return user.initialPassword || !!initial;
   },
   isTwoFactorEnabled: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    const { 'two-factor': { secret } = { secret: undefined } } =
-      user.services || {};
+    const { 'two-factor': { secret } = { secret: undefined } } = user.services || {};
     return !!secret;
   },
   isGuest: async (user, params, context) => {
@@ -137,10 +120,7 @@ export const User: UserHelperTypes = {
   async cart(user, params, context) {
     const { modules, countryContext } = context;
     await checkAction(context, viewUserOrders, [user, params]);
-    return modules.orders.cart(
-      { countryContext, orderNumber: params.orderNumber },
-      user
-    );
+    return modules.orders.cart({ countryContext, orderNumber: params.orderNumber }, user);
   },
 
   country: async (user, params, context) => {
@@ -173,7 +153,7 @@ export const User: UserHelperTypes = {
         sort: {
           updated: -1,
         },
-      }
+      },
     );
   },
 
@@ -185,7 +165,7 @@ export const User: UserHelperTypes = {
         sort: {
           created: -1,
         },
-      }
+      },
     );
   },
 
@@ -197,7 +177,7 @@ export const User: UserHelperTypes = {
         sort: {
           created: -1,
         },
-      }
+      },
     );
   },
 };

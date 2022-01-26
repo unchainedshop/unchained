@@ -1,22 +1,10 @@
 import { Context } from './api';
-import {
-  Address,
-  Contact,
-  FindOptions,
-  LogFields,
-  Locale,
-  TimestampFields,
-  _ID,
-} from './common';
+import { Address, Contact, FindOptions, LogFields, Locale, TimestampFields, _ID } from './common';
 import { OrderDeliveriesModule } from './orders.deliveries';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
 import { OrderPaymentsModule } from './orders.payments';
 import { OrderPositionsModule } from './orders.positions';
-import {
-  IOrderPricingSheet,
-  OrderPrice,
-  OrderPricingDiscount,
-} from './orders.pricing';
+import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
 import { User } from './user';
 
 export enum OrderStatus {
@@ -72,11 +60,7 @@ type OrderTransactionContext = {
   deliveryContext?: any;
   orderContext?: any;
 };
-type OrderContextParams<P> = (
-  order: Order,
-  params: P,
-  requestContext: Context
-) => Promise<Order>;
+type OrderContextParams<P> = (order: Order, params: P, requestContext: Context) => Promise<Order>;
 
 export interface OrderQueries {
   findOrder: (
@@ -84,14 +68,14 @@ export interface OrderQueries {
       orderId?: string;
       orderNumber?: string;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Order>;
   findOrders: (
     params: OrderQuery & {
       limit?: number;
       offset?: number;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<Order>>;
   count: (query: OrderQuery) => Promise<number>;
   orderExists: (params: { orderId: string }) => Promise<boolean>;
@@ -100,20 +84,17 @@ export interface OrderTransformations {
   discounted: (
     order: Order,
     orderDiscount: OrderDiscount,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Array<OrderPricingDiscount>>;
   discountTotal: (
     order: Order,
     orderDiscount: OrderDiscount,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<OrderPrice>;
 
   normalizedStatus: (order: Order) => string;
   isCart: (order: Order) => boolean;
-  cart: (
-    order: { countryContext?: string; orderNumber?: string },
-    user: User
-  ) => Promise<Order>;
+  cart: (order: { countryContext?: string; orderNumber?: string }, user: User) => Promise<Order>;
   pricingSheet: (order: Order) => IOrderPricingSheet;
 }
 
@@ -122,7 +103,7 @@ export interface OrderProcessing {
   confirm: OrderContextParams<OrderTransactionContext>;
   ensureCartForUser: (
     params: { order?: Order; user: User; countryContext?: string },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Order>;
   migrateCart: (
     params: {
@@ -130,7 +111,7 @@ export interface OrderProcessing {
       shouldMergeCarts: boolean;
       toCart: Order;
     },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Order>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<{ locale: Locale }>;
@@ -146,7 +127,7 @@ export interface OrderMutations {
       orderNumber?: string;
       originEnrollmentId?: string;
     },
-    userId?: string
+    userId?: string,
   ) => Promise<Order>;
 
   delete: (orderId: string, userId?: string) => Promise<number>;
@@ -157,39 +138,28 @@ export interface OrderMutations {
   setDeliveryProvider: (
     orderId: string,
     deliveryProviderId: string,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Order>;
   setPaymentProvider: (
     orderId: string,
     paymentProviderId: string,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Order>;
 
   updateBillingAddress: (
     orderId: string,
     billingAddress: Address,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Order>;
-  updateContact: (
-    orderId: string,
-    contact: Contact,
-    requestContext: Context
-  ) => Promise<Order>;
-  updateContext: (
-    orderId: string,
-    context: any,
-    requestContext: Context
-  ) => Promise<Order>;
+  updateContact: (orderId: string, contact: Contact, requestContext: Context) => Promise<Order>;
+  updateContext: (orderId: string, context: any, requestContext: Context) => Promise<Order>;
   updateStatus: (
     orderId: string,
     params: { status: OrderStatus; info?: string },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Order>;
 
-  updateCalculation: (
-    orderId: string,
-    requestContext: Context
-  ) => Promise<Order>;
+  updateCalculation: (orderId: string, requestContext: Context) => Promise<Order>;
 }
 
 export type OrdersModule = OrderQueries &
@@ -214,7 +184,7 @@ export type MigrateOrderCartsService = (
     shouldMergeCarts: boolean;
     toUser: User;
   },
-  requestContext: Context
+  requestContext: Context,
 ) => Promise<Order>;
 
 export interface OrderServices {

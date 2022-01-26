@@ -5,7 +5,7 @@ import { DeliverProviderNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeDeliveryProvider(
   root: Root,
   { deliveryProviderId }: { deliveryProviderId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation removeDeliveryProvider ${deliveryProviderId}`, { userId });
 

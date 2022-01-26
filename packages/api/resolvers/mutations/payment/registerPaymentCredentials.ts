@@ -5,11 +5,8 @@ import { InvalidIdError, PaymentProviderNotFoundError } from '../../../errors';
 
 export default async function registerPaymentCredentials(
   root: Root,
-  {
-    paymentContext,
-    paymentProviderId,
-  }: { paymentContext: PaymentContext; paymentProviderId: string },
-  context: Context
+  { paymentContext, paymentProviderId }: { paymentContext: PaymentContext; paymentProviderId: string },
+  context: Context,
 ) {
   const { modules, services, userId } = context;
   log(`mutation registerPaymentCredentials for ${paymentProviderId}`, {
@@ -32,6 +29,6 @@ export default async function registerPaymentCredentials(
         transactionContext: paymentContext,
       },
     },
-    context
+    context,
   );
 }

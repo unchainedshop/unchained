@@ -1,10 +1,7 @@
 import { LinkFileService } from '@unchainedshop/types/files';
 import { FileDirector } from 'meteor/unchained:core-file-upload';
 
-export const linkFileService: LinkFileService = async (
-  { fileId, size, type },
-  { modules, userId }
-) => {
+export const linkFileService: LinkFileService = async ({ fileId, size, type }, { modules, userId }) => {
   const file = await modules.files.findFile({ fileId });
 
   if (!file) throw new Error(`Media with id ${fileId} Not found`);

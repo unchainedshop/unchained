@@ -2,11 +2,7 @@ import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
-import {
-  IOrderPricingSheet,
-  OrderPrice,
-  OrderPricingDiscount,
-} from './orders.pricing';
+import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
 
 export enum OrderDeliveryStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -27,59 +23,47 @@ export type OrderDelivery = {
 
 export type OrderDeliveriesModule = {
   // Queries
-  findDelivery: (
-    params: { orderDeliveryId: string },
-    options?: FindOptions
-  ) => Promise<OrderDelivery>;
+  findDelivery: (params: { orderDeliveryId: string }, options?: FindOptions) => Promise<OrderDelivery>;
 
   // Transformations
   discounts: (
     orderDelivery: OrderDelivery,
     params: { order: Order; orderDiscount: OrderDiscount },
-    requestContext: Context
+    requestContext: Context,
   ) => Array<OrderPricingDiscount>;
   isBlockingOrderConfirmation: (
     orderDelivery: OrderDelivery,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
   normalizedStatus: (orderDelivery: OrderDelivery) => string;
-  pricingSheet: (
-    orderDelivery: OrderDelivery,
-    currency: string
-  ) => IOrderPricingSheet;
+  pricingSheet: (orderDelivery: OrderDelivery, currency: string) => IOrderPricingSheet;
 
   // Mutations
   create: (doc: OrderDelivery, userId?: string) => Promise<OrderDelivery>;
   delete: (orderDeliveryId: string, userId?: string) => Promise<number>;
 
-  markAsDelivered: (
-    orderDelivery: OrderDelivery,
-    userId?: string
-  ) => Promise<void>;
+  markAsDelivered: (orderDelivery: OrderDelivery, userId?: string) => Promise<void>;
 
   send: (
     orderDelivery: OrderDelivery,
     params: { order: Order; deliveryContext?: any },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<OrderDelivery>;
 
   updateDelivery: (
     orderDeliveryId: string,
     params: { context: any; orderId: string },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<OrderDelivery>;
 
   updateStatus: (
     orderDeliveryId: string,
     params: { status: OrderDeliveryStatus; info?: string },
-    userId?: string
+    userId?: string,
   ) => Promise<OrderDelivery>;
 
-  updateCalculation: (
-    orderDelivery: OrderDelivery,
-    requestContext: Context
-  ) => Promise<boolean>;
+  updateCalculation: (orderDelivery: OrderDelivery, requestContext: Context) => Promise<boolean>;
 };
 
 export type OrderDeliveryDiscount = Omit<OrderPrice, '_id'> & {

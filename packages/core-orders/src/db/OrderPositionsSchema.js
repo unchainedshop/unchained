@@ -37,5 +37,5 @@ export const OrderPositionsSchema = new SimpleSchema(
     ...Schemas.contextFields,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

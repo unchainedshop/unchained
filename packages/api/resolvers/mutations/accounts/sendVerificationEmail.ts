@@ -4,7 +4,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function sendVerificationEmail(
   root: Root,
   { email }: { email: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation sendVerificationEmail', { email, userId });
 

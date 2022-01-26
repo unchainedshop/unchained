@@ -16,12 +16,9 @@ const findAppropriateAdapters = (productPlan?: ProductPlan) =>
     adapterFilter: (Adapter: IEnrollmentAdapter) => {
       const activated = Adapter.isActivatedFor(productPlan);
       if (!activated) {
-        log(
-          `Enrollment Director -> ${Adapter.key} (${Adapter.version}) skipped`,
-          {
-            level: LogLevel.Warning,
-          }
-        );
+        log(`Enrollment Director -> ${Adapter.key} (${Adapter.version}) skipped`, {
+          level: LogLevel.Warning,
+        });
       }
       return activated;
     },
@@ -30,11 +27,7 @@ const findAppropriateAdapters = (productPlan?: ProductPlan) =>
 export const EnrollmentDirector: IEnrollmentDirector = {
   ...baseDirector,
 
-  transformOrderItemToEnrollment: async (
-    { orderPosition, product },
-    doc,
-    requestContext
-  ) => {
+  transformOrderItemToEnrollment: async ({ orderPosition, product }, doc, requestContext) => {
     const Adapter = findAppropriateAdapters(product.plan)?.[0];
     if (!Adapter) {
       throw new Error('No suitable enrollment plugin available for this item');
@@ -42,7 +35,7 @@ export const EnrollmentDirector: IEnrollmentDirector = {
 
     const enrollmentPlan = await Adapter.transformOrderItemToEnrollmentPlan(
       orderPosition,
-      requestContext
+      requestContext,
     );
 
     const enrollmentData: EnrollmentData = {
@@ -65,9 +58,7 @@ export const EnrollmentDirector: IEnrollmentDirector = {
     const Adapter = findAppropriateAdapters(product?.plan)?.[0];
 
     if (!Adapter) {
-      throw new Error(
-        'No suitable enrollment plugin available for this plan configuration'
-      );
+      throw new Error('No suitable enrollment plugin available for this plan configuration');
     }
     const adapter = Adapter.actions(context);
 

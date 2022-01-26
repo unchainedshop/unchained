@@ -1,19 +1,14 @@
 import { Context } from '@unchainedshop/types/api';
 import { AssortmentProduct } from '@unchainedshop/types/assortments';
 
-const upsert = async (
-  assortmentProduct: AssortmentProduct,
-  unchainedAPI: Context
-) => {
+const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Context) => {
   const { modules, userId } = unchainedAPI;
   if (
     !(await modules.products.productExists({
       productId: assortmentProduct.productId,
     }))
   ) {
-    throw new Error(
-      `Can't link non-existing product ${assortmentProduct.productId}`
-    );
+    throw new Error(`Can't link non-existing product ${assortmentProduct.productId}`);
   }
   try {
     return modules.assortments.products.create(
@@ -21,21 +16,15 @@ const upsert = async (
       {
         skipInvalidation: true,
       },
-      userId
+      userId,
     );
   } catch (e) {
-    await modules.assortments.products.update(
-      assortmentProduct._id,
-      assortmentProduct
-    );
+    await modules.assortments.products.update(assortmentProduct._id, assortmentProduct);
     return assortmentProduct._id;
   }
 };
 
-export default async (
-  { products, authorId, assortmentId },
-  unchainedAPI: Context
-) => {
+export default async ({ products, authorId, assortmentId }, unchainedAPI: Context) => {
   const { modules, userId } = unchainedAPI;
   const assortmentProductIds = await Promise.all(
     products.map(async (product: AssortmentProduct) => {
@@ -45,10 +34,10 @@ export default async (
           authorId,
           assortmentId,
         },
-        unchainedAPI
+        unchainedAPI,
       );
       return assortmentProductId;
-    })
+    }),
   );
 
   await modules.assortments.products.deleteMany(
@@ -57,6 +46,6 @@ export default async (
       assortmentId,
     },
     { skipInvalidation: true },
-    userId
+    userId,
   );
 };

@@ -113,13 +113,6 @@ const configureRoles = ({ additionalRoles = {} }) => {
 
 const checkUserHasPermission = Roles.userHasPermission;
 
-const updateUserRole = (context, roleName) =>
-  Roles.addUserToRoles(context, roles[roleName].name);
+const updateUserRole = (context, roleName) => Roles.addUserToRoles(context, roles[roleName].name);
 
-export {
-  allRoles,
-  actions,
-  configureRoles,
-  checkUserHasPermission,
-  updateUserRole,
-};
+export { allRoles, actions, configureRoles, checkUserHasPermission, updateUserRole };

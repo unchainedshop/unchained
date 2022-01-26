@@ -1,11 +1,7 @@
 import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
 import SimpleSchema from 'simpl-schema';
-import {
-  AccountsModule,
-  AccountsSettings,
-  AccountsSettingsOptions,
-} from './accounts';
+import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
 import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettingsOptions } from './assortments';
 import { BookmarkServices, BookmarksModule } from './bookmarks';
@@ -52,25 +48,10 @@ import {
   IEnrollmentDirector,
 } from './enrollments';
 import { EventDirector, EventsModule } from './events';
-import {
-  FileServices,
-  FilesModule,
-  IFileAdapter,
-  IFileDirector,
-} from './files';
-import {
-  FiltersModule,
-  FilterType as FilterTypeType,
-  IFilterAdapter,
-  IFilterDirector,
-} from './filters';
+import { FileServices, FilesModule, IFileAdapter, IFileDirector } from './files';
+import { FiltersModule, FilterType as FilterTypeType, IFilterAdapter, IFilterDirector } from './filters';
 import { LanguagesModule } from './languages';
-import {
-  Logger,
-  LogLevel as LogLevelType,
-  LogOptions,
-  Transports,
-} from './logs';
+import { Logger, LogLevel as LogLevelType, LogOptions, Transports } from './logs';
 import { IMessagingDirector, MessagingModule } from './messaging';
 import {
   OrderServices,
@@ -155,56 +136,45 @@ declare module 'meteor/unchained:utils' {
           message: string;
           path?: string | undefined;
         }
-      | undefined
+      | undefined,
   ): void;
 
   function dbIdToString(_id: _ID): string;
 
   function findUnusedSlug(
     checkSlugIsUniqueFn: (slug: string) => Promise<boolean>,
-    options: { slugify?: (text: string) => string }
-  ): (params: {
-    title?: string;
-    existingSlug: string;
-    newSlug?: string;
-  }) => Promise<string>;
+    options: { slugify?: (text: string) => string },
+  ): (params: { title?: string; existingSlug: string; newSlug?: string }) => Promise<string>;
 
   function findLocalizedText<T>(
     collection: Collection<T>,
     selector: Query,
-    locale: string | Locale
+    locale: string | Locale,
   ): Promise<T>;
 
   function findPreservingIds<T>(
-    collection: Collection<T>
-  ): (
-    selector: Query,
-    ids: Array<string>,
-    options?: FindOptions
-  ) => Promise<Array<T>>;
+    collection: Collection<T>,
+  ): (selector: Query, ids: Array<string>, options?: FindOptions) => Promise<Array<T>>;
 
   function generateDbObjectId(): string;
-  function generateDbFilterById<T extends { _id?: _ID }>(
-    id: any,
-    query?: Filter<T>
-  ): Filter<T>;
+  function generateDbFilterById<T extends { _id?: _ID }>(id: any, query?: Filter<T>): Filter<T>;
 
   function generateDbMutations<T extends { _id?: _ID }>(
     collection: Collection<T>,
     schema: SimpleSchema,
-    options?: { hasCreateOnly: boolean }
+    options?: { hasCreateOnly: boolean },
   ): ModuleMutations<T> | ModuleCreateMutation<T>;
 
   function buildDbIndexes<T extends Document>(
     collection: Collection<T>,
-    indexes: Indexes<T>
+    indexes: Indexes<T>,
   ): Promise<boolean>;
 
   function resolveBestSupported(language: string, locales: Locales): Locale;
   function resolveBestCountry(
     contextCountry: string,
     headerCountry: string | string[],
-    countries: Array<Country>
+    countries: Array<Country>,
   ): string;
   function resolveUserRemoteAddress(req: Request): {
     remoteAddress: string;
@@ -229,42 +199,31 @@ declare module 'meteor/unchained:utils' {
     options?: {
       adapterSortKey?: string;
       adapterKeyField?: string;
-    }
+    },
   ) => IBaseDirector<Adapter>;
 
   const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
-    Calculation extends PricingCalculation
-  >() => IPricingAdapter<
-    AdapterContext,
-    Calculation,
-    IPricingSheet<Calculation>
-  >;
+    Calculation extends PricingCalculation,
+  >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
 
   const BasePricingDirector: <
     Context extends BasePricingContext,
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
-    Adapter extends IPricingAdapter<
-      AdapterContext,
-      Calculation,
-      IPricingSheet<Calculation>
-    >
+    Adapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>,
   >(
-    directorName: string
+    directorName: string,
   ) => IBasePricingDirector<Context, AdapterContext, Calculation, Adapter>;
 
   const BasePricingSheet: <Calculation extends PricingCalculation>(
-    params: PricingSheetParams<Calculation>
+    params: PricingSheetParams<Calculation>,
   ) => IPricingSheet<Calculation>;
 }
 
 declare module 'meteor/unchained:logger' {
   function log(message: string, options?: LogOptions): void;
-  function createLogger(
-    moduleName: string,
-    moreTransports?: Transports
-  ): Logger;
+  function createLogger(moduleName: string, moreTransports?: Transports): Logger;
 
   const LogLevel: typeof LogLevelType;
 }
@@ -294,9 +253,7 @@ declare module 'meteor/unchained:core-file-upload' {
  */
 
 declare module 'meteor/unchained:core-accountsjs' {
-  function configureAccountsModule(
-    options: AccountsSettingsOptions
-  ): Promise<AccountsModule>;
+  function configureAccountsModule(options: AccountsSettingsOptions): Promise<AccountsModule>;
 
   function configureAccountServer(context: Context): any;
 
@@ -307,7 +264,7 @@ declare module 'meteor/unchained:core-accountsjs' {
 
 declare module 'meteor/unchained:core-assortments' {
   function configureAssortmentsModule(
-    params: ModuleInput<AssortmentsSettingsOptions>
+    params: ModuleInput<AssortmentsSettingsOptions>,
   ): Promise<AssortmentsModule>;
 
   const assortmentsSettings;
@@ -315,7 +272,7 @@ declare module 'meteor/unchained:core-assortments' {
 
 declare module 'meteor/unchained:core-bookmarks' {
   function configureBookmarksModule(
-    params: ModuleInput<Record<string, never>>
+    params: ModuleInput<Record<string, never>>,
   ): Promise<BookmarksModule>;
 
   const bookmarkServices: BookmarkServices;
@@ -323,7 +280,7 @@ declare module 'meteor/unchained:core-bookmarks' {
 
 declare module 'meteor/unchained:core-countries' {
   function configureCountriesModule(
-    params: ModuleInput<Record<string, never>>
+    params: ModuleInput<Record<string, never>>,
   ): Promise<CountriesModule>;
 
   const countryServices: CountryServices;
@@ -331,13 +288,13 @@ declare module 'meteor/unchained:core-countries' {
 
 declare module 'meteor/unchained:core-currencies' {
   function configureCurrenciesModule(
-    params: ModuleInput<Record<string, never>>
+    params: ModuleInput<Record<string, never>>,
   ): Promise<CurrenciesModule>;
 }
 
 declare module 'meteor/unchained:core-delivery' {
   function configureDeliveryModule(
-    params: ModuleInput<DeliverySettingsOptions>
+    params: ModuleInput<DeliverySettingsOptions>,
   ): Promise<DeliveryModule>;
 
   const deliverySettings;
@@ -350,13 +307,13 @@ declare module 'meteor/unchained:core-delivery' {
   const DeliveryPricingAdapter: IDeliveryPricingAdapter;
   const DeliveryPricingDirector: IDeliveryPricingDirector;
   const DeliveryPricingSheet: (
-    params: PricingSheetParams<DeliveryPricingCalculation>
+    params: PricingSheetParams<DeliveryPricingCalculation>,
   ) => IDeliveryPricingSheet;
 }
 
 declare module 'meteor/unchained:core-enrollments' {
   function configureEnrollmentsModule(
-    params: ModuleInput<EnrollmentsSettingsOptions>
+    params: ModuleInput<EnrollmentsSettingsOptions>,
   ): Promise<EnrollmentsModule>;
 
   const enrollmentsSettings;
@@ -372,23 +329,17 @@ declare module 'meteor/unchained:core-enrollments/workers/GenerateOrderWorker' {
 }
 
 declare module 'meteor/unchained:core-events' {
-  function configureEventsModule(
-    params: ModuleInput<Record<string, never>>
-  ): Promise<EventsModule>;
+  function configureEventsModule(params: ModuleInput<Record<string, never>>): Promise<EventsModule>;
 }
 
 declare module 'meteor/unchained:core-files-next' {
-  function configureFilesModule(
-    params: ModuleInput<Record<string, never>>
-  ): Promise<FilesModule>;
+  function configureFilesModule(params: ModuleInput<Record<string, never>>): Promise<FilesModule>;
 
   const fileServices: FileServices;
 }
 
 declare module 'meteor/unchained:core-filters' {
-  function configureFiltersModule(
-    params: ModuleInput<Record<string, never>>
-  ): Promise<FiltersModule>;
+  function configureFiltersModule(params: ModuleInput<Record<string, never>>): Promise<FiltersModule>;
 
   const FilterType: typeof FilterTypeType;
 
@@ -398,7 +349,7 @@ declare module 'meteor/unchained:core-filters' {
 
 declare module 'meteor/unchained:core-languages' {
   function configureLanguagesModule(
-    params: ModuleInput<Record<string, never>>
+    params: ModuleInput<Record<string, never>>,
   ): Promise<LanguagesModule>;
 }
 
@@ -411,9 +362,7 @@ declare module 'meteor/unchained:core-messaging' {
 }
 
 declare module 'meteor/unchained:core-orders' {
-  function configureOrdersModule(
-    params: ModuleInput<OrdersSettingsOptions>
-  ): Promise<OrdersModule>;
+  function configureOrdersModule(params: ModuleInput<OrdersSettingsOptions>): Promise<OrdersModule>;
 
   const orderServices: OrderServices;
   const ordersSettings;
@@ -427,14 +376,12 @@ declare module 'meteor/unchained:core-orders' {
 
   const OrderPricingAdapter: IOrderPricingAdapter;
   const OrderPricingDirector: IOrderPricingDirector;
-  const OrderPricingSheet: (
-    params: PricingSheetParams<OrderPricingCalculation>
-  ) => IOrderPricingSheet;
+  const OrderPricingSheet: (params: PricingSheetParams<OrderPricingCalculation>) => IOrderPricingSheet;
 }
 
 declare module 'meteor/unchained:core-payment' {
   function configurePaymentModule(
-    params: ModuleInput<PaymentProvidersSettingsOptions>
+    params: ModuleInput<PaymentProvidersSettingsOptions>,
   ): Promise<PaymentModule>;
   const paymentServices;
 
@@ -444,7 +391,7 @@ declare module 'meteor/unchained:core-payment' {
   const PaymentPricingAdapter: IPaymentPricingAdapter;
   const PaymentPricingDirector: IPaymentPricingDirector;
   const PaymentPricingSheet: (
-    params: PricingSheetParams<PaymentPricingCalculation>
+    params: PricingSheetParams<PaymentPricingCalculation>,
   ) => IPaymentPricingSheet;
 
   const PaymentError: typeof PaymentErrorType;
@@ -454,16 +401,14 @@ declare module 'meteor/unchained:core-payment' {
 }
 
 declare module 'meteor/unchained:core-products' {
-  function configureProductsModule(
-    params: ModuleInput<Record<string, never>>
-  ): Promise<ProductsModule>;
+  function configureProductsModule(params: ModuleInput<Record<string, never>>): Promise<ProductsModule>;
 
   const productServices: ProductServices;
 
   const ProductPricingAdapter: IProductPricingAdapter;
   const ProductPricingDirector: IProductPricingDirector;
   const ProductPricingSheet: (
-    params: PricingSheetParams<ProductPricingCalculation>
+    params: PricingSheetParams<ProductPricingCalculation>,
   ) => IProductPricingSheet;
 
   const ProductTypes: typeof ProductType;
@@ -472,7 +417,7 @@ declare module 'meteor/unchained:core-products' {
 
 declare module 'meteor/unchained:core-quotations' {
   function configureQuotationsModule(
-    params: ModuleInput<QuotationsSettingsOptions>
+    params: ModuleInput<QuotationsSettingsOptions>,
   ): Promise<QuotationsModule>;
 
   const quotationsSettings;
@@ -485,16 +430,14 @@ declare module 'meteor/unchained:core-quotations' {
 }
 
 declare module 'meteor/unchained:core-users' {
-  function configureUsersModule(
-    params: ModuleInput<Record<string, never>>
-  ): Promise<UsersModule>;
+  function configureUsersModule(params: ModuleInput<Record<string, never>>): Promise<UsersModule>;
 
   const userServices: UserServices;
 }
 
 declare module 'meteor/unchained:core-warehousing' {
   function configureWarehousingModule(
-    params: ModuleInput<Record<string, never>>
+    params: ModuleInput<Record<string, never>>,
   ): Promise<WarehousingModule>;
 
   const WarehousingDirector: IWarehousingDirector;
@@ -504,9 +447,7 @@ declare module 'meteor/unchained:core-warehousing' {
 }
 
 declare module 'meteor/unchained:core-worker' {
-  function configureWorkerModule(
-    params: ModuleInput<Record<string, never>>
-  ): Promise<WorkerModule>;
+  function configureWorkerModule(params: ModuleInput<Record<string, never>>): Promise<WorkerModule>;
 
   const WorkerDirector: IWorkerDirector;
   const WorkStatus: typeof WorkerStatusType;

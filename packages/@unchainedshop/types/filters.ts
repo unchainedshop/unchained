@@ -1,13 +1,6 @@
 import { Context } from './api';
 import { Assortment } from './assortments';
-import {
-  FindOptions,
-  IBaseAdapter,
-  IBaseDirector,
-  Query,
-  TimestampFields,
-  _ID,
-} from './common';
+import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
 import { Product } from './products';
 
 export enum FilterType {
@@ -68,19 +61,13 @@ export type SearchProducts = {
   filteredProducts: () => Promise<number>; // @deprecated: Reason: "Renamed, use the filteredProductsCount field"
   filteredProductsCount: () => Promise<number>;
   // filters: () => Array<LoadedFilter>;
-  products: (params: {
-    limit: number;
-    offset: number;
-  }) => Promise<Array<Product>>;
+  products: (params: { limit: number; offset: number }) => Promise<Array<Product>>;
 };
 
 export type SearchAssortments = {
   totalAssortments: () => Promise<number>; // @deprecated: Reason: "Renamed, use the assortmentsCount field"
   assortmentsCount: () => Promise<number>;
-  assortments: (params: {
-    limit: number;
-    offset: number;
-  }) => Promise<Array<Assortment>>;
+  assortments: (params: { limit: number; offset: number }) => Promise<Array<Assortment>>;
 };
 
 export type FiltersModule = {
@@ -93,7 +80,7 @@ export type FiltersModule = {
     params: FilterQuery & {
       limit?: number;
       offset?: number;
-    }
+    },
   ) => Promise<Array<Filter>>;
 
   filterExists: (params: { filterId: string }) => Promise<boolean>;
@@ -104,26 +91,26 @@ export type FiltersModule = {
   create: (
     doc: Filter & { title: string; locale: string },
     requestContext: Context,
-    options?: { skipInvalidation?: boolean }
+    options?: { skipInvalidation?: boolean },
   ) => Promise<Filter>;
 
   createFilterOption: (
     filterId: string,
     option: { value: string; title: string },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Filter>;
 
   update: (
     filterId: string,
     doc: Filter,
     requestContext: Context,
-    options?: { skipInvalidation?: boolean }
+    options?: { skipInvalidation?: boolean },
   ) => Promise<Filter>;
 
   delete: (
     filterId: string,
     requestContext: Context,
-    options?: { skipInvalidation?: boolean }
+    options?: { skipInvalidation?: boolean },
   ) => Promise<number>;
 
   removeFilterOption: (
@@ -131,7 +118,7 @@ export type FiltersModule = {
       filterId: string;
       filterOptionValue?: string;
     },
-    userId?: string
+    userId?: string,
   ) => Promise<Filter>;
 
   /*
@@ -141,13 +128,13 @@ export type FiltersModule = {
     searchProducts: (
       searchQuery: SearchQuery,
       params: { forceLiveCollection?: boolean },
-      requestContext: Context
+      requestContext: Context,
     ) => Promise<SearchProducts>;
 
     searchAssortments: (
       searchQuery: SearchQuery,
       params: { forceLiveCollection?: boolean },
-      requestContext: Context
+      requestContext: Context,
     ) => Promise<SearchAssortments>;
   };
 
@@ -157,10 +144,7 @@ export type FiltersModule = {
 
   texts: {
     // Queries
-    findTexts: (params: {
-      filterId: string;
-      filterOptionValue?: string;
-    }) => Promise<Array<FilterText>>;
+    findTexts: (params: { filterId: string; filterOptionValue?: string }) => Promise<Array<FilterText>>;
 
     findLocalizedText: (params: {
       filterId: string;
@@ -172,14 +156,14 @@ export type FiltersModule = {
     updateTexts: (
       query: { filterId: string; filterOptionValue?: string },
       texts: Array<{ locale: string; title?: string; subtitle?: string }>,
-      userId?: string
+      userId?: string,
     ) => Promise<Array<FilterText>>;
 
     upsertLocalizedText: (
       params: { filterId: string; filterOptionValue?: string },
       locale: string,
       text: FilterText,
-      userId?: string
+      userId?: string,
     ) => Promise<FilterText>;
 
     deleteMany: (filterId: string, userId?: string) => Promise<number>;
@@ -206,7 +190,7 @@ export interface FilterAdapterActions {
       filterSelector: Query;
       assortmentSelector: Query;
       sortStage: FindOptions['sort'];
-    }
+    },
   ) => Promise<Array<string>>;
 
   searchProducts: (
@@ -217,17 +201,14 @@ export interface FilterAdapterActions {
       filterSelector: Query;
       productSelector: Query;
       sortStage: FindOptions['sort'];
-    }
+    },
   ) => Promise<Array<string>>;
 
   transformFilterSelector: (query: Query, options?: any) => Promise<Query>;
-  transformProductSelector: (
-    query: Query,
-    options?: { key: string; value?: any }
-  ) => Promise<Query>;
+  transformProductSelector: (query: Query, options?: { key: string; value?: any }) => Promise<Query>;
   transformSortStage: (
     sort: FindOptions['sort'],
-    options?: { key: string; value?: any }
+    options?: { key: string; value?: any },
   ) => Promise<FindOptions['sort']>;
 }
 
@@ -238,8 +219,5 @@ export type IFilterAdapter = IBaseAdapter & {
 };
 
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
-  actions: (
-    filterContext: FilterContext,
-    requestContext: Context
-  ) => FilterAdapterActions;
+  actions: (filterContext: FilterContext, requestContext: Context) => FilterAdapterActions;
 };

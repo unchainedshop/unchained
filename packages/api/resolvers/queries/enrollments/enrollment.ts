@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function enrollment(
   root: Root,
   { enrollmentId }: { enrollmentId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query enrollment ${enrollmentId}`, { userId, enrollmentId });
 

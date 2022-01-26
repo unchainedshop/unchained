@@ -10,17 +10,11 @@ const sortBySequence = {
   sequence: 1,
 };
 
-const defaultSort = AMAZON_DOCUMENTDB_COMPAT_MODE
-  ? sortBySequence
-  : sortByIndex;
+const defaultSort = AMAZON_DOCUMENTDB_COMPAT_MODE ? sortBySequence : sortByIndex;
 
 export const findPreservingIds =
   <T>(collection: Collection<T>) =>
-  async (
-    selector: Query,
-    ids: Array<string>,
-    options?: FindOptions
-  ): Promise<Array<T>> => {
+  async (selector: Query, ids: Array<string>, options?: FindOptions): Promise<Array<T>> => {
     const { skip, limit, sort = defaultSort } = options || {};
     const filteredSelector = {
       ...selector,

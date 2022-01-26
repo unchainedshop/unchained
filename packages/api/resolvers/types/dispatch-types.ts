@@ -24,7 +24,7 @@ export const Dispatch = {
           params.quantity,
           params.country,
           params.userId || 'ANONYMOUS',
-        ].join('')
+        ].join(''),
       )
       .digest('hex'),
 };

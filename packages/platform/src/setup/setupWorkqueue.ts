@@ -1,10 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { WorkerSchedule } from '@unchainedshop/types/worker';
-import {
-  EventListenerWorker,
-  FailedRescheduler,
-  IntervalWorker,
-} from 'meteor/unchained:core-worker';
+import { EventListenerWorker, FailedRescheduler, IntervalWorker } from 'meteor/unchained:core-worker';
 
 export interface SetupWorkqueueOptions {
   batchCount?: number;
@@ -15,7 +11,7 @@ export interface SetupWorkqueueOptions {
 
 export const setupWorkqueue = (
   { workerId, batchCount, schedule }: SetupWorkqueueOptions = {},
-  unchainedAPI: Context
+  unchainedAPI: Context,
 ) => {
   const handlers = [
     FailedRescheduler.actions(unchainedAPI),

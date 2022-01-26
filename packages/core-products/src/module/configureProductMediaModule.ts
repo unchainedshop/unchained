@@ -1,13 +1,5 @@
-import {
-  ProductMedia,
-  ProductMediaModule,
-  ProductMediaText,
-} from '@unchainedshop/types/products.media';
-import {
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from '@unchainedshop/types/common';
+import { ProductMedia, ProductMediaModule, ProductMediaText } from '@unchainedshop/types/products.media';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
@@ -35,14 +27,14 @@ export const configureProductMediaModule = async ({
 
   const mutations = generateDbMutations<ProductMedia>(
     ProductMedia,
-    ProductMediaSchema
+    ProductMediaSchema,
   ) as ModuleMutations<ProductMedia>;
 
   const upsertLocalizedText = async (
     productMediaId: string,
     locale: string,
     text: ProductMediaText,
-    userId: string
+    userId: string,
   ) => {
     await ProductMediaTexts.updateOne(
       {
@@ -65,7 +57,7 @@ export const configureProductMediaModule = async ({
       },
       {
         upsert: true,
-      }
+      },
     );
 
     return ProductMediaTexts.findOne({
@@ -108,7 +100,7 @@ export const configureProductMediaModule = async ({
           },
           {
             sort: { sortKey: -1 },
-          }
+          },
         )) || { sortKey: 0 };
         sortKey = lastProductMedia.sortKey + 1;
       }
@@ -120,13 +112,10 @@ export const configureProductMediaModule = async ({
           ...doc,
           sortKey,
         },
-        userId
+        userId,
       );
 
-      const productMedia = await ProductMedia.findOne(
-        generateDbFilterById(productMediaId),
-        {}
-      );
+      const productMedia = await ProductMedia.findOne(generateDbFilterById(productMediaId), {});
 
       emit('PRODUCT_ADD_MEDIA', {
         productMedia,
@@ -147,11 +136,7 @@ export const configureProductMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteMediaFiles: async ({
-      productId,
-      excludedProdcutIds,
-      excludedProductMediaIds,
-    }) => {
+    deleteMediaFiles: async ({ productId, excludedProdcutIds, excludedProductMediaIds }) => {
       const selector: Query = productId ? { productId } : {};
 
       if (!productId && excludedProdcutIds) {
@@ -186,7 +171,7 @@ export const configureProductMediaModule = async ({
           });
 
           return productMediaId;
-        })
+        }),
       );
 
       const productMedias = await ProductMedia.find({
@@ -214,7 +199,7 @@ export const configureProductMediaModule = async ({
         const text = await findLocalizedText<ProductMediaText>(
           ProductMediaTexts,
           { productMediaId },
-          parsedLocale
+          parsedLocale,
         );
 
         return text;
@@ -232,9 +217,9 @@ export const configureProductMediaModule = async ({
                   ...localizations,
                   authorId: userId,
                 },
-                userId
-              )
-          )
+                userId,
+              ),
+          ),
         );
 
         emit('PRODUCT_UPDATE_MEDIA_TEXT', {

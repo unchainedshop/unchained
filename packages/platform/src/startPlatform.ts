@@ -49,16 +49,11 @@ type PlatformOptions = {
   coreOptions: UnchainedCoreOptions['options'];
 };
 export const startPlatform = async (
-  {
-    modules,
-    additionalTypeDefs = [],
-    coreOptions = {},
-    ...options
-  }: PlatformOptions = {
+  { modules, additionalTypeDefs = [], coreOptions = {}, ...options }: PlatformOptions = {
     modules: undefined,
     additionalTypeDefs: [],
     coreOptions: {},
-  }
+  },
 ) => {
   const isWorkQueueEnabled = checkWorkQueueEnabled(options.workQueueOptions);
   const emailInterceptionIsEnabled = isEmailInterceptionEnabled(options);
@@ -87,11 +82,7 @@ export const startPlatform = async (
   setupTemplates();
 
   // Combine type defs for graphQL schema
-  const typeDefs = [
-    ...generateEventTypeDefs(),
-    ...generateWorkerTypeDefs(),
-    ...additionalTypeDefs,
-  ];
+  const typeDefs = [...generateEventTypeDefs(), ...generateWorkerTypeDefs(), ...additionalTypeDefs];
 
   // Start the graphQL server
   startAPIServer({ ...options, typeDefs, unchainedAPI });

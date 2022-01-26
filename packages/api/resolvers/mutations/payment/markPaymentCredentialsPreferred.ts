@@ -1,14 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  PaymentCredentialsNotFoundError,
-  InvalidIdError,
-} from '../../../errors';
+import { PaymentCredentialsNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function makePaymentCredentialsPreferred(
   root: Root,
   { paymentCredentialsId }: { paymentCredentialsId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation markPaymentCredentialsPreferred ${paymentCredentialsId}`, {
     userId,

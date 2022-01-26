@@ -5,7 +5,7 @@ import { InvalidIdError, ProductReviewNotFoundError } from '../../../errors';
 export default async function removeProductReview(
   root: Root,
   { productReviewId }: { productReviewId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation removeProductReview', { userId, productReviewId });
 

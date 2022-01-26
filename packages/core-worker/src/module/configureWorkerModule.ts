@@ -8,17 +8,11 @@ import {
 } from '@unchainedshop/types/common';
 import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import os from 'os';
 import { WorkQueueCollection } from '../db/WorkQueueCollection';
 import { WorkQueueSchema } from '../db/WorkQueueSchema';
-import {
-  DIRECTOR_MARKED_FAILED_ERROR,
-  WorkerDirector,
-} from '../director/WorkerDirector';
+import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector';
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 import { WorkStatus } from '../director/WorkStatus';
 
@@ -60,9 +54,8 @@ const buildQuerySelector = ({
   };
   const statusQuery = {
     $or: Object.entries(filterMap).reduce(
-      (acc, [key, filter]) =>
-        status.includes(key as WorkStatus) ? [...acc, filter] : acc,
-      []
+      (acc, [key, filter]) => (status.includes(key as WorkStatus) ? [...acc, filter] : acc),
+      [],
     ),
   };
 
@@ -94,10 +87,7 @@ export const configureWorkerModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<WorkerModule> => {
   const WorkQueue = await WorkQueueCollection(db);
 
-  const mutations = generateDbMutations<Work>(
-    WorkQueue,
-    WorkQueueSchema
-  ) as ModuleMutations<Work>;
+  const mutations = generateDbMutations<Work>(WorkQueue, WorkQueueSchema) as ModuleMutations<Work>;
 
   const finishWork: WorkerModule['finishWork'] = async (
     workId,
@@ -109,10 +99,10 @@ export const configureWorkerModule = async ({
       success,
       worker = UNCHAINED_WORKER_ID,
     },
-    userId
+    userId,
   ) => {
     const workBeforeUpdate = await WorkQueue.findOne(
-      buildQuerySelector({ workId, status: [WorkStatus.ALLOCATED] })
+      buildQuerySelector({ workId, status: [WorkStatus.ALLOCATED] }),
     );
 
     if (!workBeforeUpdate) return null;
@@ -129,7 +119,7 @@ export const configureWorkerModule = async ({
           worker,
         },
       },
-      userId
+      userId,
     );
 
     const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
@@ -147,17 +137,12 @@ export const configureWorkerModule = async ({
   return {
     // Queries
     activeWorkTypes: async () => {
-      const typeList = await WorkQueue.aggregate([
-        { $group: { _id: '$type' } },
-      ]).toArray();
+      const typeList = await WorkQueue.aggregate([{ $group: { _id: '$type' } }]).toArray();
       return typeList.map((t) => t._id);
     },
 
     findWork: async ({ workId, originalWorkId }) => {
-      return WorkQueue.findOne(
-        workId ? generateDbFilterById(workId) : { originalWorkId },
-        {}
-      );
+      return WorkQueue.findOne(workId ? generateDbFilterById(workId) : { originalWorkId }, {});
     },
 
     findWorkQueue: async ({ limit, skip, ...selectorOptions }) => {
@@ -174,7 +159,7 @@ export const configureWorkerModule = async ({
     workExists: async ({ workId, originalWorkId }) => {
       const queueCount = await WorkQueue.find(
         workId ? generateDbFilterById(workId) : { originalWorkId },
-        { limit: 1 }
+        { limit: 1 },
       ).count();
       return !!queueCount;
     },
@@ -203,10 +188,7 @@ export const configureWorkerModule = async ({
     },
 
     // Mutations
-    addWork: async (
-      { type, input, priority = 0, scheduled, originalWorkId, retries = 20 },
-      userId
-    ) => {
+    addWork: async ({ type, input, priority = 0, scheduled, originalWorkId, retries = 20 }, userId) => {
       if (!WorkerDirector.getAdapter(type)) {
         throw new Error(`No plugin registered for type ${type}`);
       }
@@ -222,15 +204,12 @@ export const configureWorkerModule = async ({
           retries,
           created,
         },
-        userId
+        userId,
       );
 
-      log(
-        `WorkerDirector -> Work added ${workId} (${type} / ${
-          scheduled || created
-        } / ${retries})`,
-        { userId }
-      );
+      log(`WorkerDirector -> Work added ${workId} (${type} / ${scheduled || created} / ${retries})`, {
+        userId,
+      });
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
@@ -255,7 +234,7 @@ export const configureWorkerModule = async ({
         {
           $set: { started: new Date(), worker },
         },
-        { sort: defaultSort, returnDocument: 'after' }
+        { sort: defaultSort, returnDocument: 'after' },
       );
 
       WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
@@ -265,14 +244,7 @@ export const configureWorkerModule = async ({
       return result.value;
     },
 
-    ensureOneWork: async ({
-      type,
-      input,
-      priority = 0,
-      scheduled,
-      originalWorkId,
-      retries = 20,
-    }) => {
+    ensureOneWork: async ({ type, input, priority = 0, scheduled, originalWorkId, retries = 20 }) => {
       const created = new Date();
       const query = buildQuerySelector({
         type,
@@ -303,13 +275,11 @@ export const configureWorkerModule = async ({
             sort: defaultSort,
             returnNewDocument: true,
             upsert: true,
-          }
+          },
         ) as Promise<ModifyResult<Work>>);
 
         if (!result.lastErrorObject.updatedExisting) {
-          log(
-            `WorkerDirector -> Work added again (ensure) ${type} ${scheduled} ${retries}`
-          );
+          log(`WorkerDirector -> Work added again (ensure) ${type} ${scheduled} ${retries}`);
 
           WorkerDirector.events.emit(WorkerEventTypes.ADDED, {
             work: result.value,
@@ -332,7 +302,7 @@ export const configureWorkerModule = async ({
         buildQuerySelector({
           workId,
           status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
-        })
+        }),
       );
       if (!workBeforeRemoval) return null;
 
@@ -353,7 +323,7 @@ export const configureWorkerModule = async ({
           worker,
           type: { $in: types },
         }),
-        { type: 1, sort: { test: 1 } } as Projection<Work>
+        { type: 1, sort: { test: 1 } } as Projection<Work>,
       ).toArray();
 
       return Promise.all(
@@ -371,9 +341,9 @@ export const configureWorkerModule = async ({
               },
               worker,
             },
-            userId
-          )
-        )
+            userId,
+          ),
+        ),
       );
     },
   };

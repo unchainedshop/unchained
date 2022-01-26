@@ -1,8 +1,5 @@
 import { IQuotationAdapter } from '@unchainedshop/types/quotations';
-import {
-  QuotationDirector,
-  QuotationAdapter,
-} from 'meteor/unchained:core-quotations';
+import { QuotationDirector, QuotationAdapter } from 'meteor/unchained:core-quotations';
 
 const ManualOffering: IQuotationAdapter = {
   ...QuotationAdapter,

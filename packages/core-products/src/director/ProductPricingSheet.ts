@@ -7,7 +7,7 @@ import {
 import { PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const ProductPricingSheet = (
-  params: PricingSheetParams<ProductPricingCalculation>
+  params: PricingSheetParams<ProductPricingCalculation>,
 ): IProductPricingSheet => {
   const basePricingSheet = BasePricingSheet<ProductPricingCalculation>(params);
 

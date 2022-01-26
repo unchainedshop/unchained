@@ -3,10 +3,7 @@ import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
 import { BaseAdapter } from 'meteor/unchained:utils';
 import yj from 'yieldable-json';
-import {
-  BulkImportPayloads,
-  createBulkImporter,
-} from '../bulk-importer/createBulkImporter';
+import { BulkImportPayloads, createBulkImporter } from '../bulk-importer/createBulkImporter';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
@@ -56,7 +53,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
           authorId,
           createShouldUpsertIfIDExists,
         },
-        requestContext
+        requestContext,
       );
       await events.reduce(async (currentEventPromise, nextEvent) => {
         await currentEventPromise;

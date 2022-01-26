@@ -6,7 +6,7 @@ import { CurrencyNotFoundError, InvalidIdError } from '../../../errors';
 export default async function updateCurrency(
   root: Root,
   { currency, currencyId }: { currency: Currency; currencyId: string },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log(`mutation updateCurrency ${currencyId}`, { userId });
   if (!currencyId) throw new InvalidIdError({ currencyId });

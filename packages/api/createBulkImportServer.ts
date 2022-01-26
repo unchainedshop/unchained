@@ -18,13 +18,9 @@ const bulkImportMiddleware = async (req, res) => {
     if (req.method === 'POST') {
       req
         .pipe(
-          resolvedContext.bulkImporter.BulkImportPayloads.openUploadStreamWithId(
-            date,
-            `${date}.json`,
-            {
-              contentType: 'application/json',
-            }
-          )
+          resolvedContext.bulkImporter.BulkImportPayloads.openUploadStreamWithId(date, `${date}.json`, {
+            contentType: 'application/json',
+          }),
         )
         .on('error', (e) => {
           logger.error(e.message);
@@ -39,14 +35,13 @@ const bulkImportMiddleware = async (req, res) => {
                 input: {
                   payloadId: file._id,
                   payloadSize: file.length,
-                  createShouldUpsertIfIDExists:
-                    !!req.query?.createShouldUpsertIfIDExists,
+                  createShouldUpsertIfIDExists: !!req.query?.createShouldUpsertIfIDExists,
                   remoteAddress: resolvedContext.remoteAddress,
                 },
                 retries: 0,
                 priority: 10,
               },
-              resolvedContext.userId
+              resolvedContext.userId,
             );
 
             res.writeHead(200);
@@ -76,6 +71,6 @@ export default (options) => {
       const resolvedContext = await context({ req, res });
       req.unchainedContext = resolvedContext as Context;
       bulkImportMiddleware(req, res);
-    }
+    },
   );
 };

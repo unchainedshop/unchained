@@ -1,10 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 
-const {
-  EMAIL_FROM,
-  EMAIL_WEBSITE_NAME = 'Unchained Webshop',
-  UI_ENDPOINT,
-} = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Webshop', UI_ENDPOINT } = process.env;
 
 const textTemplate = `
   {{subject}}\n
@@ -18,14 +14,14 @@ const textTemplate = `
 
 export const resolveQuotationStatusTemplate: TemplateResolver = async (
   { quotationId, locale },
-  { modules }
+  { modules },
 ) => {
   const quotation = await modules.quotations.findQuotation({ quotationId });
   const user = await modules.users.findUser({ userId: quotation.userId });
   const attachments = (
     await modules.files.findFilesByMetaData(
       { meta: { quotationId: quotation._id, type: 'PROPOSAL ' } },
-      { sort: { 'meta.date': -1 } }
+      { sort: { 'meta.date': -1 } },
     )
   )
     .filter(Boolean)

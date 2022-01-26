@@ -8,20 +8,14 @@ import Minio from 'minio';
 import { Readable } from 'stream';
 import { URL } from 'url';
 
-const {
-  MINIO_ACCESS_KEY,
-  MINIO_SECRET_KEY,
-  MINIO_ENDPOINT,
-  MINIO_BUCKET_NAME,
-  NODE_ENV,
-} = process.env;
+const { MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_ENDPOINT, MINIO_BUCKET_NAME, NODE_ENV } = process.env;
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 
 const connectToMinio = () => {
   if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT) {
     log(
       'Please configure Minio/S3 by providing MINIO_ACCESS_KEY,MINIO_SECRET_KEY & MINIO_ENDPOINT to use upload features',
-      { level: LogLevel.Error }
+      { level: LogLevel.Error },
     );
     return null;
   }
@@ -84,10 +78,7 @@ const downloadFromUrlToBuffer = async (fileUrl: string) => {
 
 const generateRandomFileName = (fileName: string) => {
   const random = crypto.randomBytes(16);
-  const hash = crypto
-    .createHash('sha256')
-    .update([fileName, random].join(''))
-    .digest('hex');
+  const hash = crypto.createHash('sha256').update([fileName, random].join('')).digest('hex');
   const extension = fileName.substr(fileName.lastIndexOf('.'));
   const hashedName = hash + extension;
   return {
@@ -122,7 +113,7 @@ export const MinioAdapter: IFileAdapter = {
   // Returns the file name with extension from its ID and url bucket name is included in the ID on insert operation
   composeFileName: (file: File) => {
     return decodeURIComponent(file.externalId).concat(
-      file.url ? file.url.substr(file.url.lastIndexOf('.')) : ''
+      file.url ? file.url.substr(file.url.lastIndexOf('.')) : '',
     );
   },
 
@@ -134,7 +125,7 @@ export const MinioAdapter: IFileAdapter = {
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
       `${directoryName}/${hashedName}`,
-      PUT_URL_EXPIRY
+      PUT_URL_EXPIRY,
     );
 
     return {
@@ -170,11 +161,7 @@ export const MinioAdapter: IFileAdapter = {
 
     const { hash, hashedName } = generateRandomFileName(fname);
 
-    await client.putObject(
-      MINIO_BUCKET_NAME,
-      `${directoryName}/${hashedName}`,
-      stream
-    );
+    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${hashedName}`, stream);
 
     const { size } = await getObjectStats(`${directoryName}/${hashedName}`);
     const type = getMimeType(fname);
@@ -200,11 +187,7 @@ export const MinioAdapter: IFileAdapter = {
 
     const buff = await downloadFromUrlToBuffer(fileLink);
     const stream = bufferToStream(buff);
-    await client.putObject(
-      MINIO_BUCKET_NAME,
-      `${directoryName}/${hashedName}`,
-      stream
-    );
+    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${hashedName}`, stream);
     const { size } = await getObjectStats(`${directoryName}/${hashedName}`);
     const type = getMimeType(filename);
 

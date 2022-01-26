@@ -1,16 +1,12 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { AssortmentFilter } from '@unchainedshop/types/assortments';
 import { log } from 'meteor/unchained:logger';
-import {
-  AssortmentNotFoundError,
-  FilterNotFoundError,
-  InvalidIdError,
-} from '../../../errors';
+import { AssortmentNotFoundError, FilterNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function addAssortmentFilter(
   root: Root,
   { assortmentId, filterId, ...assortmentFilter }: AssortmentFilter,
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation addAssortmentFilter ${assortmentId} -> ${filterId}`, {
     userId,
@@ -22,8 +18,7 @@ export default async function addAssortmentFilter(
   if (!(await modules.assortments.assortmentExists({ assortmentId })))
     throw new AssortmentNotFoundError({ assortmentId });
 
-  if (!(await modules.filters.filterExists({ filterId })))
-    throw new FilterNotFoundError({ filterId });
+  if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
   return modules.assortments.filters.create(
     {
@@ -32,6 +27,6 @@ export default async function addAssortmentFilter(
       authorId: userId,
       ...assortmentFilter,
     },
-    userId
+    userId,
   );
 }

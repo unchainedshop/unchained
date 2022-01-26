@@ -21,9 +21,7 @@ export type AssortmentMediaText = {
 
 export type AssortmentMediaModule = {
   // Queries
-  findAssortmentMedia: (params: {
-    assortmentMediaId: string;
-  }) => Promise<AssortmentMedia>;
+  findAssortmentMedia: (params: { assortmentMediaId: string }) => Promise<AssortmentMedia>;
 
   findAssortmentMedias: (
     params: {
@@ -32,14 +30,11 @@ export type AssortmentMediaModule = {
       offset?: number;
       tags?: Array<string>;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<AssortmentMedia>>;
 
   // Mutations
-  create: (
-    doc: { assortmentId: string; mediaId: string },
-    userId: string
-  ) => Promise<AssortmentMedia>;
+  create: (doc: { assortmentId: string; mediaId: string }, userId: string) => Promise<AssortmentMedia>;
 
   delete: (assortmentMediaId: string, userId?: string) => Promise<number>;
   deleteMediaFiles: (params: {
@@ -48,10 +43,7 @@ export type AssortmentMediaModule = {
     excludedAssortmentMediaIds?: Array<_ID>;
   }) => Promise<number>;
 
-  update: (
-    assortmentMediaId: string,
-    doc: AssortmentMedia
-  ) => Promise<AssortmentMedia>;
+  update: (assortmentMediaId: string, doc: AssortmentMedia) => Promise<AssortmentMedia>;
 
   updateManualOrder: (
     params: {
@@ -60,14 +52,12 @@ export type AssortmentMediaModule = {
         sortKey: number;
       }>;
     },
-    userId?: string
+    userId?: string,
   ) => Promise<Array<AssortmentMedia>>;
 
   texts: {
     // Queries
-    findMediaTexts: (query: {
-      assortmentMediaId: string;
-    }) => Promise<Array<AssortmentMediaText>>;
+    findMediaTexts: (query: { assortmentMediaId: string }) => Promise<Array<AssortmentMediaText>>;
 
     findLocalizedMediaText: (query: {
       assortmentMediaId: string;
@@ -78,14 +68,14 @@ export type AssortmentMediaModule = {
     updateMediaTexts: (
       assortmentMediaId: string,
       texts: Array<AssortmentMediaText>,
-      userId: string
+      userId: string,
     ) => Promise<Array<AssortmentMediaText>>;
 
     upsertLocalizedText: (
       assortmentId: string,
       locale: string,
       text: AssortmentMediaText,
-      userId?: string
+      userId?: string,
     ) => Promise<AssortmentMediaText>;
   };
 };

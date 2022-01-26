@@ -21,7 +21,7 @@ export const SimpleProduct: SimpleProductHelperTypes = {
           product: obj,
           deliveryProvider,
         },
-        requestContext
+        requestContext,
       );
 
       const mappedWarehousingProviders = await Promise.all(
@@ -37,14 +37,14 @@ export const SimpleProduct: SimpleProductHelperTypes = {
           const dispatch = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
-            requestContext
+            requestContext,
           ).estimatedDispatch();
 
           return {
             ...warehousingContext,
             ...dispatch,
           };
-        })
+        }),
       );
 
       return result.concat(result, mappedWarehousingProviders);
@@ -67,7 +67,7 @@ export const SimpleProduct: SimpleProductHelperTypes = {
           product: obj,
           deliveryProvider,
         },
-        requestContext
+        requestContext,
       );
 
       const mappedWarehousingProviders = await Promise.all(
@@ -81,14 +81,14 @@ export const SimpleProduct: SimpleProductHelperTypes = {
           const stock = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
-            requestContext
+            requestContext,
           ).estimatedStock();
 
           return {
             ...warehousingContext,
             ...stock,
           };
-        })
+        }),
       );
 
       return result.concat(result, mappedWarehousingProviders);
@@ -103,12 +103,7 @@ export const SimpleProduct: SimpleProductHelperTypes = {
   },
   dimensions: ({ supply }) => {
     if (!supply) return null;
-    const {
-      weightInGram,
-      heightInMillimeters,
-      lengthInMillimeters,
-      widthInMillimeters,
-    } = supply;
+    const { weightInGram, heightInMillimeters, lengthInMillimeters, widthInMillimeters } = supply;
     return {
       weightInGram,
       heightInMillimeters,

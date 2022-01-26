@@ -26,7 +26,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
     }: {
       item: OrderPosition;
     } & ProductPricingContext,
-    requestContext
+    requestContext,
   ) => {
     const { modules } = requestContext;
 
@@ -68,7 +68,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
     return baseDirector.actions(
       pricingContext,
       requestContext,
-      ProductPricingDirector.buildPricingContext
+      ProductPricingDirector.buildPricingContext,
     );
   },
 

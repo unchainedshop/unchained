@@ -11,7 +11,7 @@ import {
 export default async function createEnrollment(
   root: Root,
   { contact, plan, billingAddress, payment, delivery, meta },
-  context: Context
+  context: Context,
 ) {
   const { countryContext, modules, userId } = context;
 
@@ -48,6 +48,6 @@ export default async function createEnrollment(
       quantity,
       userId,
     },
-    context
+    context,
   );
 }

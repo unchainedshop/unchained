@@ -4,7 +4,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function countriesCount(
   root: Root,
   { includeInactive }: { includeInactive: boolean },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query countriesCount:  ${includeInactive ? 'includeInactive' : ''}`, {
     userId,

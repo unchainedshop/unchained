@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function currency(
   root: Root,
   { currencyId }: { currencyId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query currency ${currencyId}`, { userId });
 

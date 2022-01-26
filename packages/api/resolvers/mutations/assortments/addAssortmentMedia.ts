@@ -5,7 +5,7 @@ import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
 export default async function addAssortmentMedia(
   root: Root,
   { media, assortmentId },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation addAssortmentMedia ${assortmentId}`, { modules, userId });
 
@@ -20,12 +20,12 @@ export default async function addAssortmentMedia(
       rawFile: media,
       meta: { authorId: userId },
     },
-    userId
+    userId,
   );
 
   const assortmentMedia = await modules.assortments.media.create(
     { assortmentId, mediaId: file._id },
-    userId
+    userId,
   );
 
   return assortmentMedia;

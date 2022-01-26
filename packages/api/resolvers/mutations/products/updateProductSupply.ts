@@ -3,16 +3,12 @@ import { ProductTypes } from 'meteor/unchained:core-products';
 import { Context, Root } from '@unchainedshop/types/api';
 
 import { ProductSupply } from '@unchainedshop/types/products';
-import {
-  ProductNotFoundError,
-  InvalidIdError,
-  ProductWrongTypeError,
-} from '../../../errors';
+import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors';
 
 export default async function updateProductSupply(
   root: Root,
   { supply, productId }: { supply: ProductSupply; productId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation updateProductSupply ${productId}`, { userId });
 

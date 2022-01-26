@@ -3,11 +3,7 @@ import { Context, Root } from '@unchainedshop/types/api';
 import { log } from 'meteor/unchained:logger';
 import { hashPassword } from '../../../hashPassword';
 
-export default async function createUser(
-  root: Root,
-  params: UserData,
-  context: Context
-) {
+export default async function createUser(root: Root, params: UserData, context: Context) {
   const { modules, userId } = context;
 
   log('mutation createUser', { email: params.email, userId });

@@ -31,5 +31,5 @@ export const ProductReviewsSchema = new SimpleSchema(
     'votes.$.meta': { type: Object, blackbox: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

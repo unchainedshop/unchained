@@ -8,13 +8,10 @@ export const productFulltextSearch = (
     productSelector: Query;
     sortStage: FindOptions['sort'];
   },
-  filterActions: FilterAdapterActions
+  filterActions: FilterAdapterActions,
 ) => {
   return async (productIds: Array<string>) => {
-    const foundProductIds = await filterActions.searchProducts(
-      { productIds },
-      params
-    );
+    const foundProductIds = await filterActions.searchProducts({ productIds }, params);
     return foundProductIds || [];
   };
 };

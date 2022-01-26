@@ -10,7 +10,7 @@ export default async function F(
     productVariationOptionValue?: string;
     texts: Array<ProductVariationText>;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { productVariationId, productVariationOptionValue, texts } = params;
 
@@ -18,17 +18,15 @@ export default async function F(
 
   if (!productVariationId) throw new InvalidIdError({ productVariationId });
 
-  const productVariation =
-    await modules.products.variations.findProductVariation({
-      productVariationId,
-    });
-  if (!productVariation)
-    throw new ProductVariationNotFoundError({ productVariationId });
+  const productVariation = await modules.products.variations.findProductVariation({
+    productVariationId,
+  });
+  if (!productVariation) throw new ProductVariationNotFoundError({ productVariationId });
 
   return modules.products.variations.texts.updateVariationTexts(
     productVariationId,
     texts,
     productVariationOptionValue,
-    userId
+    userId,
   );
 }

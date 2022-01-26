@@ -6,7 +6,7 @@ import { ProviderConfigurationInvalid } from '../../../errors';
 export default async function createDeliveryProvider(
   root: Root,
   { deliveryProvider }: { deliveryProvider: DeliveryProvider },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation createDeliveryProvider', { userId });
 
@@ -15,7 +15,7 @@ export default async function createDeliveryProvider(
       ...deliveryProvider,
       authorId: userId,
     },
-    userId
+    userId,
   );
 
   if (!provider) throw new ProviderConfigurationInvalid(deliveryProvider);

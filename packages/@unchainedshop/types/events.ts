@@ -1,11 +1,4 @@
-import {
-  FindOptions,
-  ModuleCreateMutation,
-  Query,
-  Sort,
-  TimestampFields,
-  _ID,
-} from './common';
+import { FindOptions, ModuleCreateMutation, Query, Sort, TimestampFields, _ID } from './common';
 
 export type Event = {
   _id?: _ID;
@@ -16,18 +9,12 @@ export type Event = {
 
 export interface EmitAdapter {
   publish(eventName: string, payload: Record<string, unknown>): void;
-  subscribe(
-    eventName: string,
-    callBack: (payload?: Record<string, unknown>) => void
-  ): void;
+  subscribe(eventName: string, callBack: (payload?: Record<string, unknown>) => void): void;
 }
 export type ContextNormalizerFunction = (context: any) => any;
 
 export interface EventDirector {
-  emit: (
-    eventName: string,
-    data?: string | Record<string, unknown>
-  ) => Promise<void>;
+  emit: (eventName: string, data?: string | Record<string, unknown>) => Promise<void>;
   getEmitAdapter: () => EmitAdapter;
   getEmitHistoryAdapter: () => EmitAdapter;
   getRegisteredEvents: () => string[];
@@ -35,17 +22,11 @@ export interface EventDirector {
   setContextNormalizer: (fn: ContextNormalizerFunction) => void;
   setEmitAdapter: (adapter: EmitAdapter) => void;
   setEmitHistoryAdapter: (adapter: EmitAdapter) => void;
-  subscribe: (
-    eventName: string,
-    callBack: (payload?: Record<string, unknown>) => void
-  ) => void;
+  subscribe: (eventName: string, callBack: (payload?: Record<string, unknown>) => void) => void;
 }
 
 export interface EventsModule extends ModuleCreateMutation<Event> {
-  findEvent: (
-    params: Query & { eventId: _ID },
-    options?: FindOptions
-  ) => Promise<Event>;
+  findEvent: (params: Query & { eventId: _ID }, options?: FindOptions) => Promise<Event>;
 
   findEvents: (
     params: Query & {
@@ -53,7 +34,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
       offset?: number;
       sort?: Sort;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<Event>>;
 
   count: (query: Query) => Promise<number>;

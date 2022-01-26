@@ -16,7 +16,7 @@ const generateOrder = async (
     orderProducts: Array<{ orderPosition: OrderPosition; product: Product }>;
     orderContext?: any;
   } & { [x: string]: any },
-  requestContext: Context
+  requestContext: Context,
 ) => {
   if (!enrollment.payment || !enrollment.delivery) return null;
 
@@ -31,7 +31,7 @@ const generateOrder = async (
       originEnrollmentId: enrollment._id,
       ...configuration,
     },
-    enrollment.userId
+    enrollment.userId,
   );
   const orderId = order._id;
 
@@ -42,9 +42,9 @@ const generateOrder = async (
           await modules.orders.positions.addProductItem(
             orderPosition,
             { order, product },
-            requestContext
-          )
-      )
+            requestContext,
+          ),
+      ),
     );
   } else {
     const product = await modules.products.findProduct({
@@ -56,26 +56,18 @@ const generateOrder = async (
         order,
         product,
       },
-      requestContext
+      requestContext,
     );
   }
 
   const { paymentProviderId, context: paymentContext } = enrollment.payment;
 
   if (paymentProviderId) {
-    await modules.orders.setPaymentProvider(
-      orderId,
-      paymentProviderId,
-      requestContext
-    );
+    await modules.orders.setPaymentProvider(orderId, paymentProviderId, requestContext);
   }
   const { deliveryProviderId, context: deliveryContext } = enrollment.delivery;
   if (deliveryProviderId) {
-    await modules.orders.setDeliveryProvider(
-      orderId,
-      deliveryProviderId,
-      requestContext
-    );
+    await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, requestContext);
   }
 
   order = await modules.orders.checkout(
@@ -85,7 +77,7 @@ const generateOrder = async (
       deliveryContext,
       orderContext,
     },
-    requestContext
+    requestContext,
   );
 
   return order;
@@ -110,10 +102,7 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
       await Promise.all(
         enrollments.map(async (enrollment) => {
           try {
-            const director = await EnrollmentDirector.actions(
-              { enrollment },
-              requestContext
-            );
+            const director = await EnrollmentDirector.actions({ enrollment }, requestContext);
             const period = await director.nextPeriod();
             if (period) {
               const configuration = await director.configurationForOrder({
@@ -121,16 +110,12 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
                 period,
               });
               if (configuration) {
-                const order = await generateOrder(
-                  enrollment,
-                  configuration,
-                  requestContext
-                );
+                const order = await generateOrder(enrollment, configuration, requestContext);
                 if (order) {
-                  await modules.enrollments.addEnrollmentPeriod(
-                    enrollment._id,
-                    { ...period, orderId: order._id }
-                  );
+                  await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
+                    ...period,
+                    orderId: order._id,
+                  });
                 }
               }
             }
@@ -142,7 +127,7 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
             };
           }
           return null;
-        })
+        }),
       )
     ).filter(Boolean);
 

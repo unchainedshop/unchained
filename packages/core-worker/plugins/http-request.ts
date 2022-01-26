@@ -30,9 +30,7 @@ const HttpRequestWorkerPlugin: IWorkerAdapter<
   version: '1.0',
   type: 'HTTP_REQUEST',
 
-  async doWork(
-    { url, data = {}, headers, method = 'POST' } = { method: 'POST' }
-  ) {
+  async doWork({ url, data = {}, headers, method = 'POST' } = { method: 'POST' }) {
     log(`${this.key} -> doWork: ${method} ${url} ${data}`, {
       level: LogLevel.Debug,
     });
@@ -48,8 +46,7 @@ const HttpRequestWorkerPlugin: IWorkerAdapter<
     }
 
     try {
-      const normalizedFetch =
-        method.toUpperCase() === 'POST' ? postFetch : nonPostFetch;
+      const normalizedFetch = method.toUpperCase() === 'POST' ? postFetch : nonPostFetch;
       const res = await normalizedFetch(url, { data, headers, method });
 
       const contentType = res.headers.get('content-type');

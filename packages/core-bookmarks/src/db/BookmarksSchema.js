@@ -7,5 +7,5 @@ export const BookmarkSchema = new SimpleSchema(
     productId: { type: String, required: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

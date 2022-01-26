@@ -12,7 +12,7 @@ import {
 export default async function signPaymentProviderForCheckout(
   root: Root,
   params: { orderPaymentId: string; transactionContext: any },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
   const { orderPaymentId, transactionContext } = params;
@@ -41,11 +41,7 @@ export default async function signPaymentProviderForCheckout(
     });
 
   try {
-    return modules.payment.paymentProviders.sign(
-      provider._id,
-      transactionContext,
-      context
-    );
+    return modules.payment.paymentProviders.sign(provider._id, transactionContext, context);
   } catch (error) {
     throw new OrderPaymentConfigurationError(error);
   }

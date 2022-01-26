@@ -6,25 +6,18 @@ import {
 } from '@unchainedshop/types/assortments';
 import { Locale } from 'locale';
 
-type HelperType<P, T> = (
-  assortment: AssortmentType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
 
 export interface AssortmentPathLinkHelperTypes {
   link: (
     params: { assortmentId: string; childAssortmentId: string },
     _: never,
-    context: Context
+    context: Context,
   ) => Promise<AssortmentLinkType>;
 
   assortmentSlug: HelperType<{ forceLocale?: string }, Promise<string>>;
 
-  assortmentTexts: HelperType<
-    { forceLocale?: string },
-    Promise<AssortmentText>
-  >;
+  assortmentTexts: HelperType<{ forceLocale?: string }, Promise<AssortmentText>>;
 }
 
 export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {

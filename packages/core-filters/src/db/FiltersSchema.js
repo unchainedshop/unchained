@@ -16,7 +16,7 @@ export const FiltersSchema = new SimpleSchema(
     authorId: { type: String, required: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const FilterTextsSchema = new SimpleSchema(
@@ -29,5 +29,5 @@ export const FilterTextsSchema = new SimpleSchema(
     authorId: { type: String, required: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

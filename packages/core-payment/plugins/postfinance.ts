@@ -1,9 +1,5 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import {
-  PaymentDirector,
-  PaymentAdapter,
-  PaymentError,
-} from 'meteor/unchained:core-payment';
+import { PaymentDirector, PaymentAdapter, PaymentError } from 'meteor/unchained:core-payment';
 
 const { POSTFINANCE_SECRET } = process.env;
 

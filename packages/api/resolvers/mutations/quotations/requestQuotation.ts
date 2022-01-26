@@ -6,17 +6,14 @@ import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 export default async function requestQuotation(
   root: Root,
   params: { productId: string; configuration: Configuration },
-  context: Context
+  context: Context,
 ) {
   const { countryContext, modules, userId } = context;
   const { productId, configuration } = params;
 
-  log(
-    `mutation requestQuotation ${productId} ${
-      configuration ? JSON.stringify(configuration) : ''
-    }`,
-    { userId }
-  );
+  log(`mutation requestQuotation ${productId} ${configuration ? JSON.stringify(configuration) : ''}`, {
+    userId,
+  });
 
   if (!productId) throw new InvalidIdError({ productId });
 
@@ -30,6 +27,6 @@ export default async function requestQuotation(
       countryCode: countryContext,
       configuration,
     },
-    context
+    context,
   );
 }

@@ -2,11 +2,7 @@ import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
-import {
-  IOrderPricingSheet,
-  OrderPrice,
-  OrderPricingDiscount,
-} from './orders.pricing';
+import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
 
 export enum OrderPaymentStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -31,32 +27,26 @@ export type OrderPaymentsModule = {
     params: {
       orderPaymentId: string;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<OrderPayment>;
 
   findOrderPaymentByContextData: (
     params: {
       context: any;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<OrderPayment>;
 
   // Transformations
   discounts: (
     orderPayment: OrderPayment,
     params: { order: Order; orderDiscount: OrderDiscount },
-    requestContext: Context
+    requestContext: Context,
   ) => Array<OrderPricingDiscount>;
-  isBlockingOrderConfirmation: (
-    orderPayment: OrderPayment,
-    requestContext: Context
-  ) => Promise<boolean>;
+  isBlockingOrderConfirmation: (orderPayment: OrderPayment, requestContext: Context) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderPayment: OrderPayment) => boolean;
   normalizedStatus: (orderPayment: OrderPayment) => string;
-  pricingSheet: (
-    orderPayment: OrderPayment,
-    currency: string
-  ) => IOrderPricingSheet;
+  pricingSheet: (orderPayment: OrderPayment, currency: string) => IOrderPricingSheet;
 
   // Mutations
   create: (doc: OrderPayment, userId?: string) => Promise<OrderPayment>;
@@ -64,45 +54,30 @@ export type OrderPaymentsModule = {
   charge: (
     orderPayment: OrderPayment,
     paymentContext: { order: Order; transactionContext: any },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<OrderPayment>;
 
   delete: (orderPaymentId: string, userId?: string) => Promise<number>;
 
-  logEvent: (
-    orderPaymentId: string,
-    event: any,
-    userId?: string
-  ) => Promise<boolean>;
+  logEvent: (orderPaymentId: string, event: any, userId?: string) => Promise<boolean>;
 
-  markAsPaid: (
-    payment: OrderPayment,
-    meta: any,
-    userId?: string
-  ) => Promise<void>;
+  markAsPaid: (payment: OrderPayment, meta: any, userId?: string) => Promise<void>;
 
-  sign: (
-    payment: OrderPayment,
-    paymentContext: any,
-    requestContext: Context
-  ) => Promise<string>;
+  sign: (payment: OrderPayment, paymentContext: any, requestContext: Context) => Promise<string>;
 
   updateContext: (
     orderPaymentId: string,
     params: { orderId?: string; context: any },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<OrderPayment>;
 
   updateStatus: (
     orderPaymentId: string,
     params: { status: OrderPaymentStatus; info?: string },
-    userId?: string
+    userId?: string,
   ) => Promise<OrderPayment>;
 
-  updateCalculation: (
-    orderPayment: OrderPayment,
-    requestContext: Context
-  ) => Promise<boolean>;
+  updateCalculation: (orderPayment: OrderPayment, requestContext: Context) => Promise<boolean>;
 };
 
 export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {

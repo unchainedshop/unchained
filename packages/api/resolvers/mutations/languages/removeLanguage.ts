@@ -5,7 +5,7 @@ import { InvalidIdError, LanguageNotFoundError } from '../../../errors';
 export default async function removeLanguage(
   root: Root,
   { languageId }: { languageId: string },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log(`mutation removeLanguage ${languageId}`, { userId });
 

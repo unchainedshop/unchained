@@ -1,11 +1,7 @@
 // https://api-reference.datatrans.ch/#operation/init
 import getPaths from '../getPaths';
 
-import type {
-  FetchDatatransFn,
-  InitRequestPayload,
-  InitResponse,
-} from './types';
+import type { FetchDatatransFn, InitRequestPayload, InitResponse } from './types';
 
 const defaultRedirect = getPaths();
 

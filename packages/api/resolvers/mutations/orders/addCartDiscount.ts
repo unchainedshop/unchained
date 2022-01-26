@@ -6,7 +6,7 @@ import { getOrderCart } from '../utils/getOrderCart';
 export default async function addCartDiscount(
   root: Root,
   { orderId, code }: { orderId?: string; code: string },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
 
@@ -17,8 +17,5 @@ export default async function addCartDiscount(
 
   const cart = await getOrderCart({ orderId, user }, context);
 
-  return modules.orders.discounts.createManualOrderDiscount(
-    { orderId: cart._id, code },
-    context
-  );
+  return modules.orders.discounts.createManualOrderDiscount({ orderId: cart._id, code }, context);
 }

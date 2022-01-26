@@ -4,7 +4,7 @@ import { Root, Context } from '@unchainedshop/types/api';
 export default async function events(
   root: Root,
   { limit, type, offset }: { type: string; limit: number; offset: number },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query events ${type}`, { userId });
 

@@ -7,13 +7,7 @@ export const Security = {
 };
 
 const generateSignature =
-  ({
-    security,
-    signKey,
-  }: {
-    security: '' | 'static-sign' | 'dynamic-sign';
-    signKey: string;
-  }) =>
+  ({ security, signKey }: { security: '' | 'static-sign' | 'dynamic-sign'; signKey: string }) =>
   (...parts) => {
     // https://docs.datatrans.ch/docs/security-sign
     if (security.toLowerCase() === Security.STATIC_SIGN) return signKey;
@@ -22,10 +16,7 @@ const generateSignature =
     const resultString = parts.filter(Boolean).join('');
     const signKeyInBytes = Buffer.from(signKey, 'hex');
 
-    const signedString = crypto
-      .createHmac('sha256', signKeyInBytes)
-      .update(resultString)
-      .digest('hex');
+    const signedString = crypto.createHmac('sha256', signKeyInBytes).update(resultString).digest('hex');
 
     return signedString;
   };

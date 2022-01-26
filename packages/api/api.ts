@@ -89,14 +89,10 @@ const getCurrentContextResolver = () => context;
 export const useMiddlewareWithCurrentContext = (path, middleware) => {
   WebApp.connectHandlers.use(
     path,
-    async (
-      req: IncomingMessage & { unchainedContext?: UnchainedAPI },
-      res,
-      ...rest
-    ) => {
+    async (req: IncomingMessage & { unchainedContext?: UnchainedAPI }, res, ...rest) => {
       const currentContextResolver = getCurrentContextResolver();
       req.unchainedContext = await currentContextResolver({ req, res });
       return middleware(req, res, ...rest);
-    }
+    },
   );
 };

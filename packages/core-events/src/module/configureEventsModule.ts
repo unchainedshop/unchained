@@ -1,7 +1,4 @@
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { ModuleInput, Filter } from '@unchainedshop/types/common';
 import { Event, EventsModule } from '@unchainedshop/types/events';
 import { EventsCollection } from '../db/EventsCollection';

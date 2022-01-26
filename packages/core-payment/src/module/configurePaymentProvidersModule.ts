@@ -8,10 +8,7 @@ import {
   PaymentProviderType,
 } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { PaymentPricingDirector } from '../director/PaymentPricingDirector';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema';
 import { PaymentDirector } from '../director/PaymentDirector';
@@ -38,7 +35,7 @@ const getDefaultContext = (context?: PaymentContext): PaymentContext => {
 
 export const configurePaymentProvidersModule = (
   PaymentProviders: Collection<PaymentProvider>,
-  options: PaymentProvidersSettingsOptions
+  options: PaymentProvidersSettingsOptions,
 ): PaymentModule['paymentProviders'] => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
 
@@ -46,17 +43,15 @@ export const configurePaymentProvidersModule = (
 
   const mutations = generateDbMutations<PaymentProvider>(
     PaymentProviders,
-    PaymentProvidersSchema
+    PaymentProvidersSchema,
   ) as ModuleMutations<PaymentProvider>;
 
   const getPaymentAdapter = async (
     paymentProviderId: string,
     paymentContext: PaymentContext,
-    requestContext: Context
+    requestContext: Context,
   ) => {
-    const provider = await PaymentProviders.findOne(
-      generateDbFilterById(paymentProviderId)
-    );
+    const provider = await PaymentProviders.findOne(generateDbFilterById(paymentProviderId));
 
     return PaymentDirector.actions(provider, paymentContext, requestContext);
   };
@@ -64,9 +59,7 @@ export const configurePaymentProvidersModule = (
   return {
     // Queries
     count: async (query) => {
-      const providerCount = await PaymentProviders.find(
-        buildFindSelector(query)
-      ).count();
+      const providerCount = await PaymentProviders.find(buildFindSelector(query)).count();
       return providerCount;
     },
 
@@ -74,22 +67,19 @@ export const configurePaymentProvidersModule = (
     findProvider: async ({ paymentProviderId, ...query }, options) => {
       return PaymentProviders.findOne(
         paymentProviderId ? generateDbFilterById(paymentProviderId) : query,
-        options
+        options,
       );
     },
 
     findProviders: async (query, options) => {
-      const providers = PaymentProviders.find(
-        buildFindSelector(query),
-        options
-      );
+      const providers = PaymentProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },
 
     providerExists: async ({ paymentProviderId }) => {
       const providerCount = await PaymentProviders.find(
         generateDbFilterById(paymentProviderId, { deleted: null }),
-        { limit: 1 }
+        { limit: 1 },
       ).count();
       return !!providerCount;
     },
@@ -118,11 +108,7 @@ export const configurePaymentProvidersModule = (
     findSupported: async ({ order }, requestContext) => {
       const providers = await PaymentProviders.find({})
         .filter((provider: PaymentProvider) => {
-          const director = PaymentDirector.actions(
-            provider,
-            getDefaultContext(order),
-            requestContext
-          );
+          const director = PaymentDirector.actions(provider, getDefaultContext(order), requestContext);
           return director.isActive();
         })
         .toArray();
@@ -139,73 +125,42 @@ export const configurePaymentProvidersModule = (
       return PaymentDirector.actions(
         paymentProvider,
         getDefaultContext(),
-        requestContext
+        requestContext,
       ).configurationError();
     },
 
     calculate: async (pricingContext, requestContext) => {
-      const pricing = await PaymentPricingDirector.actions(
-        pricingContext,
-        requestContext
-      );
+      const pricing = await PaymentPricingDirector.actions(pricingContext, requestContext);
       return pricing.calculate();
     },
 
     isActive: async (paymentProviderId, paymentContext, requestContext) => {
-      const adapter = await getPaymentAdapter(
-        paymentProviderId,
-        paymentContext,
-        requestContext
-      );
+      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
       return adapter.isActive();
     },
-    isPayLaterAllowed: async (
-      paymentProviderId,
-      paymentContext,
-      requestContext
-    ) => {
-      const adapter = await getPaymentAdapter(
-        paymentProviderId,
-        paymentContext,
-        requestContext
-      );
+    isPayLaterAllowed: async (paymentProviderId, paymentContext, requestContext) => {
+      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
 
       return adapter.isPayLaterAllowed();
     },
 
     charge: async (paymentProviderId, paymentContext, requestContext) => {
-      const adapter = await getPaymentAdapter(
-        paymentProviderId,
-        paymentContext,
-        requestContext
-      );
+      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
       return adapter.charge();
     },
 
     register: async (paymentProviderId, paymentContext, requestContext) => {
-      const adapter = await getPaymentAdapter(
-        paymentProviderId,
-        paymentContext,
-        requestContext
-      );
+      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
       return adapter.register();
     },
 
     sign: async (paymentProviderId, paymentContext, requestContext) => {
-      const adapter = await getPaymentAdapter(
-        paymentProviderId,
-        paymentContext,
-        requestContext
-      );
+      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
       return adapter.sign();
     },
 
     validate: async (paymentProviderId, paymentContext, requestContext) => {
-      const adapter = await getPaymentAdapter(
-        paymentProviderId,
-        paymentContext,
-        requestContext
-      );
+      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
       return adapter.validate();
     },
 
@@ -219,12 +174,10 @@ export const configurePaymentProvidersModule = (
           configuration: Adapter.initialConfiguration,
           ...doc,
         },
-        userId
+        userId,
       );
 
-      const paymentProvider = await PaymentProviders.findOne(
-        generateDbFilterById(paymentProviderId)
-      );
+      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(paymentProviderId));
       emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
 
       return paymentProvider;
@@ -232,9 +185,7 @@ export const configurePaymentProvidersModule = (
 
     update: async (_id: string, doc: PaymentProvider, userId: string) => {
       await mutations.update(_id, doc, userId);
-      const paymentProvider = await PaymentProviders.findOne(
-        generateDbFilterById(_id)
-      );
+      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id));
       emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
 
       return paymentProvider;
@@ -242,9 +193,7 @@ export const configurePaymentProvidersModule = (
 
     delete: async (_id, userId) => {
       await mutations.delete(_id, userId);
-      const paymentProvider = PaymentProviders.findOne(
-        generateDbFilterById(_id)
-      );
+      const paymentProvider = PaymentProviders.findOne(generateDbFilterById(_id));
 
       emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
 

@@ -1,15 +1,10 @@
-import {
-  AssortmentMedia,
-  AssortmentMediaText,
-} from '@unchainedshop/types/assortments.media';
+import { AssortmentMedia, AssortmentMediaText } from '@unchainedshop/types/assortments.media';
 import { Db } from '@unchainedshop/types/common';
 import { buildDbIndexes } from 'meteor/unchained:utils';
 
 export const AssortmentMediaCollection = async (db: Db) => {
   const AssortmentMedias = db.collection<AssortmentMedia>('assortment_media');
-  const AssortmentMediaTexts = db.collection<AssortmentMediaText>(
-    'assortment_media_texts'
-  );
+  const AssortmentMediaTexts = db.collection<AssortmentMediaText>('assortment_media_texts');
 
   // Assortment Indexes
   await buildDbIndexes(AssortmentMedias, [

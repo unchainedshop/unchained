@@ -4,7 +4,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function allocateWork(
   root: Root,
   { types, worker }: { types?: Array<string>; worker?: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation allocateWork ${(types || []).join(',')} ${worker}`, {
     userId,

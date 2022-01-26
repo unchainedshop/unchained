@@ -5,8 +5,6 @@ export const Language: LanguageHelperTypes = {
     return modules.languages.isBase(language);
   },
   name(language, _, { modules }) {
-    return `${language.isoCode}${
-      modules.languages.isBase(language) ? ' (Base)' : ''
-    }`;
+    return `${language.isoCode}${modules.languages.isBase(language) ? ' (Base)' : ''}`;
   },
 };

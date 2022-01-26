@@ -7,7 +7,7 @@ import {
 import { PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const OrderPricingSheet = (
-  params: PricingSheetParams<OrderPricingCalculation>
+  params: PricingSheetParams<OrderPricingCalculation>,
 ): IOrderPricingSheet => {
   const basePricingSheet = BasePricingSheet<OrderPricingCalculation>(params);
 
@@ -22,15 +22,7 @@ export const OrderPricingSheet = (
       });
     },
 
-    addDiscounts({
-      amount,
-      discountId,
-      meta,
-    }: {
-      amount: number;
-      discountId: string;
-      meta?: any;
-    }) {
+    addDiscounts({ amount, discountId, meta }: { amount: number; discountId: string; meta?: any }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Discounts,
         amount,
@@ -88,7 +80,7 @@ export const OrderPricingSheet = (
     },
 
     discountPrices(
-      explicitDiscountId: string
+      explicitDiscountId: string,
     ): Array<{ discountId: string; amount: number; currency: string }> {
       const discountIds = pricingSheet
         .getDiscountRows(explicitDiscountId)

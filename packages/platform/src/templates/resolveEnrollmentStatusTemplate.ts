@@ -1,10 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 
-const {
-  EMAIL_FROM,
-  EMAIL_WEBSITE_NAME = 'Unchained Webshop',
-  UI_ENDPOINT,
-} = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Webshop', UI_ENDPOINT } = process.env;
 
 const textTemplate = `
   {{subject}}\n
@@ -18,7 +14,7 @@ const textTemplate = `
 
 export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
   { enrollmentId, locale },
-  context
+  context,
 ) => {
   const { modules } = context;
   const enrollment = await modules.enrollments.findEnrollment({ enrollmentId });

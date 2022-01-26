@@ -1,31 +1,16 @@
-import {
-  Collection,
-  Filter,
-  ModuleMutations,
-  Query,
-} from '@unchainedshop/types/common';
+import { Collection, Filter, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
-import {
-  OrderPayment,
-  OrderPaymentsModule,
-} from '@unchainedshop/types/orders.payments';
+import { OrderPayment, OrderPaymentsModule } from '@unchainedshop/types/orders.payments';
 // import { PaymentPricingDirector } from 'meteor/unchained:core-payment';
 // import { PaymentDirector } from 'meteor/unchained:core-payment';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';
 import { OrderPaymentStatus } from '../db/OrderPaymentStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
-const ORDER_PAYMENT_EVENTS: string[] = [
-  'ORDER_UPDATE_PAYMENT',
-  'ORDER_SIGN_PAYMENT',
-  'ORDER_PAY',
-];
+const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
 const buildFindByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as Filter<OrderPayment>;
@@ -41,13 +26,13 @@ export const configureOrderPaymentsModule = ({
 
   const mutations = generateDbMutations<OrderPayment>(
     OrderPayments,
-    OrderPaymentsSchema
+    OrderPaymentsSchema,
   ) as ModuleMutations<OrderPayment>;
 
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,
     { status, info },
-    userId
+    userId,
   ) => {
     log(`OrderPayment ${orderPaymentId} -> New Status: ${status}`);
 
@@ -75,10 +60,7 @@ export const configureOrderPaymentsModule = ({
   return {
     // Queries
     findOrderPayment: async ({ orderPaymentId }, options) => {
-      return OrderPayments.findOne(
-        buildFindByIdSelector(orderPaymentId),
-        options
-      );
+      return OrderPayments.findOne(buildFindByIdSelector(orderPaymentId), options);
     },
     findOrderPaymentByContextData: async ({ context }, options) => {
       const contextKeys = Object.keys(context);
@@ -93,7 +75,7 @@ export const configureOrderPaymentsModule = ({
                 [`context.${key}`]: context[key],
               }
             : currentSelector,
-        {}
+        {},
       );
 
       return OrderPayments.findOne(selector, options);
@@ -103,10 +85,7 @@ export const configureOrderPaymentsModule = ({
     discounts: (orderPayment, { order, orderDiscount }, { modules }) => {
       if (!orderPayment) return [];
 
-      const pricingSheet = modules.orders.payments.pricingSheet(
-        orderPayment,
-        order.currency
-      );
+      const pricingSheet = modules.orders.payments.pricingSheet(orderPayment, order.currency);
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         payment: orderPayment,
@@ -117,12 +96,11 @@ export const configureOrderPaymentsModule = ({
     isBlockingOrderConfirmation: async (orderPayment, requestContext) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
 
-      const isPayLaterAllowed =
-        await requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
-          orderPayment.paymentProviderId,
-          {},
-          requestContext
-        );
+      const isPayLaterAllowed = await requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
+        orderPayment.paymentProviderId,
+        {},
+        requestContext,
+      );
 
       if (isPayLaterAllowed) return false;
 
@@ -150,34 +128,24 @@ export const configureOrderPaymentsModule = ({
     create: async (doc, userId) => {
       const orderPaymentId = await mutations.create(
         { ...doc, status: null, context: doc.context || {} },
-        userId
+        userId,
       );
 
-      const orderPayment = await OrderPayments.findOne(
-        buildFindByIdSelector(orderPaymentId)
-      );
+      const orderPayment = await OrderPayments.findOne(buildFindByIdSelector(orderPaymentId));
 
       return orderPayment;
     },
 
-    charge: async (
-      orderPayment,
-      { transactionContext, order },
-      requestContext
-    ) => {
+    charge: async (orderPayment, { transactionContext, order }, requestContext) => {
       const { modules, services } = requestContext;
 
-      if (
-        modules.orders.payments.normalizedStatus(orderPayment) !==
-        OrderPaymentStatus.OPEN
-      ) {
+      if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
         return orderPayment;
       }
 
-      const paymentProvider =
-        await modules.payment.paymentProviders.findProvider({
-          paymentProviderId: orderPayment.paymentProviderId,
-        });
+      const paymentProvider = await modules.payment.paymentProviders.findProvider({
+        paymentProviderId: orderPayment.paymentProviderId,
+      });
 
       const paymentProviderId = paymentProvider._id;
 
@@ -193,7 +161,7 @@ export const configureOrderPaymentsModule = ({
             },
           },
         },
-        requestContext
+        requestContext,
       );
 
       if (arbitraryResponseData) {
@@ -203,7 +171,7 @@ export const configureOrderPaymentsModule = ({
             status: OrderPaymentStatus.PAID,
             info: JSON.stringify(arbitraryResponseData),
           },
-          requestContext.userId
+          requestContext.userId,
         );
       }
 
@@ -226,10 +194,7 @@ export const configureOrderPaymentsModule = ({
           },
         },
       };
-      await OrderPayments.updateOne(
-        generateDbFilterById(orderPaymentId),
-        modifier
-      );
+      await OrderPayments.updateOne(generateDbFilterById(orderPaymentId), modifier);
 
       return true;
     },
@@ -243,7 +208,7 @@ export const configureOrderPaymentsModule = ({
           status: OrderPaymentStatus.PAID,
           info: meta ? JSON.stringify(meta) : 'mark paid manually',
         },
-        userId
+        userId,
       );
       emit('ORDER_PAY', { orderPayment });
     },
@@ -252,7 +217,7 @@ export const configureOrderPaymentsModule = ({
       const result = await requestContext.modules.payment.paymentProviders.sign(
         orderPayment.paymentProviderId,
         paymentContext,
-        requestContext
+        requestContext,
       );
 
       emit('ORDER_SIGN_PAYMENT', {
@@ -263,11 +228,7 @@ export const configureOrderPaymentsModule = ({
       return result;
     },
 
-    updateContext: async (
-      orderPaymentId,
-      { orderId, context },
-      requestContext
-    ) => {
+    updateContext: async (orderPaymentId, { orderId, context }, requestContext) => {
       log(`OrderPayment ${orderPaymentId} -> Update Context`, {
         orderId,
         context,
@@ -295,13 +256,12 @@ export const configureOrderPaymentsModule = ({
         orderId: orderPayment.orderId,
       });
 
-      const calculation =
-        await requestContext.modules.payment.paymentProviders.calculate(
-          {
-            item: orderPayment,
-          },
-          requestContext
-        );
+      const calculation = await requestContext.modules.payment.paymentProviders.calculate(
+        {
+          item: orderPayment,
+        },
+        requestContext,
+      );
 
       await OrderPayments.updateOne(buildFindByIdSelector(orderPayment._id), {
         $set: {

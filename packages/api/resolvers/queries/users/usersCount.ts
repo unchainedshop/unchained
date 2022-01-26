@@ -10,14 +10,9 @@ export default async function usersCount(
     includeGuests: boolean;
     queryString?: string;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
-  log(
-    `query usersCount ${queryString || ''} ${
-      includeGuests ? 'includeGuests' : ''
-    }`,
-    { userId }
-  );
+  log(`query usersCount ${queryString || ''} ${includeGuests ? 'includeGuests' : ''}`, { userId });
 
   return modules.users.count({ includeGuests, queryString });
 }

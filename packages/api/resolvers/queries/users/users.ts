@@ -14,14 +14,11 @@ export default async function users(
     includeGuests: boolean;
     queryString?: string;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
-  log(
-    `query users ${limit} ${offset} ${queryString} ${
-      includeGuests ? 'includeGuests' : ''
-    }`,
-    { userId }
-  );
+  log(`query users ${limit} ${offset} ${queryString} ${includeGuests ? 'includeGuests' : ''}`, {
+    userId,
+  });
 
   return modules.users.findUsers({
     limit,

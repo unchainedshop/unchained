@@ -1,13 +1,7 @@
-import {
-  AssortmentProduct,
-  AssortmentsModule,
-} from '@unchainedshop/types/assortments';
+import { AssortmentProduct, AssortmentsModule } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbObjectId,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbObjectId } from 'meteor/unchained:utils';
 
 const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_ADD_PRODUCT',
@@ -27,18 +21,13 @@ export const configureAssortmentProductsModule = ({
   return {
     // Queries
     findAssortmentIds: async ({ productId }) => {
-      return AssortmentProducts.find(
-        { productId },
-        { projection: { assortmentId: true } }
-      )
+      return AssortmentProducts.find({ productId }, { projection: { assortmentId: true } })
         .map(({ assortmentId }) => assortmentId)
         .toArray();
     },
 
     findProduct: async ({ assortmentProductId }) => {
-      return AssortmentProducts.findOne(
-        generateDbFilterById(assortmentProductId)
-      );
+      return AssortmentProducts.findOne(generateDbFilterById(assortmentProductId));
     },
 
     findProducts: async ({ assortmentId }, options) => {
@@ -91,7 +80,7 @@ export const configureAssortmentProductsModule = ({
         // Get next sort key
         const lastAssortmentProduct = (await AssortmentProducts.findOne(
           { assortmentId },
-          { sort: { sortKey: -1 } }
+          { sort: { sortKey: -1 } },
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentProduct.sortKey + 1;
       } else {
@@ -104,7 +93,7 @@ export const configureAssortmentProductsModule = ({
           $set,
           $setOnInsert,
         },
-        { upsert: true }
+        { upsert: true },
       );
 
       const assortmentProduct = await AssortmentProducts.findOne(selector, {});
@@ -156,9 +145,7 @@ export const configureAssortmentProductsModule = ({
 
       if (!options.skipInvalidation && assortmentProducts.length) {
         invalidateCache({
-          assortmentIds: assortmentProducts.map(
-            (product) => product.assortmentId
-          ),
+          assortmentIds: assortmentProducts.map((product) => product.assortmentId),
         });
       }
 
@@ -176,19 +163,16 @@ export const configureAssortmentProductsModule = ({
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedAssortmentProductIds = await Promise.all(
         sortKeys.map(async ({ assortmentProductId, sortKey }) => {
-          await AssortmentProducts.updateOne(
-            generateDbFilterById(assortmentProductId),
-            {
-              $set: {
-                sortKey: sortKey + 1,
-                updated: new Date(),
-                updatedBy: userId,
-              },
-            }
-          );
+          await AssortmentProducts.updateOne(generateDbFilterById(assortmentProductId), {
+            $set: {
+              sortKey: sortKey + 1,
+              updated: new Date(),
+              updatedBy: userId,
+            },
+          });
 
           return assortmentProductId;
-        })
+        }),
       );
 
       const assortmentProducts = await AssortmentProducts.find({

@@ -9,7 +9,7 @@ export default async function productReviews(
     sort: Array<{ key: string; value: 'DESC' | 'ASC' }>;
     queryString?: string;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { limit, offset, queryString } = params;
 

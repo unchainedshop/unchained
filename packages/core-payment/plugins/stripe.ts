@@ -28,105 +28,86 @@ stripe trigger payment_intent.succeeded
 
 const stripe = require('stripe')(STRIPE_SECRET);
 
-useMiddlewareWithCurrentContext(
-  STRIPE_WEBHOOK_PATH,
-  bodyParser.raw({ type: 'application/json' })
-);
+useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, bodyParser.raw({ type: 'application/json' }));
 
-useMiddlewareWithCurrentContext(
-  STRIPE_WEBHOOK_PATH,
-  async (request, response) => {
-    const sig = request.headers['stripe-signature'];
-    const resolvedContext = request.unchainedContext as Context;
-    const { modules, services } = resolvedContext;
+useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, async (request, response) => {
+  const sig = request.headers['stripe-signature'];
+  const resolvedContext = request.unchainedContext as Context;
+  const { modules, services } = resolvedContext;
 
-    let event;
+  let event;
 
-    try {
-      event = stripe.webhooks.constructEvent(
-        request.body,
-        sig,
-        STRIPE_ENDPOINT_SECRET
-      );
-    } catch (err) {
-      response.writeHead(400);
-      response.end(`Webhook Error: ${err.message}`);
-      return;
-    }
-
-    try {
-      if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object;
-        const orderPaymentId = paymentIntent.metadata?.orderPaymentId;
-
-        await modules.orders.payments.logEvent(
-          orderPaymentId,
-          event,
-          resolvedContext.userId
-        );
-
-        const orderPayment = await modules.orders.payments.findOrderPayment({
-          orderPaymentId,
-        });
-        const order = await modules.orders.findOrder({
-          orderId: orderPayment.orderId,
-        });
-        await modules.orders.checkout(
-          order,
-          {
-            transactionContext: {
-              paymentIntentId: paymentIntent.id,
-            },
-            paymentContext: {
-              paymentIntentId: paymentIntent.id,
-            },
-          },
-          resolvedContext
-        );
-
-        paymentLogger.info(
-          `Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-          { orderId: order._id }
-        );
-      } else if (event.type === 'setup_intent.succeeded') {
-        const setupIntent = event.data.object;
-        const { paymentProviderId, userId } = setupIntent.metadata;
-
-        await services.payment.registerPaymentCredentials(
-          {
-            paymentProviderId,
-            paymentContext: {
-              transactionContext: {
-                setupIntentId: setupIntent.id,
-              },
-            },
-          },
-          resolvedContext
-        );
-
-        paymentLogger.info(
-          `Stripe Webhook: Unchained registered payment credentials for ${userId}`,
-          { userId }
-        );
-      } else {
-        response.writeHead(404);
-        response.end();
-        return;
-      }
-    } catch (err) {
-      response.writeHead(400);
-      response.end(`Webhook Error: ${err.message}`);
-      return;
-    }
-    // Return a 200 response to acknowledge receipt of the event
-    response.end(JSON.stringify({ received: true }));
+  try {
+    event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_ENDPOINT_SECRET);
+  } catch (err) {
+    response.writeHead(400);
+    response.end(`Webhook Error: ${err.message}`);
+    return;
   }
-);
 
-const createRegistrationIntent = async (
-  { userId, paymentProviderId },
-  options = {}
-) => {
+  try {
+    if (event.type === 'payment_intent.succeeded') {
+      const paymentIntent = event.data.object;
+      const orderPaymentId = paymentIntent.metadata?.orderPaymentId;
+
+      await modules.orders.payments.logEvent(orderPaymentId, event, resolvedContext.userId);
+
+      const orderPayment = await modules.orders.payments.findOrderPayment({
+        orderPaymentId,
+      });
+      const order = await modules.orders.findOrder({
+        orderId: orderPayment.orderId,
+      });
+      await modules.orders.checkout(
+        order,
+        {
+          transactionContext: {
+            paymentIntentId: paymentIntent.id,
+          },
+          paymentContext: {
+            paymentIntentId: paymentIntent.id,
+          },
+        },
+        resolvedContext,
+      );
+
+      paymentLogger.info(`Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {
+        orderId: order._id,
+      });
+    } else if (event.type === 'setup_intent.succeeded') {
+      const setupIntent = event.data.object;
+      const { paymentProviderId, userId } = setupIntent.metadata;
+
+      await services.payment.registerPaymentCredentials(
+        {
+          paymentProviderId,
+          paymentContext: {
+            transactionContext: {
+              setupIntentId: setupIntent.id,
+            },
+          },
+        },
+        resolvedContext,
+      );
+
+      paymentLogger.info(`Stripe Webhook: Unchained registered payment credentials for ${userId}`, {
+        userId,
+      });
+    } else {
+      response.writeHead(404);
+      response.end();
+      return;
+    }
+  } catch (err) {
+    response.writeHead(400);
+    response.end(`Webhook Error: ${err.message}`);
+    return;
+  }
+  // Return a 200 response to acknowledge receipt of the event
+  response.end(JSON.stringify({ received: true }));
+});
+
+const createRegistrationIntent = async ({ userId, paymentProviderId }, options = {}) => {
   const user = Users.findOne({ _id: userId });
   const customer = await stripe.customers.create({
     metadata: {
@@ -225,10 +206,7 @@ const Stripe: IPaymentAdapter = {
           };
         }
 
-        paymentLogger.warn(
-          'Stripe Plugin: Registration declined',
-          setupIntentId
-        );
+        paymentLogger.warn('Stripe Plugin: Registration declined', setupIntentId);
         return null;
       },
 
@@ -237,18 +215,13 @@ const Stripe: IPaymentAdapter = {
         const { orderPayment, userId, paymentProviderId } = params.context;
         const paymentIntent = orderPayment
           ? await createOrderPaymentIntent(orderPayment, transactionContext)
-          : await createRegistrationIntent(
-              { userId, paymentProviderId },
-              transactionContext
-            );
+          : await createRegistrationIntent({ userId, paymentProviderId }, transactionContext);
         return paymentIntent.client_secret;
       },
 
       charge: async ({ paymentIntentId, paymentCredentials }) => {
         if (!paymentIntentId && !paymentCredentials) {
-          throw new Error(
-            'You have to provide an existing intent or a payment method'
-          );
+          throw new Error('You have to provide an existing intent or a payment method');
         }
 
         const { order } = params.context;
@@ -262,10 +235,8 @@ const Stripe: IPaymentAdapter = {
               customer: paymentCredentials.meta?.customer,
               confirm: true,
               payment_method: paymentCredentials.token,
-              payment_method_types:
-                paymentCredentials.meta?.payment_method_types, // eslint-disable-line
-              payment_method_options:
-                paymentCredentials.meta?.payment_method_options, // eslint-disable-line
+              payment_method_types: paymentCredentials.meta?.payment_method_types, // eslint-disable-line
+              payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
             });
 
         const orderPricing = modules.orders.pricingSheet(order);
@@ -275,16 +246,10 @@ const Stripe: IPaymentAdapter = {
           paymentIntentObject.currency !== currency.toLowerCase() ||
           paymentIntentObject.amount !== Math.round(amount)
         ) {
-          throw new Error(
-            'The price has changed since you have created the intent!'
-          );
+          throw new Error('The price has changed since you have created the intent!');
         }
-        if (
-          paymentIntentObject.metadata?.orderPaymentId !== orderPayment?._id
-        ) {
-          throw new Error(
-            'The order payment is different from the initiating intent!'
-          );
+        if (paymentIntentObject.metadata?.orderPaymentId !== orderPayment?._id) {
+          throw new Error('The order payment is different from the initiating intent!');
         }
 
         if (paymentIntentObject.status === 'succeeded') {

@@ -4,11 +4,7 @@ import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 import crypto from 'crypto';
 
-type HelperType<P, T> = (
-  orderDelivery: OrderDeliveryDiscountType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (orderDelivery: OrderDeliveryDiscountType, params: P, context: Context) => T;
 
 interface OrderDeliveryDiscountHelperTypes {
   _id: HelperType<never, string>;
@@ -31,11 +27,7 @@ export const OrderDeliveryDiscount: OrderDeliveryDiscountHelperTypes = {
     return {
       _id: crypto
         .createHash('sha256')
-        .update(
-          [`${obj.item._id}:${obj.discountId}`, obj.amount, obj.currency].join(
-            ''
-          )
-        )
+        .update([`${obj.item._id}:${obj.discountId}`, obj.amount, obj.currency].join(''))
         .digest('hex'),
       amount: obj.amount,
       currency: obj.currency,

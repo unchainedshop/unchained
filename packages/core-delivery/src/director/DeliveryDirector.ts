@@ -1,7 +1,4 @@
-import {
-  IDeliveryAdapter,
-  IDeliveryDirector,
-} from '@unchainedshop/types/delivery';
+import { IDeliveryAdapter, IDeliveryDirector } from '@unchainedshop/types/delivery';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { DeliveryError } from './DeliveryError';
 

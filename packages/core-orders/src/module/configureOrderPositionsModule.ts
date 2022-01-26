@@ -1,21 +1,10 @@
-import {
-  Collection,
-  Filter,
-  ModuleMutations,
-  Query,
-} from '@unchainedshop/types/common';
+import { Collection, Filter, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
-import {
-  OrderPosition,
-  OrderPositionsModule,
-} from '@unchainedshop/types/orders.positions';
+import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions';
 import { Product } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
 
 const ORDER_POSITION_EVENTS: string[] = [
@@ -26,10 +15,7 @@ const ORDER_POSITION_EVENTS: string[] = [
 ];
 
 const buildFindByIdSelector = (orderPositionId: string, orderId?: string) =>
-  generateDbFilterById(
-    orderPositionId,
-    orderId ? { orderId } : undefined
-  ) as Filter<OrderPosition>;
+  generateDbFilterById(orderPositionId, orderId ? { orderId } : undefined) as Filter<OrderPosition>;
 
 export const configureOrderPositionsModule = ({
   OrderPositions,
@@ -42,7 +28,7 @@ export const configureOrderPositionsModule = ({
 
   const mutations = generateDbMutations<OrderPosition>(
     OrderPositions,
-    OrderPositionsSchema
+    OrderPositionsSchema,
   ) as ModuleMutations<OrderPosition>;
 
   return {
@@ -61,7 +47,7 @@ export const configureOrderPositionsModule = ({
       const pricingSheet = requestContext.modules.orders.positions.pricingSheet(
         orderPosition,
         order.currency,
-        requestContext
+        requestContext,
       );
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
@@ -83,19 +69,17 @@ export const configureOrderPositionsModule = ({
     create: async (
       { configuration, context, quantity, quotationId },
       { order, product, originalProduct },
-      requestContext
+      requestContext,
     ) => {
       const orderId = order._id;
       const productId = product._id;
-      const originalProductId = originalProduct
-        ? originalProduct._id
-        : undefined;
+      const originalProductId = originalProduct ? originalProduct._id : undefined;
 
       log(
         `Create ${quantity}x Position with Product ${productId} ${
           quotationId ? ` (${quotationId})` : ''
         }`,
-        { orderId, productId, originalProductId, userId: requestContext.userId }
+        { orderId, productId, originalProductId, userId: requestContext.userId },
       );
 
       const positionId = await mutations.create(
@@ -110,7 +94,7 @@ export const configureOrderPositionsModule = ({
           calculation: [],
           scheduling: [],
         },
-        requestContext.userId
+        requestContext.userId,
       );
 
       await updateCalculation(orderId, requestContext);
@@ -149,18 +133,14 @@ export const configureOrderPositionsModule = ({
       return result.deletedCount;
     },
 
-    update: async (
-      { orderId, orderPositionId },
-      { quantity, configuration },
-      requestContext
-    ) => {
+    update: async ({ orderId, orderPositionId }, { quantity, configuration }, requestContext) => {
       const selector = buildFindByIdSelector(orderPositionId, orderId);
       const orderPosition = await OrderPositions.findOne(selector);
 
       if (quantity !== null) {
         log(
           `OrderPosition ${orderPositionId} -> Update Quantity of ${orderPositionId} to ${quantity}x`,
-          { orderId }
+          { orderId },
         );
 
         await OrderPositions.updateOne(selector, {
@@ -175,9 +155,9 @@ export const configureOrderPositionsModule = ({
       if (configuration !== null) {
         log(
           `OrderPosition ${orderPositionId} -> Update confiugration of ${orderPositionId} to ${JSON.stringify(
-            configuration
+            configuration,
           )}x`,
-          { orderId }
+          { orderId },
         );
         // check if the variant has changed
         let originalProduct: Product;
@@ -193,12 +173,11 @@ export const configureOrderPositionsModule = ({
         }
 
         if (originalProduct) {
-          const resolvedProduct =
-            await requestContext.modules.products.resolveOrderableProduct(
-              originalProduct,
-              { configuration },
-              requestContext
-            );
+          const resolvedProduct = await requestContext.modules.products.resolveOrderableProduct(
+            originalProduct,
+            { configuration },
+            requestContext,
+          );
 
           await OrderPositions.updateOne(selector, {
             $set: {
@@ -229,10 +208,7 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
-    updateScheduling: async (
-      { order, orderDelivery, orderPosition },
-      requestContext
-    ) => {
+    updateScheduling: async ({ order, orderDelivery, orderPosition }, requestContext) => {
       const { modules } = requestContext;
       // scheduling (store in db for auditing)
       const product = await modules.products.findProduct({
@@ -252,7 +228,7 @@ export const configureOrderPositionsModule = ({
               product,
               deliveryProvider,
             },
-            requestContext
+            requestContext,
           )
         ).map(async (warehousingProvider) => {
           const context = {
@@ -268,18 +244,17 @@ export const configureOrderPositionsModule = ({
             quantity: orderPosition.quantity,
           };
 
-          const dispatch =
-            await requestContext.modules.warehousing.estimatedDispatch(
-              warehousingProvider,
-              context,
-              requestContext
-            );
+          const dispatch = await requestContext.modules.warehousing.estimatedDispatch(
+            warehousingProvider,
+            context,
+            requestContext,
+          );
 
           return {
             warehousingProviderId: warehousingProvider._id,
             ...dispatch,
           };
-        })
+        }),
       );
 
       await OrderPositions.updateOne(generateDbFilterById(orderPosition._id), {
@@ -296,7 +271,7 @@ export const configureOrderPositionsModule = ({
 
       const calculation = await requestContext.modules.products.calculate(
         { item: orderPosition },
-        requestContext
+        requestContext,
       );
       const selector = buildFindByIdSelector(orderPosition._id);
 
@@ -307,26 +282,16 @@ export const configureOrderPositionsModule = ({
       return OrderPositions.findOne(selector);
     },
 
-    addProductItem: async (
-      orderPosition,
-      { order, product },
-      requestContext
-    ) => {
+    addProductItem: async (orderPosition, { order, product }, requestContext) => {
       const { modules } = requestContext;
-      const {
-        configuration,
-        context,
-        orderId: positionOrderId,
-        quantity,
-        ...scope
-      } = orderPosition;
+      const { configuration, context, orderId: positionOrderId, quantity, ...scope } = orderPosition;
       const orderId = order._id || positionOrderId;
 
       // Resolve product
       const resolvedProduct = await modules.products.resolveOrderableProduct(
         product,
         { configuration },
-        requestContext
+        requestContext,
       );
 
       // Search for existing position
@@ -351,14 +316,14 @@ export const configureOrderPositionsModule = ({
           {
             quantity: existingPosition.quantity + quantity,
           },
-          requestContext
+          requestContext,
         );
       } else {
         // Otherwise add new position
         upsertedOrderPosition = await modules.orders.positions.create(
           orderPosition,
           { order, product: resolvedProduct, originalProduct: product },
-          requestContext
+          requestContext,
         );
       }
 

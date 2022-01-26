@@ -71,9 +71,7 @@ export const EventDirector: IEventDirector = {
       context: extractedContext,
     });
 
-    logger.verbose(
-      `EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`
-    );
+    logger.verbose(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
   },
 
   subscribe: (eventName: string, callBack: () => void): void => {

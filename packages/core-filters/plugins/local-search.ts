@@ -41,14 +41,11 @@ const LocalSearch: IFilterAdapter = {
           selector.productId = { $in: [...new Set(productIds)] };
         }
 
-        const products = await params.modules.products.texts.findTexts(
-          selector,
-          {
-            projection: {
-              productId: 1,
-            },
-          }
-        );
+        const products = await params.modules.products.texts.findTexts(selector, {
+          projection: {
+            productId: 1,
+          },
+        });
 
         return products.map(({ productId }) => productId);
       },
@@ -63,7 +60,7 @@ const LocalSearch: IFilterAdapter = {
             projection: {
               assortmentId: 1,
             },
-          }
+          },
         );
         return assortments.map(({ assortmentId }) => assortmentId);
       },

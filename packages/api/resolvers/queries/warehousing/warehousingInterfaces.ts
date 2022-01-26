@@ -5,7 +5,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function warehousingInterfaces(
   root: Root,
   params: { type: WarehousingProviderType },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query warehousingInterfaces ${params.type}`, { userId });
 

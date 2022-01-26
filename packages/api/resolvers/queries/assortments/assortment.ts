@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function assortment(
   root: Root,
   { assortmentId, slug }: { assortmentId?: string; slug?: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query assortment ${assortmentId} ${slug}`, { modules, userId });
 

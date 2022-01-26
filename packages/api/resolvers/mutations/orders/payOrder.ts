@@ -8,11 +8,7 @@ import {
   InvalidIdError,
 } from '../../../errors';
 
-export default async function payOrder(
-  root: Root,
-  { orderId }: { orderId: string },
-  context: Context
-) {
+export default async function payOrder(root: Root, { orderId }: { orderId: string }, context: Context) {
   const { modules, userId } = context;
 
   log('mutation payOrder', { orderId, userId });
@@ -30,11 +26,7 @@ export default async function payOrder(
     orderPaymentId: order.paymentId,
   });
 
-  if (
-    modules.orders.payments.normalizedStatus(payment) !==
-      OrderPaymentStatus.OPEN &&
-    order.confirmed
-  ) {
+  if (modules.orders.payments.normalizedStatus(payment) !== OrderPaymentStatus.OPEN && order.confirmed) {
     throw new OrderWrongPaymentStatusError({
       status: payment.status,
     });

@@ -6,7 +6,7 @@ import { ProviderConfigurationInvalid } from '../../../errors';
 export default async function createWarehousingProvider(
   root: Root,
   params: { warehousingProvider: WarehousingProvider },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation createWarehousingProvider', { userId });
 
@@ -15,11 +15,10 @@ export default async function createWarehousingProvider(
       ...params.warehousingProvider,
       authorId: userId,
     },
-    userId
+    userId,
   );
 
-  if (!warehousingProviderId)
-    throw new ProviderConfigurationInvalid(params.warehousingProvider);
+  if (!warehousingProviderId) throw new ProviderConfigurationInvalid(params.warehousingProvider);
 
   return modules.warehousing.findProvider({ warehousingProviderId });
 }

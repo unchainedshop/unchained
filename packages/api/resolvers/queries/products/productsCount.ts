@@ -8,13 +8,11 @@ export default async function productsCount(
     slugs?: Array<string>;
     tags?: Array<string>;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(
-    `query productsCount:  ${
-      params.includeDrafts ? 'includeDrafts' : ''
-    } ${params.slugs?.join(',')}`,
-    { userId }
+    `query productsCount:  ${params.includeDrafts ? 'includeDrafts' : ''} ${params.slugs?.join(',')}`,
+    { userId },
   );
   return modules.products.count(params);
 }

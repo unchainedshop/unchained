@@ -12,7 +12,7 @@ useMiddlewareWithCurrentContext(
   '/minio/',
   bodyParser.json({
     strict: false,
-  })
+  }),
 );
 
 useMiddlewareWithCurrentContext('/minio/', async (req) => {
@@ -25,10 +25,7 @@ useMiddlewareWithCurrentContext('/minio/', async (req) => {
       const { size, contentType: type } = object;
       const [currentId] = object.key.split('.');
       const { services } = req.unchainedContext;
-      services.files.linkFile(
-        { externalId: currentId, type, size },
-        req.unchainedContext
-      );
+      services.files.linkFile({ externalId: currentId, type, size }, req.unchainedContext);
     }
   }
 });

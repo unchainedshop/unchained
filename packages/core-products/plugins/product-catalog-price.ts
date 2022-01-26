@@ -1,8 +1,5 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
-import {
-  ProductPricingDirector,
-  ProductPricingAdapter,
-} from 'meteor/unchained:core-products';
+import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-products';
 
 const ProductPrice: IProductPricingAdapter = {
   ...ProductPricingAdapter,
@@ -23,13 +20,12 @@ const ProductPrice: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, country, currency, quantity, modules } =
-          params.context;
+        const { product, country, currency, quantity, modules } = params.context;
 
         const price = await modules.products.prices.price(
           product,
           { country, currency, quantity },
-          params.context
+          params.context,
         );
         if (price === null || price === undefined) return null;
         const itemTotal = price.amount * quantity;

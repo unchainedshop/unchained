@@ -6,7 +6,7 @@ import { CountryNotFoundError, InvalidIdError } from '../../../errors';
 export default async function updateCountry(
   root: Root,
   { country, countryId }: { country: Country; countryId: string },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log(`mutation updateCountry ${countryId}`, { userId });
 

@@ -18,14 +18,9 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
   async simulatedPrice(
     obj,
     { currency: currencyCode, orderId, useNetPrice, context: providerContext },
-    requestContext
+    requestContext,
   ) {
-    const {
-      modules,
-      services,
-      countryContext: country,
-      userId,
-    } = requestContext;
+    const { modules, services, countryContext: country, userId } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
     const orderDelivery = await modules.orders.deliveries.findDelivery({
       orderDeliveryId: order.deliveryId,
@@ -37,7 +32,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
         {
           isoCode: country,
         },
-        requestContext
+        requestContext,
       ));
 
     const user = await requestContext.modules.users.findUser({ userId });
@@ -53,7 +48,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
         providerContext,
         user,
       },
-      requestContext
+      requestContext,
     );
 
     const calculated = await pricingDirector.calculate();
@@ -69,9 +64,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     return {
       _id: crypto
         .createHash('sha256')
-        .update(
-          [this._id, country, useNetPrice, order ? order._id : ''].join('')
-        )
+        .update([this._id, country, useNetPrice, order ? order._id : ''].join(''))
         .digest('hex'),
       amount: orderPrice.amount,
       currencyCode: orderPrice.currency,

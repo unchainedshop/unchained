@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function productReview(
   root: Root,
   { productReviewId }: { productReviewId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query productReview ${productReviewId}`, { userId });
 

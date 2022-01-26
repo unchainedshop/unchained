@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function quotation(
   root: Root,
   { quotationId }: { quotationId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query quotation ${quotationId}`, { userId, quotationId });
 

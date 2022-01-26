@@ -5,9 +5,7 @@ import { buildDbIndexes } from 'meteor/unchained:utils';
 export const PaymentProvidersCollection = async (db: Db) => {
   const PaymentProviders = db.collection<PaymentProvider>('payment-providers');
 
-  await buildDbIndexes<PaymentProvider>(PaymentProviders, [
-    { index: { type: 1 } },
-  ]);
+  await buildDbIndexes<PaymentProvider>(PaymentProviders, [{ index: { type: 1 } }]);
 
   return PaymentProviders;
 };

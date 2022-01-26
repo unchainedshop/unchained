@@ -20,14 +20,11 @@ export default async function workers(
       end: Date;
     };
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
-  log(
-    `query workQueue ${limit} ${offset} [${status.join(', ')}] ${JSON.stringify(
-      created
-    )}`,
-    { userId }
-  );
+  log(`query workQueue ${limit} ${offset} [${status.join(', ')}] ${JSON.stringify(created)}`, {
+    userId,
+  });
 
   return modules.worker.findWorkQueue({
     status,

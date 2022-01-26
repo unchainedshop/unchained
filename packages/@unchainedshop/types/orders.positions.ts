@@ -5,10 +5,7 @@ import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing';
 import { Product } from './products';
-import {
-  IProductPricingSheet,
-  ProductPricingCalculation,
-} from './products.pricing';
+import { IProductPricingSheet, ProductPricingCalculation } from './products.pricing';
 
 export type OrderPosition = {
   _id?: _ID;
@@ -25,48 +22,37 @@ export type OrderPosition = {
 
 export type OrderPositionsModule = {
   // Queries
-  findOrderPosition: (
-    params: { itemId: string },
-    options?: FindOptions
-  ) => Promise<OrderPosition>;
-  findOrderPositions: (params: {
-    orderId: string;
-  }) => Promise<Array<OrderPosition>>;
+  findOrderPosition: (params: { itemId: string }, options?: FindOptions) => Promise<OrderPosition>;
+  findOrderPositions: (params: { orderId: string }) => Promise<Array<OrderPosition>>;
 
   // Transformations
   discounts: (
     orderPosition: OrderPosition,
     params: { order: Order; orderDiscount: OrderDiscount },
-    requestContext: Context
+    requestContext: Context,
   ) => Array<OrderPricingDiscount>;
 
   pricingSheet: (
     orderPosition: OrderPosition,
     currency: string,
-    requestContext: Context
+    requestContext: Context,
   ) => IProductPricingSheet;
 
   // Mutations
   create: (
     doc: Partial<OrderPosition>,
     params: { order: Order; product: Product; originalProduct?: Product },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<OrderPosition>;
 
-  delete: (
-    orderPositionId: string,
-    requestContext: Context
-  ) => Promise<OrderPosition>;
+  delete: (orderPositionId: string, requestContext: Context) => Promise<OrderPosition>;
 
-  removePositions: (
-    { orderId: string },
-    requestContext: Context
-  ) => Promise<number>;
+  removePositions: ({ orderId: string }, requestContext: Context) => Promise<number>;
 
   update: (
     query: { orderId: string; orderPositionId: string },
     params: { quantity?: number; configuration?: Configuration },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<OrderPosition>;
 
   updateScheduling: (
@@ -75,13 +61,10 @@ export type OrderPositionsModule = {
       orderDelivery: OrderDelivery;
       orderPosition: OrderPosition;
     },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<boolean>;
 
-  updateCalculation: (
-    orderPosition: OrderPosition,
-    requestContext: Context
-  ) => Promise<OrderPosition>;
+  updateCalculation: (orderPosition: OrderPosition, requestContext: Context) => Promise<OrderPosition>;
 
   addProductItem: (
     doc: {
@@ -94,7 +77,7 @@ export type OrderPositionsModule = {
       quotationId?: string;
     },
     params: { order: Order; product: Product },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<OrderPosition>;
 };
 

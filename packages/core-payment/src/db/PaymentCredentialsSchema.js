@@ -10,5 +10,5 @@ export const PaymentCredentialsSchema = new SimpleSchema(
     meta: { type: Object, blackbox: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

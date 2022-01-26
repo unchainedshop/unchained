@@ -29,7 +29,7 @@ export const WorkerDirector: IWorkerDirector = {
   registerAdapter: (Adapter) => {
     if (baseDirector.getAdapter(Adapter.type))
       throw new Error(
-        `WorkderDirector: There is already a adapter registered with type: ${Adapter.type}`
+        `WorkderDirector: There is already a adapter registered with type: ${Adapter.type}`,
       );
 
     baseDirector.registerAdapter(Adapter);
@@ -39,7 +39,7 @@ export const WorkerDirector: IWorkerDirector = {
     const { schedule } = workQueue;
     AutoScheduleMap.set(adapter.type, workQueue);
     log(
-      `WorkderDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${schedule}`
+      `WorkderDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${schedule}`,
     );
   },
   getAutoSchedules: () => Array.from(AutoScheduleMap),
@@ -51,22 +51,20 @@ export const WorkerDirector: IWorkerDirector = {
       log(`WorkderDirector: No registered adapter for type: ${type}`);
     }
 
-    const output = await adapter
-      .doWork(input, requestContext, workId)
-      .catch((error) => {
-        // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
-        log('DO not use this as flow control.', { level: LogLevel.Verbose });
+    const output = await adapter.doWork(input, requestContext, workId).catch((error) => {
+      // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
+      log('DO not use this as flow control.', { level: LogLevel.Verbose });
 
-        log(`WorkderDirector -> Error doing work ${type}: ${error.message}`);
+      log(`WorkderDirector -> Error doing work ${type}: ${error.message}`);
 
-        const errorOutput = { error, success: false };
+      const errorOutput = { error, success: false };
 
-        WorkerDirector.events.emit(WorkerEventTypes.DONE, {
-          output: errorOutput,
-        });
-
-        return errorOutput;
+      WorkerDirector.events.emit(WorkerEventTypes.DONE, {
+        output: errorOutput,
       });
+
+      return errorOutput;
+    });
 
     WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });
 

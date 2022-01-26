@@ -27,16 +27,13 @@ type UploadFileCallback = (file: File) => Promise<void>;
 
 export type FilesModule = ModuleMutations<File> & {
   // Query
-  findFile: (
-    params: { fileId?: string; externalId?: string },
-    options?: FindOptions
-  ) => Promise<File>;
+  findFile: (params: { fileId?: string; externalId?: string }, options?: FindOptions) => Promise<File>;
 
   findFilesByMetaData: (
     params: {
       meta: Record<string, any>;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<File>>;
 
   // Plugin
@@ -47,7 +44,7 @@ export type FilesModule = ModuleMutations<File> & {
       meta: any;
     },
     userId: string,
-    uploadFileCallback: UploadFileCallback
+    uploadFileCallback: UploadFileCallback,
   ) => Promise<{
     _id: _ID;
     expires?: Date;
@@ -60,13 +57,13 @@ export type FilesModule = ModuleMutations<File> & {
   }) => Promise<number>;
   uploadFileFromStream: (
     params: { directoryName: string; rawFile: any; meta: any },
-    userId: string
+    userId: string,
   ) => Promise<File | null>;
   uploadFileFromURL: (
     directoryName: string,
     file: { fileLink: string; fileName: string },
     meta?: any,
-    userId?: string
+    userId?: string,
   ) => Promise<File | null>;
 };
 
@@ -76,7 +73,7 @@ export type FilesModule = ModuleMutations<File> & {
 
 export type LinkFileService = (
   params: { fileId: string; size: number; type: string },
-  context: Context
+  context: Context,
 ) => Promise<File>;
 
 export interface FileServices {
@@ -100,25 +97,16 @@ export interface UploadFileData {
 
 export interface IFileAdapter extends IBaseAdapter {
   composeFileName: (file: File) => string;
-  createSignedURL: (data: {
-    directoryName: string;
-    fileName: string;
-  }) => Promise<UploadFileData | null>;
+  createSignedURL: (data: { directoryName: string; fileName: string }) => Promise<UploadFileData | null>;
   removeFiles: (composedFileIds: Array<string>) => Promise<void>;
-  uploadFileFromStream: (
-    directoryName: string,
-    rawFile: any
-  ) => Promise<UploadFileData | null>;
+  uploadFileFromStream: (directoryName: string, rawFile: any) => Promise<UploadFileData | null>;
   uploadFileFromURL: (
     directoryName: string,
-    file: { fileLink: string; fileName: string }
+    file: { fileLink: string; fileName: string },
   ) => Promise<UploadFileData | null>;
 }
 
 export type IFileDirector = IBaseDirector<IFileAdapter> & {
-  registerFileUploadCallback: (
-    directoryName: string,
-    callback: UploadFileCallback
-  ) => void;
+  registerFileUploadCallback: (directoryName: string, callback: UploadFileCallback) => void;
   getFileUploadCallback: (directoryName: string) => UploadFileCallback;
 };

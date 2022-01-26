@@ -21,46 +21,25 @@ export type OrderDiscount = {
 
 export type OrderDiscountsModule = {
   // Queries
-  findOrderDiscount: (
-    params: { discountId: string },
-    options?: FindOptions
-  ) => Promise<OrderDiscount>;
-  findOrderDiscounts: (params: {
-    orderId: string;
-  }) => Promise<Array<OrderDiscount>>;
+  findOrderDiscount: (params: { discountId: string }, options?: FindOptions) => Promise<OrderDiscount>;
+  findOrderDiscounts: (params: { orderId: string }) => Promise<Array<OrderDiscount>>;
 
   // Transformations
-  interface: (
-    OrderDiscount: OrderDiscount,
-    requestContext: Context
-  ) => Promise<DiscountAdapterActions>;
+  interface: (OrderDiscount: OrderDiscount, requestContext: Context) => Promise<DiscountAdapterActions>;
 
-  isValid: (
-    orderDiscount: OrderDiscount,
-    requestContext: Context
-  ) => Promise<boolean>;
+  isValid: (orderDiscount: OrderDiscount, requestContext: Context) => Promise<boolean>;
 
   // Adapter
   configurationForPricingAdapterKey: (
     orderDiscount: OrderDiscount,
     adapterKey: string,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<DiscountConfiguration>;
 
   // Mutations
-  createManualOrderDiscount: (
-    doc: OrderDiscount,
-    requestContext: Context
-  ) => Promise<OrderDiscount>;
+  createManualOrderDiscount: (doc: OrderDiscount, requestContext: Context) => Promise<OrderDiscount>;
 
   create: (doc: OrderDiscount, userId?: string) => Promise<OrderDiscount>;
-  update: (
-    orderDiscountId: string,
-    doc: OrderDiscount,
-    userId?: string
-  ) => Promise<OrderDiscount>;
-  delete: (
-    orderDiscountId: string,
-    requestContext: Context
-  ) => Promise<OrderDiscount>;
+  update: (orderDiscountId: string, doc: OrderDiscount, userId?: string) => Promise<OrderDiscount>;
+  delete: (orderDiscountId: string, requestContext: Context) => Promise<OrderDiscount>;
 };

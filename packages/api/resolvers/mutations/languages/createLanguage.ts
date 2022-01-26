@@ -5,7 +5,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function createLanguage(
   root: Root,
   { language }: { language: Language },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation createLanguage', { userId });
 
@@ -14,7 +14,7 @@ export default async function createLanguage(
       ...language,
       authorId: userId,
     },
-    userId
+    userId,
   );
 
   return modules.languages.findLanguage({ languageId });

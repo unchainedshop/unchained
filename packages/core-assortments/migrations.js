@@ -1,10 +1,5 @@
 import { log } from 'meteor/unchained:logger';
-import {
-  AssortmentProducts,
-  AssortmentLinks,
-  AssortmentFilters,
-  Assortments,
-} from './db/assortments';
+import { AssortmentProducts, AssortmentLinks, AssortmentFilters, Assortments } from './db/assortments';
 
 export default (repository) => {
   repository.register({
@@ -36,23 +31,20 @@ export default (repository) => {
               },
               {
                 $match: {
-                  $or: [
-                    { assortments: { $size: 0 } },
-                    { products: { $size: 0 } },
-                  ],
+                  $or: [{ assortments: { $size: 0 } }, { products: { $size: 0 } }],
                 },
               },
             ],
             {
               allowDiskUse: true,
-            }
+            },
           )
           .toArray()
       ).map((a) => a._id);
 
       AssortmentProducts.removeProducts(
         { _id: { $in: assortmentProductIds } },
-        { skipInvalidation: true }
+        { skipInvalidation: true },
       );
 
       const assortmentLinkIds = (
@@ -80,24 +72,18 @@ export default (repository) => {
               },
               {
                 $match: {
-                  $or: [
-                    { childAssortments: { $size: 0 } },
-                    { parentAssortments: { $size: 0 } },
-                  ],
+                  $or: [{ childAssortments: { $size: 0 } }, { parentAssortments: { $size: 0 } }],
                 },
               },
             ],
             {
               allowDiskUse: true,
-            }
+            },
           )
           .toArray()
       ).map((a) => a._id);
 
-      AssortmentLinks.removeLinks(
-        { _id: { $in: assortmentLinkIds } },
-        { skipInvalidation: true }
-      );
+      AssortmentLinks.removeLinks({ _id: { $in: assortmentLinkIds } }, { skipInvalidation: true });
 
       const assortmentFilterIds = (
         await AssortmentFilters.rawCollection()
@@ -124,33 +110,24 @@ export default (repository) => {
               },
               {
                 $match: {
-                  $or: [
-                    { assortments: { $size: 0 } },
-                    { filters: { $size: 0 } },
-                  ],
+                  $or: [{ assortments: { $size: 0 } }, { filters: { $size: 0 } }],
                 },
               },
             ],
             {
               allowDiskUse: true,
-            }
+            },
           )
           .toArray()
       ).map((a) => a._id);
 
-      AssortmentFilters.removeFilters(
-        { _id: { $in: assortmentFilterIds } },
-        { skipInvalidation: true }
-      );
+      AssortmentFilters.removeFilters({ _id: { $in: assortmentFilterIds } }, { skipInvalidation: true });
 
-      log(
-        'Migration: Removed some disconnected assortment links/filters/products: ',
-        {
-          assortmentProductIds: assortmentProductIds.length,
-          assortmentLinkIds: assortmentLinkIds.length,
-          assortmentFilterIds: assortmentFilterIds.length,
-        }
-      );
+      log('Migration: Removed some disconnected assortment links/filters/products: ', {
+        assortmentProductIds: assortmentProductIds.length,
+        assortmentLinkIds: assortmentLinkIds.length,
+        assortmentFilterIds: assortmentFilterIds.length,
+      });
 
       Assortments.invalidateCache();
     },

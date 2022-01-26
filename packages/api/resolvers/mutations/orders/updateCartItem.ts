@@ -15,17 +15,12 @@ export default async function updateCartItem(
     quantity?: number;
     configuration?: Configuration;
   },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
   const { itemId, quantity = null, configuration = null } = params;
 
-  log(
-    `mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(
-      configuration
-    )}`,
-    { userId }
-  );
+  log(`mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(configuration)}`, { userId });
 
   if (!itemId) throw new InvalidIdError({ itemId });
 
@@ -46,7 +41,7 @@ export default async function updateCartItem(
         orderPositionId: itemId,
       },
       { quantity },
-      context
+      context,
     );
   }
 
@@ -57,7 +52,7 @@ export default async function updateCartItem(
         orderPositionId: itemId,
       },
       { configuration },
-      context
+      context,
     );
   }
 

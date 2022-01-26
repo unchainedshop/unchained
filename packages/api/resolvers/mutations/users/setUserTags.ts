@@ -5,7 +5,7 @@ import { InvalidIdError, UserNotFoundError } from '../../../errors';
 export default async function updateUserProfile(
   root: Root,
   params: { tags: Array<string>; userId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const normalizedUserId = params.userId;
 

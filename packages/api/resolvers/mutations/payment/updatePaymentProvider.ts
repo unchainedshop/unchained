@@ -9,7 +9,7 @@ export default async (
     paymentProviderId,
     paymentProvider,
   }: { paymentProviderId: string; paymentProvider: PaymentProvider },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) => {
   log(`mutation updatePaymentProvider ${paymentProviderId}`, { userId });
 
@@ -21,9 +21,5 @@ export default async (
   )
     throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return modules.payment.paymentProviders.update(
-    paymentProviderId,
-    paymentProvider,
-    userId
-  );
+  return modules.payment.paymentProviders.update(paymentProviderId, paymentProvider, userId);
 };

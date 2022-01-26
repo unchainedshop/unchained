@@ -6,7 +6,7 @@ import { ProviderConfigurationInvalid } from '../../../errors';
 export default async (
   root: Root,
   { paymentProvider }: { paymentProvider: PaymentProvider },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) => {
   log('mutation createPaymentProvider', { userId });
 
@@ -15,7 +15,7 @@ export default async (
       ...paymentProvider,
       authorId: userId,
     },
-    userId
+    userId,
   );
 
   if (!provider) throw new ProviderConfigurationInvalid(paymentProvider);

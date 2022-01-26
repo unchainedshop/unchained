@@ -8,5 +8,5 @@ export const parseQueryArray = (query: SearchFilterQuery) =>
       ...accumulator,
       [key]: accumulator[key] ? accumulator[key].concat(value) : [value],
     }),
-    {}
+    {},
   );

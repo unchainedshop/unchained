@@ -1,16 +1,9 @@
-import {
-  DeliveryProvider,
-  DeliverySettings,
-  FilterProviders,
-} from '@unchainedshop/types/delivery';
+import { DeliveryProvider, DeliverySettings, FilterProviders } from '@unchainedshop/types/delivery';
 import { createLogger } from 'meteor/unchained:logger';
 
 const logger = createLogger('unchained:core-delivery');
 
-const sortByCreationDate = (
-  left: DeliveryProvider,
-  right: DeliveryProvider
-) => {
+const sortByCreationDate = (left: DeliveryProvider, right: DeliveryProvider) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();
 };
 
@@ -24,12 +17,10 @@ export const deliverySettings: DeliverySettings = {
   configureSettings(
     { sortProviders, filterSupportedProviders = allProviders } = {
       sortProviders: undefined,
-    }
+    },
   ) {
     if (sortProviders) {
-      logger.warn(
-        'sortProviders is deprecated, please specifc filterSupportedProviders instead'
-      );
+      logger.warn('sortProviders is deprecated, please specifc filterSupportedProviders instead');
       const filterSortedProviders: FilterProviders = ({ providers }) => {
         return providers.sort(sortProviders);
       };

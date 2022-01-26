@@ -3,11 +3,7 @@ import { Context, Root } from '@unchainedshop/types/api';
 import { UserData } from '@unchainedshop/types/accounts';
 import { hashPassword } from '../../../hashPassword';
 
-export default async function enrollUser(
-  root: Root,
-  params: UserData,
-  context: Context
-) {
+export default async function enrollUser(root: Root, params: UserData, context: Context) {
   const { modules } = context;
 
   log('mutation enrollUser', { email: params.email, userId: context.userId });

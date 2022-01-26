@@ -83,20 +83,16 @@ export const WarehousingDirector: IWarehousingDirector = {
           const deliveryThroughputTime = await DeliveryDirector.actions(
             deliveryProvider,
             context,
-            requestContext
+            requestContext,
           ).estimatedDeliveryThroughput(warehousingThroughputTime);
 
-          const shippingTimestamp =
-            referenceDate.getTime() + warehousingThroughputTime;
+          const shippingTimestamp = referenceDate.getTime() + warehousingThroughputTime;
           const earliestDeliveryTimestamp =
-            deliveryThroughputTime !== null
-              ? shippingTimestamp + deliveryThroughputTime
-              : null;
+            deliveryThroughputTime !== null ? shippingTimestamp + deliveryThroughputTime : null;
 
           return {
             shipping: shippingTimestamp && new Date(shippingTimestamp),
-            earliestDelivery:
-              earliestDeliveryTimestamp && new Date(earliestDeliveryTimestamp),
+            earliestDelivery: earliestDeliveryTimestamp && new Date(earliestDeliveryTimestamp),
           };
         } catch (error) {
           log(error.message, { level: LogLevel.Error, ...error });

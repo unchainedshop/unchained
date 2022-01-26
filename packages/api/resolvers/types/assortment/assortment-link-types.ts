@@ -1,14 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  Assortment,
-  AssortmentLink as AssortmentLinkType,
-} from '@unchainedshop/types/assortments';
+import { Assortment, AssortmentLink as AssortmentLinkType } from '@unchainedshop/types/assortments';
 
-type HelperType<T> = (
-  assortmentLink: AssortmentLinkType,
-  _: never,
-  context: Context
-) => T;
+type HelperType<T> = (assortmentLink: AssortmentLinkType, _: never, context: Context) => T;
 
 type AssortmentLinkHelperTypes = {
   child: HelperType<Promise<Assortment>>;

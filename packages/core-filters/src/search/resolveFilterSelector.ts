@@ -1,14 +1,7 @@
 import { Query } from '@unchainedshop/types/common';
-import {
-  FilterAdapterActions,
-  SearchQuery,
-} from '@unchainedshop/types/filters';
+import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters';
 
-const defaultSelector = ({
-  filterIds,
-  filterQuery,
-  includeInactive,
-}: SearchQuery) => {
+const defaultSelector = ({ filterIds, filterQuery, includeInactive }: SearchQuery) => {
   const selector: Query = {};
   const keys = (filterQuery || []).map((filter) => filter.key);
   if (Array.isArray(filterIds)) {
@@ -30,7 +23,7 @@ const defaultSelector = ({
 
 export const resolveFilterSelector = async (
   searchQuery: SearchQuery,
-  filterActions: FilterAdapterActions
+  filterActions: FilterAdapterActions,
 ) => {
   const selector = defaultSelector(searchQuery);
   return filterActions.transformFilterSelector(selector);

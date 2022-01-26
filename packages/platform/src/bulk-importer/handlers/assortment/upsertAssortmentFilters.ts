@@ -1,33 +1,22 @@
 import { Context } from '@unchainedshop/types/api';
 import { AssortmentFilter } from '@unchainedshop/types/assortments';
 
-const upsert = async (
-  assortmentFilter: AssortmentFilter,
-  { modules, userId }: Context
-) => {
+const upsert = async (assortmentFilter: AssortmentFilter, { modules, userId }: Context) => {
   if (
     !(await modules.filters.filterExists({
       filterId: assortmentFilter.filterId,
     }))
   ) {
-    throw new Error(
-      `Can't link non-existing filter ${assortmentFilter.filterId}`
-    );
+    throw new Error(`Can't link non-existing filter ${assortmentFilter.filterId}`);
   }
   try {
     return modules.assortments.filters.create(assortmentFilter, userId);
   } catch (e) {
-    return modules.assortments.filters.update(
-      assortmentFilter._id,
-      assortmentFilter
-    );
+    return modules.assortments.filters.update(assortmentFilter._id, assortmentFilter);
   }
 };
 
-export default async (
-  { filters, authorId, assortmentId },
-  unchainedAPI: Context
-) => {
+export default async ({ filters, authorId, assortmentId }, unchainedAPI: Context) => {
   const { modules } = unchainedAPI;
   const assortmentFilterIds = await Promise.all(
     filters.map(async (filter: AssortmentFilter) => {
@@ -37,10 +26,10 @@ export default async (
           authorId,
           assortmentId,
         },
-        unchainedAPI
+        unchainedAPI,
       );
       return assortmentFilter._id;
-    })
+    }),
   );
 
   await modules.assortments.filters.deleteMany({

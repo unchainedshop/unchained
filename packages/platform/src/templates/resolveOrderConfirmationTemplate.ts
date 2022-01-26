@@ -65,7 +65,7 @@ const texts = {
 
 export const resolveOrderConfirmationTemplate: TemplateResolver = async (
   { orderId, locale },
-  context
+  context,
 ) => {
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
@@ -77,11 +77,7 @@ export const resolveOrderConfirmationTemplate: TemplateResolver = async (
 
   // TODO: If order.status is PENDING, we should only send the user
   // a notice that we have received the order but not confirming it
-  const attachments = await getOrderAttachmentsData(
-    order,
-    { fileType: 'ORDER_CONFIRMATION' },
-    context
-  );
+  const attachments = await getOrderAttachmentsData(order, { fileType: 'ORDER_CONFIRMATION' }, context);
 
   const orderPricing = modules.orders.pricingSheet(order);
 
@@ -98,25 +94,25 @@ export const resolveOrderConfirmationTemplate: TemplateResolver = async (
         orderPricing.total({
           category: OrderPricingRowCategory.Items,
           useNetPrice: false,
-        }).amount
+        }).amount,
       ),
       taxes: formatPrice(
         orderPricing.total({
           category: OrderPricingRowCategory.Taxes,
           useNetPrice: false,
-        }).amount
+        }).amount,
       ),
       delivery: formatPrice(
         orderPricing.total({
           category: OrderPricingRowCategory.Delivery,
           useNetPrice: false,
-        }).amount
+        }).amount,
       ),
       payment: formatPrice(
         orderPricing.total({
           category: OrderPricingRowCategory.Payment,
           useNetPrice: false,
-        }).amount
+        }).amount,
       ),
       gross: formatPrice(orderPricing.total({ useNetPrice: false }).amount),
     },

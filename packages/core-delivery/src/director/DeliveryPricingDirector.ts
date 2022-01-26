@@ -26,7 +26,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     }: {
       item: OrderDelivery;
     },
-    requestContext
+    requestContext,
   ) => {
     const { modules } = requestContext;
     const { providerContext, currency, ...context } = rest as any;
@@ -71,7 +71,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     return baseDirector.actions(
       pricingContext,
       requestContext,
-      DeliveryPricingDirector.buildPricingContext
+      DeliveryPricingDirector.buildPricingContext,
     );
   },
 

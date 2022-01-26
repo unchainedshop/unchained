@@ -9,27 +9,14 @@ import {
 } from '@unchainedshop/types/assortments';
 import { AssortmentMedia } from '@unchainedshop/types/assortments.media';
 import { Query } from '@unchainedshop/types/common';
-import {
-  SearchFilterQuery,
-  SearchProducts,
-} from '@unchainedshop/types/filters';
+import { SearchFilterQuery, SearchProducts } from '@unchainedshop/types/filters';
 
-type HelperType<P, T> = (
-  assortment: AssortmentType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
 
 export interface AssortmentHelperTypes {
-  assortmentPaths: HelperType<
-    never,
-    Promise<Array<{ links: Array<AssortmentPathLink> }>>
-  >;
+  assortmentPaths: HelperType<never, Promise<Array<{ links: Array<AssortmentPathLink> }>>>;
 
-  children: HelperType<
-    { includeInactive: boolean },
-    Promise<Array<AssortmentType>>
-  >;
+  children: HelperType<{ includeInactive: boolean }, Promise<Array<AssortmentType>>>;
   childrenCount: HelperType<{ includeInactive: boolean }, Promise<number>>;
 
   filterAssignments: HelperType<never, Promise<Array<AssortmentFilter>>>;
@@ -83,17 +70,11 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
-  childrenCount: async (
-    assortment,
-    { includeInactive = false },
-    { modules }
-  ) => {
+  childrenCount: async (assortment, { includeInactive = false }, { modules }) => {
     const assortmentChildrenIds = await modules.assortments.links.findLinks({
       parentAssortmentId: assortment._id,
     });
-    const assortmentIds = assortmentChildrenIds.map(
-      ({ childAssortmentId }) => childAssortmentId
-    );
+    const assortmentIds = assortmentChildrenIds.map(({ childAssortmentId }) => childAssortmentId);
 
     const selector: Query = {
       _id: { $in: assortmentIds },
@@ -112,7 +93,7 @@ export const Assortment: AssortmentHelperTypes = {
       },
       {
         sort: { sortKey: 1 },
-      }
+      },
     );
   },
 
@@ -136,7 +117,7 @@ export const Assortment: AssortmentHelperTypes = {
       },
       {
         sort: { sortKey: 1 },
-      }
+      },
     );
   },
 

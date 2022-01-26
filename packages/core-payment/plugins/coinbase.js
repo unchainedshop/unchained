@@ -99,9 +99,7 @@ class Coinbase extends PaymentAdapter {
       clientObj.setRequestTimeout(10000);
       const charge = await coinbase.resources.Charge.retrieve(chargeCode);
 
-      const completed = !!charge.timeline.find(
-        (statusUpdate) => statusUpdate.status === 'COMPLETED'
-      );
+      const completed = !!charge.timeline.find((statusUpdate) => statusUpdate.status === 'COMPLETED');
 
       if (completed) {
         paymentLogger.info('Coinbase Plugin: Charged successfully', charge);

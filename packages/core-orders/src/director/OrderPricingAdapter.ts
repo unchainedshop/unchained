@@ -7,10 +7,7 @@ import { IPricingAdapter } from '@unchainedshop/types/pricing';
 import { BasePricingAdapter } from 'meteor/unchained:utils';
 import { OrderPricingSheet } from './OrderPricingSheet';
 
-const basePricingAdapter = BasePricingAdapter<
-  OrderPricingAdapterContext,
-  OrderPricingCalculation
->();
+const basePricingAdapter = BasePricingAdapter<OrderPricingAdapterContext, OrderPricingCalculation>();
 
 export const OrderPricingAdapter: IPricingAdapter<
   OrderPricingAdapterContext,
@@ -32,9 +29,7 @@ export const OrderPricingAdapter: IPricingAdapter<
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>
-          basePricingAdapter.log(
-            `Order Pricing Calculation -> ${category} ${amount}`
-          )
+          basePricingAdapter.log(`Order Pricing Calculation -> ${category} ${amount}`),
         );
         return resultRaw;
       },

@@ -8,5 +8,5 @@ export const EventsSchema = new SimpleSchema(
     context: { type: Object, blackbox: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

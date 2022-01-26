@@ -23,9 +23,7 @@ export interface DiscountAdapterActions {
   isValidForSystemTriggering: () => Promise<boolean>;
   isValidForCodeTriggering: (params: { code: string }) => Promise<boolean>;
 
-  discountForPricingAdapterKey: (params: {
-    pricingAdapterKey: string;
-  }) => DiscountConfiguration;
+  discountForPricingAdapterKey: (params: { pricingAdapterKey: string }) => DiscountConfiguration;
 
   reserve: (params: { code: string }) => Promise<any>;
   release: () => Promise<void>;
@@ -37,19 +35,15 @@ export type IDiscountAdapter = IBaseAdapter & {
   isManualAdditionAllowed: (code: string) => Promise<boolean>;
   isManualRemovalAllowed: () => Promise<boolean>;
 
-  actions: (params: {
-    context: DiscountContext & Context;
-  }) => DiscountAdapterActions;
+  actions: (params: { context: DiscountContext & Context }) => DiscountAdapterActions;
 };
 
 export type IDiscountDirector = IBaseDirector<IDiscountAdapter> & {
   actions: (
     discountContext: DiscountContext,
-    requestContext: Context
+    requestContext: Context,
   ) => {
-    resolveDiscountKeyFromStaticCode: (params: {
-      code: string;
-    }) => Promise<string | null>;
+    resolveDiscountKeyFromStaticCode: (params: { code: string }) => Promise<string | null>;
     findSystemDiscounts: () => Promise<Array<string>>;
   };
 };

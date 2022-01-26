@@ -1,10 +1,7 @@
 import { Collection } from '@unchainedshop/types';
 import { Event, EmitAdapter } from '@unchainedshop/types/events';
 
-import {
-  getEmitHistoryAdapter,
-  setEmitHistoryAdapter,
-} from 'meteor/unchained:events';
+import { getEmitHistoryAdapter, setEmitHistoryAdapter } from 'meteor/unchained:events';
 
 export const configureEventHistoryAdapter = (Events: Collection<Event>) => {
   if (!getEmitHistoryAdapter()) {

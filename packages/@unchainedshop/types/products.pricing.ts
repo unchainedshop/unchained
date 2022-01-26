@@ -23,8 +23,7 @@ export interface ProductPricingCalculation extends PricingCalculation {
   rate?: number;
 }
 
-export interface ProductPricingAdapterContext
-  extends BasePricingAdapterContext {
+export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   country: string;
   currency: string;
   discounts: Array<OrderDiscount>;
@@ -44,14 +43,8 @@ export type ProductPricingContext = {
   user?: User;
 };
 
-export interface IProductPricingSheet
-  extends IPricingSheet<ProductPricingCalculation> {
-  addItem: (params: {
-    amount: number;
-    isTaxable: boolean;
-    isNetPrice: boolean;
-    meta: any;
-  }) => void;
+export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalculation> {
+  addItem: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta: any }) => void;
   unitPrice: (params: { useNetPrice: boolean }) => {
     amount: number;
     currency: string;

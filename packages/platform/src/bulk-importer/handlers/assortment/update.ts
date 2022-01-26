@@ -8,31 +8,24 @@ import upsertMedia from './upsertMedia';
 export default async function updateAssortment(
   payload: any,
   { logger, authorId },
-  unchainedAPI: Context
+  unchainedAPI: Context,
 ) {
   const { modules, userId } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
 
   if (specification) {
     logger.debug('update assortment object', specification);
-    await unchainedAPI.modules.assortments.update(
-      _id,
-      { ...specification, authorId },
-      userId
-    );
+    await unchainedAPI.modules.assortments.update(_id, { ...specification, authorId }, userId);
 
     if (specification.content) {
-      logger.debug(
-        'replace localized content for assortment',
-        specification.content
-      );
+      logger.debug('replace localized content for assortment', specification.content);
       await upsertAssortmentContent(
         {
           content: specification.content,
           assortmentId: _id,
           authorId,
         },
-        unchainedAPI
+        unchainedAPI,
       );
     }
   }
@@ -51,7 +44,7 @@ export default async function updateAssortment(
         assortmentId: _id,
         authorId,
       },
-      unchainedAPI
+      unchainedAPI,
     );
   }
 
@@ -63,7 +56,7 @@ export default async function updateAssortment(
         assortmentId: _id,
         authorId,
       },
-      unchainedAPI
+      unchainedAPI,
     );
   }
 
@@ -75,15 +68,12 @@ export default async function updateAssortment(
         assortmentId: _id,
         authorId,
       },
-      unchainedAPI
+      unchainedAPI,
     );
   }
   if (media) {
     logger.debug('update assortment media', media);
-    await upsertMedia(
-      { media: media || [], assortmentId: _id, authorId },
-      unchainedAPI
-    );
+    await upsertMedia({ media: media || [], assortmentId: _id, authorId }, unchainedAPI);
   }
 
   return {

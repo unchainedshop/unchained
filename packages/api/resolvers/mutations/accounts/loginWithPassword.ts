@@ -11,16 +11,10 @@ export default async function loginWithPassword(
     plainPassword?: string;
     totpCode?: string;
   },
-  context: Context
+  context: Context,
 ) {
   const { modules } = context;
-  const {
-    username,
-    email,
-    password: hashedPassword,
-    plainPassword,
-    totpCode,
-  } = params;
+  const { username, email, password: hashedPassword, plainPassword, totpCode } = params;
 
   log('mutation loginWithPassword', { username, email });
 
@@ -34,8 +28,5 @@ export default async function loginWithPassword(
     code: totpCode,
   };
 
-  return modules.accounts.loginWithService(
-    { service: 'password', ...mappedUserLoginParams },
-    context
-  );
+  return modules.accounts.loginWithService({ service: 'password', ...mappedUserLoginParams }, context);
 }

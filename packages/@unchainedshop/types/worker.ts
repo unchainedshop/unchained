@@ -48,10 +48,7 @@ interface WorkResult<Result> {
 
 export type WorkerModule = {
   activeWorkTypes: () => Promise<Array<string>>;
-  findWork: (query: {
-    workId?: string;
-    originalWorkId?: string;
-  }) => Promise<Work>;
+  findWork: (query: { workId?: string; originalWorkId?: string }) => Promise<Work>;
   findWorkQueue: (
     query: {
       created: { end?: Date; start?: Date };
@@ -60,12 +57,9 @@ export type WorkerModule = {
     } & {
       limit?: number;
       skip?: number;
-    }
+    },
   ) => Promise<Array<Work>>;
-  workExists: (query: {
-    workId?: string;
-    originalWorkId?: string;
-  }) => Promise<boolean>;
+  workExists: (query: { workId?: string; originalWorkId?: string }) => Promise<boolean>;
 
   // Transformations
   status: (work: Work) => WorkStatus;
@@ -73,10 +67,7 @@ export type WorkerModule = {
   // Mutations
   addWork: (data: WorkData, userId: string) => Promise<Work>;
 
-  allocateWork: (doc: {
-    types: Array<string>;
-    worker: string;
-  }) => Promise<Work>;
+  allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
 
   doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
 
@@ -89,7 +80,7 @@ export type WorkerModule = {
       started?: Date;
       worker: string;
     },
-    userId: string
+    userId: string,
   ) => Promise<Work | null>;
 
   deleteWork: (_id: string, userId: string) => Promise<Work | null>;
@@ -100,7 +91,7 @@ export type WorkerModule = {
       worker: string;
       referenceDate: Date;
     },
-    userId?: string
+    userId?: string,
   ) => Promise<Array<Work>>;
 };
 
@@ -120,11 +111,7 @@ export type WorkScheduleConfigureation = Omit<Work, 'input'> & {
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;
 
-  doWork: (
-    input: Input,
-    requestContext: Context,
-    workId: string
-  ) => Promise<WorkResult<Output>>;
+  doWork: (input: Input, requestContext: Context, workId: string) => Promise<WorkResult<Output>>;
 };
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
@@ -132,7 +119,7 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
 
   configureAutoscheduling: (
     adapter: IWorkerAdapter<any, any>,
-    workScheduleConfiguration: WorkScheduleConfigureation
+    workScheduleConfiguration: WorkScheduleConfigureation,
   ) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfigureation]>;
 
@@ -159,15 +146,10 @@ export type IWorker<P extends { workerId: string }> = {
 
   actions: (
     params: P,
-    requestContext: Context
+    requestContext: Context,
   ) => {
-    autorescheduleTypes: (options: {
-      referenceDate: Date;
-    }) => Promise<Array<Work>>;
-    process: (options: {
-      maxWorkItemCount?: number;
-      referenceDate?: Date;
-    }) => Promise<void>;
+    autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work>>;
+    process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;
     reset: () => Promise<void>;
     start: () => void;
     stop: () => void;

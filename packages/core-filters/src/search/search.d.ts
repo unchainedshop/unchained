@@ -27,5 +27,5 @@ export interface SearchAssortmentConfiguration extends SearchConfiguration {
 export type FilterProductIds = (
   filter: Filter,
   params: { values: Array<string>; forceLiveCollection?: boolean },
-  requestContext: Context
+  requestContext: Context,
 ) => Promise<Array<string>>;

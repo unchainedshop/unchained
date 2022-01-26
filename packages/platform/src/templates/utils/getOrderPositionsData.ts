@@ -5,7 +5,7 @@ import { Order } from '@unchainedshop/types/orders';
 export const getOrderPositionsData = async (
   order: Order,
   params: { locale: Locale },
-  context: Context
+  context: Context,
 ) => {
   const { modules } = context;
   const orderPositions = await modules.orders.positions.findOrderPositions({
@@ -23,18 +23,17 @@ export const getOrderPositionsData = async (
         productId: orderPosition.productId,
         locale: params.locale.normalized,
       });
-      const originalProductTexts =
-        await modules.products.texts.findLocalizedText({
-          productId: orderPosition.originalProductId,
-          locale: params.locale.normalized,
-        });
+      const originalProductTexts = await modules.products.texts.findLocalizedText({
+        productId: orderPosition.originalProductId,
+        locale: params.locale.normalized,
+      });
 
       const productTitle = productTexts?.title; // deprecated
 
       const positionPricing = modules.orders.positions.pricingSheet(
         orderPosition,
         order.currency,
-        context
+        context,
       );
       const total = formatPrice(positionPricing.sum());
       const { quantity } = positionPricing;
@@ -45,6 +44,6 @@ export const getOrderPositionsData = async (
         quantity,
         total,
       };
-    })
+    }),
   );
 };

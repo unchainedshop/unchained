@@ -26,9 +26,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
   },
 
   getInternalTypes() {
-    return WorkerDirector.getActivePluginTypes().filter(
-      (type) => type !== 'EXTERNAL'
-    );
+    return WorkerDirector.getActivePluginTypes().filter((type) => type !== 'EXTERNAL');
   },
 
   actions: ({ workerId, worker }: WorkerParams, requestContext) => {
@@ -58,9 +56,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
             const { schedule, input, ...rest } = work;
             const fixedSchedule = { ...schedule };
             fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
-            const nextDate = later
-              .schedule(fixedSchedule)
-              .next(1, referenceDate);
+            const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
             nextDate.setMilliseconds(0);
             return requestContext.modules.worker.ensureOneWork({
               type,
@@ -70,7 +66,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
               ...rest,
               retries: 0,
             });
-          })
+          }),
         );
       },
 
@@ -78,8 +74,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
         await workerActions.autorescheduleTypes(referenceDate);
 
         const processRecursively = async (recursionCounter = 0) => {
-          if (maxWorkItemCount && maxWorkItemCount < recursionCounter)
-            return null;
+          if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
 
           const work = await requestContext.modules.worker.allocateWork({
             types: BaseWorker.getInternalTypes(),
@@ -89,10 +84,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
           let doneWork: Work | null = null;
 
           if (work) {
-            const output = await requestContext.modules.worker.doWork(
-              work,
-              requestContext
-            );
+            const output = await requestContext.modules.worker.doWork(work, requestContext);
 
             doneWork = await requestContext.modules.worker.finishWork(
               work._id,
@@ -102,7 +94,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
                 started: work.started,
                 worker: workerId,
               },
-              '0'
+              '0',
             );
           }
 

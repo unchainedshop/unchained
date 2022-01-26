@@ -5,7 +5,7 @@ import { OrderNotFoundError, InvalidIdError } from '../../../errors';
 export default async function setOrderDeliveryProvider(
   root: Root,
   params: { orderId: string; deliveryProviderId: string },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
   const { orderId, deliveryProviderId } = params;
@@ -18,14 +18,9 @@ export default async function setOrderDeliveryProvider(
   if (!orderId) throw new InvalidIdError({ orderId });
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  if (!(await modules.orders.orderExists({ orderId })))
-    throw new OrderNotFoundError({ orderId });
+  if (!(await modules.orders.orderExists({ orderId }))) throw new OrderNotFoundError({ orderId });
 
-  const order = await modules.orders.setDeliveryProvider(
-    orderId,
-    deliveryProviderId,
-    context
-  );
+  const order = await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, context);
 
   return order;
 }

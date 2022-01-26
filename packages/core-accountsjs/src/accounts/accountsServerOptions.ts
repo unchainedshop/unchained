@@ -4,12 +4,7 @@ import { User } from '@unchainedshop/types/user';
 export const accountsServerOptions = (requestContext: Context) => ({
   useInternalUserObjectSanitizer: false,
   siteUrl: process.env.ROOT_URL,
-  prepareMail: (
-    to: string,
-    token: string,
-    user: User & { id: string },
-    pathFragment: string
-  ) => {
+  prepareMail: (to: string, token: string, user: User & { id: string }, pathFragment: string) => {
     return {
       template: 'ACCOUNT_ACTION',
       recipientEmail: to,
@@ -29,7 +24,7 @@ export const accountsServerOptions = (requestContext: Context) => ({
         retries: 0,
         input,
       },
-      requestContext.userId
+      requestContext.userId,
     );
   },
 });

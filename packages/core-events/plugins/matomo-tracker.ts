@@ -6,8 +6,7 @@ import { encode } from 'querystring';
 import { Orders } from 'meteor/unchained:core-orders';
 import { subscribe } from 'meteor/unchained:events';
 
-const parseCurrency = (amount: number): number =>
-  parseFloat((amount / 100).toString());
+const parseCurrency = (amount: number): number => parseFloat((amount / 100).toString());
 const actionMap = {
   ORDER_ADD_PRODUCT: 'addEcommerceItem',
   ORDER_UPDATE_CART_ITEM: 'addEcommerceItem',
@@ -28,11 +27,7 @@ export type OrderOption = {
 };
 
 export interface MatomoOptions {
-  transform: (
-    eventName: string,
-    orderOptions: OrderOption,
-    context: any
-  ) => OrderOption;
+  transform: (eventName: string, orderOptions: OrderOption, context: any) => OrderOption;
 }
 
 const extractOrderParameters = (orderId): OrderOption => {
@@ -55,7 +50,7 @@ const extractOrderParameters = (orderId): OrderOption => {
           '',
           parseCurrency(item.pricing().unitPrice().amount),
           item.quantity,
-        ])
+        ]),
     ),
   };
   if (!order.isCart()) {
@@ -68,42 +63,33 @@ const MatomoTracker = (
   siteId: number,
   siteUrl: string,
   subscribeTo: string,
-  options?: MatomoOptions
+  options?: MatomoOptions,
 ): void => {
-  if (!siteId && typeof siteId !== 'number')
-    throw new Error('Matomo siteId is required');
-  if (!siteUrl && typeof siteUrl !== 'string')
-    throw new Error('Matomo tracker URL is required');
+  if (!siteId && typeof siteId !== 'number') throw new Error('Matomo siteId is required');
+  if (!siteUrl && typeof siteUrl !== 'string') throw new Error('Matomo tracker URL is required');
   if (!subscribeTo && typeof subscribeTo !== 'string')
     throw new Error('Event that triggers tracking should be provided');
 
-  subscribe(
-    subscribeTo,
-    (data: { payload: { order: any; orderPosition: any }; context: any }) => {
-      let matomoOptions: OrderOption = {};
-      if (data.payload?.order || data.payload?.orderPosition)
-        matomoOptions = extractOrderParameters(
-          data.payload?.order?._id || data.payload?.orderPosition?.orderId
-        );
-
-      matomoOptions = options?.transform
-        ? options?.transform(subscribeTo, matomoOptions, data.context) ?? {}
-        : matomoOptions;
-
-      fetch(
-        `${siteUrl}/matomo.php?idsite=${siteId}&rec=1&action_name=${
-          actionMap[subscribeTo]
-        }&${encode(matomoOptions)}`
+  subscribe(subscribeTo, (data: { payload: { order: any; orderPosition: any }; context: any }) => {
+    let matomoOptions: OrderOption = {};
+    if (data.payload?.order || data.payload?.orderPosition)
+      matomoOptions = extractOrderParameters(
+        data.payload?.order?._id || data.payload?.orderPosition?.orderId,
       );
-    }
-  );
+
+    matomoOptions = options?.transform
+      ? options?.transform(subscribeTo, matomoOptions, data.context) ?? {}
+      : matomoOptions;
+
+    fetch(
+      `${siteUrl}/matomo.php?idsite=${siteId}&rec=1&action_name=${actionMap[subscribeTo]}&${encode(
+        matomoOptions,
+      )}`,
+    );
+  });
 };
 
-export const initMatomo = (
-  siteId: number,
-  url: string,
-  options?: MatomoOptions
-): void => {
+export const initMatomo = (siteId: number, url: string, options?: MatomoOptions): void => {
   MatomoTracker(siteId, url, 'ORDER_CHECKOUT', options);
   MatomoTracker(siteId, url, 'ORDER_UPDATE_CART_ITEM', options);
   MatomoTracker(siteId, url, 'ORDER_ADD_PRODUCT', options);

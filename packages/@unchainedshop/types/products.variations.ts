@@ -33,9 +33,7 @@ export type ProductVariationOption = {
 
 export type ProductVariationsModule = {
   // Queries
-  findProductVariation: (query: {
-    productVariationId: string;
-  }) => Promise<ProductVariation>;
+  findProductVariation: (query: { productVariationId: string }) => Promise<ProductVariation>;
 
   findProductVariations: (query: {
     productId: string;
@@ -47,7 +45,7 @@ export type ProductVariationsModule = {
   // Transformations
   option: (
     productVariation: ProductVariation,
-    productVariationOptionValue: string
+    productVariationOptionValue: string,
   ) => {
     _id: string;
     productVariationOption: string;
@@ -56,7 +54,7 @@ export type ProductVariationsModule = {
   // Mutations
   create: (
     doc: ProductVariation & { locale?: string; title?: string },
-    userId?: string
+    userId?: string,
   ) => Promise<ProductVariation>;
 
   delete: (productVariationId: string, userId?: string) => Promise<number>;
@@ -65,10 +63,7 @@ export type ProductVariationsModule = {
     excludedProductVariationIds: Array<_ID>;
   }) => Promise<number>;
 
-  update: (
-    productMediaId: string,
-    doc: ProductVariation
-  ) => Promise<ProductVariation>;
+  update: (productMediaId: string, doc: ProductVariation) => Promise<ProductVariation>;
 
   addVariationOption: (
     productVariationId: string,
@@ -76,13 +71,13 @@ export type ProductVariationsModule = {
       inputData: { value: string; title: string };
       localeContext: Locale;
     },
-    userId?: string
+    userId?: string,
   ) => Promise<ProductVariation>;
 
   removeVariationOption: (
     productVariationId: string,
     productVariationOptionValue: string,
-    userId?: string
+    userId?: string,
   ) => Promise<void>;
 
   texts: {
@@ -103,7 +98,7 @@ export type ProductVariationsModule = {
       productVariationId: string,
       texts: Array<ProductVariationText>,
       productVariationOptionValue?: string,
-      userId?: string
+      userId?: string,
     ) => Promise<Array<ProductVariationText>>;
 
     upsertLocalizedText: (
@@ -113,16 +108,12 @@ export type ProductVariationsModule = {
       },
       locale: string,
       text: ProductVariationText,
-      userId?: string
+      userId?: string,
     ) => Promise<ProductVariationText>;
   };
 };
 
-type HelperType<P, T> = (
-  productVariation: ProductVariation,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (productVariation: ProductVariation, params: P, context: Context) => T;
 
 export interface ProductVariationHelperTypes {
   options: HelperType<
@@ -138,42 +129,35 @@ export interface ProductVariationHelperTypes {
 type OptionHelperType<P, T> = (
   option: { _id: string; productVariationOption: string },
   params: P,
-  context: Context
+  context: Context,
 ) => T;
 
 export interface ProductVariationOptionHelperTypes {
   _id: OptionHelperType<never, string>;
-  texts: OptionHelperType<
-    { forceLocale?: string },
-    Promise<ProductVariationText>
-  >;
+  texts: OptionHelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
   value: OptionHelperType<never, string>;
 }
 
 type AssignmentHelperType<T> = (
   data: { product: Product; assignment: ProductAssignment },
   _: never,
-  context: Context
+  context: Context,
 ) => T;
 
 export interface ProductVariationAssignmentHelperTypes {
   _id: AssignmentHelperType<string>;
-  vectors: AssignmentHelperType<
-    Array<{ product: Product } & ProductConfiguration>
-  >;
+  vectors: AssignmentHelperType<Array<{ product: Product } & ProductConfiguration>>;
   product: AssignmentHelperType<Promise<Product>>;
 }
 
 type AssignmentVectorHelperType<T> = (
   data: { product: Product } & ProductConfiguration,
   _: never,
-  context: Context
+  context: Context,
 ) => T;
 
 export interface ProductVariationAssignmentVectorHelperTypes {
   _id: AssignmentVectorHelperType<string>;
-  option: AssignmentVectorHelperType<
-    Promise<{ _id: string; productVariationOption: string }>
-  >;
+  option: AssignmentVectorHelperType<Promise<{ _id: string; productVariationOption: string }>>;
   variation: AssignmentVectorHelperType<Promise<ProductVariation>>;
 }

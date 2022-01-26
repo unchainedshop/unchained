@@ -5,7 +5,7 @@ import { AssortmentMediaNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeAssortmentMedia(
   root: Root,
   { assortmentMediaId }: { assortmentMediaId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation removeAssortmentMedia ${assortmentMediaId}`, {
     modules,
@@ -17,8 +17,7 @@ export default async function removeAssortmentMedia(
   const assortmentMedia = await modules.assortments.media.findAssortmentMedia({
     assortmentMediaId,
   });
-  if (!assortmentMedia)
-    throw new AssortmentMediaNotFoundError({ assortmentMediaId });
+  if (!assortmentMedia) throw new AssortmentMediaNotFoundError({ assortmentMediaId });
 
   await modules.files.delete(assortmentMedia.mediaId, userId);
   await modules.assortments.media.delete(assortmentMediaId, userId);

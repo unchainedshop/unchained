@@ -11,12 +11,9 @@ import {
 export const AssortmentsCollection = async (db: Db) => {
   const Assortments = db.collection<Assortment>('assortments');
   const AssortmentTexts = db.collection<AssortmentText>('assortment_texts');
-  const AssortmentProducts = db.collection<AssortmentProduct>(
-    'assortment_products'
-  );
+  const AssortmentProducts = db.collection<AssortmentProduct>('assortment_products');
   const AssortmentLinks = db.collection<AssortmentLink>('assortment_links');
-  const AssortmentFilters =
-    db.collection<AssortmentFilter>('assortment_filters');
+  const AssortmentFilters = db.collection<AssortmentFilter>('assortment_filters');
 
   // Assortment Indexes
   await buildDbIndexes(Assortments, [

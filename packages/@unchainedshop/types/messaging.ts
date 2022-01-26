@@ -2,7 +2,7 @@ import { Context } from './api';
 
 export type TemplateResolver = (
   params: { template: string; [x: string]: any },
-  requestContext: Context
+  requestContext: Context,
 ) => Promise<
   Array<{
     type: 'EMAIL';
@@ -19,20 +19,11 @@ export type TemplateResolver = (
 >;
 
 export interface MessagingModule {
-  renderToText: (
-    template: string,
-    data: { subject: string } & Record<string, any>
-  ) => string;
-  renderMjmlToHtml: (
-    template: string,
-    data: { subject: string } & Record<string, any>
-  ) => string;
+  renderToText: (template: string, data: { subject: string } & Record<string, any>) => string;
+  renderMjmlToHtml: (template: string, data: { subject: string } & Record<string, any>) => string;
 }
 
 export type IMessagingDirector = {
-  registerTemplate: (
-    templateName: string,
-    templateResolver: TemplateResolver
-  ) => void;
+  registerTemplate: (templateName: string, templateResolver: TemplateResolver) => void;
   getTemplate: (templateName: string) => TemplateResolver;
 };

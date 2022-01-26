@@ -1,27 +1,14 @@
-import {
-  Collection,
-  Filter,
-  ModuleMutations,
-} from '@unchainedshop/types/common';
+import { Collection, Filter, ModuleMutations } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
-import {
-  OrderDeliveriesModule,
-  OrderDelivery,
-} from '@unchainedshop/types/orders.deliveries';
+import { OrderDeliveriesModule, OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 import { OrderDeliveryStatus } from '../db/OrderDeliveryStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
-const ORDER_DELIVERY_EVENTS: string[] = [
-  'ORDER_DELIVER',
-  'ORDER_UPDATE_DELIVERY',
-];
+const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
 const buildFindByIdSelector = (orderDeliveryId: string) =>
   generateDbFilterById(orderDeliveryId) as Filter<OrderDelivery>;
@@ -37,13 +24,13 @@ export const configureOrderDeliveriesModule = ({
 
   const mutations = generateDbMutations<OrderDelivery>(
     OrderDeliveries,
-    OrderDeliveriesSchema
+    OrderDeliveriesSchema,
   ) as ModuleMutations<OrderDelivery>;
 
   const updateStatus: OrderDeliveriesModule['updateStatus'] = async (
     orderDeliveryId,
     { status, info },
-    userId
+    userId,
   ) => {
     log(`OrderDelivery ${orderDeliveryId} -> New Status: ${status}`);
 
@@ -71,20 +58,14 @@ export const configureOrderDeliveriesModule = ({
   return {
     // Queries
     findDelivery: async ({ orderDeliveryId }, options) => {
-      return OrderDeliveries.findOne(
-        buildFindByIdSelector(orderDeliveryId),
-        options
-      );
+      return OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId), options);
     },
 
     // Transformations
     discounts: (orderDelivery, { order, orderDiscount }, { modules }) => {
       if (!orderDelivery) return [];
 
-      const pricingSheet = modules.orders.deliveries.pricingSheet(
-        orderDelivery,
-        order.currency
-      );
+      const pricingSheet = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         delivery: orderDelivery,
@@ -97,10 +78,7 @@ export const configureOrderDeliveriesModule = ({
         deliveryProviderId: orderDelivery.deliveryProviderId,
       });
 
-      return requestContext.modules.delivery.isAutoReleaseAllowed(
-        provider,
-        requestContext
-      );
+      return requestContext.modules.delivery.isAutoReleaseAllowed(provider, requestContext);
     },
     isBlockingOrderFullfillment: (orderDelivery) => {
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
@@ -125,12 +103,10 @@ export const configureOrderDeliveriesModule = ({
     create: async (doc, userId) => {
       const orderDeliveryId = await mutations.create(
         { ...doc, context: doc.context || {}, status: null },
-        userId
+        userId,
       );
 
-      const orderDelivery = await OrderDeliveries.findOne(
-        buildFindByIdSelector(orderDeliveryId)
-      );
+      const orderDelivery = await OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId));
       return orderDelivery;
     },
 
@@ -147,24 +123,21 @@ export const configureOrderDeliveriesModule = ({
           status: OrderDeliveryStatus.DELIVERED,
           info: 'mark delivered manually',
         },
-        userId
+        userId,
       );
       emit('ORDER_DELIVER', { orderDelivery: updatedOrderDelivery });
     },
 
     send: async (orderDelivery, { order, deliveryContext }, requestContext) => {
-      if (orderDelivery.status !== OrderDeliveryStatus.OPEN)
-        return orderDelivery;
+      if (orderDelivery.status !== OrderDeliveryStatus.OPEN) return orderDelivery;
 
-      const deliveryProvider =
-        await requestContext.modules.delivery.findProvider({
-          deliveryProviderId: orderDelivery.deliveryProviderId,
-        });
+      const deliveryProvider = await requestContext.modules.delivery.findProvider({
+        deliveryProviderId: orderDelivery.deliveryProviderId,
+      });
 
       const deliveryProviderId = deliveryProvider._id;
 
-      const address =
-        orderDelivery.context?.address || order || order.billingAddress || {};
+      const address = orderDelivery.context?.address || order || order.billingAddress || {};
 
       const arbitraryResponseData = await requestContext.modules.delivery.send(
         deliveryProviderId,
@@ -177,7 +150,7 @@ export const configureOrderDeliveriesModule = ({
             address,
           },
         },
-        requestContext
+        requestContext,
       );
 
       if (arbitraryResponseData) {
@@ -187,18 +160,14 @@ export const configureOrderDeliveriesModule = ({
             status: OrderDeliveryStatus.DELIVERED,
             info: JSON.stringify(arbitraryResponseData),
           },
-          requestContext.userId
+          requestContext.userId,
         );
       }
 
       return orderDelivery;
     },
 
-    updateDelivery: async (
-      orderDeliveryId,
-      { orderId, context },
-      requestContext
-    ) => {
+    updateDelivery: async (orderDeliveryId, { orderId, context }, requestContext) => {
       log(`OrderDelivery ${orderDeliveryId} -> Update Context`, {
         orderId,
       });
@@ -229,19 +198,16 @@ export const configureOrderDeliveriesModule = ({
         {
           item: orderDelivery,
         },
-        requestContext
+        requestContext,
       );
 
-      await OrderDeliveries.updateOne(
-        buildFindByIdSelector(orderDelivery._id),
-        {
-          $set: {
-            calculation,
-            updated: new Date(),
-            updatedBy: requestContext.userId,
-          },
-        }
-      );
+      await OrderDeliveries.updateOne(buildFindByIdSelector(orderDelivery._id), {
+        $set: {
+          calculation,
+          updated: new Date(),
+          updatedBy: requestContext.userId,
+        },
+      });
 
       return true;
     },

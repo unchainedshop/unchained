@@ -12,7 +12,7 @@ export const ProductMediaSchema = new SimpleSchema(
     authorId: { type: String, required: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const ProductMediaTextsSchema = new SimpleSchema(
@@ -27,5 +27,5 @@ export const ProductMediaTextsSchema = new SimpleSchema(
     subtitle: String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

@@ -5,11 +5,7 @@ import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 import crypto from 'crypto';
 import { OrderDiscountDirector } from 'meteor/unchained:core-orders';
 
-type HelperType<P, T> = (
-  orderDiscount: OrderDiscountType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (orderDiscount: OrderDiscountType, params: P, context: Context) => T;
 
 interface OrderDiscountHelperTypes {
   interface: HelperType<
@@ -37,9 +33,7 @@ export const OrderDiscount: OrderDiscountHelperTypes = {
       _id: Interface.key,
       label: Interface.label,
       version: Interface.version,
-      isManualAdditionAllowed: await Interface.isManualAdditionAllowed(
-        obj.code
-      ),
+      isManualAdditionAllowed: await Interface.isManualAdditionAllowed(obj.code),
       isManualRemovalAllowed: await Interface.isManualRemovalAllowed(),
     };
   },

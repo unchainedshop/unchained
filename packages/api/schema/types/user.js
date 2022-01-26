@@ -52,11 +52,9 @@ export default [
 
     type User {
       _id: ID!
-      email: String
-        @deprecated(reason: "Please use primaryEmail.address instead")
+      email: String @deprecated(reason: "Please use primaryEmail.address instead")
       username: String
-      isEmailVerified: Boolean!
-        @deprecated(reason: "Please use primaryEmail.verified instead")
+      isEmailVerified: Boolean! @deprecated(reason: "Please use primaryEmail.verified instead")
       isGuest: Boolean!
       isTwoFactorEnabled: Boolean!
       isInitialPassword: Boolean!

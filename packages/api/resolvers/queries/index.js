@@ -84,52 +84,32 @@ export default {
   currencies: acl(actions.viewCurrencies)(currencies),
   currency: acl(actions.viewCurrency)(currency),
   paymentProviders: acl(actions.viewPaymentProviders)(paymentProviders),
-  paymentProvidersCount: acl(actions.viewPaymentProviders)(
-    paymentProvidersCount
-  ),
+  paymentProvidersCount: acl(actions.viewPaymentProviders)(paymentProvidersCount),
   paymentProvider: acl(actions.viewPaymentProvider)(paymentProvider),
   paymentInterfaces: acl(actions.viewPaymentInterfaces)(paymentInterfaces),
-  deliveryProvidersCount: acl(actions.viewDeliveryProviders)(
-    deliveryProvidersCount
-  ),
+  deliveryProvidersCount: acl(actions.viewDeliveryProviders)(deliveryProvidersCount),
   deliveryProviders: acl(actions.viewDeliveryProviders)(deliveryProviders),
   deliveryProvider: acl(actions.viewDeliveryProvider)(deliveryProvider),
   deliveryInterfaces: acl(actions.viewDeliveryInterfaces)(deliveryInterfaces),
-  warehousingProvidersCount: acl(actions.viewWarehousingProviders)(
-    warehousingProvidersCount
-  ),
-  warehousingProviders: acl(actions.viewWarehousingProviders)(
-    warehousingProviders
-  ),
-  warehousingProvider: acl(actions.viewWarehousingProvider)(
-    warehousingProvider
-  ),
-  warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(
-    warehousingInterfaces
-  ),
+  warehousingProvidersCount: acl(actions.viewWarehousingProviders)(warehousingProvidersCount),
+  warehousingProviders: acl(actions.viewWarehousingProviders)(warehousingProviders),
+  warehousingProvider: acl(actions.viewWarehousingProvider)(warehousingProvider),
+  warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(warehousingInterfaces),
   translatedProductTexts: acl(actions.viewTranslations)(translatedProductTexts),
-  translatedProductMediaTexts: acl(actions.viewTranslations)(
-    translatedProductMediaTexts
-  ),
-  translatedProductVariationTexts: acl(actions.viewTranslations)(
-    translatedProductVariationTexts
-  ),
+  translatedProductMediaTexts: acl(actions.viewTranslations)(translatedProductMediaTexts),
+  translatedProductVariationTexts: acl(actions.viewTranslations)(translatedProductVariationTexts),
   ordersCount: acl(actions.viewOrders)(ordersCount),
   orders: acl(actions.viewOrders)(orders),
   order: acl(actions.viewOrder)(order),
   assortmentsCount: acl(actions.viewAssortments)(assortmentsCount),
   assortments: acl(actions.viewAssortments)(assortments),
-  translatedAssortmentMediaTexts: acl(actions.viewAssortment)(
-    translatedAssortmentMediaTexts
-  ),
+  translatedAssortmentMediaTexts: acl(actions.viewAssortment)(translatedAssortmentMediaTexts),
   assortment: acl(actions.viewAssortment)(assortment),
   filtersCount: acl(actions.viewFilters)(filtersCount),
   filters: acl(actions.viewFilters)(filters),
   filter: acl(actions.viewFilter)(filter),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
-  translatedAssortmentTexts: acl(actions.manageAssortments)(
-    translatedAssortmentTexts
-  ),
+  translatedAssortmentTexts: acl(actions.manageAssortments)(translatedAssortmentTexts),
   translatedFilterTexts: acl(actions.manageFilters)(translatedFilterTexts),
   productReview: acl(actions.manageProductReviews)(productReview),
   productReviews: acl(actions.manageProductReviews)(productReviews),
@@ -147,9 +127,9 @@ export default {
   enrollmentsCount: acl(actions.viewEnrollments)(enrollmentsCount),
 
   work: acl(actions.manageWorker)(work),
-  signPaymentProviderForCredentialRegistration: acl(
-    actions.registerPaymentCredentials
-  )(signPaymentProviderForCredentialRegistration),
+  signPaymentProviderForCredentialRegistration: acl(actions.registerPaymentCredentials)(
+    signPaymentProviderForCredentialRegistration,
+  ),
   event: acl(actions.viewEvent)(event),
   events: acl(actions.viewEvents)(events),
   eventsCount: acl(actions.viewEvents)(eventsCount),

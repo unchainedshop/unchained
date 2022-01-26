@@ -1,8 +1,5 @@
 import { IOrderPricingAdapter } from '@unchainedshop/types/orders.pricing';
-import {
-  OrderPricingDirector,
-  OrderPricingAdapter,
-} from 'meteor/unchained:core-orders';
+import { OrderPricingDirector, OrderPricingAdapter } from 'meteor/unchained:core-orders';
 
 const OrderItems: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
@@ -30,7 +27,7 @@ const OrderItems: IOrderPricingAdapter = {
             const pricing = modules.orders.positions.pricingSheet(
               orderPosition,
               order.currency,
-              params.context
+              params.context,
             );
             const tax = pricing.taxSum();
             const items = pricing.gross();
@@ -42,7 +39,7 @@ const OrderItems: IOrderPricingAdapter = {
           {
             taxes: 0,
             items: 0,
-          }
+          },
         );
 
         pricingAdapter.resultSheet().addItems({

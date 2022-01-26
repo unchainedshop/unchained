@@ -1,9 +1,5 @@
 import { Locale } from 'locale';
-import {
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from 'meteor/unchained:logger';
 import {
@@ -14,11 +10,7 @@ import {
 } from 'meteor/unchained:utils';
 import { UsersCollection } from '../db/UsersCollection';
 
-const buildFindSelector = ({
-  username,
-  includeGuests,
-  queryString,
-}: UserQuery) => {
+const buildFindSelector = ({ username, includeGuests, queryString }: UserQuery) => {
   const selector: Query = username ? { username } : { username };
   if (!includeGuests) selector.guest = { $ne: true };
   if (queryString) {
@@ -40,10 +32,7 @@ export const configureUsersModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<UsersModule> => {
   const Users = await UsersCollection(db);
 
-  const mutations = generateDbMutations<User>(
-    Users,
-    Schemas.User
-  ) as ModuleMutations<User>;
+  const mutations = generateDbMutations<User>(Users, Schemas.User) as ModuleMutations<User>;
 
   return {
     // Queries
@@ -58,7 +47,7 @@ export const configureUsersModule = async ({
           {
             'services.resume.loginTokens.hashedToken': hashedToken,
           },
-          options
+          options,
         );
       }
 
@@ -67,7 +56,7 @@ export const configureUsersModule = async ({
           {
             'services.password.reset.token': resetToken,
           },
-          options
+          options,
         );
       }
 
@@ -100,7 +89,7 @@ export const configureUsersModule = async ({
       return (user.emails || []).sort(
         ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
           /* @ts-ignore */
-          verifiedRight - verifiedLeft
+          verifiedRight - verifiedLeft,
       )?.[0];
     },
 

@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function deliveryProvider(
   root: Root,
   { deliveryProviderId }: { deliveryProviderId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query deliveryProvider ${deliveryProviderId}`, { userId });
 

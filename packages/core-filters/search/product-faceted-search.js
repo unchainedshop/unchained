@@ -7,10 +7,7 @@ export default ({ query, filterSelector, ...options }) => {
   return async (productIdResolver) => {
     if (!filterQuery || filterQuery.length === 0) return productIdResolver;
 
-    const [selector, allProductIds] = await Promise.all([
-      filterSelector,
-      productIdResolver,
-    ]);
+    const [selector, allProductIds] = await Promise.all([filterSelector, productIdResolver]);
     const filters = selector ? Filters.find(selector).fetch() : [];
 
     const intersectedProductIds = filters.reduce((productIdSet, filter) => {

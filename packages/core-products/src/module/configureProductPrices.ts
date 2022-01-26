@@ -1,9 +1,5 @@
 import { Collection } from '@unchainedshop/types/common';
-import {
-  Product,
-  ProductConfiguration,
-  ProductsModule,
-} from '@unchainedshop/types/products';
+import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/types/products';
 import crypto from 'crypto';
 import { ProductPricingDirector } from '../director/ProductPricingDirector';
 import { getPriceLevels } from './utils/getPriceLevels';
@@ -17,13 +13,13 @@ export const configureProductPricesModule = ({
   proxyProducts: (
     product: Product,
     vectors: Array<ProductConfiguration>,
-    options: { includeInactive?: boolean }
+    options: { includeInactive?: boolean },
   ) => Promise<Array<Product>>;
 }): ProductsModule['prices'] => {
   const price: ProductsModule['prices']['price'] = async (
     product,
     { country: countryCode, currency: forcedCurrencyCode, quantity = 1 },
-    requestContext
+    requestContext,
   ) => {
     const currencyCode =
       forcedCurrencyCode ||
@@ -31,7 +27,7 @@ export const configureProductPricesModule = ({
         {
           isoCode: countryCode,
         },
-        requestContext
+        requestContext,
       ));
 
     const pricing = getPriceLevels({
@@ -40,9 +36,7 @@ export const configureProductPricesModule = ({
       countryCode,
     });
 
-    const foundPrice = pricing.find(
-      (level) => !level.maxQuantity || level.maxQuantity >= quantity
-    );
+    const foundPrice = pricing.find((level) => !level.maxQuantity || level.maxQuantity >= quantity);
 
     const price = {
       amount: null,
@@ -68,7 +62,7 @@ export const configureProductPricesModule = ({
   const userPrice: ProductsModule['prices']['userPrice'] = async (
     product,
     { quantity = 1, country, currency, useNetPrice },
-    requestContext
+    requestContext,
   ) => {
     const currencyCode =
       currency ||
@@ -76,7 +70,7 @@ export const configureProductPricesModule = ({
         {
           isoCode: country,
         },
-        requestContext
+        requestContext,
       ));
 
     const user = await requestContext.modules.users.findUser({
@@ -90,7 +84,7 @@ export const configureProductPricesModule = ({
         currency: currencyCode,
         quantity,
       },
-      requestContext
+      requestContext,
     );
 
     const calculated = await pricingDirector.calculate();
@@ -102,15 +96,7 @@ export const configureProductPricesModule = ({
     return {
       _id: crypto
         .createHash('sha256')
-        .update(
-          [
-            product._id,
-            country,
-            quantity,
-            useNetPrice,
-            user ? user._id : 'ANONYMOUS',
-          ].join('')
-        )
+        .update([product._id, country, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''))
         .digest('hex'),
       amount: userPrice.amount,
       currencyCode: userPrice.currency,
@@ -129,13 +115,9 @@ export const configureProductPricesModule = ({
         _id: crypto
           .createHash('sha256')
           .update(
-            [
-              product._id,
-              price.countryCode,
-              price.currencyCode,
-              price.maxQuantity,
-              price.amount,
-            ].join('')
+            [product._id, price.countryCode, price.currencyCode, price.maxQuantity, price.amount].join(
+              '',
+            ),
           )
           .digest('hex'),
         ...price,
@@ -144,14 +126,8 @@ export const configureProductPricesModule = ({
 
     catalogPriceRange: async (
       product,
-      {
-        quantity = 0,
-        vectors = [],
-        includeInactive = false,
-        country,
-        currency,
-      },
-      requestContext
+      { quantity = 0, vectors = [], includeInactive = false, country, currency },
+      requestContext,
     ) => {
       const products = await proxyProducts(product, vectors, {
         includeInactive,
@@ -167,9 +143,9 @@ export const configureProductPricesModule = ({
                 quantity,
                 currency,
               },
-              requestContext
-            )
-          )
+              requestContext,
+            ),
+          ),
         )
       ).filter(Boolean);
 
@@ -191,7 +167,7 @@ export const configureProductPricesModule = ({
               minPrice.currencyCode,
               maxPrice.amount,
               maxPrice.currencyCode,
-            ].join('')
+            ].join(''),
           )
           .digest('hex'),
         minPrice,
@@ -201,15 +177,8 @@ export const configureProductPricesModule = ({
 
     simulatedPriceRange: async (
       product,
-      {
-        country,
-        currency,
-        includeInactive = false,
-        quantity,
-        useNetPrice = false,
-        vectors = [],
-      },
-      requestContext
+      { country, currency, includeInactive = false, quantity, useNetPrice = false, vectors = [] },
+      requestContext,
     ) => {
       const products = await proxyProducts(product, vectors, {
         includeInactive,
@@ -226,9 +195,9 @@ export const configureProductPricesModule = ({
                 country,
                 useNetPrice,
               },
-              requestContext
-            )
-          )
+              requestContext,
+            ),
+          ),
         )
       ).filter(Boolean);
 
@@ -250,7 +219,7 @@ export const configureProductPricesModule = ({
               minPrice.currencyCode,
               maxPrice.amount,
               maxPrice.currencyCode,
-            ].join('')
+            ].join(''),
           )
           .digest('hex'),
         minPrice,
@@ -261,7 +230,7 @@ export const configureProductPricesModule = ({
     catalogPricesLeveled: async (
       product,
       { currency: currencyCode, country: countryCode },
-      requestContext
+      requestContext,
     ) => {
       const currency =
         currencyCode ||
@@ -269,7 +238,7 @@ export const configureProductPricesModule = ({
           {
             isoCode: countryCode,
           },
-          requestContext
+          requestContext,
         ));
 
       let previousMax = null;
@@ -287,10 +256,7 @@ export const configureProductPricesModule = ({
 
         return {
           minQuantity: min,
-          maxQuantity:
-            i === 0 && priceLevel.maxQuantity > 0
-              ? priceLevel.maxQuantity
-              : max,
+          maxQuantity: i === 0 && priceLevel.maxQuantity > 0 ? priceLevel.maxQuantity : max,
           price: {
             _id: crypto
               .createHash('sha256')

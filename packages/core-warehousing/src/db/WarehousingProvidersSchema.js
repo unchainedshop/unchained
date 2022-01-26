@@ -12,5 +12,5 @@ export const WarehousingProvidersSchema = new SimpleSchema(
     'configuration.$.value': String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

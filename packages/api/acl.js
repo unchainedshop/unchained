@@ -24,12 +24,7 @@ const ensureIsFunction = (fn, action, options, key) => {
   }
 };
 
-const checkAction = async (
-  context,
-  action,
-  args = emptyArray,
-  options = emptyObject
-) => {
+const checkAction = async (context, action, args = emptyArray, options = emptyObject) => {
   const { key } = options || emptyObject;
 
   const hasPermission = await checkUserHasPermission(context, action, args);

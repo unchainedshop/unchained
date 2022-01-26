@@ -8,7 +8,7 @@ import {
 import { PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const PaymentPricingSheet = (
-  params: PricingSheetParams<PaymentPricingCalculation>
+  params: PricingSheetParams<PaymentPricingCalculation>,
 ): IPaymentPricingSheet => {
   const basePricingSheet = BasePricingSheet<PaymentPricingCalculation>(params);
 

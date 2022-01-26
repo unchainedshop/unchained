@@ -1,19 +1,12 @@
 import { Collection, ModuleMutations } from '@unchainedshop/types/common';
 import { LogLevel, log } from 'meteor/unchained:logger';
-import {
-  Order,
-  OrderMutations,
-  OrdersModule,
-} from '@unchainedshop/types/orders';
+import { Order, OrderMutations, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrdersSchema } from '../db/OrdersSchema';
 
 const ORDER_EVENTS: string[] = [
@@ -45,16 +38,10 @@ export const configureOrderModuleMutations = ({
 }): OrderMutations => {
   registerEvents(ORDER_EVENTS);
 
-  const mutations = generateDbMutations<Order>(
-    Orders,
-    OrdersSchema
-  ) as ModuleMutations<Order>;
+  const mutations = generateDbMutations<Order>(Orders, OrdersSchema) as ModuleMutations<Order>;
 
   return {
-    create: async (
-      { orderNumber, currency, countryCode, billingAddress, contact },
-      userId
-    ) => {
+    create: async ({ orderNumber, currency, countryCode, billingAddress, contact }, userId) => {
       const orderId = await mutations.create(
         {
           created: new Date(),
@@ -69,7 +56,7 @@ export const configureOrderModuleMutations = ({
           log: [],
           orderNumber,
         },
-        userId
+        userId,
       );
 
       const order = await Orders.findOne(generateDbFilterById(orderId), {});
@@ -94,16 +81,10 @@ export const configureOrderModuleMutations = ({
         status: { $eq: null }, // Null equals OrderStatus.OPEN
       }).toArray();
 
-      await Promise.all(
-        orders.map(async (order) => await initProviders(order, requestContext))
-      );
+      await Promise.all(orders.map(async (order) => await initProviders(order, requestContext)));
     },
 
-    setDeliveryProvider: async (
-      orderId,
-      deliveryProviderId,
-      requestContext
-    ) => {
+    setDeliveryProvider: async (orderId, deliveryProviderId, requestContext) => {
       const { modules } = requestContext;
       const delivery = await OrderDeliveries.findOne({
         orderId,
@@ -120,7 +101,7 @@ export const configureOrderModuleMutations = ({
               orderId,
               status: null,
             },
-            requestContext.userId
+            requestContext.userId,
           )
         )._id;
 
@@ -163,7 +144,7 @@ export const configureOrderModuleMutations = ({
               orderId,
               status: null,
             },
-            userId
+            userId,
           )
         )._id;
       log(`Set Payment Provider ${paymentProviderId}`, { orderId });

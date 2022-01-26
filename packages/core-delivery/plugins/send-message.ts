@@ -1,9 +1,5 @@
 import { IDeliveryAdapter } from '@unchainedshop/types/delivery';
-import {
-  DeliveryAdapter,
-  DeliveryDirector,
-  DeliveryProviderType,
-} from 'meteor/unchained:core-delivery';
+import { DeliveryAdapter, DeliveryDirector, DeliveryProviderType } from 'meteor/unchained:core-delivery';
 
 const SendMessage: IDeliveryAdapter = {
   ...DeliveryAdapter,
@@ -48,7 +44,7 @@ const SendMessage: IDeliveryAdapter = {
               transactionContext,
             },
           },
-          userId
+          userId,
         );
       },
     };

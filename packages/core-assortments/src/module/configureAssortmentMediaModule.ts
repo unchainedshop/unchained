@@ -3,11 +3,7 @@ import {
   AssortmentMediaModule,
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media';
-import {
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import {
@@ -31,19 +27,18 @@ export const configureAssortmentMediaModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<AssortmentMediaModule> => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
 
-  const { AssortmentMedias, AssortmentMediaTexts } =
-    await AssortmentMediaCollection(db);
+  const { AssortmentMedias, AssortmentMediaTexts } = await AssortmentMediaCollection(db);
 
   const mutations = generateDbMutations<AssortmentMedia>(
     AssortmentMedias,
-    AssortmentMediasSchema
+    AssortmentMediasSchema,
   ) as ModuleMutations<AssortmentMedia>;
 
   const upsertLocalizedText = async (
     assortmentMediaId: string,
     locale: string,
     text: AssortmentMediaText,
-    userId: string
+    userId: string,
   ) => {
     const selector = {
       assortmentMediaId,
@@ -68,30 +63,22 @@ export const configureAssortmentMediaModule = async ({
       },
       {
         upsert: true,
-      }
+      },
     );
 
     return AssortmentMediaTexts.findOne(
-      updsertResult.upsertedCount === 0
-        ? generateDbFilterById(textId)
-        : selector,
-      {}
+      updsertResult.upsertedCount === 0 ? generateDbFilterById(textId) : selector,
+      {},
     );
   };
 
   return {
     // Queries
     findAssortmentMedia: async ({ assortmentMediaId }) => {
-      return AssortmentMedias.findOne(
-        generateDbFilterById(assortmentMediaId),
-        {}
-      );
+      return AssortmentMedias.findOne(generateDbFilterById(assortmentMediaId), {});
     },
 
-    findAssortmentMedias: async (
-      { assortmentId, tags, offset, limit },
-      options
-    ) => {
+    findAssortmentMedias: async ({ assortmentId, tags, offset, limit }, options) => {
       const selector: Query = assortmentId ? { assortmentId } : {};
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
@@ -119,7 +106,7 @@ export const configureAssortmentMediaModule = async ({
           },
           {
             sort: { sortKey: -1 },
-          }
+          },
         )) || { sortKey: 0 };
         sortKey = lastAssortmentMedia.sortKey + 1;
       }
@@ -131,12 +118,12 @@ export const configureAssortmentMediaModule = async ({
           ...doc,
           sortKey,
         },
-        userId
+        userId,
       );
 
       const assortmentMedia = await AssortmentMedias.findOne(
         generateDbFilterById(assortmentMediaId),
-        {}
+        {},
       );
 
       emit('ASSORTMENT_ADD_MEDIA', {
@@ -158,11 +145,7 @@ export const configureAssortmentMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteMediaFiles: async ({
-      assortmentId,
-      excludedAssortmentIds,
-      excludedAssortmentMediaIds,
-    }) => {
+    deleteMediaFiles: async ({ assortmentId, excludedAssortmentIds, excludedAssortmentMediaIds }) => {
       const selector: Query = assortmentId ? { assortmentId } : {};
 
       if (!assortmentId && excludedAssortmentIds) {
@@ -188,19 +171,16 @@ export const configureAssortmentMediaModule = async ({
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedAssortmentMediaIds = await Promise.all(
         sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
-          await AssortmentMedias.updateOne(
-            generateDbFilterById(assortmentMediaId),
-            {
-              $set: {
-                sortKey: sortKey + 1,
-                updated: new Date(),
-                updatedBy: userId,
-              },
-            }
-          );
+          await AssortmentMedias.updateOne(generateDbFilterById(assortmentMediaId), {
+            $set: {
+              sortKey: sortKey + 1,
+              updated: new Date(),
+              updatedBy: userId,
+            },
+          });
 
           return assortmentMediaId;
-        })
+        }),
       );
 
       const assortmentMedias = await AssortmentMedias.find({
@@ -228,7 +208,7 @@ export const configureAssortmentMediaModule = async ({
         const text = await findLocalizedText<AssortmentMediaText>(
           AssortmentMediaTexts,
           { assortmentMediaId },
-          parsedLocale
+          parsedLocale,
         );
 
         return text;
@@ -245,9 +225,9 @@ export const configureAssortmentMediaModule = async ({
                 ...localizations,
                 authorId: userId,
               },
-              userId
-            )
-          )
+              userId,
+            ),
+          ),
         );
 
         emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {

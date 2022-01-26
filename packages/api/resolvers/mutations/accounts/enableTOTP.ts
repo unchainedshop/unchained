@@ -5,7 +5,7 @@ import { UserNotFoundError } from '../../../errors';
 export default async function enableTOTP(
   root: Root,
   params: { code: string; secretBase32: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation disableTOTP ${params.code}`, {
     userId,

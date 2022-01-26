@@ -4,7 +4,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function translatedProductTexts(
   root: Root,
   { productId }: { productId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query translatedProductTexts ${productId}`, { userId });
 

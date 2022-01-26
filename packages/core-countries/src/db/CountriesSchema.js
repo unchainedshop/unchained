@@ -9,5 +9,5 @@ export const CountriesSchema = new SimpleSchema(
     defaultCurrencyId: String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

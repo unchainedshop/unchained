@@ -17,7 +17,7 @@ export const AssortmentsSchema = new SimpleSchema(
     '_cachedProductIds.$': String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const AssortmentTextsSchema = new SimpleSchema(
@@ -31,7 +31,7 @@ export const AssortmentTextsSchema = new SimpleSchema(
     title: String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const AssortmentProductsSchema = new SimpleSchema(
@@ -45,7 +45,7 @@ export const AssortmentProductsSchema = new SimpleSchema(
     'tags.$': String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const AssortmentLinksSchema = new SimpleSchema(
@@ -59,7 +59,7 @@ export const AssortmentLinksSchema = new SimpleSchema(
     'tags.$': String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const AssortmentFiltersSchema = new SimpleSchema(
@@ -73,5 +73,5 @@ export const AssortmentFiltersSchema = new SimpleSchema(
     'tags.$': String,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

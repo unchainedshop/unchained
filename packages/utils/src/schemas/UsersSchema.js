@@ -15,7 +15,7 @@ const ProfileSchema = new SimpleSchema(
       blackbox: true,
     },
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const LastLoginSchema = new SimpleSchema(
@@ -27,7 +27,7 @@ export const LastLoginSchema = new SimpleSchema(
     remotePort: String,
     userAgent: String,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const LastContactSchema = new SimpleSchema(
@@ -35,7 +35,7 @@ export const LastContactSchema = new SimpleSchema(
     telNumber: String,
     emailAddress: String,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const UserSchema = new SimpleSchema(
@@ -63,5 +63,5 @@ export const UserSchema = new SimpleSchema(
     'roles.$': String,
     ...timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

@@ -367,9 +367,7 @@ export type StatusResponse = StatusResponseSuccess | ResponseError;
 
 export type AuthorizeResponse = AuthorizeResponseSuccess | ResponseError;
 
-export type AuthorizeAuthenticatedResponse =
-  | AuthorizeAuthenticatedResponseSuccess
-  | ResponseError;
+export type AuthorizeAuthenticatedResponse = AuthorizeAuthenticatedResponseSuccess | ResponseError;
 
 export type ValidateResponse = ValidateResponseSuccess | ResponseError;
 
@@ -377,7 +375,4 @@ export type SettleResponse = true | ResponseError;
 
 export type CancelResponse = true | ResponseError;
 
-export type FetchDatatransFn = (
-  path: string,
-  body?: unknown
-) => Promise<Response>;
+export type FetchDatatransFn = (path: string, body?: unknown) => Promise<Response>;

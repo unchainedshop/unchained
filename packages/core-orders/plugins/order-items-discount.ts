@@ -1,11 +1,5 @@
-import {
-  IOrderPricingAdapter,
-  OrderPricingRowCategory,
-} from '@unchainedshop/types/orders.pricing';
-import {
-  OrderPricingDirector,
-  OrderPricingAdapter,
-} from 'meteor/unchained:core-orders';
+import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing';
+import { OrderPricingDirector, OrderPricingAdapter } from 'meteor/unchained:core-orders';
 
 const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   if (total === 0 || !pricing) {
@@ -24,9 +18,7 @@ const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
 
 const resolveAmountAndTax = ({ ratio, taxDivisor }, amount) => {
   const shareAmount = Number.isFinite(ratio) ? amount * ratio : 0;
-  const shareTaxAmount = Number.isFinite(taxDivisor)
-    ? shareAmount - shareAmount / taxDivisor
-    : 0;
+  const shareTaxAmount = Number.isFinite(taxDivisor) ? shareAmount - shareAmount / taxDivisor : 0;
   return [shareAmount, shareTaxAmount];
 };
 
@@ -34,12 +26,9 @@ const applyDiscountToMultipleShares = (shares, amount) => {
   return shares.reduce(
     ([currentDiscountAmount, currentTaxAmount], share) => {
       const [shareAmount, shareTaxAmount] = resolveAmountAndTax(share, amount);
-      return [
-        currentDiscountAmount + shareAmount,
-        currentTaxAmount + shareTaxAmount,
-      ];
+      return [currentDiscountAmount + shareAmount, currentTaxAmount + shareTaxAmount];
     },
-    [0, 0]
+    [0, 0],
   );
 };
 
@@ -81,27 +70,19 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
 
         const itemShares = orderPositions.map((orderPosition) =>
           resolveRatioAndTaxDivisorForPricingSheet(
-            modules.orders.positions.pricingSheet(
-              orderPosition,
-              order.currency,
-              params.context
-            ),
-            totalAmountOfItems
-          )
+            modules.orders.positions.pricingSheet(orderPosition, order.currency, params.context),
+            totalAmountOfItems,
+          ),
         );
 
         let alreadyDeducted = 0;
 
         params.discounts.forEach(({ configuration, discountId }) => {
           // First, we deduce the discount from the items
-          const [itemsDiscountAmount, itemsTaxAmount] =
-            applyDiscountToMultipleShares(
-              itemShares,
-              calculateAmountToSplit(
-                { ...configuration, alreadyDeducted },
-                totalAmountOfItems
-              )
-            );
+          const [itemsDiscountAmount, itemsTaxAmount] = applyDiscountToMultipleShares(
+            itemShares,
+            calculateAmountToSplit({ ...configuration, alreadyDeducted }, totalAmountOfItems),
+          );
           alreadyDeducted = +itemsDiscountAmount;
 
           const discountAmount = itemsDiscountAmount;

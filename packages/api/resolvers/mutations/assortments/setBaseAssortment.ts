@@ -5,7 +5,7 @@ import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
 export default async function setBaseAssortment(
   root: Root,
   { assortmentId }: { assortmentId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation setBaseAssortment ${assortmentId}`, { modules, userId });
 

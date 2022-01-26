@@ -2,11 +2,7 @@ import { Context, Root } from '@unchainedshop/types/api';
 import { ProductVariationType } from '@unchainedshop/types/products.variations';
 import { ProductTypes } from 'meteor/unchained:core-products';
 import { log } from 'meteor/unchained:logger';
-import {
-  InvalidIdError,
-  ProductNotFoundError,
-  ProductWrongTypeError,
-} from '../../../errors';
+import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors';
 
 export default async function F(
   root: Root,
@@ -18,7 +14,7 @@ export default async function F(
       title: string;
     };
   },
-  { modules, localeContext, userId }: Context
+  { modules, localeContext, userId }: Context,
 ) {
   const { variation, productId } = params;
 
@@ -44,6 +40,6 @@ export default async function F(
       productId,
       ...variation,
     },
-    userId
+    userId,
   );
 }

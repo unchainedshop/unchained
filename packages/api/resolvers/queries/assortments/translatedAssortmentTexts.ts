@@ -4,7 +4,7 @@ import { Context, Root } from '@unchainedshop/types/api';
 export default async function translatedAssortmentTexts(
   root: Root,
   { assortmentId }: { assortmentId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query translatedAssortmentTexts ${assortmentId}`, { modules, userId });
 

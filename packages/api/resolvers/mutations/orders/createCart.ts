@@ -1,14 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
-import {
-  OrderNumberAlreadyExistsError,
-  UserNotFoundError,
-} from '../../../errors';
+import { OrderNumberAlreadyExistsError, UserNotFoundError } from '../../../errors';
 
 export default async function createCart(
   root: Root,
   { orderNumber }: { orderNumber: string },
-  context: Context
+  context: Context,
 ) {
   const { modules, services, countryContext, userId } = context;
   log('mutation createCart', { userId });
@@ -23,7 +20,7 @@ export default async function createCart(
     {
       isoCode: countryContext,
     },
-    context
+    context,
   );
 
   return modules.orders.create(
@@ -41,6 +38,6 @@ export default async function createCart(
             }
           : {}),
     },
-    userId
+    userId,
   );
 }

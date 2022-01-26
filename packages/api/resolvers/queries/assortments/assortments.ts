@@ -11,13 +11,13 @@ export default async function assortments(
     includeInactive?: boolean;
     includeLeaves?: boolean;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(
     `query assortments: ${params.limit} ${params.offset} ${
       params.includeInactive ? 'includeInactive' : ''
     } ${params.slugs?.join(',')}`,
-    { userId }
+    { userId },
   );
 
   return modules.assortments.findAssortments(params);

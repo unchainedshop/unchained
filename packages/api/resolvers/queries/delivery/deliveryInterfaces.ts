@@ -5,7 +5,7 @@ import { log } from 'meteor/unchained:logger';
 export default function deliveryInterfaces(
   root: Root,
   { type }: { type: DeliveryProviderType },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query deliveryInterfaces ${type}`, { userId });
 

@@ -8,10 +8,7 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import {
-  DeliveryPricingCalculation,
-  DeliveryPricingContext,
-} from './delivery.pricing';
+import { DeliveryPricingCalculation, DeliveryPricingContext } from './delivery.pricing';
 import { Order } from './orders';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderPosition } from './orders.positions';
@@ -69,9 +66,7 @@ export type DeliveryAdapterContext = DeliveryContext & Context;
 
 interface DeliveryAdapterActions {
   configurationError: () => DeliveryError;
-  estimatedDeliveryThroughput: (
-    warehousingThroughputTime: number
-  ) => Promise<number>;
+  estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number>;
   isActive: () => boolean;
   isAutoReleaseAllowed: () => boolean;
   pickUpLocationById: (locationId: string) => Promise<DeliveryLocation>;
@@ -83,17 +78,14 @@ export type IDeliveryAdapter = IBaseAdapter & {
 
   typeSupported: (type: DeliveryProviderType) => boolean;
 
-  actions: (
-    config: DeliveryConfiguration,
-    context: DeliveryAdapterContext
-  ) => DeliveryAdapterActions;
+  actions: (config: DeliveryConfiguration, context: DeliveryAdapterContext) => DeliveryAdapterActions;
 };
 
 export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
   actions: (
     deliveryProvider: DeliveryProvider,
     deliveryContext: DeliveryContext,
-    requestContext: Context
+    requestContext: Context,
   ) => DeliveryAdapterActions;
 };
 
@@ -132,45 +124,33 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
           deliveryProviderId: string;
         }
       | Query,
-    options?: FindOptions<DeliveryProvider>
+    options?: FindOptions<DeliveryProvider>,
   ) => Promise<DeliveryProvider>;
   findProviders: (
     query: DeliveryProviderQuery,
-    options?: FindOptions<DeliveryProvider>
+    options?: FindOptions<DeliveryProvider>,
   ) => Promise<Array<DeliveryProvider>>;
 
   providerExists: (query: { deliveryProviderId: string }) => Promise<boolean>;
 
   // Delivery adapter
   findInterface: (params: DeliveryProvider) => IDeliveryAdapter;
-  findInterfaces: (params: {
-    type: DeliveryProviderType;
-  }) => Array<DeliveryInterface>;
-  findSupported: (
-    params: { order: Order },
-    requestContext: Context
-  ) => Promise<Array<DeliveryProvider>>;
+  findInterfaces: (params: { type: DeliveryProviderType }) => Array<DeliveryInterface>;
+  findSupported: (params: { order: Order }, requestContext: Context) => Promise<Array<DeliveryProvider>>;
 
-  isAutoReleaseAllowed: (
-    deliveryProvider: DeliveryProvider,
-    requestContext: Context
-  ) => boolean;
+  isAutoReleaseAllowed: (deliveryProvider: DeliveryProvider, requestContext: Context) => boolean;
   calculate: (
     pricingContext: DeliveryPricingContext,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Array<DeliveryPricingCalculation>>;
   send: (
     deliveryProviderId: string,
     deliveryContext: DeliveryContext,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<any>;
 };
 
-type HelperType<P, T> = (
-  provider: DeliveryProvider,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (provider: DeliveryProvider, params: P, context: Context) => T;
 
 export interface DeliveryProviderHelperTypes {
   interface: HelperType<

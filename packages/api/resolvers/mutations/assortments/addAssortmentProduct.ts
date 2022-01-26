@@ -1,16 +1,12 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { AssortmentProduct } from '@unchainedshop/types/assortments';
-import {
-  AssortmentNotFoundError,
-  ProductNotFoundError,
-  InvalidIdError,
-} from '../../../errors';
+import { AssortmentNotFoundError, ProductNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function addAssortmentProduct(
   root: Root,
   { assortmentId, productId, ...assortmentProduct }: AssortmentProduct,
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation addAssortmentProduct ${assortmentId} -> ${productId}`, {
     userId,
@@ -35,6 +31,6 @@ export default async function addAssortmentProduct(
       ...assortmentProduct,
     },
     { skipInvalidation: false },
-    userId
+    userId,
   );
 }

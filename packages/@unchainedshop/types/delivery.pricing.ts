@@ -29,8 +29,7 @@ export interface DeliveryPricingCalculation extends PricingCalculation {
   rate?: number;
 }
 
-export interface DeliveryPricingAdapterContext
-  extends BasePricingAdapterContext {
+export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext {
   country?: string;
   currency?: string;
   deliveryProvider: DeliveryProvider;

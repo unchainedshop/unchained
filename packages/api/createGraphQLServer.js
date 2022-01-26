@@ -70,12 +70,7 @@ export default (options) => {
     engine: APOLLO_ENGINE_KEY
       ? {
           apiKey: APOLLO_ENGINE_KEY,
-          privateVariables: [
-            'email',
-            'plainPassword',
-            'oldPlainPassword',
-            'newPlainPassword',
-          ],
+          privateVariables: ['email', 'plainPassword', 'oldPlainPassword', 'newPlainPassword'],
           ...engine,
         }
       : undefined,
@@ -110,9 +105,7 @@ export default (options) => {
     },
   });
 
-  WebApp.connectHandlers.use(
-    handleUploads({ maxFileSize: 10000000, maxFiles: 10 })
-  );
+  WebApp.connectHandlers.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
   WebApp.connectHandlers.use(async (req, res, ...rest) => {
     const resolvedContext = await context({ req, res });
     req.unchainedContext = resolvedContext;

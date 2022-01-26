@@ -1,13 +1,7 @@
-import {
-  AssortmentFilter,
-  AssortmentsModule,
-} from '@unchainedshop/types/assortments';
+import { AssortmentFilter, AssortmentsModule } from '@unchainedshop/types/assortments';
 import { Collection, Query } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbObjectId,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbObjectId } from 'meteor/unchained:utils';
 
 const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_ADD_FILTER',
@@ -24,10 +18,7 @@ export const configureAssortmentFiltersModule = ({
 
   return {
     findFilter: async ({ assortmentFilterId }) => {
-      return AssortmentFilters.findOne(
-        generateDbFilterById(assortmentFilterId),
-        {}
-      );
+      return AssortmentFilters.findOne(generateDbFilterById(assortmentFilterId), {});
     },
 
     findFilters: async ({ assortmentId }, options) => {
@@ -41,7 +32,7 @@ export const configureAssortmentFiltersModule = ({
         {
           sort: { sortKey: 1 },
           projection: { filterId: 1 },
-        }
+        },
       ).map((filter) => filter.filterId);
 
       return filters.toArray();
@@ -72,7 +63,7 @@ export const configureAssortmentFiltersModule = ({
         // Get next sort key
         const lastAssortmentFilter = (await AssortmentFilters.findOne(
           { assortmentId },
-          { sort: { sortKey: -1 } }
+          { sort: { sortKey: -1 } },
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentFilter.sortKey + 1;
       } else {
@@ -85,7 +76,7 @@ export const configureAssortmentFiltersModule = ({
           $set,
           $setOnInsert,
         },
-        { upsert: true }
+        { upsert: true },
       );
 
       const assortmentFilter = await AssortmentFilters.findOne(selector, {});
@@ -138,19 +129,16 @@ export const configureAssortmentFiltersModule = ({
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedAssortmentFilterIds = await Promise.all(
         sortKeys.map(async ({ assortmentFilterId, sortKey }) => {
-          await AssortmentFilters.updateOne(
-            generateDbFilterById(assortmentFilterId),
-            {
-              $set: {
-                sortKey: sortKey + 1,
-                updated: new Date(),
-                updatedBy: userId,
-              },
-            }
-          );
+          await AssortmentFilters.updateOne(generateDbFilterById(assortmentFilterId), {
+            $set: {
+              sortKey: sortKey + 1,
+              updated: new Date(),
+              updatedBy: userId,
+            },
+          });
 
           return assortmentFilterId;
-        })
+        }),
       );
 
       const assortmentFilters = await AssortmentFilters.find({

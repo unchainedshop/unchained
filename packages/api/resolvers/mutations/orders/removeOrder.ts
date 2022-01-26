@@ -1,15 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
-import {
-  OrderNotFoundError,
-  OrderWrongStatusError,
-  InvalidIdError,
-} from '../../../errors';
+import { OrderNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors';
 
 export default async function removeOrder(
   root: Root,
   { orderId }: { orderId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation removeOrder', { userId, orderId });
 

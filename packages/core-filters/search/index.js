@@ -14,23 +14,14 @@ import resolveSortStage from './resolve-sort-stage';
 import parseQueryArray from './parse-query-array';
 import { FilterDirector } from '../director';
 
-const cleanQuery = ({
-  filterQuery,
-  assortmentIds = null,
-  productIds = null,
-  ...query
-}) => ({
+const cleanQuery = ({ filterQuery, assortmentIds = null, productIds = null, ...query }) => ({
   filterQuery: parseQueryArray(filterQuery),
   productIds: Promise.resolve(productIds),
   assortmentIds: Promise.resolve(assortmentIds),
   ...query,
 });
 
-const searchProducts = async ({
-  query: rawQuery,
-  forceLiveCollection,
-  context,
-}) => {
+const searchProducts = async ({ query: rawQuery, forceLiveCollection, context }) => {
   const query = cleanQuery(rawQuery);
   const filterSelector = resolveFilterSelector(query);
   const productSelector = resolveProductSelector(query);
@@ -47,9 +38,7 @@ const searchProducts = async ({
 
   const director = new FilterDirector({ query, context, forceLiveCollection });
 
-  const totalProductIds = productFulltextSearch(searchConfiguration)(
-    query?.productIds
-  );
+  const totalProductIds = productFulltextSearch(searchConfiguration)(query?.productIds);
 
   const findFilters = async () => {
     const resolvedFilterSelector = await filterSelector;
@@ -69,7 +58,7 @@ const searchProducts = async ({
       },
       {
         fields: { _id: 1 },
-      }
+      },
     ).map(({ _id }) => _id);
 
     return otherFilters.map((filter) => {
@@ -96,9 +85,7 @@ const searchProducts = async ({
     };
   }
 
-  const filteredProductIds = totalProductIds.then(
-    productFacetedSearch(searchConfiguration)
-  );
+  const filteredProductIds = totalProductIds.then(productFacetedSearch(searchConfiguration));
 
   return {
     totalProducts: async () =>
@@ -129,17 +116,13 @@ const searchProducts = async ({
           skip: offset,
           limit,
           sort: await sortStage,
-        }
+        },
       ),
     filters: findFilters,
   };
 };
 
-const searchAssortments = async ({
-  query: rawQuery,
-  forceLiveCollection,
-  context,
-}) => {
+const searchAssortments = async ({ query: rawQuery, forceLiveCollection, context }) => {
   const query = cleanQuery(rawQuery);
   const filterSelector = resolveFilterSelector(query);
   const assortmentSelector = resolveAssortmentSelector(query);
@@ -154,9 +137,7 @@ const searchAssortments = async ({
     forceLiveCollection,
   };
 
-  const totalAssortmentIds = assortmentFulltextSearch(searchConfiguration)(
-    query?.productIds
-  );
+  const totalAssortmentIds = assortmentFulltextSearch(searchConfiguration)(query?.productIds);
 
   return {
     totalAssortments: async () =>
@@ -170,15 +151,11 @@ const searchAssortments = async ({
         _id: { $in: await totalAssortmentIds },
       }).count(),
     assortments: async ({ offset, limit }) =>
-      findPreservingIds(Assortments)(
-        await assortmentSelector,
-        await totalAssortmentIds,
-        {
-          skip: offset,
-          limit,
-          sort: await sortStage,
-        }
-      ),
+      findPreservingIds(Assortments)(await assortmentSelector, await totalAssortmentIds, {
+        skip: offset,
+        limit,
+        sort: await sortStage,
+      }),
   };
 };
 

@@ -4,7 +4,7 @@ import { log } from 'meteor/unchained:logger';
 export default function shopInfo(
   root: Root,
   _: never,
-  context: Context
+  context: Context,
 ): { version?: string; externalLinks: Array<string> } {
   log('query shopInfo', { userId: context.userId });
 

@@ -5,7 +5,7 @@ import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 export default async function addProductMedia(
   root: Root,
   { media, productId },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation addProductMedia ${productId}`, { userId });
 
@@ -20,11 +20,8 @@ export default async function addProductMedia(
       rawFile: media,
       meta: { authorId: userId },
     },
-    userId
+    userId,
   );
 
-  return modules.products.media.create(
-    { productId, mediaId: file._id },
-    userId
-  );
+  return modules.products.media.create({ productId, mediaId: file._id }, userId);
 }

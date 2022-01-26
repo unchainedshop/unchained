@@ -21,28 +21,16 @@ interface RolesInterface {
   helpers: string[];
   registerAction(name: string): void;
   registerHelper(name: string): void;
-  getUserRoles(
-    context: Context,
-    roles: Array<string>,
-    includeSpecial: boolean
-  ): string[];
+  getUserRoles(context: Context, roles: Array<string>, includeSpecial: boolean): string[];
   allow(
     context: Context,
     roles: Array<string>,
     action: string,
-    args: CheckPermissionArgs
+    args: CheckPermissionArgs,
   ): Promise<boolean>;
-  userHasPermission(
-    context: Context,
-    action: string,
-    args: CheckPermissionArgs
-  ): Promise<boolean>;
+  userHasPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<boolean>;
   addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
-  checkPermission(
-    context: Context,
-    action: string,
-    args: CheckPermissionArgs
-  ): Promise<void | never>;
+  checkPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<void | never>;
   adminRole?: RoleInterface;
   loggedInRole?: RoleInterface;
   allRole?: RoleInterface;
@@ -95,32 +83,25 @@ export const Roles: RolesInterface = {
   async allow(context, roles, action, [obj, params]) {
     const userRoles = Roles.getUserRoles(context, roles, true);
 
-    return userRoles.reduce(
-      async (roleIsAllowedPromise: Promise<boolean>, role) => {
-        const roleIsAllowed = await roleIsAllowedPromise;
+    return userRoles.reduce(async (roleIsAllowedPromise: Promise<boolean>, role) => {
+      const roleIsAllowed = await roleIsAllowedPromise;
 
-        if (roleIsAllowed) return true;
+      if (roleIsAllowed) return true;
 
-        if (
-          Roles.roles[role] &&
-          Roles.roles[role].allowRules &&
-          Roles.roles[role].allowRules[action]
-        ) {
-          return Roles.roles[role].allowRules[action].reduce(
-            async (rulesIsAllowedPromise: Promise<boolean>, allowFn: any) => {
-              const ruleIsAllowed = await rulesIsAllowedPromise;
-              if (ruleIsAllowed) return true;
+      if (Roles.roles[role] && Roles.roles[role].allowRules && Roles.roles[role].allowRules[action]) {
+        return Roles.roles[role].allowRules[action].reduce(
+          async (rulesIsAllowedPromise: Promise<boolean>, allowFn: any) => {
+            const ruleIsAllowed = await rulesIsAllowedPromise;
+            if (ruleIsAllowed) return true;
 
-              return allowFn(obj, params, context);
-            },
-            Promise.resolve(false)
-          );
-        }
+            return allowFn(obj, params, context);
+          },
+          Promise.resolve(false),
+        );
+      }
 
-        return roleIsAllowed;
-      },
-      Promise.resolve(false)
-    );
+      return roleIsAllowed;
+    }, Promise.resolve(false));
   },
 
   /**
@@ -133,7 +114,7 @@ export const Roles: RolesInterface = {
       (context.userId &&
         (await context.modules.users.findUser(
           { userId: context.userId },
-          { projection: { roles: 1 } }
+          { projection: { roles: 1 } },
         )));
 
     const roles = Array.isArray(user?.roles) ? user.roles : [];
@@ -160,10 +141,7 @@ export const Roles: RolesInterface = {
    */
   async checkPermission(context, action, args) {
     if (!(await Roles.userHasPermission(context, action, args))) {
-      throw new Meteor.Error(
-        'unauthorized',
-        'The user has no permission to perform this action'
-      );
+      throw new Meteor.Error('unauthorized', 'The user has no permission to perform this action');
     }
   },
 };
@@ -177,8 +155,7 @@ export class Role implements RoleInterface {
   helpers: { [name: string]: any };
 
   constructor(public name: string) {
-    if (has(Roles.roles, name))
-      throw new Error(`"${name}" role is already defined`);
+    if (has(Roles.roles, name)) throw new Error(`"${name}" role is already defined`);
 
     this.allowRules = {};
     this.helpers = {};

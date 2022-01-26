@@ -3,19 +3,11 @@ import { CountriesModule, Country } from '@unchainedshop/types/countries';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-  systemLocale,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, systemLocale } from 'meteor/unchained:utils';
 import { CountriesCollection } from '../db/CountriesCollection';
 import { CountriesSchema } from '../db/CountriesSchema';
 
-const COUNTRY_EVENTS: string[] = [
-  'COUNTRY_CREATE',
-  'COUNTRY_UPDATE',
-  'COUNTRY_REMOVE',
-];
+const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 
 type FindQuery = {
   includeInactive?: boolean;
@@ -33,23 +25,16 @@ export const configureCountriesModule = async ({
 
   const Countries = await CountriesCollection(db);
 
-  const mutations = generateDbMutations<Country>(
-    Countries,
-    CountriesSchema
-  ) as ModuleMutations<Country>;
+  const mutations = generateDbMutations<Country>(Countries, CountriesSchema) as ModuleMutations<Country>;
 
   return {
     count: async (query) => {
-      const countryCount = await Countries.find(
-        buildFindSelector(query)
-      ).count();
+      const countryCount = await Countries.find(buildFindSelector(query)).count();
       return countryCount;
     },
 
     findCountry: async ({ countryId, isoCode }) => {
-      return Countries.findOne(
-        countryId ? generateDbFilterById(countryId) : { isoCode }
-      );
+      return Countries.findOne(countryId ? generateDbFilterById(countryId) : { isoCode });
     },
 
     findCountries: async ({ limit, offset, includeInactive }, options) => {
@@ -62,10 +47,7 @@ export const configureCountriesModule = async ({
     },
 
     countryExists: async ({ countryId }) => {
-      const countryCount = await Countries.find(
-        generateDbFilterById(countryId),
-        { limit: 1 }
-      ).count();
+      const countryCount = await Countries.find(generateDbFilterById(countryId), { limit: 1 }).count();
       return !!countryCount;
     },
 
@@ -86,7 +68,7 @@ export const configureCountriesModule = async ({
           isoCode: doc.isoCode.toUpperCase(),
           isActive: true,
         },
-        userId
+        userId,
       );
       emit('COUNTRY_CREATE', { countryId });
       return countryId;

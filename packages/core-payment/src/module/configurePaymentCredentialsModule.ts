@@ -1,15 +1,9 @@
-import {
-  PaymentCredentials,
-  PaymentModule,
-} from '@unchainedshop/types/payments';
+import { PaymentCredentials, PaymentModule } from '@unchainedshop/types/payments';
 import { Collection } from '@unchainedshop/types/common';
-import {
-  generateDbFilterById,
-  generateDbObjectId,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbObjectId } from 'meteor/unchained:utils';
 
 export const configurePaymentCredentialsModule = (
-  PaymentCredentials: Collection<PaymentCredentials>
+  PaymentCredentials: Collection<PaymentCredentials>,
 ): PaymentModule['paymentCredentials'] => {
   const markPreferred = async ({ userId, paymentCredentialsId }) => {
     await PaymentCredentials.updateOne(
@@ -20,7 +14,7 @@ export const configurePaymentCredentialsModule = (
         $set: {
           isPreferred: true,
         },
-      }
+      },
     );
     await PaymentCredentials.updateMany(
       {
@@ -31,7 +25,7 @@ export const configurePaymentCredentialsModule = (
         $set: {
           isPreferred: false,
         },
-      }
+      },
     );
   };
 
@@ -40,20 +34,17 @@ export const configurePaymentCredentialsModule = (
 
     credentialsExists: async ({ paymentCredentialsId }) => {
       const credentialsCount = await PaymentCredentials.find(
-        generateDbFilterById(paymentCredentialsId)
+        generateDbFilterById(paymentCredentialsId),
       ).count();
       return !!credentialsCount;
     },
 
-    findPaymentCredential: async (
-      { paymentCredentialsId, userId, paymentProviderId },
-      options
-    ) => {
+    findPaymentCredential: async ({ paymentCredentialsId, userId, paymentProviderId }, options) => {
       return PaymentCredentials.findOne(
         paymentCredentialsId
           ? generateDbFilterById(paymentCredentialsId)
           : { userId, paymentProviderId },
-        options
+        options,
       );
     },
 
@@ -62,13 +53,7 @@ export const configurePaymentCredentialsModule = (
       return credentials.toArray();
     },
 
-    upsertCredentials: async ({
-      userId,
-      paymentProviderId,
-      _id,
-      token,
-      ...meta
-    }) => {
+    upsertCredentials: async ({ userId, paymentProviderId, _id, token, ...meta }) => {
       const paymentCredentialsId = generateDbObjectId();
       const result = await PaymentCredentials.updateOne(
         _id
@@ -98,7 +83,7 @@ export const configurePaymentCredentialsModule = (
         },
         {
           upsert: true,
-        }
+        },
       );
 
       if (result.upsertedCount > 0) {

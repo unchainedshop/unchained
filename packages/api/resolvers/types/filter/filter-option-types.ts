@@ -1,14 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  FilterOption as FilterOptionType,
-  FilterText,
-} from '@unchainedshop/types/filters';
+import { FilterOption as FilterOptionType, FilterText } from '@unchainedshop/types/filters';
 
-type HelperType<P, T> = (
-  filterOption: FilterOptionType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (filterOption: FilterOptionType, params: P, context: Context) => T;
 
 type FilterOptionHelperTypes = {
   _id: HelperType<never, string>;

@@ -57,7 +57,7 @@ export const OrderPricingDirector: IOrderPricingDirector = {
     return baseDirector.actions(
       pricingContext,
       requestContext,
-      OrderPricingDirector.buildPricingContext
+      OrderPricingDirector.buildPricingContext,
     );
   },
 

@@ -4,10 +4,7 @@ export const ordersSettings = {
   ensureUserHasCart: null,
   orderNumberHashFn: null,
 
-  configureSettings({
-    ensureUserHasCart = false,
-    orderNumberHashFn = generateRandomHash,
-  } = {}) {
+  configureSettings({ ensureUserHasCart = false, orderNumberHashFn = generateRandomHash } = {}) {
     this.ensureUserHasCart = ensureUserHasCart;
     this.orderNumberHashFn = orderNumberHashFn;
   },

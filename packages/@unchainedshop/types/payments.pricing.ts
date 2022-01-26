@@ -28,8 +28,7 @@ export interface PaymentPricingCalculation extends PricingCalculation {
   rate?: number;
 }
 
-export interface PaymentPricingAdapterContext
-  extends BasePricingAdapterContext {
+export interface PaymentPricingAdapterContext extends BasePricingAdapterContext {
   user: User;
   orderPayment: OrderPayment;
   order: Order;

@@ -1,10 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { Collection } from '@unchainedshop/types/common';
-import {
-  Order,
-  OrderProcessing,
-  OrdersModule,
-} from '@unchainedshop/types/orders';
+import { Order, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
@@ -14,11 +10,7 @@ import { generateDbFilterById } from 'meteor/unchained:utils';
 import { OrderStatus } from '../db/OrderStatus';
 import { ordersSettings } from '../orders-settings';
 
-const ORDER_PROCESSING_EVENTS: string[] = [
-  'ORDER_CHECKOUT',
-  'ORDER_CONFIRMED',
-  'ORDER_FULLFILLED',
-];
+const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
 
 export const configureOrderModuleProcessing = ({
   Orders,
@@ -51,22 +43,15 @@ export const configureOrderModuleProcessing = ({
 
   const missingInputDataForCheckout = async (order: Order) => {
     const errors = [];
-    if (order.status !== null)
-      errors.push(new Error('Order has already been checked out'));
+    if (order.status !== null) errors.push(new Error('Order has already been checked out'));
     if (!order.contact) errors.push(new Error('Contact data not provided'));
-    if (!order.billingAddress)
-      errors.push(new Error('Billing address not provided'));
+    if (!order.billingAddress) errors.push(new Error('Billing address not provided'));
 
     const items = await findOrderPositions(order);
-    const totalQuantity = items.reduce(
-      (oldValue, item) => oldValue + item.quantity,
-      0
-    );
+    const totalQuantity = items.reduce((oldValue, item) => oldValue + item.quantity, 0);
     if (totalQuantity === 0) errors.push(new Error('No items in cart'));
-    if (!(await findOrderDelivery(order)))
-      errors.push('No delivery provider selected');
-    if (!(await findOrderPayment(order)))
-      errors.push('No payment provider selected');
+    if (!(await findOrderDelivery(order))) errors.push('No delivery provider selected');
+    if (!(await findOrderPayment(order))) errors.push('No payment provider selected');
     return errors;
   };
 
@@ -82,12 +67,9 @@ export const configureOrderModuleProcessing = ({
       orderPositions.map(async (orderPosition) => {
         const errors = [];
 
-        log(
-          `OrderPosition ${orderPosition._id} -> Validate ${orderPosition.quantity}`,
-          {
-            orderId: orderPosition.orderId,
-          }
-        );
+        log(`OrderPosition ${orderPosition._id} -> Validate ${orderPosition.quantity}`, {
+          orderId: orderPosition.orderId,
+        });
 
         const product = await modules.products.findProduct({
           productId: orderPosition.productId,
@@ -103,72 +85,51 @@ export const configureOrderModuleProcessing = ({
             quotationId: orderPosition.quotationId,
           }));
         if (quotation && !modules.quotations.isProposalValid(quotation)) {
-          errors.push(
-            new Error(
-              'Quotation expired or fullfiled, please request a new offer'
-            )
-          );
+          errors.push(new Error('Quotation expired or fullfiled, please request a new offer'));
         }
         return errors;
-      })
+      }),
     );
 
     return validationErrors.flatMap((f) => f);
   };
 
-  const isAutoConfirmationEnabled = async (
-    order: Order,
-    requestContext: Context
-  ) => {
+  const isAutoConfirmationEnabled = async (order: Order, requestContext: Context) => {
     const { modules } = requestContext;
 
     const orderPayment = await findOrderPayment(order);
     let isBlockingOrderConfirmation =
       orderPayment &&
-      (await modules.orders.payments.isBlockingOrderConfirmation(
-        orderPayment,
-        requestContext
-      ));
+      (await modules.orders.payments.isBlockingOrderConfirmation(orderPayment, requestContext));
 
     if (isBlockingOrderConfirmation) return false;
 
     const orderDelivery = await findOrderDelivery(order);
     isBlockingOrderConfirmation =
       orderDelivery &&
-      (await modules.orders.deliveries.isBlockingOrderConfirmation(
-        orderDelivery,
-        requestContext
-      ));
+      (await modules.orders.deliveries.isBlockingOrderConfirmation(orderDelivery, requestContext));
 
     if (isBlockingOrderConfirmation) return false;
 
-    if (
-      order.status === OrderStatus.FULLFILLED ||
-      order.status === OrderStatus.CONFIRMED
-    ) {
+    if (order.status === OrderStatus.FULLFILLED || order.status === OrderStatus.CONFIRMED) {
       return false;
     }
 
     return true;
   };
 
-  const isAutoFullfillmentEnabled = async (
-    order: Order,
-    requestContext: Context
-  ) => {
+  const isAutoFullfillmentEnabled = async (order: Order, requestContext: Context) => {
     const { modules } = requestContext;
 
     const orderPayment = await findOrderPayment(order);
     let isBlockingOrderFullfillment =
-      orderPayment &&
-      modules.orders.payments.isBlockingOrderFullfillment(orderPayment);
+      orderPayment && modules.orders.payments.isBlockingOrderFullfillment(orderPayment);
 
     if (isBlockingOrderFullfillment) return false;
 
     const orderDelivery = await findOrderDelivery(order);
     isBlockingOrderFullfillment =
-      orderDelivery &&
-      modules.orders.deliveries.isBlockingOrderFullfillment(orderDelivery);
+      orderDelivery && modules.orders.deliveries.isBlockingOrderFullfillment(orderDelivery);
 
     if (isBlockingOrderFullfillment) return false;
 
@@ -179,10 +140,7 @@ export const configureOrderModuleProcessing = ({
     return true;
   };
 
-  const findNextStatus = async (
-    order: Order,
-    requestContext: Context
-  ): Promise<OrderStatus | null> => {
+  const findNextStatus = async (order: Order, requestContext: Context): Promise<OrderStatus | null> => {
     let { status } = order;
 
     if (status === null /* OrderStatus.OPEN */ || !status) {
@@ -200,10 +158,7 @@ export const configureOrderModuleProcessing = ({
     }
 
     if (status === OrderStatus.CONFIRMED) {
-      const isFullfilled = await isAutoFullfillmentEnabled(
-        order,
-        requestContext
-      );
+      const isFullfilled = await isAutoFullfillmentEnabled(order, requestContext);
       if (isFullfilled) {
         emit('ORDER_FULLFILLED', { order });
         status = OrderStatus.FULLFILLED;
@@ -236,7 +191,7 @@ export const configureOrderModuleProcessing = ({
       let updatedOrder = await modules.orders.updateContext(
         orderId,
         params.orderContext,
-        requestContext
+        requestContext,
       );
 
       updatedOrder = await modules.orders.processOrder(
@@ -245,12 +200,12 @@ export const configureOrderModuleProcessing = ({
           paymentContext: params.paymentContext,
           deliveryContext: params.deliveryContext,
         },
-        requestContext
+        requestContext,
       );
       updatedOrder = await modules.orders.sendOrderConfirmationToCustomer(
         updatedOrder,
         { locale },
-        requestContext
+        requestContext,
       );
       updatedOrder = await modules.orders.ensureCartForUser(
         {
@@ -258,7 +213,7 @@ export const configureOrderModuleProcessing = ({
           user,
           countryContext: locale.country,
         },
-        requestContext
+        requestContext,
       );
 
       return updatedOrder;
@@ -279,12 +234,12 @@ export const configureOrderModuleProcessing = ({
       let updatedOrder = await modules.orders.updateContext(
         orderId,
         params.orderContext,
-        requestContext
+        requestContext,
       );
       updatedOrder = await modules.orders.updateStatus(
         orderId,
         { status: OrderStatus.CONFIRMED, info: 'confirmed manually' },
-        requestContext
+        requestContext,
       );
       updatedOrder = await modules.orders.processOrder(
         updatedOrder,
@@ -292,12 +247,12 @@ export const configureOrderModuleProcessing = ({
           paymentContext: params.paymentContext,
           deliveryContext: params.deliveryContext,
         },
-        requestContext
+        requestContext,
       );
       updatedOrder = await modules.orders.sendOrderConfirmationToCustomer(
         updatedOrder,
         { locale },
-        requestContext
+        requestContext,
       );
 
       return updatedOrder;
@@ -309,26 +264,20 @@ export const configureOrderModuleProcessing = ({
       if (!ordersSettings.ensureUserHasCart) return params.order;
 
       const user =
-        params.user ||
-        (params.order &&
-          (await modules.users.findUser({ userId: params.order._id })));
+        params.user || (params.order && (await modules.users.findUser({ userId: params.order._id })));
 
       if (!user) throw new Error('User with the id not found');
 
-      const countryCode =
-        params.countryContext || user.lastLogin.countryContext;
+      const countryCode = params.countryContext || user.lastLogin.countryContext;
 
-      const cart = await modules.orders.cart(
-        { countryContext: params.countryContext },
-        user
-      );
+      const cart = await modules.orders.cart({ countryContext: params.countryContext }, user);
       if (cart) return cart;
 
       const currency = await services.countries.resolveDefaultCurrencyCode(
         {
           isoCode: params.countryContext,
         },
-        requestContext
+        requestContext,
       );
 
       return modules.orders.create(
@@ -346,14 +295,11 @@ export const configureOrderModuleProcessing = ({
                 }
               : {}),
         },
-        userId
+        userId,
       );
     },
 
-    migrateCart: async (
-      { fromCart, shouldMergeCarts, toCart },
-      requestContext
-    ) => {
+    migrateCart: async ({ fromCart, shouldMergeCarts, toCart }, requestContext) => {
       const fromCartId = fromCart._id;
       const toCartId = toCart._id;
 
@@ -374,7 +320,7 @@ export const configureOrderModuleProcessing = ({
           $set: {
             orderId: toCartId,
           },
-        }
+        },
       );
 
       await updateCalculation(fromCartId, requestContext);
@@ -397,18 +343,10 @@ export const configureOrderModuleProcessing = ({
         await modules.orders.payments.charge(
           orderPayment,
           { order, transactionContext: params.paymentContext },
-          requestContext
+          requestContext,
         );
-        await modules.users.updateLastBillingAddress(
-          order.userId,
-          order.billingAddress,
-          userId
-        );
-        await modules.users.updateLastContact(
-          order.userId,
-          order.contact,
-          userId
-        );
+        await modules.users.updateLastBillingAddress(order.userId, order.billingAddress, userId);
+        await modules.users.updateLastContact(order.userId, order.contact, userId);
       }
 
       order = await modules.orders.findOrder({ orderId });
@@ -427,7 +365,7 @@ export const configureOrderModuleProcessing = ({
               status: OrderStatus.CONFIRMED,
               info: 'before delivery',
             },
-            requestContext
+            requestContext,
           );
 
           await modules.orders.deliveries.send(
@@ -436,13 +374,12 @@ export const configureOrderModuleProcessing = ({
               order,
               deliveryContext: params.deliveryContext,
             },
-            requestContext
+            requestContext,
           );
 
           // Generate enrollments
           if (!order.originEnrollmentId) {
-            const orderPositions =
-              await modules.orders.positions.findOrderPositions({ orderId });
+            const orderPositions = await modules.orders.positions.findOrderPositions({ orderId });
 
             const mappedProductOrderPositions = await Promise.all(
               orderPositions.map(async (orderPosition) => {
@@ -453,11 +390,12 @@ export const configureOrderModuleProcessing = ({
                   orderPosition,
                   product,
                 };
-              })
+              }),
             );
 
-            const filteredProductOrderPositions =
-              mappedProductOrderPositions.filter((item) => item.product?.plan);
+            const filteredProductOrderPositions = mappedProductOrderPositions.filter(
+              (item) => item.product?.plan,
+            );
 
             if (filteredProductOrderPositions.length > 0) {
               await modules.enrollments.createFromCheckout(
@@ -469,7 +407,7 @@ export const configureOrderModuleProcessing = ({
                     deliveryContext: params.deliveryContext,
                   },
                 },
-                requestContext
+                requestContext,
               );
             }
           }
@@ -480,7 +418,7 @@ export const configureOrderModuleProcessing = ({
               order,
               deliveryContext: params.deliveryContext,
             },
-            requestContext
+            requestContext,
           );
         }
 
@@ -495,17 +433,14 @@ export const configureOrderModuleProcessing = ({
                 orderId,
                 orderPositionId: orderPosition._id,
               },
-              requestContext
+              requestContext,
             );
 
-            log(
-              `OrderPosition ${orderPosition._id} -> Reserve ${orderPosition.quantity}`,
-              {
-                orderId,
-                quotation,
-              }
-            );
-          })
+            log(`OrderPosition ${orderPosition._id} -> Reserve ${orderPosition.quantity}`, {
+              orderId,
+              quotation,
+            });
+          }),
         );
 
         nextStatus = await findNextStatus(order, requestContext);
@@ -516,11 +451,7 @@ export const configureOrderModuleProcessing = ({
         // ???
       }
 
-      return updateStatus(
-        order._id,
-        { status: nextStatus, info: 'order processed' },
-        requestContext
-      );
+      return updateStatus(order._id, { status: nextStatus, info: 'order processed' }, requestContext);
     },
 
     sendOrderConfirmationToCustomer: async (order, params, requestContext) => {
@@ -534,7 +465,7 @@ export const configureOrderModuleProcessing = ({
             orderId: order._id,
           },
         },
-        requestContext.userId
+        requestContext.userId,
       );
 
       return order;

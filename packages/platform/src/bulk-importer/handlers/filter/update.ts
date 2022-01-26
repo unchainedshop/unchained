@@ -5,13 +5,12 @@ import upsertFilterOptionContent from './upsertFilterOptionContent';
 export default async function updateFilter(
   payload: any,
   { authorId, logger }: { authorId: string; logger: any },
-  unchainedAPI: Context
+  unchainedAPI: Context,
 ) {
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;
 
-  if (!specification)
-    throw new Error('Specification is required when creating a new filter');
+  if (!specification) throw new Error('Specification is required when creating a new filter');
 
   logger.debug('update filter object', specification);
   const { content, options, ...filterData } = specification;
@@ -22,7 +21,7 @@ export default async function updateFilter(
       options: options?.map((option) => option.value) || [],
       authorId,
     },
-    unchainedAPI
+    unchainedAPI,
   );
 
   if (content || options) {
@@ -36,11 +35,7 @@ export default async function updateFilter(
 
   if (options) {
     logger.debug('replace localized content for filter options', content);
-    await upsertFilterOptionContent(
-      { options, filter },
-      { authorId },
-      unchainedAPI
-    );
+    await upsertFilterOptionContent({ options, filter }, { authorId }, unchainedAPI);
   }
 
   return {

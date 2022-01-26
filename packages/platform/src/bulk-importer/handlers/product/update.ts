@@ -4,11 +4,7 @@ import upsertMedia from './upsertMedia';
 import upsertProductContent from './upsertProductContent';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
 
-export default async function createProduct(
-  payload: any,
-  { logger, authorId },
-  unchainedAPI: Context
-) {
+export default async function createProduct(payload: any, { logger, authorId }, unchainedAPI: Context) {
   const { modules, userId } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
 
@@ -21,21 +17,18 @@ export default async function createProduct(
         ...productData,
         authorId,
       },
-      userId
+      userId,
     );
 
     if (specification.content) {
-      logger.debug(
-        'replace localized content for product',
-        specification.content
-      );
+      logger.debug('replace localized content for product', specification.content);
       await upsertProductContent(
         {
           content: specification.content,
           productId: _id,
           authorId,
         },
-        unchainedAPI
+        unchainedAPI,
       );
     }
   }
@@ -54,7 +47,7 @@ export default async function createProduct(
         productId: _id,
         authorId,
       },
-      unchainedAPI
+      unchainedAPI,
     );
   }
 

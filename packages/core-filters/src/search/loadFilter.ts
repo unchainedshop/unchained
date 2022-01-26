@@ -1,9 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  Filter,
-  FilterAdapterActions,
-  SearchFilterQuery,
-} from '@unchainedshop/types/filters';
+import { Filter, FilterAdapterActions, SearchFilterQuery } from '@unchainedshop/types/filters';
 import { FilterType } from '../db/FilterType';
 import { intersectSet } from '../utils/intersectSet';
 import { CleanedSearchQuery, FilterProductIds } from './search';
@@ -17,14 +13,11 @@ const findLoadedOptions = async (
   },
   filterProductIds: FilterProductIds,
   filterActions: FilterAdapterActions,
-  requestContext: Context
+  requestContext: Context,
 ) => {
   const { values, forceLiveCollection, productIdSet } = params;
 
-  const filterOptions =
-    (filter.type === FilterType.SWITCH && ['true', 'false']) ||
-    filter.options ||
-    [];
+  const filterOptions = (filter.type === FilterType.SWITCH && ['true', 'false']) || filter.options || [];
 
   const mappedOptions = await Promise.all(
     filterOptions.map(async (value) => {
@@ -34,13 +27,10 @@ const findLoadedOptions = async (
           values: [value],
           forceLiveCollection,
         },
-        requestContext
+        requestContext,
       );
 
-      const filteredProductIds = intersectSet(
-        productIdSet,
-        new Set(filterOptionProductIds)
-      );
+      const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
       if (!filteredProductIds.size) return null;
 
       const filteredProductsCount = filterActions.aggregateProductIds({
@@ -52,7 +42,7 @@ const findLoadedOptions = async (
         filteredProductsCount,
         isSelected: values ? values.indexOf(value) !== -1 : false,
       };
-    })
+    }),
   );
 
   return mappedOptions.filter(Boolean);
@@ -68,10 +58,9 @@ export const loadFilter = async (
   },
   filterProductIds: FilterProductIds,
   filterActions: FilterAdapterActions,
-  requestContext: Context
+  requestContext: Context,
 ) => {
-  const { allProductIds, filterQuery, forceLiveCollection, otherFilters } =
-    params;
+  const { allProductIds, filterQuery, forceLiveCollection, otherFilters } = params;
 
   const values = filterQuery[filter.key];
 
@@ -84,13 +73,10 @@ export const loadFilter = async (
       values: [undefined],
       forceLiveCollection,
     },
-    requestContext
+    requestContext,
   );
 
-  const examinedProductIdSet = intersectSet(
-    new Set(allProductIds),
-    new Set(filteredProductIds)
-  );
+  const examinedProductIdSet = intersectSet(new Set(allProductIds), new Set(filteredProductIds));
 
   // The filteredProductIdSet is a set of product id's that:
   // - Are filtered by all other filters
@@ -108,7 +94,7 @@ export const loadFilter = async (
           values: filterQuery[filter.key],
           forceLiveCollection,
         },
-        requestContext
+        requestContext,
       );
 
       return intersectSet(productIdSet, new Set(otherFilterProductIds));
@@ -121,13 +107,13 @@ export const loadFilter = async (
           values,
           forceLiveCollection,
         },
-        requestContext
+        requestContext,
       )
     : filteredProductIds;
 
   const filteredProductIdSet = intersectSet(
     filteredByOtherFiltersSet,
-    new Set(filterProductIdsForValues)
+    new Set(filterProductIdsForValues),
   );
 
   const examinedProductsCount = filterActions.aggregateProductIds({
@@ -160,7 +146,7 @@ export const loadFilter = async (
         },
         filterProductIds,
         filterActions,
-        requestContext
+        requestContext,
       );
     },
   };

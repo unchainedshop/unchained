@@ -6,8 +6,7 @@ export const ExternalWorkerPlugin: IWorkerAdapter<void, void> = {
   ...BaseWorkerPlugin,
 
   key: 'shop.unchained.worker-plugin.external',
-  label:
-    'External plugin as a placeholder for workers who interact with the system only via GraphQL',
+  label: 'External plugin as a placeholder for workers who interact with the system only via GraphQL',
   version: '1.0',
   type: 'EXTERNAL',
 

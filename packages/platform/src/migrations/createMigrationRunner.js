@@ -53,10 +53,7 @@ export const createMigrationRunner = ({
     return id > currentId;
   },
   migrateToLatest() {
-    return repository
-      .allMigrations()
-      .filter(this.isIdAfterCurrentId)
-      .map(this.operationFactory('up'));
+    return repository.allMigrations().filter(this.isIdAfterCurrentId).map(this.operationFactory('up'));
   },
   async run() {
     try {

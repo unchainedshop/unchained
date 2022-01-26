@@ -2,9 +2,7 @@ import { ProductVariationHelperTypes } from '@unchainedshop/types/products.varia
 
 export const ProductVariation: ProductVariationHelperTypes = {
   options: (obj, _, { modules }) => {
-    return (obj.options || []).map((option) =>
-      modules.products.variations.option(obj, option)
-    );
+    return (obj.options || []).map((option) => modules.products.variations.option(obj, option));
   },
 
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {

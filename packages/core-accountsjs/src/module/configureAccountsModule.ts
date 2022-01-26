@@ -1,7 +1,4 @@
-import {
-  AccountsModule,
-  AccountsSettingsOptions,
-} from '@unchainedshop/types/accounts';
+import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { v4 as uuidv4 } from 'uuid';
 import { accountsSettings } from '../accounts-settings';
@@ -22,9 +19,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
 
       const autoMessagingEnabled = options.skipMessaging
         ? false
-        : accountsSettings.autoMessagingAfterUserCreation &&
-          !!userData.email &&
-          !!userId;
+        : accountsSettings.autoMessagingAfterUserCreation && !!userData.email && !!userId;
 
       if (autoMessagingEnabled) {
         if (userData.password === undefined) {
@@ -37,27 +32,22 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     },
 
     // Email
-    addEmail: (userId, email) =>
-      accountsPassword.addEmail(userId, email, false),
+    addEmail: (userId, email) => accountsPassword.addEmail(userId, email, false),
     removeEmail: (userId, email) => accountsPassword.removeEmail(userId, email),
     updateEmail: async (userId, email, user) => {
-      log(
-        'user.updateEmail is deprecated, please use user.addEmail and user.removeEmail',
-        { level: LogLevel.Warning }
-      );
+      log('user.updateEmail is deprecated, please use user.addEmail and user.removeEmail', {
+        level: LogLevel.Warning,
+      });
 
       await accountsPassword.addEmail(userId, email, false);
       await Promise.all(
         (user.emails || [])
-          .filter(
-            ({ address }) => address.toLowerCase() !== email.toLowerCase()
-          )
-          .map(({ address }) => accountsPassword.removeEmail(userId, address))
+          .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
+          .map(({ address }) => accountsPassword.removeEmail(userId, address)),
       );
     },
 
-    findUnverifiedUserByToken: (token) =>
-      dbManager.findUserByEmailVerificationToken(token),
+    findUnverifiedUserByToken: (token) => dbManager.findUserByEmailVerificationToken(token),
 
     sendVerificationEmail: accountsPassword.sendVerificationEmail,
     sendEnrollmentEmail: accountsPassword.sendEnrollmentEmail,
@@ -67,8 +57,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     createLoginToken: async (userId, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
 
-      const { user: tokenUser, token: loginToken } =
-        await accountsServer.loginWithUser(userId);
+      const { user: tokenUser, token: loginToken } = await accountsServer.loginWithUser(userId);
 
       await accountsServer.getHooks().emit('LoginTokenCreated', {
         userId: tokenUser,
@@ -83,14 +72,16 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
       };
     },
 
-    createHashLoginToken: (loginToken) =>
-      accountsServer.hashLoginToken(loginToken),
+    createHashLoginToken: (loginToken) => accountsServer.hashLoginToken(loginToken),
 
     loginWithService: async (params, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
 
-      const { user: tokenUser, token: loginToken } =
-        await accountsServer.loginWithService(params.service, params, context);
+      const { user: tokenUser, token: loginToken } = await accountsServer.loginWithService(
+        params.service,
+        params,
+        context,
+      );
 
       await accountsServer.getHooks().emit('LoginTokenCreated', {
         userId: tokenUser._id,
@@ -122,10 +113,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
 
     // User management
     setUsername: (_id, username) => dbManager.setUsername(_id, username),
-    setPassword: async (
-      userId,
-      { newPassword: newHashedPassword, newPlainPassword }
-    ) => {
+    setPassword: async (userId, { newPassword: newHashedPassword, newPlainPassword }) => {
       const newPassword =
         newHashedPassword ||
         (newPlainPassword && hashPassword(newPlainPassword)) ||
@@ -141,7 +129,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
         newPlainPassword,
         oldPassword: oldHashedPassword,
         oldPlainPassword,
-      }
+      },
     ) => {
       const newPassword = newHashedPassword || hashPassword(newPlainPassword);
       const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
@@ -171,10 +159,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
           return false;
         }),
 
-    resetPassword: async (
-      { newPassword: newHashedPassword, newPlainPassword, token },
-      context
-    ) => {
+    resetPassword: async ({ newPassword: newHashedPassword, newPlainPassword, token }, context) => {
       const user = await dbManager.findUserByResetPasswordToken(token);
 
       const newPassword = newHashedPassword || hashPassword(newPlainPassword);
@@ -190,11 +175,7 @@ export const configureAccountsModule = async (): Promise<AccountsModule> => {
     },
 
     enableTOTP: async (userId, secret, code) => {
-      await accountsPassword.twoFactor.set(
-        userId,
-        { base32: secret } as any,
-        code
-      );
+      await accountsPassword.twoFactor.set(userId, { base32: secret } as any, code);
       return true;
     },
 

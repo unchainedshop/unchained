@@ -30,101 +30,85 @@ const stripe = require('stripe')(STRIPE_SECRET);
 
 useMiddlewareWithCurrentContext(
   STRIPE_CHARGES_WEBHOOK_PATH,
-  bodyParser.raw({ type: 'application/json' })
+  bodyParser.raw({ type: 'application/json' }),
 );
 
-useMiddlewareWithCurrentContext(
-  STRIPE_CHARGES_WEBHOOK_PATH,
-  async (request, response) => {
-    const requestContext = request.unchainedContext as Context;
-    const { modules } = requestContext;
+useMiddlewareWithCurrentContext(STRIPE_CHARGES_WEBHOOK_PATH, async (request, response) => {
+  const requestContext = request.unchainedContext as Context;
+  const { modules } = requestContext;
 
-    const sig = request.headers['stripe-signature'];
-    let event;
+  const sig = request.headers['stripe-signature'];
+  let event;
 
-    try {
-      event = stripe.webhooks.constructEvent(
-        request.body,
-        sig,
-        STRIPE_CHARGES_ENDPOINT_SECRET
-      );
-    } catch (err) {
-      response.writeHead(400);
-      response.end(`Webhook Error: ${err.message}`);
-      return;
-    }
-
-    try {
-      if (event.type === 'source.chargeable') {
-        const source = event.data.object;
-        // eslint-disable-next-line
-        const orderPaymentId = source.metadata?.orderPaymentId;
-        const orderPayment = await modules.orders.payments.findOrderPayment({
-          orderPaymentId,
-        });
-        const order = await modules.orders.findOrder({
-          orderId: orderPayment.orderId,
-        });
-        const paymentContext = {
-          stripeToken: source,
-        };
-        if (modules.orders.isCart(order)) {
-          await modules.orders.checkout(
-            order,
-            {
-              paymentContext,
-            },
-            requestContext
-          );
-          paymentLogger.info(
-            `Stripe Webhook: Unchained checked out order ${order.orderNumber}`,
-            { orderId: order._id }
-          );
-        } else {
-          await modules.orders.payments.charge(
-            orderPayment._id,
-            paymentContext,
-            requestContext
-          );
-          paymentLogger.info(
-            `Stripe Webhook: Unchained initiated payment for order ${order.orderNumber}`,
-            { orderId: order._id }
-          );
-        }
-      } else if (event.type === 'charge.succeeded') {
-        const charge = event.data.object;
-        // eslint-disable-next-line
-        const orderPaymentId = charge.metadata?.orderPaymentId;
-        const orderPayment = await modules.orders.payments.findOrderPayment({
-          orderPaymentId,
-        });
-        const order = await modules.orders.findOrder({
-          orderId: orderPayment.orderId,
-        });
-        await modules.orders.payments.markAsPaid(
-          orderPayment,
-          charge,
-          requestContext.userId
-        );
-        paymentLogger.info(
-          `Stripe Webhook: Unchained marked payment as paid for order ${order.orderNumber}`,
-          { orderId: order._id }
-        );
-      } else {
-        response.writeHead(404);
-        response.end();
-        return;
-      }
-    } catch (err) {
-      response.writeHead(400);
-      response.end(`Webhook Error: ${err.message}`);
-      return;
-    }
-
-    // Return a 200 response to acknowledge receipt of the event
-    response.end(JSON.stringify({ received: true }));
+  try {
+    event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_CHARGES_ENDPOINT_SECRET);
+  } catch (err) {
+    response.writeHead(400);
+    response.end(`Webhook Error: ${err.message}`);
+    return;
   }
-);
+
+  try {
+    if (event.type === 'source.chargeable') {
+      const source = event.data.object;
+      // eslint-disable-next-line
+        const orderPaymentId = source.metadata?.orderPaymentId;
+      const orderPayment = await modules.orders.payments.findOrderPayment({
+        orderPaymentId,
+      });
+      const order = await modules.orders.findOrder({
+        orderId: orderPayment.orderId,
+      });
+      const paymentContext = {
+        stripeToken: source,
+      };
+      if (modules.orders.isCart(order)) {
+        await modules.orders.checkout(
+          order,
+          {
+            paymentContext,
+          },
+          requestContext,
+        );
+        paymentLogger.info(`Stripe Webhook: Unchained checked out order ${order.orderNumber}`, {
+          orderId: order._id,
+        });
+      } else {
+        await modules.orders.payments.charge(orderPayment._id, paymentContext, requestContext);
+        paymentLogger.info(
+          `Stripe Webhook: Unchained initiated payment for order ${order.orderNumber}`,
+          { orderId: order._id },
+        );
+      }
+    } else if (event.type === 'charge.succeeded') {
+      const charge = event.data.object;
+      // eslint-disable-next-line
+        const orderPaymentId = charge.metadata?.orderPaymentId;
+      const orderPayment = await modules.orders.payments.findOrderPayment({
+        orderPaymentId,
+      });
+      const order = await modules.orders.findOrder({
+        orderId: orderPayment.orderId,
+      });
+      await modules.orders.payments.markAsPaid(orderPayment, charge, requestContext.userId);
+      paymentLogger.info(
+        `Stripe Webhook: Unchained marked payment as paid for order ${order.orderNumber}`,
+        { orderId: order._id },
+      );
+    } else {
+      response.writeHead(404);
+      response.end();
+      return;
+    }
+  } catch (err) {
+    response.writeHead(400);
+    response.end(`Webhook Error: ${err.message}`);
+    return;
+  }
+
+  // Return a 200 response to acknowledge receipt of the event
+  response.end(JSON.stringify({ received: true }));
+});
 
 const StripeCharges: IPaymentAdapter = {
   ...PaymentAdapter,
@@ -163,10 +147,9 @@ const StripeCharges: IPaymentAdapter = {
         { stripeToken, stripeCustomerId } = {
           stripeToken: undefined,
           stripeCustomerId: undefined,
-        }
+        },
       ) => {
-        if (!stripeToken)
-          throw new Error('You have to provide stripeToken in paymentContext');
+        if (!stripeToken) throw new Error('You have to provide stripeToken in paymentContext');
 
         const pricing = PaymentPricingSheet({
           calculation: params.context.orderPayment.calculation,
@@ -186,20 +169,14 @@ const StripeCharges: IPaymentAdapter = {
           },
           {
             idempotencyKey: params.context.order.paymentId,
-          }
+          },
         );
 
         if (stripeChargeReceipt.status === 'succeeded') {
-          paymentLogger.info(
-            `Stripe Plugin: Successfully charged ${stripeToken}`,
-            stripeChargeReceipt
-          );
+          paymentLogger.info(`Stripe Plugin: Successfully charged ${stripeToken}`, stripeChargeReceipt);
           return stripeChargeReceipt;
         }
-        paymentLogger.warn(
-          `Stripe Plugin: Failed Charge for ${stripeToken}`,
-          stripeChargeReceipt
-        );
+        paymentLogger.warn(`Stripe Plugin: Failed Charge for ${stripeToken}`, stripeChargeReceipt);
         return false;
       },
     };

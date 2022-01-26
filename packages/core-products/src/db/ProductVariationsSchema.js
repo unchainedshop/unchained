@@ -16,7 +16,7 @@ export const ProductVariationsSchema = new SimpleSchema(
     authorId: { type: String, required: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );
 
 export const ProductVariationTextsSchema = new SimpleSchema(
@@ -32,5 +32,5 @@ export const ProductVariationTextsSchema = new SimpleSchema(
     authorId: { type: String, required: true },
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

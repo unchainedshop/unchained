@@ -1,13 +1,7 @@
-import {
-  AssortmentLink,
-  AssortmentsModule,
-} from '@unchainedshop/types/assortments';
+import { AssortmentLink, AssortmentsModule } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbObjectId,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbObjectId } from 'meteor/unchained:utils';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',
@@ -26,16 +20,12 @@ export const configureAssortmentLinksModule = ({
 
   return {
     // Queries
-    findLink: async ({
-      assortmentLinkId,
-      parentAssortmentId,
-      childAssortmentId,
-    }) => {
+    findLink: async ({ assortmentLinkId, parentAssortmentId, childAssortmentId }) => {
       return AssortmentLinks.findOne(
         assortmentLinkId
           ? generateDbFilterById(assortmentLinkId)
           : { parentAssortmentId, childAssortmentId },
-        {}
+        {},
       );
     },
 
@@ -45,17 +35,14 @@ export const configureAssortmentLinksModule = ({
             parentAssortmentId,
           }
         : {
-            $or: [
-              { parentAssortmentId: assortmentId },
-              { childAssortmentId: assortmentId },
-            ],
+            $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
           };
 
       const links = AssortmentLinks.find(
         selector,
         options || {
           sort: { sortKey: 1 },
-        }
+        },
       );
 
       return links.toArray();
@@ -63,12 +50,7 @@ export const configureAssortmentLinksModule = ({
 
     // Mutations
     create: async (doc, options, userId) => {
-      const {
-        _id: assortmentLinkId,
-        parentAssortmentId,
-        childAssortmentId,
-        ...rest
-      } = doc;
+      const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, ...rest } = doc;
 
       const selector = {
         ...(assortmentLinkId ? generateDbFilterById(assortmentLinkId) : {}),
@@ -93,7 +75,7 @@ export const configureAssortmentLinksModule = ({
         // Get next sort key
         const lastAssortmentLink = (await AssortmentLinks.findOne(
           { parentAssortmentId },
-          { sort: { sortKey: -1 } }
+          { sort: { sortKey: -1 } },
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentLink.sortKey + 1;
       } else {
@@ -108,7 +90,7 @@ export const configureAssortmentLinksModule = ({
         },
         {
           upsert: true,
-        }
+        },
       );
 
       const assortmentLink = await AssortmentLinks.findOne(selector, {});
@@ -176,19 +158,16 @@ export const configureAssortmentLinksModule = ({
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedAssortmentLinkIds = await Promise.all(
         sortKeys.map(async ({ assortmentLinkId, sortKey }) => {
-          await AssortmentLinks.updateOne(
-            generateDbFilterById(assortmentLinkId),
-            {
-              $set: {
-                sortKey: sortKey + 1,
-                updated: new Date(),
-                updatedBy: userId,
-              },
-            }
-          );
+          await AssortmentLinks.updateOne(generateDbFilterById(assortmentLinkId), {
+            $set: {
+              sortKey: sortKey + 1,
+              updated: new Date(),
+              updatedBy: userId,
+            },
+          });
 
           return assortmentLinkId;
-        })
+        }),
       );
 
       const assortmentLinks = await AssortmentLinks.find({

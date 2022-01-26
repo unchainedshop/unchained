@@ -5,7 +5,7 @@ import { InvalidIdError } from '../../../errors';
 export default async function order(
   root: Root,
   { orderId }: { orderId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`query order ${orderId}`, { userId, orderId });
 

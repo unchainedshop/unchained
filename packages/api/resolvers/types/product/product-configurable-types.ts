@@ -14,11 +14,7 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
     });
   },
 
-  catalogPriceRange: async (
-    obj,
-    { quantity, vectors, currency, includeInactive },
-    requestContext
-  ) => {
+  catalogPriceRange: async (obj, { quantity, vectors, currency, includeInactive }, requestContext) => {
     const { countryContext, modules } = requestContext;
 
     return modules.products.prices.catalogPriceRange(
@@ -30,14 +26,14 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
         country: countryContext,
         currency,
       },
-      requestContext
+      requestContext,
     );
   },
 
   async simulatedPriceRange(
     obj,
     { currency, quantity, useNetPrice, vectors, includeInactive },
-    requestContext
+    requestContext,
   ) {
     const { countryContext, modules } = requestContext;
     return modules.products.prices.simulatedPriceRange(
@@ -50,7 +46,7 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
         vectors,
         includeInactive,
       },
-      requestContext
+      requestContext,
     );
   },
 };

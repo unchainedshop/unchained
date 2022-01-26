@@ -1,8 +1,5 @@
 import { IDiscountAdapter } from '@unchainedshop/types/discount';
-import {
-  OrderDiscountDirector,
-  OrderDiscountAdapter,
-} from 'meteor/unchained:core-orders';
+import { OrderDiscountDirector, OrderDiscountAdapter } from 'meteor/unchained:core-orders';
 
 const HundredOff: IDiscountAdapter = {
   ...OrderDiscountAdapter,

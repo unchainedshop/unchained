@@ -1,8 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  Country,
-  ResolveDefaultCurrencyCodeService,
-} from '@unchainedshop/types/countries';
+import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries';
 import { Modules } from '@unchainedshop/types/modules';
 import LRU from 'lru-cache';
 
@@ -28,16 +25,18 @@ const getDefaultCurrency = async (modules: Modules, country?: Country) => {
   return null;
 };
 
-export const resolveDefaultCurrencyCodeService: ResolveDefaultCurrencyCodeService =
-  async ({ isoCode }, { modules }) => {
-    const currencyCode = currencyCodeCache.get(isoCode);
-    if (currencyCode) return currencyCode;
+export const resolveDefaultCurrencyCodeService: ResolveDefaultCurrencyCodeService = async (
+  { isoCode },
+  { modules },
+) => {
+  const currencyCode = currencyCodeCache.get(isoCode);
+  if (currencyCode) return currencyCode;
 
-    const country = await modules.countries.findCountry({ isoCode });
-    const currency = await getDefaultCurrency(modules, country);
+  const country = await modules.countries.findCountry({ isoCode });
+  const currency = await getDefaultCurrency(modules, country);
 
-    const liveCurrencyCode = currency?.isoCode || UNCHAINED_CURRENCY || 'CHF';
-    currencyCodeCache.set(isoCode, liveCurrencyCode);
+  const liveCurrencyCode = currency?.isoCode || UNCHAINED_CURRENCY || 'CHF';
+  currencyCodeCache.set(isoCode, liveCurrencyCode);
 
-    return liveCurrencyCode;
-  };
+  return liveCurrencyCode;
+};

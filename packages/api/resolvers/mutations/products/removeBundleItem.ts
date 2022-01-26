@@ -1,16 +1,12 @@
 import { log } from 'meteor/unchained:logger';
 import { ProductTypes } from 'meteor/unchained:core-products';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  ProductNotFoundError,
-  InvalidIdError,
-  ProductWrongTypeError,
-} from '../../../errors';
+import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors';
 
 export default async function removeBundleItem(
   root: Root,
   { productId, index }: { productId: string; index: number },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation removeBundleItem ${productId}`, { index });
 

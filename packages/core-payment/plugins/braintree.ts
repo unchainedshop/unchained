@@ -75,8 +75,7 @@ const BraintreeDirect: IPaymentAdapter = {
 
       configurationError: async () => {
         const publicCredentialsValid =
-          getAccessToken() ||
-          (getMerchantId() && getPublicKey() && getPrivateKey());
+          getAccessToken() || (getMerchantId() && getPublicKey() && getPrivateKey());
 
         if (!publicCredentialsValid) {
           return PaymentError.WRONG_CREDENTIALS;
@@ -106,16 +105,12 @@ const BraintreeDirect: IPaymentAdapter = {
       charge: async ({ paypalPaymentMethodNonce }) => {
         const { order, modules } = params.context;
         if (!paypalPaymentMethodNonce)
-          throw new Error(
-            'You have to provide paypalPaymentMethodNonce in paymentContext'
-          );
+          throw new Error('You have to provide paypalPaymentMethodNonce in paymentContext');
         const braintree = require('braintree'); // eslint-disable-line
         const gateway = getGateway(braintree);
         const address = order.billingAddress || {};
         const pricing = modules.orders.pricingSheet(order);
-        const rounded =
-          Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) *
-          10;
+        const rounded = Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) * 10;
         const saleRequest = {
           amount: rounded / 100,
           merchantAccountId: order.currency,
@@ -138,10 +133,7 @@ const BraintreeDirect: IPaymentAdapter = {
         };
         const result = await gateway.transaction.sale(saleRequest);
         if (result.success) {
-          paymentLogger.info(
-            `Braintree Plugin: ${result.message}`,
-            saleRequest
-          );
+          paymentLogger.info(`Braintree Plugin: ${result.message}`, saleRequest);
           return result;
         }
         paymentLogger.warn(`Braintree Plugin: ${result.message}`, saleRequest);

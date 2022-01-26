@@ -19,7 +19,7 @@ export const PaymentCredentials: PaymentCredentialsHelperTypes = {
     return modules.payment.paymentProviders.validate(
       obj.paymentProviderId,
       { paymentProviderId: obj.paymentProviderId, userId, token: obj },
-      context
+      context,
     );
   },
 };

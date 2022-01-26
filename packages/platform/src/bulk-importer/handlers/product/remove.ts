@@ -1,10 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 
-export default async function removeProduct(
-  payload: any,
-  { logger },
-  unchainedAPI: Context
-) {
+export default async function removeProduct(payload: any, { logger }, unchainedAPI: Context) {
   const { modules, userId } = unchainedAPI;
   const { _id } = payload;
   logger.debug('remove product');

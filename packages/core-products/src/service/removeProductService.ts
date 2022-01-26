@@ -1,10 +1,7 @@
 import { RemoveProductService } from '@unchainedshop/types/products';
 import { ProductStatus } from '../db/ProductStatus';
 
-export const removeProductService: RemoveProductService = async (
-  { productId },
-  { modules, userId }
-) => {
+export const removeProductService: RemoveProductService = async ({ productId }, { modules, userId }) => {
   const product = await modules.products.findProduct({ productId });
   switch (product.status) {
     case ProductStatus.ACTIVE:

@@ -1,9 +1,5 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import {
-  PaymentDirector,
-  PaymentAdapter,
-  PaymentProviderType,
-} from 'meteor/unchained:core-payment';
+import { PaymentDirector, PaymentAdapter, PaymentProviderType } from 'meteor/unchained:core-payment';
 
 const InvoicePrepaid: IPaymentAdapter = {
   ...PaymentAdapter,

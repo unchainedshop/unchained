@@ -5,15 +5,7 @@ import { UserNotFoundError } from '../../../errors';
 export default async function heartbeat(
   root: Root,
   _: any,
-  {
-    countryContext,
-    localeContext,
-    modules,
-    remoteAddress,
-    remotePort,
-    userAgent,
-    userId,
-  }: Context
+  { countryContext, localeContext, modules, remoteAddress, remotePort, userAgent, userId }: Context,
 ) {
   log(`mutation updateHeartbeat ${remoteAddress}`, { userId });
 

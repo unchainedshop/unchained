@@ -5,7 +5,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function createProduct(
   root: Root,
   { product }: { product: Product & { title: string } },
-  { modules, userId, localeContext }: Context
+  { modules, userId, localeContext }: Context,
 ) {
   log('mutation createProduct', { userId });
 
@@ -15,6 +15,6 @@ export default async function createProduct(
       authorId: userId,
       locale: localeContext.language,
     },
-    userId
+    userId,
   );
 }

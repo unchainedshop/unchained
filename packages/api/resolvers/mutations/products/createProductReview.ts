@@ -6,11 +6,8 @@ import { InvalidIdError, ProductNotFoundError } from '../../../errors';
 
 export default async function createProductReview(
   root: Root,
-  {
-    productId,
-    productReview,
-  }: { productId: string; productReview: ProductReview },
-  { modules, userId }: Context
+  { productId, productReview }: { productId: string; productReview: ProductReview },
+  { modules, userId }: Context,
 ) {
   log('mutation createProductReview', { userId, productId });
 
@@ -25,6 +22,6 @@ export default async function createProductReview(
       authorId: userId,
       ...productReview,
     },
-    userId
+    userId,
   );
 }

@@ -8,11 +8,7 @@ import {
 
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
 
-const {
-  PAYPAL_CLIENT_ID,
-  PAYPAL_SECRET,
-  PAYPAL_ENVIRONMENT = 'sandbox',
-} = process.env;
+const { PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_ENVIRONMENT = 'sandbox' } = process.env;
 
 /**
  *
@@ -77,18 +73,12 @@ const PaypalCheckout: IPaymentAdapter = {
         }
 
         try {
-          const request = new checkoutNodeJssdk.orders.OrdersGetRequest(
-            orderID
-          );
-          const client = new checkoutNodeJssdk.core.PayPalHttpClient(
-            environment()
-          );
+          const request = new checkoutNodeJssdk.orders.OrdersGetRequest(orderID);
+          const client = new checkoutNodeJssdk.core.PayPalHttpClient(environment());
           const paypalOrder = await client.execute(request);
 
           const pricing = modules.orders.pricingSheet(order);
-          const ourTotal = (
-            pricing.total({ useNetPrice: false }).amount / 100
-          ).toFixed(2);
+          const ourTotal = (pricing.total({ useNetPrice: false }).amount / 100).toFixed(2);
           const paypalTotal = paypalOrder.result.purchase_units[0].amount.value;
 
           if (ourTotal === paypalTotal) {
@@ -98,13 +88,10 @@ const PaypalCheckout: IPaymentAdapter = {
 
           paymentLogger.warn(
             'Paypal Native Plugin: Missmatch PAYPAL ORDER',
-            JSON.stringify(paypalOrder.result, null, 2)
+            JSON.stringify(paypalOrder.result, null, 2),
           );
 
-          paymentLogger.debug(
-            'Paypal Native Plugin: OUR ORDER',
-            params.context.order
-          );
+          paymentLogger.debug('Paypal Native Plugin: OUR ORDER', params.context.order);
           paymentLogger.debug('Paypal Native Plugin: OUR PRICE', pricing);
 
           throw new Error(`Payment mismatch`);

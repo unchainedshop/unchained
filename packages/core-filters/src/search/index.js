@@ -135,11 +135,7 @@ import { FilterDirector } from '../director';
 //   };
 // };
 
-const searchAssortments = async ({
-  query: rawQuery,
-  forceLiveCollection,
-  context,
-}) => {
+const searchAssortments = async ({ query: rawQuery, forceLiveCollection, context }) => {
   const query = cleanQuery(rawQuery);
   const filterSelector = resolveFilterSelector(query);
   const assortmentSelector = resolveAssortmentSelector(query);
@@ -154,9 +150,7 @@ const searchAssortments = async ({
     forceLiveCollection,
   };
 
-  const totalAssortmentIds = assortmentFulltextSearch(searchConfiguration)(
-    query?.productIds
-  );
+  const totalAssortmentIds = assortmentFulltextSearch(searchConfiguration)(query?.productIds);
 
   return {
     totalAssortments: async () =>
@@ -170,15 +164,11 @@ const searchAssortments = async ({
         _id: { $in: await totalAssortmentIds },
       }).count(),
     assortments: async ({ offset, limit }) =>
-      findPreservingIds(Assortments)(
-        await assortmentSelector,
-        await totalAssortmentIds,
-        {
-          skip: offset,
-          limit,
-          sort: await sortStage,
-        }
-      ),
+      findPreservingIds(Assortments)(await assortmentSelector, await totalAssortmentIds, {
+        skip: offset,
+        limit,
+        sort: await sortStage,
+      }),
   };
 };
 

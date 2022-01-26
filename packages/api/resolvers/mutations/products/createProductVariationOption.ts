@@ -8,7 +8,7 @@ export default async function createProductVariationOption(
     option: { value: string; title: string };
     productVariationId: string;
   },
-  { modules, localeContext, userId }: Context
+  { modules, localeContext, userId }: Context,
 ) {
   const { option: inputData, productVariationId } = params;
 
@@ -21,12 +21,11 @@ export default async function createProductVariationOption(
   const variation = await modules.products.variations.findProductVariation({
     productVariationId,
   });
-  if (!variation)
-    throw new ProductVariationNotFoundError({ productVariationId });
+  if (!variation) throw new ProductVariationNotFoundError({ productVariationId });
 
   return modules.products.variations.addVariationOption(
     productVariationId,
     { inputData, localeContext },
-    userId
+    userId,
   );
 }

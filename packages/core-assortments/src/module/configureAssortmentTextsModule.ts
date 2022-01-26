@@ -1,8 +1,4 @@
-import {
-  Assortment,
-  AssortmentsModule,
-  AssortmentText,
-} from '@unchainedshop/types/assortments';
+import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
@@ -45,7 +41,7 @@ export const configureAssortmentTextsModule = ({
     assortmentId: string,
     locale: string,
     text: AssortmentText,
-    userId?: string
+    userId?: string,
   ) => {
     const { slug: textSlug, locale: textLocale, ...textFields } = text;
     const slug = await makeSlug({
@@ -106,12 +102,12 @@ export const configureAssortmentTextsModule = ({
           $pull: {
             slugs: slug,
           },
-        }
+        },
       );
     }
 
     return AssortmentTexts.findOne(
-      updateResult.upsertedId ? { _id: updateResult.upsertedId._id } : selector
+      updateResult.upsertedId ? { _id: updateResult.upsertedId._id } : selector,
     );
   };
 
@@ -129,7 +125,7 @@ export const configureAssortmentTextsModule = ({
       const text = await findLocalizedText<AssortmentText>(
         AssortmentTexts,
         { assortmentId },
-        parsedLocale
+        parsedLocale,
       );
 
       return text;
@@ -142,7 +138,7 @@ export const configureAssortmentTextsModule = ({
           projection: {
             assortmentId: 1,
           },
-        }
+        },
       ).map(({ assortmentId }) => assortmentId);
 
       return assortmentIds.toArray();
@@ -160,9 +156,9 @@ export const configureAssortmentTextsModule = ({
                   ...text,
                   authorId: userId,
                 },
-                userId
-              )
-            )
+                userId,
+              ),
+            ),
           )
         : [];
 

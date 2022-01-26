@@ -5,7 +5,7 @@ import { UserNotFoundError, InvalidIdError } from '../../../errors';
 export default async function setUsername(
   root: Root,
   params: { username: string; userId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const normalizedUserId = params.userId || userId;
 

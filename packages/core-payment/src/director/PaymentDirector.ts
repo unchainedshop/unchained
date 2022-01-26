@@ -1,7 +1,4 @@
-import {
-  IPaymentAdapter,
-  IPaymentDirector,
-} from '@unchainedshop/types/payments';
+import { IPaymentAdapter, IPaymentDirector } from '@unchainedshop/types/payments';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { paymentLogger } from '../payment-logger';
 import { PaymentError } from './PaymentError';
@@ -15,9 +12,7 @@ export const PaymentDirector: IPaymentDirector = {
     const Adapter = baseDirector.getAdapter(paymentProvider.adapterKey);
 
     if (!Adapter) {
-      throw new Error(
-        `Payment Plugin ${paymentProvider.adapterKey} not available`
-      );
+      throw new Error(`Payment Plugin ${paymentProvider.adapterKey} not available`);
     }
 
     const adapter = Adapter.actions({

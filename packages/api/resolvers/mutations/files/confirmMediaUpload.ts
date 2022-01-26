@@ -5,17 +5,13 @@ import { UserNotFoundError } from '../../../errors';
 export default async function confirmMediaUpload(
   root: Root,
   { mediaUploadTicketId, size, type },
-  context: Context
+  context: Context,
 ) {
   const { modules, services, userId } = context;
 
   log(`mutation confirmMediaUpload `, { userId });
 
-  if (!(await modules.users.userExists({ userId })))
-    throw new UserNotFoundError({ userId });
+  if (!(await modules.users.userExists({ userId }))) throw new UserNotFoundError({ userId });
 
-  return services.files.linkFile(
-    { fileId: mediaUploadTicketId, size, type },
-    context
-  );
+  return services.files.linkFile({ fileId: mediaUploadTicketId, size, type }, context);
 }

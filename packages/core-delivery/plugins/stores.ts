@@ -1,9 +1,5 @@
 import { IDeliveryAdapter } from '@unchainedshop/types/delivery';
-import {
-  DeliveryAdapter,
-  DeliveryDirector,
-  DeliveryProviderType,
-} from 'meteor/unchained:core-delivery';
+import { DeliveryAdapter, DeliveryDirector, DeliveryProviderType } from 'meteor/unchained:core-delivery';
 
 const PickMup: IDeliveryAdapter = {
   ...DeliveryAdapter,

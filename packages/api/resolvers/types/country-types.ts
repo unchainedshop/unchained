@@ -2,11 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { Country as CountryType } from '@unchainedshop/types/countries';
 import { Currency } from '@unchainedshop/types/currencies';
 
-type HelperType<P, T> = (
-  country: CountryType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (country: CountryType, params: P, context: Context) => T;
 
 export interface CountryHelperTypes {
   flagEmoji: HelperType<never, string>;
@@ -32,9 +28,6 @@ export const Country: CountryHelperTypes = {
     return modules.countries.isBase(country);
   },
   name: (country, { forceLocale }, { localeContext, modules }) => {
-    return modules.countries.name(
-      country,
-      forceLocale || localeContext.language
-    );
+    return modules.countries.name(country, forceLocale || localeContext.language);
   },
 };

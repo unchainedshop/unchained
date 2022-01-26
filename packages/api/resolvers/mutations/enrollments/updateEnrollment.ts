@@ -3,11 +3,7 @@ import { EnrollmentStatus } from 'meteor/unchained:core-enrollments';
 import { Context, Root } from '@unchainedshop/types/api';
 import { EnrollmentPlan, Enrollment } from '@unchainedshop/types/enrollments';
 import { Address, Contact } from '@unchainedshop/types/common';
-import {
-  EnrollmentNotFoundError,
-  EnrollmentWrongStatusError,
-  InvalidIdError,
-} from '../../../errors';
+import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors';
 
 type UpdateEnrollmentParams = {
   enrollmentId: string;
@@ -21,18 +17,10 @@ type UpdateEnrollmentParams = {
 export default async function updateEnrollment(
   root: Root,
   params: UpdateEnrollmentParams,
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
-  const {
-    billingAddress,
-    contact,
-    delivery,
-    enrollmentId,
-    meta,
-    payment,
-    plan,
-  } = params;
+  const { billingAddress, contact, delivery, enrollmentId, meta, payment, plan } = params;
 
   log('mutation updateEnrollment', { userId });
 
@@ -50,57 +38,33 @@ export default async function updateEnrollment(
   }
 
   if (meta) {
-    enrollment = await modules.enrollments.updateContext(
-      enrollmentId,
-      meta,
-      userId
-    );
+    enrollment = await modules.enrollments.updateContext(enrollmentId, meta, userId);
   }
 
   if (billingAddress) {
-    enrollment = await modules.enrollments.updateBillingAddress(
-      enrollmentId,
-      billingAddress,
-      userId
-    );
+    enrollment = await modules.enrollments.updateBillingAddress(enrollmentId, billingAddress, userId);
   }
 
   if (contact) {
-    enrollment = await modules.enrollments.updateContact(
-      enrollmentId,
-      contact,
-      userId
-    );
+    enrollment = await modules.enrollments.updateContact(enrollmentId, contact, userId);
   }
 
   if (payment) {
-    enrollment = await modules.enrollments.updatePayment(
-      enrollmentId,
-      payment,
-      userId
-    );
+    enrollment = await modules.enrollments.updatePayment(enrollmentId, payment, userId);
   }
 
   if (delivery) {
-    enrollment = await modules.enrollments.updateDelivery(
-      enrollmentId,
-      delivery,
-      userId
-    );
+    enrollment = await modules.enrollments.updateDelivery(enrollmentId, delivery, userId);
   }
 
   if (plan) {
     if (enrollment.status !== EnrollmentStatus.INITIAL) {
       // If Enrollment is not initial, forcefully add a new Period that OVERLAPS the existing periods
       throw new Error(
-        'TODO: Unchained currently does not support order splitting for enrollments, therefore updates to quantity, product and configuration of a enrollment is forbidden for non initial enrollments'
+        'TODO: Unchained currently does not support order splitting for enrollments, therefore updates to quantity, product and configuration of a enrollment is forbidden for non initial enrollments',
       );
     }
-    enrollment = await modules.enrollments.updatePlan(
-      enrollmentId,
-      plan,
-      context
-    );
+    enrollment = await modules.enrollments.updatePlan(enrollmentId, plan, context);
   }
 
   return enrollment;

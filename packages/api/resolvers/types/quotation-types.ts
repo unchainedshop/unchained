@@ -6,11 +6,7 @@ import { Country } from '@unchainedshop/types/countries';
 import { Currency } from '@unchainedshop/types/currencies';
 import { File } from '@unchainedshop/types/files';
 
-type HelperType<P, T> = (
-  quotation: QuotationType,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (quotation: QuotationType, params: P, context: Context) => T;
 
 type QuotationHelperTypes = {
   country: HelperType<never, Promise<Country>>;
@@ -23,11 +19,9 @@ type QuotationHelperTypes = {
 };
 
 export const Quotation: QuotationHelperTypes = {
-  country: async (obj, _, { modules }) =>
-    modules.countries.findCountry({ isoCode: obj.countryCode }),
+  country: async (obj, _, { modules }) => modules.countries.findCountry({ isoCode: obj.countryCode }),
 
-  currency: async (obj, _, { modules }) =>
-    modules.currencies.findCurrency({ isoCode: obj.currency }),
+  currency: async (obj, _, { modules }) => modules.currencies.findCurrency({ isoCode: obj.currency }),
 
   documents: (obj, { type }, { modules }) =>
     modules.files.findFilesByMetaData(
@@ -41,7 +35,7 @@ export const Quotation: QuotationHelperTypes = {
         sort: {
           'meta.date': -1,
         },
-      }
+      },
     ),
 
   isExpired: (obj, { referenceDate }, { modules }) =>

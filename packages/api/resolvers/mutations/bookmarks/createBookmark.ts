@@ -1,15 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  BookmarkAlreadyExistsError,
-  InvalidIdError,
-  ProductNotFoundError,
-} from '../../../errors';
+import { BookmarkAlreadyExistsError, InvalidIdError, ProductNotFoundError } from '../../../errors';
 
 export default async function createBookmark(
   root: Root,
   { productId, userId }: { productId: string; userId: string },
-  { modules, userId: currenctUserId }: Context
+  { modules, userId: currenctUserId }: Context,
 ) {
   log(`mutation createBookmark for ${userId}`, {
     productId,
@@ -24,15 +20,14 @@ export default async function createBookmark(
     userId,
   });
 
-  if (bookmark)
-    throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });
+  if (bookmark) throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });
 
   const bookmarkId = await modules.bookmarks.create(
     {
       userId,
       productId,
     },
-    currenctUserId
+    currenctUserId,
   );
 
   return modules.bookmarks.findById(bookmarkId);

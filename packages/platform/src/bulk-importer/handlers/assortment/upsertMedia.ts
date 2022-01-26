@@ -2,16 +2,12 @@ import { Context } from '@unchainedshop/types/api';
 import { AssortmentMediaText } from '@unchainedshop/types/assortments.media';
 import { File } from '@unchainedshop/types/files';
 
-const upsertAsset = async (
-  asset: File & { fileName: string },
-  unchainedAPI: Context
-) => {
+const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Context) => {
   const { modules, userId } = unchainedAPI;
   const { _id, fileName, url, ...assetData } = asset;
   const fileId = _id;
   try {
-    if (_id && (await modules.files.findFile({ fileId })))
-      throw new Error('Media already exists');
+    if (_id && (await modules.files.findFile({ fileId }))) throw new Error('Media already exists');
 
     const assetObject = await modules.files.uploadFileFromURL(
       'assortment-media',
@@ -21,7 +17,7 @@ const upsertAsset = async (
       },
       {
         fileId,
-      }
+      },
     );
 
     if (!assetObject) throw new Error('Media not created');
@@ -42,10 +38,7 @@ const upsertMediaObject = async (media, unchainedAPI: Context) => {
   }
 };
 
-export default async (
-  { media, authorId, assortmentId },
-  unchainedAPI: Context
-) => {
+export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) => {
   const { modules, userId } = unchainedAPI;
   const mediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
@@ -59,31 +52,28 @@ export default async (
           assortmentId,
           mediaId: file._id,
         },
-        unchainedAPI
+        unchainedAPI,
       );
 
-      if (!mediaObject)
-        throw new Error(`Unable to create media object ${mediaObject._id}`);
+      if (!mediaObject) throw new Error(`Unable to create media object ${mediaObject._id}`);
 
       if (content) {
         await Promise.all(
-          Object.entries(content).map(
-            async ([locale, localizedData]: [string, AssortmentMediaText]) => {
-              return modules.assortments.media.texts.upsertLocalizedText(
-                mediaObject._id,
-                locale,
-                {
-                  ...localizedData,
-                  authorId,
-                },
-                userId
-              );
-            }
-          )
+          Object.entries(content).map(async ([locale, localizedData]: [string, AssortmentMediaText]) => {
+            return modules.assortments.media.texts.upsertLocalizedText(
+              mediaObject._id,
+              locale,
+              {
+                ...localizedData,
+                authorId,
+              },
+              userId,
+            );
+          }),
         );
       }
       return mediaObject;
-    })
+    }),
   );
 
   await modules.assortments.media.deleteMediaFiles({

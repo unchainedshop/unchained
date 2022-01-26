@@ -10,7 +10,7 @@ export const PeriodSchema = new SimpleSchema(
   },
   {
     requiredByDefault: false,
-  }
+  },
 );
 
 export const EnrollmentsSchema = new SimpleSchema(
@@ -49,5 +49,5 @@ export const EnrollmentsSchema = new SimpleSchema(
     ...Schemas.logFields,
     ...Schemas.timestampFields,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

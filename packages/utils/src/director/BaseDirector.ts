@@ -6,7 +6,7 @@ export const BaseDirector = <Adapter extends IBaseAdapter>(
   options?: {
     adapterSortKey?: string;
     adapterKeyField?: string; // Set to 'key' per default
-  }
+  },
 ): IBaseDirector<Adapter> => {
   const Adapters = new Map<string, Adapter>();
   const keyField = options?.adapterKeyField || 'key';
@@ -25,9 +25,9 @@ export const BaseDirector = <Adapter extends IBaseAdapter>(
 
     registerAdapter: (Adapter) => {
       log(
-        `${directorName} -> Registered ${
-          keyField !== 'key' ? `${Adapter[keyField]} ` : ' '
-        } ${Adapter.key} ${Adapter.version} (${Adapter.label})`
+        `${directorName} -> Registered ${keyField !== 'key' ? `${Adapter[keyField]} ` : ' '} ${
+          Adapter.key
+        } ${Adapter.version} (${Adapter.label})`,
       );
 
       Adapters.set(Adapter[keyField], Adapter);

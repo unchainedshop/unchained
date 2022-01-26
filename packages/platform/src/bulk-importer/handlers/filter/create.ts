@@ -5,22 +5,16 @@ import upsertFilterOptionContent from './upsertFilterOptionContent';
 export default async function createFilter(
   payload: any,
   { logger, authorId, createShouldUpsertIfIDExists },
-  unchainedAPI: Context
+  unchainedAPI: Context,
 ) {
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;
 
-  if (!specification)
-    throw new Error(
-      `Specification is required when creating new filter ${_id}`
-    );
+  if (!specification) throw new Error(`Specification is required when creating new filter ${_id}`);
 
   const { content, options, ...filterData } = specification;
 
-  if (!content)
-    throw new Error(
-      `Localizable content is required when creating new filter${_id}`
-    );
+  if (!content) throw new Error(`Localizable content is required when creating new filter${_id}`);
 
   logger.debug('create filter object', specification);
   let filter;
@@ -32,15 +26,12 @@ export default async function createFilter(
         options: options?.map((option) => option.value) || [],
         authorId,
       },
-      unchainedAPI
+      unchainedAPI,
     );
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
 
-    logger.debug(
-      'entity already exists, falling back to update',
-      specification
-    );
+    logger.debug('entity already exists, falling back to update', specification);
     filter = await modules.filters.update(
       _id,
       {
@@ -48,7 +39,7 @@ export default async function createFilter(
         options: options?.map((option) => option.value) || [],
         authorId,
       },
-      unchainedAPI
+      unchainedAPI,
     );
   }
 
@@ -56,11 +47,7 @@ export default async function createFilter(
   await upsertFilterContent({ content, filter }, { authorId }, unchainedAPI);
 
   logger.debug('create localized content for filter options', content);
-  await upsertFilterOptionContent(
-    { options, filter },
-    { authorId },
-    unchainedAPI
-  );
+  await upsertFilterOptionContent({ options, filter }, { authorId }, unchainedAPI);
 
   return {
     entity: 'FILTER',

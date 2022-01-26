@@ -1,9 +1,6 @@
 /* @ts-ignore */
 import moment from 'moment';
-import {
-  DeliveryPricingAdapter,
-  DeliveryPricingDirector,
-} from 'meteor/unchained:core-delivery';
+import { DeliveryPricingAdapter, DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
 import {
   DeliveryPricingAdapterContext,
   IDeliveryPricingAdapter,
@@ -35,17 +32,12 @@ export const SwissTaxCategories = {
 };
 
 const getTaxRate = (context: DeliveryPricingAdapterContext) => {
-  const date =
-    context.order && context.order.ordered
-      ? new Date(context.order.ordered)
-      : new Date();
+  const date = context.order && context.order.ordered ? new Date(context.order.ordered) : new Date();
 
-  const taxCategoryFromProvider = context.deliveryProvider?.configuration?.find(
-    ({ key }) => {
-      if (key === 'swiss-tax-category') return true;
-      return null;
-    }
-  )?.value;
+  const taxCategoryFromProvider = context.deliveryProvider?.configuration?.find(({ key }) => {
+    if (key === 'swiss-tax-category') return true;
+    return null;
+  })?.value;
 
   if (taxCategoryFromProvider === SwissTaxCategories.REDUCED.value) {
     return SwissTaxCategories.REDUCED.rate();
@@ -91,9 +83,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
       calculate: async () => {
         const taxRate = getTaxRate(context);
 
-        DeliveryPricingAdapter.log(
-          `DeliverySwissTax -> Tax Multiplicator: ${taxRate}`
-        );
+        DeliveryPricingAdapter.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
 
         pricingAdapter
           .calculationSheet()

@@ -13,16 +13,13 @@ type LanguageQuery = {
 };
 
 export interface LanguagesModule extends ModuleMutations<Language> {
-  findLanguage: (params: {
-    languageId?: string;
-    isoCode?: string;
-  }) => Promise<Language>;
+  findLanguage: (params: { languageId?: string; isoCode?: string }) => Promise<Language>;
   findLanguages: (
     params: LanguageQuery & {
       limit?: number;
       offset?: number;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<Language>>;
   count: (query: LanguageQuery) => Promise<number>;
   languageExists: (params: { languageId: string }) => Promise<boolean>;

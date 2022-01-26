@@ -25,8 +25,7 @@ export const configureMessagingModule = (): MessagingModule => {
       try {
         const rendered = mustache.render(template, data);
         const { html, errors } = mjml(rendered, { minify: true });
-        if (errors && errors.length)
-          messagingLogger.warn(JSON.stringify(errors));
+        if (errors && errors.length) messagingLogger.warn(JSON.stringify(errors));
         return html;
       } catch (e) {
         if (e.getMessages) {

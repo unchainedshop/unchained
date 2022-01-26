@@ -3,11 +3,7 @@ import { ProductTypes } from 'meteor/unchained:core-products';
 
 import { Context, Root } from '@unchainedshop/types/api';
 import { ProductConfiguration } from '@unchainedshop/types/products';
-import {
-  ProductNotFoundError,
-  InvalidIdError,
-  ProductWrongTypeError,
-} from '../../../errors';
+import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors';
 
 export default async function addProductAssignment(
   root: Root,
@@ -16,7 +12,7 @@ export default async function addProductAssignment(
     productId: string;
     vectors: Array<ProductConfiguration>;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { proxyId, productId, vectors } = params;
 
@@ -46,7 +42,7 @@ export default async function addProductAssignment(
       proxyId,
       vectors,
     },
-    userId
+    userId,
   );
 
   return modules.products.findProduct({ productId: proxyId });

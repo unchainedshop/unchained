@@ -172,15 +172,11 @@ export default {
   setUsername: acl(actions.manageUsers)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
   enrollUser: acl(actions.manageUsers)(enrollUser),
-  registerPaymentCredentials: acl(actions.registerPaymentCredentials)(
-    registerPaymentCredentials
-  ),
+  registerPaymentCredentials: acl(actions.registerPaymentCredentials)(registerPaymentCredentials),
   markPaymentCredentialsPreferred: acl(actions.managePaymentCredentials)(
-    markPaymentCredentialsPreferred
+    markPaymentCredentialsPreferred,
   ),
-  removePaymentCredentials: acl(actions.managePaymentCredentials)(
-    removePaymentCredentials
-  ),
+  removePaymentCredentials: acl(actions.managePaymentCredentials)(removePaymentCredentials),
 
   createLanguage: acl(actions.manageLanguages)(createLanguage),
   updateLanguage: acl(actions.manageLanguages)(updateLanguage),
@@ -199,30 +195,20 @@ export default {
   updateProductMediaTexts: acl(actions.manageProducts)(updateProductMediaTexts),
   addProductMedia: acl(actions.manageProducts)(addProductMedia),
   confirmMediaUpload: acl(actions.manageProducts)(confirmMediaUpload),
-  prepareProductMediaUpload: acl(actions.manageProducts)(
-    prepareProductMediaUpload
-  ),
+  prepareProductMediaUpload: acl(actions.manageProducts)(prepareProductMediaUpload),
   reorderProductMedia: acl(actions.manageProducts)(reorderProductMedia),
   removeProductMedia: acl(actions.manageProducts)(removeProductMedia),
   updateProductCommerce: acl(actions.manageProducts)(updateProductCommerce),
-  updateProductWarehousing: acl(actions.manageProducts)(
-    updateProductWarehousing
-  ),
+  updateProductWarehousing: acl(actions.manageProducts)(updateProductWarehousing),
   updateProductSupply: acl(actions.manageProducts)(updateProductSupply),
   updateProductPlan: acl(actions.manageProducts)(updateProductPlan),
   removeProductVariation: acl(actions.manageProducts)(removeProductVariation),
-  updateProductVariationTexts: acl(actions.manageProducts)(
-    updateProductVariationTexts
-  ),
-  removeProductVariationOption: acl(actions.manageProducts)(
-    removeProductVariationOption
-  ),
+  updateProductVariationTexts: acl(actions.manageProducts)(updateProductVariationTexts),
+  removeProductVariationOption: acl(actions.manageProducts)(removeProductVariationOption),
   createProductVariation: acl(actions.manageProducts)(createProductVariation),
   createProductBundleItem: acl(actions.manageProducts)(createProductBundleItem),
   removeBundleItem: acl(actions.manageProducts)(removeBundleItem),
-  createProductVariationOption: acl(actions.manageProducts)(
-    createProductVariationOption
-  ),
+  createProductVariationOption: acl(actions.manageProducts)(createProductVariationOption),
   addProductAssignment: acl(actions.manageProducts)(addProductAssignment),
   removeProductAssignment: acl(actions.manageProducts)(removeProductAssignment),
 
@@ -243,21 +229,11 @@ export default {
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
   setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
   setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
-  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(
-    updateOrderDeliveryShipping
-  ),
-  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(
-    updateOrderDeliveryPickUp
-  ),
-  updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(
-    updateOrderPaymentGeneric
-  ),
-  updateOrderPaymentCard: acl(actions.updateOrderPayment)(
-    updateOrderPaymentCard
-  ),
-  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(
-    updateOrderPaymentInvoice
-  ),
+  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(updateOrderDeliveryShipping),
+  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(updateOrderDeliveryPickUp),
+  updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(updateOrderPaymentGeneric),
+  updateOrderPaymentCard: acl(actions.updateOrderPayment)(updateOrderPaymentCard),
+  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(updateOrderPaymentInvoice),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
@@ -268,35 +244,17 @@ export default {
   activateEnrollment: acl(actions.updateEnrollment)(activateEnrollment),
   updateEnrollment: acl(actions.updateEnrollment)(updateEnrollment),
 
-  createPaymentProvider: acl(actions.managePaymentProviders)(
-    createPaymentProvider
-  ),
-  updatePaymentProvider: acl(actions.managePaymentProviders)(
-    updatePaymentProvider
-  ),
-  removePaymentProvider: acl(actions.managePaymentProviders)(
-    removePaymentProvider
-  ),
+  createPaymentProvider: acl(actions.managePaymentProviders)(createPaymentProvider),
+  updatePaymentProvider: acl(actions.managePaymentProviders)(updatePaymentProvider),
+  removePaymentProvider: acl(actions.managePaymentProviders)(removePaymentProvider),
 
-  createDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    createDeliveryProvider
-  ),
-  updateDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    updateDeliveryProvider
-  ),
-  removeDeliveryProvider: acl(actions.manageDeliveryProviders)(
-    removeDeliveryProvider
-  ),
+  createDeliveryProvider: acl(actions.manageDeliveryProviders)(createDeliveryProvider),
+  updateDeliveryProvider: acl(actions.manageDeliveryProviders)(updateDeliveryProvider),
+  removeDeliveryProvider: acl(actions.manageDeliveryProviders)(removeDeliveryProvider),
 
-  createWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    createWarehousingProvider
-  ),
-  updateWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    updateWarehousingProvider
-  ),
-  removeWarehousingProvider: acl(actions.manageWarehousingProviders)(
-    removeWarehousingProvider
-  ),
+  createWarehousingProvider: acl(actions.manageWarehousingProviders)(createWarehousingProvider),
+  updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
+  removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
 
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),
@@ -307,47 +265,29 @@ export default {
 
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   addAssortmentMedia: acl(actions.manageAssortments)(addAssortmentMedia),
-  prepareAssortmentMediaUpload: acl(actions.manageAssortments)(
-    prepareAssortmentMediaUpload
-  ),
+  prepareAssortmentMediaUpload: acl(actions.manageAssortments)(prepareAssortmentMediaUpload),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
   setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
-  reorderAssortmentMedia: acl(actions.manageAssortments)(
-    reorderAssortmentMedia
-  ),
+  reorderAssortmentMedia: acl(actions.manageAssortments)(reorderAssortmentMedia),
   removeAssortmentMedia: acl(actions.manageAssortments)(removeAssortmentMedia),
-  updateAssortmentMediaTexts: acl(actions.manageAssortments)(
-    updateAssortmentMediaTexts
-  ),
+  updateAssortmentMediaTexts: acl(actions.manageAssortments)(updateAssortmentMediaTexts),
   updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
   addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),
-  removeAssortmentProduct: acl(actions.manageAssortments)(
-    removeAssortmentProduct
-  ),
-  reorderAssortmentProducts: acl(actions.manageAssortments)(
-    reorderAssortmentProducts
-  ),
+  removeAssortmentProduct: acl(actions.manageAssortments)(removeAssortmentProduct),
+  reorderAssortmentProducts: acl(actions.manageAssortments)(reorderAssortmentProducts),
   addAssortmentLink: acl(actions.manageAssortments)(addAssortmentLink),
   removeAssortmentLink: acl(actions.manageAssortments)(removeAssortmentLink),
-  reorderAssortmentLinks: acl(actions.manageAssortments)(
-    reorderAssortmentLinks
-  ),
+  reorderAssortmentLinks: acl(actions.manageAssortments)(reorderAssortmentLinks),
   addAssortmentFilter: acl(actions.manageAssortments)(addAssortmentFilter),
-  removeAssortmentFilter: acl(actions.manageAssortments)(
-    removeAssortmentFilter
-  ),
-  reorderAssortmentFilters: acl(actions.manageAssortments)(
-    reorderAssortmentFilters
-  ),
+  removeAssortmentFilter: acl(actions.manageAssortments)(removeAssortmentFilter),
+  reorderAssortmentFilters: acl(actions.manageAssortments)(reorderAssortmentFilters),
 
   createProductReview: acl(actions.reviewProduct)(createProductReview),
   updateProductReview: acl(actions.updateProductReview)(updateProductReview),
   removeProductReview: acl(actions.updateProductReview)(removeProductReview),
   addProductReviewVote: acl(actions.voteProductReview)(addProductReviewVote),
-  removeProductReviewVote: acl(actions.voteProductReview)(
-    removeProductReviewVote
-  ),
+  removeProductReviewVote: acl(actions.voteProductReview)(removeProductReviewVote),
 
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),
   rejectQuotation: acl(actions.answerQuotation)(rejectQuotation),
@@ -363,10 +303,10 @@ export default {
   finishWork: acl(actions.manageWorker)(finishWork),
   removeWork: acl(actions.manageWorker)(removeWork),
   doWork: acl(actions.manageWorker)(doWork),
-  signPaymentProviderForCredentialRegistration: acl(
-    actions.registerPaymentCredentials
-  )(signPaymentProviderForCredentialRegistration),
+  signPaymentProviderForCredentialRegistration: acl(actions.registerPaymentCredentials)(
+    signPaymentProviderForCredentialRegistration,
+  ),
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
-    signPaymentProviderForCheckout
+    signPaymentProviderForCheckout,
   ),
 };

@@ -1,16 +1,12 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 
-import {
-  OrderDiscountNotFoundError,
-  OrderWrongStatusError,
-  InvalidIdError,
-} from '../../../errors';
+import { OrderDiscountNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors';
 
 export default async function removeCartDiscount(
   root: Root,
   { discountId }: { discountId: string },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
 

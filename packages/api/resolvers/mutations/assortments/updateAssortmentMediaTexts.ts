@@ -5,11 +5,8 @@ import { AssortmentMediaNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function updateAssortmentMediaTexts(
   root: Root,
-  {
-    texts,
-    assortmentMediaId,
-  }: { texts: Array<AssortmentMediaText>; assortmentMediaId: string },
-  { modules, userId }: Context
+  { texts, assortmentMediaId }: { texts: Array<AssortmentMediaText>; assortmentMediaId: string },
+  { modules, userId }: Context,
 ) {
   log(`mutation updateAssortmentMediaTexts ${assortmentMediaId}`, {
     modules,
@@ -22,12 +19,7 @@ export default async function updateAssortmentMediaTexts(
     assortmentMediaId,
   });
 
-  if (!assortmentMedia)
-    throw new AssortmentMediaNotFoundError({ assortmentMediaId });
+  if (!assortmentMedia) throw new AssortmentMediaNotFoundError({ assortmentMediaId });
 
-  return modules.assortments.media.texts.updateMediaTexts(
-    assortmentMediaId,
-    texts,
-    userId
-  );
+  return modules.assortments.media.texts.updateMediaTexts(assortmentMediaId, texts, userId);
 }

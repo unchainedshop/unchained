@@ -5,7 +5,7 @@ import { AssortmentFilterNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeAssortmentFilter(
   root: Root,
   { assortmentFilterId }: { assortmentFilterId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation removeAssortmentFilter ${assortmentFilterId}`, {
     modules,
@@ -17,8 +17,7 @@ export default async function removeAssortmentFilter(
     assortmentFilterId,
   });
 
-  if (!assortmentFilter)
-    throw new AssortmentFilterNotFoundError({ assortmentFilterId });
+  if (!assortmentFilter) throw new AssortmentFilterNotFoundError({ assortmentFilterId });
 
   await modules.assortments.filters.delete(assortmentFilterId, userId);
 

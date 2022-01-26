@@ -6,14 +6,11 @@ import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors';
 export default async function signPaymentProviderForCredentialRegistration(
   root: Root,
   params: PaymentContext,
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   const { paymentProviderId } = params;
 
-  log(
-    `query signPaymentProviderForCredentialRegistration ${paymentProviderId}`,
-    { userId }
-  );
+  log(`query signPaymentProviderForCredentialRegistration ${paymentProviderId}`, { userId });
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
   if (

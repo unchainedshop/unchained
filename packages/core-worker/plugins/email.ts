@@ -24,9 +24,7 @@ const EmailWorkerPlugin: IWorkerAdapter<
   type: 'EMAIL',
 
   doWork: async ({ from, to, subject, ...rest }) => {
-    logger.debug(
-      `${EmailWorkerPlugin.key} -> doWork: ${from} -> ${to} (${subject})`
-    );
+    logger.debug(`${EmailWorkerPlugin.key} -> doWork: ${from} -> ${to} (${subject})`);
 
     if (!to) {
       return {

@@ -4,7 +4,7 @@ import { log } from 'meteor/unchained:logger';
 export default async function prepareProductMediaUpload(
   root: Root,
   { mediaName, productId }: { mediaName: string; productId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation prepareProductMediaUpload', { mediaName, userId });
 
@@ -21,8 +21,8 @@ export default async function prepareProductMediaUpload(
           productId,
           mediaId: file._id,
         },
-        userId
+        userId,
       );
-    }
+    },
   );
 }

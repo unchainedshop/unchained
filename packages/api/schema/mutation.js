@@ -114,10 +114,7 @@ export default [
       """
       Add multiple new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
       """
-      addMultipleCartProducts(
-        orderId: ID
-        items: [OrderItemInput!]!
-      ): [OrderItem]!
+      addMultipleCartProducts(orderId: ID, items: [OrderItemInput!]!): [OrderItem]!
 
       """
       Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary
@@ -159,12 +156,7 @@ export default [
       Process the checkout (automatically charge & deliver if possible), the cart will get
       transformed to an ordinary order if everything goes well.
       """
-      checkoutCart(
-        orderId: ID
-        orderContext: JSON
-        paymentContext: JSON
-        deliveryContext: JSON
-      ): Order!
+      checkoutCart(orderId: ID, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
 
       """
       Change the quantity or configuration of an item in an open order.align-baselineAll
@@ -260,18 +252,12 @@ export default [
       """
       Update an Invoice Payment Provider's specific configuration
       """
-      updateOrderPaymentInvoice(
-        orderPaymentId: ID!
-        meta: JSON
-      ): OrderPaymentInvoice!
+      updateOrderPaymentInvoice(orderPaymentId: ID!, meta: JSON): OrderPaymentInvoice!
 
       """
       Update a Generic Payment Provider's specific configuration
       """
-      updateOrderPaymentGeneric(
-        orderPaymentId: ID!
-        meta: JSON
-      ): OrderPaymentGeneric!
+      updateOrderPaymentGeneric(orderPaymentId: ID!, meta: JSON): OrderPaymentGeneric!
 
       """
       Remove an order while it's still open
@@ -281,12 +267,7 @@ export default [
       """
       Manually confirm an order which is in progress
       """
-      confirmOrder(
-        orderId: ID!
-        orderContext: JSON
-        paymentContext: JSON
-        deliveryContext: JSON
-      ): Order!
+      confirmOrder(orderId: ID!, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
 
       """
       Manually mark an unpaid/partially paid order as fully paid
@@ -352,11 +333,7 @@ export default [
       """
       Set a new password for a specific user
       """
-      setPassword(
-        newPassword: HashedPasswordInput
-        newPlainPassword: String
-        userId: ID!
-      ): User
+      setPassword(newPassword: HashedPasswordInput, newPlainPassword: String, userId: ID!): User
 
       """
       Set roles of a user
@@ -391,18 +368,12 @@ export default [
       """
       Modify commerce part of a product
       """
-      updateProductCommerce(
-        productId: ID!
-        commerce: UpdateProductCommerceInput!
-      ): Product
+      updateProductCommerce(productId: ID!, commerce: UpdateProductCommerceInput!): Product
 
       """
       Modify delivery part of a product
       """
-      updateProductSupply(
-        productId: ID!
-        supply: UpdateProductSupplyInput!
-      ): Product
+      updateProductSupply(productId: ID!, supply: UpdateProductSupplyInput!): Product
 
       """
       Modify plan part of a product
@@ -412,18 +383,12 @@ export default [
       """
       Modify warehousing part of a product
       """
-      updateProductWarehousing(
-        productId: ID!
-        warehousing: UpdateProductWarehousingInput!
-      ): Product
+      updateProductWarehousing(productId: ID!, warehousing: UpdateProductWarehousingInput!): Product
 
       """
       Modify localized texts part of a product
       """
-      updateProductTexts(
-        productId: ID!
-        texts: [UpdateProductTextInput!]!
-      ): [ProductTexts!]!
+      updateProductTexts(productId: ID!, texts: [UpdateProductTextInput!]!): [ProductTexts!]!
 
       """
       Add a new media to a product's visualization
@@ -438,9 +403,7 @@ export default [
       """
       Reorder a media asset (first is primary)
       """
-      reorderProductMedia(
-        sortKeys: [ReorderProductMediaInput!]!
-      ): [ProductMedia!]!
+      reorderProductMedia(sortKeys: [ReorderProductMediaInput!]!): [ProductMedia!]!
 
       """
       Modify localized texts part of a product's media asset
@@ -476,18 +439,12 @@ export default [
       """
       Creates new product variation for a product.
       """
-      createProductVariation(
-        productId: ID!
-        variation: CreateProductVariationInput!
-      ): ProductVariation!
+      createProductVariation(productId: ID!, variation: CreateProductVariationInput!): ProductVariation!
 
       """
       Adds one product as bundle for another products
       """
-      createProductBundleItem(
-        productId: ID!
-        item: CreateProductBundleItemInput!
-      ): Product!
+      createProductBundleItem(productId: ID!, item: CreateProductBundleItemInput!): Product!
 
       """
       Removes products bundle item found at the given 0 based index.
@@ -516,10 +473,7 @@ export default [
       Unlinks a product from a ConfigurableProduct by providing a configuration
       combination that uniquely identifies a row in the assignment matrix
       """
-      removeProductAssignment(
-        proxyId: ID!
-        vectors: [ProductAssignmentVectorInput!]!
-      ): Product!
+      removeProductAssignment(proxyId: ID!, vectors: [ProductAssignmentVectorInput!]!): Product!
 
       """
       Adds new language along with the user who created it
@@ -563,9 +517,7 @@ export default [
       """
       Adds new payment provider
       """
-      createPaymentProvider(
-        paymentProvider: CreatePaymentProviderInput!
-      ): PaymentProvider!
+      createPaymentProvider(paymentProvider: CreatePaymentProviderInput!): PaymentProvider!
 
       """
       Updates payment provider information with the provided ID
@@ -584,9 +536,7 @@ export default [
       """
       Creates new delivery provider
       """
-      createDeliveryProvider(
-        deliveryProvider: CreateDeliveryProviderInput!
-      ): DeliveryProvider!
+      createDeliveryProvider(deliveryProvider: CreateDeliveryProviderInput!): DeliveryProvider!
 
       """
       Updates the delivery provider specified
@@ -622,9 +572,7 @@ export default [
       Note warehousing provider still exists in the system after successful
       completing of this operation with status deleted.
       """
-      removeWarehousingProvider(
-        warehousingProviderId: ID!
-      ): WarehousingProvider!
+      removeWarehousingProvider(warehousingProviderId: ID!): WarehousingProvider!
 
       """
       Creates new assortment.
@@ -634,10 +582,7 @@ export default [
       """
       Updates the provided assortment
       """
-      updateAssortment(
-        assortment: UpdateAssortmentInput!
-        assortmentId: ID!
-      ): Assortment!
+      updateAssortment(assortment: UpdateAssortmentInput!, assortmentId: ID!): Assortment!
 
       """
       Makes the assortment provided as the base assortment and make
@@ -653,19 +598,12 @@ export default [
       """
       Modify localized texts part of an assortment
       """
-      updateAssortmentTexts(
-        assortmentId: ID!
-        texts: [UpdateAssortmentTextInput!]!
-      ): [AssortmentTexts!]!
+      updateAssortmentTexts(assortmentId: ID!, texts: [UpdateAssortmentTextInput!]!): [AssortmentTexts!]!
 
       """
       Add a new product to an assortment
       """
-      addAssortmentProduct(
-        assortmentId: ID!
-        productId: ID!
-        tags: [String!]
-      ): AssortmentProduct!
+      addAssortmentProduct(assortmentId: ID!, productId: ID!, tags: [String!]): AssortmentProduct!
 
       """
       Remove a product from an assortment
@@ -675,9 +613,7 @@ export default [
       """
       Reorder the products in an assortment
       """
-      reorderAssortmentProducts(
-        sortKeys: [ReorderAssortmentProductInput!]!
-      ): [AssortmentProduct!]!
+      reorderAssortmentProducts(sortKeys: [ReorderAssortmentProductInput!]!): [AssortmentProduct!]!
 
       """
       Add a new child assortment to an assortment
@@ -696,18 +632,12 @@ export default [
       """
       Reorder the child assortment links in it's parent
       """
-      reorderAssortmentLinks(
-        sortKeys: [ReorderAssortmentLinkInput!]!
-      ): [AssortmentLink!]!
+      reorderAssortmentLinks(sortKeys: [ReorderAssortmentLinkInput!]!): [AssortmentLink!]!
 
       """
       Add a new filter to an assortment
       """
-      addAssortmentFilter(
-        assortmentId: ID!
-        filterId: ID!
-        tags: [String!]
-      ): AssortmentFilter!
+      addAssortmentFilter(assortmentId: ID!, filterId: ID!, tags: [String!]): AssortmentFilter!
 
       """
       Remove a product from an assortment
@@ -717,9 +647,7 @@ export default [
       """
       Reorder the products in an assortment
       """
-      reorderAssortmentFilters(
-        sortKeys: [ReorderAssortmentFilterInput!]!
-      ): [AssortmentFilter!]!
+      reorderAssortmentFilters(sortKeys: [ReorderAssortmentFilterInput!]!): [AssortmentFilter!]!
       """
       Add a new media to a assortment
       """
@@ -733,9 +661,7 @@ export default [
       """
       Reorder a media asset (first is primary)
       """
-      reorderAssortmentMedia(
-        sortKeys: [ReorderAssortmentMediaInput!]!
-      ): [AssortmentMedia!]!
+      reorderAssortmentMedia(sortKeys: [ReorderAssortmentMediaInput!]!): [AssortmentMedia!]!
 
       """
       Modify localized texts part of a assortment media asset
@@ -777,26 +703,17 @@ export default [
       """
       Adds new option to filters
       """
-      createFilterOption(
-        filterId: ID!
-        option: CreateFilterOptionInput!
-      ): Filter!
+      createFilterOption(filterId: ID!, option: CreateFilterOptionInput!): Filter!
 
       """
       Add a new ProductReview
       """
-      createProductReview(
-        productId: ID!
-        productReview: ProductReviewInput!
-      ): ProductReview!
+      createProductReview(productId: ID!, productReview: ProductReviewInput!): ProductReview!
 
       """
       Update an existing ProductReview. The logic to allow/dissallow editing is controlled by product plugin logic
       """
-      updateProductReview(
-        productReviewId: ID!
-        productReview: ProductReviewInput!
-      ): ProductReview!
+      updateProductReview(productReviewId: ID!, productReview: ProductReviewInput!): ProductReview!
 
       """
       Remove an existing ProductReview. The logic to allow/dissallow removal is controlled by product plugin logic
@@ -816,18 +733,12 @@ export default [
       """
       Remove a vote from a ProductReview
       """
-      removeProductReviewVote(
-        productReviewId: ID!
-        type: ProductReviewVoteType
-      ): ProductReview!
+      removeProductReviewVote(productReviewId: ID!, type: ProductReviewVoteType): ProductReview!
 
       """
       Request for Proposal (RFP) for the specified product
       """
-      requestQuotation(
-        productId: ID!
-        configuration: [ProductConfigurationParameterInput!]
-      ): Quotation!
+      requestQuotation(productId: ID!, configuration: [ProductConfigurationParameterInput!]): Quotation!
 
       """
       Verify quotation request elligibility. and marks requested quotations as verified if it is
@@ -842,10 +753,7 @@ export default [
       """
       Make a proposal as answer to the RFP by changing its status to PROCESSED
       """
-      makeQuotationProposal(
-        quotationId: ID!
-        quotationContext: JSON
-      ): Quotation!
+      makeQuotationProposal(quotationId: ID!, quotationContext: JSON): Quotation!
 
       """
       toggle Bookmarks state of a product as currently logged in user
@@ -910,17 +818,12 @@ export default [
       Register credentials for an existing payment provider allowing to store and use them
       for later payments (1-click checkout or enrollments)
       """
-      registerPaymentCredentials(
-        paymentContext: JSON!
-        paymentProviderId: ID!
-      ): PaymentCredentials
+      registerPaymentCredentials(paymentContext: JSON!, paymentProviderId: ID!): PaymentCredentials
 
       """
       Make's the provided payment credential as the users preferred method of payment.
       """
-      markPaymentCredentialsPreferred(
-        paymentCredentialsId: ID!
-      ): PaymentCredentials
+      markPaymentCredentialsPreferred(paymentCredentialsId: ID!): PaymentCredentials
 
       """
       Deletes the specified payment credential.
@@ -929,35 +832,17 @@ export default [
       """
       Sign a generic payment provider for registration
       """
-      signPaymentProviderForCredentialRegistration(
-        paymentProviderId: ID!
-      ): String
+      signPaymentProviderForCredentialRegistration(paymentProviderId: ID!): String
 
       """
       Sign a generic order payment
       """
-      signPaymentProviderForCheckout(
-        orderPaymentId: ID!
-        transactionContext: JSON
-      ): String!
+      signPaymentProviderForCheckout(orderPaymentId: ID!, transactionContext: JSON): String!
 
-      prepareProductMediaUpload(
-        mediaName: String!
-        productId: ID!
-      ): MediaUploadTicket!
-      prepareAssortmentMediaUpload(
-        mediaName: String!
-        assortmentId: ID!
-      ): MediaUploadTicket!
-      prepareUserAvatarUpload(
-        mediaName: String!
-        userId: ID
-      ): MediaUploadTicket!
-      confirmMediaUpload(
-        mediaUploadTicketId: ID!
-        size: Int!
-        type: String!
-      ): Media!
+      prepareProductMediaUpload(mediaName: String!, productId: ID!): MediaUploadTicket!
+      prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!
+      prepareUserAvatarUpload(mediaName: String!, userId: ID): MediaUploadTicket!
+      confirmMediaUpload(mediaUploadTicketId: ID!, size: Int!, type: String!): Media!
     }
   `,
 ];

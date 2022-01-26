@@ -137,17 +137,14 @@ export type ProductQuery = {
 
 export type ProductsModule = {
   // Queries
-  findProduct: (params: {
-    productId?: string;
-    slug?: string;
-  }) => Promise<Product>;
+  findProduct: (params: { productId?: string; slug?: string }) => Promise<Product>;
 
   findProducts: (
     params: ProductQuery & {
       limit?: number;
       offset?: number;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<Product>>;
 
   findProductSiblings: (params: {
@@ -158,10 +155,7 @@ export type ProductsModule = {
   }) => Promise<Array<Product>>;
 
   count: (query: ProductQuery) => Promise<number>;
-  productExists: (params: {
-    productId?: string;
-    slug?: string;
-  }) => Promise<boolean>;
+  productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
 
   // Transformations
   isActive: (product: Product) => boolean;
@@ -177,26 +171,26 @@ export type ProductsModule = {
 
   proxyAssignments: (
     product: Product,
-    options: { includeInactive?: boolean }
+    options: { includeInactive?: boolean },
   ) => Promise<Array<{ assignment: ProductAssignment; product: Product }>>;
 
   proxyProducts: (
     product: Product,
     vectors: Array<ProductConfiguration>,
-    options: { includeInactive?: boolean }
+    options: { includeInactive?: boolean },
   ) => Promise<Array<Product>>;
 
   resolveOrderableProduct: (
     product: Product,
     params: { configuration?: Array<ProductConfiguration> },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Product>;
 
   prices: {
     price: (
       product: Product,
       params: { country: string; currency: string; quantity?: number },
-      requestContext: Context
+      requestContext: Context,
     ) => Promise<ProductPrice>;
 
     userPrice: (
@@ -207,14 +201,14 @@ export type ProductsModule = {
         quantity?: number;
         useNetPrice?: boolean;
       },
-      requestContext: Context
+      requestContext: Context,
     ) => Promise<ProductPrice>;
 
     catalogPrices: (prodct: Product) => Array<ProductPrice>;
     catalogPricesLeveled: (
       product: Product,
       params: { currency: string; country: string },
-      requestContext: Context
+      requestContext: Context,
     ) => Promise<
       Array<{
         minQuantity: number;
@@ -231,7 +225,7 @@ export type ProductsModule = {
         quantity?: number;
         vectors: Array<ProductConfiguration>;
       },
-      requestContext: Context
+      requestContext: Context,
     ) => Promise<ProductPriceRange>;
 
     simulatedPriceRange: (
@@ -244,7 +238,7 @@ export type ProductsModule = {
         useNetPrice?: boolean;
         vectors: Array<ProductConfiguration>;
       },
-      requestContext: Context
+      requestContext: Context,
     ) => Promise<ProductPriceRange>;
   };
 
@@ -252,14 +246,14 @@ export type ProductsModule = {
 
   calculate: (
     pricingContext: ProductPricingContext & { item: OrderPosition },
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations
   create: (
     doc: Product & { title: string; locale: string },
     userId?: string,
-    options?: { autopublish?: boolean }
+    options?: { autopublish?: boolean },
   ) => Promise<Product>;
 
   delete: (productId: string, userId?: string) => Promise<number>;
@@ -268,11 +262,7 @@ export type ProductsModule = {
     excludedProductIds?: Array<_ID>;
   }) => Promise<number>;
 
-  update: (
-    productId: string,
-    doc: Update<Product>,
-    userId: string
-  ) => Promise<string>;
+  update: (productId: string, doc: Update<Product>, userId: string) => Promise<string>;
 
   publish: (product: Product, userId?: string) => Promise<boolean>;
   unpublish: (product: Product, userId?: string) => Promise<boolean>;
@@ -282,16 +272,8 @@ export type ProductsModule = {
    */
 
   bundleItems: {
-    addBundleItem: (
-      productId: string,
-      doc: ProductBundleItem,
-      userId?: string
-    ) => Promise<string>;
-    removeBundleItem: (
-      productId: string,
-      index: number,
-      userId?: string
-    ) => Promise<ProductBundleItem>;
+    addBundleItem: (productId: string, doc: ProductBundleItem, userId?: string) => Promise<string>;
+    removeBundleItem: (productId: string, index: number, userId?: string) => Promise<ProductBundleItem>;
   };
 
   /*
@@ -302,12 +284,12 @@ export type ProductsModule = {
     addProxyAssignment: (
       productId: string,
       params: { proxyId: string; vectors: Array<ProductConfiguration> },
-      userId?: string
+      userId?: string,
     ) => Promise<string>;
     removeAssignment: (
       productId: string,
       params: { vectors: Array<ProductConfiguration> },
-      userId?: string
+      userId?: string,
     ) => Promise<number>;
   };
 
@@ -340,36 +322,26 @@ export type ProductsModule = {
 
   texts: {
     // Queries
-    findTexts: (
-      query: Query,
-      options?: FindOptions
-    ) => Promise<Array<ProductText>>;
+    findTexts: (query: Query, options?: FindOptions) => Promise<Array<ProductText>>;
 
-    findLocalizedText: (params: {
-      productId: string;
-      locale?: string;
-    }) => Promise<ProductText>;
+    findLocalizedText: (params: { productId: string; locale?: string }) => Promise<ProductText>;
     searchTexts: ({ searchText: string }) => Promise<Array<string>>;
 
     // Mutations
     updateTexts: (
       productId: string,
       texts: Array<ProductText>,
-      userId?: string
+      userId?: string,
     ) => Promise<Array<ProductText>>;
 
     upsertLocalizedText: (
       productId: string,
       locale: string,
       text: ProductText,
-      userId?: string
+      userId?: string,
     ) => Promise<ProductText>;
 
-    makeSlug: (data: {
-      slug?: string;
-      title: string;
-      productId: string;
-    }) => Promise<string>;
+    makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;
 
     deleteMany: (productId: string, userId?: string) => Promise<number>;
   };
@@ -379,10 +351,7 @@ export type ProductsModule = {
  * Services
  */
 
-export type RemoveProductService = (
-  params: { productId: string },
-  context: Context
-) => Promise<boolean>;
+export type RemoveProductService = (params: { productId: string }, context: Context) => Promise<boolean>;
 
 export interface ProductServices {
   removeProductService: RemoveProductService;
@@ -469,10 +438,7 @@ export interface ConfigurableProductHelperTypes extends ProductHelperTypes {
 }
 
 export interface PlanProductHelperTypes extends ProductHelperTypes {
-  catalogPrice: HelperType<
-    { quantity: number; currency: string },
-    Promise<ProductPrice>
-  >;
+  catalogPrice: HelperType<{ quantity: number; currency: string }, Promise<ProductPrice>>;
 
   leveledCatalogPrices: HelperType<
     { currency: string },
@@ -545,26 +511,14 @@ export interface SimpleProductHelperTypes extends PlanProductHelperTypes {
 }
 
 export interface ProductAssortmentPathHelperTypes {
-  assortmentProduct: (
-    product: Product,
-    _: never,
-    context: Context
-  ) => Promise<AssortmentProduct>;
+  assortmentProduct: (product: Product, _: never, context: Context) => Promise<AssortmentProduct>;
 }
 
 export interface ProductBundleItemHelperTypes {
-  product: (
-    bundleItem: ProductBundleItem,
-    _: never,
-    context: Context
-  ) => Promise<Product>;
+  product: (bundleItem: ProductBundleItem, _: never, context: Context) => Promise<Product>;
 }
 
-type ProductCatalogHelperType<P, T> = (
-  productPrice: ProductPrice,
-  params: P,
-  context: Context
-) => T;
+type ProductCatalogHelperType<P, T> = (productPrice: ProductPrice, params: P, context: Context) => T;
 
 export interface ProductCatalogPriceHelperTypes {
   isTaxable: ProductCatalogHelperType<never, boolean>;

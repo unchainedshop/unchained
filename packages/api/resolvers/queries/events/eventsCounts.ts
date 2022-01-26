@@ -6,7 +6,7 @@ const logger = createLogger('unchained:api');
 export default async function eventsCount(
   root: Root,
   { type }: { type: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   logger.info(`query eventsCount ${userId}`);
 

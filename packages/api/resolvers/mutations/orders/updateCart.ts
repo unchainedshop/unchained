@@ -13,19 +13,8 @@ interface UpdateCartParams {
   meta?: any;
 }
 
-export default async function updateCart(
-  root: Root,
-  params: UpdateCartParams,
-  context: Context
-) {
-  const {
-    orderId,
-    billingAddress,
-    contact,
-    paymentProviderId,
-    deliveryProviderId,
-    meta,
-  } = params;
+export default async function updateCart(root: Root, params: UpdateCartParams, context: Context) {
+  const { orderId, billingAddress, contact, paymentProviderId, deliveryProviderId, meta } = params;
 
   const { modules, userId } = context;
 
@@ -41,11 +30,7 @@ export default async function updateCart(
   }
 
   if (billingAddress) {
-    order = await modules.orders.updateBillingAddress(
-      order._id,
-      billingAddress,
-      context
-    );
+    order = await modules.orders.updateBillingAddress(order._id, billingAddress, context);
   }
 
   if (contact) {
@@ -53,19 +38,11 @@ export default async function updateCart(
   }
 
   if (paymentProviderId) {
-    order = await modules.orders.setPaymentProvider(
-      order._id,
-      paymentProviderId,
-      context
-    );
+    order = await modules.orders.setPaymentProvider(order._id, paymentProviderId, context);
   }
 
   if (deliveryProviderId) {
-    order = await modules.orders.setDeliveryProvider(
-      order._id,
-      deliveryProviderId,
-      context
-    );
+    order = await modules.orders.setDeliveryProvider(order._id, deliveryProviderId, context);
   }
 
   return order;

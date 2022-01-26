@@ -1,8 +1,5 @@
 import { IOrderPricingAdapter } from '@unchainedshop/types/orders.pricing';
-import {
-  OrderPricingDirector,
-  OrderPricingAdapter,
-} from 'meteor/unchained:core-orders';
+import { OrderPricingDirector, OrderPricingAdapter } from 'meteor/unchained:core-orders';
 
 const OrderDelivery: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
@@ -26,10 +23,7 @@ const OrderDelivery: IOrderPricingAdapter = {
       calculate: async () => {
         // just add tax + net price to order pricing
         if (orderDelivery) {
-          const pricing = modules.orders.deliveries.pricingSheet(
-            orderDelivery,
-            order.currency
-          );
+          const pricing = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
           const tax = pricing.taxSum();
           const shipping = pricing.gross();
 

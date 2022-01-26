@@ -9,7 +9,7 @@ export default async function changePassword(
     newPassword?: string;
     newPlainPassword?: string;
   },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log('mutation changePassword', { userId });
 

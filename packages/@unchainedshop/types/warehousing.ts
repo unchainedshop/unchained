@@ -47,7 +47,7 @@ export type IWarehousingAdapter = IBaseAdapter & {
 
   actions: (
     config: WarehousingProvider['configuration'],
-    context: WarehousingContext & Context
+    context: WarehousingContext & Context,
   ) => {
     configurationError: () => WarehousingError;
     isActive: () => boolean;
@@ -65,7 +65,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
   actions: (
     warehousingProvider: WarehousingProvider,
     warehousingContext: WarehousingContext,
-    requestContext: Context
+    requestContext: Context,
   ) => {
     configurationError: () => WarehousingError;
     isActive: () => boolean;
@@ -85,35 +85,28 @@ export type WarehousingModule = ModuleMutations<WarehousingProvider> & {
   // Queries
   findProvider: (
     query: { warehousingProviderId: string },
-    options?: FindOptions<WarehousingProvider>
+    options?: FindOptions<WarehousingProvider>,
   ) => Promise<WarehousingProvider>;
   findProviders: (
     query: WarehousingProviderQuery,
-    options?: FindOptions<WarehousingProvider>
+    options?: FindOptions<WarehousingProvider>,
   ) => Promise<Array<WarehousingProvider>>;
   count: (query: WarehousingProviderQuery) => Promise<number>;
-  providerExists: (query: {
-    warehousingProviderId: string;
-  }) => Promise<boolean>;
+  providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;
 
   // Adapter
 
   findSupported: (
     warehousingContext: WarehousingContext,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<Array<WarehousingProvider>>;
   findInterface: (query: WarehousingProvider) => WarehousingInterface;
-  findInterfaces: (
-    query: WarehousingProviderQuery
-  ) => Array<WarehousingInterface>;
-  configurationError: (
-    provider: WarehousingProvider,
-    requestContext: Context
-  ) => WarehousingError;
+  findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
+  configurationError: (provider: WarehousingProvider, requestContext: Context) => WarehousingError;
   estimatedDispatch: (
     provider: WarehousingProvider,
     context: WarehousingContext,
-    requestContext: Context
+    requestContext: Context,
   ) => Promise<EstimatedDispatch>;
   isActive: (provider: WarehousingProvider, requestContext: Context) => boolean;
 
@@ -121,11 +114,7 @@ export type WarehousingModule = ModuleMutations<WarehousingProvider> & {
   delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;
 };
 
-type HelperType<P, T> = (
-  provider: WarehousingProvider,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (provider: WarehousingProvider, params: P, context: Context) => T;
 
 export interface WarehousingProviderHelperTypes {
   configurationError: HelperType<never, WarehousingError>;

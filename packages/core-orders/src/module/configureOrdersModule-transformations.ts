@@ -39,7 +39,7 @@ export const configureOrderModuleTransformations = ({
       const orderDeliveryDiscounts = modules.orders.deliveries.discounts(
         orderDelivery,
         { order, orderDiscount },
-        requestContext
+        requestContext,
       );
 
       // Payment discounts
@@ -49,7 +49,7 @@ export const configureOrderModuleTransformations = ({
       const orderPaymentDiscounts = modules.orders.payments.discounts(
         orderPayment,
         { order, orderDiscount },
-        requestContext
+        requestContext,
       );
 
       // Position discounts
@@ -57,11 +57,7 @@ export const configureOrderModuleTransformations = ({
         orderId: order._id,
       });
       const orderPositionDiscounts = orderPositions.flatMap((orderPosition) =>
-        modules.orders.positions.discounts(
-          orderPosition,
-          { order, orderDiscount },
-          requestContext
-        )
+        modules.orders.positions.discounts(orderPosition, { order, orderDiscount }, requestContext),
       );
 
       // order discounts
@@ -112,7 +108,7 @@ export const configureOrderModuleTransformations = ({
       const orderPositionDiscounts = orderPositions.map((orderPosition) =>
         modules.orders.positions
           .pricingSheet(orderPosition, order.currency, requestContext)
-          .discountSum(orderDiscountId)
+          .discountSum(orderDiscountId),
       );
 
       // order discounts
@@ -127,10 +123,7 @@ export const configureOrderModuleTransformations = ({
         ...orderPositionDiscounts,
         orderDiscountSum,
       ];
-      const amount = prices.reduce(
-        (oldValue, price) => oldValue + (price || 0),
-        0
-      );
+      const amount = prices.reduce((oldValue, price) => oldValue + (price || 0), 0);
       return {
         amount,
         currency: order.currency,
@@ -138,9 +131,7 @@ export const configureOrderModuleTransformations = ({
     },
 
     normalizedStatus: (order) => {
-      return order.status === null
-        ? OrderStatus.OPEN
-        : (order.status as OrderStatus);
+      return order.status === null ? OrderStatus.OPEN : (order.status as OrderStatus);
     },
 
     isCart: (order) => {

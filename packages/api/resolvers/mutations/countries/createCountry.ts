@@ -5,7 +5,7 @@ import { Context, Root } from '@unchainedshop/types/api';
 export default async function createCountry(
   root: Root,
   { country }: { country: Country },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log('mutation createCountry', { userId });
 
@@ -14,7 +14,7 @@ export default async function createCountry(
       ...country,
       authorId: userId,
     },
-    userId
+    userId,
   );
 
   return modules.countries.findCountry({ countryId });

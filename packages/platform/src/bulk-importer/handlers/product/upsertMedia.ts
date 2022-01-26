@@ -1,20 +1,13 @@
 import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
-import {
-  ProductMedia,
-  ProductMediaText,
-} from '@unchainedshop/types/products.media';
+import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media';
 
-const upsertAsset = async (
-  asset: File & { fileName: string },
-  { modules, userId }: Context
-) => {
+const upsertAsset = async (asset: File & { fileName: string }, { modules, userId }: Context) => {
   const { _id, fileName, url, ...assetData } = asset;
   const fileId = _id;
 
   try {
-    if (_id && (await modules.files.findFile({ fileId })))
-      throw new Error('Media already exists');
+    if (_id && (await modules.files.findFile({ fileId }))) throw new Error('Media already exists');
 
     const assetObject = await modules.files.uploadFileFromURL(
       'product-media',
@@ -25,7 +18,7 @@ const upsertAsset = async (
       {
         fileId,
       },
-      userId
+      userId,
     );
 
     if (!assetObject) throw new Error('Media not created');
@@ -36,10 +29,7 @@ const upsertAsset = async (
   }
 };
 
-const upsertProductMedia = async (
-  productMedia: ProductMedia,
-  { modules, userId }: Context
-) => {
+const upsertProductMedia = async (productMedia: ProductMedia, { modules, userId }: Context) => {
   try {
     return modules.products.media.create(productMedia, userId);
   } catch (e) {
@@ -50,10 +40,7 @@ const upsertProductMedia = async (
   }
 };
 
-export default async function upsertMedia(
-  { media, authorId, productId },
-  unchainedAPI: Context
-) {
+export default async function upsertMedia({ media, authorId, productId }, unchainedAPI: Context) {
   const { modules, userId } = unchainedAPI;
 
   const productMediaObjects = await Promise.all(
@@ -68,33 +55,28 @@ export default async function upsertMedia(
           productId,
           mediaId: file._id,
         } as ProductMedia,
-        unchainedAPI
+        unchainedAPI,
       );
 
-      if (!productMedia)
-        throw new Error(
-          `Unable to create product media object for file ${fileId}`
-        );
+      if (!productMedia) throw new Error(`Unable to create product media object for file ${fileId}`);
 
       if (content) {
         await Promise.all(
-          Object.entries(content).map(
-            async ([locale, localizedData]: [string, ProductMediaText]) => {
-              return modules.products.media.texts.upsertLocalizedText(
-                productMedia._id,
-                locale,
-                {
-                  ...localizedData,
-                  authorId,
-                },
-                userId
-              );
-            }
-          )
+          Object.entries(content).map(async ([locale, localizedData]: [string, ProductMediaText]) => {
+            return modules.products.media.texts.upsertLocalizedText(
+              productMedia._id,
+              locale,
+              {
+                ...localizedData,
+                authorId,
+              },
+              userId,
+            );
+          }),
         );
       }
       return productMedia;
-    })
+    }),
   );
 
   await modules.products.media.deleteMediaFiles({

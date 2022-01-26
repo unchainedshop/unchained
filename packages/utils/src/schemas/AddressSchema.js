@@ -12,5 +12,5 @@ export const AddressSchema = new SimpleSchema(
     regionCode: String,
     countryCode: String,
   },
-  { requiredByDefault: false }
+  { requiredByDefault: false },
 );

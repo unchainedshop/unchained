@@ -5,7 +5,7 @@ import { Currency } from '@unchainedshop/types/currencies';
 export default async function createCurrency(
   root: Root,
   { currency }: { currency: Currency },
-  { userId, modules }: Context
+  { userId, modules }: Context,
 ) {
   log('mutation createCurrency', { userId });
   const currencyId = await modules.currencies.create(
@@ -13,7 +13,7 @@ export default async function createCurrency(
       ...currency,
       authorId: userId,
     },
-    userId
+    userId,
   );
 
   return modules.currencies.findCurrency({ currencyId });

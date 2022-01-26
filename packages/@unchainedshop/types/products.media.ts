@@ -23,9 +23,7 @@ export type ProductMediaText = {
 
 export type ProductMediaModule = {
   // Queries
-  findProductMedia: (params: {
-    productMediaId: string;
-  }) => Promise<ProductMedia>;
+  findProductMedia: (params: { productMediaId: string }) => Promise<ProductMedia>;
 
   findProductMedias: (
     params: {
@@ -34,14 +32,11 @@ export type ProductMediaModule = {
       offset?: number;
       tags?: Array<string>;
     },
-    options?: FindOptions
+    options?: FindOptions,
   ) => Promise<Array<ProductMedia>>;
 
   // Mutations
-  create: (
-    data: { productId: string; mediaId: string },
-    userId: string
-  ) => Promise<ProductMedia>;
+  create: (data: { productId: string; mediaId: string }, userId: string) => Promise<ProductMedia>;
 
   delete: (productMediaId: string, userId?: string) => Promise<number>;
   deleteMediaFiles: (params: {
@@ -50,10 +45,7 @@ export type ProductMediaModule = {
     excludedProductMediaIds?: Array<_ID>;
   }) => Promise<number>;
 
-  update: (
-    productMediaId: string,
-    productMedia: ProductMedia
-  ) => Promise<ProductMedia>;
+  update: (productMediaId: string, productMedia: ProductMedia) => Promise<ProductMedia>;
   updateManualOrder: (
     params: {
       sortKeys: Array<{
@@ -61,14 +53,12 @@ export type ProductMediaModule = {
         sortKey: number;
       }>;
     },
-    userId?: string
+    userId?: string,
   ) => Promise<Array<ProductMedia>>;
 
   texts: {
     // Queries
-    findMediaTexts: (query: {
-      productMediaId: string;
-    }) => Promise<Array<ProductMediaText>>;
+    findMediaTexts: (query: { productMediaId: string }) => Promise<Array<ProductMediaText>>;
 
     findLocalizedMediaText: (query: {
       productMediaId: string;
@@ -79,23 +69,19 @@ export type ProductMediaModule = {
     updateMediaTexts: (
       productMediaId: string,
       texts: Array<ProductMediaText>,
-      userId: string
+      userId: string,
     ) => Promise<Array<ProductMediaText>>;
 
     upsertLocalizedText: (
       productMediaId: string,
       locale: string,
       text: ProductMediaText,
-      userId?: string
+      userId?: string,
     ) => Promise<ProductMediaText>;
   };
 };
 
-type HelperType<P, T> = (
-  productMedia: ProductMedia,
-  params: P,
-  context: Context
-) => T;
+type HelperType<P, T> = (productMedia: ProductMedia, params: P, context: Context) => T;
 
 export interface ProductMediaHelperTypes {
   texts: HelperType<{ forceLocale?: string }, Promise<ProductMediaText>>;

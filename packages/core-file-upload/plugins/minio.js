@@ -7,13 +7,7 @@ import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
 import { MediaObjects } from '../db';
 
-const {
-  MINIO_ACCESS_KEY,
-  MINIO_SECRET_KEY,
-  MINIO_ENDPOINT,
-  MINIO_BUCKET_NAME,
-  NODE_ENV,
-} = process.env;
+const { MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_ENDPOINT, MINIO_BUCKET_NAME, NODE_ENV } = process.env;
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 const mediaContainerRegistry = {};
 
@@ -24,7 +18,7 @@ const generateMinioUrl = (directoryName, hashedFilename) => {
 // Returns the file name with extension from its ID and url bucket name is included in the ID on insert operation
 const composeObjectName = (file) => {
   return decodeURIComponent(file.externalId).concat(
-    file.url ? file.url.substr(file.url.lastIndexOf('.')) : ''
+    file.url ? file.url.substr(file.url.lastIndexOf('.')) : '',
   );
 };
 
@@ -90,10 +84,7 @@ function downloadFromUrlToBuffer(fileUrl) {
 
 const generateRandomFileName = (fileName) => {
   const random = crypto.randomBytes(16);
-  const hash = crypto
-    .createHash('sha256')
-    .update([fileName, random].join(''))
-    .digest('hex');
+  const hash = crypto.createHash('sha256').update([fileName, random].join('')).digest('hex');
   const extension = fileName.substr(fileName.lastIndexOf('.'));
   const hashedName = hash + extension;
   return {
@@ -113,7 +104,7 @@ function bufferToStream(buffer) {
 function connectToMinio() {
   if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT) {
     console.error(
-      'Please configure Minio/S3 by providing MINIO_ACCESS_KEY,MINIO_SECRET_KEY & MINIO_ENDPOINT to use upload features'
+      'Please configure Minio/S3 by providing MINIO_ACCESS_KEY,MINIO_SECRET_KEY & MINIO_ENDPOINT to use upload features',
     );
     return null;
   }
@@ -142,12 +133,7 @@ const getObjectStats = async (fileName) => {
   return client.statObject(MINIO_BUCKET_NAME, fileName);
 };
 
-export const createSignedPutURL = async (
-  directoryName = '',
-  linkedMediaId,
-  fileName,
-  context = {}
-) => {
+export const createSignedPutURL = async (directoryName = '', linkedMediaId, fileName, context = {}) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
   const { hash, hashedName } = generateRandomFileName(fileName);
@@ -155,7 +141,7 @@ export const createSignedPutURL = async (
   const putURL = await client.presignedPutObject(
     MINIO_BUCKET_NAME,
     `${directoryName}/${hashedName}`,
-    PUT_URL_EXPIRY
+    PUT_URL_EXPIRY,
   );
   const { _id, expires } = insertMedia({
     directoryName,
@@ -193,8 +179,8 @@ export const removeObjects = async (ids) => {
               _id: true,
               url: true,
             },
-          }
-        ).map((o) => composeObjectName(o))
+          },
+        ).map((o) => composeObjectName(o)),
       );
     });
   }
@@ -224,11 +210,7 @@ export const uploadObjectStream = async (directoryName, rawFile, meta) => {
 
   const { hash, hashedName } = generateRandomFileName(fname);
 
-  await client.putObject(
-    MINIO_BUCKET_NAME,
-    `${directoryName}/${hashedName}`,
-    stream
-  );
+  await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${hashedName}`, stream);
 
   const { size } = await getObjectStats(`${directoryName}/${hashedName}`);
   const type = getMimeType(fname);
@@ -244,11 +226,7 @@ export const uploadObjectStream = async (directoryName, rawFile, meta) => {
   });
 };
 
-export const uploadFileFromURL = async (
-  directoryName,
-  { fileLink, fileName },
-  meta = {}
-) => {
+export const uploadFileFromURL = async (directoryName, { fileLink, fileName }, meta = {}) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
   const { href } = new URL(fileLink);
@@ -257,11 +235,7 @@ export const uploadFileFromURL = async (
 
   const buff = await downloadFromUrlToBuffer(fileLink);
   const stream = bufferToStream(buff);
-  await client.putObject(
-    MINIO_BUCKET_NAME,
-    `${directoryName}/${hashedName}`,
-    stream
-  );
+  await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${hashedName}`, stream);
   const { size } = await getObjectStats(`${directoryName}/${hashedName}`);
   const type = getMimeType(filename);
 
@@ -276,10 +250,7 @@ export const uploadFileFromURL = async (
   });
 };
 
-export const linkMedia = async (
-  { mediaUploadTicketId, size, type },
-  { modules }
-) => {
+export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }) => {
   const media = await modules.files.findFile({ fileId: mediaUploadTicketId });
   if (!media) throw new Error(`Media with id ${mediaUploadTicketId} Not found`);
   const { meta } = media;
@@ -296,7 +267,7 @@ export const linkMedia = async (
         expires: null,
         updated: new Date(),
       },
-    }
+    },
   );
   await mediaContainerRegistry[mediaType](mediaUploadTicketId, mediaId, {
     ...mediaMeta,
@@ -308,25 +279,14 @@ export const linkMedia = async (
 export default client;
 
 export const createUploadContainer = (directoryName, fn) => {
-  if (!mediaContainerRegistry[directoryName])
-    mediaContainerRegistry[directoryName] = fn;
+  if (!mediaContainerRegistry[directoryName]) mediaContainerRegistry[directoryName] = fn;
 
   return {
-    createSignedURL: async (
-      linkedMediaId,
-      mediaName,
-      options,
-      { userId, ...context }
-    ) => {
-      const result = await createSignedPutURL(
-        directoryName,
-        linkedMediaId,
-        mediaName,
-        {
-          userId,
-          ...options,
-        }
-      );
+    createSignedURL: async (linkedMediaId, mediaName, options, { userId, ...context }) => {
+      const result = await createSignedPutURL(directoryName, linkedMediaId, mediaName, {
+        userId,
+        ...options,
+      });
       return result;
     },
   };

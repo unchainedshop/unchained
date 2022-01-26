@@ -6,7 +6,7 @@ import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 export default async function updateFilter(
   root: Root,
   { filter, filterId }: { filter: Filter; filterId: string },
-  context: Context
+  context: Context,
 ) {
   const { modules, userId } = context;
 
@@ -14,8 +14,7 @@ export default async function updateFilter(
 
   if (!filterId) throw new InvalidIdError({ filterId });
 
-  if (!(await modules.filters.filterExists({ filterId })))
-    throw new FilterNotFoundError({ filterId });
+  if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
   return modules.filters.update(filterId, filter, context);
 }

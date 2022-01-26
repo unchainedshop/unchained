@@ -1,9 +1,6 @@
 /* @ts-ignore */
 import moment from 'moment';
-import {
-  ProductPricingDirector,
-  ProductPricingAdapter,
-} from 'meteor/unchained:core-products';
+import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-products';
 import {
   IProductPricingAdapter,
   ProductPricingAdapterContext,
@@ -35,10 +32,7 @@ export const SwissTaxCategories = {
 };
 
 const getTaxRate = (context: ProductPricingAdapterContext) => {
-  const date =
-    context.order && context.order.ordered
-      ? new Date(context.order.ordered)
-      : new Date();
+  const date = context.order && context.order.ordered ? new Date(context.order.ordered) : new Date();
   const { product } = context;
 
   if (product.tags?.includes(SwissTaxCategories.REDUCED.tag)) {
@@ -83,9 +77,7 @@ const ProductSwissTax: IProductPricingAdapter = {
 
       calculate: async () => {
         const taxRate = getTaxRate(params.context);
-        ProductPricingAdapter.log(
-          `ProductSwissTax -> Tax Multiplicator: ${taxRate}`
-        );
+        ProductPricingAdapter.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
         pricingAdapter
           .calculationSheet()
           .filterBy({ isTaxable: true })

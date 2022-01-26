@@ -1,32 +1,18 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
 import fetch from 'isomorphic-unfetch';
-import {
-  ProductPricingDirector,
-  ProductPricingAdapter,
-} from 'meteor/unchained:core-products';
+import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-products';
 
 import Cache from './utils/cache';
 
 const CACHE_PERIOD = 60 * 60 * 0.1; // 10 minutes
-const SUPPORTED_CURRENCIES = [
-  'BTC',
-  'ETH',
-  'XRP',
-  'USDT',
-  'BCH',
-  'BSV',
-  'LTC',
-  'EOS',
-  'BNB',
-  'XTZ',
-];
+const SUPPORTED_CURRENCIES = ['BTC', 'ETH', 'XRP', 'USDT', 'BCH', 'BSV', 'LTC', 'EOS', 'BNB', 'XTZ'];
 const cache = new Cache(CACHE_PERIOD);
 
 const getFiatexchangeRateForCrypto = async (base, target) => {
   const { data } = await cache.get(`${base}-${target}`, () =>
     fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${base}`, {
       method: 'GET',
-    }).then((res) => res.json())
+    }).then((res) => res.json()),
   );
   return data?.rates?.[target];
 };
@@ -51,13 +37,12 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
 
       calculate: async () => {
         const { product, country, quantity, currency } = params.context;
-        const defaultCurrency =
-          await services.countries.resolveDefaultCurrencyCode(
-            {
-              isoCode: country,
-            },
-            params.context
-          );
+        const defaultCurrency = await services.countries.resolveDefaultCurrencyCode(
+          {
+            isoCode: country,
+          },
+          params.context,
+        );
 
         const productPrice = await modules.products.prices.price(
           product,
@@ -66,7 +51,7 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
             currency: defaultCurrency,
             quantity,
           },
-          params.context
+          params.context,
         );
 
         const { calculation = [] } = pricingAdapter.calculationSheet;
@@ -74,10 +59,7 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
         if (!productPrice || !productPrice?.amount || calculation?.length)
           return pricingAdapter.calculate();
 
-        const rate = await getFiatexchangeRateForCrypto(
-          defaultCurrency,
-          currency
-        );
+        const rate = await getFiatexchangeRateForCrypto(defaultCurrency, currency);
 
         const convertedAmount = productPrice?.amount * rate;
         pricingAdapter.resetCalculation();

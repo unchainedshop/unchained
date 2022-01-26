@@ -24,8 +24,7 @@ export const configureProductPriceRounding = ({
   defaultPrecision,
   skip,
 }: PriceRoundSettings) => {
-  if (defaultPrecision)
-    ProductPriceRoundSettings.defaultPrecision = defaultPrecision;
+  if (defaultPrecision) ProductPriceRoundSettings.defaultPrecision = defaultPrecision;
   if (configurations) ProductPriceRoundSettings.configurations = configurations;
   if (skip?.length) ProductPriceRoundSettings.skip = skip;
 };
@@ -54,8 +53,7 @@ export const ProductPriceRound: IProductPricingAdapter & {
 
       calculate: async () => {
         const { currency, quantity } = params.context;
-        const { configurations, skip, defaultPrecision } =
-          ProductPriceRoundSettings;
+        const { configurations, skip, defaultPrecision } = ProductPriceRoundSettings;
         const { calculation = [] } = pricingAdapter.calculationSheet;
 
         if (skip?.indexOf(currency) !== -1) return pricingAdapter.calculate();

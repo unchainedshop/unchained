@@ -1,14 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  AssortmentProductNotFoundError,
-  InvalidIdError,
-} from '../../../errors';
+import { AssortmentProductNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function removeAssortmentProduct(
   root: Root,
   { assortmentProductId }: { assortmentProductId: string },
-  { modules, userId }: Context
+  { modules, userId }: Context,
 ) {
   log(`mutation removeAssortmentProduct ${assortmentProductId}`, {
     modules,
@@ -20,14 +17,9 @@ export default async function removeAssortmentProduct(
   const assortmentProduct = await modules.assortments.products.findProduct({
     assortmentProductId,
   });
-  if (!assortmentProduct)
-    throw new AssortmentProductNotFoundError({ assortmentProductId });
+  if (!assortmentProduct) throw new AssortmentProductNotFoundError({ assortmentProductId });
 
-  await modules.assortments.products.delete(
-    assortmentProductId,
-    { skipInvalidation: false },
-    userId
-  );
+  await modules.assortments.products.delete(assortmentProductId, { skipInvalidation: false }, userId);
 
   return assortmentProduct;
 }

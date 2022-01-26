@@ -1,16 +1,8 @@
 import { Collection } from '@unchainedshop/types/common';
-import {
-  Filter,
-  FiltersModule,
-  FilterText,
-} from '@unchainedshop/types/filters';
+import { Filter, FiltersModule, FilterText } from '@unchainedshop/types/filters';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  findLocalizedText,
-  generateDbFilterById,
-  generateDbObjectId,
-} from 'meteor/unchained:utils';
+import { findLocalizedText, generateDbFilterById, generateDbObjectId } from 'meteor/unchained:utils';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXTS'];
 
@@ -27,7 +19,7 @@ export const configureFilterTextsModule = ({
     params: { filterId: string; filterOptionValue?: string },
     locale: string,
     text: FilterText,
-    userId?: string
+    userId?: string,
   ) => {
     const { filterId, filterOptionValue } = params;
 
@@ -59,9 +51,7 @@ export const configureFilterTextsModule = ({
       upsert: true,
     });
 
-    return FilterTexts.findOne(
-      updateResult.upsertedCount === 1 ? generateDbFilterById(_id) : selector
-    );
+    return FilterTexts.findOne(updateResult.upsertedCount === 1 ? generateDbFilterById(_id) : selector);
   };
 
   return {
@@ -84,7 +74,7 @@ export const configureFilterTextsModule = ({
           filterId,
           filterOptionValue: filterOptionValue || { $eq: null },
         },
-        parsedLocale
+        parsedLocale,
       );
 
       return text;
@@ -102,9 +92,9 @@ export const configureFilterTextsModule = ({
               ...params,
               authorId: userId,
             },
-            userId
-          )
-        )
+            userId,
+          ),
+        ),
       );
 
       emit('FILTER_UPDATE_TEXTS', {

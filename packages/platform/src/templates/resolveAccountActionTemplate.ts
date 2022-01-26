@@ -1,10 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 
-const {
-  EMAIL_FROM,
-  UI_ENDPOINT,
-  EMAIL_WEBSITE_NAME = 'Unchained Webshop',
-} = process.env;
+const { EMAIL_FROM, UI_ENDPOINT, EMAIL_WEBSITE_NAME = 'Unchained Webshop' } = process.env;
 
 const mjmlTemplate = `
 <mjml>
@@ -34,8 +30,7 @@ const mjmlTemplate = `
 
 const verifyEmailEnglishConfig = {
   buttonText: 'Verify email address',
-  message:
-    'We need to ensure that this email is yours as a commercial partner.',
+  message: 'We need to ensure that this email is yours as a commercial partner.',
   subject: `${EMAIL_WEBSITE_NAME}: Verify your email address`,
 };
 
@@ -117,7 +112,7 @@ const emailConfig = {
 
 export const resolveAccountActionTemplate: TemplateResolver = async (
   { userId, action, recipientEmail, token },
-  { modules }
+  { modules },
 ) => {
   if (!token || !action) return [];
 

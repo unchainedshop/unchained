@@ -1,20 +1,10 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from '@unchainedshop/types/common';
-import {
-  Enrollment,
-  EnrollmentsModule,
-} from '@unchainedshop/types/enrollments';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Enrollment, EnrollmentsModule } from '@unchainedshop/types/enrollments';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
 import { EnrollmentStatus } from '../db/EnrollmentStatus';
@@ -40,25 +30,15 @@ export const configureEnrollmentsModule = async ({
 
   const mutations = generateDbMutations<Enrollment>(
     Enrollments,
-    EnrollmentsSchema
+    EnrollmentsSchema,
   ) as ModuleMutations<Enrollment>;
 
-  const findNewEnrollmentNumber = async (
-    enrollment: Enrollment
-  ): Promise<string> => {
+  const findNewEnrollmentNumber = async (enrollment: Enrollment): Promise<string> => {
     let enrollmentNumber: string = null;
     let index = 0;
     while (!enrollmentNumber) {
-      const newHashID = enrollmentsSettings.enrollmentNumberHashFn(
-        enrollment,
-        index
-      );
-      if (
-        (await Enrollments.find(
-          { enrollmentNumber: newHashID },
-          { limit: 1 }
-        ).count()) === 0
-      ) {
+      const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
+      if ((await Enrollments.find({ enrollmentNumber: newHashID }, { limit: 1 }).count()) === 0) {
         enrollmentNumber = newHashID;
       }
       index += 1;
@@ -68,18 +48,12 @@ export const configureEnrollmentsModule = async ({
 
   const findNextStatus = async (
     enrollment: Enrollment,
-    requestContext: Context
+    requestContext: Context,
   ): Promise<EnrollmentStatus> => {
     let status = enrollment.status as EnrollmentStatus;
-    const director = await EnrollmentDirector.actions(
-      { enrollment },
-      requestContext
-    );
+    const director = await EnrollmentDirector.actions({ enrollment }, requestContext);
 
-    if (
-      status === EnrollmentStatus.INITIAL ||
-      status === EnrollmentStatus.PAUSED
-    ) {
+    if (status === EnrollmentStatus.INITIAL || status === EnrollmentStatus.PAUSED) {
       if (await director.isValidForActivation()) {
         status = EnrollmentStatus.ACTIVE;
       }
@@ -97,7 +71,7 @@ export const configureEnrollmentsModule = async ({
   const updateStatus: EnrollmentsModule['updateStatus'] = async (
     enrollmentId,
     { status, info = '' },
-    requestContext
+    requestContext,
   ) => {
     const selector = generateDbFilterById(enrollmentId);
     const enrollment = await Enrollments.findOne(selector);
@@ -119,9 +93,7 @@ export const configureEnrollmentsModule = async ({
     switch (status) {
       case EnrollmentStatus.ACTIVE:
         /* @ts-ignore */
-        modifier.$set.enrollmentNumber = await findNewEnrollmentNumber(
-          enrollment
-        );
+        modifier.$set.enrollmentNumber = await findNewEnrollmentNumber(enrollment);
         break;
       case EnrollmentStatus.TERMINATED:
         /* @ts-ignore */
@@ -145,7 +117,7 @@ export const configureEnrollmentsModule = async ({
   const reactivateEnrollment = async (
     enrollment: Enrollment,
     params: { enrollmentContext?: any; orderIdForFirstPeriod?: string },
-    requestContext: Context
+    requestContext: Context,
   ) => {
     return enrollment;
   };
@@ -153,30 +125,22 @@ export const configureEnrollmentsModule = async ({
   const processEnrollment = async (
     enrollment: Enrollment,
     params: { enrollmentContext?: any; orderIdForFirstPeriod?: string },
-    requestContext: Context
+    requestContext: Context,
   ) => {
     let status = await findNextStatus(enrollment, requestContext);
 
     if (status === EnrollmentStatus.ACTIVE) {
-      const nextEnrollment = await reactivateEnrollment(
-        enrollment,
-        params,
-        requestContext
-      );
+      const nextEnrollment = await reactivateEnrollment(enrollment, params, requestContext);
       status = await findNextStatus(nextEnrollment, requestContext);
     }
 
-    return updateStatus(
-      enrollment._id,
-      { status, info: 'enrollment processed' },
-      requestContext
-    );
+    return updateStatus(enrollment._id, { status, info: 'enrollment processed' }, requestContext);
   };
 
   const initializeEnrollment = async (
     enrollment: Enrollment,
     params: { orderIdForFirstPeriod?: string; reason: string },
-    requestContext: Context
+    requestContext: Context,
   ) => {
     const { modules, userId } = requestContext;
 
@@ -186,19 +150,15 @@ export const configureEnrollmentsModule = async ({
     const locale = modules.users.userLocale(user, requestContext);
     const reason = 'new_enrollment';
 
-    const director = await EnrollmentDirector.actions(
-      { enrollment },
-      requestContext
-    );
+    const director = await EnrollmentDirector.actions({ enrollment }, requestContext);
     const period = await director.nextPeriod();
 
     if (period && (params.orderIdForFirstPeriod || period.isTrial)) {
-      const intializedEnrollment =
-        await modules.enrollments.addEnrollmentPeriod(
-          enrollment._id,
-          { ...period, orderId: params.orderIdForFirstPeriod },
-          userId
-        );
+      const intializedEnrollment = await modules.enrollments.addEnrollmentPeriod(
+        enrollment._id,
+        { ...period, orderId: params.orderIdForFirstPeriod },
+        userId,
+      );
 
       return processEnrollment(intializedEnrollment, params, requestContext);
     }
@@ -209,7 +169,7 @@ export const configureEnrollmentsModule = async ({
   const sendStatusToCustomer = async (
     enrollment: Enrollment,
     params: { locale?: Locale; reason?: string } = { reason: 'status_change' },
-    requestContext: Context
+    requestContext: Context,
   ) => {
     const { modules, userId } = requestContext;
 
@@ -232,25 +192,20 @@ export const configureEnrollmentsModule = async ({
           enrollmentId: enrollment._id,
         },
       },
-      userId
+      userId,
     );
 
     return enrollment;
   };
 
   const updateEnrollmentField =
-    (fieldKey: string) =>
-    async (enrollmentId: string, fieldValue: any, userId?: string) => {
+    (fieldKey: string) => async (enrollmentId: string, fieldValue: any, userId?: string) => {
       log(`Update enrollment field ${fieldKey.toUpperCase()}`, {
         enrollmentId,
         userId,
       });
 
-      await mutations.update(
-        enrollmentId,
-        { $set: { [fieldKey]: fieldValue } },
-        userId
-      );
+      await mutations.update(enrollmentId, { $set: { [fieldKey]: fieldValue } }, userId);
 
       const selector = generateDbFilterById(enrollmentId);
       const enrollment = await Enrollments.findOne(selector);
@@ -304,11 +259,7 @@ export const configureEnrollmentsModule = async ({
     },
 
     // Processing
-    terminateEnrollment: async (
-      enrollment,
-      { enrollmentContext },
-      requestContext
-    ) => {
+    terminateEnrollment: async (enrollment, { enrollmentContext }, requestContext) => {
       if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
       let updatedEnrollment = await updateStatus(
@@ -317,23 +268,19 @@ export const configureEnrollmentsModule = async ({
           status: EnrollmentStatus.TERMINATED,
           info: 'terminated manually',
         },
-        requestContext
+        requestContext,
       );
 
       updatedEnrollment = await processEnrollment(
         updatedEnrollment,
         { enrollmentContext },
-        requestContext
+        requestContext,
       );
 
       return sendStatusToCustomer(updatedEnrollment, {}, requestContext);
     },
 
-    activateEnrollment: async (
-      enrollment,
-      { enrollmentContext },
-      requestContext
-    ) => {
+    activateEnrollment: async (enrollment, { enrollmentContext }, requestContext) => {
       if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
       let updatedEnrollment = await updateStatus(
@@ -342,13 +289,13 @@ export const configureEnrollmentsModule = async ({
           status: EnrollmentStatus.ACTIVE,
           info: 'activated manually',
         },
-        requestContext
+        requestContext,
       );
 
       updatedEnrollment = await processEnrollment(
         updatedEnrollment,
         { enrollmentContext },
-        requestContext
+        requestContext,
       );
 
       return sendStatusToCustomer(updatedEnrollment, {}, requestContext);
@@ -381,7 +328,7 @@ export const configureEnrollmentsModule = async ({
 
     create: async (
       { countryCode, currencyCode, orderIdForFirstPeriod, ...enrollmentData },
-      requestContext
+      requestContext,
     ) => {
       const { userId, services } = requestContext;
 
@@ -393,7 +340,7 @@ export const configureEnrollmentsModule = async ({
           {
             isoCode: countryCode,
           },
-          requestContext
+          requestContext,
         ));
 
       const enrollmentId = await mutations.create(
@@ -406,12 +353,10 @@ export const configureEnrollmentsModule = async ({
           configuration: enrollmentData.configuration || [],
           log: [],
         },
-        userId
+        userId,
       );
 
-      const newEnrollment = await Enrollments.findOne(
-        generateDbFilterById(enrollmentId)
-      );
+      const newEnrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId));
 
       const reason = 'new_enrollment';
 
@@ -421,7 +366,7 @@ export const configureEnrollmentsModule = async ({
           orderIdForFirstPeriod,
           reason,
         },
-        requestContext
+        requestContext,
       );
 
       const enrollment = await sendStatusToCustomer(
@@ -429,7 +374,7 @@ export const configureEnrollmentsModule = async ({
         {
           reason,
         },
-        requestContext
+        requestContext,
       );
 
       emit('ENROLLMENT_CREATE', { enrollment });
@@ -472,15 +417,14 @@ export const configureEnrollmentsModule = async ({
 
       const enrollments = await Promise.all(
         items.map(async (item) => {
-          const enrollmentData =
-            await EnrollmentDirector.transformOrderItemToEnrollment(
-              item,
-              template,
-              requestContext
-            );
+          const enrollmentData = await EnrollmentDirector.transformOrderItemToEnrollment(
+            item,
+            template,
+            requestContext,
+          );
 
           return modules.enrollments.create(enrollmentData, requestContext);
-        })
+        }),
       );
 
       return enrollments;
@@ -529,7 +473,7 @@ export const configureEnrollmentsModule = async ({
           quantity: plan.quantity,
           configuration: plan.configuration,
         },
-        userId
+        userId,
       );
 
       const selector = generateDbFilterById(enrollmentId);
@@ -538,17 +482,9 @@ export const configureEnrollmentsModule = async ({
       emit('ENROLLMENT_UPDATE', { enrollment, field: 'plan' });
 
       const reason = 'updated_plan';
-      const initializedEnrollment = await initializeEnrollment(
-        enrollment,
-        { reason },
-        requestContext
-      );
+      const initializedEnrollment = await initializeEnrollment(enrollment, { reason }, requestContext);
 
-      return sendStatusToCustomer(
-        initializedEnrollment,
-        { reason },
-        requestContext
-      );
+      return sendStatusToCustomer(initializedEnrollment, { reason }, requestContext);
     },
 
     updateStatus,

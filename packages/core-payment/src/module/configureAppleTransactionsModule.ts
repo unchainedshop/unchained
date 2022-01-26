@@ -3,7 +3,7 @@ import { AppleTransaction, PaymentModule } from '@unchainedshop/types/payments';
 import { generateDbObjectId } from 'meteor/unchained:utils';
 
 export const configureAppleTransactionsModule = (
-  AppleTransactions: Collection<AppleTransaction>
+  AppleTransactions: Collection<AppleTransaction>,
 ): PaymentModule['appleTransactions'] => {
   return {
     findTransactions: async ({ transactionIdentifier }) => {

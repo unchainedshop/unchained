@@ -7,18 +7,14 @@ import transformSpecificationToProductStructure from './transformSpecificationTo
 export default async function createProduct(
   payload: any,
   { logger, authorId, createShouldUpsertIfIDExists },
-  unchainedAPI: Context
+  unchainedAPI: Context,
 ) {
   const { modules, userId } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
 
-  if (!specification)
-    throw new Error(
-      `Specification is required when creating new product ${_id}`
-    );
+  if (!specification) throw new Error(`Specification is required when creating new product ${_id}`);
 
-  if (!specification.content)
-    throw new Error(`Content is required when creating new product ${_id}`);
+  if (!specification.content) throw new Error(`Content is required when creating new product ${_id}`);
 
   const productData = transformSpecificationToProductStructure(specification);
   logger.debug('create product object', productData);
@@ -29,22 +25,19 @@ export default async function createProduct(
         _id,
         authorId,
       },
-      userId
+      userId,
     );
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
 
-    logger.debug(
-      'entity already exists, falling back to update',
-      specification
-    );
+    logger.debug('entity already exists, falling back to update', specification);
     await modules.products.update(
       _id,
       {
         ...productData,
         authorId,
       },
-      userId
+      userId,
     );
   }
 
@@ -55,7 +48,7 @@ export default async function createProduct(
       productId: _id,
       authorId,
     },
-    unchainedAPI
+    unchainedAPI,
   );
 
   logger.debug('create product variations', variations);
@@ -65,14 +58,11 @@ export default async function createProduct(
       productId: _id,
       authorId,
     },
-    unchainedAPI
+    unchainedAPI,
   );
 
   logger.debug('create product media', media);
-  await upsertMedia(
-    { media: media || [], productId: _id, authorId },
-    unchainedAPI
-  );
+  await upsertMedia({ media: media || [], productId: _id, authorId }, unchainedAPI);
 
   return {
     entity: 'PRODUCT',
