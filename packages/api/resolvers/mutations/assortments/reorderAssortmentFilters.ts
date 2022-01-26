@@ -8,7 +8,7 @@ export default async function reorderAssortmentFilters(
 ) {
   log('mutation reorderAssortmentFilters', { modules, userId });
 
-  return await modules.assortments.filters.updateManualOrder({
+  return modules.assortments.filters.updateManualOrder({
     sortKeys: params.sortKeys,
   });
 }

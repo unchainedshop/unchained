@@ -14,7 +14,7 @@ export default async function prepareUserAvatarUpload(
     userId,
   });
 
-  return await modules.files.createSignedURL(
+  return modules.files.createSignedURL(
     {
       directoryName: 'user-avatars',
       fileName: params.mediaName,

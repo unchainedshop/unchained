@@ -11,5 +11,7 @@ export default async function paymentProvider(
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
 
-  return await modules.payment.paymentProviders.findProvider({ paymentProviderId });
+  return modules.payment.paymentProviders.findProvider({
+    paymentProviderId,
+  });
 }

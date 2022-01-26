@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
+import { WarehousingProvider } from '@unchainedshop/types/warehousing';
 import {
   WarehousingProviderNotFoundError,
   InvalidIdError,
 } from '../../../errors';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing';
 
 export default async function updateWarehousingProvider(
   root: Root,
@@ -32,5 +32,5 @@ export default async function updateWarehousingProvider(
     userId
   );
 
-  return await modules.warehousing.findProvider({ warehousingProviderId })
+  return modules.warehousing.findProvider({ warehousingProviderId });
 }

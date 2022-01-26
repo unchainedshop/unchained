@@ -8,7 +8,7 @@ export const registerPaymentCredentialsService: RegisterPaymentCredentialsServic
       paymentContext,
       requestContext
     );
-    
+
     if (!registration) return null;
 
     const paymentCredentialsId =
@@ -18,7 +18,7 @@ export const registerPaymentCredentialsService: RegisterPaymentCredentialsServic
         ...registration,
       });
 
-    return await modules.payment.paymentCredentials.findPaymentCredential({
+    return modules.payment.paymentCredentials.findPaymentCredential({
       paymentCredentialsId,
       userId,
       paymentProviderId,

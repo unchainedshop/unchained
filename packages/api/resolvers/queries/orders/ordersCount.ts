@@ -8,5 +8,5 @@ export default async function ordersCount(
 ) {
   log(`query ordersCount: ${includeCarts ? 'includeCart' : ''}`, { userId });
 
-  return await modules.orders.count({ includeCarts });
+  return modules.orders.count({ includeCarts });
 }

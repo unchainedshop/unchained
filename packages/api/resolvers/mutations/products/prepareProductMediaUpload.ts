@@ -8,7 +8,7 @@ export default async function prepareProductMediaUpload(
 ) {
   log('mutation prepareProductMediaUpload', { mediaName, userId });
 
-  return await modules.files.createSignedURL(
+  return modules.files.createSignedURL(
     {
       directoryName: 'product-media',
       fileName: mediaName,

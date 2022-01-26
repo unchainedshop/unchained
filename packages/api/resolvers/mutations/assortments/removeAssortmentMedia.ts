@@ -20,7 +20,7 @@ export default async function removeAssortmentMedia(
   if (!assortmentMedia)
     throw new AssortmentMediaNotFoundError({ assortmentMediaId });
 
-  await modules.files.delete(assortmentMedia.mediaId, userId)
+  await modules.files.delete(assortmentMedia.mediaId, userId);
   await modules.assortments.media.delete(assortmentMediaId, userId);
 
   return assortmentMedia;

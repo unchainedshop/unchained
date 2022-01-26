@@ -4,9 +4,9 @@ import { Filter, FindOptions, Query, TimestampFields, _ID } from './common';
 export type Assortment = {
   _id?: _ID;
   authorId: string;
-  isActive: Boolean;
-  isBase: Boolean;
-  isRoot: Boolean;
+  isActive: boolean;
+  isBase: boolean;
+  isRoot: boolean;
   meta?: any;
   sequence: number;
   slugs: Array<string>;

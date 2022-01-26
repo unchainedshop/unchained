@@ -73,7 +73,7 @@ const buildFindSelector = ({
 
 export const configureProductsModule = async ({
   db,
-}: ModuleInput<{}>): Promise<ProductsModule> => {
+}: ModuleInput<Record<string, never>>): Promise<ProductsModule> => {
   registerEvents(PRODUCT_EVENTS);
 
   const { Products, ProductTexts } = await ProductsCollection(db);
@@ -167,7 +167,7 @@ export const configureProductsModule = async ({
         ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }
         : ProductStatus.ACTIVE,
     };
-    return await Products.find(selector).toArray();
+    return Products.find(selector).toArray();
   };
 
   /*
@@ -189,7 +189,7 @@ export const configureProductsModule = async ({
       const selector = productId
         ? generateDbFilterById(productId)
         : { slugs: slug };
-      return await Products.findOne(selector, {});
+      return Products.findOne(selector, {});
     },
 
     findProducts: async ({ limit, offset, ...query }) => {
@@ -202,7 +202,7 @@ export const configureProductsModule = async ({
 
       const products = Products.find(buildFindSelector(query), options);
 
-      return await products.toArray();
+      return products.toArray();
     },
 
     findProductSiblings: async ({
@@ -220,11 +220,11 @@ export const configureProductsModule = async ({
 
       const productOptions = { skip: offset, limit };
 
-      return await Products.find(productSelector, productOptions).toArray();
+      return Products.find(productSelector, productOptions).toArray();
     },
 
     count: async (query) => {
-      return await Products.find(buildFindSelector(query)).count();
+      return Products.find(buildFindSelector(query)).count();
     },
 
     productExists: async ({ productId, slug }) => {
@@ -338,7 +338,7 @@ export const configureProductsModule = async ({
         requestContext
       );
 
-      return await director.calculate();
+      return director.calculate();
     },
 
     // Mutations
@@ -553,7 +553,7 @@ export const configureProductsModule = async ({
         productSelector,
         sort,
       }) => {
-        return await findPreservingIds(Products)(productSelector, productIds, {
+        return findPreservingIds(Products)(productSelector, productIds, {
           skip: offset,
           limit,
           sort,

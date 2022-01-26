@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
-import { WorkTypeInvalidError } from '../../../errors';
 import { Context, Root } from '@unchainedshop/types/api';
 import { Work } from '@unchainedshop/types/worker';
+import { WorkTypeInvalidError } from '../../../errors';
 
 export default async function doWork(root: Root, work: Work, context: Context) {
   const { modules, userId } = context;
@@ -13,5 +13,5 @@ export default async function doWork(root: Root, work: Work, context: Context) {
 
   if (!type) throw new WorkTypeInvalidError({ type });
 
-  return await modules.worker.doWork(work, context);
+  return modules.worker.doWork(work, context);
 }

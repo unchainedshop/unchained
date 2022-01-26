@@ -158,12 +158,15 @@ export const configureEnrollmentsModule = async ({
     let status = await findNextStatus(enrollment, requestContext);
 
     if (status === EnrollmentStatus.ACTIVE) {
-      const nextEnrollment = await reactivateEnrollment(enrollment, params, requestContext);
+      const nextEnrollment = await reactivateEnrollment(
+        enrollment,
+        params,
+        requestContext
+      );
       status = await findNextStatus(nextEnrollment, requestContext);
     }
 
-
-    return await updateStatus(
+    return updateStatus(
       enrollment._id,
       { status, info: 'enrollment processed' },
       requestContext
@@ -197,14 +200,10 @@ export const configureEnrollmentsModule = async ({
           userId
         );
 
-      return await processEnrollment(
-        intializedEnrollment,
-        params,
-        requestContext
-      );
+      return processEnrollment(intializedEnrollment, params, requestContext);
     }
 
-    return await processEnrollment(enrollment, params, requestContext);
+    return processEnrollment(enrollment, params, requestContext);
   };
 
   const sendStatusToCustomer = async (
@@ -214,7 +213,7 @@ export const configureEnrollmentsModule = async ({
   ) => {
     const { modules, userId } = requestContext;
 
-    let locale = params.locale;
+    let { locale } = params;
     if (!locale) {
       const user = await modules.users.findUser({
         userId: enrollment.userId,
@@ -273,11 +272,11 @@ export const configureEnrollmentsModule = async ({
         ? generateDbFilterById(enrollmentId)
         : { 'periods.orderId': orderId };
 
-      return await Enrollments.findOne(selector, options);
+      return Enrollments.findOne(selector, options);
     },
 
     findEnrollments: async ({ status, userId, limit, offset }) => {
-      let selector: Query = status ? { status: { $in: status } } : {};
+      const selector: Query = status ? { status: { $in: status } } : {};
       if (userId) {
         selector.userId = userId;
       }
@@ -287,7 +286,7 @@ export const configureEnrollmentsModule = async ({
         limit,
       });
 
-      return await enrollments.toArray();
+      return enrollments.toArray();
     },
 
     // Transformations
@@ -327,7 +326,7 @@ export const configureEnrollmentsModule = async ({
         requestContext
       );
 
-      return await sendStatusToCustomer(updatedEnrollment, {}, requestContext);
+      return sendStatusToCustomer(updatedEnrollment, {}, requestContext);
     },
 
     activateEnrollment: async (
@@ -346,13 +345,13 @@ export const configureEnrollmentsModule = async ({
         requestContext
       );
 
-      updatedEnrollment= await processEnrollment(
+      updatedEnrollment = await processEnrollment(
         updatedEnrollment,
         { enrollmentContext },
         requestContext
       );
 
-      return await sendStatusToCustomer(updatedEnrollment, {}, requestContext);
+      return sendStatusToCustomer(updatedEnrollment, {}, requestContext);
     },
 
     // Mutations
@@ -480,10 +479,7 @@ export const configureEnrollmentsModule = async ({
               requestContext
             );
 
-          return await modules.enrollments.create(
-            enrollmentData,
-            requestContext
-          );
+          return modules.enrollments.create(enrollmentData, requestContext);
         })
       );
 
@@ -509,7 +505,7 @@ export const configureEnrollmentsModule = async ({
         },
       });
 
-      return await Enrollments.findOne(selector);
+      return Enrollments.findOne(selector);
     },
 
     updateBillingAddress: updateEnrollmentField('billingAddress'),
@@ -548,7 +544,7 @@ export const configureEnrollmentsModule = async ({
         requestContext
       );
 
-      return await sendStatusToCustomer(
+      return sendStatusToCustomer(
         initializedEnrollment,
         { reason },
         requestContext

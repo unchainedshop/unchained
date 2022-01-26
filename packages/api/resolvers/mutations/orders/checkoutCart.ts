@@ -34,8 +34,7 @@ export default async function checkoutCart(
       });
     });
 
-  console.log('CHECKOUT ORDER', order)
+  console.log('CHECKOUT ORDER', order);
 
-  return order
+  return order;
 }
-

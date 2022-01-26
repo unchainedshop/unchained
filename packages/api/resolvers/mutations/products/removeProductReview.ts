@@ -16,7 +16,7 @@ export default async function removeProductReview(
 
   await modules.products.reviews.delete(productReviewId, userId);
 
-  return await modules.products.reviews.findProductReview({
+  return modules.products.reviews.findProductReview({
     productReviewId,
   });
 }

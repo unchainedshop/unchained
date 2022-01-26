@@ -183,7 +183,7 @@ export const configureOrderModuleProcessing = ({
     order: Order,
     requestContext: Context
   ): Promise<OrderStatus | null> => {
-    let status = order.status;
+    let { status } = order;
 
     if (status === null /* OrderStatus.OPEN */ || !status) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
@@ -191,14 +191,14 @@ export const configureOrderModuleProcessing = ({
         status = OrderStatus.PENDING;
       }
     }
-    
+
     if (status === OrderStatus.PENDING) {
       if (await isAutoConfirmationEnabled(order, requestContext)) {
         emit('ORDER_CONFIRMED', { order });
         status = OrderStatus.CONFIRMED;
       }
     }
-    
+
     if (status === OrderStatus.CONFIRMED) {
       const isFullfilled = await isAutoFullfillmentEnabled(
         order,
@@ -331,7 +331,7 @@ export const configureOrderModuleProcessing = ({
         requestContext
       );
 
-      return await modules.orders.create(
+      return modules.orders.create(
         {
           // TODO: Check with Pascal
           currency,
@@ -364,7 +364,7 @@ export const configureOrderModuleProcessing = ({
             userId: toCart.userId,
           },
         });
-        return await updateCalculation(fromCartId, requestContext);
+        return updateCalculation(fromCartId, requestContext);
       }
 
       // Move positions
@@ -378,7 +378,7 @@ export const configureOrderModuleProcessing = ({
       );
 
       await updateCalculation(fromCartId, requestContext);
-      return await updateCalculation(toCartId, requestContext);
+      return updateCalculation(toCartId, requestContext);
     },
 
     processOrder: async (initialOrder, params, requestContext) => {
@@ -516,7 +516,7 @@ export const configureOrderModuleProcessing = ({
         // ???
       }
 
-      return await updateStatus(
+      return updateStatus(
         order._id,
         { status: nextStatus, info: 'order processed' },
         requestContext

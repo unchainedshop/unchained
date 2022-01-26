@@ -13,8 +13,11 @@ export default async function updateOrderDeliveryPickUp(
   context: Context
 ) {
   const { modules, userId } = context;
-  const { orderDeliveryId, orderPickUpLocationId, meta } = params
-  log(`mutation updateOrderDeliveryPickUp ${orderDeliveryId} with location ${orderPickUpLocationId}`, { userId });
+  const { orderDeliveryId, orderPickUpLocationId, meta } = params;
+  log(
+    `mutation updateOrderDeliveryPickUp ${orderDeliveryId} with location ${orderPickUpLocationId}`,
+    { userId }
+  );
 
   if (!orderDeliveryId) throw new InvalidIdError({ orderDeliveryId });
 
@@ -27,7 +30,7 @@ export default async function updateOrderDeliveryPickUp(
     deliveryProviderId: orderDelivery.deliveryProviderId,
   });
   const deliveryProviderType = provider?.type;
-  
+
   if (deliveryProviderType !== DeliveryProviderType.PICKUP)
     throw new OrderDeliveryTypeError({
       orderDeliveryId,
@@ -35,9 +38,12 @@ export default async function updateOrderDeliveryPickUp(
       required: DeliveryProviderType.PICKUP,
     });
 
-  return await modules.orders.deliveries.updateDelivery(
+  return modules.orders.deliveries.updateDelivery(
     orderDeliveryId,
-    { orderId: orderDelivery.orderId, context: { orderPickUpLocationId, meta } },
+    {
+      orderId: orderDelivery.orderId,
+      context: { orderPickUpLocationId, meta },
+    },
     context
   );
 }

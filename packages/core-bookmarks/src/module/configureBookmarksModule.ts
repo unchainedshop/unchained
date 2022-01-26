@@ -16,7 +16,7 @@ const BOOKMARK_EVENTS: string[] = [
 
 export const configureBookmarksModule = async ({
   db,
-}: ModuleInput<{}>): Promise<BookmarksModule> => {
+}: ModuleInput<Record<string, never>>): Promise<BookmarksModule> => {
   registerEvents(BOOKMARK_EVENTS);
 
   const Bookmarks = await BookmarksCollection(db);
@@ -71,7 +71,7 @@ export const configureBookmarksModule = async ({
       );
       return result.upsertedCount;
     },
-    
+
     deleteByUserId: async (toUserId, userId) => {
       const result = await Bookmarks.updateMany(
         { userId: toUserId },

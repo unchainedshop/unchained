@@ -21,11 +21,11 @@ export interface ProductReviewHelperTypes {
 }
 export const ProductReview: ProductReviewHelperTypes = {
   author: async (obj, _, { modules }) => {
-    return await modules.users.findUser({ userId: obj.authorId });
+    return modules.users.findUser({ userId: obj.authorId });
   },
 
   product: async (obj, _, { modules }) => {
-    return await modules.products.findProduct({ productId: obj.productId });
+    return modules.products.findProduct({ productId: obj.productId });
   },
 
   ownVotes: async (obj, _, { modules, userId }) => {

@@ -35,7 +35,7 @@ export const resolveQuotationStatusTemplate: TemplateResolver = async (
     }));
 
   const subject = `${EMAIL_WEBSITE_NAME}: Updated Quotation / ${quotation.quotationNumber}`;
-  
+
   const data = {
     locale,
     quotation,

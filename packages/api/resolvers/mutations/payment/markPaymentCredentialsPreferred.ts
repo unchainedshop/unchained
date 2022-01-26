@@ -28,7 +28,7 @@ export default async function makePaymentCredentialsPreferred(
     userId,
   });
 
-  return await modules.payment.paymentCredentials.findPaymentCredential({
+  return modules.payment.paymentCredentials.findPaymentCredential({
     paymentCredentialsId,
   });
 }

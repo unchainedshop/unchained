@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
-import { InvalidIdError } from '../../../errors';
 import { Root, Context } from '@unchainedshop/types/api';
+import { InvalidIdError } from '../../../errors';
 
 export default async function productReview(
   root: Root,
@@ -11,5 +11,5 @@ export default async function productReview(
 
   if (!productReviewId) throw new InvalidIdError({ productReviewId });
 
-  return await modules.products.reviews.findProductReview({ productReviewId });
+  return modules.products.reviews.findProductReview({ productReviewId });
 }

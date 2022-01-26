@@ -8,7 +8,7 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
   },
 
   async configurationError(obj, _, context) {
-    return await context.modules.payment.paymentProviders.configurationError(
+    return context.modules.payment.paymentProviders.configurationError(
       obj,
       context
     );

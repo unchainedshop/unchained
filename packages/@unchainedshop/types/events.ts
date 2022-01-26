@@ -1,4 +1,11 @@
-import { ModuleCreateMutation, Query, TimestampFields, _ID, FindOptions, Sort } from './common';
+import {
+  ModuleCreateMutation,
+  Query,
+  TimestampFields,
+  _ID,
+  FindOptions,
+  Sort,
+} from './common';
 
 export type Event = {
   _id?: _ID;

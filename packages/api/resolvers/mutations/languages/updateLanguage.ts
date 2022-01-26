@@ -17,5 +17,5 @@ export default async function updateLanguage(
 
   await modules.languages.update(languageId, language, userId);
 
-  return await modules.languages.findLanguage({ languageId });
+  return modules.languages.findLanguage({ languageId });
 }

@@ -21,6 +21,6 @@ export default async function changePassword(
   }
 
   const success = await modules.accounts.changePassword(userId, params);
-  
+
   return { success };
 }

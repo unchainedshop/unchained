@@ -162,8 +162,8 @@ export const configureQuotationsModule = async ({
   ) => {
     const { modules, userId } = requestContext;
 
-    const quotationId = initialQuotation._id
-    let quotation = initialQuotation
+    const quotationId = initialQuotation._id;
+    let quotation = initialQuotation;
     let nextStatus = await findNextStatus(quotation, requestContext);
     const director = QuotationDirector.actions({ quotation }, requestContext);
 
@@ -190,12 +190,15 @@ export const configureQuotationsModule = async ({
     nextStatus = await findNextStatus(quotation, requestContext);
     if (nextStatus === QuotationStatus.PROPOSED) {
       const proposal = await director.quote();
-      quotation = await modules.quotations.updateProposal(quotation._id, proposal, userId);
+      quotation = await modules.quotations.updateProposal(
+        quotation._id,
+        proposal,
+        userId
+      );
       nextStatus = await findNextStatus(quotation, requestContext);
     }
 
-    
-    return await updateStatus(
+    return updateStatus(
       quotation._id,
       { status: nextStatus, info: 'quotation processed' },
       requestContext.userId
@@ -265,7 +268,7 @@ export const configureQuotationsModule = async ({
 
     findQuotation: async ({ quotationId }, options) => {
       const selector = generateDbFilterById(quotationId);
-      return await Quotations.findOne(selector, options);
+      return Quotations.findOne(selector, options);
     },
 
     findQuotations: async ({ limit, offset, ...query }, options) => {
@@ -274,7 +277,7 @@ export const configureQuotationsModule = async ({
         skip: offset,
       });
 
-      return await quotations.toArray();
+      return quotations.toArray();
     },
 
     // Transformations
@@ -314,7 +317,7 @@ export const configureQuotationsModule = async ({
         requestContext
       );
 
-      return await sendStatusToCustomer(updatedQuotation, requestContext);
+      return sendStatusToCustomer(updatedQuotation, requestContext);
     },
 
     proposeQuotation: async (
@@ -339,7 +342,7 @@ export const configureQuotationsModule = async ({
         requestContext
       );
 
-      return await sendStatusToCustomer(updatedQuotation, requestContext);
+      return sendStatusToCustomer(updatedQuotation, requestContext);
     },
 
     rejectQuotation: async (
@@ -364,7 +367,7 @@ export const configureQuotationsModule = async ({
         requestContext
       );
 
-      return await sendStatusToCustomer(updatedQuotation, requestContext);
+      return sendStatusToCustomer(updatedQuotation, requestContext);
     },
 
     verifyQuotation: async (
@@ -389,7 +392,7 @@ export const configureQuotationsModule = async ({
         requestContext
       );
 
-      return await sendStatusToCustomer(updatedQuotation, requestContext);
+      return sendStatusToCustomer(updatedQuotation, requestContext);
     },
 
     transformItemConfiguration: async (
@@ -398,7 +401,7 @@ export const configureQuotationsModule = async ({
       requestContext
     ) => {
       const director = QuotationDirector.actions({ quotation }, requestContext);
-      return await director.transformItemConfiguration(configuration);
+      return director.transformItemConfiguration(configuration);
     },
 
     // Mutations

@@ -13,7 +13,7 @@ Npm.depends({
 Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
-  api.use('typescript')
+  api.use('typescript');
 
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:events@1.0.0-beta15');
@@ -30,5 +30,4 @@ Package.onTest((api) => {
   api.use('unchained:core-currencies');
 
   api.mainModule('tests/currencies-index.test.ts');
-
 });

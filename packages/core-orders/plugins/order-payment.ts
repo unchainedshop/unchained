@@ -39,7 +39,7 @@ const OrderPayment: IOrderPricingAdapter = {
           }
         }
 
-        return await pricingAdapter.calculate();
+        return pricingAdapter.calculate();
       },
     };
   },

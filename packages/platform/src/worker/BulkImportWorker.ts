@@ -32,7 +32,7 @@ const unpackPayload = async ({ payloadId, ...options }) => {
   });
 };
 
-export const BulkImportWorker: IWorkerAdapter<any, {}> = {
+export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
   ...BaseAdapter,
 
   key: 'shop.unchained.worker-plugin.bulk-import',
@@ -58,7 +58,6 @@ export const BulkImportWorker: IWorkerAdapter<any, {}> = {
         },
         requestContext
       );
-      let i = 0;
       await events.reduce(async (currentEventPromise, nextEvent) => {
         await currentEventPromise;
         return bulkImporter.prepare(nextEvent);

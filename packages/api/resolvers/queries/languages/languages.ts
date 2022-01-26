@@ -17,7 +17,7 @@ export default async function languages(
     { userId }
   );
 
-  return await modules.languages.findLanguages({
+  return modules.languages.findLanguages({
     limit,
     offset,
     includeInactive,

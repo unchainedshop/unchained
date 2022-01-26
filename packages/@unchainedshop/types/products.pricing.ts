@@ -6,7 +6,7 @@ import {
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
-  PricingCalculation
+  PricingCalculation,
 } from './pricing';
 import { Product } from './products';
 import { User } from './user';
@@ -24,10 +24,11 @@ export interface ProductPricingCalculation extends PricingCalculation {
   rate?: number;
 }
 
-export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
+export interface ProductPricingAdapterContext
+  extends BasePricingAdapterContext {
   country: string;
   currency: string;
-  discounts: Array<OrderDiscount>
+  discounts: Array<OrderDiscount>;
   order: Order;
   product: Product;
   quantity: number;
@@ -58,12 +59,11 @@ export interface IProductPricingSheet
   };
 }
 
-export interface IProductPricingAdapter
-  extends IPricingAdapter<
-    ProductPricingAdapterContext,
-    ProductPricingCalculation,
-    IProductPricingSheet
-  > {}
+export type IProductPricingAdapter = IPricingAdapter<
+  ProductPricingAdapterContext,
+  ProductPricingCalculation,
+  IProductPricingSheet
+>;
 
 export interface IProductPricingDirector
   extends IPricingDirector<

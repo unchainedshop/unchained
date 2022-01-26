@@ -16,5 +16,5 @@ export default async function removeEmail(
 
   await modules.accounts.removeEmail(normalizedUserId, params.email);
 
-  return await modules.users.findUser({ userId: normalizedUserId });
+  return modules.users.findUser({ userId: normalizedUserId });
 }

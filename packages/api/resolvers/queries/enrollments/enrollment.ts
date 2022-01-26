@@ -11,5 +11,5 @@ export default async function enrollment(
 
   if (!enrollmentId) throw new InvalidIdError({ enrollmentId });
 
-  return await modules.enrollments.findEnrollment({ enrollmentId });
+  return modules.enrollments.findEnrollment({ enrollmentId });
 }

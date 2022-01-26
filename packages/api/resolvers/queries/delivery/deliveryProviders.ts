@@ -9,5 +9,5 @@ export default async function deliveryProviders(
 ) {
   log(`query deliveryProviders ${type}`, { userId });
 
-  return await modules.delivery.findProviders({ type });
+  return modules.delivery.findProviders({ type });
 }

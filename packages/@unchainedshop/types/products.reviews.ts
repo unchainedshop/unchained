@@ -53,7 +53,11 @@ export type ProductReviewsModule = {
 
   delete: (productPreviewId: string, userId?: string) => Promise<number>;
 
-  update: (productReviewId: string, doc: ProductReview, userId?: string) => Promise<ProductReview>
+  update: (
+    productReviewId: string,
+    doc: ProductReview,
+    userId?: string
+  ) => Promise<ProductReview>;
 
   /*
    * Product review votes

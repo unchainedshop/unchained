@@ -9,7 +9,7 @@ export const PlanProduct: PlanProductHelperTypes = {
 
   catalogPrice: async (obj, { quantity, currency }, requestContext) => {
     const { modules, countryContext } = requestContext;
-    return await modules.products.prices.price(
+    return modules.products.prices.price(
       obj,
       {
         country: countryContext,
@@ -26,7 +26,7 @@ export const PlanProduct: PlanProductHelperTypes = {
     requestContext
   ) => {
     const { countryContext, modules } = requestContext;
-    return await modules.products.prices.userPrice(
+    return modules.products.prices.userPrice(
       obj,
       { quantity, currency, country: countryContext, useNetPrice },
       requestContext
@@ -35,7 +35,7 @@ export const PlanProduct: PlanProductHelperTypes = {
 
   leveledCatalogPrices: async (obj, { currency }, requestContext) => {
     const { countryContext, modules } = requestContext;
-    return await modules.products.prices.catalogPricesLeveled(
+    return modules.products.prices.catalogPricesLeveled(
       obj,
       { currency, country: countryContext },
       requestContext
@@ -44,7 +44,7 @@ export const PlanProduct: PlanProductHelperTypes = {
 
   simulatedDiscounts: async (obj, { quantity }, requestContext) => {
     // const { modules, countryContext } = requestContext;
-    // return await modules.products.prices.userDiscounts(
+    // return modules.products.prices.userDiscounts(
     //   {
     //     quantity,
     //     country: countryContext,

@@ -13,7 +13,7 @@ export const ProductVariationAssignment: ProductVariationAssignmentHelperTypes =
       }));
     },
     product: async ({ assignment }, _, { modules }) => {
-      return await modules.products.findProduct({
+      return modules.products.findProduct({
         productId: assignment.productId,
       });
     },

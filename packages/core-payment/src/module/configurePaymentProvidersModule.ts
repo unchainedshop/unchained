@@ -72,7 +72,7 @@ export const configurePaymentProvidersModule = (
 
     /* @ts-ignore */
     findProvider: async ({ paymentProviderId, ...query }, options) => {
-      return await PaymentProviders.findOne(
+      return PaymentProviders.findOne(
         paymentProviderId ? generateDbFilterById(paymentProviderId) : query,
         options
       );
@@ -83,7 +83,7 @@ export const configurePaymentProvidersModule = (
         buildFindSelector(query),
         options
       );
-      return await providers.toArray();
+      return providers.toArray();
     },
 
     providerExists: async ({ paymentProviderId }) => {
@@ -136,7 +136,7 @@ export const configurePaymentProvidersModule = (
     // Payment Adapter
 
     configurationError: async (paymentProvider, requestContext) => {
-      return await PaymentDirector.actions(
+      return PaymentDirector.actions(
         paymentProvider,
         getDefaultContext(),
         requestContext
@@ -148,7 +148,7 @@ export const configurePaymentProvidersModule = (
         pricingContext,
         requestContext
       );
-      return await pricing.calculate();
+      return pricing.calculate();
     },
 
     isActive: async (paymentProviderId, paymentContext, requestContext) => {

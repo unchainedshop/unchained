@@ -86,7 +86,8 @@ const ProductSwissTax: IProductPricingAdapter = {
         ProductPricingAdapter.log(
           `ProductSwissTax -> Tax Multiplicator: ${taxRate}`
         );
-        pricingAdapter.calculationSheet()
+        pricingAdapter
+          .calculationSheet()
           .filterBy({ isTaxable: true })
           .forEach(({ isNetPrice, ...row }) => {
             if (!isNetPrice) {
@@ -112,7 +113,7 @@ const ProductSwissTax: IProductPricingAdapter = {
               });
             }
           });
-        return await pricingAdapter.calculate();
+        return pricingAdapter.calculate();
       },
     };
   },

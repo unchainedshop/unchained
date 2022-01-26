@@ -9,7 +9,7 @@ export default async (
   { modules, userId }: Context
 ) => {
   log('mutation createPaymentProvider', { userId });
-  
+
   const provider = await modules.payment.paymentProviders.create(
     {
       ...paymentProvider,

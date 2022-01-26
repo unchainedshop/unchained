@@ -72,7 +72,7 @@ const userIdsThatVoted: ProductReviewsModule['votes']['userIdsThatVoted'] = (
 
 export const configureProductReviewsModule = async ({
   db,
-}: ModuleInput<{}>): Promise<ProductReviewsModule> => {
+}: ModuleInput<Record<string, never>>): Promise<ProductReviewsModule> => {
   registerEvents(PRODUCT_REVIEW_EVENTS);
 
   const { ProductReviews } = await ProductReviewsCollection(db);
@@ -93,9 +93,7 @@ export const configureProductReviewsModule = async ({
   return {
     // Queries
     findProductReview: async ({ productReviewId }) => {
-      return await ProductReviews.findOne(
-        generateDbFilterById(productReviewId)
-      );
+      return ProductReviews.findOne(generateDbFilterById(productReviewId));
     },
 
     findProductReviews: async ({ offset, limit, sort, ...query }) => {
@@ -105,11 +103,11 @@ export const configureProductReviewsModule = async ({
         sort: buildSortOptions(sort || [{ key: 'rating', value: 'DESC' }]),
       });
 
-      return await reviewsList.toArray();
+      return reviewsList.toArray();
     },
 
     count: async (query) => {
-      return await ProductReviews.find(buildFindSelector(query)).count();
+      return ProductReviews.find(buildFindSelector(query)).count();
     },
 
     reviewExists: async ({ productReviewId }) => {

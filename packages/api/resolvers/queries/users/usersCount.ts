@@ -19,5 +19,5 @@ export default async function usersCount(
     { userId }
   );
 
-  return await modules.users.count({ includeGuests, queryString });
+  return modules.users.count({ includeGuests, queryString });
 }

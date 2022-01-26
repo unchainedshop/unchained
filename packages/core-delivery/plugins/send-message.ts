@@ -37,7 +37,7 @@ const SendMessage: IDeliveryAdapter = {
       send: async (transactionContext) => {
         const { modules, order, userId } = context;
 
-        return await modules.worker.addWork(
+        return modules.worker.addWork(
           {
             type: 'MESSAGE',
             retries: 0,

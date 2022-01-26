@@ -22,7 +22,7 @@ export default async function updateFilterTexts(
   const filter = await modules.filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
 
-  return await modules.filters.texts.updateTexts(
+  return modules.filters.texts.updateTexts(
     { filterId, filterOptionValue },
     texts,
     userId

@@ -49,7 +49,7 @@ export const configurePaymentCredentialsModule = (
       { paymentCredentialsId, userId, paymentProviderId },
       options
     ) => {
-      return await PaymentCredentials.findOne(
+      return PaymentCredentials.findOne(
         paymentCredentialsId
           ? generateDbFilterById(paymentCredentialsId)
           : { userId, paymentProviderId },
@@ -59,7 +59,7 @@ export const configurePaymentCredentialsModule = (
 
     findPaymentCredentials: async (query, options) => {
       const credentials = PaymentCredentials.find(query, options);
-      return await credentials.toArray();
+      return credentials.toArray();
     },
 
     upsertCredentials: async ({
@@ -113,7 +113,7 @@ export const configurePaymentCredentialsModule = (
 
     removeCredentials: async (paymentCredentialsId) => {
       const selector = generateDbFilterById(paymentCredentialsId);
-      const paymentCredentials = await PaymentCredentials.findOne(selector)
+      const paymentCredentials = await PaymentCredentials.findOne(selector);
       await PaymentCredentials.deleteOne(selector);
       return paymentCredentials;
     },

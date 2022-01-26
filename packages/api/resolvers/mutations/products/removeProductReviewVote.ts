@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors';
 import { ProductReviewVoteType } from '@unchainedshop/types/products.reviews';
+import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function removeProductReviewVote(
   root: Root,
@@ -19,7 +19,7 @@ export default async function removeProductReviewVote(
   });
   if (!productReview) throw new ProductReviewNotFoundError({ productReviewId });
 
-  return await modules.products.reviews.votes.removeVote(
+  return modules.products.reviews.votes.removeVote(
     productReviewId,
     { type, userId },
     userId

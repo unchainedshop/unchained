@@ -8,9 +8,9 @@ export const ProductCatalogPrice: ProductCatalogPriceHelperTypes = {
     return isNetPrice || false;
   },
   country: async ({ countryCode }, _, { modules }) => {
-    return await modules.countries.findCountry({ isoCode: countryCode });
+    return modules.countries.findCountry({ isoCode: countryCode });
   },
   currency: async ({ currencyCode }, _, { modules }) => {
-    return await modules.currencies.findCurrency({ isoCode: currencyCode });
+    return modules.currencies.findCurrency({ isoCode: currencyCode });
   },
 };

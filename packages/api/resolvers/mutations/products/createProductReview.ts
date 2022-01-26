@@ -1,8 +1,8 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 
-import { InvalidIdError, ProductNotFoundError } from '../../../errors';
 import { ProductReview } from '@unchainedshop/types/products.reviews';
+import { InvalidIdError, ProductNotFoundError } from '../../../errors';
 
 export default async function createProductReview(
   root: Root,
@@ -19,7 +19,7 @@ export default async function createProductReview(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  return await modules.products.reviews.create(
+  return modules.products.reviews.create(
     {
       productId,
       authorId: userId,

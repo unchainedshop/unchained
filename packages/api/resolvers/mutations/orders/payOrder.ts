@@ -42,5 +42,5 @@ export default async function payOrder(
 
   await modules.orders.payments.markAsPaid(payment, null, userId);
 
-  return await modules.orders.processOrder(order, {}, context);
+  return modules.orders.processOrder(order, {}, context);
 }

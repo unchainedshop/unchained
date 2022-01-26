@@ -41,7 +41,7 @@ const ProductPrice: IProductPricingAdapter = {
           meta: { adapter: ProductPrice.key },
         });
 
-        return await pricingAdapter.calculate();
+        return pricingAdapter.calculate();
       },
     };
   },

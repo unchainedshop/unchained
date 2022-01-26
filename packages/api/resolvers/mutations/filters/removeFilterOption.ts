@@ -18,7 +18,7 @@ export default async function removeFilterOption(
   if (!(await modules.filters.filterExists({ filterId })))
     throw new FilterNotFoundError({ filterId });
 
-  return await modules.filters.removeFilterOption({
+  return modules.filters.removeFilterOption({
     filterId,
     filterOptionValue,
   });

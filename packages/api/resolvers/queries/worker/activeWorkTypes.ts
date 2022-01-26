@@ -8,5 +8,5 @@ export default async function activeWorkTypes(
 ) {
   log(`query activeWorkTypes  `, { userId });
 
-  return await modules.worker.activeWorkTypes();
+  return modules.worker.activeWorkTypes();
 }

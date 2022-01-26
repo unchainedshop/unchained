@@ -1,7 +1,7 @@
-import { messagingLogger } from '../messaging-logger';
 import mjml from 'mjml';
 import mustache from 'mustache';
 import { MessagingModule } from '@unchainedshop/types/messaging';
+import { messagingLogger } from '../messaging-logger';
 
 export const configureMessagingModule = (): MessagingModule => {
   return {

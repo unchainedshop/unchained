@@ -26,7 +26,7 @@ export default async function createCart(
     context
   );
 
-  return await modules.orders.create(
+  return modules.orders.create(
     {
       orderNumber,
       currency,

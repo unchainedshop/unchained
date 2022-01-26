@@ -29,7 +29,7 @@ export const OrderDeliveryShipping: OrderDeliveryShippingHelperTypes = {
   },
 
   provider: async (obj, _, { modules }) => {
-    return await modules.delivery.findProvider({
+    return modules.delivery.findProvider({
       deliveryProviderId: obj.deliveryProviderId,
     });
   },

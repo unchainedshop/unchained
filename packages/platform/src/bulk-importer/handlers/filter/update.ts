@@ -4,7 +4,7 @@ import upsertFilterOptionContent from './upsertFilterOptionContent';
 
 export default async function updateFilter(
   payload: any,
-  { authorId, logger }: { authorId: string, logger: any },
+  { authorId, logger }: { authorId: string; logger: any },
   unchainedAPI: Context
 ) {
   const { modules } = unchainedAPI;
@@ -26,8 +26,7 @@ export default async function updateFilter(
   );
 
   if (content || options) {
-    if (!filter)
-      throw new Error(`Can't update non-existing filter ${_id}`);
+    if (!filter) throw new Error(`Can't update non-existing filter ${_id}`);
   }
 
   if (content) {
@@ -37,7 +36,11 @@ export default async function updateFilter(
 
   if (options) {
     logger.debug('replace localized content for filter options', content);
-    await upsertFilterOptionContent({ options, filter }, { authorId }, unchainedAPI);
+    await upsertFilterOptionContent(
+      { options, filter },
+      { authorId },
+      unchainedAPI
+    );
   }
 
   return {

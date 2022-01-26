@@ -4,4 +4,4 @@ export enum WorkStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   DELETED = 'DELETED',
-};
+}

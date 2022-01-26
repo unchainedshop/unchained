@@ -1,6 +1,6 @@
+import { Schemas } from 'meteor/unchained:utils';
 import { accountsPassword } from './accounts/accountsPassword';
 import { accountsServer } from './accounts/accountsServer';
-import { Schemas } from 'meteor/unchained:utils'
 
 const defaultAutoMessagingAfterUserCreation = true;
 

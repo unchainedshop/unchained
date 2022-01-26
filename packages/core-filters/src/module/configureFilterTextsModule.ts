@@ -59,7 +59,7 @@ export const configureFilterTextsModule = ({
       upsert: true,
     });
 
-    return await FilterTexts.findOne(
+    return FilterTexts.findOne(
       updateResult.upsertedCount === 1 ? generateDbFilterById(_id) : selector
     );
   };

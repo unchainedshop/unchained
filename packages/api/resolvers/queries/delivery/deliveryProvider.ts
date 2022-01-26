@@ -11,5 +11,5 @@ export default async function deliveryProvider(
 
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  return await modules.delivery.findProvider({ deliveryProviderId });
+  return modules.delivery.findProvider({ deliveryProviderId });
 }

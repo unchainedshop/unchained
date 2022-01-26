@@ -11,5 +11,5 @@ export default async function order(
 
   if (!orderId) throw new InvalidIdError({ orderId });
 
-  return await modules.orders.findOrder({ orderId });
+  return modules.orders.findOrder({ orderId });
 }

@@ -35,7 +35,7 @@ export const configureProductTextsModule = ({
     };
 
     const findSlug = findUnusedSlug(checkSlugIsUnique, {});
-    return await findSlug({
+    return findSlug({
       existingSlug: slug,
       title: title || productId,
     });
@@ -116,7 +116,7 @@ export const configureProductTextsModule = ({
       );
     }
 
-    return await ProductTexts.findOne(selector);
+    return ProductTexts.findOne(selector);
   };
 
   return {
@@ -124,7 +124,7 @@ export const configureProductTextsModule = ({
     findTexts: async (selector, options) => {
       const texts = ProductTexts.find(selector, options);
 
-      return await texts.toArray();
+      return texts.toArray();
     },
 
     findLocalizedText: async ({ productId, locale }) => {
@@ -149,7 +149,7 @@ export const configureProductTextsModule = ({
         }
       ).map(({ productId }) => productId);
 
-      return await productIds.toArray();
+      return productIds.toArray();
     },
 
     // Mutations

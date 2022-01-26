@@ -11,7 +11,7 @@ export default async function assortment(
 
   if (!assortmentId === !slug) throw new InvalidIdError({ assortmentId, slug });
 
-  return await modules.assortments.findAssortment({
+  return modules.assortments.findAssortment({
     assortmentId,
     slug,
   });

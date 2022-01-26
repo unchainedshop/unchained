@@ -8,5 +8,5 @@ export default async function translatedAssortmentTexts(
 ) {
   log(`query translatedAssortmentTexts ${assortmentId}`, { modules, userId });
 
-  return await modules.assortments.texts.findTexts({ assortmentId });
+  return modules.assortments.texts.findTexts({ assortmentId });
 }

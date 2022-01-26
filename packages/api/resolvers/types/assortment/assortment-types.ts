@@ -71,13 +71,13 @@ export interface AssortmentHelperTypes {
 
 export const Assortment: AssortmentHelperTypes = {
   async assortmentPaths(obj, _, { modules }) {
-    return await modules.assortments.breadcrumbs({
+    return modules.assortments.breadcrumbs({
       assortmentId: obj._id,
     });
   },
 
   children: async (obj, { includeInactive }, { modules }) => {
-    return await modules.assortments.children({
+    return modules.assortments.children({
       assortmentId: obj._id,
       includeInactive,
     });
@@ -102,11 +102,11 @@ export const Assortment: AssortmentHelperTypes = {
       selector.isActive = true;
     }
 
-    return await modules.assortments.count(selector);
+    return modules.assortments.count(selector);
   },
 
   filterAssignments: async (obj, _, { modules }) => {
-    return await modules.assortments.filters.findFilters(
+    return modules.assortments.filters.findFilters(
       {
         assortmentId: obj._id,
       },
@@ -117,20 +117,20 @@ export const Assortment: AssortmentHelperTypes = {
   },
 
   linkedAssortments: async (obj, _, { modules }) => {
-    return await modules.assortments.links.findLinks({
+    return modules.assortments.links.findLinks({
       assortmentId: obj._id,
     });
   },
 
   async media(obj, params, { modules }) {
-    return await modules.assortments.media.findAssortmentMedias({
+    return modules.assortments.media.findAssortmentMedias({
       assortmentId: obj._id,
       ...params,
     });
   },
 
   productAssignments: async (obj, _, { modules }) => {
-    return await modules.assortments.products.findProducts(
+    return modules.assortments.products.findProducts(
       {
         assortmentId: obj._id,
       },
@@ -141,24 +141,16 @@ export const Assortment: AssortmentHelperTypes = {
   },
 
   async texts(obj, { forceLocale }, { modules, localeContext }) {
-    return await modules.assortments.texts.findLocalizedText({
+    return modules.assortments.texts.findLocalizedText({
       assortmentId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });
   },
 
   search: async (obj, query, context) => {
-    return await context.modules.filters.search.searchProducts(
-      query,
-      {},
-      context
-    );
+    return context.modules.filters.search.searchProducts(query, {}, context);
   },
   searchProducts: async (obj, query, context) => {
-    return await context.modules.filters.search.searchProducts(
-      query,
-      {},
-      context
-    );
+    return context.modules.filters.search.searchProducts(query, {}, context);
   },
 };

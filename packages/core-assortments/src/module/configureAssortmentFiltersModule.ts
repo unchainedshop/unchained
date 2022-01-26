@@ -24,7 +24,7 @@ export const configureAssortmentFiltersModule = ({
 
   return {
     findFilter: async ({ assortmentFilterId }) => {
-      return await AssortmentFilters.findOne(
+      return AssortmentFilters.findOne(
         generateDbFilterById(assortmentFilterId),
         {}
       );
@@ -32,7 +32,7 @@ export const configureAssortmentFiltersModule = ({
 
     findFilters: async ({ assortmentId }, options) => {
       const filters = AssortmentFilters.find({ assortmentId }, options);
-      return await filters.toArray();
+      return filters.toArray();
     },
 
     findFilterIds: async ({ assortmentId }) => {
@@ -44,7 +44,7 @@ export const configureAssortmentFiltersModule = ({
         }
       ).map((filter) => filter.filterId);
 
-      return await filters.toArray();
+      return filters.toArray();
     },
     create: async (doc: AssortmentFilter, userId) => {
       const { _id, assortmentId, filterId, ...rest } = doc;
@@ -132,7 +132,7 @@ export const configureAssortmentFiltersModule = ({
       const selector = generateDbFilterById(assortmentFilterId);
       const modifier = { $set: doc };
       await AssortmentFilters.updateOne(selector, modifier);
-      return await AssortmentFilters.findOne(selector, {});
+      return AssortmentFilters.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {

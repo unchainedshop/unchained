@@ -17,5 +17,9 @@ export default async function countries(
     { userId }
   );
 
-  return await modules.countries.findCountries({ limit, offset, includeInactive });
+  return modules.countries.findCountries({
+    limit,
+    offset,
+    includeInactive,
+  });
 }

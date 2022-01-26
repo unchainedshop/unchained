@@ -1,7 +1,7 @@
+import { IWorker } from '@unchainedshop/types/worker';
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 import { WorkerDirector } from '../director/WorkerDirector';
 import { BaseWorker } from './BaseWorker';
-import { IWorker } from '@unchainedshop/types/worker';
 
 export const EventListenerWorker: IWorker<{ workerId: string }> = {
   ...BaseWorker,

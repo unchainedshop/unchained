@@ -21,7 +21,7 @@ export type Work = {
   retries: number;
   scheduled: Date;
   started?: Date;
-  success?: Boolean;
+  success?: boolean;
   timeout?: number;
   type: string;
   worker?: string;

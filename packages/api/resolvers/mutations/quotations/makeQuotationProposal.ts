@@ -26,7 +26,7 @@ export default async function makeQuotationProposal(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return await modules.quotations.proposeQuotation(
+  return modules.quotations.proposeQuotation(
     quotation,
     transactionContext,
     context

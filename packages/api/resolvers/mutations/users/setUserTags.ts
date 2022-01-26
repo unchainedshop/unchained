@@ -10,10 +10,10 @@ export default async function updateUserProfile(
   const normalizedUserId = params.userId;
 
   log(`mutation setUserTags ${normalizedUserId}`, { userId });
-  
+
   if (!normalizedUserId) throw new InvalidIdError({ normalizedUserId });
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  return await modules.users.updateTags(normalizedUserId, params.tags, userId);
+  return modules.users.updateTags(normalizedUserId, params.tags, userId);
 }

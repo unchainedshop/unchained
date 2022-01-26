@@ -20,11 +20,11 @@ const Post: IDeliveryAdapter = {
     return {
       ...DeliveryAdapter.actions(config, context),
 
-      isActive:() => {
+      isActive: () => {
         return true;
       },
 
-      configurationError:() => {
+      configurationError: () => {
         return null;
       },
     };

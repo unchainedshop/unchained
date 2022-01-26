@@ -1,11 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { ProductTypes } from 'meteor/unchained:core-products';
+import { Context, Root } from '@unchainedshop/types/api';
 import {
   ProductNotFoundError,
   InvalidIdError,
   ProductWrongTypeError,
 } from '../../../errors';
-import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function removeBundleItem(
   root: Root,
@@ -26,11 +26,7 @@ export default async function removeBundleItem(
       required: ProductTypes.BundleProduct,
     });
 
-  await modules.products.bundleItems.removeBundleItem(
-    productId,
-    index,
-    userId
-  );
+  await modules.products.bundleItems.removeBundleItem(productId, index, userId);
 
-  return await modules.products.findProduct({ productId });
+  return modules.products.findProduct({ productId });
 }

@@ -10,5 +10,5 @@ export default async function filtersCount(
     userId,
   });
 
-  return await modules.filters.count({ includeInactive });
+  return modules.filters.count({ includeInactive });
 }

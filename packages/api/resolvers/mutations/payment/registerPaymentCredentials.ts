@@ -25,7 +25,7 @@ export default async function registerPaymentCredentials(
   )
     throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return await services.payment.registerPaymentCredentials(
+  return services.payment.registerPaymentCredentials(
     {
       paymentProviderId,
       paymentContext: {

@@ -3,10 +3,9 @@ import crypto from 'crypto';
 import { Readable } from 'stream';
 import https from 'https';
 import mimeType from 'mime-types';
-import { MediaObjects } from '../db';
 import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
-
+import { MediaObjects } from '../db';
 
 const {
   MINIO_ACCESS_KEY,
@@ -28,7 +27,6 @@ const composeObjectName = (file) => {
     file.url ? file.url.substr(file.url.lastIndexOf('.')) : ''
   );
 };
-
 
 const insertMedia = ({
   directoryName,
@@ -57,7 +55,6 @@ const insertMedia = ({
 
   return options;
 };
-
 
 const getMimeType = (extension) => {
   return mimeType.lookup(extension);
@@ -139,7 +136,6 @@ function connectToMinio() {
 const client = connectToMinio();
 if (NODE_ENV === 'development') client?.traceOn(process.stdout);
 
-
 const getObjectStats = async (fileName) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
@@ -177,7 +173,6 @@ export const createSignedPutURL = async (
     expires,
   };
 };
-
 
 export const removeObjects = async (ids) => {
   if (!client) throw new Error('Minio not connected, check env variables');
@@ -281,8 +276,10 @@ export const uploadFileFromURL = async (
   });
 };
 
-
-export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }) => {
+export const linkMedia = async (
+  { mediaUploadTicketId, size, type },
+  { modules }
+) => {
   const media = await modules.files.findFile({ fileId: mediaUploadTicketId });
   if (!media) throw new Error(`Media with id ${mediaUploadTicketId} Not found`);
   const { meta } = media;
@@ -309,7 +306,6 @@ export const linkMedia = async ({ mediaUploadTicketId, size, type }, { modules }
 };
 
 export default client;
-
 
 export const createUploadContainer = (directoryName, fn) => {
   if (!mediaContainerRegistry[directoryName])

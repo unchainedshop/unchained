@@ -11,5 +11,5 @@ export default async function currency(
 
   if (!currencyId) throw new InvalidIdError({ currencyId });
 
-  return await modules.currencies.findCurrency({ currencyId });
+  return modules.currencies.findCurrency({ currencyId });
 }

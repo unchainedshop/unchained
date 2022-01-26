@@ -1,11 +1,10 @@
 import { Context } from '@unchainedshop/types/api';
-import { LogLevel } from 'meteor/unchained:logger';
+import { LogLevel, log } from 'meteor/unchained:logger';
 import {
   IQuotationAdapter,
   IQuotationDirector,
   QuotationContext,
 } from '@unchainedshop/types/quotations';
-import { log } from 'meteor/unchained:logger';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { QuotationError } from './QuotationError';
 
@@ -66,7 +65,7 @@ export const QuotationDirector: IQuotationDirector = {
 
       isManualRequestVerificationRequired: async () => {
         try {
-          return await adapter.isManualRequestVerificationRequired();
+          return adapter.isManualRequestVerificationRequired();
         } catch (error) {
           console.error(error);
           return null;
@@ -75,7 +74,7 @@ export const QuotationDirector: IQuotationDirector = {
 
       isManualProposalRequired: async () => {
         try {
-          return await adapter.isManualProposalRequired();
+          return adapter.isManualProposalRequired();
         } catch (error) {
           console.error(error);
           return null;
@@ -89,7 +88,7 @@ export const QuotationDirector: IQuotationDirector = {
 
       transformItemConfiguration: async ({ quantity, configuration }) => {
         try {
-          return await adapter.transformItemConfiguration({
+          return adapter.transformItemConfiguration({
             quantity,
             configuration,
           });

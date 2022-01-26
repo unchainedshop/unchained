@@ -23,7 +23,7 @@ export const OrderPaymentDiscount: OrderPaymentDiscountHelperTypes = {
   },
 
   async orderDiscount(obj, _, { modules }) {
-    return await modules.orders.discounts.findOrderDiscount({
+    return modules.orders.discounts.findOrderDiscount({
       discountId: obj.discountId,
     });
   },

@@ -1,14 +1,13 @@
+import { Context } from '@unchainedshop/types/api';
 import {
-  IWorkerDirector,
   IWorkerAdapter,
-  Work,
+  IWorkerDirector,
   WorkScheduleConfigureation,
 } from '@unchainedshop/types/worker';
 import { EventEmitter } from 'events';
-import { BaseDirector } from 'meteor/unchained:utils';
 import { log, LogLevel } from 'meteor/unchained:logger';
+import { BaseDirector } from 'meteor/unchained:utils';
 import { WorkerEventTypes } from './WorkerEventTypes';
-import { Context } from '@unchainedshop/types/api';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
@@ -60,11 +59,13 @@ export const WorkerDirector: IWorkerDirector = {
 
         log(`WorkderDirector -> Error doing work ${type}: ${error.message}`);
 
-        const output = { error, success: false };
+        const errorOutput = { error, success: false };
 
-        WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });
+        WorkerDirector.events.emit(WorkerEventTypes.DONE, {
+          output: errorOutput,
+        });
 
-        return output;
+        return errorOutput;
       });
 
     WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });

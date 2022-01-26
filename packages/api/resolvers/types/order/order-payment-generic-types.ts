@@ -25,7 +25,7 @@ export const OrderPaymentGeneric: OrderPaymentGenericHelperTypes = {
   },
 
   provider: async (obj, _, { modules }) => {
-    return await modules.payment.paymentProviders.findProvider({
+    return modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });
   },
@@ -48,7 +48,7 @@ export const OrderPaymentGeneric: OrderPaymentGenericHelperTypes = {
 
   sign: async (obj, { transactionContext }, context) => {
     try {
-      return await context.modules.orders.payments.sign(
+      return context.modules.orders.payments.sign(
         obj,
         transactionContext,
         context

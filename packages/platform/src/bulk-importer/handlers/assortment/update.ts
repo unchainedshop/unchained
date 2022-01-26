@@ -1,9 +1,9 @@
+import { Context } from '@unchainedshop/types/api';
 import upsertAssortmentContent from './upsertAssortmentContent';
 import upsertAssortmentProducts from './upsertAssortmentProducts';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
 import upsertAssortmentFilters from './upsertAssortmentFilters';
 import upsertMedia from './upsertMedia';
-import { Context } from '@unchainedshop/types/api';
 
 export default async function updateAssortment(
   payload: any,

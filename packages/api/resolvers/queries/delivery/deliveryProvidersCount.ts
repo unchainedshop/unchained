@@ -9,5 +9,5 @@ export default async function deliveryProvidersCount(
 ) {
   log(`query deliveryProvidersCount ${type}`, { userId });
 
-  return await modules.delivery.count({ type });
+  return modules.delivery.count({ type });
 }

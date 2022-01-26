@@ -48,15 +48,12 @@ export const configureOrderPositionsModule = ({
   return {
     // Queries
     findOrderPosition: async ({ itemId }, options) => {
-      return await OrderPositions.findOne(
-        buildFindByIdSelector(itemId),
-        options
-      );
+      return OrderPositions.findOne(buildFindByIdSelector(itemId), options);
     },
 
     findOrderPositions: async ({ orderId }) => {
       const positions = OrderPositions.find({ orderId, quantity: { $gt: 0 } });
-      return await positions.toArray();
+      return positions.toArray();
     },
 
     // Transformations
@@ -118,7 +115,7 @@ export const configureOrderPositionsModule = ({
 
       await updateCalculation(orderId, requestContext);
 
-      return await OrderPositions.findOne(buildFindByIdSelector(positionId));
+      return OrderPositions.findOne(buildFindByIdSelector(positionId));
     },
 
     delete: async (orderPositionId, requestContext) => {
@@ -307,7 +304,7 @@ export const configureOrderPositionsModule = ({
         $set: { calculation },
       });
 
-      return await OrderPositions.findOne(selector);
+      return OrderPositions.findOne(selector);
     },
 
     addProductItem: async (

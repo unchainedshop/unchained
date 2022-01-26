@@ -37,7 +37,7 @@ export default async function addAssortmentLink(
       assortmentId: childAssortmentId,
     });
 
-  return await modules.assortments.links.create(
+  return modules.assortments.links.create(
     {
       parentAssortmentId,
       childAssortmentId,

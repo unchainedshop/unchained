@@ -9,5 +9,5 @@ export default async function paymentProviders(
 ) {
   log(`query paymentProvider ${type}`, { userId });
 
-  return await modules.payment.paymentProviders.findProviders({ type });
+  return modules.payment.paymentProviders.findProviders({ type });
 }

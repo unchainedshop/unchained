@@ -415,7 +415,7 @@ const Bity: IPaymentAdapter = {
         await params.context.modules.orders.updateContext(
           order._id,
           {
-            bityOrder: bityOrder,
+            bityOrder,
           },
           params.context
         );

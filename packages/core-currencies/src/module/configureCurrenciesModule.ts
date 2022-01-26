@@ -25,7 +25,7 @@ const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
 
 export const configureCurrenciesModule = async ({
   db,
-}: ModuleInput<{}>): Promise<CurrenciesModule> => {
+}: ModuleInput<Record<string, never>>): Promise<CurrenciesModule> => {
   registerEvents(CURRENCY_EVENTS);
 
   const Currencies = await CurrenciesCollection(db);
@@ -37,7 +37,7 @@ export const configureCurrenciesModule = async ({
 
   return {
     findCurrency: async ({ currencyId, isoCode }) => {
-      return await Currencies.findOne(
+      return Currencies.findOne(
         currencyId ? generateDbFilterById(currencyId) : { isoCode }
       );
     },
@@ -50,7 +50,7 @@ export const configureCurrenciesModule = async ({
           limit,
         }
       );
-      return await currencies.toArray();
+      return currencies.toArray();
     },
 
     count: async (query) => {

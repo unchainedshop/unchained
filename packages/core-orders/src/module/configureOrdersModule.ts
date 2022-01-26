@@ -121,7 +121,7 @@ export const configureOrdersModule = async ({
 
     await Orders.updateOne(selector, modifier);
 
-    return await Orders.findOne(selector, {});
+    return Orders.findOne(selector, {});
   };
 
   const updateDiscounts = async (order: Order, requestContext: Context) => {
@@ -332,7 +332,7 @@ export const configureOrdersModule = async ({
       },
     });
 
-    return await Orders.findOne(selector, {});
+    return Orders.findOne(selector, {});
   };
 
   const orderQueries = configureOrdersModuleQueries({ Orders });

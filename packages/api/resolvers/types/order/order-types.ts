@@ -51,7 +51,7 @@ export const Order: OrderHelperTypes = {
   },
 
   supportedPaymentProviders: async (obj, _, context) => {
-    return await context.modules.payment.paymentProviders.findSupported(
+    return context.modules.payment.paymentProviders.findSupported(
       {
         order: obj,
       },
@@ -60,46 +60,46 @@ export const Order: OrderHelperTypes = {
   },
 
   currency: async (obj, _, { modules }) => {
-    return await modules.currencies.findCurrency({ isoCode: obj.currency });
+    return modules.currencies.findCurrency({ isoCode: obj.currency });
   },
 
   country: async (obj, _, { modules }) => {
-    return await modules.countries.findCountry({ isoCode: obj.countryCode });
+    return modules.countries.findCountry({ isoCode: obj.countryCode });
   },
 
   discounts: async (obj, _, { modules }) => {
-    return await modules.orders.discounts.findOrderDiscounts({
+    return modules.orders.discounts.findOrderDiscounts({
       orderId: obj._id,
     });
   },
 
   documents: async (obj, { type }, { modules }) => {
-    return await modules.files.findFilesByMetaData(
+    return modules.files.findFilesByMetaData(
       { meta: { orderId: obj._id, type } },
       { sort: { 'meta.data': -1 } }
     );
   },
 
   delivery: async (obj, _, { modules }) => {
-    return await modules.orders.deliveries.findDelivery({
+    return modules.orders.deliveries.findDelivery({
       orderDeliveryId: obj.deliveryId,
     });
   },
 
   enrollment: async (obj, _, { modules }) => {
-    return await modules.enrollments.findEnrollment({
+    return modules.enrollments.findEnrollment({
       orderId: obj._id,
     });
   },
 
   items: async (obj, _, { modules }) => {
-    return await modules.orders.positions.findOrderPositions({
+    return modules.orders.positions.findOrderPositions({
       orderId: obj._id,
     });
   },
 
   payment: async (obj, _, { modules }) => {
-    return await modules.orders.payments.findOrderPayment({
+    return modules.orders.payments.findOrderPayment({
       orderPaymentId: obj.paymentId,
     });
   },
@@ -123,7 +123,7 @@ export const Order: OrderHelperTypes = {
   },
 
   user: async (obj, _, { modules }) => {
-    return await modules.users.findUser({
+    return modules.users.findUser({
       userId: obj.userId,
     });
   },

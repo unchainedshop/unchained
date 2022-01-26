@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 import { Configuration } from '@unchainedshop/types/common';
+import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function requestQuotation(
   root: Root,
@@ -23,7 +23,7 @@ export default async function requestQuotation(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  return await modules.quotations.create(
+  return modules.quotations.create(
     {
       userId,
       productId,

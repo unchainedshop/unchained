@@ -17,5 +17,5 @@ export default async function createLanguage(
     userId
   );
 
-  return await modules.languages.findLanguage({ languageId });
+  return modules.languages.findLanguage({ languageId });
 }

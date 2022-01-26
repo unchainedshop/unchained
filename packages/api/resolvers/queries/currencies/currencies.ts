@@ -16,5 +16,9 @@ export default async function currencies(
     }`,
     { userId }
   );
-  return await modules.currencies.findCurrencies({ limit, offset, includeInactive });
+  return modules.currencies.findCurrencies({
+    limit,
+    offset,
+    includeInactive,
+  });
 }

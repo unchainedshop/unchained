@@ -1,6 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import {
-  WarehousingContext,
   WarehousingModule,
   WarehousingProvider,
   WarehousingProviderType,
@@ -12,7 +11,6 @@ import {
 } from 'meteor/unchained:utils';
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection';
 import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema';
-import { WarehousingAdapter } from '../director/WarehousingAdapter';
 import { WarehousingDirector } from '../director/WarehousingDirector';
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
@@ -33,7 +31,7 @@ const buildFindSelector = ({ type, deleted = null }: FindQuery = {}) => {
 
 export const configureWarehousingModule = async ({
   db,
-}: ModuleInput<{}>): Promise<WarehousingModule> => {
+}: ModuleInput<Record<string, never>>): Promise<WarehousingModule> => {
   registerEvents(WAREHOUSING_PROVIDER_EVENTS);
 
   const WarehousingProviders = await WarehousingProvidersCollection(db);
@@ -53,7 +51,7 @@ export const configureWarehousingModule = async ({
     },
 
     findProvider: async ({ warehousingProviderId }, options) => {
-      return await WarehousingProviders.findOne(
+      return WarehousingProviders.findOne(
         generateDbFilterById(warehousingProviderId),
         options
       );
@@ -64,7 +62,7 @@ export const configureWarehousingModule = async ({
         buildFindSelector(query),
         options
       );
-      return await providers.toArray();
+      return providers.toArray();
     },
 
     providerExists: async ({ warehousingProviderId }) => {
@@ -131,7 +129,7 @@ export const configureWarehousingModule = async ({
         warehousingContext,
         requestContext
       );
-      return await director.estimatedDispatch();
+      return director.estimatedDispatch();
     },
 
     isActive: (warehousingProvider, requestContext) => {
@@ -176,7 +174,7 @@ export const configureWarehousingModule = async ({
       );
 
       emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
-      
+
       return warehousingProvider;
     },
   };

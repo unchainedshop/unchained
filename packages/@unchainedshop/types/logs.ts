@@ -26,5 +26,8 @@ export interface LogOptions extends LoggerOptions {
 
 export type log = (message: string, options?: LogOptions) => void;
 export type Transports = Array<TransportStream>;
-export type Logger = WinstonLogger
-export type createLogger = (moduleName: string, moreTransports?: Transports) => Logger;
+export type Logger = WinstonLogger;
+export type createLogger = (
+  moduleName: string,
+  moreTransports?: Transports
+) => Logger;

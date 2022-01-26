@@ -11,5 +11,5 @@ export default async function work(
 
   if (!workId) throw new InvalidIdError({ workId });
 
-  return await modules.worker.findWork({ workId });
+  return modules.worker.findWork({ workId });
 }

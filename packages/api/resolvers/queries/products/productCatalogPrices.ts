@@ -14,5 +14,5 @@ export default async function productCatalogPrices(
   const product = await modules.products.findProduct({ productId });
   if (!product) return null;
 
-  return await modules.products.prices.catalogPrices(product);
+  return modules.products.prices.catalogPrices(product);
 }

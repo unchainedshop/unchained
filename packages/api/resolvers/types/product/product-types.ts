@@ -9,20 +9,20 @@ export const Product: ProductHelperTypes = {
   },
 
   assortmentPaths: async (obj, _, { modules }) => {
-    return await modules.assortments.breadcrumbs({
+    return modules.assortments.breadcrumbs({
       productId: obj._id,
     });
   },
 
   media: async (obj, params, { modules }) => {
-    return await modules.products.media.findProductMedias({
+    return modules.products.media.findProductMedias({
       productId: obj._id,
       ...params,
     });
   },
 
   reviews: async (obj, { limit = 10, offset = 0 }, { modules }) => {
-    return await modules.products.reviews.findProductReviews({
+    return modules.products.reviews.findProductReviews({
       productId: obj._id,
       limit,
       offset,
@@ -44,7 +44,7 @@ export const Product: ProductHelperTypes = {
       assortmentIds,
     });
 
-    return await modules.products.findProductSiblings({
+    return modules.products.findProductSiblings({
       productIds,
       includeInactive,
       limit,
@@ -58,7 +58,7 @@ export const Product: ProductHelperTypes = {
 
   texts: async (obj, { forceLocale }, requestContext) => {
     const { localeContext, modules } = requestContext;
-    return await modules.products.texts.findLocalizedText({
+    return modules.products.texts.findLocalizedText({
       productId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });

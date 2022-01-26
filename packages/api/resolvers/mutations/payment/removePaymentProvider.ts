@@ -10,8 +10,12 @@ export default async (
   log(`mutation removePaymentProvider ${paymentProviderId}`, { userId });
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
-  if (!await modules.payment.paymentProviders.providerExists({ paymentProviderId }))
+  if (
+    !(await modules.payment.paymentProviders.providerExists({
+      paymentProviderId,
+    }))
+  )
     throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return await modules.payment.paymentProviders.delete(paymentProviderId, userId);
+  return modules.payment.paymentProviders.delete(paymentProviderId, userId);
 };

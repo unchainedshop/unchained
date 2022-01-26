@@ -1,8 +1,8 @@
+import { Context } from '@unchainedshop/types/api';
 import upsertVariations from './upsertVariations';
 import upsertMedia from './upsertMedia';
 import upsertProductContent from './upsertProductContent';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
-import { Context } from '@unchainedshop/types/api';
 
 export default async function createProduct(
   payload: any,

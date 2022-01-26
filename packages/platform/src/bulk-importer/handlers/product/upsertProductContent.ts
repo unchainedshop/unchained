@@ -14,7 +14,7 @@ export default async function upsertProductContent(
   await Promise.all(
     Object.entries(content).map(
       async ([locale, localizedData]: [string, ProductText]) => {
-        return await modules.products.texts.upsertLocalizedText(
+        return modules.products.texts.upsertLocalizedText(
           productId,
           locale,
           {

@@ -126,20 +126,20 @@ export const User: UserHelperTypes = {
 
   avatar: async (user, params, context) => {
     await checkAction(context, viewUserPublicInfos, [user, params]);
-    return await context.modules.files.findFile({
+    return context.modules.files.findFile({
       fileId: user.avatarId as string,
     });
   },
 
   bookmarks: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return await context.modules.bookmarks.findByUserId(user._id);
+    return context.modules.bookmarks.findByUserId(user._id);
   },
 
   async cart(user, params, context) {
     const { modules, countryContext } = context;
     await checkAction(context, viewUserOrders, [user, params]);
-    return await modules.orders.cart(
+    return modules.orders.cart(
       { countryContext, orderNumber: params.orderNumber },
       user
     );
@@ -147,19 +147,19 @@ export const User: UserHelperTypes = {
 
   country: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return await context.services.users.getUserCountry(user, params, context);
+    return context.services.users.getUserCountry(user, params, context);
   },
 
   enrollments: async (user, params, context) => {
     await checkAction(context, viewUserEnrollments, [user, params]);
-    return await context.modules.enrollments.findEnrollments({
+    return context.modules.enrollments.findEnrollments({
       userId: user._id,
     });
   },
 
   language: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return await context.services.users.getUserLanguage(user, params, context);
+    return context.services.users.getUserLanguage(user, params, context);
   },
 
   // locale: async (user, params, context) => {
@@ -169,7 +169,7 @@ export const User: UserHelperTypes = {
 
   orders: async (user, params, context) => {
     await checkAction(context, viewUserOrders, [user, params]);
-    return await context.modules.orders.findOrders(
+    return context.modules.orders.findOrders(
       { userId: user._id, includeCarts: params.includeCarts },
       {
         sort: {
@@ -181,7 +181,7 @@ export const User: UserHelperTypes = {
 
   paymentCredentials: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return await context.modules.payment.paymentCredentials.findPaymentCredentials(
+    return context.modules.payment.paymentCredentials.findPaymentCredentials(
       { ...params.selector, userId: user._id },
       {
         sort: {
@@ -193,7 +193,7 @@ export const User: UserHelperTypes = {
 
   quotations: async (user, params, context) => {
     await checkAction(context, viewUserQuotations, [user, params]);
-    return await context.modules.quotations.findQuotations(
+    return context.modules.quotations.findQuotations(
       { userId: user._id },
       {
         sort: {

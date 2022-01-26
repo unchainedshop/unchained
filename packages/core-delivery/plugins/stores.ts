@@ -23,7 +23,7 @@ const PickMup: IDeliveryAdapter = {
         return current;
       }, {});
     };
-    
+
     return {
       ...DeliveryAdapter.actions(config, context),
 

@@ -20,5 +20,5 @@ export const OrderPayment = {
       return invertedProductTypes[provider.type];
     }
     return invertedProductTypes[PaymentProviderType.INVOICE];
-  },  
+  },
 };

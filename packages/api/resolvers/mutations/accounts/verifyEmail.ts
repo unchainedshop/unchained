@@ -15,10 +15,15 @@ export default async function verifyEmail(
   );
 
   await modules.accounts.verifyEmail(token);
-  const verifiedUser = await modules.users.findUser({ userId: unverifiedUser.id });
+  const verifiedUser = await modules.users.findUser({
+    userId: unverifiedUser.id,
+  });
   await modules.accounts.emit('VerifyEmailSuccess', verifiedUser);
 
-  const tokenData = await modules.accounts.createLoginToken(unverifiedUser.id, context);
+  const tokenData = await modules.accounts.createLoginToken(
+    unverifiedUser.id,
+    context
+  );
 
-  return tokenData
+  return tokenData;
 }

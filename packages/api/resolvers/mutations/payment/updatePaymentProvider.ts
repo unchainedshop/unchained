@@ -21,7 +21,7 @@ export default async (
   )
     throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return await modules.payment.paymentProviders.update(
+  return modules.payment.paymentProviders.update(
     paymentProviderId,
     paymentProvider,
     userId

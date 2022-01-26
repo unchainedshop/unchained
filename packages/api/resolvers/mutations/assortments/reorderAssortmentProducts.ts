@@ -7,7 +7,7 @@ export default async function reorderAssortmentProducts(
   { modules, userId }: Context
 ) {
   log('mutation reorderAssortmentProducts', { modules, userId });
-  return await modules.assortments.products.updateManualOrder({
+  return modules.assortments.products.updateManualOrder({
     sortKeys: params.sortKeys,
   });
 }

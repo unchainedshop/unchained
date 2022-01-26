@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
-import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 import { FilterOption } from '@unchainedshop/types/filters';
+import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function createFilterOption(
   root: Root,
@@ -18,5 +18,5 @@ export default async function createFilterOption(
   const filter = await modules.filters.findFilter({ filterId });
   if (!filter) throw new FilterNotFoundError({ filterId });
 
-  return await modules.filters.createFilterOption(filterId, option, context);
+  return modules.filters.createFilterOption(filterId, option, context);
 }

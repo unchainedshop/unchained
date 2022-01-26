@@ -5,11 +5,11 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
   ...Product,
 
   assignments: async (obj, params, { modules }) => {
-    return await modules.products.proxyAssignments(obj, params);
+    return modules.products.proxyAssignments(obj, params);
   },
 
   products: async (obj, { vectors, includeInactive }, { modules }) => {
-    return await modules.products.proxyProducts(obj, vectors, {
+    return modules.products.proxyProducts(obj, vectors, {
       includeInactive,
     });
   },
@@ -21,7 +21,7 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
   ) => {
     const { countryContext, modules } = requestContext;
 
-    return await modules.products.prices.catalogPriceRange(
+    return modules.products.prices.catalogPriceRange(
       obj,
       {
         quantity,
@@ -40,7 +40,7 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
     requestContext
   ) {
     const { countryContext, modules } = requestContext;
-    return await modules.products.prices.simulatedPriceRange(
+    return modules.products.prices.simulatedPriceRange(
       obj,
       {
         quantity,

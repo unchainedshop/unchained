@@ -28,7 +28,7 @@ const PRODUCT_MEDIA_EVENTS = [
 
 export const configureProductMediaModule = async ({
   db,
-}: ModuleInput<{}>): Promise<ProductMediaModule> => {
+}: ModuleInput<Record<string, never>>): Promise<ProductMediaModule> => {
   registerEvents(PRODUCT_MEDIA_EVENTS);
 
   const { ProductMedia, ProductMediaTexts } = await ProductMediaCollection(db);
@@ -68,7 +68,7 @@ export const configureProductMediaModule = async ({
       }
     );
 
-    return await ProductMediaTexts.findOne({
+    return ProductMediaTexts.findOne({
       productMediaId,
       locale,
     });
@@ -77,10 +77,7 @@ export const configureProductMediaModule = async ({
   return {
     // Queries
     findProductMedia: async ({ productMediaId }) => {
-      return await ProductMedia.findOne(
-        generateDbFilterById(productMediaId),
-        {}
-      );
+      return ProductMedia.findOne(generateDbFilterById(productMediaId), {});
     },
 
     findProductMedias: async ({ productId, tags, offset, limit }, options) => {
@@ -96,12 +93,12 @@ export const configureProductMediaModule = async ({
         ...options,
       });
 
-      return await mediaList.toArray();
+      return mediaList.toArray();
     },
 
     // Mutations
     create: async (doc: ProductMedia, userId) => {
-      let sortKey = doc.sortKey;
+      let { sortKey } = doc;
 
       if (!sortKey) {
         // Get next sort key
@@ -174,7 +171,7 @@ export const configureProductMediaModule = async ({
       const selector = generateDbFilterById(productMediaId);
       const modifier = { $set: doc };
       await ProductMedia.updateOne(selector, modifier);
-      return await ProductMedia.findOne(selector, {});
+      return ProductMedia.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {
@@ -208,7 +205,7 @@ export const configureProductMediaModule = async ({
     texts: {
       // Queries
       findMediaTexts: async ({ productMediaId }) => {
-        return await ProductMediaTexts.find({ productMediaId }).toArray();
+        return ProductMediaTexts.find({ productMediaId }).toArray();
       },
 
       findLocalizedMediaText: async ({ productMediaId, locale }) => {

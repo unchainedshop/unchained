@@ -28,7 +28,7 @@ const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
 
 export const configureCountriesModule = async ({
   db,
-}: ModuleInput<{}>): Promise<CountriesModule> => {
+}: ModuleInput<Record<string, never>>): Promise<CountriesModule> => {
   registerEvents(COUNTRY_EVENTS);
 
   const Countries = await CountriesCollection(db);
@@ -47,7 +47,7 @@ export const configureCountriesModule = async ({
     },
 
     findCountry: async ({ countryId, isoCode }) => {
-      return await Countries.findOne(
+      return Countries.findOne(
         countryId ? generateDbFilterById(countryId) : { isoCode }
       );
     },
@@ -58,7 +58,7 @@ export const configureCountriesModule = async ({
         limit,
         ...options,
       });
-      return await countries.toArray();
+      return countries.toArray();
     },
 
     countryExists: async ({ countryId }) => {

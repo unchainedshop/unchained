@@ -20,5 +20,5 @@ export default async function assortments(
     { userId }
   );
 
-  return await modules.assortments.findAssortments(params);
+  return modules.assortments.findAssortments(params);
 }

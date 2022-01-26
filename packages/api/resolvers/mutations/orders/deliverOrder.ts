@@ -1,19 +1,19 @@
 import { log } from 'meteor/unchained:logger';
 import { OrderDeliveryStatus } from 'meteor/unchained:core-orders';
+import { Root, Context } from '@unchainedshop/types/api';
 import {
   OrderNotFoundError,
   OrderWrongDeliveryStatusError,
   OrderWrongStatusError,
   InvalidIdError,
 } from '../../../errors';
-import { Root, Context } from '@unchainedshop/types/api';
 
 export default async function deliverOrder(
   root: Root,
   { orderId }: { orderId: string },
   context: Context
 ) {
-  const { modules, userId } = context
+  const { modules, userId } = context;
   log('mutation deliverOrder', { orderId, userId });
 
   if (!orderId) throw new InvalidIdError({ orderId });
@@ -41,5 +41,5 @@ export default async function deliverOrder(
 
   await modules.orders.deliveries.markAsDelivered(orderDelivery);
 
-  return await modules.orders.processOrder(order, {}, context);
+  return modules.orders.processOrder(order, {}, context);
 }

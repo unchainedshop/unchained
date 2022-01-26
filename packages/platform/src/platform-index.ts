@@ -1,1 +1,1 @@
-export { startPlatform } from './startPlatform'
+export { startPlatform } from './startPlatform';

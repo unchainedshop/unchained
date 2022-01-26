@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors';
 import { PaymentContext } from '@unchainedshop/types/payments';
+import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function signPaymentProviderForCredentialRegistration(
   root: Root,

@@ -11,7 +11,7 @@ export default async function translatedAssortmentMediaTexts(
     userId,
   });
 
-  return await modules.assortments.media.texts.findMediaTexts({
+  return modules.assortments.media.texts.findMediaTexts({
     assortmentMediaId,
   });
 }

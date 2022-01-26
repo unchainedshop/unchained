@@ -13,5 +13,5 @@ export default async function translatedFilterTexts(
     userId,
   });
 
-  return await modules.filters.texts.findTexts({ filterId, filterOptionValue });
+  return modules.filters.texts.findTexts({ filterId, filterOptionValue });
 }

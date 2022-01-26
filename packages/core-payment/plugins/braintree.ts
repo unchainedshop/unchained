@@ -112,8 +112,10 @@ const BraintreeDirect: IPaymentAdapter = {
         const braintree = require('braintree'); // eslint-disable-line
         const gateway = getGateway(braintree);
         const address = order.billingAddress || {};
-        const pricing = modules.orders.pricingSheet(order)
-        const rounded = Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) * 10;
+        const pricing = modules.orders.pricingSheet(order);
+        const rounded =
+          Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) *
+          10;
         const saleRequest = {
           amount: rounded / 100,
           merchantAccountId: order.currency,
@@ -147,7 +149,7 @@ const BraintreeDirect: IPaymentAdapter = {
       },
     };
 
-    return adapter
+    return adapter;
   },
 };
 

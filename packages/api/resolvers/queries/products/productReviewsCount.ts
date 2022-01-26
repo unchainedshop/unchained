@@ -8,5 +8,5 @@ export default async function productReviewsCount(
 ) {
   log(`query productReviewsCount`, { userId });
 
-  return await modules.products.reviews.count({});
+  return modules.products.reviews.count({});
 }

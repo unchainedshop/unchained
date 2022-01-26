@@ -36,24 +36,24 @@ export interface PaymentPricingAdapterContext
   provider: PaymentProvider;
 }
 
-export type PaymentPricingContext = {
-  user: User;
-  orderPayment: OrderPayment;
-  order: Order;
-  provider: PaymentProvider;
-} | {
-  item: OrderPayment
-}
+export type PaymentPricingContext =
+  | {
+      user: User;
+      orderPayment: OrderPayment;
+      order: Order;
+      provider: PaymentProvider;
+    }
+  | {
+      item: OrderPayment;
+    };
 
-export interface IPaymentPricingSheet
-  extends IPricingSheet<PaymentPricingCalculation> {}
+export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation>;
 
-export interface IPaymentPricingAdapter
-  extends IPricingAdapter<
-    PaymentPricingAdapterContext,
-    PaymentPricingCalculation,
-    IPaymentPricingSheet
-  > {}
+export type IPaymentPricingAdapter = IPricingAdapter<
+  PaymentPricingAdapterContext,
+  PaymentPricingCalculation,
+  IPaymentPricingSheet
+>;
 
 export interface IPaymentPricingDirector
   extends IPricingDirector<

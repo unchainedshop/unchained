@@ -69,13 +69,13 @@ export const configureOrderPaymentsModule = ({
 
     const selector = buildFindByIdSelector(orderPaymentId);
     await OrderPayments.updateOne(selector, modifier);
-    return await OrderPayments.findOne(selector);
+    return OrderPayments.findOne(selector);
   };
 
   return {
     // Queries
     findOrderPayment: async ({ orderPaymentId }, options) => {
-      return await OrderPayments.findOne(
+      return OrderPayments.findOne(
         buildFindByIdSelector(orderPaymentId),
         options
       );
@@ -85,7 +85,7 @@ export const configureOrderPaymentsModule = ({
 
       if (contextKeys.length === 0) return null;
 
-      let selector: Query = contextKeys.reduce(
+      const selector: Query = contextKeys.reduce(
         (currentSelector, key) =>
           context[key] !== undefined
             ? {
@@ -96,7 +96,7 @@ export const configureOrderPaymentsModule = ({
         {}
       );
 
-      return await OrderPayments.findOne(selector, options);
+      return OrderPayments.findOne(selector, options);
     },
 
     // Transformations
@@ -197,7 +197,7 @@ export const configureOrderPaymentsModule = ({
       );
 
       if (arbitraryResponseData) {
-        return await updateStatus(
+        return updateStatus(
           orderPayment._id,
           {
             status: OrderPaymentStatus.PAID,

@@ -62,7 +62,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
               .schedule(fixedSchedule)
               .next(1, referenceDate);
             nextDate.setMilliseconds(0);
-            return await requestContext.modules.worker.ensureOneWork({
+            return requestContext.modules.worker.ensureOneWork({
               type,
               input: input(),
               scheduled: nextDate,

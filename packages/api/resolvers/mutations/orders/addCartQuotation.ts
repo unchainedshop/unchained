@@ -1,6 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { QuotationStatus } from 'meteor/unchained:core-quotations';
 import { Context, Root } from '@unchainedshop/types/api';
+import { Configuration } from '@unchainedshop/types/common';
 import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
@@ -8,7 +9,6 @@ import {
   InvalidIdError,
 } from '../../../errors';
 import { getOrderCart } from '../utils/getOrderCart';
-import { Configuration } from '@unchainedshop/types/common';
 
 export default async function addCartQuotation(
   root: Root,
@@ -58,7 +58,7 @@ export default async function addCartQuotation(
       context
     );
 
-  return await modules.orders.positions.addProductItem(
+  return modules.orders.positions.addProductItem(
     {
       quantity: quotationConfiguration.quantity,
       configuration: quotationConfiguration.configuration,

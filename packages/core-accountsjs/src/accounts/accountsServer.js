@@ -130,7 +130,7 @@ export const configureAccountServer = (requestContext) => {
     }
   );
 
-  return accountsServer
+  return accountsServer;
 };
 
-export { accountsServer }
+export { accountsServer };

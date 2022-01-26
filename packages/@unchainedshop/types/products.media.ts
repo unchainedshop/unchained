@@ -27,12 +27,15 @@ export type ProductMediaModule = {
     productMediaId: string;
   }) => Promise<ProductMedia>;
 
-  findProductMedias: (params: {
-    productId?: string;
-    limit?: number;
-    offset?: number;
-    tags?: Array<string>;
-  }, options?: FindOptions) => Promise<Array<ProductMedia>>;
+  findProductMedias: (
+    params: {
+      productId?: string;
+      limit?: number;
+      offset?: number;
+      tags?: Array<string>;
+    },
+    options?: FindOptions
+  ) => Promise<Array<ProductMedia>>;
 
   // Mutations
   create: (
@@ -47,7 +50,10 @@ export type ProductMediaModule = {
     excludedProductMediaIds?: Array<_ID>;
   }) => Promise<number>;
 
-  update: (productMediaId: string, productMedia: ProductMedia) => Promise<ProductMedia>;
+  update: (
+    productMediaId: string,
+    productMedia: ProductMedia
+  ) => Promise<ProductMedia>;
   updateManualOrder: (
     params: {
       sortKeys: Array<{

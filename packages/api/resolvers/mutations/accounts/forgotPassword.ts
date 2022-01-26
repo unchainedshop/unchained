@@ -8,7 +8,7 @@ export default async function forgotPassword(
 ) {
   log('mutation forgotPassword', { email, userId });
 
-  const success = await modules.accounts.sendResetPasswordEmail(email)
-  
-  return { success }
+  const success = await modules.accounts.sendResetPasswordEmail(email);
+
+  return { success };
 }

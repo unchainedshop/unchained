@@ -24,15 +24,15 @@ type QuotationHelperTypes = {
 
 export const Quotation: QuotationHelperTypes = {
   country: async (obj, _, { modules }) => {
-    return await modules.countries.findCountry({ isoCode: obj.countryCode });
+    return modules.countries.findCountry({ isoCode: obj.countryCode });
   },
 
   currency: async (obj, _, { modules }) => {
-    return await modules.currencies.findCurrency({ isoCode: obj.currency });
+    return modules.currencies.findCurrency({ isoCode: obj.currency });
   },
 
   documents: async (obj, { type }, { modules }) => {
-    return await modules.files.findFilesByMetaData(
+    return modules.files.findFilesByMetaData(
       {
         meta: {
           quotationId: obj._id,
@@ -51,7 +51,7 @@ export const Quotation: QuotationHelperTypes = {
   },
 
   product: async (obj, _, { modules }) => {
-    return await modules.products.findProduct({
+    return modules.products.findProduct({
       productId: obj.productId,
     });
   },
@@ -61,7 +61,7 @@ export const Quotation: QuotationHelperTypes = {
   },
 
   user: async (obj, _, { modules }) => {
-    return await modules.users.findUser({
+    return modules.users.findUser({
       userId: obj.userId,
     });
   },

@@ -38,7 +38,7 @@ export const setupAccounts = (
         },
         {}
       );
-      return await unchainedAPI.modules.users.findUser({
+      return unchainedAPI.modules.users.findUser({
         userId: guestUserId,
       });
     },

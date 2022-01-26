@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
 import { Assortment } from '@unchainedshop/types/assortments';
+import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function updateAssortment(
   root: Root,
@@ -19,5 +19,5 @@ export default async function updateAssortment(
 
   await modules.assortments.update(assortmentId, assortment, userId);
 
-  return await modules.assortments.findAssortment({ assortmentId });
+  return modules.assortments.findAssortment({ assortmentId });
 }

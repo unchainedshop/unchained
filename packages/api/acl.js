@@ -34,7 +34,7 @@ const checkAction = async (
 
   const hasPermission = await checkUserHasPermission(context, action, args);
   if (hasPermission) return;
-  
+
   const keyText = key && key !== '' ? ` in "${key}"` : '';
 
   throw new NoPermissionError({

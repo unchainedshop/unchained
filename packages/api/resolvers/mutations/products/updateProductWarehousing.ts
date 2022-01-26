@@ -2,12 +2,12 @@ import { log } from 'meteor/unchained:logger';
 import { ProductTypes } from 'meteor/unchained:core-products';
 import { Context, Root } from '@unchainedshop/types/api';
 
+import { ProductWarehousing } from '@unchainedshop/types/products';
 import {
   ProductNotFoundError,
   InvalidIdError,
   ProductWrongTypeError,
 } from '../../../errors';
-import { ProductWarehousing } from '@unchainedshop/types/products';
 
 export default async function updateProductWarehousing(
   root: Root,
@@ -17,7 +17,7 @@ export default async function updateProductWarehousing(
   }: { warehousing: ProductWarehousing; productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation updateProductWarehousing ${productId}`,{ userId });
+  log(`mutation updateProductWarehousing ${productId}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 
@@ -33,5 +33,5 @@ export default async function updateProductWarehousing(
 
   await modules.products.update(productId, { warehousing }, userId);
 
-  return await modules.products.findProduct({ productId });
+  return modules.products.findProduct({ productId });
 }

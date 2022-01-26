@@ -75,7 +75,7 @@ export const configureDeliveryModule = async ({
     },
 
     findProvider: async ({ deliveryProviderId, ...query }, options) => {
-      return await DeliveryProviders.findOne(
+      return DeliveryProviders.findOne(
         deliveryProviderId ? generateDbFilterById(deliveryProviderId) : query,
         options
       );
@@ -86,7 +86,7 @@ export const configureDeliveryModule = async ({
         buildFindSelector(query),
         options
       );
-      return await providers.toArray();
+      return providers.toArray();
     },
 
     providerExists: async ({ deliveryProviderId }) => {
@@ -147,7 +147,7 @@ export const configureDeliveryModule = async ({
         pricingContext,
         requestContext
       );
-      return await pricing.calculate();
+      return pricing.calculate();
     },
 
     send: async (deliveryProviderId, deliveryContext, requestContext) => {

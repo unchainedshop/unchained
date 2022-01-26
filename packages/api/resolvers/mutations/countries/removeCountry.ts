@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
-import { CountryNotFoundError, InvalidIdError } from '../../../errors';
 import { Country } from '@unchainedshop/types/countries';
 import { Context, Root } from '@unchainedshop/types/api';
+import { CountryNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function removeCountry(
   root: Root,
@@ -17,5 +17,5 @@ export default async function removeCountry(
 
   await modules.countries.delete(countryId, userId);
 
-  return await modules.countries.findCountry({ countryId });
+  return modules.countries.findCountry({ countryId });
 }

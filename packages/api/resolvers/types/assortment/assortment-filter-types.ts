@@ -22,12 +22,12 @@ export const AssortmentFilter: AssortmentFilterHelperTypes = {
       assortmentId: obj.assortmentId,
     });
 
-    console.log('ASSORTMENT-TYPE', assortment, obj)
-    return assortment
+    console.log('ASSORTMENT-TYPE', assortment, obj);
+    return assortment;
   },
 
   filter: async (obj, _, { modules }) => {
-    return await modules.filters.findFilter({
+    return modules.filters.findFilter({
       filterId: obj.filterId,
     });
   },

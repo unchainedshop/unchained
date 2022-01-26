@@ -13,7 +13,7 @@ export const chargeService: ChargeService = async (
       paymentProviderId,
       isPreferred: true,
     }));
-    
+
   const normalizedContext = {
     ...paymentContext,
     userId,

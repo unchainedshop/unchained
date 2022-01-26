@@ -79,7 +79,7 @@ const fixPeriods = async (
     requestContext.userId
   );
 
-  return await Promise.all(
+  return Promise.all(
     adjustedEnrollmentPeriods.map(
       async (period) =>
         await requestContext.modules.enrollments.addEnrollmentPeriod(
@@ -165,7 +165,8 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         const originalOrderPayment =
           await modules.orders.payments.findOrderPaymentByContextData({
             context: {
-              'meta.transactionIdentifier': latestTransaction.original_transaction_id,
+              'meta.transactionIdentifier':
+                latestTransaction.original_transaction_id,
             },
           });
         if (!originalOrderPayment)
@@ -339,7 +340,6 @@ const AppleIAP: IPaymentAdapter = {
             'Apple IAP Plugin: You have to set the transaction id on the order payment'
           );
         }
-        
 
         const receiptResponse =
           receiptData &&

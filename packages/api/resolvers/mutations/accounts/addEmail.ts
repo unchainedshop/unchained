@@ -16,5 +16,5 @@ export default async function addEmail(
 
   await modules.accounts.addEmail(normalizedUserId, params.email);
 
-  return await modules.users.findUser({ userId: normalizedUserId });
+  return modules.users.findUser({ userId: normalizedUserId });
 }

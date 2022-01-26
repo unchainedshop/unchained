@@ -15,9 +15,8 @@ const upsert = async (
       `Can't link non-existing product ${assortmentProduct.productId}`
     );
   }
-  console.log('UPSERT ASSORTMENT PRODUCT', assortmentProduct);
   try {
-    return await modules.assortments.products.create(
+    return modules.assortments.products.create(
       assortmentProduct,
       {
         skipInvalidation: true,
@@ -25,7 +24,6 @@ const upsert = async (
       userId
     );
   } catch (e) {
-    console.log('ERROR', e);
     await modules.assortments.products.update(
       assortmentProduct._id,
       assortmentProduct
@@ -40,10 +38,10 @@ export default async (
 ) => {
   const { modules, userId } = unchainedAPI;
   const assortmentProductIds = await Promise.all(
-    products.map(async (products: AssortmentProduct) => {
+    products.map(async (product: AssortmentProduct) => {
       const assortmentProductId = await upsert(
         {
-          ...products,
+          ...product,
           authorId,
           assortmentId,
         },

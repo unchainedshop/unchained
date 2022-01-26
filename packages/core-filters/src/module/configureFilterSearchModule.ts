@@ -140,9 +140,9 @@ export const configureFilterSearchModule = ({
         );
         const relevantProductIds = relevantProducts.map(({ _id }) => _id);
 
-        return await Promise.all(
+        return Promise.all(
           sortedFilters.map(async (filter) => {
-            return await loadFilter(
+            return loadFilter(
               filter,
               {
                 allProductIds: relevantProductIds,

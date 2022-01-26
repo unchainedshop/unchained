@@ -12,9 +12,9 @@ interface BookmarkHelperTypes {
 
 export const Bookmark: BookmarkHelperTypes = {
   product: async (obj, _, { modules }) => {
-    return await modules.products.findProduct({ productId: obj.productId });
+    return modules.products.findProduct({ productId: obj.productId });
   },
   user: async (obj, _, { modules }) => {
-    return await modules.users.findUser({ userId: obj.userId });
+    return modules.users.findUser({ userId: obj.userId });
   },
 };

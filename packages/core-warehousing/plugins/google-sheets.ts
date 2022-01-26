@@ -13,28 +13,6 @@ const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } =
 
 const maxAge = NODE_ENV === 'production' ? 1000 * 60 * 60 : -1; // 1 hour or 1 second
 
-let updateGoogleCache = async () => {
-  try {
-    const sheet = await downloadSpreadsheet();
-    if (sheet) {
-      googleCache.set('tables', sheet);
-      return sheet;
-    }
-  } catch (e) {
-    log(e, { level: LogLevel.Error });
-  }
-  return null;
-};
-
-const googleCache = new LRU({
-  max: 500,
-  maxAge, // 1 second in dev
-  stale: true,
-  dispose() {
-    updateGoogleCache();
-  },
-});
-
 const downloadSpreadsheet = async () => {
   if (!GOOGLE_SHEETS_PRIVATE_KEY_DATA || !GOOGLE_SHEETS_ID) return null;
   try {
@@ -56,6 +34,28 @@ const downloadSpreadsheet = async () => {
     throw err;
   }
 };
+
+const updateGoogleCache = async () => {
+  try {
+    const sheet = await downloadSpreadsheet();
+    if (sheet) {
+      googleCache.set('tables', sheet);
+      return sheet;
+    }
+  } catch (e) {
+    log(e, { level: LogLevel.Error });
+  }
+  return null;
+};
+
+const googleCache = new LRU({
+  max: 500,
+  maxAge, // 1 second in dev
+  stale: true,
+  dispose() {
+    updateGoogleCache();
+  },
+});
 
 updateGoogleCache();
 

@@ -1,7 +1,4 @@
-import {
-  UnchainedAPI,
-  UnchainedLocaleContext,
-} from '@unchainedshop/types/api';
+import { UnchainedAPI, UnchainedLocaleContext } from '@unchainedshop/types/api';
 import { Request } from 'express';
 import { Locales } from 'locale';
 import LRU from 'lru-cache';

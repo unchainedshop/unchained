@@ -10,9 +10,9 @@ const upsert = async (
 ) => {
   const { modules, userId } = unchainedAPI;
   try {
-    return await modules.products.variations.create(productVariation, userId);
+    return modules.products.variations.create(productVariation, userId);
   } catch (e) {
-    return await modules.products.variations.update(
+    return modules.products.variations.update(
       productVariation._id,
       productVariation
     );
@@ -45,7 +45,7 @@ export default async function upsertVariations(
                 string,
                 ProductVariationText
               ]) => {
-                return await modules.products.variations.texts.upsertLocalizedText(
+                return modules.products.variations.texts.upsertLocalizedText(
                   {
                     productVariationId: variation._id,
                     productVariationOptionValue: optionValue,
@@ -65,7 +65,7 @@ export default async function upsertVariations(
       await Promise.all(
         Object.entries(content).map(
           async ([locale, localizedData]: [string, ProductVariationText]) => {
-            return await modules.products.variations.texts.upsertLocalizedText(
+            return modules.products.variations.texts.upsertLocalizedText(
               {
                 productVariationId: variation._id,
               },

@@ -30,5 +30,5 @@ export default async function removeCartDiscount(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  return await modules.orders.discounts.delete(discountId, context);
+  return modules.orders.discounts.delete(discountId, context);
 }

@@ -31,7 +31,7 @@ export const configureAssortmentLinksModule = ({
       parentAssortmentId,
       childAssortmentId,
     }) => {
-      return await AssortmentLinks.findOne(
+      return AssortmentLinks.findOne(
         assortmentLinkId
           ? generateDbFilterById(assortmentLinkId)
           : { parentAssortmentId, childAssortmentId },
@@ -122,7 +122,7 @@ export const configureAssortmentLinksModule = ({
       const selector = generateDbFilterById(assortmentLinkId);
       const modifier = { $set: doc };
       await AssortmentLinks.updateOne(selector, modifier);
-      return await AssortmentLinks.findOne(selector, {});
+      return AssortmentLinks.findOne(selector, {});
     },
 
     delete: async (assortmentLinkId, options) => {

@@ -1,10 +1,9 @@
-import upsertMedia from './upsertMedia';
-import upsertAssortmentContent from './upsertAssortmentContent';
-import upsertAssortmentProducts from './upsertAssortmentProducts';
-import upsertAssortmentChildren from './upsertAssortmentChildren';
-import upsertAssortmentFilters from './upsertAssortmentFilters';
 import { Context } from '@unchainedshop/types/api';
-import { assortmentsSettings } from 'meteor/unchained:utils';
+import upsertAssortmentChildren from './upsertAssortmentChildren';
+import upsertAssortmentContent from './upsertAssortmentContent';
+import upsertAssortmentFilters from './upsertAssortmentFilters';
+import upsertAssortmentProducts from './upsertAssortmentProducts';
+import upsertMedia from './upsertMedia';
 
 export default async function createAssortment(
   payload: any,
@@ -100,5 +99,5 @@ export default async function createAssortment(
     operation: 'create',
     _id,
     success: true,
-  }
+  };
 }

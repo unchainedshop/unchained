@@ -26,7 +26,7 @@ export default async function rejectQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return await modules.quotations.rejectQuotation(
+  return modules.quotations.rejectQuotation(
     quotation,
     transactionContext,
     context

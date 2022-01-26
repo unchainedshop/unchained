@@ -14,7 +14,7 @@ import {
 } from 'mongodb';
 import { LogOptions } from './logs';
 
-export { Locale, Locales } from 'locale'
+export { Locale, Locales } from 'locale';
 /*
  * MongoDb
  */
@@ -62,12 +62,8 @@ export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
 }
 
 export interface ModuleMutationsWithReturnDoc<T> {
-  create: (doc: T, userId?: string) => Promise<T>
-  update: (
-    _id: _ID,
-    doc: UpdateFilter<T> | T,
-    userId?: string
-  ) => Promise<T>;
+  create: (doc: T, userId?: string) => Promise<T>;
+  update: (_id: _ID, doc: UpdateFilter<T> | T, userId?: string) => Promise<T>;
   delete: (_id: _ID, userId?: string) => Promise<T>;
 }
 

@@ -1,14 +1,13 @@
 import { log } from 'meteor/unchained:logger';
 import { EnrollmentStatus } from 'meteor/unchained:core-enrollments';
 import { Context, Root } from '@unchainedshop/types/api';
+import { EnrollmentPlan, Enrollment } from '@unchainedshop/types/enrollments';
+import { Address, Contact } from '@unchainedshop/types/common';
 import {
   EnrollmentNotFoundError,
   EnrollmentWrongStatusError,
   InvalidIdError,
 } from '../../../errors';
-import { EnrollmentPlan } from '@unchainedshop/types/enrollments';
-import { Address, Contact } from '@unchainedshop/types/common';
-import { Enrollment } from '@unchainedshop/types/enrollments';
 
 type UpdateEnrollmentParams = {
   enrollmentId: string;

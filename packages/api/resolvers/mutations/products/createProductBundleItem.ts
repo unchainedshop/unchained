@@ -1,12 +1,12 @@
 import { log } from 'meteor/unchained:logger';
+import { ProductTypes } from 'meteor/unchained:core-products';
+import { Context, Root } from '@unchainedshop/types/api';
+import { ProductBundleItem } from '@unchainedshop/types/products';
 import {
   ProductNotFoundError,
   InvalidIdError,
   ProductWrongTypeError,
 } from '../../../errors';
-import { ProductTypes } from 'meteor/unchained:core-products';
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductBundleItem } from '@unchainedshop/types/products';
 
 export default async function createProductBundleItem(
   root: Root,
@@ -34,5 +34,5 @@ export default async function createProductBundleItem(
 
   await modules.products.bundleItems.addBundleItem(productId, item, userId);
 
-  return await modules.products.findProduct({ productId });
+  return modules.products.findProduct({ productId });
 }

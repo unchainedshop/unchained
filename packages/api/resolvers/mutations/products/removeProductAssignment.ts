@@ -1,15 +1,15 @@
 import { log } from 'meteor/unchained:logger';
 import { ProductTypes } from 'meteor/unchained:core-products';
-import {
-  ProductNotFoundError,
-  InvalidIdError,
-  ProductWrongTypeError,
-} from '../../../errors';
 import { Context, Root } from '@unchainedshop/types/api';
 import {
   ProductAssignment,
   ProductConfiguration,
 } from '@unchainedshop/types/products';
+import {
+  ProductNotFoundError,
+  InvalidIdError,
+  ProductWrongTypeError,
+} from '../../../errors';
 
 export default async function removeProductAssignment(
   root: Root,
@@ -17,7 +17,7 @@ export default async function removeProductAssignment(
   { modules, userId }: Context
 ) {
   const { proxyId, vectors } = params;
-  log(`mutation removeProductAssignment ${proxyId}`,{ userId });
+  log(`mutation removeProductAssignment ${proxyId}`, { userId });
 
   if (!proxyId) throw new InvalidIdError({ proxyId });
 
@@ -37,5 +37,5 @@ export default async function removeProductAssignment(
     userId
   );
 
-  return await modules.products.findProduct({ productId: proxyId });
+  return modules.products.findProduct({ productId: proxyId });
 }

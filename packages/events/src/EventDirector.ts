@@ -7,7 +7,6 @@ import { createLogger } from 'meteor/unchained:logger';
 
 const logger = createLogger('unchained:events');
 
-
 export const defaultNormalizer: ContextNormalizerFunction = (context) => {
   return {
     userAgent: context?.userAgent,

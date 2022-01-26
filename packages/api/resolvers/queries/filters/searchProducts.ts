@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
-import { QueryStringRequiredError } from '../../../errors';
 import { Root, Context } from '@unchainedshop/types/api';
 import { SearchFilterQuery } from '@unchainedshop/types/filters';
+import { QueryStringRequiredError } from '../../../errors';
 
 export default async function searchProducts(
   root: Root,

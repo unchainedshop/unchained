@@ -17,7 +17,7 @@ export default async function orders(
     userId,
   });
 
-  return await modules.orders.findOrders({
+  return modules.orders.findOrders({
     includeCarts,
     limit,
     offset,

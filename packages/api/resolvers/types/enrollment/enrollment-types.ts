@@ -36,15 +36,15 @@ export const Enrollment: EnrollmentHelperTypes = {
   },
 
   user: async (obj, _, { modules }) => {
-    return await modules.users.findUser({
+    return modules.users.findUser({
       userId: obj.userId,
     });
   },
 
   country: async (obj, _, { modules }) => {
-    return await modules.countries.findCountry({ isoCode: obj.countryCode });
+    return modules.countries.findCountry({ isoCode: obj.countryCode });
   },
   currency: async (obj, _, { modules }) => {
-    return await modules.currencies.findCurrency({ isoCode: obj.currencyCode });
+    return modules.currencies.findCurrency({ isoCode: obj.currencyCode });
   },
 };

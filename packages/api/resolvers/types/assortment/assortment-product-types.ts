@@ -18,13 +18,13 @@ type AssortmentProductHelperTypes = {
 
 export const AssortmentProduct: AssortmentProductHelperTypes = {
   assortment: async (obj, _, { modules }) => {
-    return await modules.assortments.findAssortment({
+    return modules.assortments.findAssortment({
       assortmentId: obj.assortmentId,
     });
   },
 
   product: async (obj, _, { modules }) => {
-    return await modules.products.findProduct({
+    return modules.products.findProduct({
       productId: obj.productId,
     });
   },

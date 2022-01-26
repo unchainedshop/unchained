@@ -14,7 +14,7 @@ export default async function confirmMediaUpload(
   if (!(await modules.users.userExists({ userId })))
     throw new UserNotFoundError({ userId });
 
-  return await services.files.linkFile(
+  return services.files.linkFile(
     { fileId: mediaUploadTicketId, size, type },
     context
   );

@@ -27,7 +27,7 @@ const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
 
 export const configureFilesModule = async ({
   db,
-}: ModuleInput<{}>): Promise<FilesModule> => {
+}: ModuleInput<Record<string, never>>): Promise<FilesModule> => {
   registerEvents(FILE_EVENTS);
 
   const Files = await MediaObjectsCollection(db);
@@ -49,7 +49,7 @@ export const configureFilesModule = async ({
 
   return {
     findFile: async ({ fileId, externalId }, options) => {
-      return await Files.findOne(
+      return Files.findOne(
         fileId ? generateDbFilterById(fileId) : { externalId },
         options
       );
@@ -60,7 +60,7 @@ export const configureFilesModule = async ({
 
       if (metaKeys.length === 0) return [];
 
-      let selector: Query = metaKeys.reduce(
+      const selector: Query = metaKeys.reduce(
         (currentSelector, key) =>
           meta[key] !== undefined
             ? {
@@ -73,7 +73,7 @@ export const configureFilesModule = async ({
 
       const files = Files.find(selector, options);
 
-      return await files.toArray();
+      return files.toArray();
     },
 
     create: async (doc: File, userId: string) => {
@@ -170,7 +170,7 @@ export const configureFilesModule = async ({
 
       const fileId = await mutations.create(fileData, userId);
 
-      return await Files.findOne(generateDbFilterById(fileId), {});
+      return Files.findOne(generateDbFilterById(fileId), {});
     },
 
     uploadFileFromURL: async (directoryName, fileInput, meta, userId) => {
@@ -183,7 +183,7 @@ export const configureFilesModule = async ({
 
       const fileId = await mutations.create(fileData, userId);
 
-      return await Files.findOne(generateDbFilterById(fileId), {});
+      return Files.findOne(generateDbFilterById(fileId), {});
     },
   };
 };

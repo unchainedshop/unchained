@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import clone from 'lodash.clone';
+import { Context } from '@unchainedshop/types/api';
 import { has } from './utils/has';
 import { isFunction } from './utils/isFunction';
-import { Context } from '@unchainedshop/types/api';
 
 interface RoleInterface {
   name: string;
@@ -95,7 +95,7 @@ export const Roles: RolesInterface = {
   async allow(context, roles, action, [obj, params]) {
     const userRoles = Roles.getUserRoles(context, roles, true);
 
-    return await userRoles.reduce(
+    return userRoles.reduce(
       async (roleIsAllowedPromise: Promise<boolean>, role) => {
         const roleIsAllowed = await roleIsAllowedPromise;
 
@@ -106,12 +106,12 @@ export const Roles: RolesInterface = {
           Roles.roles[role].allowRules &&
           Roles.roles[role].allowRules[action]
         ) {
-          return await Roles.roles[role].allowRules[action].reduce(
+          return Roles.roles[role].allowRules[action].reduce(
             async (rulesIsAllowedPromise: Promise<boolean>, allowFn: any) => {
               const ruleIsAllowed = await rulesIsAllowedPromise;
               if (ruleIsAllowed) return true;
 
-              return await allowFn(obj, params, context);
+              return allowFn(obj, params, context);
             },
             Promise.resolve(false)
           );
@@ -151,7 +151,7 @@ export const Roles: RolesInterface = {
       userRoles = [userRoles];
     }
 
-    return await context.modules.users.addRoles(context.userId, userRoles);
+    return context.modules.users.addRoles(context.userId, userRoles);
   },
 
   /**

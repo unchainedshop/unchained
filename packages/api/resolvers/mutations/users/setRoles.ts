@@ -15,5 +15,5 @@ export default async function updateUserProfile(
   if (!(await modules.users.userExists({ userId: foreignUserId })))
     throw new UserNotFoundError({ userId: foreignUserId });
 
-  return await modules.users.updateRoles(foreignUserId, params.roles, userId);
+  return modules.users.updateRoles(foreignUserId, params.roles, userId);
 }

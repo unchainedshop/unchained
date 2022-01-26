@@ -9,7 +9,7 @@ import {
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
-  PricingDiscount
+  PricingDiscount,
 } from './pricing';
 import { User } from './user';
 
@@ -71,12 +71,11 @@ export interface IOrderPricingSheet
   getPaymentRows: () => Array<OrderPricingCalculation>;
 }
 
-export interface IOrderPricingAdapter
-  extends IPricingAdapter<
-    OrderPricingAdapterContext,
-    OrderPricingCalculation,
-    IOrderPricingSheet
-  > {}
+export type IOrderPricingAdapter = IPricingAdapter<
+  OrderPricingAdapterContext,
+  OrderPricingCalculation,
+  IOrderPricingSheet
+>;
 
 export interface IOrderPricingDirector
   extends IPricingDirector<

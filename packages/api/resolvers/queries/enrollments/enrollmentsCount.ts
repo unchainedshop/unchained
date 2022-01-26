@@ -8,5 +8,5 @@ export default async function enrollmentsCount(
 ) {
   log(`query enrollmentsCount`, { userId });
 
-  return await modules.enrollments.count();
+  return modules.enrollments.count();
 }

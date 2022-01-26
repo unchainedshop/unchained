@@ -28,7 +28,7 @@ const ASSORTMENT_MEDIA_EVENTS = [
 
 export const configureAssortmentMediaModule = async ({
   db,
-}: ModuleInput<{}>): Promise<AssortmentMediaModule> => {
+}: ModuleInput<Record<string, never>>): Promise<AssortmentMediaModule> => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
 
   const { AssortmentMedia, AssortmentMediaTexts } =
@@ -71,7 +71,7 @@ export const configureAssortmentMediaModule = async ({
       }
     );
 
-    return await AssortmentMediaTexts.findOne(
+    return AssortmentMediaTexts.findOne(
       updsertResult.upsertedCount === 0
         ? generateDbFilterById(textId)
         : selector,
@@ -82,7 +82,7 @@ export const configureAssortmentMediaModule = async ({
   return {
     // Queries
     findAssortmentMedia: async ({ assortmentMediaId }) => {
-      return await AssortmentMedia.findOne(
+      return AssortmentMedia.findOne(
         generateDbFilterById(assortmentMediaId),
         {}
       );
@@ -104,12 +104,12 @@ export const configureAssortmentMediaModule = async ({
         ...options,
       });
 
-      return await mediaList.toArray();
+      return mediaList.toArray();
     },
 
     // Mutations
     create: async (doc: AssortmentMedia, userId) => {
-      let sortKey = doc.sortKey;
+      let { sortKey } = doc;
 
       if (!sortKey) {
         // Get next sort key
@@ -182,7 +182,7 @@ export const configureAssortmentMediaModule = async ({
       const selector = generateDbFilterById(assortmentMediaId);
       const modifier = { $set: doc };
       await AssortmentMedia.updateOne(selector, modifier);
-      return await AssortmentMedia.findOne(selector, {});
+      return AssortmentMedia.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {
@@ -219,7 +219,7 @@ export const configureAssortmentMediaModule = async ({
     texts: {
       // Queries
       findMediaTexts: async ({ assortmentMediaId }) => {
-        return await AssortmentMediaTexts.find({ assortmentMediaId }).toArray();
+        return AssortmentMediaTexts.find({ assortmentMediaId }).toArray();
       },
 
       findLocalizedMediaText: async ({ assortmentMediaId, locale }) => {

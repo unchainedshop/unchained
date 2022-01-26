@@ -22,12 +22,8 @@ export const setupCarts = async (
     const users = await unchainedAPI.modules.users.findUsers({});
 
     await Promise.all(
-      users.map(
-        async (user) =>
-          await unchainedAPI.modules.orders.ensureCartForUser(
-            { user },
-            unchainedAPI
-          )
+      users.map((user) =>
+        unchainedAPI.modules.orders.ensureCartForUser({ user }, unchainedAPI)
       )
     );
   }

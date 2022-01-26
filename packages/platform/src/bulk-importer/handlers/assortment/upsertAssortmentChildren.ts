@@ -15,16 +15,13 @@ const upsert = async (
     );
   }
   try {
-    return await modules.assortments.links.create(
+    return modules.assortments.links.create(
       assortmentLink,
       { skipInvalidation: true },
       userId
     );
   } catch (e) {
-    return await modules.assortments.links.update(
-      assortmentLink._id,
-      assortmentLink
-    );
+    return modules.assortments.links.update(assortmentLink._id, assortmentLink);
   }
 };
 

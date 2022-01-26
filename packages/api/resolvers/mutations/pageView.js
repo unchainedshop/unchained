@@ -8,6 +8,6 @@ export default (root, { path, referrer }, { userId }) => {
     path,
     referrer,
   });
-  
+
   return path;
 };

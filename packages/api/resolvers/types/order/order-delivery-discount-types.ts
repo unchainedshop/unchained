@@ -22,7 +22,7 @@ export const OrderDeliveryDiscount: OrderDeliveryDiscountHelperTypes = {
   },
 
   orderDiscount: async (obj, _, { modules }) => {
-    return await modules.orders.discounts.findOrderDiscount({
+    return modules.orders.discounts.findOrderDiscount({
       discountId: obj.discountId,
     });
   },

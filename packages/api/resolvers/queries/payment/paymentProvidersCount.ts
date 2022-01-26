@@ -9,5 +9,5 @@ export default async function paymentProvidersCount(
 ) {
   log(`query paymentProvidersCount ${type}`, { userId });
 
-  return await modules.payment.paymentProviders.count({ type });
+  return modules.payment.paymentProviders.count({ type });
 }

@@ -10,7 +10,7 @@ Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('typescript');
-  
+
   api.use('unchained:utils@1.0.0-beta15');
   api.use('unchained:events@1.0.0-beta15');
 
@@ -22,6 +22,6 @@ Package.onTest((api) => {
   api.use('typescript');
 
   api.use('unchained:core-languages');
-  
+
   api.mainModule('tests/languages-index.test.ts');
 });

@@ -53,7 +53,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     context: Context
   ) => {
     if (params.orderId) {
-      return await isOwnedOrder(null, { orderId: params.orderId }, context);
+      return isOwnedOrder(null, { orderId: params.orderId }, context);
     }
     return true;
   };

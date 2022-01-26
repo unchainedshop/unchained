@@ -11,5 +11,5 @@ export default async function filter(
 
   if (!filterId) throw new InvalidIdError({ filterId });
 
-  return await modules.filters.findFilter({ filterId });
+  return modules.filters.findFilter({ filterId });
 }

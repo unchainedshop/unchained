@@ -1,3 +1,4 @@
+import { UpdateFilter } from 'mongodb';
 import { Context } from './api';
 import {
   FindOptions,
@@ -16,7 +17,6 @@ import {
   PaymentPricingContext,
   PaymentPricingCalculation,
 } from './payments.pricing';
-import { UpdateFilter } from 'mongodb';
 
 export enum PaymentProviderType {
   CARD = 'CARD',

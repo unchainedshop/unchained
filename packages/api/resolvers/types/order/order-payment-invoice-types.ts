@@ -23,7 +23,7 @@ export const OrderPaymentInvoice: OrderPaymentInvoiceHelperTypes = {
   },
 
   provider: async (obj, _, { modules }) => {
-    return await modules.payment.paymentProviders.findProvider({
+    return modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });
   },

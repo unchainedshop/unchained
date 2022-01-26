@@ -16,5 +16,5 @@ export const linkFileService: LinkFileService = async (
 
   await FileDirector.getFileUploadCallback(directoryName)(file);
 
-  return await modules.files.findFile({ fileId });
+  return modules.files.findFile({ fileId });
 };

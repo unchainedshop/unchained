@@ -54,15 +54,15 @@ export const DeliveryDirector: IDeliveryDirector = {
       },
 
       send: async () => {
-        return await adapter.send();
+        return adapter.send();
       },
 
       pickUpLocationById: async (locationId) => {
-        return await adapter.pickUpLocationById(locationId);
+        return adapter.pickUpLocationById(locationId);
       },
 
       pickUpLocations: async () => {
-        return await adapter.pickUpLocations();
+        return adapter.pickUpLocations();
       },
     };
   },

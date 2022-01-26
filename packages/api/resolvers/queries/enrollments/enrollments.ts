@@ -8,5 +8,5 @@ export default async function enrollments(
 ) {
   log(`query enrollments: ${limit} ${offset}`, { userId });
 
-  return await modules.enrollments.findEnrollments({ limit, offset });
+  return modules.enrollments.findEnrollments({ limit, offset });
 }

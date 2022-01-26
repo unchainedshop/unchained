@@ -13,7 +13,6 @@ export const getOrderCart = async (
   const { countryContext, modules, services, userId } = context;
   const { orderId } = params;
 
-  
   if (orderId) {
     const order = await modules.orders.findOrder({ orderId });
     if (!order) throw new OrderNotFoundError({ orderId });
@@ -28,7 +27,7 @@ export const getOrderCart = async (
 
   const cart = await modules.orders.cart({ countryContext }, user);
   if (cart) return cart;
-  
+
   const currency = await services.countries.resolveDefaultCurrencyCode(
     {
       isoCode: countryContext,
@@ -36,7 +35,7 @@ export const getOrderCart = async (
     context
   );
 
-  return await modules.orders.create(
+  return modules.orders.create(
     {
       currency,
       countryCode: countryContext,

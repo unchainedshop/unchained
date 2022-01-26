@@ -1,5 +1,4 @@
 import {
-  Filter,
   ModifyResult,
   ModuleInput,
   ModuleMutations,
@@ -7,14 +6,13 @@ import {
   Query,
   Sort,
 } from '@unchainedshop/types/common';
-import { WorkerModule, Work } from '@unchainedshop/types/worker';
+import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
 import os from 'os';
-import { WorkStatus } from '../director/WorkStatus';
 import { WorkQueueCollection } from '../db/WorkQueueCollection';
 import { WorkQueueSchema } from '../db/WorkQueueSchema';
 import {
@@ -22,6 +20,7 @@ import {
   WorkerDirector,
 } from '../director/WorkerDirector';
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
+import { WorkStatus } from '../director/WorkStatus';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
@@ -92,7 +91,7 @@ const defaultSort = {
 
 export const configureWorkerModule = async ({
   db,
-}: ModuleInput<{}>): Promise<WorkerModule> => {
+}: ModuleInput<Record<string, never>>): Promise<WorkerModule> => {
   const WorkQueue = await WorkQueueCollection(db);
 
   const mutations = generateDbMutations<Work>(
@@ -155,7 +154,7 @@ export const configureWorkerModule = async ({
     },
 
     findWork: async ({ workId, originalWorkId }) => {
-      return await WorkQueue.findOne(
+      return WorkQueue.findOne(
         workId ? generateDbFilterById(workId) : { originalWorkId },
         {}
       );
@@ -169,7 +168,7 @@ export const configureWorkerModule = async ({
         sort: defaultSort,
       });
 
-      return await workQueues.toArray();
+      return workQueues.toArray();
     },
 
     workExists: async ({ workId, originalWorkId }) => {
@@ -358,23 +357,22 @@ export const configureWorkerModule = async ({
       ).toArray();
 
       return Promise.all(
-        workQueue.map(
-          async ({ _id }) =>
-            await finishWork(
-              _id,
-              {
-                finished: new Date(),
-                result: null,
-                success: false,
-                error: {
-                  name: DIRECTOR_MARKED_FAILED_ERROR,
-                  message:
-                    'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
-                },
-                worker,
+        workQueue.map(({ _id }) =>
+          finishWork(
+            _id,
+            {
+              finished: new Date(),
+              result: null,
+              success: false,
+              error: {
+                name: DIRECTOR_MARKED_FAILED_ERROR,
+                message:
+                  'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
               },
-              userId
-            )
+              worker,
+            },
+            userId
+          )
         )
       );
     },

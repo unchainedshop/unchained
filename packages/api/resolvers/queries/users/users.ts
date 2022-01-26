@@ -3,7 +3,17 @@ import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function users(
   root: Root,
-  { limit, offset, includeGuests, queryString }: { limit: number; offset: number; includeGuests: boolean, queryString?: string },
+  {
+    limit,
+    offset,
+    includeGuests,
+    queryString,
+  }: {
+    limit: number;
+    offset: number;
+    includeGuests: boolean;
+    queryString?: string;
+  },
   { modules, userId }: Context
 ) {
   log(
@@ -13,5 +23,10 @@ export default async function users(
     { userId }
   );
 
-  return await modules.users.findUsers({ limit, offset, includeGuests, queryString });
+  return modules.users.findUsers({
+    limit,
+    offset,
+    includeGuests,
+    queryString,
+  });
 }

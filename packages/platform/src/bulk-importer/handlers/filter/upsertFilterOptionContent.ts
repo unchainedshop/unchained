@@ -12,7 +12,7 @@ export default async function upsertFilterOptionContent(
         await Promise.all(
           Object.entries(optionContent).map(
             async ([locale, localizedData]: [string, FilterText]) => {
-              return await unchainedAPI.modules.filters.texts.upsertLocalizedText(
+              return unchainedAPI.modules.filters.texts.upsertLocalizedText(
                 { filterId: filter._id, filterOptionValue: optionValue },
                 locale,
                 {

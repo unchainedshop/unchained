@@ -12,7 +12,7 @@ export default async function translatedProductVariationTexts(
     { userId }
   );
 
-  return await modules.products.variations.texts.findVariationTexts({
+  return modules.products.variations.texts.findVariationTexts({
     productVariationId,
     productVariationOptionValue,
   });

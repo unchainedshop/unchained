@@ -9,6 +9,6 @@ export default async function countriesCount(
   log(`query countriesCount:  ${includeInactive ? 'includeInactive' : ''}`, {
     userId,
   });
-  
+
   return modules.countries.count({ includeInactive });
 }

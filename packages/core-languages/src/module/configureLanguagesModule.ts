@@ -4,10 +4,10 @@ import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   generateDbMutations,
   generateDbFilterById,
+  systemLocale,
 } from 'meteor/unchained:utils';
 import { LanguagesCollection } from '../db/LanguagesCollection';
 import { LanguagesSchema } from '../db/LanguagesSchema';
-import { systemLocale } from 'meteor/unchained:utils';
 
 const LANGUAGE_EVENTS: string[] = [
   'LANGUAGE_CREATE',
@@ -26,7 +26,7 @@ const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
 
 export const configureLanguagesModule = async ({
   db,
-}: ModuleInput<{}>): Promise<LanguagesModule> => {
+}: ModuleInput<Record<string, never>>): Promise<LanguagesModule> => {
   registerEvents(LANGUAGE_EVENTS);
 
   const Languages = await LanguagesCollection(db);
@@ -35,7 +35,7 @@ export const configureLanguagesModule = async ({
 
   return {
     findLanguage: async ({ languageId, isoCode }) => {
-      return await Languages.findOne(
+      return Languages.findOne(
         languageId ? generateDbFilterById(languageId) : { isoCode }
       );
     },
@@ -46,7 +46,7 @@ export const configureLanguagesModule = async ({
         limit,
         ...options,
       });
-      return await languages.toArray();
+      return languages.toArray();
     },
 
     count: async (query) => {

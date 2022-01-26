@@ -1,7 +1,7 @@
 import { FindOptions } from '@unchainedshop/types/common';
 import {
   FilterAdapterActions,
-  SearchQuery
+  SearchQuery,
 } from '@unchainedshop/types/filters';
 
 const ORDER_BY_INDEX = 'default';
@@ -56,5 +56,5 @@ export const resolveSortStage = async (
 ) => {
   const stage = defaultStage(searchQuery);
 
-  return await filterActions.transformSortStage(stage);
+  return filterActions.transformSortStage(stage);
 };

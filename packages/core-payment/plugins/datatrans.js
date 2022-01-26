@@ -321,7 +321,10 @@ class Datatrans extends PaymentAdapter {
         transactionResponse
       );
     }
-    paymentLogger.info('Datatrans Plugin: Registration declined', transactionResponse);
+    paymentLogger.info(
+      'Datatrans Plugin: Registration declined',
+      transactionResponse
+    );
     return null;
   }
 
@@ -395,7 +398,10 @@ class Datatrans extends PaymentAdapter {
     const { currency, amount } = roundedAmountFromOrder(order);
 
     if (!status || status === 'error') {
-      paymentLogger.info('Datatrans Plugin: Payment declined', transactionResponse);
+      paymentLogger.info(
+        'Datatrans Plugin: Payment declined',
+        transactionResponse
+      );
       throw new Error('Payment declined');
     }
     const validSign = generateSignature(DATATRANS_SIGN_KEY)(

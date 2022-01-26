@@ -14,6 +14,6 @@ export const Work: WorkHelperTypes = {
   },
 
   original: async (obj, _, { modules }) => {
-    return await modules.worker.findWork({ workId: obj.originalWorkId });
+    return modules.worker.findWork({ workId: obj.originalWorkId });
   },
 };

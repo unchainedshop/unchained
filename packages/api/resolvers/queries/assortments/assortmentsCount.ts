@@ -18,5 +18,5 @@ export default async function assortmentsCount(
     { userId }
   );
 
-  return await modules.assortments.count(params);
+  return modules.assortments.count(params);
 }

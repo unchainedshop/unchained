@@ -39,7 +39,7 @@ export default async function F(
       required: ProductTypes.ConfigurableProduct,
     });
 
-  return await modules.products.variations.create(
+  return modules.products.variations.create(
     {
       authorId: userId,
       locale: localeContext.language,

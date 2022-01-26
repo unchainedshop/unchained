@@ -44,7 +44,7 @@ export const configureOrdersModuleQueries = ({
         ? generateDbFilterById(orderId)
         : { orderNumber };
 
-      return await Orders.findOne(selector, options);
+      return Orders.findOne(selector, options);
     },
 
     findOrders: async ({ limit, offset, queryString, ...query }, options) => {
@@ -58,14 +58,14 @@ export const configureOrdersModuleQueries = ({
       const selector = buildFindSelector({ queryString, ...query });
 
       if (queryString) {
-        return await Orders.find(selector, {
+        return Orders.find(selector, {
           ...options,
           projection: { score: { $meta: 'textScore' } },
           sort: { score: { $meta: 'textScore' } },
         }).toArray();
       }
 
-      return await Orders.find(selector, findOptions).toArray();
+      return Orders.find(selector, findOptions).toArray();
     },
 
     orderExists: async ({ orderId }) => {

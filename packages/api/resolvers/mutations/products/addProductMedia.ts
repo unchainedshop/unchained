@@ -23,7 +23,7 @@ export default async function addProductMedia(
     userId
   );
 
-  return await modules.products.media.create(
+  return modules.products.media.create(
     { productId, mediaId: file._id },
     userId
   );

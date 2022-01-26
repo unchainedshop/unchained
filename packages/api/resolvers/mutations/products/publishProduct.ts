@@ -1,8 +1,9 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { log } from 'meteor/unchained:logger';
 import {
-  InvalidIdError, ProductNotFoundError,
-  ProductWrongStatusError
+  InvalidIdError,
+  ProductNotFoundError,
+  ProductWrongStatusError,
 } from '../../../errors';
 
 export default async function publishProduct(
@@ -10,7 +11,7 @@ export default async function publishProduct(
   { productId }: { productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation publishProduct ${productId}`,{ userId });
+  log(`mutation publishProduct ${productId}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 
@@ -21,5 +22,5 @@ export default async function publishProduct(
     throw new ProductWrongStatusError({ status: product.status });
   }
 
-  return await modules.products.findProduct({ productId });
+  return modules.products.findProduct({ productId });
 }

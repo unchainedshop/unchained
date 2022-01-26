@@ -35,7 +35,7 @@ export const configureAssortmentTextsModule = ({
     };
 
     const findSlug = findUnusedSlug(checkSlugIsUnique, {});
-    return await findSlug({
+    return findSlug({
       existingSlug: slug,
       title: title || assortmentId,
     });
@@ -110,7 +110,7 @@ export const configureAssortmentTextsModule = ({
       );
     }
 
-    return await AssortmentTexts.findOne(
+    return AssortmentTexts.findOne(
       updateResult.upsertedId ? { _id: updateResult.upsertedId._id } : selector
     );
   };
@@ -145,7 +145,7 @@ export const configureAssortmentTextsModule = ({
         }
       ).map(({ assortmentId }) => assortmentId);
 
-      return await assortmentIds.toArray();
+      return assortmentIds.toArray();
     },
 
     // Mutations

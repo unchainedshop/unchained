@@ -1,5 +1,5 @@
 import { Collection, ModuleMutations } from '@unchainedshop/types/common';
-import { LogLevel } from 'meteor/unchained:logger';
+import { LogLevel, log } from 'meteor/unchained:logger';
 import {
   Order,
   OrderMutations,
@@ -10,7 +10,6 @@ import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log } from 'meteor/unchained:logger';
 import {
   generateDbFilterById,
   generateDbMutations,

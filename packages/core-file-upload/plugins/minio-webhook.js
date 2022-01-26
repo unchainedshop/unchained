@@ -24,8 +24,11 @@ useMiddlewareWithCurrentContext('/minio/', async (req) => {
       const { object } = s3;
       const { size, contentType: type } = object;
       const [currentId] = object.key.split('.');
-      const { services } = req.unchainedContext
-      services.files.linkFile({ externalId: currentId, type, size }, req.unchainedContext);
+      const { services } = req.unchainedContext;
+      services.files.linkFile(
+        { externalId: currentId, type, size },
+        req.unchainedContext
+      );
     }
   }
 });

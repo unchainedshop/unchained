@@ -26,7 +26,7 @@ export default async function verifyQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  return await modules.quotations.verifyQuotation(
+  return modules.quotations.verifyQuotation(
     quotation,
     transactionContext,
     context

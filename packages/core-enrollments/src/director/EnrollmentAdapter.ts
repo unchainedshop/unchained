@@ -5,8 +5,8 @@ import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
 
 const periodForReferenceDate = (
   referenceDate: Date,
-  intervalCount: number = 1,
-  interval: string = 'WEEK'
+  intervalCount = 1,
+  interval = 'WEEK'
 ) => {
   const start = moment(referenceDate).startOf(
     interval === 'HOUR' ? 'minute' : 'hour'

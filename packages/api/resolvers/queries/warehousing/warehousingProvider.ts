@@ -12,7 +12,7 @@ export default async function warehousingProvider(
   if (!warehousingProviderId)
     throw new InvalidIdError({ warehousingProviderId });
 
-  return await modules.warehousing.findProvider({
+  return modules.warehousing.findProvider({
     warehousingProviderId,
   });
 }

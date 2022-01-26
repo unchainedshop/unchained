@@ -38,7 +38,7 @@ const OrderDelivery: IOrderPricingAdapter = {
             pricingAdapter.resultSheet().addTaxes({ amount: tax });
           }
         }
-        return await pricingAdapter.calculate();
+        return pricingAdapter.calculate();
       },
     };
   },

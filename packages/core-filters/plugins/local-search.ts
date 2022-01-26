@@ -64,7 +64,7 @@ const LocalSearch: IFilterAdapter = {
               assortmentId: 1,
             },
           }
-        )
+        );
         return assortments.map(({ assortmentId }) => assortmentId);
       },
 

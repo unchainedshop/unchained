@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:logger';
+import { Context, Root } from '@unchainedshop/types/api';
 import {
   InvalidIdError,
   ProductNotFoundError,
   BookmarkNotFoundError,
 } from '../../../errors';
-import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function bookmark(
   root: Root,

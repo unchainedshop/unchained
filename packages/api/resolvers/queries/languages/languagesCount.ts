@@ -10,7 +10,7 @@ export default async function languagesCount(
     userId,
   });
 
-  return await modules.languages.count({
+  return modules.languages.count({
     includeInactive,
   });
 }

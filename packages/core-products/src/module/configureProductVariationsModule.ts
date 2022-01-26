@@ -32,7 +32,7 @@ const PRODUCT_VARIATION_EVENTS = [
 
 export const configureProductVariationsModule = async ({
   db,
-}: ModuleInput<{}>): Promise<ProductVariationsModule> => {
+}: ModuleInput<Record<string, never>>): Promise<ProductVariationsModule> => {
   registerEvents(PRODUCT_VARIATION_EVENTS);
 
   const { ProductVariations, ProductVariationTexts } =
@@ -81,13 +81,13 @@ export const configureProductVariationsModule = async ({
       }
     );
 
-    return await ProductVariationTexts.findOne(selector);
+    return ProductVariationTexts.findOne(selector);
   };
 
   return {
     // Queries
     findProductVariation: async ({ productVariationId }) => {
-      return await ProductVariations.findOne(
+      return ProductVariations.findOne(
         generateDbFilterById(productVariationId)
       );
     },
@@ -103,7 +103,7 @@ export const configureProductVariationsModule = async ({
         limit,
       });
 
-      return await variations.toArray();
+      return variations.toArray();
     },
 
     // Transformations
@@ -182,7 +182,7 @@ export const configureProductVariationsModule = async ({
       const selector = generateDbFilterById(productVariationId);
       const modifier = { $set: doc };
       await ProductVariations.updateOne(selector, modifier);
-      return await ProductVariations.findOne(selector);
+      return ProductVariations.findOne(selector);
     },
 
     addVariationOption: async (
@@ -259,7 +259,7 @@ export const configureProductVariationsModule = async ({
         productVariationId,
         productVariationOptionValue,
       }) => {
-        return await ProductVariationTexts.find({
+        return ProductVariationTexts.find({
           productVariationId,
           productVariationOptionValue,
         }).toArray();

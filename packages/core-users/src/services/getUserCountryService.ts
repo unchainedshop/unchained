@@ -7,7 +7,7 @@ export const getUserCountryService: GetUserCountryService = async (
 ) => {
   const userLocale = modules.users.userLocale(user, params);
 
-  return await modules.countries.findCountry({
+  return modules.countries.findCountry({
     isoCode: userLocale.country.toUpperCase(),
   });
 };

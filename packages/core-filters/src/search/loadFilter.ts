@@ -49,7 +49,7 @@ const findLoadedOptions = async (
       return {
         definition: () => ({ filterOption: value, ...filter }),
         filteredProducts: filteredProductsCount,
-        filteredProductsCount: filteredProductsCount,
+        filteredProductsCount,
         isSelected: values ? values.indexOf(value) !== -1 : false,
       };
     })
@@ -143,7 +143,7 @@ export const loadFilter = async (
     examinedProducts: examinedProductsCount,
     productsCount: examinedProductsCount,
     filteredProducts: filteredProductsCount,
-    filteredProductsCount: filteredProductsCount,
+    filteredProductsCount,
     isSelected: Object.prototype.hasOwnProperty.call(filterQuery, filter.key),
     options: async () => {
       // The current base for options should be an array of product id's that:
@@ -151,7 +151,7 @@ export const loadFilter = async (
       // - Fit this filter generally
       // - Are filtered by all other filters
       // - Are not filtered by the currently selected value of this filter
-      return await findLoadedOptions(
+      return findLoadedOptions(
         filter,
         {
           values,

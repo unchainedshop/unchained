@@ -20,5 +20,5 @@ export default async function createAssortment(
     userId
   );
 
-  return await modules.assortments.findAssortment({ assortmentId });
+  return modules.assortments.findAssortment({ assortmentId });
 }

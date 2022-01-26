@@ -15,9 +15,9 @@ const upsert = async (
     );
   }
   try {
-    return await modules.assortments.filters.create(assortmentFilter, userId);
+    return modules.assortments.filters.create(assortmentFilter, userId);
   } catch (e) {
-    return await modules.assortments.filters.update(
+    return modules.assortments.filters.update(
       assortmentFilter._id,
       assortmentFilter
     );
@@ -28,7 +28,7 @@ export default async (
   { filters, authorId, assortmentId },
   unchainedAPI: Context
 ) => {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const assortmentFilterIds = await Promise.all(
     filters.map(async (filter: AssortmentFilter) => {
       const assortmentFilter = await upsert(

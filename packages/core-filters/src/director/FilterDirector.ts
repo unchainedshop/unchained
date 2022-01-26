@@ -45,7 +45,7 @@ export const FilterDirector: IFilterDirector = {
       },
 
       searchAssortments: async (params) => {
-        return await reduceAdapters<Array<string>>(
+        return reduceAdapters<Array<string>>(
           async (lastSearchPromise, adapter) => {
             const assortmentIds = await lastSearchPromise;
             return adapter.searchAssortments({ assortmentIds });
@@ -55,7 +55,7 @@ export const FilterDirector: IFilterDirector = {
       },
 
       searchProducts: async (params) => {
-        return await reduceAdapters<Array<string>>(
+        return reduceAdapters<Array<string>>(
           async (lastSearchPromise, adapter) => {
             const productIds = await lastSearchPromise;
             return adapter.searchProducts({ productIds });
@@ -65,7 +65,7 @@ export const FilterDirector: IFilterDirector = {
       },
 
       transformProductSelector: async (defaultSelector, options) => {
-        return await reduceAdapters<Query>(async (lastSelector, adapter) => {
+        return reduceAdapters<Query>(async (lastSelector, adapter) => {
           return adapter.transformProductSelector(await lastSelector, options);
         }, defaultSelector || null);
       },
@@ -80,7 +80,7 @@ export const FilterDirector: IFilterDirector = {
       },
 
       transformFilterSelector: async (defaultSelector) => {
-        return await reduceAdapters<Query>(async (lastSelector, adapter) => {
+        return reduceAdapters<Query>(async (lastSelector, adapter) => {
           return adapter.transformFilterSelector(await lastSelector);
         }, defaultSelector || null);
       },

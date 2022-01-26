@@ -7,7 +7,7 @@ export const configureAppleTransactionsModule = (
 ): PaymentModule['appleTransactions'] => {
   return {
     findTransactions: async ({ transactionIdentifier }) => {
-      return await AppleTransactions.find({ transactionIdentifier }).toArray();
+      return AppleTransactions.find({ transactionIdentifier }).toArray();
     },
 
     createTransaction: async (doc, userId) => {

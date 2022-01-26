@@ -11,5 +11,5 @@ export default async function language(
 
   if (!languageId) throw new InvalidIdError({ languageId });
 
-  return await modules.languages.findLanguage({ languageId });
+  return modules.languages.findLanguage({ languageId });
 }

@@ -33,7 +33,7 @@ const runPrepareAsync = async (
     );
   }
 
-  return await entityOperation(event.payload, context, requestContext);
+  return entityOperation(event.payload, context, requestContext);
 };
 
 export const createBucket = (bucketName) => {
@@ -71,7 +71,7 @@ export const createBulkImporter = (options, requestContext) => {
     prepare: async (event) => {
       const entity = event.entity.toUpperCase();
       const operation = event.operation.toLowerCase();
-      
+
       if (!allowedOperations.includes(operation)) {
         throw new Error(`Operation ${event.operation} unknown`);
       }

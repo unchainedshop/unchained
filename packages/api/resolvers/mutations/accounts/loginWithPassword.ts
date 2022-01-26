@@ -34,7 +34,7 @@ export default async function loginWithPassword(
     code: totpCode,
   };
 
-  return await modules.accounts.loginWithService(
+  return modules.accounts.loginWithService(
     { service: 'password', ...mappedUserLoginParams },
     context
   );

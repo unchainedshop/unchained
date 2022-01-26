@@ -55,19 +55,16 @@ export type DeliveryPricingContext =
     }
   | { item: OrderDelivery };
 
-export interface IDeliveryPricingSheet
-  extends IPricingSheet<DeliveryPricingCalculation> {}
-export interface IDeliveryPricingAdapter
-  extends IPricingAdapter<
-    DeliveryPricingAdapterContext,
-    DeliveryPricingCalculation,
-    IDeliveryPricingSheet
-  > {}
+export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation>;
+export type IDeliveryPricingAdapter = IPricingAdapter<
+  DeliveryPricingAdapterContext,
+  DeliveryPricingCalculation,
+  IDeliveryPricingSheet
+>;
 
-export interface IDeliveryPricingDirector
-  extends IPricingDirector<
-    DeliveryPricingContext,
-    DeliveryPricingAdapterContext,
-    DeliveryPricingCalculation,
-    IDeliveryPricingAdapter
-  > {}
+export type IDeliveryPricingDirector = IPricingDirector<
+  DeliveryPricingContext,
+  DeliveryPricingAdapterContext,
+  DeliveryPricingCalculation,
+  IDeliveryPricingAdapter
+>;

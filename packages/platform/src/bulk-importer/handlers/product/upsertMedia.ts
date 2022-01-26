@@ -41,12 +41,12 @@ const upsertProductMedia = async (
   { modules, userId }: Context
 ) => {
   try {
-    return await modules.products.media.create(productMedia, userId);
+    return modules.products.media.create(productMedia, userId);
   } catch (e) {
     const { _id, ...productMediaData } = productMedia;
     const productMediaId = _id;
     await modules.products.media.update(productMediaId, productMediaData);
-    return await modules.products.media.findProductMedia({ productMediaId });
+    return modules.products.media.findProductMedia({ productMediaId });
   }
 };
 
@@ -80,7 +80,7 @@ export default async function upsertMedia(
         await Promise.all(
           Object.entries(content).map(
             async ([locale, localizedData]: [string, ProductMediaText]) => {
-              return await modules.products.media.texts.upsertLocalizedText(
+              return modules.products.media.texts.upsertLocalizedText(
                 productMedia._id,
                 locale,
                 {

@@ -16,7 +16,7 @@ const incrementSuffixedSlug = (slugIncludingSuffix, delimiter = DELIMITER) => {
 export default (checkSlugIsUniqueFn, { slugify = defaultSlugify } = {}) => {
   const findUnusedSlug = async ({ title, existingSlug, newSlug }) => {
     const slug = newSlug || existingSlug || `${slugify(title)}`;
-    if (!await checkSlugIsUniqueFn(slug)) {
+    if (!(await checkSlugIsUniqueFn(slug))) {
       const isSlugAlreadySuffixed = !!newSlug;
       return findUnusedSlug({
         newSlug: isSlugAlreadySuffixed

@@ -8,7 +8,7 @@ export default async function setBaseAssortment(
   { modules, userId }: Context
 ) {
   log(`mutation setBaseAssortment ${assortmentId}`, { modules, userId });
-  
+
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
 
   if (!(await modules.assortments.assortmentExists({ assortmentId })))
@@ -16,5 +16,5 @@ export default async function setBaseAssortment(
 
   await modules.assortments.setBase(assortmentId, userId);
 
-  return await modules.assortments.findAssortment({ assortmentId });
+  return modules.assortments.findAssortment({ assortmentId });
 }

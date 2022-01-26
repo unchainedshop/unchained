@@ -14,6 +14,6 @@ type EnrollmentPlanHelperTypes = {
 
 export const EnrollmentPlan: EnrollmentPlanHelperTypes = {
   product: async (plan, _, { modules }) => {
-    return await modules.products.findProduct({ productId: plan.productId });
+    return modules.products.findProduct({ productId: plan.productId });
   },
 };

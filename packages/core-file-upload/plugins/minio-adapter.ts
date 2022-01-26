@@ -99,7 +99,7 @@ const generateRandomFileName = (fileName: string) => {
 const getObjectStats = async (fileName: string) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
-  return await client.statObject(MINIO_BUCKET_NAME, fileName);
+  return client.statObject(MINIO_BUCKET_NAME, fileName);
 };
 
 const bufferToStream = (buffer: any) => {

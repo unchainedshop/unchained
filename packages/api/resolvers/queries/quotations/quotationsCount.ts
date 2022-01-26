@@ -8,5 +8,5 @@ export default async function quotationsCount(
 ) {
   log(`query quotationsCount`, { userId });
 
-  return await modules.quotations.count();
+  return modules.quotations.count();
 }

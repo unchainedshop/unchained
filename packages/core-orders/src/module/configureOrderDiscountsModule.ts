@@ -133,7 +133,7 @@ export const configureOrderDiscountsModule = ({
       code: orderDiscount.code,
     });
 
-    return await updateDiscount(
+    return updateDiscount(
       orderDiscount._id,
       reservation,
       requestContext.userId
@@ -161,7 +161,7 @@ export const configureOrderDiscountsModule = ({
         { orderId },
         requestContext.userId
       );
-      return await reserveDiscount(updatedDiscount, requestContext);
+      return reserveDiscount(updatedDiscount, requestContext);
     } catch (error) {
       // Rollback
       await updateDiscount(
@@ -177,14 +177,11 @@ export const configureOrderDiscountsModule = ({
   return {
     // Queries
     findOrderDiscount: async ({ discountId }, options) => {
-      return await OrderDiscounts.findOne(
-        buildFindByIdSelector(discountId),
-        options
-      );
+      return OrderDiscounts.findOne(buildFindByIdSelector(discountId), options);
     },
     findOrderDiscounts: async ({ orderId }) => {
       const discounts = OrderDiscounts.find({ orderId });
-      return await discounts.toArray();
+      return discounts.toArray();
     },
 
     // Transformations

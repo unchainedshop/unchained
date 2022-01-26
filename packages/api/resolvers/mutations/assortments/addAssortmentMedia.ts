@@ -28,5 +28,5 @@ export default async function addAssortmentMedia(
     userId
   );
 
-  return assortmentMedia
+  return assortmentMedia;
 }

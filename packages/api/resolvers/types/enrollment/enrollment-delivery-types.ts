@@ -14,6 +14,6 @@ type EnrollmentDeliveryHelperTypes = {
 
 export const EnrollmentDelivery: EnrollmentDeliveryHelperTypes = {
   provider: async ({ deliveryProviderId }, _, { modules }) => {
-    return await modules.delivery.findProvider({ deliveryProviderId });
+    return modules.delivery.findProvider({ deliveryProviderId });
   },
 };

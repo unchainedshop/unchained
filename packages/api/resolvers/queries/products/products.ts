@@ -19,5 +19,5 @@ export default async function products(
     { userId }
   );
 
-  return await modules.products.findProducts(params);
+  return modules.products.findProducts(params);
 }

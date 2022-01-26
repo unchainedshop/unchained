@@ -23,4 +23,4 @@ export type CurrenciesModule = ModuleMutations<Currency> & {
   ) => Promise<Array<Currency>>;
   count: (query: CurrencyQuery) => Promise<number>;
   currencyExists: (params: { currencyId: string }) => Promise<boolean>;
-}
+};

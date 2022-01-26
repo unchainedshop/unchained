@@ -35,7 +35,7 @@ export default async function createEnrollment(
     throw new ProductWrongStatusError({ status: product.status });
   }
 
-  return await modules.enrollments.create(
+  return modules.enrollments.create(
     {
       billingAddress,
       configuration,

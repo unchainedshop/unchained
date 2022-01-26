@@ -90,7 +90,7 @@ export const configureAssortmentsModule = async ({
   ) as ModuleMutations<Assortment>;
 
   const findLinkedAssortments = async (assortment: Assortment) => {
-    return await AssortmentLinks.find(
+    return AssortmentLinks.find(
       {
         $or: [
           { parentAssortmentId: assortment._id },
@@ -104,7 +104,7 @@ export const configureAssortmentsModule = async ({
   };
 
   const findProductAssignments = async (assortment: Assortment) => {
-    return await AssortmentProducts.find(
+    return AssortmentProducts.find(
       { assortmentId: assortment._id },
       {
         sort: { sortKey: 1 },
@@ -286,7 +286,7 @@ export const configureAssortmentsModule = async ({
         return null;
       }
 
-      return await Assortments.findOne(selector);
+      return Assortments.findOne(selector);
     },
 
     findAssortments: async ({ limit, offset, ...query }) => {
@@ -295,7 +295,7 @@ export const configureAssortmentsModule = async ({
         limit,
         sort: { sequence: 1 },
       });
-      return await assortments.toArray();
+      return assortments.toArray();
     },
 
     findProductIds: async ({
@@ -306,7 +306,7 @@ export const configureAssortmentsModule = async ({
       const assortment = await Assortments.findOne(
         generateDbFilterById(assortmentId)
       );
-      return await findProductIds(assortment, {
+      return findProductIds(assortment, {
         forceLiveCollection,
         ignoreChildAssortments,
       });
@@ -326,7 +326,7 @@ export const configureAssortmentsModule = async ({
       );
 
       const selector = !includeInactive ? { isActive: true } : {};
-      return await findPreservingIds(Assortments)(selector, assortmentIds);
+      return findPreservingIds(Assortments)(selector, assortmentIds);
     },
 
     count: async (query) => {
@@ -374,7 +374,7 @@ export const configureAssortmentsModule = async ({
           }
         );
 
-        return await assortmentProducts.toArray();
+        return assortmentProducts.toArray();
       };
 
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
@@ -382,7 +382,7 @@ export const configureAssortmentsModule = async ({
         resolveAssortmentProducts,
       });
 
-      return await buildBreadcrumbs({ assortmentId, productId });
+      return buildBreadcrumbs({ assortmentId, productId });
     },
 
     // Mutations
@@ -504,7 +504,7 @@ export const configureAssortmentsModule = async ({
         assortmentSelector,
         sort,
       }) => {
-        const assortments =  await findPreservingIds(Assortments)(
+        const assortments = await findPreservingIds(Assortments)(
           assortmentSelector,
           assortmentIds,
           {
@@ -512,11 +512,10 @@ export const configureAssortmentsModule = async ({
             offset,
             sort,
           }
-        )
+        );
 
-        return assortments
-      }
-      
+        return assortments;
+      },
     },
 
     // Sub entities

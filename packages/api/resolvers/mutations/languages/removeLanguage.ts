@@ -16,5 +16,5 @@ export default async function removeLanguage(
 
   await modules.languages.delete(languageId, userId);
 
-  return await modules.languages.findLanguage({ languageId });
+  return modules.languages.findLanguage({ languageId });
 }

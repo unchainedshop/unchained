@@ -18,7 +18,9 @@ export interface CountryHelperTypes {
 export const Country: CountryHelperTypes = {
   defaultCurrency: async (country, _, { modules }) => {
     if (country.defaultCurrencyId) {
-      return modules.currencies.findCurrency({ currencyId: country.defaultCurrencyId });
+      return modules.currencies.findCurrency({
+        currencyId: country.defaultCurrencyId,
+      });
     }
     return null;
   },

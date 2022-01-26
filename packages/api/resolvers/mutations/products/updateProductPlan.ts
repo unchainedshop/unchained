@@ -1,19 +1,19 @@
 import { log } from 'meteor/unchained:logger';
 import { ProductTypes } from 'meteor/unchained:core-products';
 import { Context, Root } from '@unchainedshop/types/api';
+import { ProductPlan } from '@unchainedshop/types/products';
 import {
   ProductNotFoundError,
   InvalidIdError,
   ProductWrongStatusError,
 } from '../../../errors';
-import { ProductPlan } from '@unchainedshop/types/products';
 
 export default async function updateProductPlan(
   root: Root,
   { plan, productId }: { plan: ProductPlan; productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation updateProductPlan ${productId}`,{ userId });
+  log(`mutation updateProductPlan ${productId}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 
@@ -28,5 +28,5 @@ export default async function updateProductPlan(
 
   await modules.products.update(productId, { plan }, userId);
 
-  return await modules.products.findProduct({ productId });
+  return modules.products.findProduct({ productId });
 }

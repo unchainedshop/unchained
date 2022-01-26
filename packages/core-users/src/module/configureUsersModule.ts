@@ -10,9 +10,9 @@ import {
   generateDbFilterById,
   generateDbMutations,
   Schemas,
+  systemLocale,
 } from 'meteor/unchained:utils';
 import { UsersCollection } from '../db/UsersCollection';
-import { systemLocale } from 'meteor/unchained:utils';
 
 const buildFindSelector = ({
   username,
@@ -37,7 +37,7 @@ const getUserLocale = (user: User, params: { localeContext?: Locale } = {}) => {
 
 export const configureUsersModule = async ({
   db,
-}: ModuleInput<{}>): Promise<UsersModule> => {
+}: ModuleInput<Record<string, never>>): Promise<UsersModule> => {
   const Users = await UsersCollection(db);
 
   const mutations = generateDbMutations<User>(
@@ -54,7 +54,7 @@ export const configureUsersModule = async ({
 
     findUser: async ({ userId, resetToken, hashedToken }, options) => {
       if (hashedToken) {
-        return await Users.findOne(
+        return Users.findOne(
           {
             'services.resume.loginTokens.hashedToken': hashedToken,
           },
@@ -63,7 +63,7 @@ export const configureUsersModule = async ({
       }
 
       if (resetToken) {
-        return await Users.findOne(
+        return Users.findOne(
           {
             'services.password.reset.token': resetToken,
           },
@@ -71,14 +71,14 @@ export const configureUsersModule = async ({
         );
       }
 
-      return await Users.findOne(generateDbFilterById(userId), options);
+      return Users.findOne(generateDbFilterById(userId), options);
     },
 
     findUsers: async ({ limit, offset, includeGuests, queryString }) => {
       const selector = buildFindSelector({ includeGuests, queryString });
 
       if (queryString) {
-        return await Users.find(selector, {
+        return Users.find(selector, {
           skip: offset,
           limit,
           projection: { score: { $meta: 'textScore' } },
@@ -86,7 +86,7 @@ export const configureUsersModule = async ({
         }).toArray();
       }
 
-      return await Users.find(selector, { skip: offset, limit }).toArray();
+      return Users.find(selector, { skip: offset, limit }).toArray();
     },
 
     userExists: async ({ userId }) => {
@@ -131,7 +131,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return await Users.findOne(userFilter);
+      return Users.findOne(userFilter);
     },
 
     updateGuest: async (user, guest) => {
@@ -155,7 +155,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(userId, modifier, userId);
 
-      return await Users.findOne(userFilter);
+      return Users.findOne(userFilter);
     },
 
     updateInitialPassword: async (user, initialPassword) => {
@@ -178,7 +178,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return await Users.findOne(userFilter);
+      return Users.findOne(userFilter);
     },
 
     updateLastBillingAddress: async (_id, lastBillingAddress, userId) => {
@@ -208,7 +208,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return await Users.findOne(userFilter);
+      return Users.findOne(userFilter);
     },
 
     updateLastContact: async (_id, lastContact, userId) => {
@@ -235,7 +235,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return await Users.findOne(userFilter);
+      return Users.findOne(userFilter);
     },
 
     updateRoles: async (_id, roles, userId) => {
@@ -250,7 +250,7 @@ export const configureUsersModule = async ({
       };
       await mutations.update(_id, modifier, userId);
 
-      return await Users.findOne(userFilter);
+      return Users.findOne(userFilter);
     },
     updateTags: async (_id, tags, userId) => {
       const userFilter = generateDbFilterById(_id);
@@ -265,7 +265,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return await Users.findOne(userFilter);
+      return Users.findOne(userFilter);
     },
 
     updateUser: async (query, modifier, options) => {

@@ -8,7 +8,7 @@ export const ProductVariation: ProductVariationHelperTypes = {
   },
 
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {
-    return await modules.products.variations.texts.findLocalizedVariationText({
+    return modules.products.variations.texts.findLocalizedVariationText({
       productVariationId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });

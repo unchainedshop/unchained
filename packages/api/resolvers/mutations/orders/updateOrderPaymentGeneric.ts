@@ -42,7 +42,7 @@ export default async function updateOrderPaymentGeneric(
       required: PaymentProviderType.GENERIC,
     });
 
-  return await modules.orders.payments.updateContext(
+  return modules.orders.payments.updateContext(
     orderPayment._id,
     { orderId: orderPayment.orderId, context: { meta } },
     context

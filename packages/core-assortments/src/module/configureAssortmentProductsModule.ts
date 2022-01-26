@@ -27,7 +27,7 @@ export const configureAssortmentProductsModule = ({
   return {
     // Queries
     findAssortmentIds: async ({ productId }) => {
-      return await AssortmentProducts.find(
+      return AssortmentProducts.find(
         { productId },
         { projection: { assortmentId: true } }
       )
@@ -36,14 +36,14 @@ export const configureAssortmentProductsModule = ({
     },
 
     findProduct: async ({ assortmentProductId }) => {
-      return await AssortmentProducts.findOne(
+      return AssortmentProducts.findOne(
         generateDbFilterById(assortmentProductId)
       );
     },
 
     findProducts: async ({ assortmentId }, options) => {
       const products = AssortmentProducts.find({ assortmentId }, options);
-      return await products.toArray();
+      return products.toArray();
     },
 
     findProductSiblings: async ({ assortmentIds, productId }) => {
@@ -58,7 +58,7 @@ export const configureAssortmentProductsModule = ({
         ],
       };
 
-      return await AssortmentProducts.find(selector, {
+      return AssortmentProducts.find(selector, {
         projection: { productId: 1 },
       })
         .map(({ productId }) => productId)
@@ -170,7 +170,7 @@ export const configureAssortmentProductsModule = ({
       const selector = generateDbFilterById(assortmentProductId);
       const modifier = { $set: doc };
       await AssortmentProducts.updateOne(selector, modifier);
-      return await AssortmentProducts.findOne(selector, {});
+      return AssortmentProducts.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {

@@ -16,5 +16,5 @@ export default async function productsCount(
     } ${params.slugs?.join(',')}`,
     { userId }
   );
-  return await modules.products.count(params);
+  return modules.products.count(params);
 }

@@ -25,5 +25,5 @@ export default async function createUser(
   const newUserId = await modules.accounts.createUser(mappedUser, {});
   await modules.users.findUser({ userId: newUserId });
 
-  return await modules.accounts.createLoginToken(newUserId, context);
+  return modules.accounts.createLoginToken(newUserId, context);
 }

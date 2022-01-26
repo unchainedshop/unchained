@@ -1,10 +1,10 @@
 import { log } from 'meteor/unchained:logger';
+import { Context, Root } from '@unchainedshop/types/api';
 import {
   BookmarkAlreadyExistsError,
   InvalidIdError,
   ProductNotFoundError,
 } from '../../../errors';
-import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function createBookmark(
   root: Root,
@@ -35,5 +35,5 @@ export default async function createBookmark(
     currenctUserId
   );
 
-  return await modules.bookmarks.findById(bookmarkId);
+  return modules.bookmarks.findById(bookmarkId);
 }

@@ -1,6 +1,6 @@
 import {
   IPaymentAdapter,
-  IPaymentDirector
+  IPaymentDirector,
 } from '@unchainedshop/types/payments';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { paymentLogger } from '../payment-logger';
@@ -37,7 +37,7 @@ export const PaymentDirector: IPaymentDirector = {
 
       isActive: async () => {
         try {
-          return await adapter.isActive();
+          return adapter.isActive();
         } catch (error) {
           paymentLogger.error(error.message);
           return false;

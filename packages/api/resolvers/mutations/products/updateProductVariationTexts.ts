@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductVariationNotFoundError, InvalidIdError } from '../../../errors';
 import { ProductVariationText } from '@unchainedshop/types/products.variations';
+import { ProductVariationNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function F(
   root: Root,
@@ -25,7 +25,7 @@ export default async function F(
   if (!productVariation)
     throw new ProductVariationNotFoundError({ productVariationId });
 
-  return await modules.products.variations.texts.updateVariationTexts(
+  return modules.products.variations.texts.updateVariationTexts(
     productVariationId,
     texts,
     productVariationOptionValue,

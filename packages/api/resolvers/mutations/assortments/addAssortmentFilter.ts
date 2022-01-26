@@ -25,7 +25,7 @@ export default async function addAssortmentFilter(
   if (!(await modules.filters.filterExists({ filterId })))
     throw new FilterNotFoundError({ filterId });
 
-  return await modules.assortments.filters.create(
+  return modules.assortments.filters.create(
     {
       assortmentId,
       filterId,

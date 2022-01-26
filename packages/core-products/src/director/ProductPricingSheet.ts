@@ -65,7 +65,7 @@ export const ProductPricingSheet = (
       });
     },
 
-    unitPrice({ useNetPrice = false } = {}) {      
+    unitPrice({ useNetPrice = false } = {}) {
       const amount = useNetPrice ? this.net() : this.gross();
       return {
         amount: Math.round(amount / this.quantity),

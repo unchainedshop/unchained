@@ -29,7 +29,7 @@ export default async function removeProductVariationOption(
     userId
   );
 
-  return await modules.products.variations.findProductVariation({
+  return modules.products.variations.findProductVariation({
     productVariationId,
   });
 }

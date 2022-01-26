@@ -17,5 +17,5 @@ export default async function setUsername(
 
   await modules.accounts.setUsername(normalizedUserId, params.username);
 
-  return await modules.users.findUser({ userId: normalizedUserId });
+  return modules.users.findUser({ userId: normalizedUserId });
 }

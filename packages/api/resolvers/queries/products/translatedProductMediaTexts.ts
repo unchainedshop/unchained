@@ -8,5 +8,5 @@ export default async function translatedProductMediaTexts(
 ) {
   log(`query translatedProductMediaTexts ${productMediaId}`, { userId });
 
-  return await modules.products.media.texts.findMediaTexts({ productMediaId });
+  return modules.products.media.texts.findMediaTexts({ productMediaId });
 }

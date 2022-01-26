@@ -1,14 +1,14 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 import { ProductCommerce } from '@unchainedshop/types/products';
+import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function updateProductCommerce(
   root: Root,
   { commerce, productId }: { commerce: ProductCommerce; productId: string },
   { modules, userId }: Context
 ) {
-  log(`mutation updateProductCommerce ${productId}`,{ userId });
+  log(`mutation updateProductCommerce ${productId}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 
@@ -17,5 +17,5 @@ export default async function updateProductCommerce(
 
   await modules.products.update(productId, { commerce }, userId);
 
-  return await modules.products.findProduct({ productId });
+  return modules.products.findProduct({ productId });
 }

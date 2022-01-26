@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors';
 import { ProductReview } from '@unchainedshop/types/products.reviews';
+import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function updateProductReview(
   root: Root,
@@ -17,7 +17,7 @@ export default async function updateProductReview(
   if (!(await modules.products.reviews.reviewExists({ productReviewId })))
     throw new ProductReviewNotFoundError({ productReviewId });
 
-  return await modules.products.reviews.update(
+  return modules.products.reviews.update(
     productReviewId,
     productReview,
     userId

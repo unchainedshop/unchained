@@ -1,12 +1,12 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
+import { Configuration } from '@unchainedshop/types/common';
 import {
   OrderQuantityTooLowError,
   OrderItemNotFoundError,
   OrderWrongStatusError,
   InvalidIdError,
 } from '../../../errors';
-import { Configuration } from '@unchainedshop/types/common';
 
 export default async function updateCartItem(
   root: Root,
@@ -36,7 +36,7 @@ export default async function updateCartItem(
   if (!modules.orders.isCart(order)) {
     throw new OrderWrongStatusError({ status: order.status });
   }
-  
+
   if (quantity !== null) {
     if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
     // FIXME: positionId is actually
@@ -61,5 +61,5 @@ export default async function updateCartItem(
     );
   }
 
-  return await modules.orders.positions.findOrderPosition({ itemId });
+  return modules.orders.positions.findOrderPosition({ itemId });
 }

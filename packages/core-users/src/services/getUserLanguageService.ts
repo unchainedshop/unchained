@@ -7,7 +7,7 @@ export const getUserLanguageService: GetUserLanguageService = async (
 ) => {
   const userLocale = modules.users.userLocale(user, params);
 
-  return await modules.languages.findLanguage({
+  return modules.languages.findLanguage({
     isoCode: userLocale.language,
   });
 };

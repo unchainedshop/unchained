@@ -1,7 +1,7 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductMediaNotFoundError, InvalidIdError } from '../../../errors';
 import { ProductMediaText } from '@unchainedshop/types/products.media';
+import { ProductMediaNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function updateProductMediaTexts(
   root: Root,
@@ -20,7 +20,7 @@ export default async function updateProductMediaTexts(
   });
   if (!productMedia) throw new ProductMediaNotFoundError({ productMediaId });
 
-  return await modules.products.media.texts.updateMediaTexts(
+  return modules.products.media.texts.updateMediaTexts(
     productMediaId,
     texts,
     userId

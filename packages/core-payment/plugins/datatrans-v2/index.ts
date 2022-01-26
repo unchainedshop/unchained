@@ -1,6 +1,4 @@
-import {
-  PaymentAdapter as IPaymentAdapter,
-} from '@unchainedshop/types/payments';
+import { PaymentAdapter as IPaymentAdapter } from '@unchainedshop/types/payments';
 import {
   PaymentAdapter,
   PaymentError,

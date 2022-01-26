@@ -31,5 +31,5 @@ export default async function confirmOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  return await modules.orders.confirm(order, transactionContext, context);
+  return modules.orders.confirm(order, transactionContext, context);
 }

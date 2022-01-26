@@ -16,5 +16,5 @@ export default async function createCurrency(
     userId
   );
 
-  return await modules.currencies.findCurrency({ currencyId });
+  return modules.currencies.findCurrency({ currencyId });
 }

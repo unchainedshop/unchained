@@ -41,7 +41,7 @@ export default async function signPaymentProviderForCheckout(
     });
 
   try {
-    return await modules.payment.paymentProviders.sign(
+    return modules.payment.paymentProviders.sign(
       provider._id,
       transactionContext,
       context

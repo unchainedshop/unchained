@@ -1,11 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
+import { AssortmentProduct } from '@unchainedshop/types/assortments';
 import {
   AssortmentNotFoundError,
   ProductNotFoundError,
   InvalidIdError,
 } from '../../../errors';
-import { AssortmentProduct } from '@unchainedshop/types/assortments';
 
 export default async function addAssortmentProduct(
   root: Root,
@@ -27,7 +27,7 @@ export default async function addAssortmentProduct(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  return await modules.assortments.products.create(
+  return modules.assortments.products.create(
     {
       assortmentId,
       productId,

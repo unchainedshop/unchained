@@ -16,7 +16,7 @@ export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorH
     },
 
     variation: async (obj, _, { modules }) => {
-      return await modules.products.variations.findProductVariation({
+      return modules.products.variations.findProductVariation({
         productVariationId: obj.key,
       });
     },

@@ -7,9 +7,9 @@ export default async function createProduct(
   { product }: { product: Product & { title: string } },
   { modules, userId, localeContext }: Context
 ) {
-  log('mutation createProduct',{ userId });
+  log('mutation createProduct', { userId });
 
-  return await modules.products.create(
+  return modules.products.create(
     {
       ...product,
       authorId: userId,

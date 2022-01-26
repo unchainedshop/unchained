@@ -14,7 +14,7 @@ type EnrollmentPaymentHelperTypes = {
 
 export const EnrollmentPayment: EnrollmentPaymentHelperTypes = {
   provider: async ({ paymentProviderId }, _, { modules }) => {
-    return await modules.payment.paymentProviders.findProvider({
+    return modules.payment.paymentProviders.findProvider({
       paymentProviderId,
     });
   },

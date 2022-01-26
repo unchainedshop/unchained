@@ -10,6 +10,6 @@ export default async function quotation(
   log(`query quotation ${quotationId}`, { userId, quotationId });
 
   if (!quotationId) throw new InvalidIdError({ quotationId });
-  
-  return await modules.quotations.findQuotation({ quotationId });
+
+  return modules.quotations.findQuotation({ quotationId });
 }

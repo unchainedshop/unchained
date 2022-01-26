@@ -39,7 +39,7 @@ export const SimpleProduct: SimpleProductHelperTypes = {
             warehousingContext,
             requestContext
           ).estimatedDispatch();
-          
+
           return {
             ...warehousingContext,
             ...dispatch,

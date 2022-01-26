@@ -13,7 +13,7 @@ export default async function updateOrderDeliveryShipping(
   context: Context
 ) {
   const { modules, userId } = context;
-  const { orderDeliveryId, address, meta } = params
+  const { orderDeliveryId, address, meta } = params;
 
   log(`mutation updateOrderDeliveryShipping ${orderDeliveryId}`, { userId });
 
@@ -36,7 +36,7 @@ export default async function updateOrderDeliveryShipping(
       required: DeliveryProviderType.SHIPPING,
     });
 
-  return await modules.orders.deliveries.updateDelivery(
+  return modules.orders.deliveries.updateDelivery(
     orderDeliveryId,
     { orderId: orderDelivery.orderId, context: { address, meta } },
     context

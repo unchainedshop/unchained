@@ -19,7 +19,7 @@ export const migrateOrderCartsService: MigrateOrderCartsService = async (
     return toCart;
   }
 
-  return await requestContext.modules.orders.migrateCart(
+  return requestContext.modules.orders.migrateCart(
     { fromCart, shouldMergeCarts, toCart },
     requestContext
   );

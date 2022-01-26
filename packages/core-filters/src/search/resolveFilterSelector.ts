@@ -33,5 +33,5 @@ export const resolveFilterSelector = async (
   filterActions: FilterAdapterActions
 ) => {
   const selector = defaultSelector(searchQuery);
-  return await filterActions.transformFilterSelector(selector);
+  return filterActions.transformFilterSelector(selector);
 };

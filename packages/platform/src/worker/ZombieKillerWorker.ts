@@ -1,8 +1,7 @@
-import WorkerPlugin from 'meteor/unchained:core-worker/workers/base';
+import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
 import { BaseAdapter } from 'meteor/unchained:utils';
-import { IWorkerAdapter } from '@unchainedshop/types/worker';
 
 const logger = createLogger('unchained:platform:zombie-killer');
 
@@ -27,7 +26,7 @@ const ZombieKillerWorker: IWorkerAdapter<
   type: 'ZOMBIE_KILLER',
 
   doWork: async (_, requestContext) => {
-    const { modules, userId } = requestContext;
+    const { modules } = requestContext;
 
     try {
       const error = false;

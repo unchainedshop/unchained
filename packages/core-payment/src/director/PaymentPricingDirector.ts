@@ -46,7 +46,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
   },
 
   actions: async (pricingContext, requestContext) => {
-    return await baseDirector.actions(
+    return baseDirector.actions(
       pricingContext,
       requestContext,
       PaymentPricingDirector.buildPricingContext

@@ -8,5 +8,5 @@ export default async function translatedProductTexts(
 ) {
   log(`query translatedProductTexts ${productId}`, { userId });
 
-  return await modules.products.texts.findTexts({ productId });
+  return modules.products.texts.findTexts({ productId });
 }

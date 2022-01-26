@@ -13,7 +13,7 @@ type HelperType<T> = (
 
 interface OrderPaymentCardHelperTypes {
   discounts: HelperType<Promise<Array<OrderPaymentDiscount>>>;
-  provider: HelperType<Promise<PaymentProvider>>
+  provider: HelperType<Promise<PaymentProvider>>;
   status: HelperType<string>;
 }
 
@@ -23,7 +23,7 @@ export const OrderPaymentCard: OrderPaymentCardHelperTypes = {
   },
 
   provider: async (obj, _, { modules }) => {
-    return await modules.payment.paymentProviders.findProvider({
+    return modules.payment.paymentProviders.findProvider({
       paymentProviderId: obj.paymentProviderId,
     });
   },

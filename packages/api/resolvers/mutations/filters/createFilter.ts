@@ -10,7 +10,7 @@ export default async function createFilter(
   const { modules, localeContext, userId } = context;
   log('mutation createFilter', { userId });
 
-  return await modules.filters.create(
+  return modules.filters.create(
     {
       ...filter,
       locale: localeContext.language,

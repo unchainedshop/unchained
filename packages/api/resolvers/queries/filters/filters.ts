@@ -13,5 +13,5 @@ export default async function filters(
     { userId }
   );
 
-  return await modules.filters.findFilters({ limit, offset, includeInactive });
+  return modules.filters.findFilters({ limit, offset, includeInactive });
 }

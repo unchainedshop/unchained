@@ -1,5 +1,8 @@
 import { IWorkerAdapter, Work } from '@unchainedshop/types/worker';
-import { MessagingDirector, messagingLogger } from 'meteor/unchained:core-messaging';
+import {
+  MessagingDirector,
+  messagingLogger,
+} from 'meteor/unchained:core-messaging';
 import { WorkerAdapter, WorkerDirector } from 'meteor/unchained:core-worker';
 
 export const MessageWorker: IWorkerAdapter<
@@ -57,4 +60,4 @@ export const MessageWorker: IWorkerAdapter<
   },
 };
 
-WorkerDirector.registerAdapter(MessageWorker)
+WorkerDirector.registerAdapter(MessageWorker);

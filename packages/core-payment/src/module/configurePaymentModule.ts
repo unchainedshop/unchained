@@ -1,5 +1,8 @@
 import { ModuleInput } from '@unchainedshop/types/common';
-import { PaymentModule, PaymentProvidersSettingsOptions } from '@unchainedshop/types/payments';
+import {
+  PaymentModule,
+  PaymentProvidersSettingsOptions,
+} from '@unchainedshop/types/payments';
 import { AppleTransactionsCollection } from '../db/AppleTransactionsCollection';
 import { BityCredentialsCollection } from '../db/BityCredentialsCollection';
 import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection';
@@ -19,7 +22,10 @@ export const configurePaymentModule = async ({
   const AppleTransactions = await AppleTransactionsCollection(db);
 
   return {
-    paymentProviders: configurePaymentProvidersModule(PaymentProviders, options),
+    paymentProviders: configurePaymentProvidersModule(
+      PaymentProviders,
+      options
+    ),
     paymentCredentials: configurePaymentCredentialsModule(PaymentCredentials),
     bityCredentials: configureBityCredentialsModule(BityCredentials),
     appleTransactions: configureAppleTransactionsModule(AppleTransactions),

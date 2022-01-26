@@ -126,7 +126,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
             }
           });
 
-        return await pricingAdapter.calculate();
+        return pricingAdapter.calculate();
       },
     };
   },

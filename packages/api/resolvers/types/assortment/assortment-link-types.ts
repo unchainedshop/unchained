@@ -18,12 +18,12 @@ type AssortmentLinkHelperTypes = {
 
 export const AssortmentLink: AssortmentLinkHelperTypes = {
   child: async (obj, _, { modules }) => {
-    return await modules.assortments.findAssortment({
+    return modules.assortments.findAssortment({
       assortmentId: obj.childAssortmentId,
     });
   },
   parent: async (obj, _, { modules }) => {
-    return await modules.assortments.findAssortment({
+    return modules.assortments.findAssortment({
       assortmentId: obj.parentAssortmentId,
     });
   },

@@ -65,13 +65,13 @@ export const configureOrderDeliveriesModule = ({
 
     const selector = buildFindByIdSelector(orderDeliveryId);
     await OrderDeliveries.updateOne(selector, modifier);
-    return await OrderDeliveries.findOne(selector);
+    return OrderDeliveries.findOne(selector);
   };
 
   return {
     // Queries
     findDelivery: async ({ orderDeliveryId }, options) => {
-      return await OrderDeliveries.findOne(
+      return OrderDeliveries.findOne(
         buildFindByIdSelector(orderDeliveryId),
         options
       );
@@ -106,7 +106,7 @@ export const configureOrderDeliveriesModule = ({
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
       return true;
     },
-    
+
     normalizedStatus: (orderDelivery) => {
       return orderDelivery.status === null
         ? OrderDeliveryStatus.OPEN
@@ -181,7 +181,7 @@ export const configureOrderDeliveriesModule = ({
       );
 
       if (arbitraryResponseData) {
-        return await updateStatus(
+        return updateStatus(
           orderDelivery._id,
           {
             status: OrderDeliveryStatus.DELIVERED,

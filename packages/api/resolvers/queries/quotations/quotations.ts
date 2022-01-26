@@ -8,5 +8,5 @@ export default async function quotations(
 ) {
   log(`query quotations: ${limit} ${offset}`, { userId });
 
-  return await modules.quotations.findQuotations({ limit, offset });
+  return modules.quotations.findQuotations({ limit, offset });
 }

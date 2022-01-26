@@ -16,11 +16,11 @@ import {
   generateDbFilterById,
   generateDbMutations,
 } from 'meteor/unchained:utils';
+import util from 'util';
+import zlib from 'zlib';
 import { FilterType } from '../db/FilterType';
 import { FilterDirector } from '../director/FilterDirector';
 import { CleanedFilterCache } from '../search/search';
-import util from 'util';
-import zlib from 'zlib';
 import { FiltersCollection } from '../db/FiltersCollection';
 import { FiltersSchema } from '../db/FiltersSchema';
 import { configureFilterSearchModule } from './configureFilterSearchModule';
@@ -39,7 +39,7 @@ const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
 export const configureFiltersModule = async ({
   db,
   skipInvalidationOnStartup,
-}: ModuleInput<{}> & {
+}: ModuleInput<Record<string, never>> & {
   skipInvalidationOnStartup: boolean;
 }): Promise<FiltersModule> => {
   registerEvents(FILTER_EVENTS);
@@ -252,7 +252,7 @@ export const configureFiltersModule = async ({
   return {
     // Queries
     findFilter: async ({ filterId }) => {
-      return await Filters.findOne(generateDbFilterById(filterId));
+      return Filters.findOne(generateDbFilterById(filterId));
     },
 
     findFilters: async ({ limit, offset, ...query }) => {
@@ -261,7 +261,7 @@ export const configureFiltersModule = async ({
         limit,
         sort: { sequence: 1 },
       });
-      return await filters.toArray();
+      return filters.toArray();
     },
 
     count: async (query) => {
@@ -337,7 +337,7 @@ export const configureFiltersModule = async ({
         userId
       );
 
-      return await Filters.findOne(selector);
+      return Filters.findOne(selector);
     },
 
     delete: async (filterId, requestContext, options) => {
@@ -371,7 +371,7 @@ export const configureFiltersModule = async ({
         },
       });
 
-      return await Filters.findOne(selector);
+      return Filters.findOne(selector);
     },
 
     update: async (filterId, doc, requestContext, options) => {

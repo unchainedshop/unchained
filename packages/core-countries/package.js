@@ -33,6 +33,6 @@ Package.onTest((api) => {
 
   api.use('unchained:mongodb');
   api.use('unchained:core-countries');
-  
+
   api.mainModule('tests/countries-index.test.ts');
 });

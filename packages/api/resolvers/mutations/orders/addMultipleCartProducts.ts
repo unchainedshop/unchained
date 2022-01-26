@@ -1,11 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
+import { Configuration } from '@unchainedshop/types/common';
 import {
   ProductNotFoundError,
   OrderQuantityTooLowError,
 } from '../../../errors';
 import { getOrderCart } from '../utils/getOrderCart';
-import { Configuration } from '@unchainedshop/types/common';
 
 export default async function addMultipleCartProducts(
   root: Root,
@@ -38,7 +38,7 @@ export default async function addMultipleCartProducts(
   const order = await getOrderCart({ orderId }, context);
 
   // Reduce is used to wait for each product to be added before processing the next (sequential processing)
-  return await itemsWithProducts.reduce(
+  return itemsWithProducts.reduce(
     async (positionsPromise, { product, quantity, configuration }) => {
       const positions = await positionsPromise;
       if (quantity < 1)
@@ -62,7 +62,7 @@ export default async function addMultipleCartProducts(
         { order, product },
         context
       );
-      
+
       positions.push(position);
 
       return positions;

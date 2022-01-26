@@ -9,5 +9,5 @@ export default async function warehousingProviders(
 ) {
   log(`query warehousingProviders ${params.type}`, { userId });
 
-  return await modules.warehousing.findProviders(params);
+  return modules.warehousing.findProviders(params);
 }

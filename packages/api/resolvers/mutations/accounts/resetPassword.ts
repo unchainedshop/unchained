@@ -19,8 +19,5 @@ export default async function resetPassword(
     context
   );
 
-  return await modules.accounts.createLoginToken(
-    userWithNewPassword.id,
-    context
-  );
+  return modules.accounts.createLoginToken(userWithNewPassword.id, context);
 }

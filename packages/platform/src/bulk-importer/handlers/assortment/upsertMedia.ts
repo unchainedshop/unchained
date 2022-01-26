@@ -28,17 +28,17 @@ const upsertAsset = async (
     return assetObject;
   } catch (e) {
     await modules.files.update(fileId, { fileName, url, ...assetData }, userId);
-    return await modules.files.findFile({ fileId });
+    return modules.files.findFile({ fileId });
   }
 };
 
 const upsertMediaObject = async (media, unchainedAPI: Context) => {
   const { modules, userId } = unchainedAPI;
   try {
-    return await modules.assortments.media.create(media, userId);
+    return modules.assortments.media.create(media, userId);
   } catch (e) {
     const { _id, ...mediaData } = media;
-    return await modules.assortments.media.update(_id, mediaData);
+    return modules.assortments.media.update(_id, mediaData);
   }
 };
 
@@ -69,7 +69,7 @@ export default async (
         await Promise.all(
           Object.entries(content).map(
             async ([locale, localizedData]: [string, AssortmentMediaText]) => {
-              return await modules.assortments.media.texts.upsertLocalizedText(
+              return modules.assortments.media.texts.upsertLocalizedText(
                 mediaObject._id,
                 locale,
                 {

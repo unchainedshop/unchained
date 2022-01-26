@@ -10,5 +10,5 @@ export default async function currenciesCount(
     userId,
   });
 
-  return await modules.currencies.count({ includeInactive });
+  return modules.currencies.count({ includeInactive });
 }

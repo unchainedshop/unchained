@@ -7,7 +7,7 @@ export const configureBityCredentialsModule = (
 ): PaymentModule['bityCredentials'] => {
   return {
     findBityCredentials: async ({ externalId }) => {
-      return await BityCredentials.findOne({ externalId });
+      return BityCredentials.findOne({ externalId });
     },
 
     upsertCredentials: async (doc, userId) => {

@@ -13,7 +13,7 @@ export const DeliveryPricingSheet = (
 
   const pricingSheet: IDeliveryPricingSheet = {
     ...basePricingSheet,
-    
+
     addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: DeliveryPricingRowCategory.Discount,

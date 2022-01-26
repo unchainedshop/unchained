@@ -54,7 +54,7 @@ export const OrderPricingDirector: IOrderPricingDirector = {
   },
 
   actions: async (pricingContext, requestContext) => {
-    return await baseDirector.actions(
+    return baseDirector.actions(
       pricingContext,
       requestContext,
       OrderPricingDirector.buildPricingContext

@@ -9,5 +9,5 @@ export default async function warehousingProvidersCount(
 ) {
   log(`query warehousingProvidersCount ${params.type}`, { userId });
 
-  return await modules.warehousing.count(params);
+  return modules.warehousing.count(params);
 }

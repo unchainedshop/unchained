@@ -17,5 +17,5 @@ export default async function productReviews(
     userId,
   });
 
-  return await modules.products.reviews.findProductReviews(params);
+  return modules.products.reviews.findProductReviews(params);
 }
