@@ -108,16 +108,7 @@ export const Roles: RolesInterface = {
    * To check if a user has permisisons to execute an action
    */
   userHasPermission: async (context, action, args) => {
-    // const user =
-    //   context.user ||
-    //   (context.userId &&
-    //     (await context.modules.users.findUser(
-    //       { userId: context.userId },
-    //       { projection: { roles: 1 } }
-    //     )));
-
     const roles = Array.isArray(context.user?.roles) ? context.user.roles : [];
-
     const allows = await Roles.allow(context, roles, action, args);
     return allows === true;
   },
