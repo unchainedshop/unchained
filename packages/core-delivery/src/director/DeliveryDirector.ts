@@ -1,4 +1,5 @@
 import { IDeliveryAdapter, IDeliveryDirector } from '@unchainedshop/types/delivery';
+import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { DeliveryError } from './DeliveryError';
 
@@ -27,7 +28,10 @@ export const DeliveryDirector: IDeliveryDirector = {
         try {
           return adapter.estimatedDeliveryThroughput(warehousingThroughputTime);
         } catch (error) {
-          console.warn(error);
+          log('Delivery Director -> Error while estimating delivery throughput', {
+            level: LogLevel.Warning,
+            ...error,
+          });
           return null;
         }
       },
@@ -36,7 +40,10 @@ export const DeliveryDirector: IDeliveryDirector = {
         try {
           return adapter.isActive();
         } catch (error) {
-          console.warn(error);
+          log('Delivery Director -> Error while checking if is active', {
+            level: LogLevel.Warning,
+            ...error,
+          });
           return false;
         }
       },
@@ -45,7 +52,10 @@ export const DeliveryDirector: IDeliveryDirector = {
         try {
           return adapter.isAutoReleaseAllowed();
         } catch (error) {
-          console.warn(error);
+          log('Delivery Director -> Error while checking if auto release is allowed', {
+            level: LogLevel.Warning,
+            ...error,
+          });
           return false;
         }
       },

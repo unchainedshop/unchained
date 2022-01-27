@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations, Query, Update } from '@unchainedshop/types/common';
 import { Quotation, QuotationsModule, QuotationsSettingsOptions } from '@unchainedshop/types/quotations';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
@@ -26,11 +26,11 @@ const isExpired: QuotationsModule['isExpired'] = (quotation, { referenceDate }) 
 
 export const configureQuotationsModule = async ({
   db,
-  options,
+  quotationsOptions,
 }: ModuleInput<QuotationsSettingsOptions>): Promise<QuotationsModule> => {
   registerEvents(QUOTATION_EVENTS);
 
-  quotationsSettings.configureSettings(options);
+  quotationsSettings.configureSettings(quotationsOptions);
 
   const Quotations = await QuotationsCollection(db);
 
@@ -83,7 +83,7 @@ export const configureQuotationsModule = async ({
     if (quotation.status === status) return quotation;
 
     const date = new Date();
-    const modifier = {
+    const modifier: Update<Quotation> = {
       $set: { status, updated: new Date(), updatedBy: userId },
       $push: {
         log: {
@@ -98,21 +98,16 @@ export const configureQuotationsModule = async ({
       // explicitly use fallthrough here!
       case QuotationStatus.FULLFILLED:
         if (!quotation.fullfilled) {
-          /* @ts-ignore */
           modifier.$set.fullfilled = date;
         }
-        /* @ts-ignore */
         modifier.$set.expires = date;
-      case QuotationStatus.PROCESSING: // eslint-disable-line
+      case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough
         if (!quotation.quotationNumber) {
-          /* @ts-ignore */
           modifier.$set.quotationNumber = findNewQuotationNumber(quotation);
         }
         break;
       case QuotationStatus.REJECTED:
-        /* @ts-ignore */
         modifier.$set.expires = date;
-        /* @ts-ignore */
         modifier.$set.rejected = date;
         break;
       default:

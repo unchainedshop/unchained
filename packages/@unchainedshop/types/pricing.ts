@@ -134,6 +134,9 @@ export type IBasePricingDirector<
   actions: (
     pricingContext: PricingContext,
     requestContext: Context,
-    buildPricingContext: (context: any, requestContext: Context) => Promise<PricingAdapterContext>,
+    buildPricingContext: (
+      buildContext: any,
+      buildRequestContext: Context,
+    ) => Promise<PricingAdapterContext>,
   ) => Promise<IPricingAdapterActions<Calculation>>;
 };

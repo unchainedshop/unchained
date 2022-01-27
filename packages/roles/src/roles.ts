@@ -174,7 +174,7 @@ export class Role implements RoleInterface {
 
     if (!isFunction(helperFn)) {
       const clonedValue = clone(helperFn);
-      helperFn = function () {
+      helperFn = () => {
         return clonedValue;
       };
     }
@@ -196,7 +196,7 @@ export class Role implements RoleInterface {
     let allowFn = allow;
     if (!isFunction(allowFn)) {
       const clonedValue = clone(allowFn);
-      allowFn = function () {
+      allowFn = () => {
         return clonedValue;
       };
     }

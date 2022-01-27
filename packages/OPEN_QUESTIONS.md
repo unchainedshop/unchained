@@ -135,3 +135,8 @@ OPEN TASKS:
 - Invalidate cache for Filters on startup (configureFilterMOdule)
 - DatatransV2 Plugin --> Leave for Pascal
 - Prettier configuration not adapted (Semi: false, printWidth)
+
+
+## NEW OPEN QUESTIONS (27.01.22)
+- Filter caching: Check line 117 (TODO) in _configureFiltersModule_
+  - As far as I understand the _isCacheTransformed is set before returning the filter but then never stored somewhere. Thus the information is irrelavant and can be deleted

@@ -23,10 +23,10 @@ export const configureProductMediaModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<ProductMediaModule> => {
   registerEvents(PRODUCT_MEDIA_EVENTS);
 
-  const { ProductMedia, ProductMediaTexts } = await ProductMediaCollection(db);
+  const { ProductMedias, ProductMediaTexts } = await ProductMediaCollection(db);
 
   const mutations = generateDbMutations<ProductMedia>(
-    ProductMedia,
+    ProductMedias,
     ProductMediaSchema,
   ) as ModuleMutations<ProductMedia>;
 
@@ -69,7 +69,7 @@ export const configureProductMediaModule = async ({
   return {
     // Queries
     findProductMedia: async ({ productMediaId }) => {
-      return ProductMedia.findOne(generateDbFilterById(productMediaId), {});
+      return ProductMedias.findOne(generateDbFilterById(productMediaId), {});
     },
 
     findProductMedias: async ({ productId, tags, offset, limit }, options) => {
@@ -78,7 +78,7 @@ export const configureProductMediaModule = async ({
         selector.tags = { $all: tags };
       }
 
-      const mediaList = ProductMedia.find(selector, {
+      const mediaList = ProductMedias.find(selector, {
         skip: offset,
         limit,
         sort: { sortKey: 1 },
@@ -94,7 +94,7 @@ export const configureProductMediaModule = async ({
 
       if (!sortKey) {
         // Get next sort key
-        const lastProductMedia = (await ProductMedia.findOne(
+        const lastProductMedia = (await ProductMedias.findOne(
           {
             productId: doc.productId,
           },
@@ -115,7 +115,7 @@ export const configureProductMediaModule = async ({
         userId,
       );
 
-      const productMedia = await ProductMedia.findOne(generateDbFilterById(productMediaId), {});
+      const productMedia = await ProductMedias.findOne(generateDbFilterById(productMediaId), {});
 
       emit('PRODUCT_ADD_MEDIA', {
         productMedia,
@@ -127,7 +127,7 @@ export const configureProductMediaModule = async ({
     delete: async (productMediaId) => {
       const selector = generateDbFilterById(productMediaId);
 
-      const deletedResult = await ProductMedia.deleteOne(selector);
+      const deletedResult = await ProductMedias.deleteOne(selector);
 
       emit('PRODUCT_REMOVE_MEDIA', {
         productMediaId,
@@ -147,7 +147,7 @@ export const configureProductMediaModule = async ({
         selector._id = { $nin: excludedProductMediaIds };
       }
 
-      const deletedResult = await ProductMedia.deleteMany(selector);
+      const deletedResult = await ProductMedias.deleteMany(selector);
       return deletedResult.deletedCount;
     },
 
@@ -155,14 +155,14 @@ export const configureProductMediaModule = async ({
     update: async (productMediaId, doc) => {
       const selector = generateDbFilterById(productMediaId);
       const modifier = { $set: doc };
-      await ProductMedia.updateOne(selector, modifier);
-      return ProductMedia.findOne(selector, {});
+      await ProductMedias.updateOne(selector, modifier);
+      return ProductMedias.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedProductMediaIds = await Promise.all(
         sortKeys.map(async ({ productMediaId, sortKey }) => {
-          await ProductMedia.updateOne(generateDbFilterById(productMediaId), {
+          await ProductMedias.updateOne(generateDbFilterById(productMediaId), {
             $set: {
               sortKey: sortKey + 1,
               updated: new Date(),
@@ -174,7 +174,7 @@ export const configureProductMediaModule = async ({
         }),
       );
 
-      const productMedias = await ProductMedia.find({
+      const productMedias = await ProductMedias.find({
         _id: { $in: changedProductMediaIds },
       }).toArray();
 

@@ -17,7 +17,6 @@ export const UsersCollection = async (db: Db) => {
     },
     {
       index: {
-        /* @ts-ignore */
         'emails.address': 1,
       },
       options: {
@@ -28,7 +27,6 @@ export const UsersCollection = async (db: Db) => {
 
     {
       index: {
-        /* @ts-ignore */
         'services.email.verificationTokens.token': 1,
       },
       options: {
@@ -38,7 +36,6 @@ export const UsersCollection = async (db: Db) => {
 
     {
       index: {
-        /* @ts-ignore */
         'services.password.reset.token': 1,
       },
       options: {
@@ -48,7 +45,6 @@ export const UsersCollection = async (db: Db) => {
 
     {
       index: {
-        /* @ts-ignore */
         'services.resume.loginTokens.hashedToken': 1,
       },
       options: {
@@ -60,7 +56,6 @@ export const UsersCollection = async (db: Db) => {
       index: {
         _id: 'text',
         username: 'text',
-        /* @ts-ignore */
         'emails.address': 'text',
         'profile.displayName': 'text',
         'lastBillingAddress.firstName': 'text',

@@ -1,4 +1,4 @@
-import { Collection, Filter, ModuleMutations } from '@unchainedshop/types/common';
+import { Collection, Filter, ModuleMutations, Update } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDeliveriesModule, OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { emit, registerEvents } from 'meteor/unchained:events';
@@ -35,7 +35,7 @@ export const configureOrderDeliveriesModule = ({
     log(`OrderDelivery ${orderDeliveryId} -> New Status: ${status}`);
 
     const date = new Date();
-    const modifier = {
+    const modifier: Update<OrderDelivery> = {
       $set: { status, updated: new Date(), updatedBy: userId },
       $push: {
         log: {
@@ -46,7 +46,6 @@ export const configureOrderDeliveriesModule = ({
       },
     };
     if (status === OrderDeliveryStatus.DELIVERED) {
-      /* @ts-ignore */
       modifier.$set.delivered = date;
     }
 

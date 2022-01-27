@@ -87,9 +87,7 @@ export const configureUsersModule = async ({
     // Transformations
     primaryEmail: (user) => {
       return (user.emails || []).sort(
-        ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
-          /* @ts-ignore */
-          verifiedRight - verifiedLeft,
+        (left, right) => Number(right.verified) - Number(left.verified),
       )?.[0];
     },
 

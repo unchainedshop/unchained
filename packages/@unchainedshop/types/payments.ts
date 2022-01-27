@@ -133,11 +133,11 @@ export type PaymentModule = {
       query: Query & {
         paymentProviderId: string;
       },
-      options?: FindOptions<PaymentProvider>,
+      options?: FindOptions,
     ) => Promise<PaymentProvider>;
     findProviders: (
       query: PaymentProviderQuery,
-      options?: FindOptions<PaymentProvider>,
+      options?: FindOptions,
     ) => Promise<Array<PaymentProvider>>;
 
     providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
@@ -208,13 +208,10 @@ export type PaymentModule = {
         paymentProviderId?: string;
         isPreferred?: boolean;
       },
-      options?: FindOptions<PaymentCredentials>,
+      options?: FindOptions,
     ) => Promise<PaymentCredentials>;
 
-    findPaymentCredentials: (
-      query: Query,
-      options?: FindOptions<PaymentCredentials>,
-    ) => Promise<Array<PaymentCredentials>>;
+    findPaymentCredentials: (query: Query, options?: FindOptions) => Promise<Array<PaymentCredentials>>;
 
     // Mutations
 

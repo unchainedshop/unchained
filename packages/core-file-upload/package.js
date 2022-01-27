@@ -11,7 +11,7 @@ Npm.depends({
   'mime-types': '2.1.32',
 });
 
-Package.onUse(function (api) {
+Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('typescript');

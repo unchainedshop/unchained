@@ -12,7 +12,6 @@ export const ProductsCollection = async (db: Db) => {
     { index: { slugs: 1 } },
     { index: { status: 1 } },
     { index: { tags: 1 } },
-    /* @ts-ignore */
     { index: { 'warehousing.sku': 1 } },
   ]);
 

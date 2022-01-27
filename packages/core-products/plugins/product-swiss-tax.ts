@@ -1,4 +1,3 @@
-/* @ts-ignore */
 import moment from 'moment';
 import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-products';
 import {

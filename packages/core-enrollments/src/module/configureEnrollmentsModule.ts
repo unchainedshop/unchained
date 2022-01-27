@@ -20,11 +20,11 @@ const ENROLLMENT_EVENTS: string[] = [
 
 export const configureEnrollmentsModule = async ({
   db,
-  options,
+  enrollmentOptions,
 }: ModuleInput<EnrollmentsSettingsOptions>): Promise<EnrollmentsModule> => {
   registerEvents(ENROLLMENT_EVENTS);
 
-  enrollmentsSettings.configureSettings(options);
+  enrollmentsSettings.configureSettings(enrollmentOptions);
 
   const Enrollments = await EnrollmentsCollection(db);
 
@@ -34,15 +34,11 @@ export const configureEnrollmentsModule = async ({
   ) as ModuleMutations<Enrollment>;
 
   const findNewEnrollmentNumber = async (enrollment: Enrollment, index = 0): Promise<string> => {
-    // let enrollmentNumber: string = null;
-    // while (!enrollmentNumber) {
     const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
     if ((await Enrollments.find({ enrollmentNumber: newHashID }, { limit: 1 }).count()) === 0) {
       return newHashID;
     }
     return findNewEnrollmentNumber(enrollment, index + 1);
-    // }
-    // return enrollmentNumber;
   };
 
   const findNextStatus = async (
@@ -78,7 +74,10 @@ export const configureEnrollmentsModule = async ({
     if (enrollment.status === status) return enrollment;
 
     const date = new Date();
-    const modifier = {
+    const modifier: {
+      $set: Partial<Enrollment>;
+      $push: { log: Enrollment['log'][0] };
+    } = {
       $set: { status, updated: new Date(), updatedBy: requestContext.userId },
       $push: {
         log: {
@@ -91,11 +90,9 @@ export const configureEnrollmentsModule = async ({
 
     switch (status) {
       case EnrollmentStatus.ACTIVE:
-        /* @ts-ignore */
         modifier.$set.enrollmentNumber = await findNewEnrollmentNumber(enrollment);
         break;
       case EnrollmentStatus.TERMINATED:
-        /* @ts-ignore */
         modifier.$set.expires = enrollment.periods?.pop()?.end || new Date();
         break;
       default:

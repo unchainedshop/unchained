@@ -1,4 +1,4 @@
-import { Collection, Filter, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Collection, Filter, ModuleMutations, Query, Update } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderPayment, OrderPaymentsModule } from '@unchainedshop/types/orders.payments';
 // import { PaymentPricingDirector } from 'meteor/unchained:core-payment';
@@ -37,7 +37,7 @@ export const configureOrderPaymentsModule = ({
     log(`OrderPayment ${orderPaymentId} -> New Status: ${status}`);
 
     const date = new Date();
-    const modifier = {
+    const modifier: Update<OrderPayment> = {
       $set: { status, updated: new Date(), updatedBy: userId },
       $push: {
         log: {
@@ -48,7 +48,6 @@ export const configureOrderPaymentsModule = ({
       },
     };
     if (status === OrderPaymentStatus.PAID) {
-      /* @ts-ignore */
       modifier.$set.paid = date;
     }
 

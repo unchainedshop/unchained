@@ -138,6 +138,5 @@ export const uploadToMinio = async (file, url) => {
   if (response.ok) {
     return Promise.resolve({});
   }
-  console.log('RESPONSE', response.error, response.status);
   return Promise.reject(new Error('error'));
 };

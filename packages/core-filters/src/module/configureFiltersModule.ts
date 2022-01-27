@@ -60,31 +60,37 @@ export const configureFiltersModule = async ({
   };
 
   const buildProductIdMap = async (filter: Filter, requestContext: Context) => {
-    const cache: CleanedFilterCache = {
+    const filterCache: CleanedFilterCache = {
       allProductIds: await findProductIds(filter, {}, requestContext),
       productIds: {},
     };
 
     if (filter.type === FilterType.SWITCH) {
-      cache.productIds = {
+      filterCache.productIds = {
         true: await findProductIds(filter, { value: true }, requestContext),
         false: await findProductIds(filter, { value: false }, requestContext),
       };
     } else {
-      cache.productIds = await (filter.options || []).reduce(async (accumulatorPromise, option) => {
-        const accumulator = await accumulatorPromise;
-        return {
-          ...accumulator,
-          [option]: await findProductIds(filter, { value: option }, requestContext),
-        };
-      }, Promise.resolve({}));
+      filterCache.productIds = await(filter.options || []).reduce(
+        async (accumulatorPromise, option) => {
+          const accumulator = await accumulatorPromise;
+          return {
+            ...accumulator,
+            [option]: await findProductIds(
+              filter,
+              { value: option },
+              requestContext
+            ),
+          };
+        },
+        Promise.resolve({})
+      );
     }
 
-    return cache;
+    return filterCache;
   };
 
   const cache = async (filter: Filter) => {
-    // eslint-disable-next-line
     let filterCache = filter._cache;
 
     if (!filterCache) return null;
@@ -95,8 +101,8 @@ export const configureFiltersModule = async ({
     // } else {
     if (filterCache.compressed) {
       const gunzip = util.promisify(zlib.gunzip);
-      /* @ts-ignore */
-      filterCache = JSON.parse(await gunzip(filterCache.compressed)); // eslint-disable-line
+      const buffer = await gunzip(filterCache.compressed);
+      filterCache = JSON.parse(buffer.toString());
     }
 
     const cleanedCache: CleanedFilterCache = {

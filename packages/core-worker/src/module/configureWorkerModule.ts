@@ -138,12 +138,11 @@ export const configureWorkerModule = async ({
     // Queries
     activeWorkTypes: async () => {
       const typeList = await WorkQueue.aggregate([{ $group: { _id: '$type' } }]).toArray();
-      return typeList.map((t) => t._id);
+      return typeList.map((t) => t._id as string);
     },
 
-    findWork: async ({ workId, originalWorkId }) => {
-      return WorkQueue.findOne(workId ? generateDbFilterById(workId) : { originalWorkId }, {});
-    },
+    findWork: async ({ workId, originalWorkId }) =>
+      WorkQueue.findOne(workId ? generateDbFilterById(workId) : { originalWorkId }, {}),
 
     findWorkQueue: async ({ limit, skip, ...selectorOptions }) => {
       const selector = buildQuerySelector(selectorOptions);
@@ -252,8 +251,7 @@ export const configureWorkerModule = async ({
       });
       try {
         const workId = `${type}:${scheduled.getTime()}`;
-        const result = await /* @ts-ignore */
-        (Work.findOneAndUpdate(
+        const result = await (WorkQueue.findOneAndUpdate(
           query,
           {
             $set: {
@@ -273,7 +271,7 @@ export const configureWorkerModule = async ({
           },
           {
             sort: defaultSort,
-            returnNewDocument: true,
+            returnDocument: 'after',
             upsert: true,
           },
         ) as Promise<ModifyResult<Work>>);
@@ -329,7 +327,7 @@ export const configureWorkerModule = async ({
       return Promise.all(
         workQueue.map(({ _id }) =>
           finishWork(
-            _id,
+            _id as string,
             {
               finished: new Date(),
               result: null,

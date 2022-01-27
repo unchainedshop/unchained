@@ -1,14 +1,14 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/types/common';
 import { log } from 'meteor/unchained:logger';
 
-export const BaseDirector = <Adapter extends IBaseAdapter>(
+export const BaseDirector = <AdapterType extends IBaseAdapter>(
   directorName: string,
   options?: {
     adapterSortKey?: string;
     adapterKeyField?: string; // Set to 'key' per default
   },
-): IBaseDirector<Adapter> => {
-  const Adapters = new Map<string, Adapter>();
+): IBaseDirector<AdapterType> => {
+  const Adapters = new Map<string, AdapterType>();
   const keyField = options?.adapterKeyField || 'key';
 
   return {

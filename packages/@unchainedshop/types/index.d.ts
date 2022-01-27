@@ -208,13 +208,13 @@ declare module 'meteor/unchained:utils' {
   >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
 
   const BasePricingDirector: <
-    Context extends BasePricingContext,
-    AdapterContext extends BasePricingAdapterContext,
+    PricingContext extends BasePricingContext,
+    AdapterPricingContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
-    Adapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>,
+    Adapter extends IPricingAdapter<AdapterPricingContext, Calculation, IPricingSheet<Calculation>>,
   >(
     directorName: string,
-  ) => IBasePricingDirector<Context, AdapterContext, Calculation, Adapter>;
+  ) => IBasePricingDirector<PricingContext, AdapterPricingContext, Calculation, Adapter>;
 
   const BasePricingSheet: <Calculation extends PricingCalculation>(
     params: PricingSheetParams<Calculation>,

@@ -1,5 +1,11 @@
 import SimpleSchema from 'simpl-schema';
-import { Collection, ModuleMutations, ModuleCreateMutation, _ID } from '@unchainedshop/types/common';
+import {
+  Collection,
+  ModuleMutations,
+  ModuleCreateMutation,
+  _ID,
+  Update,
+} from '@unchainedshop/types/common';
 import { checkId } from './check-id';
 import { generateDbObjectId } from './generate-db-object-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';
@@ -25,7 +31,6 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       values._id = doc._id || generateDbObjectId();
 
       const result = await collection.insertOne(values);
-      /* @ts-ignore */
       return result.insertedId as string;
     },
 
@@ -34,9 +39,8 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       : async (_id, doc, userId) => {
           checkId(_id);
 
-          let modifier: any;
+          let modifier: Update<T>;
 
-          /* @ts-ignore */
           if (doc.$set) {
             const values = schema.clean(doc, { isModifier: true });
             modifier = values;

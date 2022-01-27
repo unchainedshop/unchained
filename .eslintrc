@@ -36,7 +36,7 @@
         ]
       }
     ],
-    "no-unused-vars": "off",
+    "no-unused-vars": "warn",
     "no-shadow": [
       "warn",
       { "builtinGlobals": false, "hoist": "functions", "allow": ["DeliveryProviderType"] }

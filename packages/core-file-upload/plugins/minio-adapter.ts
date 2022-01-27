@@ -29,8 +29,8 @@ const connectToMinio = () => {
       accessKey: MINIO_ACCESS_KEY,
       secretKey: MINIO_SECRET_KEY,
     });
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    log('Exception while creating Minio client', { level: LogLevel.Error, ...error });
     return null;
   }
 };

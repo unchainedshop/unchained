@@ -8,12 +8,10 @@ import {
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 
 import { OrderPricingSheet } from 'meteor/unchained:core-orders';
-/* @ts-ignore */
 import bodyParser from 'body-parser';
 import { acl, roles, useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
-/* @ts-ignore */
 import ClientOAuth2 from 'client-oauth2';
 import { Context } from '@unchainedshop/types/api';
 
@@ -266,8 +264,8 @@ const Bity: IPaymentAdapter = {
       ...PaymentAdapter.actions(params),
 
       configurationError: async () => {
-        const currentToken = await loadToken(params.context);
-        if (!currentToken) {
+        const token = await loadToken(params.context);
+        if (!token) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
         return null;

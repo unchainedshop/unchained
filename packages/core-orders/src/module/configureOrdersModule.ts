@@ -47,16 +47,11 @@ export const configureOrdersModule = async ({
     OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
 
   const findNewOrderNumber = async (order: Order, index = 0) => {
-    // let orderNumber = null;
-    // let i = 0;
-    // while (!orderNumber) {
     const newHashID = ordersSettings.orderNumberHashFn(order, index);
     if ((await Orders.find({ orderNumber: newHashID }, { limit: 1 }).count()) === 0) {
       return newHashID;
     }
     return findNewOrderNumber(order, index + 1);
-    // }
-    // return orderNumber;
   };
 
   const updateStatus: OrdersModule['updateStatus'] = async (
@@ -85,22 +80,18 @@ export const configureOrdersModule = async ({
       // explicitly use fallthrough here!
       case OrderStatus.FULLFILLED:
         if (!order.fullfilled) {
-          /* @ts-ignore */
           modifier.$set.fullfilled = date;
         }
       case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
         if (!order.confirmed) {
-          /* @ts-ignore */
           modifier.$set.confirmed = date;
         }
       case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
         if (!order.ordered) {
-          /* @ts-ignore */
           modifier.$set.ordered = date;
         }
         if (!order.orderNumber) {
           // Order Numbers can be set by the user
-          /* @ts-ignore */
           modifier.$set.orderNumber = await findNewOrderNumber(order);
         }
         break;
