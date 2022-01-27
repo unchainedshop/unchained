@@ -3,8 +3,8 @@ import { BityCredentials as BityCredentialsType, PaymentModule } from '@unchaine
 import { generateDbObjectId } from 'meteor/unchained:utils';
 
 export const configureBityCredentialsModule = (
-  BityCredentials: Collection<BityCredentialsType>
-): PaymentModule["bityCredentials"] => {
+  BityCredentials: Collection<BityCredentialsType>,
+): PaymentModule['bityCredentials'] => {
   return {
     findBityCredentials: async ({ externalId }) => {
       return BityCredentials.findOne({ externalId });
@@ -31,7 +31,7 @@ export const configureBityCredentialsModule = (
             created: new Date(),
             createdBy: userId,
           },
-        }
+        },
       );
 
       return doc.externalId;

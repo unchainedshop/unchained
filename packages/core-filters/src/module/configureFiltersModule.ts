@@ -71,19 +71,15 @@ export const configureFiltersModule = async ({
         false: await findProductIds(filter, { value: false }, requestContext),
       };
     } else {
-      filterCache.productIds = await(filter.options || []).reduce(
+      filterCache.productIds = await (filter.options || []).reduce(
         async (accumulatorPromise, option) => {
           const accumulator = await accumulatorPromise;
           return {
             ...accumulator,
-            [option]: await findProductIds(
-              filter,
-              { value: option },
-              requestContext
-            ),
+            [option]: await findProductIds(filter, { value: option }, requestContext),
           };
         },
-        Promise.resolve({})
+        Promise.resolve({}),
       );
     }
 
@@ -156,14 +152,16 @@ export const configureFiltersModule = async ({
     log(`Filters: Rebuilding ${filter.key}`, { level: LogLevel.Verbose });
 
     const { productIds, allProductIds } = await buildProductIdMap(filter, requestContext);
-    const cache: FilterCache = {
+    const filterCache: FilterCache = {
       allProductIds,
       productIds: Object.values(productIds).flatMap((ids) => ids),
     };
 
     const gzip = util.promisify(zlib.gzip);
     const compressedCache =
-      allProductIds.length > MAX_UNCOMPRESSED_FILTER_PRODUCTS ? await gzip(JSON.stringify(cache)) : null;
+      allProductIds.length > MAX_UNCOMPRESSED_FILTER_PRODUCTS
+        ? await gzip(JSON.stringify(filterCache))
+        : null;
 
     await Filters.updateOne(generateDbFilterById(filter._id), {
       $set: {
@@ -171,7 +169,7 @@ export const configureFiltersModule = async ({
           ? {
               compressed: compressedCache,
             }
-          : cache,
+          : filterCache,
       },
     });
   };
