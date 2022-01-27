@@ -16,11 +16,9 @@ const ManualOffering: IQuotationAdapter = {
       ...QuotationAdapter.actions(params),
 
       quote: async () => {
-        const expires = new Date();
-        expires.setHours(expires.getHours() + 1000); // Expires after 1000h
-        // const expires = new Date() + 1000 * 3600 * 1000, // Before refactoring
         return {
-          expires,
+          /* @ts-ignore */
+          expires: new Date() + 1000 * 3600 * 1000,
         };
       },
     };
