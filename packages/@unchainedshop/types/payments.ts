@@ -58,6 +58,11 @@ export type AppleTransaction = {
   orderId: string;
 } & TimestampFields;
 
+export type CryptopayTransaction = {
+  _id?: _ID;
+  cryptoAddress: string;
+} & TimestampFields;
+
 type PaymentProviderQuery = {
   type?: PaymentProviderType;
   deleted?: Date;
@@ -243,6 +248,16 @@ export type PaymentModule = {
     findTransactions: (query: { transactionIdentifier: string }) => Promise<Array<AppleTransaction>>;
 
     createTransaction: (doc: AppleTransaction, userId: string) => Promise<string | null>;
+  };
+
+  /*
+   * Cryptopay Transactions Module
+   */
+
+  cryptopayTransactions: {
+    findTransactions: (query: { cryptoAddress: string }) => Promise<Array<CryptopayTransaction>>;
+
+    createTransaction: (doc: CryptopayTransaction, userId: string) => Promise<string | null>;
   };
 };
 
