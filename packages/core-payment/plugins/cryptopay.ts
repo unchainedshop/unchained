@@ -13,7 +13,14 @@ import { Users } from 'meteor/unchained:core-users';
 const {
   CRYPTOPAY_SECRET,
   CRYPTOPAY_WEBHOOK_PATH = '/graphql/cryptopay',
+  CRYPTOPAY_BTC_XPUB,
+  CRYPTOPAY_ETH_XPUB,
 } = process.env;
+
+enum CryptopayCurrencies {
+  BTC = 'BTC',
+  ETH = 'ETH',
+}
 
 useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.raw({ type: 'application/json' }));
 
@@ -57,27 +64,33 @@ const Cryptopay: IPaymentAdapter = {
         return false;
       },
 
-      validate: async (token) => {
-        // TODO
-      },
-
-      register: async ({ setupIntentId }) => {
-        if (!setupIntentId) {
-          throw new Error('You have to provide a setup intent id');
+      charge: async () => {
+        const { order } = params.context;
+        const orderPricing = modules.orders.pricingSheet(order);
+        const { currency, amount } = orderPricing.total({ useNetPrice: false });
+        let cryptoAddress: string;
+        switch (currency) {
+          case CryptopayCurrencies.BTC:
+            if (!CRYPTOPAY_BTC_XPUB) {
+              throw new Error(`Cryptopay Plugin: BTC xpub not defined.`);
+            }
+            break;
+          case CryptopayCurrencies.ETH:
+            if (!CRYPTOPAY_ETH_XPUB) {
+              throw new Error(`Cryptopay Plugin: ETH xpub not defined.`);
+            }
+            break;
+          default:
+            throw new Error(`Cryptopay Plugin: Currency ${currency} not supported!`);
         }
-        // TODO
-      },
-
-      sign: async ({ transactionContext = {} } = {}) => {
-        // eslint-disable-line
-        // TODO
-      },
-
-      charge: async ({ paymentIntentId, paymentCredentials }) => {
-        if (!paymentIntentId && !paymentCredentials) {
-          throw new Error('You have to provide an existing intent or a payment method');
-        }
-        // TODO
+        await params.context.modules.orders.updateContext(
+          order._id,
+          {
+            cryptoAddress,
+          },
+          params.context,
+        );
+        return false;
       },
     };
 
