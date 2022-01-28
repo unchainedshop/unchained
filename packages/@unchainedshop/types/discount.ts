@@ -2,6 +2,7 @@ import { Context } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
+import { Product, ProductDiscount } from './products';
 
 export interface DiscountConfiguration {
   fixedRate?: number;

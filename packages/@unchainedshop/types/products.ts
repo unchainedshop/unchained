@@ -4,12 +4,14 @@ import { FindOptions, Query, TimestampFields, Update, _ID } from "./common";
 import { Country } from "./countries";
 import { Currency } from "./currencies";
 import { DeliveryProvider, DeliveryProviderType } from "./delivery";
+import { IDiscountAdapter } from "./discount";
 import { OrderPosition } from "./orders.positions";
+import { OrderPrice } from "./orders.pricing";
 import { ProductMedia, ProductMediaModule } from "./products.media";
 import {
   IProductPricingSheet,
   ProductPricingCalculation,
-  ProductPricingContext,
+  ProductPricingContext
 } from "./products.pricing";
 import { ProductReview, ProductReviewsModule } from "./products.reviews";
 import { ProductVariationsModule } from "./products.variations";
@@ -123,11 +125,13 @@ export type ProductText = {
   labels?: Array<string>;
 } & TimestampFields;
 
-
 export type ProductDiscount = {
-  _id: string;
-  interface: any;
-  total: ProductPrice;
+  _id?: _ID;
+  productId: string;
+  code: string;
+  total?: OrderPrice;
+  discountKey?: string;
+  context?: any;
 };
 
 /*
@@ -171,6 +175,8 @@ export type ProductsModule = {
   }) => Promise<boolean>;
 
   // Transformations
+  interface: (productDiscount: ProductDiscount) => IDiscountAdapter;
+
   isActive: (product: Product) => boolean;
   isDraft: (product: Product) => boolean;
 
