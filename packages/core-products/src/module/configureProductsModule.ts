@@ -16,7 +16,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
 } from "meteor/unchained:utils";
-import { ProductDiscountDirector } from "src/director/ProductDiscountDirector";
+import { ProductDiscountDirector } from "../director/ProductDiscountDirector";
 import { ProductsCollection } from "../db/ProductsCollection";
 import { ProductsSchema, ProductTypes } from "../db/ProductsSchema";
 import { ProductStatus } from "../db/ProductStatus";
