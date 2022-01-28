@@ -1,25 +1,51 @@
-import { UnchainedCoreOptions } from '@unchainedshop/types/api';
-import { configureAccountsModule } from 'meteor/unchained:core-accountsjs';
-import { configureAssortmentsModule } from 'meteor/unchained:core-assortments';
-import { bookmarkServices, configureBookmarksModule } from 'meteor/unchained:core-bookmarks';
-import { configureCountriesModule, countryServices } from 'meteor/unchained:core-countries';
-import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
-import { configureDeliveryModule } from 'meteor/unchained:core-delivery';
-import { configureEnrollmentsModule } from 'meteor/unchained:core-enrollments';
-import { configureEventsModule } from 'meteor/unchained:core-events';
-import { configureFilesModule, fileServices } from 'meteor/unchained:core-files-next';
-import { configureFiltersModule } from 'meteor/unchained:core-filters';
-import { configureLanguagesModule } from 'meteor/unchained:core-languages';
-import { configureMessagingModule } from 'meteor/unchained:core-messaging';
-import { configureOrdersModule, orderServices } from 'meteor/unchained:core-orders';
-import { configurePaymentModule, paymentServices } from 'meteor/unchained:core-payment';
-import { configureProductsModule, productServices } from 'meteor/unchained:core-products';
-import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
-import { configureUsersModule, userServices } from 'meteor/unchained:core-users';
-import { configureWarehousingModule } from 'meteor/unchained:core-warehousing';
-import { configureWorkerModule } from 'meteor/unchained:core-worker';
+import { UnchainedCoreOptions } from "@unchainedshop/types/api";
+import { configureAccountsModule } from "meteor/unchained:core-accountsjs";
+import { configureAssortmentsModule } from "meteor/unchained:core-assortments";
+import {
+  bookmarkServices,
+  configureBookmarksModule,
+} from "meteor/unchained:core-bookmarks";
+import {
+  configureCountriesModule,
+  countryServices,
+} from "meteor/unchained:core-countries";
+import { configureCurrenciesModule } from "meteor/unchained:core-currencies";
+import { configureDeliveryModule } from "meteor/unchained:core-delivery";
+import { configureEnrollmentsModule } from "meteor/unchained:core-enrollments";
+import { configureEventsModule } from "meteor/unchained:core-events";
+import {
+  configureFilesModule,
+  fileServices,
+} from "meteor/unchained:core-files-next";
+import { configureFiltersModule } from "meteor/unchained:core-filters";
+import { configureLanguagesModule } from "meteor/unchained:core-languages";
+import { configureMessagingModule } from "meteor/unchained:core-messaging";
+import {
+  configureOrdersModule,
+  orderServices,
+} from "meteor/unchained:core-orders";
+import {
+  configurePaymentModule,
+  paymentServices,
+} from "meteor/unchained:core-payment";
+import {
+  configureProductsModule,
+  productServices,
+} from "meteor/unchained:core-products";
+import { configureQuotationsModule } from "meteor/unchained:core-quotations";
+import {
+  configureUsersModule,
+  userServices,
+} from "meteor/unchained:core-users";
+import { configureWarehousingModule } from "meteor/unchained:core-warehousing";
+import { configureWorkerModule } from "meteor/unchained:core-worker";
 
-export const initCore = async ({ db, modules, bulkImporter, options = {} }: UnchainedCoreOptions) => {
+export const initCore = async ({
+  db,
+  modules,
+  bulkImporter,
+  options = {},
+}: UnchainedCoreOptions) => {
   const accounts = await configureAccountsModule();
   const assortments = await configureAssortmentsModule({
     db,
@@ -58,10 +84,21 @@ export const initCore = async ({ db, modules, bulkImporter, options = {} }: Unch
   const warehousing = await configureWarehousingModule({ db });
   const worker = await configureWorkerModule({ db });
 
+  // Configure custom modules
+  const customModules = await Object.entries(modules).reduce(
+    async (modulesPromise, [key, customModule]) => {
+      return {
+        ...(await modulesPromise),
+        [key]: await customModule.configure({ db }),
+      };
+    },
+    Promise.resolve({})
+  );
+
   return {
     db,
     modules: {
-      ...modules,
+      ...customModules,
       accounts,
       assortments,
       bookmarks,

@@ -1,10 +1,28 @@
-import { Collection } from '@unchainedshop/types/common';
-import { BityCredentials as BityCredentialsType, PaymentModule } from '@unchainedshop/types/payments';
-import { generateDbObjectId } from 'meteor/unchained:utils';
+import { Db } from "@unchainedshop/types/common";
+import { generateDbObjectId } from "meteor/unchained:utils";
+import {
+  BityCredentialsCollection,
+  BityCredentialsType,
+} from "../db/BityCredentialsCollection";
 
-export const configureBityCredentialsModule = (
-  BityCredentials: Collection<BityCredentialsType>,
-): PaymentModule['bityCredentials'] => {
+export interface BityModule {
+  findBityCredentials: (query: {
+    externalId: string;
+  }) => Promise<BityCredentialsType>;
+
+  upsertCredentials: (
+    doc: BityCredentialsType,
+    userId: string
+  ) => Promise<string | null>;
+}
+
+export const configureBityModule = ({
+  db,
+}: {
+  db: Db;
+}): BityModule => {
+  const BityCredentials = BityCredentialsCollection(db);
+
   return {
     findBityCredentials: async ({ externalId }) => {
       return BityCredentials.findOne({ externalId });
@@ -31,7 +49,7 @@ export const configureBityCredentialsModule = (
             created: new Date(),
             createdBy: userId,
           },
-        },
+        }
       );
 
       return doc.externalId;

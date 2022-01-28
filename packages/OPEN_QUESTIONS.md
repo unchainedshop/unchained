@@ -3,12 +3,13 @@
 3. DONE: Is product-discount type used (in api/resolvers/types/product-discount.js)? --> For VeloPlus for 10% day / Black Friday
 
 
-20. Pattern for Collections used in dedicated plugins (e.g. AppleTransactions, Bity). Create in core (see bity plugin) or provide db in context (see apple-iap plugin) --> Provide as custome module
+20. DONE: Pattern for Collections used in dedicated plugins (e.g. AppleTransactions, Bity). Create in core (see bity plugin) or provide db in context (see apple-iap plugin) --> Provide as custome module
 
 
 OPEN TASKS:
 - Migration in assortments --> Leave as OPEN ISSUE / keep migrationRepository
 
+- Update unchainedshop/type npm version
 
 ## NEW OPEN QUESTIONS (27.01.22)
 - Filter caching: Check line 117 (TODO) in _configureFiltersModule_

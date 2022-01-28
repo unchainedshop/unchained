@@ -44,10 +44,10 @@ type PlatformOptions = {
   additionalTypeDefs: Array<string>;
   bulkImporter?: any;
   context?: any;
-  modules: Record<string, any>;
+  modules: UnchainedCoreOptions["modules"];
+  options: UnchainedCoreOptions["options"];
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
-  options: UnchainedCoreOptions["options"];
 };
 export const startPlatform = async (
   {
@@ -56,7 +56,7 @@ export const startPlatform = async (
     options = {},
     ...otherOptions
   }: PlatformOptions = {
-    modules: undefined,
+    modules: {},
     additionalTypeDefs: [],
     options: {},
   }
@@ -71,11 +71,11 @@ export const startPlatform = async (
 
   // Initialise core api using the database
   const unchainedAPI = await initCore({
-    db,
-    modules,
     bulkImporter: {
       BulkImportPayloads,
     },
+    db,
+    modules,
     options,
   });
 
@@ -114,7 +114,7 @@ export const startPlatform = async (
   }
 
   // Setup filter cache
-  if (!options.filters.skipInvalidationOnStartup) {
+  if (!options.filters?.skipInvalidationOnStartup) {
     Meteor.defer(() =>
       unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI)
     );

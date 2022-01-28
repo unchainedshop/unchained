@@ -58,7 +58,7 @@ export interface UnchainedServerOptions {
 
 export interface UnchainedCoreOptions {
   db: Db;
-  modules: Record<string, any>;
+  modules: Record<string, { configure: ({ db }: { db: Db }) => any }>;
   options: {
     accounts?: AccountsSettingsOptions;
     assortments?: AssortmentsSettingsOptions;
