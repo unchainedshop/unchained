@@ -9,6 +9,7 @@ import {
   paymentLogger,
 } from 'meteor/unchained:core-payment';
 import { Users } from 'meteor/unchained:core-users';
+import { ethers } from "ethers";
 
 const {
   CRYPTOPAY_SECRET,
@@ -70,16 +71,22 @@ const Cryptopay: IPaymentAdapter = {
         const { currency, amount } = orderPricing.total({ useNetPrice: false });
         let cryptoAddress: string;
         switch (currency) {
-          case CryptopayCurrencies.BTC:
+          case CryptopayCurrencies.BTC: {
             if (!CRYPTOPAY_BTC_XPUB) {
               throw new Error(`Cryptopay Plugin: BTC xpub not defined.`);
             }
+            // https://github.com/bitcoinjs/bitcoinjs-lib/issues/1334
             break;
-          case CryptopayCurrencies.ETH:
+          }
+          case CryptopayCurrencies.ETH: {
             if (!CRYPTOPAY_ETH_XPUB) {
               throw new Error(`Cryptopay Plugin: ETH xpub not defined.`);
             }
+            const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
+            const ethDerivationNumber = 0; // TODO: Consecutive number, unique among orders
+            cryptoAddress = hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address;
             break;
+          }
           default:
             throw new Error(`Cryptopay Plugin: Currency ${currency} not supported!`);
         }
