@@ -9,13 +9,17 @@ import {
   paymentLogger,
 } from 'meteor/unchained:core-payment';
 import { Users } from 'meteor/unchained:core-users';
-import { ethers } from "ethers";
+import { ethers } from 'ethers';
+import BIP32Factory from 'bip32';
+import * as ecc from 'tiny-secp256k1';
+import * as bitcoin from 'bitcoinjs-lib';
 
 const {
   CRYPTOPAY_SECRET,
   CRYPTOPAY_WEBHOOK_PATH = '/graphql/cryptopay',
   CRYPTOPAY_BTC_XPUB,
   CRYPTOPAY_ETH_XPUB,
+  CRYPTOPAY_BTC_TESTNET = false,
 } = process.env;
 
 enum CryptopayCurrencies {
@@ -27,7 +31,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.raw({ type: '
 
 useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response) => {
   // Return a 200 response to acknowledge receipt of the event
-  response.end(JSON.stringify({ received: true }));
+  response.end(JSON.stringify({ success: true }));
 });
 
 const Cryptopay: IPaymentAdapter = {
@@ -75,7 +79,15 @@ const Cryptopay: IPaymentAdapter = {
             if (!CRYPTOPAY_BTC_XPUB) {
               throw new Error(`Cryptopay Plugin: BTC xpub not defined.`);
             }
-            // https://github.com/bitcoinjs/bitcoinjs-lib/issues/1334
+            const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
+            const bip32 = BIP32Factory(ecc);
+            const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
+            const btcDerivationNumber = 0; // TODO: Consecutive number, unique among orders
+            const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
+            cryptoAddress = bitcoin.payments.p2pkh({
+              pubkey: child.publicKey,
+              network,
+            }).address;
             break;
           }
           case CryptopayCurrencies.ETH: {
