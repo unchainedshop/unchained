@@ -8,7 +8,7 @@ class MigrationError extends Error {
       Error.captureStackTrace(this, MigrationError);
     }
 
-    this.name = "MigrationError";
+    this.name = 'MigrationError';
     this.migrationId = migrationId;
     this.date = new Date();
   }
@@ -41,7 +41,7 @@ export const createMigrationRunner = ({
     return migrationRepository
       .allMigrations()
       .filter(this.isIdAfterCurrentId)
-      .map(this.operationFactory("up"));
+      .map(this.operationFactory('up'));
   },
   async run() {
     try {
@@ -51,7 +51,7 @@ export const createMigrationRunner = ({
 
       const mostRecentId = await migrations.reduce(
         (idPromise, migration) => Promise.resolve(idPromise).then(migration),
-        currentId
+        currentId,
       );
 
       return [mostRecentId, migrations.length];

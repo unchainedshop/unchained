@@ -1,15 +1,15 @@
-import { Db, Locale, MigrationRepository } from "./common";
-import { AccountsSettingsOptions } from "./accounts";
-import { AssortmentsSettingsOptions } from "./assortments";
-import { DeliverySettingsOptions } from "./delivery";
-import { EnrollmentsSettingsOptions } from "./enrollments";
-import { Modules } from "./modules";
-import { OrdersSettingsOptions } from "./orders";
-import { PaymentProvidersSettingsOptions } from "./payments";
-import { QuotationsSettingsOptions } from "./quotations";
-import { Services } from "./services";
-import { User } from "./user";
-import { Logger } from "./logs";
+import { Db, Locale, MigrationRepository } from './common';
+import { AccountsSettingsOptions } from './accounts';
+import { AssortmentsSettingsOptions } from './assortments';
+import { DeliverySettingsOptions } from './delivery';
+import { EnrollmentsSettingsOptions } from './enrollments';
+import { Modules } from './modules';
+import { OrdersSettingsOptions } from './orders';
+import { PaymentProvidersSettingsOptions } from './payments';
+import { QuotationsSettingsOptions } from './quotations';
+import { Services } from './services';
+import { User } from './user';
+import { Logger } from './logs';
 
 export declare type Root = Record<string, unknown>;
 
@@ -58,10 +58,7 @@ export interface UnchainedServerOptions {
 
 export interface Migration {
   id: number;
-  up: (params: {
-    logger: Logger | Console;
-    unchainedAPI: UnchainedAPI;
-  }) => Promise<void>;
+  up: (params: { logger: Logger | Console; unchainedAPI: UnchainedAPI }) => Promise<void>;
 }
 
 export interface UnchainedCoreOptions {

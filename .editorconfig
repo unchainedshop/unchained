@@ -1,10 +1,34 @@
+# EditorConfig: http://EditorConfig.org
+# EditorConfig Properties: https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties
+
+# top-most EditorConfig file
 root = true
 
+### defaults
 [*]
-indent_style = space
-indent_size = 2
-end_of_line = lf
 charset = utf-8
 
+# Max line length
+max_line_length=105
+
+# 2 space indentation
+indent_size = 2
+indent_style = space
+
+# Unix-style newlines with
+end_of_line = lf
+
+# remove any whitespace characters preceding newline characters
+trim_trailing_whitespace = true
+
+# newline ending every file
+insert_final_newline = true
+
+# Denotes preferred quoting style for string literals
+quote_type = single
+
+# Mark down
 [*.md]
+
+# remove any whitespace characters preceding newline characters
 trim_trailing_whitespace = false

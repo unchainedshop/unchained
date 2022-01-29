@@ -1,4 +1,5 @@
-## Known OPEN Issues
+## (Known) OPEN ISSUES
+_(Discussed between Pascal & Joel on Jan, 27th 2022)_
 
 1. Adjust documentation for plugins (rewrite)
 
