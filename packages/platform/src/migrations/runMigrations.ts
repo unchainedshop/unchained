@@ -54,7 +54,9 @@ export const runMigrations = async ({
     onMigrationComplete,
     unchainedAPI,
   });
+  
   const [lastMigrationId, operationCount] = await runner.run();
+
   if (operationCount !== null) {
     if (operationCount > 0) {
       logger.info(

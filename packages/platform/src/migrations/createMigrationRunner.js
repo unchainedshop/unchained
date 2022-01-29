@@ -23,6 +23,7 @@ export const createMigrationRunner = ({
 }) => ({
   operationFactory(action) {
     const migrationContext = { logger, unchainedAPI };
+
     return (migration) => async () => {
       try {
         await migration[action](migrationContext);

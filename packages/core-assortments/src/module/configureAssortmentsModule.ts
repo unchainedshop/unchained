@@ -8,7 +8,7 @@ import {
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbMutations, generateDbFilterById, findPreservingIds } from 'meteor/unchained:utils';
-import { configureEmptyMigration } from 'src/migrations/configureEmptyMigration';
+import { configureEmptyMigration } from '../migrations/configureEmptyMigration';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 import { AssortmentsSchema } from '../db/AssortmentsSchema';
 import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule';
