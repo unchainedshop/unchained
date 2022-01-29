@@ -75,7 +75,7 @@ export const startPlatform = async (
   });
 
   if (isWorkQueueEnabled) {
-    await runMigrations({ db });
+    await runMigrations({ db, unchainedAPI });
   }
 
   // Setup accountsjs specific extensions and event handlers

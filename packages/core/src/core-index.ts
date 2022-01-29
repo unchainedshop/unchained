@@ -77,7 +77,6 @@ export const initCore = async ({
   );
 
   return {
-    db,
     modules: {
       ...customModules,
       accounts,
