@@ -1,12 +1,9 @@
-import { ModuleInput } from "@unchainedshop/types/common";
-import {
-  PaymentModule,
-  PaymentProvidersSettingsOptions,
-} from "@unchainedshop/types/payments";
-import { PaymentCredentialsCollection } from "../db/PaymentCredentialsCollection";
-import { PaymentProvidersCollection } from "../db/PaymentProvidersCollection";
-import { configurePaymentCredentialsModule } from "./configurePaymentCredentialsModule";
-import { configurePaymentProvidersModule } from "./configurePaymentProvidersModule";
+import { ModuleInput } from '@unchainedshop/types/common';
+import { PaymentModule, PaymentProvidersSettingsOptions } from '@unchainedshop/types/payments';
+import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection';
+import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection';
+import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule';
+import { configurePaymentProvidersModule } from './configurePaymentProvidersModule';
 
 export const configurePaymentModule = async ({
   db,
@@ -16,10 +13,7 @@ export const configurePaymentModule = async ({
   const PaymentCredentials = await PaymentCredentialsCollection(db);
 
   return {
-    paymentProviders: configurePaymentProvidersModule(
-      PaymentProviders,
-      paymentProviderOptions
-    ),
+    paymentProviders: configurePaymentProvidersModule(PaymentProviders, paymentProviderOptions),
     paymentCredentials: configurePaymentCredentialsModule(PaymentCredentials),
   };
 };

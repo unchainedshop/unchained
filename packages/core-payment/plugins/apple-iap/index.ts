@@ -1,3 +1,3 @@
-import "./adapter";
+import './adapter';
 
-export { configureAppleTransactionsModule } from "./module/configureAppleTransactionsModule";
+export { configureAppleTransactionsModule } from './module/configureAppleTransactionsModule';

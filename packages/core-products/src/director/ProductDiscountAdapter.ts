@@ -1,7 +1,5 @@
-import { IDiscountAdapter } from "@unchainedshop/types/discount";
-import { BaseDiscountAdapter } from "meteor/unchained:utils";
+import { IDiscountAdapter } from '@unchainedshop/types/discount';
+import { BaseDiscountAdapter } from 'meteor/unchained:utils';
 
-export const ProductDiscountAdapter: Omit<
-  IDiscountAdapter,
-  "key" | "label" | "version"
-> = BaseDiscountAdapter;
+export const ProductDiscountAdapter: Omit<IDiscountAdapter, 'key' | 'label' | 'version'> =
+  BaseDiscountAdapter;

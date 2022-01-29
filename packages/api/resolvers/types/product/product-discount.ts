@@ -1,12 +1,8 @@
-import { Context } from "@unchainedshop/types/api";
-import { ProductDiscount as ProductDiscountType } from "@unchainedshop/types/products";
-import crypto from "crypto";
+import { Context } from '@unchainedshop/types/api';
+import { ProductDiscount as ProductDiscountType } from '@unchainedshop/types/products';
+import crypto from 'crypto';
 
-type HelperType<T> = (
-  product: ProductDiscountType,
-  _: never,
-  context: Context
-) => T;
+type HelperType<T> = (product: ProductDiscountType, _: never, context: Context) => T;
 
 export interface ProductDiscountHelperTypes {
   interface: HelperType<
@@ -33,9 +29,7 @@ export const ProductDiscount: ProductDiscountHelperTypes = {
       _id: Interface.key,
       label: Interface.label,
       version: Interface.version,
-      isManualAdditionAllowed: await Interface.isManualAdditionAllowed(
-        obj.code
-      ),
+      isManualAdditionAllowed: await Interface.isManualAdditionAllowed(obj.code),
       isManualRemovalAllowed: await Interface.isManualRemovalAllowed(),
     };
   },
@@ -45,9 +39,9 @@ export const ProductDiscount: ProductDiscountHelperTypes = {
     if (total) {
       return {
         _id: crypto
-          .createHash("sha256")
-          .update([`${obj._id}`, total.amount, total.currency].join(""))
-          .digest("hex"),
+          .createHash('sha256')
+          .update([`${obj._id}`, total.amount, total.currency].join(''))
+          .digest('hex'),
         amount: total.amount,
         currency: total.currency,
       };

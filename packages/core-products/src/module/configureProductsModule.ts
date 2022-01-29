@@ -1,39 +1,21 @@
-import { Context } from "@unchainedshop/types/api";
-import {
-  FindOptions,
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from "@unchainedshop/types/common";
-import {
-  Product,
-  ProductQuery,
-  ProductsModule,
-} from "@unchainedshop/types/products";
-import { emit, registerEvents } from "meteor/unchained:events";
-import {
-  findPreservingIds,
-  generateDbFilterById,
-  generateDbMutations,
-} from "meteor/unchained:utils";
-import { ProductDiscountDirector } from "../director/ProductDiscountDirector";
-import { ProductsCollection } from "../db/ProductsCollection";
-import { ProductsSchema, ProductTypes } from "../db/ProductsSchema";
-import { ProductStatus } from "../db/ProductStatus";
-import { ProductPricingSheet } from "../director/ProductPricingSheet";
-import { ProductPricingDirector } from "../products-index";
-import { configureProductMediaModule } from "./configureProductMediaModule";
-import { configureProductPricesModule } from "./configureProductPrices";
-import { configureProductReviewsModule } from "./configureProductReviewsModule";
-import { configureProductTextsModule } from "./configureProductTextsModule";
-import { configureProductVariationsModule } from "./configureProductVariationsModule";
+import { Context } from '@unchainedshop/types/api';
+import { FindOptions, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Product, ProductQuery, ProductsModule } from '@unchainedshop/types/products';
+import { emit, registerEvents } from 'meteor/unchained:events';
+import { findPreservingIds, generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
+import { ProductsCollection } from '../db/ProductsCollection';
+import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
+import { ProductStatus } from '../db/ProductStatus';
+import { ProductPricingSheet } from '../director/ProductPricingSheet';
+import { ProductPricingDirector } from '../products-index';
+import { configureProductMediaModule } from './configureProductMediaModule';
+import { configureProductPricesModule } from './configureProductPrices';
+import { configureProductReviewsModule } from './configureProductReviewsModule';
+import { configureProductTextsModule } from './configureProductTextsModule';
+import { configureProductVariationsModule } from './configureProductVariationsModule';
 
-const PRODUCT_EVENTS = [
-  "PRODUCT_CREATE",
-  "PRODUCT_REMOVE",
-  "PRODUCT_SET_BASE",
-  "PRODUCT_UPDATE",
-];
+const PRODUCT_EVENTS = ['PRODUCT_CREATE', 'PRODUCT_REMOVE', 'PRODUCT_SET_BASE', 'PRODUCT_UPDATE'];
 
 const InternalProductStatus = {
   DRAFT: null,
@@ -47,9 +29,7 @@ const buildFindSelector = ({
   productSelector,
   ...query
 }: ProductQuery) => {
-  const selector: Query = productSelector
-    ? { ...productSelector, ...query }
-    : query;
+  const selector: Query = productSelector ? { ...productSelector, ...query } : query;
 
   if (productIds?.length > 0) {
     selector._id = { $in: productIds };
@@ -79,30 +59,27 @@ export const configureProductsModule = async ({
 
   const { Products, ProductTexts } = await ProductsCollection(db);
 
-  const mutations = generateDbMutations<Product>(
-    Products,
-    ProductsSchema
-  ) as ModuleMutations<Product>;
+  const mutations = generateDbMutations<Product>(Products, ProductsSchema) as ModuleMutations<Product>;
 
   const checkIsActive = (product: Product, { modules }: Context) => {
     if (!modules.products.isActive(product)) {
-      throw new Error(
-        "This product is not available for ordering at the moment"
-      );
+      throw new Error('This product is not available for ordering at the moment');
     }
   };
 
-  const deleteProductsPermanently: ProductsModule["deleteProductsPermanently"] =
-    async ({ productId, excludedProductIds }) => {
-      const selector: Query = productId
-        ? generateDbFilterById(productId, { status: ProductStatus.DELETED })
-        : { _id: { $nin: excludedProductIds } };
-      const deletedResult = await Products.deleteOne(selector);
+  const deleteProductsPermanently: ProductsModule['deleteProductsPermanently'] = async ({
+    productId,
+    excludedProductIds,
+  }) => {
+    const selector: Query = productId
+      ? generateDbFilterById(productId, { status: ProductStatus.DELETED })
+      : { _id: { $nin: excludedProductIds } };
+    const deletedResult = await Products.deleteOne(selector);
 
-      return deletedResult.deletedCount;
-    };
+    return deletedResult.deletedCount;
+  };
 
-  const publishProduct: ProductsModule["publish"] = async (product, userId) => {
+  const publishProduct: ProductsModule['publish'] = async (product, userId) => {
     if (product.status === InternalProductStatus.DRAFT) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
@@ -113,7 +90,7 @@ export const configureProductsModule = async ({
         },
       });
 
-      emit("PRODUCT_PUBLISH", { product: this });
+      emit('PRODUCT_PUBLISH', { product: this });
 
       return true;
     }
@@ -121,10 +98,7 @@ export const configureProductsModule = async ({
     return false;
   };
 
-  const unpublishProduct: ProductsModule["unpublish"] = async (
-    product,
-    userId
-  ) => {
+  const unpublishProduct: ProductsModule['unpublish'] = async (product, userId) => {
     if (product.status === ProductStatus.ACTIVE) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
@@ -135,7 +109,7 @@ export const configureProductsModule = async ({
         },
       });
 
-      emit("PRODUCT_UNPUBLISH", { product: this });
+      emit('PRODUCT_UNPUBLISH', { product: this });
 
       return true;
     }
@@ -143,10 +117,10 @@ export const configureProductsModule = async ({
     return false;
   };
 
-  const proxyProducts: ProductsModule["proxyProducts"] = async (
+  const proxyProducts: ProductsModule['proxyProducts'] = async (
     product,
     vectors = [],
-    { includeInactive = false } = {}
+    { includeInactive = false } = {},
   ) => {
     const { proxy } = product;
     let filtered = [...(proxy.assignments || [])];
@@ -159,9 +133,7 @@ export const configureProductsModule = async ({
         return false;
       });
     });
-    const productIds = filtered.map(
-      (filteredAssignment) => filteredAssignment.productId
-    );
+    const productIds = filtered.map((filteredAssignment) => filteredAssignment.productId);
     const selector: Query = {
       _id: { $in: productIds },
       status: includeInactive
@@ -187,9 +159,7 @@ export const configureProductsModule = async ({
   return {
     // Queries
     findProduct: async ({ productId, slug }) => {
-      const selector = productId
-        ? generateDbFilterById(productId)
-        : { slugs: slug };
+      const selector = productId ? generateDbFilterById(productId) : { slugs: slug };
       return Products.findOne(selector, {});
     },
 
@@ -206,12 +176,7 @@ export const configureProductsModule = async ({
       return products.toArray();
     },
 
-    findProductSiblings: async ({
-      productIds,
-      limit,
-      offset,
-      includeInactive = false,
-    }) => {
+    findProductSiblings: async ({ productIds, limit, offset, includeInactive = false }) => {
       const productSelector: Query = {
         _id: { $in: productIds },
         status: includeInactive
@@ -229,9 +194,7 @@ export const configureProductsModule = async ({
     },
 
     productExists: async ({ productId, slug }) => {
-      const selector: Query = productId
-        ? generateDbFilterById(productId)
-        : { slugs: slug };
+      const selector: Query = productId ? generateDbFilterById(productId) : { slugs: slug };
       selector.status = { $ne: ProductStatus.DELETED };
 
       const productCount = await Products.find(selector, { limit: 1 }).count();
@@ -248,16 +211,11 @@ export const configureProductsModule = async ({
       return product.status === ProductStatus.ACTIVE;
     },
     isDraft: (product) => {
-      return (
-        product.status === ProductStatus.DRAFT ||
-        product.status === InternalProductStatus.DRAFT
-      );
+      return product.status === ProductStatus.DRAFT || product.status === InternalProductStatus.DRAFT;
     },
 
     normalizedStatus: (product) => {
-      return product.status === null
-        ? ProductStatus.DRAFT
-        : (product.status as ProductStatus);
+      return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
     },
 
     pricingSheet: (params) => {
@@ -292,40 +250,29 @@ export const configureProductsModule = async ({
 
     proxyProducts,
 
-    resolveOrderableProduct: async (
-      product,
-      { configuration },
-      requestContext
-    ) => {
+    resolveOrderableProduct: async (product, { configuration }, requestContext) => {
       const { modules } = requestContext;
       const productId = product._id as string;
 
       checkIsActive(product, requestContext);
 
       if (product.type === ProductTypes.ConfigurableProduct) {
-        const variations =
-          await modules.products.variations.findProductVariations({
-            productId,
-          });
+        const variations = await modules.products.variations.findProductVariations({
+          productId,
+        });
         const vectors = configuration.filter(({ key: configurationKey }) => {
           const isKeyEqualsVariationKey = Boolean(
-            variations.filter(
-              ({ key: variationKey }) => variationKey === configurationKey
-            ).length
+            variations.filter(({ key: variationKey }) => variationKey === configurationKey).length,
           );
           return isKeyEqualsVariationKey;
         });
 
-        const variants = await modules.products.proxyProducts(
-          product,
-          vectors,
-          {
-            includeInactive: false,
-          }
-        );
+        const variants = await modules.products.proxyProducts(product, vectors, {
+          includeInactive: false,
+        });
         if (variants.length !== 1) {
           throw new Error(
-            "There needs to be exactly one variant left when adding a ConfigurableProduct to the cart, configuration not distinct enough"
+            'There needs to be exactly one variant left when adding a ConfigurableProduct to the cart, configuration not distinct enough',
           );
         }
 
@@ -340,10 +287,7 @@ export const configureProductsModule = async ({
 
     // Product adapter
     calculate: async (pricingContext, requestContext) => {
-      const director = await ProductPricingDirector.actions(
-        pricingContext,
-        requestContext
-      );
+      const director = await ProductPricingDirector.actions(pricingContext, requestContext);
 
       return director.calculate();
     },
@@ -352,7 +296,7 @@ export const configureProductsModule = async ({
     create: async (
       { locale, title, type, sequence, authorId, ...productData },
       userId,
-      { autopublish = false } = {}
+      { autopublish = false } = {},
     ) => {
       if (productData._id) {
         // Remove deleted product by _id before creating a new one.
@@ -369,20 +313,17 @@ export const configureProductsModule = async ({
           authorId,
           ...productData,
         },
-        userId
+        userId,
       );
 
-      const product = await Products.findOne(
-        generateDbFilterById(productId),
-        {}
-      );
+      const product = await Products.findOne(generateDbFilterById(productId), {});
 
       if (locale) {
         productTexts.upsertLocalizedText(
           productId,
           locale,
           { productId, title, authorId, locale },
-          userId
+          userId,
         );
 
         if (autopublish) {
@@ -390,7 +331,7 @@ export const configureProductsModule = async ({
         }
       }
 
-      emit("PRODUCT_CREATE", { product });
+      emit('PRODUCT_CREATE', { product });
 
       return product;
     },
@@ -403,33 +344,27 @@ export const configureProductsModule = async ({
 
       const productId = await mutations.update(_id, updateDoc, userId);
 
-      emit("PRODUCT_UPDATE", { productId, ...doc });
+      emit('PRODUCT_UPDATE', { productId, ...doc });
 
       return productId;
     },
 
     delete: async (productId, userId) => {
-      const product = await Products.findOne(
-        generateDbFilterById(productId),
-        {}
-      );
+      const product = await Products.findOne(generateDbFilterById(productId), {});
 
       if (product.status !== InternalProductStatus.DRAFT) {
         throw new Error(`Invalid status', ${product.status}`);
       }
 
-      const updatedResult = await Products.updateOne(
-        generateDbFilterById(productId),
-        {
-          $set: {
-            status: ProductStatus.DELETED,
-            updated: new Date(),
-            updatedBy: userId,
-          },
-        }
-      );
+      const updatedResult = await Products.updateOne(generateDbFilterById(productId), {
+        $set: {
+          status: ProductStatus.DELETED,
+          updated: new Date(),
+          updatedBy: userId,
+        },
+      });
 
-      emit("PRODUCT_REMOVE", { productId });
+      emit('PRODUCT_REMOVE', { productId });
 
       return updatedResult.modifiedCount;
     },
@@ -455,7 +390,7 @@ export const configureProductsModule = async ({
             updatedBy: userId,
           },
           $push: {
-            "proxy.assignments": {
+            'proxy.assignments': {
               vector,
               productId,
             },
@@ -464,7 +399,7 @@ export const configureProductsModule = async ({
 
         await Products.updateOne(generateDbFilterById(proxyId), modifier);
 
-        emit("PRODUCT_ADD_ASSIGNMENT", { productId, proxyId });
+        emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
 
         return proxyId;
       },
@@ -480,14 +415,14 @@ export const configureProductsModule = async ({
             updatedBy: userId,
           },
           $pull: {
-            "proxy.assignments": {
+            'proxy.assignments': {
               vector,
             },
           },
         };
         await Products.updateOne(generateDbFilterById(productId), modifier);
 
-        emit("PRODUCT_REMOVE_ASSIGNMENT", { productId });
+        emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
 
         return vectors.length;
       },
@@ -505,17 +440,14 @@ export const configureProductsModule = async ({
           },
         });
 
-        emit("PRODUCT_CREATE_BUNDLE_ITEM", { productId });
+        emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
 
         return productId;
       },
 
       removeBundleItem: async (productId, index, userId) => {
         // TODO: There has to be a better MongoDB way to do this!
-        const product = await Products.findOne(
-          generateDbFilterById(productId),
-          {}
-        );
+        const product = await Products.findOne(generateDbFilterById(productId), {});
 
         const { bundleItems = [] } = product;
         const removedItems = bundleItems.splice(index, 1);
@@ -531,7 +463,7 @@ export const configureProductsModule = async ({
           });
         }
 
-        emit("PRODUCT_REMOVE_BUNDLE_ITEM", {
+        emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
           productId,
           item: removedItem,
         });
@@ -551,13 +483,7 @@ export const configureProductsModule = async ({
       buildActiveStatusFilter: () => ({
         status: { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] },
       }),
-      findFilteredProducts: async ({
-        limit,
-        offset,
-        productIds,
-        productSelector,
-        sort,
-      }) => {
+      findFilteredProducts: async ({ limit, offset, productIds, productSelector, sort }) => {
         return findPreservingIds(Products)(productSelector, productIds, {
           skip: offset,
           limit,

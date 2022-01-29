@@ -7,8 +7,8 @@
 
 
 OPEN TASKS:
-- Migration in assortments --> Leave as OPEN ISSUE / keep migrationRepository
-
+- Migration in assortments --> DONE: Check for RUN method  / keep migrationRepository
+  - Leave as OPEN ISSUE 
 - Update unchainedshop/type npm version
 
 ## NEW OPEN QUESTIONS (27.01.22)

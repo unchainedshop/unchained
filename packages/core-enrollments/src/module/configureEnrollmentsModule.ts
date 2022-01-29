@@ -1,6 +1,10 @@
 import { Context } from '@unchainedshop/types/api';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { Enrollment, EnrollmentsModule, EnrollmentsSettingsOptions } from '@unchainedshop/types/enrollments';
+import {
+  Enrollment,
+  EnrollmentsModule,
+  EnrollmentsSettingsOptions,
+} from '@unchainedshop/types/enrollments';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';

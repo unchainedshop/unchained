@@ -4,12 +4,14 @@ import {
   Db,
   Document,
   Filter,
-  FindOptions, IndexDirection, ModifyResult,
+  FindOptions,
+  IndexDirection,
+  ModifyResult,
   ObjectId,
   Projection,
   Sort,
   UpdateFilter,
-  UpdateOptions
+  UpdateOptions,
 } from 'mongodb';
 import { LogOptions } from './logs';
 
@@ -43,8 +45,6 @@ export type Indexes<T extends Document> = Array<{
 /*
  * Module
  */
-
-
 
 export interface MigrationRepository<Migration> {
   migrations: Map<string, Migration>;

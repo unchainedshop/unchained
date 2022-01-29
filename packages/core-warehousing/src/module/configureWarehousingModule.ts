@@ -133,7 +133,10 @@ export const configureWarehousingModule = async ({
 
     delete: async (providerId, userId) => {
       await mutations.delete(providerId, userId);
-      const warehousingProvider = await WarehousingProviders.findOne(generateDbFilterById(providerId), {});
+      const warehousingProvider = await WarehousingProviders.findOne(
+        generateDbFilterById(providerId),
+        {},
+      );
 
       emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
 

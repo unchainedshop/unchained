@@ -1,4 +1,4 @@
-import { Db, TimestampFields, _ID } from "@unchainedshop/types/common";
+import { Db, TimestampFields, _ID } from '@unchainedshop/types/common';
 
 export type BityCredentialsType = {
   _id?: _ID;
@@ -11,8 +11,7 @@ export type BityCredentialsType = {
 } & TimestampFields;
 
 export const BityCredentialsCollection = (db: Db) => {
-  const BityCredentials =
-    db.collection<BityCredentialsType>("bity_credentials");
+  const BityCredentials = db.collection<BityCredentialsType>('bity_credentials');
 
   return BityCredentials;
 };

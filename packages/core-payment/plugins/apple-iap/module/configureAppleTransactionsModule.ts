@@ -1,19 +1,11 @@
-import { Db } from "@unchainedshop/types/common";
-import { generateDbObjectId } from "meteor/unchained:utils";
-import {
-  AppleTransaction,
-  AppleTransactionsCollection,
-} from "../db/AppleTransactionsCollection";
+import { Db } from '@unchainedshop/types/common';
+import { generateDbObjectId } from 'meteor/unchained:utils';
+import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransactionsCollection';
 
 export interface AppleTransactionsModule {
-  findTransactions: (query: {
-    transactionIdentifier: string;
-  }) => Promise<Array<AppleTransaction>>;
+  findTransactions: (query: { transactionIdentifier: string }) => Promise<Array<AppleTransaction>>;
 
-  createTransaction: (
-    doc: AppleTransaction,
-    userId: string
-  ) => Promise<string | null>;
+  createTransaction: (doc: AppleTransaction, userId: string) => Promise<string | null>;
 }
 
 export const configureAppleTransactionsModule = async ({

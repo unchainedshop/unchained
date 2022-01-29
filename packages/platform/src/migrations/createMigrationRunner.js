@@ -39,9 +39,9 @@ export const createMigrationRunner = ({
 }) => ({
   operationFactory(action) {
     const ctx = { logger, ...options };
-    return (migration) => async () => {
+    return (migration) => async (unchainedAPI) => {
       try {
-        await migration[action](ctx);
+        await migration[action]({ ...ctx, ...unchainedAPI });
         await onMigrationComplete(migration.id, action);
         return migration.id;
       } catch (e) {

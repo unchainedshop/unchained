@@ -1,32 +1,22 @@
-import {
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from "@unchainedshop/types/common";
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import {
   ProductReview,
   ProductReviewQuery,
   ProductReviewsModule,
   ProductReviewVoteType,
   ProductVote,
-} from "@unchainedshop/types/products.reviews";
-import { emit, registerEvents } from "meteor/unchained:events";
-import {
-  generateDbFilterById,
-  generateDbMutations,
-} from "meteor/unchained:utils";
-import { ProductReviewsCollection } from "../db/ProductReviewsCollection";
-import {
-  ProductReviewsSchema,
-  ProductReviewVoteTypes,
-} from "../db/ProductReviewsSchema";
+} from '@unchainedshop/types/products.reviews';
+import { emit, registerEvents } from 'meteor/unchained:events';
+import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { ProductReviewsCollection } from '../db/ProductReviewsCollection';
+import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema';
 
 const PRODUCT_REVIEW_EVENTS = [
-  "PRODUCT_REVIEW_CREATE",
-  "PRODUCT_REMOVE_REVIEW",
-  "PRODUCT_UPDATE_REVIEW",
-  "PRODUCT_REVIEW_ADD_VOTE",
-  "PRODUCT_REMOVE_REVIEW_VOTE",
+  'PRODUCT_REVIEW_CREATE',
+  'PRODUCT_REMOVE_REVIEW',
+  'PRODUCT_UPDATE_REVIEW',
+  'PRODUCT_REVIEW_ADD_VOTE',
+  'PRODUCT_REMOVE_REVIEW_VOTE',
 ];
 
 const SORT_DIRECTIONS = {
@@ -51,9 +41,7 @@ const buildFindSelector = ({
   return selector;
 };
 
-const buildSortOptions = (
-  sort: Array<{ key: string; value: "DESC" | "ASC" }>
-) => {
+const buildSortOptions = (sort: Array<{ key: string; value: 'DESC' | 'ASC' }>) => {
   const sortBy = {};
   sort?.forEach(({ key, value }) => {
     sortBy[key] = SORT_DIRECTIONS[value];
@@ -61,9 +49,9 @@ const buildSortOptions = (
   return sortBy;
 };
 
-const userIdsThatVoted: ProductReviewsModule["votes"]["userIdsThatVoted"] = (
+const userIdsThatVoted: ProductReviewsModule['votes']['userIdsThatVoted'] = (
   productReview,
-  { type = ProductReviewVoteTypes.UPVOTE }
+  { type = ProductReviewVoteTypes.UPVOTE },
 ) => {
   return (productReview.votes || [])
     .filter(({ type: currentType }) => type === currentType)
@@ -79,7 +67,7 @@ export const configureProductReviewsModule = async ({
 
   const mutations = generateDbMutations<ProductReview>(
     ProductReviews,
-    ProductReviewsSchema
+    ProductReviewsSchema,
   ) as ModuleMutations<ProductReview>;
 
   const removeVote = async (selector: Query, { userId, type }: ProductVote) => {
@@ -99,7 +87,7 @@ export const configureProductReviewsModule = async ({
       const reviewsList = ProductReviews.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort || [{ key: "rating", value: "DESC" }]),
+        sort: buildSortOptions(sort || [{ key: 'rating', value: 'DESC' }]),
       });
 
       return reviewsList.toArray();
@@ -111,7 +99,7 @@ export const configureProductReviewsModule = async ({
 
     reviewExists: async ({ productReviewId }) => {
       const productReviewCount = await ProductReviews.find(
-        generateDbFilterById(productReviewId)
+        generateDbFilterById(productReviewId),
       ).count();
 
       return !!productReviewCount;
@@ -121,12 +109,9 @@ export const configureProductReviewsModule = async ({
     create: async (doc, userId) => {
       const productReviewId = await mutations.create(doc, userId);
 
-      const productReview = await ProductReviews.findOne(
-        generateDbFilterById(productReviewId),
-        {}
-      );
+      const productReview = await ProductReviews.findOne(generateDbFilterById(productReviewId), {});
 
-      emit("PRODUCT_REVIEW_CREATE", {
+      emit('PRODUCT_REVIEW_CREATE', {
         productReview,
       });
 
@@ -136,7 +121,7 @@ export const configureProductReviewsModule = async ({
     delete: async (productReviewId, userId) => {
       const deletedCount = await mutations.delete(productReviewId, userId);
 
-      emit("PRODUCT_REMOVE_REVIEW", {
+      emit('PRODUCT_REMOVE_REVIEW', {
         productReviewId,
       });
 
@@ -150,10 +135,10 @@ export const configureProductReviewsModule = async ({
         generateDbFilterById(productReviewId, {
           deleted: null,
         }),
-        {}
+        {},
       );
 
-      emit("PRODUCT_UPDATE_REVIEW", { productReview });
+      emit('PRODUCT_UPDATE_REVIEW', { productReview });
 
       return productReview;
     },
@@ -162,15 +147,13 @@ export const configureProductReviewsModule = async ({
       userIdsThatVoted,
 
       ownVotes: (productReview, { userId: ownUserId }) => {
-        return (productReview.votes || []).filter(
-          ({ userId }) => userId === ownUserId
-        );
+        return (productReview.votes || []).filter(({ userId }) => userId === ownUserId);
       },
 
       addVote: async (
         productReview,
         { type = ProductReviewVoteTypes.UPVOTE as ProductReviewVoteType, meta },
-        userId
+        userId,
       ) => {
         if (!userIdsThatVoted(productReview, { type }).includes(userId)) {
           const selector = generateDbFilterById(productReview._id, {
@@ -205,7 +188,7 @@ export const configureProductReviewsModule = async ({
 
           const updatedProductReview = await ProductReviews.findOne(selector, {});
 
-          emit("PRODUCT_REVIEW_ADD_VOTE", {
+          emit('PRODUCT_REVIEW_ADD_VOTE', {
             productReview: updatedProductReview,
           });
 
@@ -217,10 +200,7 @@ export const configureProductReviewsModule = async ({
 
       removeVote: async (
         productReviewId,
-        {
-          userId,
-          type = ProductReviewVoteTypes.UPVOTE as ProductReviewVoteType,
-        }
+        { userId, type = ProductReviewVoteTypes.UPVOTE as ProductReviewVoteType },
       ) => {
         const selector = generateDbFilterById(productReviewId, {
           deleted: null,
@@ -232,7 +212,7 @@ export const configureProductReviewsModule = async ({
 
         const productReview = await ProductReviews.findOne(selector, {});
 
-        emit("PRODUCT_REMOVE_REVIEW_VOTE", {
+        emit('PRODUCT_REMOVE_REVIEW_VOTE', {
           productReviewId,
           userId,
           type,

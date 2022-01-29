@@ -1,15 +1,10 @@
-import {
-  IDiscountAdapter,
-  IDiscountDirector,
-} from "@unchainedshop/types/discount";
-import { log } from "meteor/unchained:logger";
-import { BaseDirector } from "meteor/unchained:utils";
+import { IDiscountAdapter, IDiscountDirector } from '@unchainedshop/types/discount';
+import { log } from 'meteor/unchained:logger';
+import { BaseDirector } from 'meteor/unchained:utils';
 
-export const BaseDiscountDirector = (
-  directorName: string
-): IDiscountDirector => {
+export const BaseDiscountDirector = (directorName: string): IDiscountDirector => {
   const baseDirector = BaseDirector<IDiscountAdapter>(directorName, {
-    adapterSortKey: "orderIndex",
+    adapterSortKey: 'orderIndex',
   });
 
   return {
@@ -29,23 +24,19 @@ export const BaseDiscountDirector = (
         resolveDiscountKeyFromStaticCode: async (options) => {
           if (!context.order) return null;
 
-          log(
-            `DiscountDirector -> Find user discount for static code ${options?.code}`
-          );
+          log(`DiscountDirector -> Find user discount for static code ${options?.code}`);
 
           const discounts = await Promise.all(
             baseDirector
               .getAdapters()
-              .filter((Adapter) =>
-                Adapter.isManualAdditionAllowed(options?.code)
-              )
+              .filter((Adapter) => Adapter.isManualAdditionAllowed(options?.code))
               .map(async (Adapter) => {
                 const adapter = Adapter.actions({ context });
                 return {
                   key: Adapter.key,
                   isValid: await adapter.isValidForCodeTriggering(options),
                 };
-              })
+              }),
           );
 
           return discounts.find(({ isValid }) => isValid === true)?.key;
@@ -60,7 +51,7 @@ export const BaseDiscountDirector = (
                 key: Adapter.key,
                 isValid: await adapter.isValidForSystemTriggering(),
               };
-            })
+            }),
           );
 
           const validDiscounts = discounts
@@ -68,9 +59,7 @@ export const BaseDiscountDirector = (
             .map(({ key }) => key);
 
           if (validDiscounts.length > 0) {
-            log(
-              `DiscountDirector -> Found ${validDiscounts.length} system discounts`
-            );
+            log(`DiscountDirector -> Found ${validDiscounts.length} system discounts`);
           }
           return validDiscounts;
         },

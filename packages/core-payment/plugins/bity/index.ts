@@ -1,3 +1,3 @@
-import './adapter'
+import './adapter';
 
-export { configureBityModule } from "./module/configureBityModule";
+export { configureBityModule } from './module/configureBityModule';

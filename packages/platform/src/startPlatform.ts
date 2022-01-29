@@ -1,24 +1,24 @@
-import { UnchainedCoreOptions } from "@unchainedshop/types/api";
-import { Meteor } from "meteor/meteor";
-import { startAPIServer } from "meteor/unchained:api";
-import { initCore } from "meteor/unchained:core";
-import { initDb } from "meteor/unchained:mongodb";
-import { BulkImportPayloads } from "./bulk-importer/createBulkImporter";
-import { interceptEmails } from "./interceptEmails";
-import { runMigrations } from "./migrations/runMigrations";
-import { generateEventTypeDefs } from "./setup/generateEventTypeDefs";
-import { generateWorkerTypeDefs } from "./setup/generateWorkTypeDefs";
-import { setupAccounts, SetupAccountsOptions } from "./setup/setupAccounts";
-import { setupAutoScheduling } from "./setup/setupAutoScheduling";
-import { setupCarts, SetupCartsOptions } from "./setup/setupCarts";
-import { MessageTypes, setupTemplates } from "./setup/setupTemplates";
-import { setupWorkqueue, SetupWorkqueueOptions } from "./setup/setupWorkqueue";
-import { migrationRepository } from "./migrations/migrationRepository";
+import { UnchainedCoreOptions } from '@unchainedshop/types/api';
+import { Meteor } from 'meteor/meteor';
+import { startAPIServer } from 'meteor/unchained:api';
+import { initCore } from 'meteor/unchained:core';
+import { initDb } from 'meteor/unchained:mongodb';
+import { BulkImportPayloads } from './bulk-importer/createBulkImporter';
+import { interceptEmails } from './interceptEmails';
+import { runMigrations } from './migrations/runMigrations';
+import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
+import { generateWorkerTypeDefs } from './setup/generateWorkTypeDefs';
+import { setupAccounts, SetupAccountsOptions } from './setup/setupAccounts';
+import { setupAutoScheduling } from './setup/setupAutoScheduling';
+import { setupCarts, SetupCartsOptions } from './setup/setupCarts';
+import { MessageTypes, setupTemplates } from './setup/setupTemplates';
+import { setupWorkqueue, SetupWorkqueueOptions } from './setup/setupWorkqueue';
+import { migrationRepository } from './migrations/migrationRepository';
 
 // Workers
-import "./worker/BulkImportWorker";
-import "meteor/unchained:core-enrollments/workers/GenerateOrderWorker";
-import "meteor/unchained:core-messaging/workers/MessageWorker";
+import './worker/BulkImportWorker';
+import 'meteor/unchained:core-enrollments/workers/GenerateOrderWorker';
+import 'meteor/unchained:core-messaging/workers/MessageWorker';
 
 export { MessageTypes };
 
@@ -35,7 +35,7 @@ const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
 
 const isEmailInterceptionEnabled = (options) => {
   if (options?.disableEmailInterception) return false;
-  return NODE_ENV !== "production" && !UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
+  return NODE_ENV !== 'production' && !UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
 };
 
 export const queueWorkers = [];
@@ -45,26 +45,19 @@ type PlatformOptions = {
   additionalTypeDefs: Array<string>;
   bulkImporter?: any;
   context?: any;
-  modules: UnchainedCoreOptions["modules"];
-  options: UnchainedCoreOptions["options"];
+  modules: UnchainedCoreOptions['modules'];
+  options: UnchainedCoreOptions['options'];
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
 };
 export const startPlatform = async (
-  {
-    modules,
-    additionalTypeDefs = [],
-    options = {},
-    ...otherOptions
-  }: PlatformOptions = {
+  { modules, additionalTypeDefs = [], options = {}, ...otherOptions }: PlatformOptions = {
     modules: {},
     additionalTypeDefs: [],
     options: {},
-  }
+  },
 ) => {
-  const isWorkQueueEnabled = checkWorkQueueEnabled(
-    otherOptions.workQueueOptions
-  );
+  const isWorkQueueEnabled = checkWorkQueueEnabled(otherOptions.workQueueOptions);
   const emailInterceptionIsEnabled = isEmailInterceptionEnabled(otherOptions);
 
   // Configure database
@@ -92,11 +85,7 @@ export const startPlatform = async (
   setupTemplates();
 
   // Combine type defs for graphQL schema
-  const typeDefs = [
-    ...generateEventTypeDefs(),
-    ...generateWorkerTypeDefs(),
-    ...additionalTypeDefs,
-  ];
+  const typeDefs = [...generateEventTypeDefs(), ...generateWorkerTypeDefs(), ...additionalTypeDefs];
 
   // Start the graphQL server
   startAPIServer({ ...options, typeDefs, unchainedAPI });
@@ -105,10 +94,7 @@ export const startPlatform = async (
 
   // Setup work queues for scheduled work
   if (isWorkQueueEnabled) {
-    const handlers = setupWorkqueue(
-      otherOptions.workQueueOptions,
-      unchainedAPI
-    );
+    const handlers = setupWorkqueue(otherOptions.workQueueOptions, unchainedAPI);
     handlers.forEach((handler) => queueWorkers.push(handler));
     await setupCarts(otherOptions.workQueueOptions, unchainedAPI);
 
@@ -117,9 +103,7 @@ export const startPlatform = async (
 
   // Setup filter cache
   if (!options.filters?.skipInvalidationOnStartup) {
-    Meteor.defer(() =>
-      unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI)
-    );
+    Meteor.defer(() => unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI));
   }
 
   return unchainedAPI;

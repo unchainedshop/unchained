@@ -2,32 +2,25 @@ import {
   ProductVariation,
   ProductVariationsModule,
   ProductVariationText,
-} from "@unchainedshop/types/products.variations";
-import {
-  ModuleInput,
-  ModuleMutations,
-  Query,
-} from "@unchainedshop/types/common";
-import { Locale } from "locale";
-import { emit, registerEvents } from "meteor/unchained:events";
+} from '@unchainedshop/types/products.variations';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Locale } from 'locale';
+import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   findLocalizedText,
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from "meteor/unchained:utils";
-import { ProductVariationsCollection } from "../db/ProductVariationsCollection";
-import {
-  ProductVariationsSchema,
-  ProductVariationType,
-} from "../db/ProductVariationsSchema";
+} from 'meteor/unchained:utils';
+import { ProductVariationsCollection } from '../db/ProductVariationsCollection';
+import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema';
 
 const PRODUCT_VARIATION_EVENTS = [
-  "PRODUCT_CREATE_VARIATION",
-  "PRODUCT_REMOVE_VARIATION",
-  "PRODUCT_UPDATE_VARIATION_TEXTS",
-  "PRODUCT_VARIATION_OPTION_CREATE",
-  "PRODUCT_REMOVE_VARIATION_OPTION",
+  'PRODUCT_CREATE_VARIATION',
+  'PRODUCT_REMOVE_VARIATION',
+  'PRODUCT_UPDATE_VARIATION_TEXTS',
+  'PRODUCT_VARIATION_OPTION_CREATE',
+  'PRODUCT_REMOVE_VARIATION_OPTION',
 ];
 
 export const configureProductVariationsModule = async ({
@@ -35,22 +28,16 @@ export const configureProductVariationsModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<ProductVariationsModule> => {
   registerEvents(PRODUCT_VARIATION_EVENTS);
 
-  const { ProductVariations, ProductVariationTexts } =
-    await ProductVariationsCollection(db);
+  const { ProductVariations, ProductVariationTexts } = await ProductVariationsCollection(db);
 
   const mutations = generateDbMutations<ProductVariation>(
     ProductVariations,
-    ProductVariationsSchema
+    ProductVariationsSchema,
   ) as ModuleMutations<ProductVariation>;
 
   const upsertLocalizedText = async (
-    {
-      productVariationId,
-      productVariationOptionValue = null,
-      locale,
-      ...text
-    }: ProductVariationText,
-    userId: string
+    { productVariationId, productVariationOptionValue = null, locale, ...text }: ProductVariationText,
+    userId: string,
   ) => {
     const selector = {
       productVariationId,
@@ -78,7 +65,7 @@ export const configureProductVariationsModule = async ({
       },
       {
         upsert: true,
-      }
+      },
     );
 
     return ProductVariationTexts.findOne(selector, {});
@@ -87,10 +74,7 @@ export const configureProductVariationsModule = async ({
   return {
     // Queries
     findProductVariation: async ({ productVariationId }) => {
-      return ProductVariations.findOne(
-        generateDbFilterById(productVariationId),
-        {}
-      );
+      return ProductVariations.findOne(generateDbFilterById(productVariationId), {});
     },
 
     findProductVariations: async ({ productId, tags, offset, limit }) => {
@@ -118,14 +102,8 @@ export const configureProductVariationsModule = async ({
 
     // Mutations
     create: async (
-      {
-        type,
-        locale,
-        title,
-        authorId,
-        ...doc
-      }: ProductVariation & { title: string; locale: string },
-      userId
+      { type, locale, title, authorId, ...doc }: ProductVariation & { title: string; locale: string },
+      userId,
     ) => {
       const productVariationId = await mutations.create(
         {
@@ -133,12 +111,12 @@ export const configureProductVariationsModule = async ({
           authorId,
           ...doc,
         },
-        userId
+        userId,
       );
 
       const productVariation = await ProductVariations.findOne(
         generateDbFilterById(productVariationId),
-        {}
+        {},
       );
 
       await upsertLocalizedText(
@@ -148,10 +126,10 @@ export const configureProductVariationsModule = async ({
           productVariationId,
           title,
         },
-        userId
+        userId,
       );
 
-      emit("PRODUCT_CREATE_VARIATION", {
+      emit('PRODUCT_CREATE_VARIATION', {
         productVariation,
       });
 
@@ -163,7 +141,7 @@ export const configureProductVariationsModule = async ({
 
       const deletedResult = await ProductVariations.deleteOne(selector);
 
-      emit("PRODUCT_REMOVE_VARIATION", {
+      emit('PRODUCT_REMOVE_VARIATION', {
         productVariationId,
       });
 
@@ -187,25 +165,18 @@ export const configureProductVariationsModule = async ({
       return ProductVariations.findOne(selector, {});
     },
 
-    addVariationOption: async (
-      productVariationId,
-      { inputData, localeContext },
-      userId
-    ) => {
+    addVariationOption: async (productVariationId, { inputData, localeContext }, userId) => {
       const { value, title } = inputData;
 
-      await ProductVariations.updateOne(
-        generateDbFilterById(productVariationId),
-        {
-          $set: {
-            updated: new Date(),
-            updatedBy: userId,
-          },
-          $addToSet: {
-            options: value,
-          },
-        }
-      );
+      await ProductVariations.updateOne(generateDbFilterById(productVariationId), {
+        $set: {
+          updated: new Date(),
+          updatedBy: userId,
+        },
+        $addToSet: {
+          options: value,
+        },
+      });
 
       await upsertLocalizedText(
         {
@@ -215,38 +186,31 @@ export const configureProductVariationsModule = async ({
           productVariationOptionValue: value,
           title,
         },
-        userId
+        userId,
       );
 
       const productVariation = await ProductVariations.findOne(
         generateDbFilterById(productVariationId),
-        {}
+        {},
       );
 
-      emit("PRODUCT_VARIATION_OPTION_CREATE", { productVariation });
+      emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation });
 
       return productVariation;
     },
 
-    removeVariationOption: async (
-      productVariationId,
-      productVariationOptionValue,
-      userId
-    ) => {
-      await ProductVariations.updateOne(
-        generateDbFilterById(productVariationId),
-        {
-          $set: {
-            updated: new Date(),
-            updatedBy: userId,
-          },
-          $pull: {
-            options: productVariationOptionValue,
-          },
-        }
-      );
+    removeVariationOption: async (productVariationId, productVariationOptionValue, userId) => {
+      await ProductVariations.updateOne(generateDbFilterById(productVariationId), {
+        $set: {
+          updated: new Date(),
+          updatedBy: userId,
+        },
+        $pull: {
+          options: productVariationOptionValue,
+        },
+      });
 
-      emit("PRODUCT_REMOVE_VARIATION_OPTION", {
+      emit('PRODUCT_REMOVE_VARIATION_OPTION', {
         productVariationId,
         productVariationOptionValue,
       });
@@ -258,10 +222,7 @@ export const configureProductVariationsModule = async ({
 
     texts: {
       // Queries
-      findVariationTexts: async ({
-        productVariationId,
-        productVariationOptionValue,
-      }) => {
+      findVariationTexts: async ({ productVariationId, productVariationOptionValue }) => {
         return ProductVariationTexts.find({
           productVariationId,
           productVariationOptionValue,
@@ -276,25 +237,20 @@ export const configureProductVariationsModule = async ({
         const parsedLocale = new Locale(locale);
 
         const selector: Query = { productVariationId };
-        if (productVariationOptionValue > "") {
+        if (productVariationOptionValue > '') {
           selector.procuctVariationOptionValue = productVariationOptionValue;
         }
         const text = await findLocalizedText<ProductVariationText>(
           ProductVariationTexts,
           selector,
-          parsedLocale
+          parsedLocale,
         );
 
         return text;
       },
 
       // Mutations
-      updateVariationTexts: async (
-        productVariationId,
-        texts,
-        productVariationOptionValue,
-        userId
-      ) => {
+      updateVariationTexts: async (productVariationId, texts, productVariationOptionValue, userId) => {
         const productVariationTexts = await Promise.all(
           texts.map(({ locale, ...text }) =>
             upsertLocalizedText(
@@ -305,12 +261,12 @@ export const configureProductVariationsModule = async ({
                 productVariationId,
                 productVariationOptionValue,
               },
-              userId
-            )
-          )
+              userId,
+            ),
+          ),
         );
 
-        emit("PRODUCT_UPDATE_VARIATION_TEXTS", {
+        emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
           productVariationId,
           productVariationOptionValue,
           productVariationTexts,
@@ -323,7 +279,7 @@ export const configureProductVariationsModule = async ({
         { productVariationId, productVariationOptionValue },
         locale,
         text,
-        userId
+        userId,
       ) =>
         upsertLocalizedText(
           {
@@ -332,7 +288,7 @@ export const configureProductVariationsModule = async ({
             locale,
             ...text,
           },
-          userId
+          userId,
         ),
     },
   };
