@@ -4,13 +4,12 @@ import {
   Db,
   Document,
   Filter,
-  FindOptions,
-  ModifyResult,
+  FindOptions, IndexDirection, ModifyResult,
   ObjectId,
   Projection,
   Sort,
   UpdateFilter,
-  IndexDirection,
+  UpdateOptions
 } from 'mongodb';
 import { LogOptions } from './logs';
 
@@ -18,7 +17,6 @@ export { Locale, Locales } from 'locale';
 /*
  * MongoDb
  */
-
 export type {
   Collection,
   Db,
@@ -30,6 +28,7 @@ export type {
   Projection,
   Sort,
   UpdateFilter as Update,
+  UpdateOptions,
 };
 
 export type _ID = string;
@@ -45,8 +44,17 @@ export type Indexes<T extends Document> = Array<{
  * Module
  */
 
+
+
+export interface MigrationRepository<Migration> {
+  migrations: Map<string, Migration>;
+  register: (migration: Migration) => void;
+  allMigrations: Array<Migration>;
+}
+
 export interface ModuleInput<Options extends Record<string, any>> {
   db: Db;
+  migrationRepository?: MigrationRepository<any>;
   options?: Options;
 }
 

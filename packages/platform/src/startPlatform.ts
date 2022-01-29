@@ -13,6 +13,7 @@ import { setupAutoScheduling } from "./setup/setupAutoScheduling";
 import { setupCarts, SetupCartsOptions } from "./setup/setupCarts";
 import { MessageTypes, setupTemplates } from "./setup/setupTemplates";
 import { setupWorkqueue, SetupWorkqueueOptions } from "./setup/setupWorkqueue";
+import { migrationRepository } from "./migrations/migrationRepository";
 
 // Workers
 import "./worker/BulkImportWorker";
@@ -75,6 +76,7 @@ export const startPlatform = async (
       BulkImportPayloads,
     },
     db,
+    migrationRepository,
     modules,
     options,
   });

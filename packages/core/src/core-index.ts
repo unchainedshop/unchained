@@ -42,6 +42,7 @@ import { configureWorkerModule } from "meteor/unchained:core-worker";
 
 export const initCore = async ({
   db,
+  migrationRepository,
   modules,
   bulkImporter,
   options = {},
@@ -50,6 +51,7 @@ export const initCore = async ({
   const assortments = await configureAssortmentsModule({
     db,
     options: options.assortments,
+    migrationRepository,
   });
   const bookmarks = await configureBookmarksModule({ db });
   const countries = await configureCountriesModule({ db });

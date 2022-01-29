@@ -51,7 +51,7 @@ export const configureOrderDeliveriesModule = ({
 
     const selector = buildFindByIdSelector(orderDeliveryId);
     await OrderDeliveries.updateOne(selector, modifier);
-    return OrderDeliveries.findOne(selector);
+    return OrderDeliveries.findOne(selector, {});
   };
 
   return {
@@ -180,7 +180,7 @@ export const configureOrderDeliveriesModule = ({
         },
       });
 
-      const orderDelivery = await OrderDeliveries.findOne(selector);
+      const orderDelivery = await OrderDeliveries.findOne(selector, {});
       await updateCalculation(orderId, requestContext);
       emit('ORDER_UPDATE_DELIVERY', { orderDelivery });
       return orderDelivery;

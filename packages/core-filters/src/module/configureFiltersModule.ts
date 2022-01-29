@@ -323,7 +323,7 @@ export const configureFiltersModule = async ({
         userId
       );
 
-      return Filters.findOne(selector);
+      return Filters.findOne(selector, {});
     },
 
     delete: async (filterId, requestContext, options) => {
@@ -357,7 +357,7 @@ export const configureFiltersModule = async ({
         },
       });
 
-      return Filters.findOne(selector);
+      return Filters.findOne(selector, {});
     },
 
     update: async (filterId, doc, requestContext, options) => {

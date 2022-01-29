@@ -1,4 +1,4 @@
-import { Db, Locale } from "./common";
+import { Db, Locale, MigrationRepository } from "./common";
 import { AccountsSettingsOptions } from "./accounts";
 import { AssortmentsSettingsOptions } from "./assortments";
 import { DeliverySettingsOptions } from "./delivery";
@@ -56,8 +56,14 @@ export interface UnchainedServerOptions {
   context?: any;
 }
 
+export interface Migration {
+  id: number;
+  up: (context: Context) => Promise<void>;
+}
+
 export interface UnchainedCoreOptions {
   db: Db;
+  migrationRepository: MigrationRepository<Migration>;
   modules: Record<string, { configure: ({ db }: { db: Db }) => any }>;
   options: {
     accounts?: AccountsSettingsOptions;

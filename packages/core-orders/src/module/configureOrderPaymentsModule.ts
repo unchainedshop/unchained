@@ -53,7 +53,7 @@ export const configureOrderPaymentsModule = ({
 
     const selector = buildFindByIdSelector(orderPaymentId);
     await OrderPayments.updateOne(selector, modifier);
-    return OrderPayments.findOne(selector);
+    return OrderPayments.findOne(selector, {});
   };
 
   return {
@@ -242,7 +242,7 @@ export const configureOrderPaymentsModule = ({
         },
       });
 
-      const orderPayment = await OrderPayments.findOne(selector);
+      const orderPayment = await OrderPayments.findOne(selector, {});
       await updateCalculation(orderId, requestContext);
       emit('ORDER_UPDATE_PAYMENT', { orderPayment });
       return orderPayment;

@@ -81,7 +81,7 @@ export interface WarehousingInterface {
   version: string;
 }
 
-export type WarehousingModule = ModuleMutations<WarehousingProvider> & {
+export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'delete'> & {
   // Queries
   findProvider: (
     query: { warehousingProviderId: string },

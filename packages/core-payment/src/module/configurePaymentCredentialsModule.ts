@@ -101,7 +101,7 @@ export const configurePaymentCredentialsModule = (
 
     removeCredentials: async (paymentCredentialsId) => {
       const selector = generateDbFilterById(paymentCredentialsId);
-      const paymentCredentials = await PaymentCredentials.findOne(selector);
+      const paymentCredentials = await PaymentCredentials.findOne(selector, {});
       await PaymentCredentials.deleteOne(selector);
       return paymentCredentials;
     },

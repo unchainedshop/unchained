@@ -1,7 +1,7 @@
 import { ModuleInput } from "@unchainedshop/types/common";
 import {
   PaymentModule,
-  PaymentProvidersSettingsOptions
+  PaymentProvidersSettingsOptions,
 } from "@unchainedshop/types/payments";
 import { PaymentCredentialsCollection } from "../db/PaymentCredentialsCollection";
 import { PaymentProvidersCollection } from "../db/PaymentProvidersCollection";
@@ -10,7 +10,7 @@ import { configurePaymentProvidersModule } from "./configurePaymentProvidersModu
 
 export const configurePaymentModule = async ({
   db,
-  options,
+  options: paymentProviderOptions,
 }: ModuleInput<PaymentProvidersSettingsOptions>): Promise<PaymentModule> => {
   const PaymentProviders = await PaymentProvidersCollection(db);
   const PaymentCredentials = await PaymentCredentialsCollection(db);
@@ -18,7 +18,7 @@ export const configurePaymentModule = async ({
   return {
     paymentProviders: configurePaymentProvidersModule(
       PaymentProviders,
-      options
+      paymentProviderOptions
     ),
     paymentCredentials: configurePaymentCredentialsModule(PaymentCredentials),
   };

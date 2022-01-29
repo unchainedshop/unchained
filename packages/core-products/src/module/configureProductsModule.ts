@@ -240,7 +240,7 @@ export const configureProductsModule = async ({
     },
 
     // Transformations
-    interface: async (productDiscount) => {
+    interface: (productDiscount) => {
       return ProductDiscountDirector.getAdapter(productDiscount.discountKey);
     },
 
