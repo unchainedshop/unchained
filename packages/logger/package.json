@@ -39,7 +39,7 @@
     "@types/jest": "^27.0.2",
     "@types/mocha": "^9.0.0",
     "@types/winston": "^2.4.4",
-    "@unchainedshop/types": "^0.9.2",
+    "@unchainedshop/types": "1.0.0",
     "babel-jest": "^27.3.1",
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
