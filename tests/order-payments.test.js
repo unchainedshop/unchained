@@ -385,7 +385,7 @@ describe('Order: Payments', () => {
   });
 
   describe('Mutation.updateOrderPaymentGeneric for admin user should', () => {
-    // TODO: Check with Pascal if still relevant
+    // TODO: Migrate datatrans plugin
     xit('update order payment successfuly when order payment provider type is generic', async () => {
       const { data: { updateOrderPaymentGeneric } = {} } =
         await graphqlFetchAsAdmin({

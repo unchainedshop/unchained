@@ -7,6 +7,7 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 let db;
 let graphqlFetch;
 
+// TODO: Migrate datatrans plugin
 xdescribe('Plugins: Datatrans Payments', () => {
   const merchantId = '1100004624';
   const amount = '20000';

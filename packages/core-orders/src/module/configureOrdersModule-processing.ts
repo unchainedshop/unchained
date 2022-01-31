@@ -282,7 +282,6 @@ export const configureOrderModuleProcessing = ({
 
       return modules.orders.create(
         {
-          // TODO: Check with Pascal
           currency,
           countryCode,
           billingAddress: user.lastBillingAddress || user.profile?.address,
