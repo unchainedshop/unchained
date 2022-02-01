@@ -24,9 +24,9 @@ import { configureOrderModuleTransformations } from './configureOrdersModule-tra
 
 export const configureOrdersModule = async ({
   db,
-  options,
+  options: orderOptions,
 }: ModuleInput<OrdersSettingsOptions>): Promise<OrdersModule> => {
-  ordersSettings.configureSettings(options);
+  ordersSettings.configureSettings(orderOptions);
 
   const Orders = await OrdersCollection(db);
   const OrderDeliveries = await OrderDeliveriesCollection(db);
@@ -47,16 +47,11 @@ export const configureOrdersModule = async ({
     OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
 
   const findNewOrderNumber = async (order: Order, index = 0) => {
-    // let orderNumber = null;
-    // let i = 0;
-    // while (!orderNumber) {
     const newHashID = ordersSettings.orderNumberHashFn(order, index);
     if ((await Orders.find({ orderNumber: newHashID }, { limit: 1 }).count()) === 0) {
       return newHashID;
     }
     return findNewOrderNumber(order, index + 1);
-    // }
-    // return orderNumber;
   };
 
   const updateStatus: OrdersModule['updateStatus'] = async (
@@ -70,8 +65,37 @@ export const configureOrdersModule = async ({
     if (order.status === status) return order;
 
     const date = new Date();
+    const $set: Partial<Order> = {
+      status,
+      updated: new Date(),
+      updatedBy: requestContext.userId,
+    };
+
+    switch (status) {
+      // explicitly use fallthrough here!
+      case OrderStatus.FULLFILLED:
+        if (!order.fullfilled) {
+          $set.fullfilled = date;
+        }
+      case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
+        if (!order.confirmed) {
+          $set.confirmed = date;
+        }
+      case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
+        if (!order.ordered) {
+          $set.ordered = date;
+        }
+        if (!order.orderNumber) {
+          // Order Numbers can be set by the user
+          $set.orderNumber = await findNewOrderNumber(order);
+        }
+        break;
+      default:
+        break;
+    }
+
     const modifier: Update<Order> = {
-      $set: { status, updated: new Date(), updatedBy: requestContext.userId },
+      $set,
       $push: {
         log: {
           date,
@@ -80,33 +104,6 @@ export const configureOrdersModule = async ({
         },
       },
     };
-
-    switch (status) {
-      // explicitly use fallthrough here!
-      case OrderStatus.FULLFILLED:
-        if (!order.fullfilled) {
-          /* @ts-ignore */
-          modifier.$set.fullfilled = date;
-        }
-      case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
-        if (!order.confirmed) {
-          /* @ts-ignore */
-          modifier.$set.confirmed = date;
-        }
-      case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
-        if (!order.ordered) {
-          /* @ts-ignore */
-          modifier.$set.ordered = date;
-        }
-        if (!order.orderNumber) {
-          // Order Numbers can be set by the user
-          /* @ts-ignore */
-          modifier.$set.orderNumber = await findNewOrderNumber(order);
-        }
-        break;
-      default:
-        break;
-    }
 
     log(`New Status: ${status}`, { orderId });
 
@@ -221,7 +218,6 @@ export const configureOrdersModule = async ({
         );
 
         if (foundSupportedPreferredProvider) {
-          isOrderUpdated = true;
           await modules.orders.setPaymentProvider(
             orderId,
             foundSupportedPreferredProvider._id,

@@ -124,11 +124,11 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
           deliveryProviderId: string;
         }
       | Query,
-    options?: FindOptions<DeliveryProvider>,
+    options?: FindOptions,
   ) => Promise<DeliveryProvider>;
   findProviders: (
     query: DeliveryProviderQuery,
-    options?: FindOptions<DeliveryProvider>,
+    options?: FindOptions,
   ) => Promise<Array<DeliveryProvider>>;
 
   providerExists: (query: { deliveryProviderId: string }) => Promise<boolean>;

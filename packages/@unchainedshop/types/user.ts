@@ -1,5 +1,15 @@
 import { Context } from './api';
-import { Address, Contact, FindOptions, Locale, TimestampFields, Update, _ID } from './common';
+import {
+  Address,
+  Contact,
+  FindOptions,
+  Locale,
+  Query,
+  TimestampFields,
+  Update,
+  UpdateOptions,
+  _ID,
+} from './common';
 import { Country } from './countries';
 import { File } from './files';
 import { Language } from './languages';
@@ -88,6 +98,8 @@ export type UsersModule = {
   updateProfile: (_id: string, doc: Update<UserProfile>, userId: string) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>, userId: string) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>, userId: string) => Promise<User>;
+
+  updateUser: (selector: Query, modifier: Update<User>, options: UpdateOptions) => Promise<void>;
 };
 
 /*

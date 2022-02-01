@@ -61,7 +61,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
       }, Promise.resolve());
 
       const [result, error] = await bulkImporter.execute();
-      await bulkImporter.invalidateCaches(requestContext);
+      await bulkImporter.invalidateCaches();
 
       if (error) {
         return {

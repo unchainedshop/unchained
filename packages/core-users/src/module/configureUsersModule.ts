@@ -87,9 +87,7 @@ export const configureUsersModule = async ({
     // Transformations
     primaryEmail: (user) => {
       return (user.emails || []).sort(
-        ({ verified: verifiedLeft }, { verified: verifiedRight }) =>
-          /* @ts-ignore */
-          verifiedRight - verifiedLeft,
+        (left, right) => Number(right.verified) - Number(left.verified),
       )?.[0];
     },
 
@@ -120,7 +118,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return Users.findOne(userFilter);
+      return Users.findOne(userFilter, {});
     },
 
     updateGuest: async (user, guest) => {
@@ -144,7 +142,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(userId, modifier, userId);
 
-      return Users.findOne(userFilter);
+      return Users.findOne(userFilter, {});
     },
 
     updateInitialPassword: async (user, initialPassword) => {
@@ -167,12 +165,12 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return Users.findOne(userFilter);
+      return Users.findOne(userFilter, {});
     },
 
     updateLastBillingAddress: async (_id, lastBillingAddress, userId) => {
       const userFilter = generateDbFilterById(_id);
-      const user = await Users.findOne(userFilter);
+      const user = await Users.findOne(userFilter, {});
 
       log('Store Last Billing Address', { userId });
 
@@ -197,12 +195,12 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return Users.findOne(userFilter);
+      return Users.findOne(userFilter, {});
     },
 
     updateLastContact: async (_id, lastContact, userId) => {
       const userFilter = generateDbFilterById(_id);
-      const user = await Users.findOne(userFilter);
+      const user = await Users.findOne(userFilter, {});
 
       log('Store Last Contact', { userId });
 
@@ -224,7 +222,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return Users.findOne(userFilter);
+      return Users.findOne(userFilter, {});
     },
 
     updateRoles: async (_id, roles, userId) => {
@@ -239,7 +237,7 @@ export const configureUsersModule = async ({
       };
       await mutations.update(_id, modifier, userId);
 
-      return Users.findOne(userFilter);
+      return Users.findOne(userFilter, {});
     },
     updateTags: async (_id, tags, userId) => {
       const userFilter = generateDbFilterById(_id);
@@ -254,7 +252,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return Users.findOne(userFilter);
+      return Users.findOne(userFilter, {});
     },
 
     updateUser: async (query, modifier, options) => {

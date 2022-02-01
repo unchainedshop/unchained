@@ -81,15 +81,15 @@ export interface WarehousingInterface {
   version: string;
 }
 
-export type WarehousingModule = ModuleMutations<WarehousingProvider> & {
+export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'delete'> & {
   // Queries
   findProvider: (
     query: { warehousingProviderId: string },
-    options?: FindOptions<WarehousingProvider>,
+    options?: FindOptions,
   ) => Promise<WarehousingProvider>;
   findProviders: (
     query: WarehousingProviderQuery,
-    options?: FindOptions<WarehousingProvider>,
+    options?: FindOptions,
   ) => Promise<Array<WarehousingProvider>>;
   count: (query: WarehousingProviderQuery) => Promise<number>;
   providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;

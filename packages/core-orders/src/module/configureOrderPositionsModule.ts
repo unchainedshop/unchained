@@ -104,7 +104,7 @@ export const configureOrderPositionsModule = ({
 
     delete: async (orderPositionId, requestContext) => {
       const selector = buildFindByIdSelector(orderPositionId);
-      const orderPosition = await OrderPositions.findOne(selector);
+      const orderPosition = await OrderPositions.findOne(selector, {});
 
       log(`Remove Position ${orderPositionId}`, {
         orderId: orderPosition.orderId,
@@ -135,7 +135,7 @@ export const configureOrderPositionsModule = ({
 
     update: async ({ orderId, orderPositionId }, { quantity, configuration }, requestContext) => {
       const selector = buildFindByIdSelector(orderPositionId, orderId);
-      const orderPosition = await OrderPositions.findOne(selector);
+      const orderPosition = await OrderPositions.findOne(selector, {});
 
       if (quantity !== null) {
         log(
@@ -199,7 +199,7 @@ export const configureOrderPositionsModule = ({
 
       await updateCalculation(orderId, requestContext);
 
-      const updatedOrderPosition = await OrderPositions.findOne(selector);
+      const updatedOrderPosition = await OrderPositions.findOne(selector, {});
 
       emit('ORDER_UPDATE_CART_ITEM', {
         orderPosition: updatedOrderPosition,
@@ -279,7 +279,7 @@ export const configureOrderPositionsModule = ({
         $set: { calculation },
       });
 
-      return OrderPositions.findOne(selector);
+      return OrderPositions.findOne(selector, {});
     },
 
     addProductItem: async (orderPosition, { order, product }, requestContext) => {
@@ -302,7 +302,7 @@ export const configureOrderPositionsModule = ({
         configuration: configuration || { $exists: false },
         ...scope,
       };
-      const existingPosition = await OrderPositions.findOne(selector);
+      const existingPosition = await OrderPositions.findOne(selector, {});
 
       // Update position if exists
       let upsertedOrderPosition: OrderPosition;

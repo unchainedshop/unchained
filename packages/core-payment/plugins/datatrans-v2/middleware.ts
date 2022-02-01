@@ -52,7 +52,6 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
       return;
     }
 
-    console.log(req.body);
     const transaction: StatusResponseSuccess = JSON.parse(req.body) as StatusResponseSuccess;
 
     if (transaction.status === 'authorized') {

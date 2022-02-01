@@ -1,4 +1,4 @@
-import { Db, Locale } from './common';
+import { Db, Locale, MigrationRepository } from './common';
 import { AccountsSettingsOptions } from './accounts';
 import { AssortmentsSettingsOptions } from './assortments';
 import { DeliverySettingsOptions } from './delivery';
@@ -9,6 +9,7 @@ import { PaymentProvidersSettingsOptions } from './payments';
 import { QuotationsSettingsOptions } from './quotations';
 import { Services } from './services';
 import { User } from './user';
+import { Logger } from './logs';
 
 export declare type Root = Record<string, unknown>;
 
@@ -19,7 +20,6 @@ export interface UnchainedUserContext {
 }
 
 export interface UnchainedAPI {
-  db: Db;
   modules: Modules;
   services: Services;
   version?: string;
@@ -56,13 +56,20 @@ export interface UnchainedServerOptions {
   context?: any;
 }
 
+export interface Migration {
+  id: number;
+  up: (params: { logger: Logger | Console; unchainedAPI: UnchainedAPI }) => Promise<void>;
+}
+
 export interface UnchainedCoreOptions {
   db: Db;
-  modules: Record<string, any>;
+  migrationRepository: MigrationRepository<Migration>;
+  modules: Record<string, { configure: ({ db }: { db: Db }) => any }>;
   options: {
     accounts?: AccountsSettingsOptions;
     assortments?: AssortmentsSettingsOptions;
     delivery?: DeliverySettingsOptions;
+    filters?: { skipInvalidationOnStartup?: boolean };
     enrollments?: EnrollmentsSettingsOptions;
     orders?: OrdersSettingsOptions;
     paymentProviders?: PaymentProvidersSettingsOptions;

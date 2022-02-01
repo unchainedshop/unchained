@@ -13,7 +13,7 @@ export const configureProductPricesModule = ({
     options: { includeInactive?: boolean },
   ) => Promise<Array<Product>>;
 }): ProductsModule['prices'] => {
-  const price: ProductsModule['prices']['price'] = async (
+  const mapPrice: ProductsModule['prices']['price'] = async (
     product,
     { country: countryCode, currency: forcedCurrencyCode, quantity = 1 },
     requestContext,
@@ -56,7 +56,7 @@ export const configureProductPricesModule = ({
     return null;
   };
 
-  const userPrice: ProductsModule['prices']['userPrice'] = async (
+  const mapUserPrice: ProductsModule['prices']['userPrice'] = async (
     product,
     { quantity = 1, country, currency, useNetPrice },
     requestContext,
@@ -103,8 +103,8 @@ export const configureProductPricesModule = ({
   };
 
   return {
-    price,
-    userPrice,
+    price: mapPrice,
+    userPrice: mapUserPrice,
 
     catalogPrices: (product) => {
       const prices = (product.commerce && product.commerce.pricing) || [];
@@ -132,9 +132,9 @@ export const configureProductPricesModule = ({
 
       const filteredPrices = (
         await Promise.all(
-          products.map((product) =>
-            price(
-              product,
+          products.map((proxyProduct) =>
+            mapPrice(
+              proxyProduct,
               {
                 country,
                 quantity,
@@ -183,9 +183,9 @@ export const configureProductPricesModule = ({
 
       const filteredPrices = (
         await Promise.all(
-          products.map((product) =>
-            userPrice(
-              product,
+          products.map((proxyProduct) =>
+            mapUserPrice(
+              proxyProduct,
               {
                 quantity,
                 currency,

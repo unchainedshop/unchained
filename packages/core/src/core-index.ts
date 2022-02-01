@@ -19,11 +19,18 @@ import { configureUsersModule, userServices } from 'meteor/unchained:core-users'
 import { configureWarehousingModule } from 'meteor/unchained:core-warehousing';
 import { configureWorkerModule } from 'meteor/unchained:core-worker';
 
-export const initCore = async ({ db, modules, bulkImporter, options = {} }: UnchainedCoreOptions) => {
+export const initCore = async ({
+  db,
+  migrationRepository,
+  modules,
+  bulkImporter,
+  options = {},
+}: UnchainedCoreOptions) => {
   const accounts = await configureAccountsModule();
   const assortments = await configureAssortmentsModule({
     db,
     options: options.assortments,
+    migrationRepository,
   });
   const bookmarks = await configureBookmarksModule({ db });
   const countries = await configureCountriesModule({ db });
@@ -58,10 +65,20 @@ export const initCore = async ({ db, modules, bulkImporter, options = {} }: Unch
   const warehousing = await configureWarehousingModule({ db });
   const worker = await configureWorkerModule({ db });
 
+  // Configure custom modules
+  const customModules = await Object.entries(modules).reduce(
+    async (modulesPromise, [key, customModule]) => {
+      return {
+        ...(await modulesPromise),
+        [key]: await customModule.configure({ db }),
+      };
+    },
+    Promise.resolve({}),
+  );
+
   return {
-    db,
     modules: {
-      ...modules,
+      ...customModules,
       accounts,
       assortments,
       bookmarks,

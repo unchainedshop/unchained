@@ -1,5 +1,3 @@
-import { pipePromises } from 'meteor/unchained:utils';
-
 class MigrationError extends Error {
   constructor(migrationId = null, ...params) {
     // Pass remaining arguments (including vendor specific ones) to parent constructor
@@ -16,32 +14,19 @@ class MigrationError extends Error {
   }
 }
 
-export const createRepository = () => {
-  return {
-    migrations: new Map(),
-    register(migration) {
-      this.migrations.set(migration.id, migration);
-    },
-    allMigrations() {
-      return [...this.migrations.values()].sort((left, right) => {
-        return left.id - right.id;
-      });
-    },
-  };
-};
-
 export const createMigrationRunner = ({
-  repository,
   currentId,
-  onMigrationComplete,
   logger = console,
-  ...options
+  migrationRepository,
+  onMigrationComplete,
+  unchainedAPI,
 }) => ({
   operationFactory(action) {
-    const ctx = { logger, ...options };
+    const migrationContext = { logger, unchainedAPI };
+
     return (migration) => async () => {
       try {
-        await migration[action](ctx);
+        await migration[action](migrationContext);
         await onMigrationComplete(migration.id, action);
         return migration.id;
       } catch (e) {
@@ -53,13 +38,23 @@ export const createMigrationRunner = ({
     return id > currentId;
   },
   migrateToLatest() {
-    return repository.allMigrations().filter(this.isIdAfterCurrentId).map(this.operationFactory('up'));
+    return migrationRepository
+      .allMigrations()
+      .filter(this.isIdAfterCurrentId)
+      .map(this.operationFactory('up'));
   },
   async run() {
     try {
-      const operations = this.migrateToLatest();
-      const mostRecentId = await pipePromises(operations)(currentId);
-      return [mostRecentId, operations.length];
+      const migrations = this.migrateToLatest();
+      export default (fns) => (initialValue) =>
+        fns.reduce((sum, fn) => Promise.resolve(sum).then(fn), initialValue);
+
+      const mostRecentId = await migrations.reduce(
+        (idPromise, migration) => Promise.resolve(idPromise).then(migration),
+        currentId,
+      );
+
+      return [mostRecentId, migrations.length];
     } catch (e) {
       logger.error(e.name, e);
       return [e.migrationId, null];

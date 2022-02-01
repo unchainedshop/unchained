@@ -41,23 +41,6 @@ export type PaymentCredentials = {
   meta: any;
 } & TimestampFields;
 
-export type BityCredentials = {
-  _id?: _ID;
-  externalId: string;
-  data: {
-    iv: string;
-    encryptedData: string;
-  };
-  expires: Date;
-} & TimestampFields;
-
-export type AppleTransaction = {
-  _id?: _ID;
-  transactionIdentifier: string;
-  matchedTransaction: any;
-  orderId: string;
-} & TimestampFields;
-
 type PaymentProviderQuery = {
   type?: PaymentProviderType;
   deleted?: Date;
@@ -133,11 +116,11 @@ export type PaymentModule = {
       query: Query & {
         paymentProviderId: string;
       },
-      options?: FindOptions<PaymentProvider>,
+      options?: FindOptions,
     ) => Promise<PaymentProvider>;
     findProviders: (
       query: PaymentProviderQuery,
-      options?: FindOptions<PaymentProvider>,
+      options?: FindOptions,
     ) => Promise<Array<PaymentProvider>>;
 
     providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
@@ -208,13 +191,10 @@ export type PaymentModule = {
         paymentProviderId?: string;
         isPreferred?: boolean;
       },
-      options?: FindOptions<PaymentCredentials>,
+      options?: FindOptions,
     ) => Promise<PaymentCredentials>;
 
-    findPaymentCredentials: (
-      query: Query,
-      options?: FindOptions<PaymentCredentials>,
-    ) => Promise<Array<PaymentCredentials>>;
+    findPaymentCredentials: (query: Query, options?: FindOptions) => Promise<Array<PaymentCredentials>>;
 
     // Mutations
 
@@ -223,26 +203,6 @@ export type PaymentModule = {
     upsertCredentials: (doc: PaymentCredentials & { [x: string]: any }) => Promise<string | null>;
 
     removeCredentials: (paymentCredentialsId: string) => Promise<PaymentCredentials>;
-  };
-
-  /*
-   * Bity Credentials Module
-   */
-
-  bityCredentials: {
-    findBityCredentials: (query: { externalId: string }) => Promise<BityCredentials>;
-
-    upsertCredentials: (doc: BityCredentials, userId: string) => Promise<string | null>;
-  };
-
-  /*
-   * Apple Transactions Module
-   */
-
-  appleTransactions: {
-    findTransactions: (query: { transactionIdentifier: string }) => Promise<Array<AppleTransaction>>;
-
-    createTransaction: (doc: AppleTransaction, userId: string) => Promise<string | null>;
   };
 };
 

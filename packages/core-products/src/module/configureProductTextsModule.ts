@@ -112,7 +112,7 @@ export const configureProductTextsModule = ({
       );
     }
 
-    return ProductTexts.findOne(selector);
+    return ProductTexts.findOne(selector, {});
   };
 
   return {

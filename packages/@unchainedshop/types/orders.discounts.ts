@@ -25,7 +25,7 @@ export type OrderDiscountsModule = {
   findOrderDiscounts: (params: { orderId: string }) => Promise<Array<OrderDiscount>>;
 
   // Transformations
-  interface: (OrderDiscount: OrderDiscount, requestContext: Context) => Promise<DiscountAdapterActions>;
+  interface: (orderDiscount: OrderDiscount, requestContext: Context) => Promise<DiscountAdapterActions>;
 
   isValid: (orderDiscount: OrderDiscount, requestContext: Context) => Promise<boolean>;
 

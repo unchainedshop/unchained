@@ -44,7 +44,10 @@ export const QuotationDirector: IQuotationDirector = {
         try {
           return adapter.configurationError();
         } catch (error) {
-          console.warn(error);
+          log('QuotationDirector -> Error while checking for configurationError', {
+            level: LogLevel.Warning,
+            ...error,
+          });
           return QuotationError.ADAPTER_NOT_FOUND;
         }
       },
@@ -53,7 +56,10 @@ export const QuotationDirector: IQuotationDirector = {
         try {
           return adapter.isManualRequestVerificationRequired();
         } catch (error) {
-          console.error(error);
+          log('QuotationDirector -> Error while checking if is manual request verification required', {
+            level: LogLevel.Error,
+            ...error,
+          });
           return null;
         }
       },
@@ -62,7 +68,10 @@ export const QuotationDirector: IQuotationDirector = {
         try {
           return adapter.isManualProposalRequired();
         } catch (error) {
-          console.error(error);
+          log('QuotationDirector -> Error while checking if is manual proposal required', {
+            level: LogLevel.Error,
+            ...error,
+          });
           return null;
         }
       },
@@ -79,7 +88,10 @@ export const QuotationDirector: IQuotationDirector = {
             configuration,
           });
         } catch (error) {
-          console.error(error);
+          log('QuotationDirector -> Error while transforming item configuration', {
+            level: LogLevel.Error,
+            ...error,
+          });
           return null;
         }
       },

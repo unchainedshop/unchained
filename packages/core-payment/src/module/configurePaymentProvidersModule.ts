@@ -35,11 +35,11 @@ const getDefaultContext = (context?: PaymentContext): PaymentContext => {
 
 export const configurePaymentProvidersModule = (
   PaymentProviders: Collection<PaymentProvider>,
-  options: PaymentProvidersSettingsOptions,
+  paymentProviderOptions: PaymentProvidersSettingsOptions,
 ): PaymentModule['paymentProviders'] => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
 
-  paymentProviderSettings.configureSettings(options);
+  paymentProviderSettings.configureSettings(paymentProviderOptions);
 
   const mutations = generateDbMutations<PaymentProvider>(
     PaymentProviders,
@@ -63,7 +63,6 @@ export const configurePaymentProvidersModule = (
       return providerCount;
     },
 
-    /* @ts-ignore */
     findProvider: async ({ paymentProviderId, ...query }, options) => {
       return PaymentProviders.findOne(
         paymentProviderId ? generateDbFilterById(paymentProviderId) : query,

@@ -3,6 +3,7 @@ import { FindOptions, ModuleInput, ModuleMutations, Query } from '@unchainedshop
 import { Product, ProductQuery, ProductsModule } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { findPreservingIds, generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
 import { ProductStatus } from '../db/ProductStatus';
@@ -202,8 +203,8 @@ export const configureProductsModule = async ({
     },
 
     // Transformations
-    normalizedStatus: (product) => {
-      return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
+    interface: (productDiscount) => {
+      return ProductDiscountDirector.getAdapter(productDiscount.discountKey);
     },
 
     isActive: (product) => {
@@ -211,6 +212,10 @@ export const configureProductsModule = async ({
     },
     isDraft: (product) => {
       return product.status === ProductStatus.DRAFT || product.status === InternalProductStatus.DRAFT;
+    },
+
+    normalizedStatus: (product) => {
+      return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
     },
 
     pricingSheet: (params) => {
