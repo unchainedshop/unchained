@@ -7,7 +7,7 @@ export default async function removeAssortmentLink(
   { assortmentLinkId }: { assortmentLinkId: string },
   { modules, userId }: Context,
 ) {
-  log(`mutation removeAssortmentLink ${assortmentLinkId}`, { modules, userId });
+  log(`mutation removeAssortmentLink ${assortmentLinkId}`, { userId });
   if (!assortmentLinkId) throw new InvalidIdError({ assortmentLinkId });
 
   const assortmentLink = await modules.assortments.links.findLink({

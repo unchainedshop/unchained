@@ -7,7 +7,7 @@ export default async function removeAssortment(
   { assortmentId }: { assortmentId: string },
   { modules, userId }: Context,
 ) {
-  log(`mutation removeAssortment ${assortmentId}`, { modules, userId });
+  log(`mutation removeAssortment ${assortmentId}`, { userId });
 
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
 

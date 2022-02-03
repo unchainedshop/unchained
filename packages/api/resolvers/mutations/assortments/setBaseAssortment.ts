@@ -7,7 +7,7 @@ export default async function setBaseAssortment(
   { assortmentId }: { assortmentId: string },
   { modules, userId }: Context,
 ) {
-  log(`mutation setBaseAssortment ${assortmentId}`, { modules, userId });
+  log(`mutation setBaseAssortment ${assortmentId}`, { userId });
 
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
 

@@ -60,7 +60,6 @@ export const configureAssortmentTextsModule = ({
         _id: generateDbObjectId(),
         created: new Date(),
         createdBy: userId,
-        assortmentId,
         locale: locale || textLocale,
       },
     };

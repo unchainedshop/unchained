@@ -8,7 +8,7 @@ export default async function updateAssortmentTexts(
   { texts, assortmentId }: { texts: Array<AssortmentText>; assortmentId: string },
   { modules, userId }: Context,
 ) {
-  log(`mutation updateAssortmentTexts ${assortmentId}`, { modules, userId });
+  log(`mutation updateAssortmentTexts ${assortmentId}`, { userId });
 
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
 

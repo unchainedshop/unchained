@@ -6,7 +6,7 @@ export default async function reorderAssortmentLinks(
   params: { sortKeys: Array<{ assortmentLinkId: string; sortKey: number }> },
   { modules, userId }: Context,
 ) {
-  log('mutation reorderAssortmentLinks', { modules, userId });
+  log('mutation reorderAssortmentLinks', { userId });
   return modules.assortments.links.updateManualOrder({
     sortKeys: params.sortKeys,
   });

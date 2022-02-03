@@ -7,7 +7,7 @@ export default async function createAssortment(
   { assortment }: { assortment: Assortment & { title: string; locale?: string } },
   { modules, userId, localeContext }: Context,
 ) {
-  log('mutation createAssortment', { modules, userId });
+  log('mutation createAssortment', { userId });
 
   const assortmentId = await modules.assortments.create(
     {

@@ -7,7 +7,7 @@ export default async function addAssortmentMedia(
   { media, assortmentId },
   { modules, userId }: Context,
 ) {
-  log(`mutation addAssortmentMedia ${assortmentId}`, { modules, userId });
+  log(`mutation addAssortmentMedia ${assortmentId}`, { userId });
 
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
 
