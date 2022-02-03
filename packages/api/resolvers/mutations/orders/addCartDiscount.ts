@@ -8,12 +8,9 @@ export default async function addCartDiscount(
   { orderId, code }: { orderId?: string; code: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, user } = context;
 
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
-
-  const user = await modules.users.findUser({ userId });
-  if (!user) throw new UserNotFoundError({ userId });
 
   const cart = await getOrderCart({ orderId, user }, context);
 

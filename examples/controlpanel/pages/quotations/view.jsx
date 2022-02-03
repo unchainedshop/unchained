@@ -4,7 +4,6 @@ import { Container, Grid } from 'semantic-ui-react';
 import App from '../../components/App';
 import QuotationHeader from '../../components/quotations/QuotationHeader';
 import QuotationDownloads from '../../components/quotations/QuotationDownloads';
-import QuotationLogList from '../../components/quotations/QuotationLogList';
 import connectApollo from '../../lib/connectApollo';
 
 export default connectApollo(
@@ -18,11 +17,8 @@ export default connectApollo(
           <Grid.Column>
             <QuotationDownloads quotationId={router.query._id} />
           </Grid.Column>
-          <Grid.Column width={16}>
-            <QuotationLogList quotationId={router.query._id} />
-          </Grid.Column>
         </Grid>
       </Container>
     </App>
-  ))
+  )),
 );

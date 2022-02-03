@@ -7,7 +7,6 @@ import EnrollmentOrders from '../../components/enrollments/EnrollmentOrders';
 // import EnrollmentDelivery from '../../components/enrollments/EnrollmentDelivery';
 // import EnrollmentPayment from '../../components/enrollments/EnrollmentPayment';
 import EnrollmentHeader from '../../components/enrollments/EnrollmentHeader';
-import EnrollmentLogList from '../../components/enrollments/EnrollmentLogList';
 import connectApollo from '../../lib/connectApollo';
 
 export default connectApollo(
@@ -30,11 +29,8 @@ export default connectApollo(
           <Grid.Column>
             <EnrollmentPayment enrollmentId={router.query._id} />
           </Grid.Column> */}
-          <Grid.Column width={16}>
-            <EnrollmentLogList enrollmentId={router.query._id} />
-          </Grid.Column>
         </Grid>
       </Container>
     </App>
-  ))
+  )),
 );

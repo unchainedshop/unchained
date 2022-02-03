@@ -51,12 +51,7 @@ const QuotationHeader = ({
             >
               Delete
             </BtnRemoveQuotation>
-            <Dropdown.Item
-              primary
-              fluid
-              disabled={status !== 'REQUESTED'}
-              onClick={verifyQuotation}
-            >
+            <Dropdown.Item primary fluid disabled={status !== 'REQUESTED'} onClick={verifyQuotation}>
               Verify
             </Dropdown.Item>
             <Dropdown.Item
@@ -78,9 +73,7 @@ const QuotationHeader = ({
             <List relaxed>
               <List.Item>
                 <List.Icon name="money" />
-                <List.Content>
-                  Currency: {currency && currency.isoCode}
-                </List.Content>
+                <List.Content>Currency: {currency && currency.isoCode}</List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name="box" />
@@ -101,9 +94,7 @@ const QuotationHeader = ({
                   <List.Content>
                     User:&nbsp;
                     <Link href={`/users/edit?_id=${user._id}`}>
-                      <a href={`/users/edit?_id=${user._id}`}>
-                        {`${user.name || user._id}`}
-                      </a>
+                      <a href={`/users/edit?_id=${user._id}`}>{`${user.name || user._id}`}</a>
                     </Link>
                   </List.Content>
                 </List.Item>
@@ -114,9 +105,7 @@ const QuotationHeader = ({
             <List>
               <List.Item>
                 <List.Icon name="add to calendar" />
-                <List.Content>
-                  Created: {created ? format(new Date(created), 'Pp') : 'n/a'}
-                </List.Content>
+                <List.Content>Created: {created ? format(new Date(created), 'Pp') : 'n/a'}</List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name="hourglass end" />
@@ -127,15 +116,13 @@ const QuotationHeader = ({
               <List.Item>
                 <List.Icon name="checkmark box" />
                 <List.Content>
-                  Fulfilled:{' '}
-                  {fullfilled ? format(new Date(fullfilled), 'Pp') : 'n/a'}
+                  Fulfilled: {fullfilled ? format(new Date(fullfilled), 'Pp') : 'n/a'}
                 </List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name="ban" />
                 <List.Content>
-                  Rejected:{' '}
-                  {rejected ? format(new Date(rejected), 'Pp') : 'n/a'}
+                  Rejected: {rejected ? format(new Date(rejected), 'Pp') : 'n/a'}
                 </List.Content>
               </List.Item>
             </List>
@@ -162,9 +149,9 @@ export default compose(
     {
       name: 'verifyQuotation',
       options: {
-        refetchQueries: ['quotations', 'quotation', 'quotationLogs'],
+        refetchQueries: ['quotations', 'quotation'],
       },
-    }
+    },
   ),
   graphql(
     gql`
@@ -182,9 +169,9 @@ export default compose(
     {
       name: 'rejectQuotation',
       options: {
-        refetchQueries: ['quotations', 'quotation', 'quotationLogs'],
+        refetchQueries: ['quotations', 'quotation'],
       },
-    }
+    },
   ),
   graphql(gql`
     query quotation($quotationId: ID!) {
@@ -230,7 +217,7 @@ export default compose(
     rejectQuotation:
       ({ rejectQuotation, quotationId }) =>
       () => {
-      const reason = prompt('Reason', ''); // eslint-disable-line
+        const reason = prompt('Reason', ''); // eslint-disable-line
         return rejectQuotation({
           variables: {
             quotationId,
@@ -241,12 +228,10 @@ export default compose(
         });
       },
   }),
-  mapProps(
-    ({ verifyQuotation, rejectQuotation, data: { quotation = {} } }) => ({
-      statusColor: colorForStatus(quotation.status),
-      verifyQuotation,
-      rejectQuotation,
-      ...quotation,
-    })
-  )
+  mapProps(({ verifyQuotation, rejectQuotation, data: { quotation = {} } }) => ({
+    statusColor: colorForStatus(quotation.status),
+    verifyQuotation,
+    rejectQuotation,
+    ...quotation,
+  })),
 )(QuotationHeader);

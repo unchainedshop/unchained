@@ -8,7 +8,6 @@ import OrderCalculation from '../../components/orders/OrderCalculation';
 import OrderDelivery from '../../components/orders/OrderDelivery';
 import OrderPayment from '../../components/orders/OrderPayment';
 import OrderHeader from '../../components/orders/OrderHeader';
-import OrderLogList from '../../components/orders/OrderLogList';
 import connectApollo from '../../lib/connectApollo';
 
 export default connectApollo(
@@ -34,11 +33,8 @@ export default connectApollo(
           <Grid.Column>
             <OrderPayment orderId={router.query._id} />
           </Grid.Column>
-          <Grid.Column width={16}>
-            <OrderLogList orderId={router.query._id} />
-          </Grid.Column>
         </Grid>
       </Container>
     </App>
-  ))
+  )),
 );

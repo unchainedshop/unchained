@@ -7,14 +7,11 @@ export default async function createCart(
   { orderNumber }: { orderNumber: string },
   context: Context,
 ) {
-  const { modules, services, countryContext, userId } = context;
+  const { modules, services, countryContext, userId, user } = context;
   log('mutation createCart', { userId });
 
   const order = await modules.orders.findOrder({ orderNumber });
   if (order) throw new OrderNumberAlreadyExistsError({ orderNumber });
-
-  const user = await modules.users.findUser({ userId });
-  if (!user) throw new UserNotFoundError({ userId });
 
   const currency = await services.countries.resolveDefaultCurrencyCode(
     {

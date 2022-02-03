@@ -18,7 +18,7 @@ export default async function setPassword(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  await modules.accounts.setPassword(userId, params);
+  await modules.accounts.setPassword(normalizedUserId, params);
 
   return modules.users.findUser({ userId: normalizedUserId });
 }

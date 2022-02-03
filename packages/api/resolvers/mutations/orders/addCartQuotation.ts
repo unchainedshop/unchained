@@ -20,7 +20,7 @@ export default async function addCartQuotation(
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, userId, user } = context;
   const { orderId, quotationId, quantity, configuration } = params;
 
   log(
@@ -40,8 +40,6 @@ export default async function addCartQuotation(
   if (quotation.status !== QuotationStatus.PROPOSED) {
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
-
-  const user = await modules.users.findUser({ userId });
 
   const order = await getOrderCart({ orderId, user }, context);
   const product = await modules.products.findProduct({

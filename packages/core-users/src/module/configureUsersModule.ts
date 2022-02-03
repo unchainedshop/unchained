@@ -146,7 +146,7 @@ export const configureUsersModule = async ({
     },
 
     updateInitialPassword: async (user, initialPassword) => {
-      log('Update initial password', { userId: user._id });
+      log('Update initial password flag to ' + initialPassword, { userId: user._id, level: "verbose" });
 
       const modifier = { $set: { initialPassword } };
       await Users.updateOne(generateDbFilterById(user._id), modifier);

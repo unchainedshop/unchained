@@ -13,7 +13,7 @@ export default async function addCartProduct(
   { orderId, productId, quantity, configuration },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, userId, user } = context;
 
   log(
     `mutation addCartProduct ${productId} ${quantity} ${
@@ -27,9 +27,6 @@ export default async function addCartProduct(
 
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
-
-  const user = await modules.users.findUser({ userId });
-  if (!user) throw new UserNotFoundError({ userId });
 
   const order = await getOrderCart({ orderId, user }, context);
 

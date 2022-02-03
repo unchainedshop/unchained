@@ -11,10 +11,7 @@ export default async function enableTOTP(
     userId,
   });
 
-  const user = await modules.users.findUser({ userId });
-  if (!user) throw new UserNotFoundError({ userId });
-
   await modules.accounts.enableTOTP(userId, params.secretBase32, params.code);
 
-  return user;
+  return modules.users.findUser({ userId });
 }

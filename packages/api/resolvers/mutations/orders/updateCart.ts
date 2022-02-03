@@ -16,12 +16,9 @@ interface UpdateCartParams {
 export default async function updateCart(root: Root, params: UpdateCartParams, context: Context) {
   const { orderId, billingAddress, contact, paymentProviderId, deliveryProviderId, meta } = params;
 
-  const { modules, userId } = context;
+  const { modules, userId, user } = context;
 
   log('mutation updateCart', { userId });
-
-  const user = await modules.users.findUser({ userId });
-  if (!user) throw UserNotFoundError({ userId });
 
   let order = await getOrderCart({ orderId, user }, context);
 

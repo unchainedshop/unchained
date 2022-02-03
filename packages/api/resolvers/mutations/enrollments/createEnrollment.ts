@@ -17,9 +17,6 @@ export default async function createEnrollment(
 
   log('mutation createEnrollment', { userId });
 
-  const user = await modules.users.findUser({ userId });
-  if (!user) throw new UserNotFoundError({ userId });
-
   const { configuration, quantity, productId } = plan;
 
   if (!productId) throw new InvalidIdError({ productId });

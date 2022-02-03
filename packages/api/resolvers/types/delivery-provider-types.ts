@@ -20,7 +20,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     { currency: currencyCode, orderId, useNetPrice, context: providerContext },
     requestContext,
   ) {
-    const { modules, services, countryContext: country, userId } = requestContext;
+    const { modules, services, countryContext: country, user } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
     const orderDelivery = await modules.orders.deliveries.findDelivery({
       orderDeliveryId: order.deliveryId,
@@ -34,8 +34,6 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
         },
         requestContext,
       ));
-
-    const user = await requestContext.modules.users.findUser({ userId });
 
     const pricingDirector = await DeliveryPricingDirector.actions(
       {
