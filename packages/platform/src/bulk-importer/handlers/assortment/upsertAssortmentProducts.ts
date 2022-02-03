@@ -19,8 +19,7 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Contex
       userId,
     );
   } catch (e) {
-    await modules.assortments.products.update(assortmentProduct._id, assortmentProduct);
-    return assortmentProduct._id;
+    return await modules.assortments.products.update(assortmentProduct._id, assortmentProduct);
   }
 };
 
@@ -28,7 +27,7 @@ export default async ({ products, authorId, assortmentId }, unchainedAPI: Contex
   const { modules, userId } = unchainedAPI;
   const assortmentProductIds = await Promise.all(
     products.map(async (product: AssortmentProduct) => {
-      const assortmentProductId = await upsert(
+      const assortmentProduct = await upsert(
         {
           ...product,
           authorId,
@@ -36,7 +35,7 @@ export default async ({ products, authorId, assortmentId }, unchainedAPI: Contex
         },
         unchainedAPI,
       );
-      return assortmentProductId;
+      return assortmentProduct._id;
     }),
   );
 

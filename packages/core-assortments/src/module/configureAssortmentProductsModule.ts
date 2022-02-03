@@ -104,7 +104,7 @@ export const configureAssortmentProductsModule = ({
         invalidateCache({ assortmentIds: [assortmentId] });
       }
 
-      return assortmentProduct._id;
+      return assortmentProduct;
     },
 
     delete: async (assortmentProductId, options) => {

@@ -8,7 +8,6 @@ export default async function removeAssortmentProduct(
   { modules, userId }: Context,
 ) {
   log(`mutation removeAssortmentProduct ${assortmentProductId}`, {
-    modules,
     userId,
   });
 
