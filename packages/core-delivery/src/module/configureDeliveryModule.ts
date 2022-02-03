@@ -36,11 +36,11 @@ const getDefaultContext = (context?: DeliveryContext): DeliveryContext => {
 
 export const configureDeliveryModule = async ({
   db,
-  options,
+  options: deliveryOptions,
 }: ModuleInput<DeliverySettingsOptions>): Promise<DeliveryModule> => {
   registerEvents(DELIVERY_PROVIDER_EVENTS);
 
-  deliverySettings.configureSettings(options);
+  deliverySettings.configureSettings(deliveryOptions);
 
   const DeliveryProviders = await DeliveryProvidersCollection(db);
 

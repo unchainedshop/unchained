@@ -21,7 +21,6 @@ export const FailedRescheduler: IScheduler = {
             : new Date(now.setSeconds(now.getSeconds() + 5));
 
         log(
-          /* @ts-ignore */
           `${FailedRescheduler.key} -> Reschedule failed work ${work._id} ${
             work.type
           } for ${scheduled} (in ${Math.round(workDelayMs / 1000)}). Remaining retries: ${work.retries}`,

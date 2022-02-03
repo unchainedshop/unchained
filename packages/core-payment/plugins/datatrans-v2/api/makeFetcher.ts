@@ -1,6 +1,7 @@
 import fs from 'fs';
 import util from 'util';
 import { resolve } from 'path';
+import { log, LogLevel } from 'meteor/unchained:logger';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -16,13 +17,16 @@ export default (
       try {
         const filePath = resolve(process.env.PWD, DATATRANS_API_MOCKS_PATH, `.${path}.json`);
         const content = await readFile(filePath);
-        const json = JSON.parse(content);
+        const json = JSON.parse(content.toString());
         return {
           json: async () => json,
           status: json?.error ? 500 : 204,
         };
-      } catch (e) {
-        console.log(e);
+      } catch (error) {
+        log('DataTrans V2 (makeFetcher) -> Error while trying reading and parsing file', {
+          level: LogLevel.Error,
+          ...error,
+        });
         return {
           json: async () => ({ error: { code: 'MOCK', message: 'MOCK' } }),
           status: 500,

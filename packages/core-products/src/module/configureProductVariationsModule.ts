@@ -68,13 +68,13 @@ export const configureProductVariationsModule = async ({
       },
     );
 
-    return ProductVariationTexts.findOne(selector);
+    return ProductVariationTexts.findOne(selector, {});
   };
 
   return {
     // Queries
     findProductVariation: async ({ productVariationId }) => {
-      return ProductVariations.findOne(generateDbFilterById(productVariationId));
+      return ProductVariations.findOne(generateDbFilterById(productVariationId), {});
     },
 
     findProductVariations: async ({ productId, tags, offset, limit }) => {
@@ -114,7 +114,10 @@ export const configureProductVariationsModule = async ({
         userId,
       );
 
-      const productVariation = await ProductVariations.findOne(generateDbFilterById(productVariationId));
+      const productVariation = await ProductVariations.findOne(
+        generateDbFilterById(productVariationId),
+        {},
+      );
 
       await upsertLocalizedText(
         {
@@ -159,7 +162,7 @@ export const configureProductVariationsModule = async ({
       const selector = generateDbFilterById(productVariationId);
       const modifier = { $set: doc };
       await ProductVariations.updateOne(selector, modifier);
-      return ProductVariations.findOne(selector);
+      return ProductVariations.findOne(selector, {});
     },
 
     addVariationOption: async (productVariationId, { inputData, localeContext }, userId) => {
@@ -186,7 +189,10 @@ export const configureProductVariationsModule = async ({
         userId,
       );
 
-      const productVariation = await ProductVariations.findOne(generateDbFilterById(productVariationId));
+      const productVariation = await ProductVariations.findOne(
+        generateDbFilterById(productVariationId),
+        {},
+      );
 
       emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation });
 

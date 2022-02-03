@@ -113,7 +113,7 @@ export const createBulkImporter = (options, requestContext) => {
         null,
       ];
     },
-    async invalidateCaches(requestContext) {
+    invalidateCaches: async () => {
       await requestContext.modules.assortments.invalidateCache();
       await requestContext.modules.filters.invalidateCache({}, requestContext);
     },

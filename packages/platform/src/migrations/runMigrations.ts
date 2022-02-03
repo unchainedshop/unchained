@@ -1,3 +1,4 @@
+import { UnchainedAPI } from '@unchainedshop/types/api';
 import { Db } from '@unchainedshop/types/common';
 import { createLogger } from 'meteor/unchained:logger';
 import { generateDbFilterById } from 'meteor/unchained:utils';
@@ -7,10 +8,11 @@ import { migrationRepository } from './migrationRepository';
 export const runMigrations = async ({
   db,
   logger = createLogger('unchained:migrations'),
-  ...options
+  unchainedAPI,
 }: {
   db: Db;
   logger?: any;
+  unchainedAPI: UnchainedAPI;
 }) => {
   const LastMigration = db.collection('last-migration');
 
@@ -42,13 +44,15 @@ export const runMigrations = async ({
 
   const currentId = await findCurrentId();
   const runner = createMigrationRunner({
-    repository: migrationRepository,
     currentId,
-    onMigrationComplete,
     logger,
-    ...options,
+    migrationRepository,
+    onMigrationComplete,
+    unchainedAPI,
   });
+
   const [lastMigrationId, operationCount] = await runner.run();
+
   if (operationCount !== null) {
     if (operationCount > 0) {
       logger.info(`All ${operationCount} migrations completed with most recent id: ${lastMigrationId}`);

@@ -7,8 +7,7 @@ const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval
   const start = moment(referenceDate).startOf(interval === 'HOUR' ? 'minute' : 'hour');
   return {
     start: start.toDate(),
-    /* @ts-ignore */
-    end: start.add(intervalCount, interval).toDate(),
+    end: start.clone().add(intervalCount, interval).toDate(),
   };
 };
 

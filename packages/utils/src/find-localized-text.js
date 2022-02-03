@@ -41,7 +41,7 @@ const findLocalizedText = async (collection, selector, locale) => {
     }
   }
 
-  const foundText = await collection.findOne(selector);
+  const foundText = await collection.findOne(selector, {});
   textCache.set(cacheKey, foundText);
   return foundText;
 };

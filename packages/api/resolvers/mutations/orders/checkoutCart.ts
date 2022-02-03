@@ -26,12 +26,10 @@ export default async function checkoutCart(
     throw new OrderCheckoutError({
       userId,
       orderId: cart._id,
-      // ...transactionContext,
+      ...transactionContext,
       detailMessage: error.message,
     });
   });
-
-  console.log('CHECKOUT ORDER', order);
 
   return order;
 }

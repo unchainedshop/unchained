@@ -282,7 +282,6 @@ export const configureOrderModuleProcessing = ({
 
       return modules.orders.create(
         {
-          // TODO: Check with Pascal
           currency,
           countryCode,
           billingAddress: user.lastBillingAddress || user.profile?.address,
@@ -359,7 +358,7 @@ export const configureOrderModuleProcessing = ({
           // we have to stop here shortly to complete the confirmation
           // before auto delivery is started, else we have no chance to create
           // documents and numbers that are needed for delivery
-          const order = await updateStatus(
+          order = await updateStatus(
             orderId,
             {
               status: OrderStatus.CONFIRMED,

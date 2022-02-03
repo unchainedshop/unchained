@@ -1,9 +1,12 @@
-import { PaymentCredentials, PaymentModule } from '@unchainedshop/types/payments';
+import {
+  PaymentCredentials as PaymentCredentialsType,
+  PaymentModule,
+} from '@unchainedshop/types/payments';
 import { Collection } from '@unchainedshop/types/common';
 import { generateDbFilterById, generateDbObjectId } from 'meteor/unchained:utils';
 
 export const configurePaymentCredentialsModule = (
-  PaymentCredentials: Collection<PaymentCredentials>,
+  PaymentCredentials: Collection<PaymentCredentialsType>,
 ): PaymentModule['paymentCredentials'] => {
   const markPreferred = async ({ userId, paymentCredentialsId }) => {
     await PaymentCredentials.updateOne(
@@ -98,7 +101,7 @@ export const configurePaymentCredentialsModule = (
 
     removeCredentials: async (paymentCredentialsId) => {
       const selector = generateDbFilterById(paymentCredentialsId);
-      const paymentCredentials = await PaymentCredentials.findOne(selector);
+      const paymentCredentials = await PaymentCredentials.findOne(selector, {});
       await PaymentCredentials.deleteOne(selector);
       return paymentCredentials;
     },

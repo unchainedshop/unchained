@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "0.10.1",
+  "version": "1.0.0",
   "description": "Types for unchained core meteor packages",
   "repository": {
     "type": "git",
@@ -32,8 +32,5 @@
     "typescript": "^4.4.2",
     "winston": "3.3.3",
     "winston-transport": "4.4.0"
-  },
-  "dependencies": {
-    "bjson": "^1.0.1"
   }
 }

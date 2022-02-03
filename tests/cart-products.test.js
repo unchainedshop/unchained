@@ -364,7 +364,7 @@ describe("Cart: Product Items", () => {
     });
   });
 
-  // TODO: Check with Pascal. If run in the middle the simple order cart is emptied which leads to a failure of subsequent tests
+  // TODO: If run in the middle the simple order cart is emptied which leads to a failure of subsequent tests
   describe("Mutation.emptyCart", () => {
     it("clear the cart from items", async () => {
       const { data: { emptyCart } = {} } = await graphqlFetch({

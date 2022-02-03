@@ -1,4 +1,3 @@
-/* @ts-ignore */
 import moment from 'moment';
 import { DeliveryPricingAdapter, DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
 import {
@@ -96,13 +95,11 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
                 amount: -taxAmount,
                 isTaxable: false,
                 isNetPrice: false,
-                /* @ts-ignore */
                 meta: { adapter: DeliverySwissTax.key },
               });
               pricingAdapter.resultSheet().addTax({
                 amount: taxAmount,
                 rate: taxRate,
-                /* @ts-ignore */
                 meta: { adapter: DeliverySwissTax.key },
               });
             } else {
@@ -110,7 +107,6 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
               pricingAdapter.resultSheet().addTax({
                 amount: taxAmount,
                 rate: taxRate,
-                /* @ts-ignore */
                 meta: { adapter: DeliverySwissTax.key },
               });
             }

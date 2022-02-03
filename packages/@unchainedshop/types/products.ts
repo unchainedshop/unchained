@@ -4,7 +4,9 @@ import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { DeliveryProvider, DeliveryProviderType } from './delivery';
+import { IDiscountAdapter } from './discount';
 import { OrderPosition } from './orders.positions';
+import { OrderPrice } from './orders.pricing';
 import { ProductMedia, ProductMediaModule } from './products.media';
 import {
   IProductPricingSheet,
@@ -123,6 +125,15 @@ export type ProductText = {
   labels?: Array<string>;
 } & TimestampFields;
 
+export type ProductDiscount = {
+  _id?: _ID;
+  productId: string;
+  code: string;
+  total?: OrderPrice;
+  discountKey?: string;
+  context?: any;
+};
+
 /*
  * Module
  */
@@ -158,6 +169,8 @@ export type ProductsModule = {
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
 
   // Transformations
+  interface: (productDiscount: ProductDiscount) => IDiscountAdapter;
+
   isActive: (product: Product) => boolean;
   isDraft: (product: Product) => boolean;
 

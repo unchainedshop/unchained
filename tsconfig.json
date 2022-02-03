@@ -24,17 +24,23 @@
     /* Module Resolution Options */
     "baseUrl": ".",
     "paths": {
+      // Resolve types for meteor node stubs
+      "meteor/unchained:*": ["node_modules/@unchainedshop/types/index.d.ts"],
+
       /* Support absolute /imports/* with a leading '/' */
       "/*": ["*"]
     },
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "typeRoots": ["./node_modules/@types", "./node_modules/unchained-core-types"],
+    "typeRoots": ["./node_modules/@types", "./node_modules/@unchainedshop/types"],
     "esModuleInterop": true,
     "preserveSymlinks": true
   },
-  "exclude": [
-    "examples/**"
-  ],
-  "include": ["packages/**/*"]
+  "exclude": ["examples/**"],
+  "include": [
+    "packages/**/src/*",
+    "packages/**/test/*",
+    "packages/**/plugins/*",
+    "packages/**/workers/*"
+  ]
 }

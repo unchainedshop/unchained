@@ -10,6 +10,7 @@ import {
   PaymentError,
   paymentLogger,
 } from 'meteor/unchained:core-payment';
+import { AppleTransactionsModule } from './module/configureAppleTransactionsModule';
 
 const {
   APPLE_IAP_SHARED_SECRET,
@@ -307,6 +308,8 @@ const AppleIAP: IPaymentAdapter = {
         const { order } = params.context;
         const { meta, paymentCredentials, receiptData } = params.context.transactionContext || {};
         const { transactionIdentifier } = meta || {};
+        const appleTransactions = (params.context.modules as any)
+          .appleTransactions as AppleTransactionsModule;
 
         if (!transactionIdentifier) {
           throw new Error('Apple IAP Plugin: You have to set the transaction id on the order payment');
@@ -362,7 +365,7 @@ const AppleIAP: IPaymentAdapter = {
 
         const transactionAlreadyProcessed =
           (
-            await modules.payment.appleTransactions.findTransactions({
+            await appleTransactions.findTransactions({
               transactionIdentifier,
             })
           ).length > 0;
@@ -371,7 +374,7 @@ const AppleIAP: IPaymentAdapter = {
           throw new Error('Apple IAP Plugin: Transaction already processed');
 
         // All good
-        const transactionId = await modules.payment.appleTransactions.createTransaction(
+        const transactionId = await appleTransactions.createTransaction(
           {
             transactionIdentifier,
             matchedTransaction,

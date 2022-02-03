@@ -1,6 +1,10 @@
 import { Context } from '@unchainedshop/types/api';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { Enrollment, EnrollmentsModule } from '@unchainedshop/types/enrollments';
+import {
+  Enrollment,
+  EnrollmentsModule,
+  EnrollmentsSettingsOptions,
+} from '@unchainedshop/types/enrollments';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
@@ -20,11 +24,11 @@ const ENROLLMENT_EVENTS: string[] = [
 
 export const configureEnrollmentsModule = async ({
   db,
-  options,
+  options: enrollmentOptions,
 }: ModuleInput<EnrollmentsSettingsOptions>): Promise<EnrollmentsModule> => {
   registerEvents(ENROLLMENT_EVENTS);
 
-  enrollmentsSettings.configureSettings(options);
+  enrollmentsSettings.configureSettings(enrollmentOptions);
 
   const Enrollments = await EnrollmentsCollection(db);
 
@@ -34,15 +38,11 @@ export const configureEnrollmentsModule = async ({
   ) as ModuleMutations<Enrollment>;
 
   const findNewEnrollmentNumber = async (enrollment: Enrollment, index = 0): Promise<string> => {
-    // let enrollmentNumber: string = null;
-    // while (!enrollmentNumber) {
     const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
     if ((await Enrollments.find({ enrollmentNumber: newHashID }, { limit: 1 }).count()) === 0) {
       return newHashID;
     }
     return findNewEnrollmentNumber(enrollment, index + 1);
-    // }
-    // return enrollmentNumber;
   };
 
   const findNextStatus = async (
@@ -73,12 +73,15 @@ export const configureEnrollmentsModule = async ({
     requestContext,
   ) => {
     const selector = generateDbFilterById(enrollmentId);
-    const enrollment = await Enrollments.findOne(selector);
+    const enrollment = await Enrollments.findOne(selector, {});
 
     if (enrollment.status === status) return enrollment;
 
     const date = new Date();
-    const modifier = {
+    const modifier: {
+      $set: Partial<Enrollment>;
+      $push: { log: Enrollment['log'][0] };
+    } = {
       $set: { status, updated: new Date(), updatedBy: requestContext.userId },
       $push: {
         log: {
@@ -91,11 +94,9 @@ export const configureEnrollmentsModule = async ({
 
     switch (status) {
       case EnrollmentStatus.ACTIVE:
-        /* @ts-ignore */
         modifier.$set.enrollmentNumber = await findNewEnrollmentNumber(enrollment);
         break;
       case EnrollmentStatus.TERMINATED:
-        /* @ts-ignore */
         modifier.$set.expires = enrollment.periods?.pop()?.end || new Date();
         break;
       default:
@@ -106,7 +107,7 @@ export const configureEnrollmentsModule = async ({
 
     await Enrollments.updateOne(selector, modifier);
 
-    const updatedEnrollment = await Enrollments.findOne(selector);
+    const updatedEnrollment = await Enrollments.findOne(selector, {});
 
     emit('ENROLLMENT_UPDATE', { enrollment, field: 'status' });
 
@@ -125,7 +126,7 @@ export const configureEnrollmentsModule = async ({
     let status = await findNextStatus(enrollment, requestContext);
 
     if (status === EnrollmentStatus.ACTIVE) {
-      const nextEnrollment = await reactivateEnrollment(enrollment, params, requestContext);
+      const nextEnrollment = await reactivateEnrollment(enrollment);
       status = await findNextStatus(nextEnrollment, requestContext);
     }
 
@@ -203,7 +204,7 @@ export const configureEnrollmentsModule = async ({
       await mutations.update(enrollmentId, { $set: { [fieldKey]: fieldValue } }, userId);
 
       const selector = generateDbFilterById(enrollmentId);
-      const enrollment = await Enrollments.findOne(selector);
+      const enrollment = await Enrollments.findOne(selector, {});
 
       emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
 
@@ -314,7 +315,7 @@ export const configureEnrollmentsModule = async ({
           updatedBy: userId,
         },
       });
-      const enrollment = await Enrollments.findOne(selector);
+      const enrollment = await Enrollments.findOne(selector, {});
 
       emit('ENROLLMENT_ADD_PERIOD', { enrollment });
 
@@ -351,7 +352,7 @@ export const configureEnrollmentsModule = async ({
         userId,
       );
 
-      const newEnrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId));
+      const newEnrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId), {});
 
       const reason = 'new_enrollment';
 
@@ -433,7 +434,7 @@ export const configureEnrollmentsModule = async ({
 
     removeEnrollmentPeriodByOrderId: async (enrollmentId, orderId, userId) => {
       const selector = generateDbFilterById(enrollmentId);
-      await Enrollments.update(selector, {
+      await Enrollments.updateOne(selector, {
         $set: {
           updated: new Date(),
           updatedBy: userId,
@@ -444,7 +445,7 @@ export const configureEnrollmentsModule = async ({
         },
       });
 
-      return Enrollments.findOne(selector);
+      return Enrollments.findOne(selector, {});
     },
 
     updateBillingAddress: updateEnrollmentField('billingAddress'),
@@ -472,7 +473,7 @@ export const configureEnrollmentsModule = async ({
       );
 
       const selector = generateDbFilterById(enrollmentId);
-      const enrollment = await Enrollments.findOne(selector);
+      const enrollment = await Enrollments.findOne(selector, {});
 
       emit('ENROLLMENT_UPDATE', { enrollment, field: 'plan' });
 

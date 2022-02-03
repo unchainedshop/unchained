@@ -12,7 +12,7 @@ Npm.depends({
   'simpl-schema': '1.12.0',
 });
 
-Package.onUse(function (api) {
+Package.onUse((api) => {
   api.versionsFrom('2.2');
   api.use('ecmascript');
   api.use('typescript');

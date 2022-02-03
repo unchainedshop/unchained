@@ -80,9 +80,8 @@ export const configureProductReviewsModule = async ({
 
   return {
     // Queries
-    findProductReview: async ({ productReviewId }) => {
-      return ProductReviews.findOne(generateDbFilterById(productReviewId));
-    },
+    findProductReview: async ({ productReviewId }) =>
+      ProductReviews.findOne(generateDbFilterById(productReviewId), {}),
 
     findProductReviews: async ({ offset, limit, sort, ...query }) => {
       const reviewsList = ProductReviews.find(buildFindSelector(query), {
@@ -110,7 +109,7 @@ export const configureProductReviewsModule = async ({
     create: async (doc, userId) => {
       const productReviewId = await mutations.create(doc, userId);
 
-      const productReview = await ProductReviews.findOne(generateDbFilterById(productReviewId));
+      const productReview = await ProductReviews.findOne(generateDbFilterById(productReviewId), {});
 
       emit('PRODUCT_REVIEW_CREATE', {
         productReview,
@@ -132,10 +131,11 @@ export const configureProductReviewsModule = async ({
     update: async (productReviewId, doc, userId) => {
       await mutations.update(productReviewId, doc, userId);
 
-      const productReview = ProductReviews.findOne(
+      const productReview = await ProductReviews.findOne(
         generateDbFilterById(productReviewId, {
           deleted: null,
         }),
+        {},
       );
 
       emit('PRODUCT_UPDATE_REVIEW', { productReview });
@@ -186,7 +186,7 @@ export const configureProductReviewsModule = async ({
             },
           });
 
-          const updatedProductReview = await ProductReviews.findOne(selector);
+          const updatedProductReview = await ProductReviews.findOne(selector, {});
 
           emit('PRODUCT_REVIEW_ADD_VOTE', {
             productReview: updatedProductReview,
@@ -210,7 +210,7 @@ export const configureProductReviewsModule = async ({
           type,
         });
 
-        const productReview = await ProductReviews.findOne(selector);
+        const productReview = await ProductReviews.findOne(selector, {});
 
         emit('PRODUCT_REMOVE_REVIEW_VOTE', {
           productReviewId,

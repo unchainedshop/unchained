@@ -8,14 +8,13 @@ import {
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 
 import { OrderPricingSheet } from 'meteor/unchained:core-orders';
-/* @ts-ignore */
 import bodyParser from 'body-parser';
 import { acl, roles, useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
-/* @ts-ignore */
 import ClientOAuth2 from 'client-oauth2';
 import { Context } from '@unchainedshop/types/api';
+import { BityModule } from './module/configureBityModule';
 
 const { checkAction } = acl;
 const { actions } = roles;
@@ -81,11 +80,13 @@ const upsertBityCredentials = async (user, context: Context) => {
     expires: user.expires,
   };
 
-  await context.modules.payment.bityCredentials.upsertCredentials(doc, context.userId);
+  const bityModule = (context.modules as any).bity as BityModule;
+  await bityModule.upsertCredentials(doc, context.userId);
 };
 
 const getTokenFromDb = async (bityAuth, context: Context) => {
-  const credentials = await context.modules.payment.bityCredentials.findBityCredentials({
+  const bityModule = (context.modules as any).bity as BityModule;
+  const credentials = await bityModule.findBityCredentials({
     externalId: `${BITY_CLIENT_ID}-${BITY_OAUTH_REDIRECT_URI}-${BITY_OAUTH_STATE}`,
   });
   if (!credentials?.data) return null;
@@ -266,8 +267,8 @@ const Bity: IPaymentAdapter = {
       ...PaymentAdapter.actions(params),
 
       configurationError: async () => {
-        const currentToken = await loadToken(params.context);
-        if (!currentToken) {
+        const token = await loadToken(params.context);
+        if (!token) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
         return null;
