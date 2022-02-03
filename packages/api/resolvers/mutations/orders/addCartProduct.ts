@@ -30,7 +30,7 @@ export default async function addCartProduct(
 
   const order = await getOrderCart({ orderId, user }, context);
 
-  const orderPosition = await modules.orders.positions.create(
+  const orderPosition = await modules.orders.positions.addProductItem(
     {
       quantity,
       configuration,

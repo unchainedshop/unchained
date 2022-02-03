@@ -114,7 +114,7 @@ const StripeCharges: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.stripe-charges',
-  label: 'Stripe',
+  label: 'Stripe (legacy charges)',
   version: '1.0',
   initialConfiguration: [],
 
