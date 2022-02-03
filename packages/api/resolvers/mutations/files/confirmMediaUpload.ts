@@ -11,7 +11,5 @@ export default async function confirmMediaUpload(
 
   log(`mutation confirmMediaUpload `, { userId });
 
-  if (!(await modules.users.userExists({ userId }))) throw new UserNotFoundError({ userId });
-
   return services.files.linkFile({ fileId: mediaUploadTicketId, size, type }, context);
 }

@@ -19,7 +19,6 @@ export default async function createUser(root: Root, params: UserData, context: 
   delete mappedUser.plainPassword;
 
   const newUserId = await modules.accounts.createUser(mappedUser, {});
-  await modules.users.findUser({ userId: newUserId });
 
   return modules.accounts.createLoginToken(newUserId, context);
 }
