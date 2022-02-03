@@ -69,7 +69,7 @@ const Cryptopay: IPaymentAdapter = {
         return false;
       },
 
-      charge: async () => {
+      sign: async () => {
         const { order } = params.context;
         const orderPricing = modules.orders.pricingSheet(order);
         const { currency, amount } = orderPricing.total({ useNetPrice: false });
@@ -109,6 +109,10 @@ const Cryptopay: IPaymentAdapter = {
           },
           params.context,
         );
+        return cryptoAddress;
+      },
+
+      charge: async () => {
         return false;
       },
     };
