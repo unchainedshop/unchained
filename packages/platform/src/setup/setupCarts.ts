@@ -16,7 +16,13 @@ export const setupCarts = async (options: SetupCartsOptions = {}, unchainedAPI: 
     const users = await unchainedAPI.modules.users.findUsers({});
 
     await Promise.all(
-      users.map((user) => unchainedAPI.modules.orders.ensureCartForUser({ user }, unchainedAPI)),
+      users.map((user) => {
+        const locale = unchainedAPI.modules.users.userLocale(user);
+        return unchainedAPI.modules.orders.ensureCartForUser(
+          { user, countryCode: locale.country },
+          unchainedAPI,
+        );
+      }),
     );
   }
 };

@@ -102,14 +102,14 @@ export interface OrderProcessing {
   checkout: OrderContextParams<OrderTransactionContext>;
   confirm: OrderContextParams<OrderTransactionContext>;
   ensureCartForUser: (
-    params: { order?: Order; user: User; countryContext?: string },
+    params: { user: User; countryCode?: string },
     requestContext: Context,
   ) => Promise<Order>;
   migrateCart: (
     params: {
       fromCart: Order;
-      shouldMergeCarts: boolean;
-      toCart: Order;
+      shouldMerge: boolean;
+      toCart?: Order;
     },
     requestContext: Context,
   ) => Promise<Order>;
@@ -179,16 +179,25 @@ export type OrdersModule = OrderQueries &
 
 export type MigrateOrderCartsService = (
   params: {
-    countryContext?: string;
-    fromUserId: string;
-    shouldMergeCarts: boolean;
+    fromUser: User;
     toUser: User;
+    shouldMerge: boolean;
+  },
+  requestContext: Context,
+) => Promise<Order>;
+
+export type CreateUserCartService = (
+  params: {
+    user: User;
+    orderNumber?: string;
+    countryCode?: string;
   },
   requestContext: Context,
 ) => Promise<Order>;
 
 export interface OrderServices {
   migrateOrderCarts: MigrateOrderCartsService;
+  createUserCart: CreateUserCartService;
 }
 
 /*
