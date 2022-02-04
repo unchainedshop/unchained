@@ -1,6 +1,5 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { log } from 'meteor/unchained:logger';
-import { UserNotFoundError } from '../../../errors';
 import { getOrderCart } from '../utils/getOrderCart';
 
 export default async function addCartDiscount(
@@ -8,7 +7,7 @@ export default async function addCartDiscount(
   { orderId, code }: { orderId?: string; code: string },
   context: Context,
 ) {
-  const { modules, user } = context;
+  const { modules, user, userId } = context;
 
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
 

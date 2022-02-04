@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
-import { OrderNumberAlreadyExistsError, UserNotFoundError } from '../../../errors';
+import { OrderNumberAlreadyExistsError } from '../../../errors';
 
 export default async function createCart(
   root: Root,

@@ -172,9 +172,11 @@ export const configureOrdersModule = async ({
     });
     const deliveryProviderId = orderDelivery?.deliveryProviderId;
 
-    const isAlreadyInitializedWithSupportedDeliveryProvider = supportedDeliveryProviders.some((provider) => {
-      return provider._id === deliveryProviderId;
-    });
+    const isAlreadyInitializedWithSupportedDeliveryProvider = supportedDeliveryProviders.some(
+      (provider) => {
+        return provider._id === deliveryProviderId;
+      },
+    );
 
     if (supportedDeliveryProviders.length > 0 && !isAlreadyInitializedWithSupportedDeliveryProvider) {
       updatedOrder = await modules.orders.setDeliveryProvider(
@@ -195,9 +197,11 @@ export const configureOrdersModule = async ({
     });
     const paymentProviderId = orderPayment?.paymentProviderId;
 
-    const isAlreadyInitializedWithSupportedPaymentProvider = supportedPaymentProviders.some((provider) => {
-      return provider._id === paymentProviderId;
-    });
+    const isAlreadyInitializedWithSupportedPaymentProvider = supportedPaymentProviders.some(
+      (provider) => {
+        return provider._id === paymentProviderId;
+      },
+    );
 
     if (supportedPaymentProviders.length > 0 && !isAlreadyInitializedWithSupportedPaymentProvider) {
       const paymentCredentials = await modules.payment.paymentCredentials.findPaymentCredentials(

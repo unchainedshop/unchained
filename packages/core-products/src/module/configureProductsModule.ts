@@ -15,7 +15,14 @@ import { configureProductReviewsModule } from './configureProductReviewsModule';
 import { configureProductTextsModule } from './configureProductTextsModule';
 import { configureProductVariationsModule } from './configureProductVariationsModule';
 
-const PRODUCT_EVENTS = ['PRODUCT_CREATE', 'PRODUCT_REMOVE', 'PRODUCT_SET_BASE', 'PRODUCT_UPDATE', 'PRODUCT_PUBLISH', 'PRODUCT_UNPUBLISH'];
+const PRODUCT_EVENTS = [
+  'PRODUCT_CREATE',
+  'PRODUCT_REMOVE',
+  'PRODUCT_SET_BASE',
+  'PRODUCT_UPDATE',
+  'PRODUCT_PUBLISH',
+  'PRODUCT_UNPUBLISH',
+];
 
 const InternalProductStatus = {
   DRAFT: null,

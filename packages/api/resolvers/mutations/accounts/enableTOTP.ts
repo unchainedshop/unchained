@@ -1,6 +1,5 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { UserNotFoundError } from '../../../errors';
 
 export default async function enableTOTP(
   root: Root,
