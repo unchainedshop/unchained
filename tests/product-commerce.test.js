@@ -54,9 +54,6 @@ describe('ProductsCommerce', () => {
                 siblings {
                   _id
                 }
-                siblings {
-                  _id
-                }
               }
             }
           `,

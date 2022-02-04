@@ -12,22 +12,6 @@ export const configureOrderModuleTransformations = ({
 }: {
   Orders: Collection<Order>;
 }): OrderTransformations => {
-  const findOrdersByUser = async (query: Query) => {
-    const { includeCarts, status, userId, ...rest } = query;
-
-    const selector: Query = { userId, ...rest };
-    if (!includeCarts || status) {
-      selector.status = status || { $ne: InternalOrderStatus.OPEN };
-    }
-    const options: FindOptions = {
-      sort: {
-        updated: -1,
-      },
-    };
-    const orders = Orders.find(selector, options);
-    return orders.toArray();
-  };
-
   return {
     discounted: async (order, orderDiscount, requestContext) => {
       const { modules } = requestContext;
@@ -148,12 +132,12 @@ export const configureOrderModuleTransformations = ({
         selector.orderNumber = order.orderNumber;
       }
 
-      const carts = await findOrdersByUser(selector);
-
-      if (carts.length > 0) {
-        return carts[0];
-      }
-      return null;
+      const options: FindOptions = {
+        sort: {
+          updated: -1,
+        },
+      };
+      return Orders.findOne(selector, options);
     },
 
     pricingSheet: (order) => {
