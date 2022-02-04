@@ -27,6 +27,7 @@ export default async function signPaymentProviderForCheckout(
     orderPaymentId,
   });
   if (!orderPayment) throw new OrderPaymentNotFoundError({ orderPaymentId });
+  transactionContext.orderPayment = orderPayment;
 
   const provider = await modules.payment.paymentProviders.findProvider({
     paymentProviderId: orderPayment.paymentProviderId,

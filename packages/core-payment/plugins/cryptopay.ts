@@ -70,6 +70,7 @@ const Cryptopay: IPaymentAdapter = {
       },
 
       sign: async () => {
+        const { orderPayment } = params.context;
         const cryptoAddresses: { currency: CryptopayCurrencies; address: string }[] = [];
 
         if (CRYPTOPAY_BTC_XPUB) {
@@ -94,16 +95,12 @@ const Cryptopay: IPaymentAdapter = {
             address: hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address,
           });
         }
+        await modules.orders.payments.updateContext(
+          orderPayment._id,
+          { context: cryptoAddresses },
+          params.context,
+        );
         return JSON.stringify(cryptoAddresses);
-
-        // await params.context.modules.orders.updateContext(
-        //   order._id,
-        //   {
-        //     cryptoAddress,
-        //   },
-        //   params.context,
-        // );
-        // return cryptoAddress;
       },
 
       charge: async () => {
