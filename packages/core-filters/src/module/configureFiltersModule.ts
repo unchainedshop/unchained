@@ -88,10 +88,9 @@ export const configureFiltersModule = async ({
 
     if (!filterCache) return null;
 
-    // TODO: Check with Pascal about the caching logic
-    // if (filter._isCacheTransformed) {
-    //   cleanedCache = filterCache as CleanedFilterCache
-    // } else {
+    if (filter._isCacheTransformed) { // eslint-disable-line
+      return filterCache as CleanedFilterCache;
+    }
     if (filterCache.compressed) {
       const gunzip = util.promisify(zlib.gunzip);
       const buffer = await gunzip(filterCache.compressed);
@@ -108,8 +107,8 @@ export const configureFiltersModule = async ({
         {},
       ),
     };
-    //   filter._isCacheTransformed = true;
-    // }
+    filter._cache = cleanedCache; // eslint-disable-line
+    filter._isCacheTransformed = true; // eslint-disable-line
 
     return cleanedCache;
   };
