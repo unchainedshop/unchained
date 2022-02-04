@@ -96,7 +96,9 @@ const Cryptopay: IPaymentAdapter = {
           const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
           const bip32 = BIP32Factory(ecc);
           const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
-          const btcDerivationNumber = 0; // TODO: Consecutive number, unique among orders
+          const btcDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
+            context: { currency: CryptopayCurrencies.BTC },
+          });
           const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
           cryptoAddresses.push({
             currency: CryptopayCurrencies.BTC,
@@ -108,7 +110,9 @@ const Cryptopay: IPaymentAdapter = {
         }
         if (CRYPTOPAY_ETH_XPUB) {
           const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
-          const ethDerivationNumber = 0; // TODO: Consecutive number, unique among orders
+          const ethDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
+            context: { currency: CryptopayCurrencies.ETH },
+          });
           cryptoAddresses.push({
             currency: CryptopayCurrencies.ETH,
             address: hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address,
