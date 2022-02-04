@@ -1,7 +1,7 @@
 import { MigrateOrderCartsService } from '@unchainedshop/types/orders';
 
 export const migrateOrderCartsService: MigrateOrderCartsService = async (
-  { fromUser, toUser, shouldMergeCarts },
+  { fromUser, toUser, shouldMerge },
   requestContext,
 ) => {
   const fromCart = await requestContext.modules.orders.cart(
@@ -18,8 +18,5 @@ export const migrateOrderCartsService: MigrateOrderCartsService = async (
     return toCart;
   }
 
-  return requestContext.modules.orders.migrateCart(
-    { fromCart, shouldMergeCarts, toCart },
-    requestContext,
-  );
+  return requestContext.modules.orders.migrateCart({ fromCart, shouldMerge, toCart }, requestContext);
 };

@@ -72,16 +72,16 @@ export const setupAccounts = (
         {
           fromUser: userBeforeLogin,
           toUser: user,
-          shouldMergeCarts: options.mergeUserCartsOnLogin,
+          shouldMerge: options.mergeUserCartsOnLogin,
         },
         context,
       );
 
       await unchainedAPI.services.bookmarks.migrateBookmarks(
         {
-          fromUserId: userIdBeforeLogin,
-          toUserId: userId,
-          shouldMergeBookmarks: options.mergeUserCartsOnLogin,
+          fromUser: userBeforeLogin,
+          toUser: user,
+          shouldMerge: options.mergeUserCartsOnLogin,
         },
         context,
       );
