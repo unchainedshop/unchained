@@ -81,7 +81,7 @@ describe("Cart: Product Items", () => {
       });
     });
 
-    it("add another product to the cart should create new order item", async () => {
+    it("add another product to the cart (with different config) should create new order item", async () => {
       const { data: { addCartProduct } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addCartProduct($productId: ID!) {
@@ -141,6 +141,47 @@ describe("Cart: Product Items", () => {
         },
       });
       expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+    });
+  });
+
+  describe("Mutation.emptyCart", () => {
+    it("clear the cart from items", async () => {
+      const { data: { emptyCart } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            emptyCart {
+              _id
+              items {
+                _id
+              }
+            }
+          }
+        `,
+      });
+
+      expect(emptyCart).toMatchObject({
+        items: [],
+      });
+    });
+
+    it("return error if order is not mutable (confirmed)", async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation emptyCart($orderId: ID!) {
+            emptyCart(orderId: $orderId) {
+              _id
+              items {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          orderId: ConfirmedOrder._id,
+        },
+      });
+
+      expect(errors[0]?.extensions?.code).toEqual("OrderWrongStatusError");
     });
   });
 
@@ -361,48 +402,6 @@ describe("Cart: Product Items", () => {
         },
       });
       expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
-    });
-  });
-
-  // TODO: If run in the middle the simple order cart is emptied which leads to a failure of subsequent tests
-  describe("Mutation.emptyCart", () => {
-    it("clear the cart from items", async () => {
-      const { data: { emptyCart } = {} } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation {
-            emptyCart {
-              _id
-              items {
-                _id
-              }
-            }
-          }
-        `,
-      });
-
-      expect(emptyCart).toMatchObject({
-        items: [],
-      });
-    });
-
-    it("return error if order is not mutable (confirmed)", async () => {
-      const { errors } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation emptyCart($orderId: ID!) {
-            emptyCart(orderId: $orderId) {
-              _id
-              items {
-                _id
-              }
-            }
-          }
-        `,
-        variables: {
-          orderId: ConfirmedOrder._id,
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual("OrderWrongStatusError");
     });
   });
 });

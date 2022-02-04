@@ -141,6 +141,7 @@ export const configureOrderModuleTransformations = ({
       const selector: Query = {
         countryCode: order.countryContext || user.lastLogin.countryContext,
         status: { $eq: InternalOrderStatus.OPEN },
+        userId: user._id,
       };
 
       if (order.orderNumber) {
