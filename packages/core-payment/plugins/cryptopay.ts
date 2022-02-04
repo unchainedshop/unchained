@@ -70,46 +70,40 @@ const Cryptopay: IPaymentAdapter = {
       },
 
       sign: async () => {
-        const { order } = params.context;
-        const orderPricing = modules.orders.pricingSheet(order);
-        const { currency, amount } = orderPricing.total({ useNetPrice: false });
-        let cryptoAddress: string;
-        switch (currency) {
-          case CryptopayCurrencies.BTC: {
-            if (!CRYPTOPAY_BTC_XPUB) {
-              throw new Error(`Cryptopay Plugin: BTC xpub not defined.`);
-            }
-            const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
-            const bip32 = BIP32Factory(ecc);
-            const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
-            const btcDerivationNumber = 0; // TODO: Consecutive number, unique among orders
-            const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
-            cryptoAddress = bitcoin.payments.p2pkh({
+        const cryptoAddresses: { currency: CryptopayCurrencies; address: string }[] = [];
+
+        if (CRYPTOPAY_BTC_XPUB) {
+          const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
+          const bip32 = BIP32Factory(ecc);
+          const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
+          const btcDerivationNumber = 0; // TODO: Consecutive number, unique among orders
+          const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
+          cryptoAddresses.push({
+            currency: CryptopayCurrencies.BTC,
+            address: bitcoin.payments.p2pkh({
               pubkey: child.publicKey,
               network,
-            }).address;
-            break;
-          }
-          case CryptopayCurrencies.ETH: {
-            if (!CRYPTOPAY_ETH_XPUB) {
-              throw new Error(`Cryptopay Plugin: ETH xpub not defined.`);
-            }
-            const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
-            const ethDerivationNumber = 0; // TODO: Consecutive number, unique among orders
-            cryptoAddress = hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address;
-            break;
-          }
-          default:
-            throw new Error(`Cryptopay Plugin: Currency ${currency} not supported!`);
+            }).address,
+          });
         }
-        await params.context.modules.orders.updateContext(
-          order._id,
-          {
-            cryptoAddress,
-          },
-          params.context,
-        );
-        return cryptoAddress;
+        if (CRYPTOPAY_ETH_XPUB) {
+          const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
+          const ethDerivationNumber = 0; // TODO: Consecutive number, unique among orders
+          cryptoAddresses.push({
+            currency: CryptopayCurrencies.BTC,
+            address: hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address,
+          });
+        }
+        return JSON.stringify(cryptoAddresses);
+
+        // await params.context.modules.orders.updateContext(
+        //   order._id,
+        //   {
+        //     cryptoAddress,
+        //   },
+        //   params.context,
+        // );
+        // return cryptoAddress;
       },
 
       charge: async () => {
