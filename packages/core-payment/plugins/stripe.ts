@@ -8,7 +8,6 @@ import {
   PaymentError,
   paymentLogger,
 } from 'meteor/unchained:core-payment';
-import { Users } from 'meteor/unchained:core-users';
 
 const {
   STRIPE_SECRET,
@@ -107,14 +106,13 @@ useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, async (request, response) =
   response.end(JSON.stringify({ received: true }));
 });
 
-const createRegistrationIntent = async ({ userId, paymentProviderId }, options = {}) => {
-  const user = Users.findOne({ _id: userId });
+const createRegistrationIntent = async ({ userId, name, email, paymentProviderId }, options = {}) => {
   const customer = await stripe.customers.create({
     metadata: {
       userId,
     },
-    name: user.name(),
-    email: user.primaryEmail()?.address,
+    name,
+    email,
   });
   const setupIntent = await stripe.setupIntents.create({
     customer: customer.id,
@@ -189,7 +187,8 @@ const Stripe: IPaymentAdapter = {
         return !!paymentMethod;
       },
 
-      register: async ({ setupIntentId }) => {
+      register: async (t) => {
+        console.log(t);
         if (!setupIntentId) {
           throw new Error('You have to provide a setup intent id');
         }
@@ -213,9 +212,19 @@ const Stripe: IPaymentAdapter = {
       sign: async ({ transactionContext = {} } = {}) => {
         // eslint-disable-line
         const { orderPayment, userId, paymentProviderId } = params.context;
-        const paymentIntent = orderPayment
-          ? await createOrderPaymentIntent(orderPayment, transactionContext)
-          : await createRegistrationIntent({ userId, paymentProviderId }, transactionContext);
+
+        if (orderPayment) {
+          const paymentIntent = await createOrderPaymentIntent(orderPayment, transactionContext);
+          return paymentIntent.client_secret;
+        }
+
+        const user = await modules.users.findUser({ userId });
+        const email = modules.users.primaryEmail(user)?.address;
+        const name = user.profile.displayName || user.username || email;
+        const paymentIntent = await createRegistrationIntent(
+          { userId, name, email, paymentProviderId },
+          transactionContext,
+        );
         return paymentIntent.client_secret;
       },
 

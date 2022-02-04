@@ -48,7 +48,6 @@ import quotationsCount from './quotations/quotationsCount';
 import searchAssortments from './filters/searchAssortments';
 import searchProducts from './filters/searchProducts';
 import shopInfo from './shopInfo';
-import signPaymentProviderForCredentialRegistration from './payment/signPaymentProviderForCredentialRegistration';
 import translatedAssortmentMediaTexts from './assortments/translatedAssortmentMediaTexts';
 import translatedAssortmentTexts from './assortments/translatedAssortmentTexts';
 import translatedFilterTexts from './filters/translatedFilterTexts';
@@ -127,9 +126,6 @@ export default {
   enrollmentsCount: acl(actions.viewEnrollments)(enrollmentsCount),
 
   work: acl(actions.manageWorker)(work),
-  signPaymentProviderForCredentialRegistration: acl(actions.registerPaymentCredentials)(
-    signPaymentProviderForCredentialRegistration,
-  ),
   event: acl(actions.viewEvent)(event),
   events: acl(actions.viewEvents)(events),
   eventsCount: acl(actions.viewEvents)(eventsCount),
