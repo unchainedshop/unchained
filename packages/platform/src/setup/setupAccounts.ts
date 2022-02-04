@@ -66,10 +66,12 @@ export const setupAccounts = (
     };
 
     if (userIdBeforeLogin) {
+      const userBeforeLogin = await unchainedAPI.modules.users.findUser({ userId: userIdBeforeLogin });
+
       await unchainedAPI.services.orders.migrateOrderCarts(
         {
-          fromUserId: userIdBeforeLogin,
-          toUser: userId,
+          fromUser: userBeforeLogin,
+          toUser: user,
           shouldMergeCarts: options.mergeUserCartsOnLogin,
         },
         context,

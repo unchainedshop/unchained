@@ -109,7 +109,7 @@ export interface OrderProcessing {
     params: {
       fromCart: Order;
       shouldMergeCarts: boolean;
-      toCart: Order;
+      toCart?: Order;
     },
     requestContext: Context,
   ) => Promise<Order>;
@@ -179,9 +179,9 @@ export type OrdersModule = OrderQueries &
 
 export type MigrateOrderCartsService = (
   params: {
-    fromUserId: string;
-    shouldMergeCarts: boolean;
+    fromUser: User;
     toUser: User;
+    shouldMergeCarts: boolean;
   },
   requestContext: Context,
 ) => Promise<Order>;

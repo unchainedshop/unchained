@@ -1,12 +1,9 @@
 import { MigrateOrderCartsService } from '@unchainedshop/types/orders';
 
 export const migrateOrderCartsService: MigrateOrderCartsService = async (
-  { fromUserId, toUser, shouldMergeCarts },
+  { fromUser, toUser, shouldMergeCarts },
   requestContext,
 ) => {
-  const fromUser = await requestContext.modules.users.findUser({
-    userId: fromUserId,
-  });
   const fromCart = await requestContext.modules.orders.cart(
     { countryContext: requestContext.countryContext },
     fromUser,

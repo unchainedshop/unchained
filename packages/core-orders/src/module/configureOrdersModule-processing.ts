@@ -280,19 +280,19 @@ export const configureOrderModuleProcessing = ({
 
     migrateCart: async ({ fromCart, shouldMergeCarts, toCart }, requestContext) => {
       const fromCartId = fromCart._id;
-      const toCartId = toCart._id;
 
       if (!toCart || !shouldMergeCarts) {
         // No destination cart, move whole cart
         await Orders.updateOne(generateDbFilterById(fromCart._id), {
           $set: {
-            userId: toCart.userId,
+            userId: requestContext.userId,
           },
         });
         return updateCalculation(fromCartId, requestContext);
       }
 
       // Move positions
+      const toCartId = toCart._id;
       await OrderPositions.updateMany(
         { orderId: fromCartId },
         {
