@@ -171,12 +171,10 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         });
 
         await services.payment.registerPaymentCredentials(
+          enrollment.payment.paymentProviderId,
           {
-            paymentProviderId: enrollment.payment.paymentProviderId,
-            paymentContext: {
-              transactionContext: {
-                receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-              },
+            transactionContext: {
+              receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
             },
           },
           resolvedContext,

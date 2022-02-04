@@ -119,11 +119,11 @@ if (STRIPE_SECRET) {
             query: /* GraphQL */ `
               mutation register(
                 $paymentProviderId: ID!
-                $paymentContext: JSON!
+                $transactionContext: JSON!
               ) {
                 registerPaymentCredentials(
                   paymentProviderId: $paymentProviderId
-                  paymentContext: $paymentContext
+                  transactionContext: $transactionContext
                 ) {
                   _id
                   token
@@ -134,7 +134,7 @@ if (STRIPE_SECRET) {
             `,
             variables: {
               paymentProviderId: confirmedIntent.metadata.paymentProviderId,
-              paymentContext: {
+              transactionContext: {
                 setupIntentId: confirmedIntent.id,
               },
             },
@@ -146,35 +146,25 @@ if (STRIPE_SECRET) {
       });
     });
 
-    describe('OrderPaymentGeneric.sign (Stripe)', () => {
+    describe.only('Mutation.signPaymentProviderForCheckout (Stripe)', () => {
       let idAndSecret;
       it('Request a new client secret', async () => {
-        const { data: { me } = {} } = await graphqlFetch({
+        const { data: { signPaymentProviderForCheckout } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
-            query sign($transactionContext: JSON, $orderNumber: String) {
-              me {
-                cart(orderNumber: $orderNumber) {
-                  _id
-                  payment {
-                    _id
-                    ... on OrderPaymentGeneric {
-                      sign(transactionContext: $transactionContext)
-                    }
-                  }
-                }
-              }
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId, transactionContext: $transactionContext)
             }
           `,
           variables: {
-            orderNumber: 'stripe',
+            orderPaymentId: 'stripe-payment',
             transactionContext: {},
           },
         });
 
-        expect(me?.cart?.payment?.sign).not.toBe('');
-        expect(me?.cart?.payment?.sign).not.toBe(null);
-        expect(me?.cart?.payment?.sign).not.toBe(undefined);
-        idAndSecret = me?.cart?.payment?.sign.split('_secret_');
+        expect(signPaymentProviderForCheckout).not.toBe('');
+        expect(signPaymentProviderForCheckout).not.toBe(null);
+        expect(signPaymentProviderForCheckout).not.toBe(undefined);
+        idAndSecret = signPaymentProviderForCheckout.split('_secret_');
       });
       it('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);

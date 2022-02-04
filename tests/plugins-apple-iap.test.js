@@ -96,11 +96,11 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
         const { data } = await graphqlFetch({
           query: /* GraphQL */ `
             mutation registerPaymentCredentials(
-              $paymentContext: JSON!
+              $transactionContext: JSON!
               $paymentProviderId: ID!
             ) {
               registerPaymentCredentials(
-                paymentContext: $paymentContext
+                transactionContext: $transactionContext
                 paymentProviderId: $paymentProviderId
               ) {
                 _id
@@ -110,7 +110,7 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
             }
           `,
           variables: {
-            paymentContext: {
+            transactionContext: {
               receiptData,
             },
             paymentProviderId: "iap-payment-provider",
@@ -126,11 +126,11 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
         const { errors } = await graphqlFetch({
           query: /* GraphQL */ `
             mutation registerPaymentCredentials(
-              $paymentContext: JSON!
+              $transactionContext: JSON!
               $paymentProviderId: ID!
             ) {
               registerPaymentCredentials(
-                paymentContext: $paymentContext
+                transactionContext: $transactionContext
                 paymentProviderId: $paymentProviderId
               ) {
                 _id
@@ -138,7 +138,7 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
             }
           `,
           variables: {
-            paymentContext: {
+            transactionContext: {
               receiptData,
             },
             paymentProviderId: "non-existing",
@@ -153,11 +153,11 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
         const { errors } = await graphqlFetch({
           query: /* GraphQL */ `
             mutation registerPaymentCredentials(
-              $paymentContext: JSON!
+              $transactionContext: JSON!
               $paymentProviderId: ID!
             ) {
               registerPaymentCredentials(
-                paymentContext: $paymentContext
+                transactionContext: $transactionContext
                 paymentProviderId: $paymentProviderId
               ) {
                 _id
@@ -165,7 +165,7 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
             }
           `,
           variables: {
-            paymentContext: {
+            transactionContext: {
               receiptData,
             },
             paymentProviderId: "",

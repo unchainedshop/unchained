@@ -1,7 +1,8 @@
 import { RegisterPaymentCredentialsService } from '@unchainedshop/types/payments';
 
 export const registerPaymentCredentialsService: RegisterPaymentCredentialsService = async (
-  { paymentContext, paymentProviderId },
+  paymentProviderId,
+  paymentContext,
   requestContext,
 ) => {
   const { modules, userId } = requestContext;

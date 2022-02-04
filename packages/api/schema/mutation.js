@@ -818,7 +818,7 @@ export default [
       Register credentials for an existing payment provider allowing to store and use them
       for later payments (1-click checkout or enrollments)
       """
-      registerPaymentCredentials(paymentContext: JSON!, paymentProviderId: ID!): PaymentCredentials
+      registerPaymentCredentials(transactionContext: JSON!, paymentProviderId: ID!): PaymentCredentials
 
       """
       Make's the provided payment credential as the users preferred method of payment.

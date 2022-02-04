@@ -212,21 +212,6 @@ export const configureOrderPaymentsModule = ({
       emit('ORDER_PAY', { orderPayment });
     },
 
-    sign: async (orderPayment, paymentContext, requestContext) => {
-      const result = await requestContext.modules.payment.paymentProviders.sign(
-        orderPayment.paymentProviderId,
-        paymentContext,
-        requestContext,
-      );
-
-      emit('ORDER_SIGN_PAYMENT', {
-        orderPayment,
-        paymentContext,
-      });
-
-      return result;
-    },
-
     updateContext: async (orderPaymentId, { orderId, context }, requestContext) => {
       log(`OrderPayment ${orderPaymentId} -> Update Context`, {
         orderId,
