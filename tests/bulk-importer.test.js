@@ -246,10 +246,10 @@ describe('Bulk Importer', () => {
       const result = await intervalUntilTimeout(async () => {
         const product = await Products.findOne({ tags: 'awesome2' });
         return !!product;
-      }, 3000);
+      }, 5000);
 
       expect(result).toBe(true);
-    }, 10000);
+    }, 15000);
   });
 
   describe('Import Filters', () => {
