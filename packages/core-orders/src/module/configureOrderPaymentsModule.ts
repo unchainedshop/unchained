@@ -15,6 +15,24 @@ const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYM
 const buildFindByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as Filter<OrderPayment>;
 
+const buildFindByContextDataSelector = (context: any): Query => {
+  const contextKeys = Object.keys(context);
+
+  if (contextKeys.length === 0) return null;
+
+  const selector: Query = contextKeys.reduce(
+    (currentSelector, key) =>
+      context[key] !== undefined
+        ? {
+            ...currentSelector,
+            [`context.${key}`]: context[key],
+          }
+        : currentSelector,
+    {},
+  );
+  return selector;
+};
+
 export const configureOrderPaymentsModule = ({
   OrderPayments,
   updateCalculation,
@@ -62,24 +80,15 @@ export const configureOrderPaymentsModule = ({
       return OrderPayments.findOne(buildFindByIdSelector(orderPaymentId), options);
     },
     findOrderPaymentByContextData: async ({ context }, options) => {
-      const contextKeys = Object.keys(context);
-
-      if (contextKeys.length === 0) return null;
-
-      const selector: Query = contextKeys.reduce(
-        (currentSelector, key) =>
-          context[key] !== undefined
-            ? {
-                ...currentSelector,
-                [`context.${key}`]: context[key],
-              }
-            : currentSelector,
-        {},
-      );
+      const selector = buildFindByContextDataSelector(context);
 
       return OrderPayments.findOne(selector, options);
     },
+    countOrderPaymentsByContextData: async ({ context }, options) => {
+      const selector = buildFindByContextDataSelector(context);
 
+      return OrderPayments.count(selector, options);
+    },
     // Transformations
     discounts: (orderPayment, { order, orderDiscount }, { modules }) => {
       if (!orderPayment) return [];

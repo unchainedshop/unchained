@@ -37,6 +37,13 @@ export type OrderPaymentsModule = {
     options?: FindOptions,
   ) => Promise<OrderPayment>;
 
+  countOrderPaymentsByContextData: (
+    params: {
+      context: any;
+    },
+    options?: FindOptions,
+  ) => Promise<number>;
+
   // Transformations
   discounts: (
     orderPayment: OrderPayment,
