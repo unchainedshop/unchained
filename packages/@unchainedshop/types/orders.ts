@@ -102,7 +102,7 @@ export interface OrderProcessing {
   checkout: OrderContextParams<OrderTransactionContext>;
   confirm: OrderContextParams<OrderTransactionContext>;
   ensureCartForUser: (
-    params: { order?: Order; user: User; countryContext?: string },
+    params: { user: User; countryCode?: string },
     requestContext: Context,
   ) => Promise<Order>;
   migrateCart: (
@@ -179,7 +179,6 @@ export type OrdersModule = OrderQueries &
 
 export type MigrateOrderCartsService = (
   params: {
-    countryContext?: string;
     fromUserId: string;
     shouldMergeCarts: boolean;
     toUser: User;
@@ -187,8 +186,18 @@ export type MigrateOrderCartsService = (
   requestContext: Context,
 ) => Promise<Order>;
 
+export type CreateUserCartService = (
+  params: {
+    user: User;
+    orderNumber?: string;
+    countryCode?: string;
+  },
+  requestContext: Context,
+) => Promise<Order>;
+
 export interface OrderServices {
   migrateOrderCarts: MigrateOrderCartsService;
+  createUserCart: CreateUserCartService;
 }
 
 /*

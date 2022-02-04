@@ -49,11 +49,6 @@ export const setupAccounts = (
     const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
       connection;
 
-    const context = {
-      ...unchainedAPI,
-      userId: userId || unchainedAPI.userId,
-    };
-
     await unchainedAPI.modules.users.updateHeartbeat(userId, {
       remoteAddress,
       remotePort,
@@ -62,12 +57,19 @@ export const setupAccounts = (
       countryContext,
     });
 
+    const user = await unchainedAPI.modules.users.findUser({ userId });
+    const context = {
+      ...unchainedAPI,
+      countryContext,
+      userId,
+      user,
+    };
+
     if (userIdBeforeLogin) {
       await unchainedAPI.services.orders.migrateOrderCarts(
         {
           fromUserId: userIdBeforeLogin,
           toUser: userId,
-          countryContext,
           shouldMergeCarts: options.mergeUserCartsOnLogin,
         },
         context,
@@ -83,11 +85,9 @@ export const setupAccounts = (
       );
     }
 
-    const user = await unchainedAPI.modules.users.findUser({ userId });
     await unchainedAPI.modules.orders.ensureCartForUser(
       {
         user,
-        countryContext,
       },
       context,
     );

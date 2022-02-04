@@ -207,14 +207,14 @@ export const configureOrderModuleProcessing = ({
         { locale },
         requestContext,
       );
-      updatedOrder = await modules.orders.ensureCartForUser(
-        {
-          order: updatedOrder,
-          user,
-          countryContext: locale.country,
-        },
-        requestContext,
-      );
+      updatedOrder =
+        (await modules.orders.ensureCartForUser(
+          {
+            user,
+            countryCode: locale.country,
+          },
+          requestContext,
+        )) || updatedOrder;
 
       return updatedOrder;
     },
@@ -258,43 +258,23 @@ export const configureOrderModuleProcessing = ({
       return updatedOrder;
     },
 
-    ensureCartForUser: async (params, requestContext) => {
-      const { modules, services, userId } = requestContext;
+    ensureCartForUser: async ({ user, countryCode }, requestContext) => {
+      const { modules, services } = requestContext;
 
-      if (!ordersSettings.ensureUserHasCart) return params.order;
+      if (!ordersSettings.ensureUserHasCart) return null;
 
-      const user =
-        params.user || (params.order && (await modules.users.findUser({ userId: params.order._id })));
-
-      if (!user) throw new Error('User with the id not found');
-
-      const countryCode = params.countryContext || user.lastLogin.countryContext;
-
-      const cart = await modules.orders.cart({ countryContext: params.countryContext }, user);
+      const cart = await modules.orders.cart(
+        { countryContext: countryCode || requestContext.countryContext },
+        user,
+      );
       if (cart) return cart;
 
-      const currency = await services.countries.resolveDefaultCurrencyCode(
+      return services.orders.createUserCart(
         {
-          isoCode: params.countryContext,
+          user,
+          countryCode: countryCode || requestContext.countryContext,
         },
         requestContext,
-      );
-
-      return modules.orders.create(
-        {
-          currency,
-          countryCode,
-          billingAddress: user.lastBillingAddress || user.profile?.address,
-          contact:
-            user.lastContact ||
-            (!user.guest
-              ? {
-                  telNumber: user.profile?.phoneMobile,
-                  emailAddress: modules.users.primaryEmail(user)?.address,
-                }
-              : {}),
-        },
-        userId,
       );
     },
 

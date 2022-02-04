@@ -1,15 +1,20 @@
 import { MigrateOrderCartsService } from '@unchainedshop/types/orders';
 
 export const migrateOrderCartsService: MigrateOrderCartsService = async (
-  { fromUserId, toUser, countryContext, shouldMergeCarts },
+  { fromUserId, toUser, shouldMergeCarts },
   requestContext,
 ) => {
-  const cartContext = { countryContext };
   const fromUser = await requestContext.modules.users.findUser({
     userId: fromUserId,
   });
-  const fromCart = await requestContext.modules.orders.cart(cartContext, fromUser);
-  const toCart = await requestContext.modules.orders.cart(cartContext, toUser);
+  const fromCart = await requestContext.modules.orders.cart(
+    { countryContext: requestContext.countryContext },
+    fromUser,
+  );
+  const toCart = await requestContext.modules.orders.cart(
+    { countryContext: requestContext.countryContext },
+    toUser,
+  );
 
   if (!fromCart) {
     // No cart, don't copy

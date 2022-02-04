@@ -20,27 +20,5 @@ export const getOrderCart = async (params: { orderId?: string; user?: User }, co
   const cart = await modules.orders.cart({ countryContext }, user);
   if (cart) return cart;
 
-  const currency = await services.countries.resolveDefaultCurrencyCode(
-    {
-      isoCode: countryContext,
-    },
-    context,
-  );
-
-  return modules.orders.create(
-    {
-      currency,
-      countryCode: countryContext,
-      billingAddress: user.lastBillingAddress || user.profile?.address,
-      contact:
-        user.lastContact ||
-        (!user.guest
-          ? {
-              telNumber: user.profile?.phoneMobile,
-              emailAddress: modules.users.primaryEmail(user)?.address,
-            }
-          : {}),
-    },
-    userId,
-  );
+  return services.orders.createUserCart({ user }, context);
 };
