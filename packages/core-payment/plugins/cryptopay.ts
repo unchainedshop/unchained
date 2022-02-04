@@ -27,11 +27,30 @@ enum CryptopayCurrencies {
   ETH = 'ETH',
 }
 
-useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.raw({ type: 'application/json' }));
+useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
 
 useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response) => {
   // Return a 200 response to acknowledge receipt of the event
-  response.end(JSON.stringify({ success: true }));
+  const resolvedContext = request.unchainedContext as Context;
+  const { currency, contract, address, amount, secret } = request.body;
+  if (secret !== CRYPTOPAY_SECRET) {
+    paymentLogger.warn(`Cryptopay Plugin: Invalid Cryptopay Secret provided`);
+    response.end(JSON.stringify({ success: false }));
+    return;
+  }
+  const orderPayment = await resolvedContext.modules.orders.payments.findOrderPaymentByContextData({
+    context: { currency, address },
+  });
+  if (orderPayment) {
+    // TODO: Check sum, only mark as paid if threshold met -> When contract is set, use that for calculation
+    await resolvedContext.modules.orders.payments.markAsPaid(orderPayment, {});
+    response.end(JSON.stringify({ success: true }));
+  } else {
+    paymentLogger.info(
+      `Cryptopay Plugin: No orderPayment with address ${address} and currency ${currency} found`,
+    );
+    response.end(JSON.stringify({ success: false }));
+  }
 });
 
 const Cryptopay: IPaymentAdapter = {
@@ -91,7 +110,7 @@ const Cryptopay: IPaymentAdapter = {
           const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
           const ethDerivationNumber = 0; // TODO: Consecutive number, unique among orders
           cryptoAddresses.push({
-            currency: CryptopayCurrencies.BTC,
+            currency: CryptopayCurrencies.ETH,
             address: hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address,
           });
         }
