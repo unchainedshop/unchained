@@ -19,6 +19,7 @@ const {
   CRYPTOPAY_WEBHOOK_PATH = '/graphql/cryptopay',
   CRYPTOPAY_BTC_XPUB,
   CRYPTOPAY_ETH_XPUB,
+  CRYPTOPAY_ETH_ERC20_WHITELIST,
   CRYPTOPAY_BTC_TESTNET = false,
 } = process.env;
 
@@ -43,6 +44,14 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
   });
   if (orderPayment) {
     // TODO: Check sum, only mark as paid if threshold met -> When contract is set, use that for calculation
+    if (currency === CryptopayCurrencies.ETH && contract) {
+      const ERC20Whitelist = CRYPTOPAY_ETH_ERC20_WHITELIST.split(',');
+      if (!ERC20Whitelist.includes(contract)) {
+        paymentLogger.warn(`Cryptopay Plugin: ERC20 token address ${contract} not whitelisted.`);
+        response.end(JSON.stringify({ success: false }));
+        return;
+      }
+    }
     await resolvedContext.modules.orders.payments.markAsPaid(orderPayment, {});
     response.end(JSON.stringify({ success: true }));
   } else {
