@@ -125,7 +125,7 @@ const createRegistrationIntent = async ({ userId, name, email, paymentProviderId
 
 const createOrderPaymentIntent = async ({ order, orderPayment, pricing }, options = {}) => {
   const reference = EMAIL_WEBSITE_NAME || order._id;
-  const { currency, amount } = pricing.total();
+  const { currency, amount } = pricing.total({ useNetPrice: false });
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(amount),
     currency: currency.toLowerCase(),

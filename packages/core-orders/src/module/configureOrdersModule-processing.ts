@@ -406,18 +406,19 @@ export const configureOrderModuleProcessing = ({
         const orderPositions = await findOrderPositions(order);
         await Promise.all(
           orderPositions.map(async (orderPosition) => {
-            const quotation = await modules.quotations.fullfillQuotation(
-              orderPosition.quotationId,
-              {
-                orderId,
-                orderPositionId: orderPosition._id,
-              },
-              requestContext,
-            );
+            if (orderPosition.quotationId) {
+              await modules.quotations.fullfillQuotation(
+                orderPosition.quotationId,
+                {
+                  orderId,
+                  orderPositionId: orderPosition._id,
+                },
+                requestContext,
+              );
+            }
 
             log(`OrderPosition ${orderPosition._id} -> Reserve ${orderPosition.quantity}`, {
               orderId,
-              quotation,
             });
           }),
         );

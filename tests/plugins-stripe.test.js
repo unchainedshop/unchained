@@ -144,72 +144,7 @@ if (STRIPE_SECRET) {
           isPreferred: true,
         });
       });
-    });
 
-    describe.only('Mutation.signPaymentProviderForCheckout (Stripe)', () => {
-      let idAndSecret;
-      it('Request a new client secret', async () => {
-        const { data: { signPaymentProviderForCheckout } = {} } = await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
-              signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId, transactionContext: $transactionContext)
-            }
-          `,
-          variables: {
-            orderPaymentId: 'stripe-payment',
-            transactionContext: {},
-          },
-        });
-
-        expect(signPaymentProviderForCheckout).not.toBe('');
-        expect(signPaymentProviderForCheckout).not.toBe(null);
-        expect(signPaymentProviderForCheckout).not.toBe(undefined);
-        idAndSecret = signPaymentProviderForCheckout.split('_secret_');
-      });
-      it('Confirm the payment and checkout the order', async () => {
-        const stripe = Stripe(STRIPE_SECRET);
-        const method = await stripe.paymentMethods.create({
-          type: 'card',
-          card: {
-            number: '4242424242424242',
-            exp_month: 12,
-            exp_year: 2025,
-            cvc: '314',
-          },
-        });
-        const confirmedIntent = await stripe.paymentIntents.confirm(
-          idAndSecret[0],
-          {
-            payment_method: method.id,
-          },
-        );
-        expect(confirmedIntent).toMatchObject({
-          status: 'succeeded',
-        });
-
-        const { data: { checkoutCart } = {} } = await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation checkout($orderId: ID, $paymentContext: JSON) {
-              checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
-                _id
-                status
-              }
-            }
-          `,
-          variables: {
-            orderId: 'stripe-order',
-            paymentContext: {
-              paymentIntentId: confirmedIntent.id,
-            },
-          },
-        });
-        expect(checkoutCart).toMatchObject({
-          status: 'CONFIRMED',
-        });
-      });
-    });
-
-    describe('Checkout', () => {
       it('checkout with stored alias', async () => {
         const { data: { me } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
@@ -232,6 +167,7 @@ if (STRIPE_SECRET) {
             }
           `,
         });
+        console.log(me);
         const credentials = me?.paymentCredentials?.[0];
 
         expect(credentials).toMatchObject({
@@ -286,6 +222,69 @@ if (STRIPE_SECRET) {
           payment: {
             provider: {
               _id: 'stripe-payment-provider',
+            },
+          },
+        });
+        expect(checkoutCart).toMatchObject({
+          status: 'CONFIRMED',
+        });
+      });
+    });
+
+    describe('Mutation.signPaymentProviderForCheckout (Stripe)', () => {
+      let idAndSecret;
+      it('Request a new client secret', async () => {
+        const { data: { signPaymentProviderForCheckout } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId, transactionContext: $transactionContext)
+            }
+          `,
+          variables: {
+            orderPaymentId: 'stripe-payment',
+            transactionContext: {},
+          },
+        });
+
+        expect(signPaymentProviderForCheckout).not.toBe('');
+        expect(signPaymentProviderForCheckout).not.toBe(null);
+        expect(signPaymentProviderForCheckout).not.toBe(undefined);
+        idAndSecret = signPaymentProviderForCheckout.split('_secret_');
+      });
+      it('Confirm the payment and checkout the order', async () => {
+        const stripe = Stripe(STRIPE_SECRET);
+        const method = await stripe.paymentMethods.create({
+          type: 'card',
+          card: {
+            number: '4242424242424242',
+            exp_month: 12,
+            exp_year: 2025,
+            cvc: '314',
+          },
+        });
+        const confirmedIntent = await stripe.paymentIntents.confirm(
+          idAndSecret[0],
+          {
+            payment_method: method.id,
+          },
+        );
+        expect(confirmedIntent).toMatchObject({
+          status: 'succeeded',
+        });
+
+        const { data: { checkoutCart } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation checkout($orderId: ID, $paymentContext: JSON) {
+              checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
+                _id
+                status
+              }
+            }
+          `,
+          variables: {
+            orderId: 'stripe-order',
+            paymentContext: {
+              paymentIntentId: confirmedIntent.id,
             },
           },
         });
