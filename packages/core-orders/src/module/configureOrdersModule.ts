@@ -112,9 +112,10 @@ export const configureOrdersModule = async ({
     return Orders.findOne(selector, {});
   };
 
-  const updateDiscounts = async (order: Order, requestContext: Context) => {
+  const updateDiscounts = async (orderId: string, requestContext: Context) => {
     const { modules } = requestContext;
-    const orderId = order._id;
+    const selector = generateDbFilterById(orderId);
+    const order = await Orders.findOne(selector, {});
 
     // 1. go through existing order-discounts and check if discount still valid,
     // those who are not valid anymore should get removed
@@ -158,17 +159,20 @@ export const configureOrdersModule = async ({
     );
   };
 
-  const initProviders = async (order: Order, requestContext: Context) => {
+  const initProviders = async (orderId: string, requestContext: Context) => {
     const { modules } = requestContext;
 
-    const orderId = order._id;
-    let updatedOrder = order;
+    const selector = generateDbFilterById(orderId);
+    let updatedOrder = await Orders.findOne(selector, {});
 
     // Init delivery provider
-    const supportedDeliveryProviders = await modules.delivery.findSupported({ order }, requestContext);
+    const supportedDeliveryProviders = await modules.delivery.findSupported(
+      { order: updatedOrder },
+      requestContext,
+    );
 
     const orderDelivery = await modules.orders.deliveries.findDelivery({
-      orderDeliveryId: order.deliveryId,
+      orderDeliveryId: updatedOrder.deliveryId,
     });
     const deliveryProviderId = orderDelivery?.deliveryProviderId;
 
@@ -188,12 +192,12 @@ export const configureOrdersModule = async ({
 
     // Init payment provider
     const supportedPaymentProviders = await modules.payment.paymentProviders.findSupported(
-      { order },
+      { order: updatedOrder },
       requestContext,
     );
 
     const orderPayment = await modules.orders.payments.findOrderPayment({
-      orderPaymentId: order.paymentId,
+      orderPaymentId: updatedOrder.paymentId,
     });
     const paymentProviderId = orderPayment?.paymentProviderId;
 
@@ -205,7 +209,7 @@ export const configureOrdersModule = async ({
 
     if (supportedPaymentProviders.length > 0 && !isAlreadyInitializedWithSupportedPaymentProvider) {
       const paymentCredentials = await modules.payment.paymentCredentials.findPaymentCredentials(
-        { userId: order.userId, isPreferred: true },
+        { userId: updatedOrder.userId, isPreferred: true },
         {
           sort: {
             created: -1,
@@ -241,27 +245,29 @@ export const configureOrdersModule = async ({
 
   const updateCalculation: OrdersModule['updateCalculation'] = async (orderId, requestContext) => {
     const { modules } = requestContext;
-    const selector = generateDbFilterById(orderId);
-    const order = await Orders.findOne(selector, {});
 
-    await updateDiscounts(order, requestContext);
+    await updateDiscounts(orderId, requestContext);
 
-    await initProviders(order, requestContext);
+    const order = await initProviders(orderId, requestContext);
 
-    const orderPositions = await findOrderPositions(order);
-    const updatedOrderPositions = await Promise.all(
+    let orderPositions = await findOrderPositions(order);
+    orderPositions = await Promise.all(
       orderPositions.map((orderPosition) =>
         modules.orders.positions.updateCalculation(orderPosition, requestContext),
       ),
     );
 
-    const orderDelivery = await findOrderDelivery(order);
-    await modules.orders.deliveries.updateCalculation(orderDelivery, requestContext);
-    const orderPayment = await findOrderPayment(order);
-    await modules.orders.payments.updateCalculation(orderPayment, requestContext);
+    let orderDelivery = await findOrderDelivery(order);
+    if (orderDelivery) {
+      orderDelivery = await modules.orders.deliveries.updateCalculation(orderDelivery, requestContext);
+    }
+    let orderPayment = await findOrderPayment(order);
+    if (orderPayment) {
+      orderPayment = await modules.orders.payments.updateCalculation(orderPayment, requestContext);
+    }
 
     await Promise.all(
-      updatedOrderPositions.map((orderPosition) =>
+      orderPositions.map((orderPosition) =>
         modules.orders.positions.updateScheduling(
           { order, orderDelivery, orderPosition },
           requestContext,
@@ -271,6 +277,8 @@ export const configureOrdersModule = async ({
 
     const pricing = await OrderPricingDirector.actions({ order }, requestContext);
     const calculation = await pricing.calculate();
+
+    const selector = generateDbFilterById(orderId);
 
     await Orders.updateOne(selector, {
       $set: {

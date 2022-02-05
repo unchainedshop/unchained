@@ -247,7 +247,8 @@ export const configureOrderPaymentsModule = ({
         requestContext,
       );
 
-      await OrderPayments.updateOne(buildFindByIdSelector(orderPayment._id), {
+      const selector = buildFindByIdSelector(orderPayment._id);
+      await OrderPayments.updateOne(selector, {
         $set: {
           calculation,
           updated: new Date(),
@@ -255,7 +256,7 @@ export const configureOrderPaymentsModule = ({
         },
       });
 
-      return true;
+      return OrderPayments.findOne(selector);
     },
   };
 };
