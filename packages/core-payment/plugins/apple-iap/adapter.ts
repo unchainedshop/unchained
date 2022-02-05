@@ -171,12 +171,10 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
         });
 
         await services.payment.registerPaymentCredentials(
+          enrollment.payment.paymentProviderId,
           {
-            paymentProviderId: enrollment.payment.paymentProviderId,
-            paymentContext: {
-              transactionContext: {
-                receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-              },
+            transactionContext: {
+              receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
             },
           },
           resolvedContext,
@@ -276,8 +274,8 @@ const AppleIAP: IPaymentAdapter = {
       },
 
       // eslint-disable-next-line
-      async register() {
-        const { receiptData } = params.context.transactionContext;
+      async register(transactionContext) {
+        const { receiptData } = transactionContext;
 
         const response = await verifyReceipt({
           receiptData,
@@ -304,9 +302,9 @@ const AppleIAP: IPaymentAdapter = {
       },
 
       // eslint-disable-next-line
-      async charge() {
-        const { order } = params.context;
-        const { meta, paymentCredentials, receiptData } = params.context.transactionContext || {};
+      async charge(transactionContext) {
+        const { order } = params.paymentContext;
+        const { meta, paymentCredentials, receiptData } = transactionContext || {};
         const { transactionIdentifier } = meta || {};
         const appleTransactions = (params.context.modules as any)
           .appleTransactions as AppleTransactionsModule;

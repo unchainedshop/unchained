@@ -1,26 +1,30 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { PaymentProvider } from '@unchainedshop/types/payments';
 import { log } from 'meteor/unchained:logger';
+import { Context, Root } from '@unchainedshop/types/api';
 import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors';
 
-export default async (
+export default async function signPaymentProviderForCredentialRegistration(
   root: Root,
-  { paymentProviderId, ...paymentProvider }: { paymentProviderId: string } & PaymentProvider,
-  { modules, userId }: Context,
-) => {
+  params: { paymentProviderId: string; transactionContext: any },
+  context: Context,
+) {
+  const { modules, userId } = context;
+  const { paymentProviderId, transactionContext } = params;
+
   log(`mutation signPaymentProviderForCredentialRegistration ${paymentProviderId}`, { userId });
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
   if (
-    !(await modules.payment.paymentProviders.findProvider({
+    !(await modules.payment.paymentProviders.providerExists({
       paymentProviderId,
     }))
   )
     throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return modules.payment.paymentProviders.sign(paymentProviderId, {
-    userId,
+  return modules.payment.paymentProviders.sign(
     paymentProviderId,
-    transactionContext: paymentProvider,
-  });
-};
+    {
+      transactionContext,
+    },
+    context,
+  );
+}

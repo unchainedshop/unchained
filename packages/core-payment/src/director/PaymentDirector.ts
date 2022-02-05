@@ -17,7 +17,8 @@ export const PaymentDirector: IPaymentDirector = {
 
     const adapter = Adapter.actions({
       config: paymentProvider.configuration,
-      context: { ...paymentContext, ...requestContext },
+      paymentContext: { paymentProvider, paymentProviderId: paymentProvider._id, ...paymentContext },
+      context: requestContext,
     });
 
     return {
@@ -32,7 +33,7 @@ export const PaymentDirector: IPaymentDirector = {
 
       isActive: async () => {
         try {
-          return adapter.isActive();
+          return adapter.isActive(paymentContext.transactionContext);
         } catch (error) {
           paymentLogger.error(error.message);
           return false;
@@ -41,32 +42,28 @@ export const PaymentDirector: IPaymentDirector = {
 
       isPayLaterAllowed: () => {
         try {
-          return adapter.isPayLaterAllowed();
+          return adapter.isPayLaterAllowed(paymentContext.transactionContext);
         } catch (error) {
           paymentLogger.error(error.message);
           return false;
         }
       },
 
-      charge: async (transactionContext?: any) => {
-        return adapter.charge(transactionContext);
+      charge: async () => {
+        return adapter.charge(paymentContext.transactionContext);
       },
 
-      register: async (transactionContext?: any) => {
-        return adapter.register(transactionContext);
+      register: async () => {
+        return adapter.register(paymentContext.transactionContext);
       },
 
-      sign: async (transactionContext?: any) => {
-        return adapter.sign(transactionContext);
+      sign: async () => {
+        return adapter.sign(paymentContext.transactionContext);
       },
 
-      validate: async (token?: any) => {
-        const validated = await adapter.validate(token);
+      validate: async () => {
+        const validated = await adapter.validate(paymentContext.token);
         return !!validated;
-      },
-
-      run: async (command, ...args) => {
-        return adapter[command](...args);
       },
     };
   },

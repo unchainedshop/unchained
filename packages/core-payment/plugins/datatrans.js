@@ -108,10 +108,8 @@ useMiddlewareWithCurrentContext(DATATRANS_WEBHOOK_PATH || '/graphql/datatrans', 
           const [paymentProviderId, userId] = refno.split(':');
           const { services } = req.unchainedContext;
           const paymentCredentials = services.registerPaymentCredentials(
-            {
-              paymentProviderId,
-              paymentContext: authorizationResponse,
-            },
+            paymentProviderId,
+            { transactionContext: authorizationResponse },
             req.unchainedContext,
           );
           paymentLogger.info(

@@ -132,7 +132,7 @@ export interface OrderMutations {
 
   delete: (orderId: string, userId?: string) => Promise<number>;
 
-  initProviders: (order: Order, requestContext: Context) => Promise<Order>;
+  initProviders: (orderId: string, requestContext: Context) => Promise<Order>;
   invalidateProviders: (requestContext: Context) => Promise<void>;
 
   setDeliveryProvider: (

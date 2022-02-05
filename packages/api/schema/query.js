@@ -363,14 +363,6 @@ export default [
       activeWorkTypes: [WorkType!]!
 
       """
-      Sign a generic payment provider for registration
-      """
-      signPaymentProviderForCredentialRegistration(paymentProviderId: ID!): String
-        @deprecated(
-          reason: "Has been deprecated and will be removed on future releases, use mutation.signPaymentProviderForCredentialRegistration instead"
-        )
-
-      """
       Get a specific work unit by ID
       """
       event(eventId: ID!): Event

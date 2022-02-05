@@ -8,7 +8,6 @@ import {
   PaymentError,
   paymentLogger,
 } from 'meteor/unchained:core-payment';
-import { Users } from 'meteor/unchained:core-users';
 
 const {
   STRIPE_SECRET,
@@ -79,12 +78,10 @@ useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, async (request, response) =
       const { paymentProviderId, userId } = setupIntent.metadata;
 
       await services.payment.registerPaymentCredentials(
+        paymentProviderId,
         {
-          paymentProviderId,
-          paymentContext: {
-            transactionContext: {
-              setupIntentId: setupIntent.id,
-            },
+          transactionContext: {
+            setupIntentId: setupIntent.id,
           },
         },
         resolvedContext,
@@ -107,14 +104,13 @@ useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, async (request, response) =
   response.end(JSON.stringify({ received: true }));
 });
 
-const createRegistrationIntent = async ({ userId, paymentProviderId }, options = {}) => {
-  const user = Users.findOne({ _id: userId });
+const createRegistrationIntent = async ({ userId, name, email, paymentProviderId }, options = {}) => {
   const customer = await stripe.customers.create({
     metadata: {
       userId,
     },
-    name: user.name(),
-    email: user.primaryEmail()?.address,
+    name,
+    email,
   });
   const setupIntent = await stripe.setupIntents.create({
     customer: customer.id,
@@ -127,11 +123,9 @@ const createRegistrationIntent = async ({ userId, paymentProviderId }, options =
   return setupIntent;
 };
 
-const createOrderPaymentIntent = async (orderPayment, options = {}) => {
-  const order = orderPayment.order();
-  const pricing = order.pricing();
+const createOrderPaymentIntent = async ({ order, orderPayment, pricing }, options = {}) => {
   const reference = EMAIL_WEBSITE_NAME || order._id;
-  const { currency, amount } = pricing.total();
+  const { currency, amount } = pricing.total({ useNetPrice: false });
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(amount),
     currency: currency.toLowerCase(),
@@ -183,7 +177,7 @@ const Stripe: IPaymentAdapter = {
         return false;
       },
 
-      validate: async (token) => {
+      validate: async ({ token }) => {
         const paymentMethod = await stripe.paymentMethods.retrieve(token);
         // TODO: Add further checks like expiration of cards
         return !!paymentMethod;
@@ -195,7 +189,6 @@ const Stripe: IPaymentAdapter = {
         }
 
         const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
-
         if (setupIntent.status === 'succeeded') {
           return {
             token: setupIntent.payment_method,
@@ -210,12 +203,29 @@ const Stripe: IPaymentAdapter = {
         return null;
       },
 
-      sign: async ({ transactionContext = {} } = {}) => {
+      sign: async (transactionContext = {}) => {
         // eslint-disable-line
-        const { orderPayment, userId, paymentProviderId } = params.context;
-        const paymentIntent = orderPayment
-          ? await createOrderPaymentIntent(orderPayment, transactionContext)
-          : await createRegistrationIntent({ userId, paymentProviderId }, transactionContext);
+        const { orderPayment, paymentProviderId } = params.paymentContext;
+        const { userId } = params.context;
+
+        if (orderPayment) {
+          const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
+          const pricing = await modules.orders.pricingSheet(order);
+          const paymentIntent = await createOrderPaymentIntent(
+            { order, orderPayment, pricing },
+            transactionContext,
+          );
+          return paymentIntent.client_secret;
+        }
+
+        const user = await modules.users.findUser({ userId });
+        const email = modules.users.primaryEmail(user)?.address;
+        const name = user.profile.displayName || user.username || email;
+
+        const paymentIntent = await createRegistrationIntent(
+          { userId, name, email, paymentProviderId },
+          transactionContext,
+        );
         return paymentIntent.client_secret;
       },
 
@@ -224,7 +234,7 @@ const Stripe: IPaymentAdapter = {
           throw new Error('You have to provide an existing intent or a payment method');
         }
 
-        const { order } = params.context;
+        const { order } = params.paymentContext;
         const orderPayment = await modules.orders.payments.findOrderPayment({
           orderPaymentId: order.paymentId,
         });

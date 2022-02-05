@@ -80,7 +80,8 @@ export type IPaymentAdapter = IBaseAdapter & {
 
   actions: (params: {
     config: PaymentConfiguration;
-    context: PaymentContext & Context;
+    paymentContext: PaymentContext;
+    context: Context;
   }) => IPaymentActions;
 };
 
@@ -89,9 +90,7 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
     paymentProvider: PaymentProvider,
     paymentContext: PaymentContext,
     requestContext: Context,
-  ) => IPaymentActions & {
-    run: (command: string, args: any) => Promise<boolean>;
-  };
+  ) => IPaymentActions;
 };
 
 /*
@@ -219,10 +218,8 @@ export type ChargeService = (
 ) => Promise<any>;
 
 export type RegisterPaymentCredentialsService = (
-  params: {
-    paymentContext: PaymentContext;
-    paymentProviderId: string;
-  },
+  paymentProviderId: string,
+  paymentContext: PaymentContext,
   context: Context,
 ) => Promise<PaymentCredentials | null>;
 

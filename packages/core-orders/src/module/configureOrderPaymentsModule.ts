@@ -212,21 +212,6 @@ export const configureOrderPaymentsModule = ({
       emit('ORDER_PAY', { orderPayment });
     },
 
-    sign: async (orderPayment, paymentContext, requestContext) => {
-      const result = await requestContext.modules.payment.paymentProviders.sign(
-        orderPayment.paymentProviderId,
-        paymentContext,
-        requestContext,
-      );
-
-      emit('ORDER_SIGN_PAYMENT', {
-        orderPayment,
-        paymentContext,
-      });
-
-      return result;
-    },
-
     updateContext: async (orderPaymentId, { orderId, context }, requestContext) => {
       log(`OrderPayment ${orderPaymentId} -> Update Context`, {
         orderId,
@@ -262,7 +247,8 @@ export const configureOrderPaymentsModule = ({
         requestContext,
       );
 
-      await OrderPayments.updateOne(buildFindByIdSelector(orderPayment._id), {
+      const selector = buildFindByIdSelector(orderPayment._id);
+      await OrderPayments.updateOne(selector, {
         $set: {
           calculation,
           updated: new Date(),
@@ -270,7 +256,7 @@ export const configureOrderPaymentsModule = ({
         },
       });
 
-      return true;
+      return OrderPayments.findOne(selector);
     },
   };
 };
