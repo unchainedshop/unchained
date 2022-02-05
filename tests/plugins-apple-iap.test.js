@@ -20,7 +20,6 @@ import { AllEnrollmentIds } from "./seeds/enrollments";
 let db;
 let graphqlFetch;
 
-if (process.env.APPLE_IAP_SHARED_SECRET) {
   describe("Plugins: Apple IAP Payments", () => {
     beforeAll(async () => {
       [db] = await setupDatabase();
@@ -247,7 +246,7 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
         });
 
         expect(errors?.[0].extensions.code).toEqual("OrderCheckoutError");
-      });
+      }, 10000);
     });
 
     describe("Apple Store Server Notifications", () => {
@@ -305,7 +304,7 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
           .collection("orders")
           .findOne({ _id: "iap-order2" });
         expect(order.status).toBe("CONFIRMED");
-      });
+      }, 10000);
       it("notification_type = DID_RECOVER should just store the current receipt", async () => {
         const result = await fetch("http://localhost:3000/graphql/apple-iap", {
           method: "POST",
@@ -321,7 +320,7 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
           },
         });
         expect(enrollment?.status).toBe("ACTIVE");
-      });
+      }, 10000);
 
       it("notification_type = DID_CHANGE_RENEWAL_STATUS should terminate enrollment", async () => {
         const result = await fetch("http://localhost:3000/graphql/apple-iap", {
@@ -338,13 +337,6 @@ if (process.env.APPLE_IAP_SHARED_SECRET) {
           },
         });
         expect(enrollment?.status).toBe("TERMINATED");
-      });
+      }, 10000);
     });
   });
-} else {
-  describe.skip('Plugins: Apple IAP Payments', () => {
-    it('Skipped because secret not set', async () => {
-      console.log('skipped'); // eslint-disable-line
-    });
-  });
-}
