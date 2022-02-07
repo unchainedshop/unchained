@@ -74,7 +74,7 @@ export type OrderPaymentsModule = {
 
   updateContext: (
     orderPaymentId: string,
-    params: { orderId?: string; context: any },
+    params: { orderId: string; context: any },
     requestContext: Context,
   ) => Promise<OrderPayment>;
 
