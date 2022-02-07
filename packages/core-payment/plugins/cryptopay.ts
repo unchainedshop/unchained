@@ -98,7 +98,7 @@ const Cryptopay: IPaymentAdapter = {
       },
 
       sign: async () => {
-        const { orderPayment } = params.context;
+        const { orderPayment } = params.paymentContext;
         const cryptoAddresses: { currency: CryptopayCurrencies; address: string }[] = [];
 
         if (CRYPTOPAY_BTC_XPUB) {
