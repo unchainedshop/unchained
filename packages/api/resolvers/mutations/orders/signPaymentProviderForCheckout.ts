@@ -42,7 +42,14 @@ export default async function signPaymentProviderForCheckout(
     });
 
   try {
-    return modules.payment.paymentProviders.sign(provider._id, transactionContext, context);
+    return modules.payment.paymentProviders.sign(
+      provider._id,
+      {
+        orderPayment,
+        transactionContext,
+      },
+      context,
+    );
   } catch (error) {
     throw new OrderPaymentConfigurationError(error);
   }

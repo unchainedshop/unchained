@@ -1,14 +1,12 @@
 import { Context } from '@unchainedshop/types/api';
 import { OrderPayment, OrderPaymentDiscount } from '@unchainedshop/types/orders.payments';
 import { PaymentProvider } from '@unchainedshop/types/payments';
-import { OrderPaymentConfigurationError } from '../../../errors';
 
 type HelperType<P, T> = (orderPayment: OrderPayment, params: P, context: Context) => T;
 
 interface OrderPaymentGenericHelperTypes {
   discounts: HelperType<never, Promise<Array<OrderPaymentDiscount>>>;
   provider: HelperType<never, Promise<PaymentProvider>>;
-  sign: HelperType<{ transactionContext: any }, Promise<string>>;
   status: HelperType<never, string>;
 }
 
@@ -34,13 +32,5 @@ export const OrderPaymentGeneric: OrderPaymentGenericHelperTypes = {
       }));
     }
     return [];
-  },
-
-  sign: async (obj, { transactionContext }, context) => {
-    try {
-      return context.modules.orders.payments.sign(obj, transactionContext, context);
-    } catch (error) {
-      throw new OrderPaymentConfigurationError(error);
-    }
   },
 };

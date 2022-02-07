@@ -37,7 +37,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
       return pricingSheet.gross() - pricingSheet.taxSum();
     },
 
-    total: ({ category, useNetPrice }) => {
+    total: ({ category, useNetPrice } = { useNetPrice: false }) => {
       if (!category) {
         return {
           amount: Math.round(useNetPrice ? pricingSheet.net() : pricingSheet.gross()),

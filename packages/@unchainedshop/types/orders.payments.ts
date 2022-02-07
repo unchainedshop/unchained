@@ -84,7 +84,7 @@ export type OrderPaymentsModule = {
     userId?: string,
   ) => Promise<OrderPayment>;
 
-  updateCalculation: (orderPayment: OrderPayment, requestContext: Context) => Promise<boolean>;
+  updateCalculation: (orderPayment: OrderPayment, requestContext: Context) => Promise<OrderPayment>;
 };
 
 export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {

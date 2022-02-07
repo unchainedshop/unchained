@@ -1,5 +1,6 @@
 import { Context } from './api';
 import { ModuleMutations, Query, TimestampFields, _ID } from './common';
+import { User } from './user';
 
 type UserProductFilter = {
   userId: string;
@@ -32,9 +33,9 @@ export interface BookmarksModule extends ModuleMutations<Bookmark> {
 
 export type MigrateBookmarksService = (
   params: {
-    fromUserId: string;
-    toUserId: string;
-    shouldMergeBookmarks: boolean;
+    fromUser: User;
+    toUser: User;
+    shouldMerge: boolean;
   },
   context: Context,
 ) => Promise<void>;

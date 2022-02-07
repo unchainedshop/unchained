@@ -30,9 +30,7 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, assortmentId: 1 } },
-    {
-      index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' }, // TODO: check with Pascal
-    },
+    { index: { title: 'text', subtitle: 'text' } },
   ]);
 
   // AssortmentProducts indexes

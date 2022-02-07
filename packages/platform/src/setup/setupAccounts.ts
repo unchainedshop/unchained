@@ -49,11 +49,6 @@ export const setupAccounts = (
     const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
       connection;
 
-    const context = {
-      ...unchainedAPI,
-      userId: userId || unchainedAPI.userId,
-    };
-
     await unchainedAPI.modules.users.updateHeartbeat(userId, {
       remoteAddress,
       remotePort,
@@ -62,32 +57,39 @@ export const setupAccounts = (
       countryContext,
     });
 
+    const user = await unchainedAPI.modules.users.findUser({ userId });
+    const context = {
+      ...unchainedAPI,
+      countryContext,
+      userId,
+      user,
+    };
+
     if (userIdBeforeLogin) {
+      const userBeforeLogin = await unchainedAPI.modules.users.findUser({ userId: userIdBeforeLogin });
+
       await unchainedAPI.services.orders.migrateOrderCarts(
         {
-          fromUserId: userIdBeforeLogin,
-          toUser: userId,
-          countryContext,
-          shouldMergeCarts: options.mergeUserCartsOnLogin,
+          fromUser: userBeforeLogin,
+          toUser: user,
+          shouldMerge: options.mergeUserCartsOnLogin,
         },
         context,
       );
 
       await unchainedAPI.services.bookmarks.migrateBookmarks(
         {
-          fromUserId: userIdBeforeLogin,
-          toUserId: userId,
-          shouldMergeBookmarks: options.mergeUserCartsOnLogin,
+          fromUser: userBeforeLogin,
+          toUser: user,
+          shouldMerge: options.mergeUserCartsOnLogin,
         },
         context,
       );
     }
 
-    const user = await unchainedAPI.modules.users.findUser({ userId });
     await unchainedAPI.modules.orders.ensureCartForUser(
       {
         user,
-        countryContext,
       },
       context,
     );

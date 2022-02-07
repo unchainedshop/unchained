@@ -63,7 +63,7 @@ export type OrderDeliveriesModule = {
     userId?: string,
   ) => Promise<OrderDelivery>;
 
-  updateCalculation: (orderDelivery: OrderDelivery, requestContext: Context) => Promise<boolean>;
+  updateCalculation: (orderDelivery: OrderDelivery, requestContext: Context) => Promise<OrderDelivery>;
 };
 
 export type OrderDeliveryDiscount = Omit<OrderPrice, '_id'> & {

@@ -200,7 +200,8 @@ export const configureOrderDeliveriesModule = ({
         requestContext,
       );
 
-      await OrderDeliveries.updateOne(buildFindByIdSelector(orderDelivery._id), {
+      const selector = buildFindByIdSelector(orderDelivery._id);
+      await OrderDeliveries.updateOne(selector, {
         $set: {
           calculation,
           updated: new Date(),
@@ -208,7 +209,7 @@ export const configureOrderDeliveriesModule = ({
         },
       });
 
-      return true;
+      return OrderDeliveries.findOne(selector);
     },
   };
 };

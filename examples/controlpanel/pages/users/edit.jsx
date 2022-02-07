@@ -6,7 +6,6 @@ import { Container, Grid, Menu, Segment } from 'semantic-ui-react';
 import App from '../../components/App';
 import FormProfile from '../../components/users/FormProfile';
 import UserOrderList from '../../components/users/UserOrderList';
-import UserLogList from '../../components/users/UserLogList';
 import FormSetPassword from '../../components/account/FormSetPassword';
 import EmailsList from '../../components/account/EmailsList';
 import FormSetRoles from '../../components/account/FormSetRoles';
@@ -25,51 +24,25 @@ const UsersEdit = ({ router, redirect, changeTab, ...rest }) => (
               <Menu.Item active={!router.query.tab} name="" onClick={changeTab}>
                 Profile
               </Menu.Item>
-              <Menu.Item
-                active={router.query.tab === 'account'}
-                name="account"
-                onClick={changeTab}
-              >
+              <Menu.Item active={router.query.tab === 'account'} name="account" onClick={changeTab}>
                 Account
               </Menu.Item>
-              <Menu.Item
-                active={router.query.tab === 'orders'}
-                name="orders"
-                onClick={changeTab}
-              >
+              <Menu.Item active={router.query.tab === 'orders'} name="orders" onClick={changeTab}>
                 Orders
-              </Menu.Item>
-              <Menu.Item
-                active={router.query.tab === 'log'}
-                name="log"
-                onClick={changeTab}
-              >
-                Logs
               </Menu.Item>
             </Menu>
           </Grid.Column>
           <Grid.Column stretched width={12}>
-            {!router.query.tab && (
-              <FormProfile
-                onSubmitSuccess={redirect}
-                userId={router.query._id}
-              />
-            )}
+            {!router.query.tab && <FormProfile onSubmitSuccess={redirect} userId={router.query._id} />}
             {router.query.tab === 'account' && (
               <div>
                 <Segment>
                   <h3 className="title">Set username</h3>
-                  <FormSetUsername
-                    onSubmitSuccess={redirect}
-                    userId={router.query._id}
-                  />
+                  <FormSetUsername onSubmitSuccess={redirect} userId={router.query._id} />
                 </Segment>
                 <Segment>
                   <h3 className="title">Set password</h3>
-                  <FormSetPassword
-                    onSubmitSuccess={redirect}
-                    userId={router.query._id}
-                  />
+                  <FormSetPassword onSubmitSuccess={redirect} userId={router.query._id} />
                 </Segment>
                 <Segment>
                   <h3 className="title">Edit E-Mail addresses</h3>
@@ -81,26 +54,15 @@ const UsersEdit = ({ router, redirect, changeTab, ...rest }) => (
                 </Segment>
                 <Segment>
                   <h3 className="title">Set roles</h3>
-                  <FormSetRoles
-                    onSubmitSuccess={redirect}
-                    userId={router.query._id}
-                  />
+                  <FormSetRoles onSubmitSuccess={redirect} userId={router.query._id} />
                 </Segment>
                 <Segment>
                   <h3 className="title">Set tags</h3>
-                  <FormTags
-                    onSubmitSuccess={redirect}
-                    userId={router.query._id}
-                  />
+                  <FormTags onSubmitSuccess={redirect} userId={router.query._id} />
                 </Segment>
               </div>
             )}
-            {router.query.tab === 'orders' && (
-              <UserOrderList userId={router.query._id} />
-            )}
-            {router.query.tab === 'log' && (
-              <UserLogList userId={router.query._id} />
-            )}
+            {router.query.tab === 'orders' && <UserOrderList userId={router.query._id} />}
           </Grid.Column>
         </Grid.Row>
       </Grid>
@@ -123,6 +85,6 @@ export default connectApollo(
         toast('User updated', { type: toast.TYPE.SUCCESS });
       },
     }),
-    pure
-  )(UsersEdit)
+    pure,
+  )(UsersEdit),
 );

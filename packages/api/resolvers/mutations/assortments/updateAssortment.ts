@@ -10,7 +10,7 @@ export default async function updateAssortment(
 ) {
   const { assortment, assortmentId } = params;
 
-  log(`mutation updateAssortment ${assortmentId}`, { modules, userId });
+  log(`mutation updateAssortment ${assortmentId}`, { userId });
 
   if (!assortmentId) throw new InvalidIdError({ assortmentId });
 

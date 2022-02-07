@@ -5,7 +5,6 @@ import {
 } from "./helpers";
 import { ADMIN_TOKEN } from "./seeds/users";
 import { SimpleProduct } from "./seeds/products";
-import { text } from "stream/consumers";
 
 let graphqlFetch;
 

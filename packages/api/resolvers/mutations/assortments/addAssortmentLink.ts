@@ -8,7 +8,7 @@ export default async function addAssortmentLink(
   { parentAssortmentId, childAssortmentId, ...assortmentLink }: AssortmentLink,
   { modules, userId }: Context,
 ) {
-  log(`mutation addAssortmentLink ${parentAssortmentId} -> ${childAssortmentId}`, { modules, userId });
+  log(`mutation addAssortmentLink ${parentAssortmentId} -> ${childAssortmentId}`, { userId });
   if (!parentAssortmentId) throw new InvalidIdError({ parentAssortmentId });
   if (!childAssortmentId) throw new InvalidIdError({ childAssortmentId });
 

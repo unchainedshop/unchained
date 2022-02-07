@@ -1,11 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import {
-  ProductNotFoundError,
-  OrderQuantityTooLowError,
-  InvalidIdError,
-  UserNotFoundError,
-} from '../../../errors';
+import { ProductNotFoundError, OrderQuantityTooLowError, InvalidIdError } from '../../../errors';
 import { getOrderCart } from '../utils/getOrderCart';
 
 export default async function addCartProduct(
@@ -13,7 +8,7 @@ export default async function addCartProduct(
   { orderId, productId, quantity, configuration },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, userId, user } = context;
 
   log(
     `mutation addCartProduct ${productId} ${quantity} ${
@@ -28,12 +23,9 @@ export default async function addCartProduct(
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  const user = await modules.users.findUser({ userId });
-  if (!user) throw new UserNotFoundError({ userId });
-
   const order = await getOrderCart({ orderId, user }, context);
 
-  const orderPosition = await modules.orders.positions.create(
+  const orderPosition = await modules.orders.positions.addProductItem(
     {
       quantity,
       configuration,

@@ -6,7 +6,7 @@ export default async function translatedAssortmentTexts(
   { assortmentId }: { assortmentId: string },
   { modules, userId }: Context,
 ) {
-  log(`query translatedAssortmentTexts ${assortmentId}`, { modules, userId });
+  log(`query translatedAssortmentTexts ${assortmentId}`, { userId });
 
   return modules.assortments.texts.findTexts({ assortmentId });
 }

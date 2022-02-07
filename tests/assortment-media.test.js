@@ -296,8 +296,6 @@ describe("AssortmentMedia", () => {
         },
       });
 
-      console.log("CONFIRM MEDIA LINK COMPLETED");
-
       expect(confirmMediaUpload).toMatchObject({
         _id: prepareAssortmentMediaUpload._id,
         name: "test-media",

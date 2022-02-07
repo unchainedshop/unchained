@@ -18,8 +18,9 @@ export const SimpleOrder = {
   calculation: [
     {
       category: 'ITEMS',
-      amount: 20000,
+      amount: 30000,
     },
+    { category: 'TAXES', amount: 2144.8467966573808 },
     {
       category: 'PAYMENT',
       amount: 0,
@@ -92,11 +93,30 @@ export const SimplePosition = {
   calculation: [
     {
       category: 'ITEM',
-      amount: 20000, // CHF 200
+      amount: 30000, // CHF 300
       isTaxable: true,
       isNetPrice: false,
       meta: {
         adapter: 'shop.unchained.pricing.product-price',
+      },
+    },
+    {
+      category: 'ITEM',
+      amount: -2144.8467966573808,
+      isTaxable: false,
+      meta: {
+        adapter: 'shop.unchained.pricing.product-swiss-tax',
+      },
+      isNetPrice: false,
+    },
+    {
+      category: 'TAX',
+      amount: 2144.8467966573808,
+      isTaxable: false,
+      isNetPrice: false,
+      rate: 0.077,
+      meta: {
+        adapter: 'shop.unchained.pricing.product-swiss-tax',
       },
     },
   ],

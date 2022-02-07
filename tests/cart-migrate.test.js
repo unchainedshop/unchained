@@ -112,14 +112,10 @@ describe("Guest user cart migration", () => {
         }
       `,
     });
-    // We use settimeout to induce a delay since the hook doesn't set the values immediately
-    setTimeout(async () => {
-      // Although the admin has placed no orders you can find an order of his
-      const adminOrders = await db.collection("orders").findOne({
-        userId: loginWithPassword.id,
-        _id: orderId,
-      });
-      expect(adminOrders).toMatchObject({});
-    }, 0);
+    const adminOrder = await db.collection("orders").findOne({
+      userId: loginWithPassword.id,
+      _id: orderId,
+    });
+    expect(adminOrder).toMatchObject({});
   });
 });

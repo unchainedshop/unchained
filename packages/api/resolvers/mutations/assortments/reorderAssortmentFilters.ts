@@ -6,7 +6,7 @@ export default async function reorderAssortmentFilters(
   params: { sortKeys: Array<{ assortmentFilterId: string; sortKey: number }> },
   { modules, userId }: Context,
 ) {
-  log('mutation reorderAssortmentFilters', { modules, userId });
+  log('mutation reorderAssortmentFilters', { userId });
 
   return modules.assortments.filters.updateManualOrder({
     sortKeys: params.sortKeys,
