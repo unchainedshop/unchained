@@ -29,7 +29,8 @@ const runPrepareAsync = async (entity, operation, event, context, requestContext
 };
 
 export const createBucket = (bucketName) => {
-  const options = { bucketName };
+  // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
+  const options = { bucketName, chunkSizeBytes: 5 * 1024 * 1024 };
   return new MongoInternals.NpmModule.GridFSBucket(
     MongoInternals.defaultRemoteCollectionDriver().mongo.db,
     options,
