@@ -6,10 +6,10 @@
 
 webapp@1.13.0
 mongo@1.13.0
-ecmascript@0.16.0
+ecmascript@0.16.1
 email@2.2.0
 disable-oplog@1.0.7
 unchained:platform
 es5-shim@4.8.0
 meteor@1.10.0
-typescript@4.4.0
+typescript@4.4.1
