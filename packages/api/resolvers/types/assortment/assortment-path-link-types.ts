@@ -28,18 +28,18 @@ export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
     });
   },
 
-  assortmentSlug: async (obj, params, { modules, localeContext }) => {
+  assortmentSlug: async ({ assortmentId }, params, { modules, localeContext }) => {
     const text = await modules.assortments.texts.findLocalizedText({
-      assortmentId: obj._id,
+      assortmentId,
       locale: params.forceLocale || localeContext.normalized,
     });
 
     return text.slug;
   },
 
-  assortmentTexts: async (obj, params, { modules, localeContext }) => {
+  assortmentTexts: async ({ assortmentId }, params, { modules, localeContext }) => {
     return modules.assortments.texts.findLocalizedText({
-      assortmentId: obj._id,
+      assortmentId,
       locale: params.forceLocale || localeContext.normalized,
     });
   },
