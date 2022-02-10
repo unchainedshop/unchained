@@ -73,6 +73,14 @@ export const configureProductVariationsModule = async ({
 
   return {
     // Queries
+    findProductVariationByKey: async ({ productId, key }) => {
+      const selector: Query = {
+        productId,
+        key
+      };
+      return ProductVariations.findOne(selector, {});
+    },
+
     findProductVariation: async ({ productVariationId }) => {
       return ProductVariations.findOne(generateDbFilterById(productVariationId), {});
     },

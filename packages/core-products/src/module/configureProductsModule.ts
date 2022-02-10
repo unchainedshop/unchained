@@ -22,6 +22,8 @@ const PRODUCT_EVENTS = [
   'PRODUCT_UPDATE',
   'PRODUCT_PUBLISH',
   'PRODUCT_UNPUBLISH',
+  'PRODUCT_ADD_ASSIGNMENT',
+  'PRODUCT_REMOVE_ASSIGNMENT'
 ];
 
 const InternalProductStatus = {
@@ -250,7 +252,7 @@ export const configureProductsModule = async ({
         })
         .map((assignment) => ({
           assignment,
-          product: this,
+          product,
         }));
     },
 
@@ -266,7 +268,7 @@ export const configureProductsModule = async ({
         const variations = await modules.products.variations.findProductVariations({
           productId,
         });
-        const vectors = configuration.filter(({ key: configurationKey }) => {
+        const vectors = configuration?.filter(({ key: configurationKey }) => {
           const isKeyEqualsVariationKey = Boolean(
             variations.filter(({ key: variationKey }) => variationKey === configurationKey).length,
           );
