@@ -83,7 +83,7 @@ const PickMup: IDeliveryAdapter = {
     return {
       ...DeliveryAdapter.actions(config, context),
 
-      isActive() {
+      isActive: async () => {
         return true;
       },
 
@@ -91,7 +91,7 @@ const PickMup: IDeliveryAdapter = {
         return true;
       },
 
-      configurationError: () => {
+      configurationError: async () => {
         // eslint-disable-line
         if (!getKey()) {
           return DeliveryError.INCOMPLETE_CONFIGURATION;

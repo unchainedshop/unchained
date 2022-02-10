@@ -40,7 +40,7 @@ export const QuotationDirector: IQuotationDirector = {
     const adapter = Adapter.actions(context);
 
     return {
-      configurationError: () => {
+      configurationError: async () => {
         try {
           return adapter.configurationError();
         } catch (error) {

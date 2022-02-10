@@ -133,7 +133,7 @@ export type QuotationContext = {
 };
 
 export interface QuotationAdapterActions {
-  configurationError: () => QuotationError;
+  configurationError: () => Promise<QuotationError>;
   isManualProposalRequired: () => Promise<boolean>;
   isManualRequestVerificationRequired: () => Promise<boolean>;
   quote: () => Promise<QuotationProposal>;
