@@ -29,20 +29,18 @@ export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
   },
 
   assortmentSlug: async (obj, params, { modules, localeContext }) => {
-    const locale = new Locale(params.forceLocale || localeContext.normalized);
     const text = await modules.assortments.texts.findLocalizedText({
       assortmentId: obj._id,
-      locale,
+      locale: params.forceLocale || localeContext.normalized,
     });
 
     return text.slug;
   },
 
   assortmentTexts: async (obj, params, { modules, localeContext }) => {
-    const locale = new Locale(params.forceLocale || localeContext.normalized);
     return modules.assortments.texts.findLocalizedText({
       assortmentId: obj._id,
-      locale,
+      locale: params.forceLocale || localeContext.normalized,
     });
   },
 };
