@@ -96,8 +96,7 @@ export const configureProductsModule = async ({
           published: new Date(),
         },
       });
-
-      emit('PRODUCT_PUBLISH', { product: this });
+      emit('PRODUCT_PUBLISH', { product });
 
       return true;
     }
@@ -116,7 +115,7 @@ export const configureProductsModule = async ({
         },
       });
 
-      emit('PRODUCT_UNPUBLISH', { product: this });
+      emit('PRODUCT_UNPUBLISH', { product });
 
       return true;
     }
@@ -453,7 +452,6 @@ export const configureProductsModule = async ({
       },
 
       removeBundleItem: async (productId, index, userId) => {
-        // TODO: There has to be a better MongoDB way to do this!
         const product = await Products.findOne(generateDbFilterById(productId), {});
 
         const { bundleItems = [] } = product;
