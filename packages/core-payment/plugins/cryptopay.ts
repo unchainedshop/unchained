@@ -8,7 +8,7 @@ import {
   PaymentError,
   paymentLogger,
 } from 'meteor/unchained:core-payment';
-import { Users } from 'meteor/unchained:core-users';
+import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 import { ethers } from 'ethers';
 import BIP32Factory from 'bip32';
 import * as ecc from 'tiny-secp256k1';
@@ -52,6 +52,15 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
         return;
       }
     }
+    const order = await resolvedContext.modules.orders.findOrder({
+      orderId: orderPayment.orderId,
+    });
+    const pricing = OrderPricingSheet({
+      calculation: order.calculation,
+      currency: order.currency,
+    });
+    const totalAmount = Math.round(pricing?.total({ useNetPrice: false }).amount / 10 || 0) * 10;
+    console.log(totalAmount);
     await resolvedContext.modules.orders.payments.markAsPaid(orderPayment, {});
     response.end(JSON.stringify({ success: true }));
   } else {
