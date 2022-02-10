@@ -81,14 +81,17 @@ const ProductPriceCryptopay: IProductPricingAdapter = {
         )
           return pricingAdapter.calculate();
 
-        const cryptopayRate = await modules.events.findEvents({
+        const cryptopayRates = await modules.events.findEvents({
           limit: 10,
           offset: 0,
-          query: { type: 'CRYPTOPAY_UPDATE_RATE' },
+          type: 'CRYPTOPAY_UPDATE_RATE',
+          sort: {
+            created: -1,
+          },
         });
-        console.log(cryptopayRate);
+        const cryptopayRate = cryptopayRates.find((ev) => ev.payload.token === currency)?.payload;
         let rate = null;
-        if (!cryptopayRate || cryptopayRate.timestamp < Date.now() - MAX_RATE_AGE) {
+        if (!cryptopayRate || cryptopayRate.timestamp < Date.now() / 1000 - MAX_RATE_AGE) {
           // TODO: Use Coinbase as fallback if no or too old values cached
           console.log('No Cryptopay rate available');
         } else {
