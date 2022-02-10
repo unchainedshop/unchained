@@ -90,13 +90,11 @@ const ProductPriceCryptopay: IProductPricingAdapter = {
           },
         });
         const cryptopayRate = cryptopayRates.find((ev) => ev.payload.token === currency)?.payload;
-        let rate = null;
         if (!cryptopayRate || cryptopayRate.timestamp < Date.now() / 1000 - MAX_RATE_AGE) {
-          // TODO: Use Coinbase as fallback if no or too old values cached
-          console.log('No Cryptopay rate available');
-        } else {
-          rate = cryptopayRate.rate;
-        }
+          // Allow fallback to different adapter when no data available 
+          return pricingAdapter.calculate();
+        } 
+        const rate = cryptopayRate.rate;
 
         const convertedAmount = productPrice?.amount * rate;
         pricingAdapter.resetCalculation();
