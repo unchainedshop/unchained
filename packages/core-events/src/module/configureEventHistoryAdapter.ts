@@ -9,11 +9,11 @@ export const configureEventHistoryAdapter = (Events: Collection<Event>) => {
       subscribe: () => {
         // Do nothing
       },
-      publish: async (eventName, payload: any) => {
+      publish: async (eventName, { payload, context = {} }) => {
         await Events.insertOne({
           type: eventName,
           payload,
-          context: {},
+          context,
           created: new Date(),
         });
       },
