@@ -59,16 +59,6 @@ export type IProductPricingAdapter = IPricingAdapter<
   IProductPricingSheet
 >;
 
-export interface IProductPricingDirector
-  extends IPricingDirector<
-    ProductPricingContext,
-    ProductPricingAdapterContext,
-    ProductPricingCalculation,
-    IProductPricingAdapter
-  > {
-  resultSheet: () => IProductPricingSheet;
-}
-
 export type IProductPricingDirector = IPricingDirector<
   ProductPricingContext,
   ProductPricingAdapterContext,
