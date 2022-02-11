@@ -25,7 +25,7 @@ describe('Test exports', () => {
     const events = await module.findEvents({
       limit: 10,
       offset: 0,
-      query: { type: 'TEST EVENT' },
+      type: 'TEST EVENT',
     });
 
     assert.isAtLeast(events.length, 1)
