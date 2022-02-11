@@ -66,3 +66,10 @@ export interface IProductPricingDirector
   > {
   resultSheet: () => IProductPricingSheet;
 }
+
+export type ProductPriceRate = {
+  baseCurrency: string;
+  quoteCurrency: string;
+  rate: number;
+  timestamp: number;
+};

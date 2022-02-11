@@ -3,15 +3,18 @@ import crypto from 'crypto';
 import { ProductPricingDirector } from '../director/ProductPricingDirector';
 import { getPriceLevels } from './utils/getPriceLevels';
 import { getPriceRange } from './utils/getPriceRange';
+import { ProductPriceRates } from '../db/ProductPriceRates';
 
 export const configureProductPricesModule = ({
   proxyProducts,
+  db,
 }: {
   proxyProducts: (
     product: Product,
     vectors: Array<ProductConfiguration>,
     options: { includeInactive?: boolean },
   ) => Promise<Array<Product>>;
+  db: any;
 }): ProductsModule['prices'] => {
   const mapPrice: ProductsModule['prices']['price'] = async (
     product,
@@ -266,6 +269,11 @@ export const configureProductPricesModule = ({
           },
         };
       });
+    },
+
+    rates: async () => {
+      const priceRates = await ProductPriceRates(db);
+      return priceRates.ProductRates;
     },
   };
 };

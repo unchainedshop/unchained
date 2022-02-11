@@ -1,6 +1,6 @@
 import { Context } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
-import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
+import { Collection, FindOptions, Query, TimestampFields, Update, _ID } from './common';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { DeliveryProvider, DeliveryProviderType } from './delivery';
@@ -10,6 +10,7 @@ import { OrderPrice } from './orders.pricing';
 import { ProductMedia, ProductMediaModule } from './products.media';
 import {
   IProductPricingSheet,
+  ProductPriceRate,
   ProductPricingCalculation,
   ProductPricingContext,
 } from './products.pricing';
@@ -253,6 +254,8 @@ export type ProductsModule = {
       },
       requestContext: Context,
     ) => Promise<ProductPriceRange>;
+
+    rates: () => Promise<Collection<ProductPriceRate>>;
   };
 
   // Product adapter

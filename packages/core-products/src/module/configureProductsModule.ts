@@ -290,7 +290,7 @@ export const configureProductsModule = async ({
       return product;
     },
 
-    prices: configureProductPricesModule({ proxyProducts }),
+    prices: configureProductPricesModule({ proxyProducts, db }),
 
     // Product adapter
     calculate: async (pricingContext, requestContext) => {
