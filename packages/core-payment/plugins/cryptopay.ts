@@ -45,7 +45,6 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
     context: { currency, address },
   });
   if (orderPayment) {
-    // TODO: Check sum, only mark as paid if threshold met -> When contract is set, use that for calculation
     if (currency === CryptopayCurrencies.ETH && contract && contract !== '') {
       const ERC20Currency = (await resolvedContext.modules.currencies.findCurrencies({})).filter(
         (c) => c.contractAddress === contract,
@@ -71,7 +70,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
       // Need to convert
       const rate = await resolvedContext.modules.products.prices.rates.getRate(
         order.currency,
-        currency,
+        contract && contract !== '' ? contract : currency, // Convert to the smart contract if given
         MAX_RATE_AGE,
       );
       if (rate) {
