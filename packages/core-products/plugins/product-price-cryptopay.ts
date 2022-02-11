@@ -5,8 +5,6 @@ import bodyParser from 'body-parser';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-products';
 
-import Cache from './utils/cache';
-
 const {
   CRYPTOPAY_SECRET,
   CRYPTOPAY_PRICING_WEBHOOK_PATH = '/graphql/cryptopay-pricing',
@@ -17,7 +15,13 @@ const CRYPTOPAY_PRICING_EVENTS = ['CRYPTOPAY_UPDATE_RATE'];
 const CACHE_PERIOD = 60 * 60 * 0.1; // 10 minutes
 const MAX_RATE_AGE = CACHE_PERIOD;
 const SUPPORTED_CURRENCIES = ['BTC', 'ETH', 'XRP', 'USDT', 'BCH', 'BSV', 'LTC', 'EOS', 'BNB', 'XTZ'];
-const cache = new Cache(CACHE_PERIOD);
+
+export type CryptopayRateData = {
+  quoteCurrency: string;
+  token: string;
+  rate: number;
+  timestamp: number;
+};
 
 useMiddlewareWithCurrentContext(CRYPTOPAY_PRICING_WEBHOOK_PATH, bodyParser.json());
 
@@ -89,12 +93,13 @@ const ProductPriceCryptopay: IProductPricingAdapter = {
             created: -1,
           },
         });
-        const cryptopayRate = cryptopayRates.find((ev) => ev.payload.token === currency)?.payload;
+        const cryptopayRate = cryptopayRates.find((ev) => ev.payload.token === currency)
+          ?.payload as CryptopayRateData;
         if (!cryptopayRate || cryptopayRate.timestamp < Date.now() / 1000 - MAX_RATE_AGE) {
           // Allow fallback to different adapter when no data available 
           return pricingAdapter.calculate();
-        } 
-        const rate = cryptopayRate.rate;
+        }
+        const { rate } = cryptopayRate;
 
         const convertedAmount = productPrice?.amount * rate;
         pricingAdapter.resetCalculation();
