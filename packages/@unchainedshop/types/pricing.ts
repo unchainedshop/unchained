@@ -6,6 +6,7 @@ import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
 import { OrderPayment } from './orders.payments';
 import { OrderPosition } from './orders.positions';
+import { IProductPricingSheet } from './products.pricing';
 import { User } from './user';
 
 export interface BasePricingAdapterContext extends Context {
@@ -85,7 +86,7 @@ export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricing
 
 export interface IPricingAdapterActions<Calculation extends PricingCalculation> {
   calculate: () => Promise<Array<Calculation>>;
-  resultSheet: () => IBasePricingSheet<Calculation>;
+  resultSheet: () => IProductPricingSheet;
 }
 
 export type IPricingAdapter<
