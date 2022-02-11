@@ -30,6 +30,14 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
     );
   },
 
+  variations: async (obj, { limit = 10, offset = 0 }, { modules }) => {
+    return modules.products.variations.findProductVariations({
+      productId: obj._id,
+      limit,
+      offset,
+    });
+  },
+
   async simulatedPriceRange(
     obj,
     { currency, quantity, useNetPrice, vectors, includeInactive },

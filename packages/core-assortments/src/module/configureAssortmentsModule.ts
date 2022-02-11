@@ -299,8 +299,8 @@ export const configureAssortmentsModule = async ({
         const links = AssortmentLinks.find(
           { childAssortmentId: assortmentId },
           {
-            projection: { parentAssortmentId: 1 },
-            sort: { sortKey: 1 },
+            projection: { childAssortmentId: 1, parentAssortmentId: 1 },
+            sort: { childAssortmentId: 1, sortKey: 1 },
           },
         );
 

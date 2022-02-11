@@ -8,7 +8,6 @@ export default async function removeAssortmentFilter(
   { modules, userId }: Context,
 ) {
   log(`mutation removeAssortmentFilter ${assortmentFilterId}`, {
-    modules,
     userId,
   });
   if (!assortmentFilterId) throw new InvalidIdError({ assortmentFilterId });

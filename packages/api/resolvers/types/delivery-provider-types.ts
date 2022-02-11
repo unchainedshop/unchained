@@ -62,7 +62,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     return {
       _id: crypto
         .createHash('sha256')
-        .update([this._id, country, useNetPrice, order ? order._id : ''].join(''))
+        .update([obj._id, country, useNetPrice, order ? order._id : ''].join(''))
         .digest('hex'),
       amount: orderPrice.amount,
       currencyCode: orderPrice.currency,

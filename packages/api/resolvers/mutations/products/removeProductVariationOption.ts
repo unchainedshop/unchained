@@ -10,7 +10,6 @@ export default async function removeProductVariationOption(
   const { productVariationId, productVariationOptionValue } = params;
 
   log(`mutation removeProductVariationOption ${productVariationId} ${productVariationOptionValue}`, {
-    modules,
     userId,
   });
 

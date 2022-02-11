@@ -4,8 +4,9 @@ export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorH
   _id: ({ product, key, value }) => `${product._id}:${key}=${value}}`,
 
   option: async (obj, _, { modules }) => {
-    const productVariation = await modules.products.variations.findProductVariation({
-      productVariationId: obj.key,
+    const productVariation = await modules.products.variations.findProductVariationByKey({
+      key: obj.key,
+      productId: obj.product._id
     });
     return modules.products.variations.option(productVariation, obj.value);
   },

@@ -168,8 +168,8 @@ const Stripe: IPaymentAdapter = {
         return null;
       },
 
-      isActive() {
-        if (this.configurationError() === null) return true;
+      isActive: async () => {
+        if ((await adapter.configurationError()) === null) return true;
         return false;
       },
 

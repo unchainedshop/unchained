@@ -52,7 +52,7 @@ const PaypalCheckout: IPaymentAdapter = {
       },
 
       isActive: async () => {
-        if (!(await adapter.configurationError())) return true;
+        if ((await adapter.configurationError()) === null) return true;
         return false;
       },
 

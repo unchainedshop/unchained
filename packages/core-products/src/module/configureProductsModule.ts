@@ -22,6 +22,8 @@ const PRODUCT_EVENTS = [
   'PRODUCT_UPDATE',
   'PRODUCT_PUBLISH',
   'PRODUCT_UNPUBLISH',
+  'PRODUCT_ADD_ASSIGNMENT',
+  'PRODUCT_REMOVE_ASSIGNMENT'
 ];
 
 const InternalProductStatus = {
@@ -96,8 +98,7 @@ export const configureProductsModule = async ({
           published: new Date(),
         },
       });
-
-      emit('PRODUCT_PUBLISH', { product: this });
+      emit('PRODUCT_PUBLISH', { product });
 
       return true;
     }
@@ -116,7 +117,7 @@ export const configureProductsModule = async ({
         },
       });
 
-      emit('PRODUCT_UNPUBLISH', { product: this });
+      emit('PRODUCT_UNPUBLISH', { product });
 
       return true;
     }
@@ -251,7 +252,7 @@ export const configureProductsModule = async ({
         })
         .map((assignment) => ({
           assignment,
-          product: this,
+          product,
         }));
     },
 
@@ -267,7 +268,7 @@ export const configureProductsModule = async ({
         const variations = await modules.products.variations.findProductVariations({
           productId,
         });
-        const vectors = configuration.filter(({ key: configurationKey }) => {
+        const vectors = configuration?.filter(({ key: configurationKey }) => {
           const isKeyEqualsVariationKey = Boolean(
             variations.filter(({ key: variationKey }) => variationKey === configurationKey).length,
           );
@@ -453,7 +454,6 @@ export const configureProductsModule = async ({
       },
 
       removeBundleItem: async (productId, index, userId) => {
-        // TODO: There has to be a better MongoDB way to do this!
         const product = await Products.findOne(generateDbFilterById(productId), {});
 
         const { bundleItems = [] } = product;

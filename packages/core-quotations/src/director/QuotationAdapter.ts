@@ -12,7 +12,7 @@ export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'versio
 
   actions: () => {
     return {
-      configurationError: () => {
+      configurationError: async () => {
         return QuotationError.NOT_IMPLEMENTED;
       },
 

@@ -15,9 +15,9 @@ export const DeliveryDirector: IDeliveryDirector = {
     const adapter = Adapter.actions(deliveryProvider.configuration, context);
 
     return {
-      configurationError: () => {
+      configurationError: async () => {
         try {
-          const error = adapter.configurationError();
+          const error = await adapter.configurationError();
           return error;
         } catch (error) {
           return DeliveryError.ADAPTER_NOT_FOUND;
@@ -36,7 +36,7 @@ export const DeliveryDirector: IDeliveryDirector = {
         }
       },
 
-      isActive: () => {
+      isActive: async () => {
         try {
           return adapter.isActive();
         } catch (error) {

@@ -49,8 +49,8 @@ export type IWarehousingAdapter = IBaseAdapter & {
     config: WarehousingProvider['configuration'],
     context: WarehousingContext & Context,
   ) => {
-    configurationError: () => WarehousingError;
-    isActive: () => boolean;
+    configurationError: () => Promise<WarehousingError>;
+    isActive: () => Promise<boolean>;
     stock: (referenceDate: Date) => Promise<number>;
     productionTime: (quantityToProduce: number) => Promise<number>;
     commissioningTime: (quantity: number) => Promise<number>;
@@ -67,8 +67,8 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     warehousingContext: WarehousingContext,
     requestContext: Context,
   ) => {
-    configurationError: () => WarehousingError;
-    isActive: () => boolean;
+    configurationError: () => Promise<WarehousingError>;
+    isActive: () => Promise<boolean>;
     throughputTime: () => Promise<number>;
     estimatedStock: () => Promise<{ quantity: number } | null>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
@@ -102,13 +102,13 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
   ) => Promise<Array<WarehousingProvider>>;
   findInterface: (query: WarehousingProvider) => WarehousingInterface;
   findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
-  configurationError: (provider: WarehousingProvider, requestContext: Context) => WarehousingError;
+  configurationError: (provider: WarehousingProvider, requestContext: Context) => Promise<WarehousingError>;
   estimatedDispatch: (
     provider: WarehousingProvider,
     context: WarehousingContext,
     requestContext: Context,
   ) => Promise<EstimatedDispatch>;
-  isActive: (provider: WarehousingProvider, requestContext: Context) => boolean;
+  isActive: (provider: WarehousingProvider, requestContext: Context) => Promise<boolean>;
 
   // Mutations
   delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;
