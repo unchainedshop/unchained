@@ -27,15 +27,15 @@ const ProductPrice: IProductPricingAdapter = {
           { country, currency, quantity },
           params.context,
         );
-        if (price === null || price === undefined) return null;
-        const itemTotal = price.amount * quantity;
-
-        pricingAdapter.resultSheet().addItem({
-          amount: itemTotal,
-          isTaxable: price.isTaxable,
-          isNetPrice: price.isNetPrice,
-          meta: { adapter: ProductPrice.key },
-        });
+        if (price) {
+          const itemTotal = price.amount * quantity;
+          pricingAdapter.resultSheet().addItem({
+            amount: itemTotal,
+            isTaxable: price.isTaxable,
+            isNetPrice: price.isNetPrice,
+            meta: { adapter: ProductPrice.key },
+          });
+        }
 
         return pricingAdapter.calculate();
       },

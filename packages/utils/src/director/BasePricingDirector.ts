@@ -44,6 +44,8 @@ export const BasePricingDirector = <
 
           calculation = await Adapters.reduce(async (previousPromise, Adapter) => {
             const resolvedCalculation = await previousPromise;
+            if (!resolvedCalculation) return null;
+
             const discounts: Array<Discount> = await Promise.all(
               context.discounts.map(async (discount) => ({
                 discountId: discount._id,
@@ -63,10 +65,7 @@ export const BasePricingDirector = <
               });
 
               const nextCalculationResult = await adapter.calculate();
-
               if (!nextCalculationResult) return null;
-              if (!resolvedCalculation) return null;
-
               return resolvedCalculation.concat(nextCalculationResult);
             } catch (error) {
               log(error, { level: LogLevel.Error });
