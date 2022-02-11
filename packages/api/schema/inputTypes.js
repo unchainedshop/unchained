@@ -72,6 +72,7 @@ export default [
     input UpdateCurrencyInput {
       isoCode: String!
       isActive: Boolean
+      contractAddress: String
     }
 
     input CreateProductInput {

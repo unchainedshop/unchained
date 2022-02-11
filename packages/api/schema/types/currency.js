@@ -4,6 +4,7 @@ export default [
       _id: ID!
       isoCode: String
       isActive: Boolean
+      contractAddress: String
     }
   `,
 ];

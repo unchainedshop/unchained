@@ -14,7 +14,7 @@ export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,
   AdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>,
+  PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>
 >(
   directorName: string,
 ): IBasePricingDirector<DirectorContext, AdapterContext, Calculation, PricingAdapter> => {
@@ -22,17 +22,13 @@ export const BasePricingDirector = <
     adapterSortKey: 'orderIndex',
   });
 
-  let calculation: Array<Calculation> = [];
-  let context: AdapterContext | null = null;
-
   const director = {
     ...baseDirector,
 
-    getCalculation: () => calculation,
-    getContext: () => context,
-
     actions: async (pricingContext, requestContext, buildPricingContext) => {
-      context = await buildPricingContext(pricingContext, requestContext);
+      const context = await buildPricingContext(pricingContext, requestContext);
+
+      let calculation: Array<Calculation> = [];
 
       return {
         calculate: async () => {
@@ -44,6 +40,8 @@ export const BasePricingDirector = <
 
           calculation = await Adapters.reduce(async (previousPromise, Adapter) => {
             const resolvedCalculation = await previousPromise;
+            if (!resolvedCalculation) return null;
+
             const discounts: Array<Discount> = await Promise.all(
               context.discounts.map(async (discount) => ({
                 discountId: discount._id,
@@ -63,10 +61,7 @@ export const BasePricingDirector = <
               });
 
               const nextCalculationResult = await adapter.calculate();
-
               if (!nextCalculationResult) return null;
-              if (!resolvedCalculation) return null;
-
               return resolvedCalculation.concat(nextCalculationResult);
             } catch (error) {
               log(error, { level: LogLevel.Error });
@@ -76,7 +71,8 @@ export const BasePricingDirector = <
 
           return calculation;
         },
-
+        getCalculation: () => calculation,
+        getContext: () => context,
         resultSheet: () => null,
       };
     },

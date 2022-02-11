@@ -19,7 +19,7 @@ const baseDirector = BasePricingDirector<
 export const ProductPricingDirector: IProductPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: async (
+  async buildPricingContext(
     {
       item: orderPosition,
       ...pricingContext
@@ -27,7 +27,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
       item: OrderPosition;
     } & ProductPricingContext,
     requestContext,
-  ) => {
+  ) {
     const { modules } = requestContext;
 
     if (!orderPosition) {
@@ -64,22 +64,20 @@ export const ProductPricingDirector: IProductPricingDirector = {
     };
   },
 
-  actions: async (pricingContext, requestContext) => {
-    return baseDirector.actions(
-      pricingContext,
-      requestContext,
-      ProductPricingDirector.buildPricingContext,
-    );
-  },
+  async actions(pricingContext, requestContext) {
+    const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
+    return {
+      ...actions,
+      resultSheet() {
+        const calculation = actions.getCalculation();
+        const context = actions.getContext();
 
-  resultSheet() {
-    const calculation = baseDirector.getCalculation();
-    const context = baseDirector.getContext();
-
-    return ProductPricingSheet({
-      calculation,
-      currency: context.currency,
-      quantity: context.quantity,
-    });
+        return ProductPricingSheet({
+          calculation,
+          currency: context.currency,
+          quantity: context.quantity,
+        });
+      },
+    };
   },
 };
