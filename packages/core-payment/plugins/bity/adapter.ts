@@ -287,7 +287,7 @@ const Bity: IPaymentAdapter = {
         // Signing the order will estimate a new order in bity and sign it with private data
         paymentLogger.info(`Bity Plugin: Sign ${JSON.stringify(transactionContext)}`);
 
-        const { orderPayment } = params.context;
+        const { orderPayment } = params.paymentContext;
 
         const order = await params.context.modules.orders.findOrder({
           orderId: orderPayment.orderId,
@@ -325,7 +325,7 @@ const Bity: IPaymentAdapter = {
       },
 
       charge: async () => {
-        const { order } = params.context;
+        const { order } = params.paymentContext;
         const { bityPayload, bitySignature } = order?.context || {};
 
         const pricing = OrderPricingSheet({
