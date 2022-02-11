@@ -88,9 +88,9 @@ export const configureProductPricesModule = ({
     );
 
     const calculated = await pricingDirector.calculate();
-    if (!calculated) return null;
+    if (!calculated || !calculated.length) return null;
 
-    const pricing = ProductPricingDirector.resultSheet();
+    const pricing = ProductPricingDirector.resultSheet(calculated);
     const userPrice = pricing.unitPrice({ useNetPrice });
 
     return {

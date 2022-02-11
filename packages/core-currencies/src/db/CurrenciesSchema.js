@@ -6,6 +6,7 @@ export const CurrenciesSchema = new SimpleSchema(
     isoCode: { type: String, required: true },
     isActive: Boolean,
     authorId: { type: String, required: true },
+    contractAddress: { type: String, required: false },
     ...Schemas.timestampFields,
   },
   { requiredByDefault: false },
