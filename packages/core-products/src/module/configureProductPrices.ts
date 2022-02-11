@@ -271,9 +271,27 @@ export const configureProductPricesModule = ({
       });
     },
 
-    rates: async () => {
-      const priceRates = await ProductPriceRates(db);
-      return priceRates.ProductRates;
+    rates: {
+      getRate: async (baseCurrency, quoteCurrency, maxAge) => {
+        const priceRates = await (await ProductPriceRates(db)).ProductRates;
+        const currencyRateBase = await priceRates.findOne({ baseCurrency, quoteCurrency });
+        const currencyRateInv = await priceRates.findOne({
+          baseCurrency: quoteCurrency,
+          quoteCurrency: baseCurrency,
+        });
+
+        let rate = null;
+        if (currencyRateBase && currencyRateBase.timestamp >= Date.now() / 1000 - maxAge) {
+          rate = currencyRateBase.rate;
+        } else if (currencyRateInv && currencyRateInv.timestamp >= Date.now() / 1000 - maxAge) {
+          rate = 1 / currencyRateInv.rate;
+        }
+        return rate;
+      },
+      getRates: async () => {
+        const priceRates = await ProductPriceRates(db);
+        return priceRates.ProductRates;
+      },
     },
   };
 };

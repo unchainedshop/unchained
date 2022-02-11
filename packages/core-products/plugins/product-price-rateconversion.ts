@@ -49,19 +49,11 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
         )
           return pricingAdapter.calculate();
 
-        const priceRates = await modules.products.prices.rates();
-        const currencyRateBase = await priceRates.findOne({ baseCurrency: defaultCurrency });
-        const currencyRateQuote = await priceRates.findOne({ quoteCurrency: defaultCurrency });
-
-        let rate;
-        if (currencyRateBase && currencyRateBase.timestamp >= Date.now() / 1000 - MAX_RATE_AGE) {
-          rate = currencyRateBase.rate;
-        } else if (
-          currencyRateQuote &&
-          currencyRateQuote.timestamp >= Date.now() / 1000 - MAX_RATE_AGE
-        ) {
-          rate = 1 / currencyRateQuote.rate;
-        }
+        const rate = await modules.products.prices.rates.getRate(
+          defaultCurrency,
+          currency,
+          MAX_RATE_AGE,
+        );
 
         if (rate) {
           const convertedAmount = productPrice?.amount * rate;

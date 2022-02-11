@@ -21,7 +21,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_PRICING_WEBHOOK_PATH, async (request, 
     rate,
     timestamp,
   };
-  const priceRates = await resolvedContext.modules.products.prices.rates();
+  const priceRates = await resolvedContext.modules.products.prices.rates.getRates();
   priceRates.replaceOne({ baseCurrency, quoteCurrency: token }, rateData, {
     upsert: true,
   });
