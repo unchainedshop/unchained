@@ -255,7 +255,10 @@ export type ProductsModule = {
       requestContext: Context,
     ) => Promise<ProductPriceRange>;
 
-    rates: () => Promise<Collection<ProductPriceRate>>;
+    rates: {
+      getRate(baseCurrency: string, quoteCurrency: string, maxAge: number): Promise<number | null>;
+      getRates(): Promise<Collection<ProductPriceRate>>;
+    };
   };
 
   // Product adapter

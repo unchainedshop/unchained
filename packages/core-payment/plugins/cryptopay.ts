@@ -19,7 +19,6 @@ const {
   CRYPTOPAY_WEBHOOK_PATH = '/graphql/cryptopay',
   CRYPTOPAY_BTC_XPUB,
   CRYPTOPAY_ETH_XPUB,
-  CRYPTOPAY_ETH_ERC20_WHITELIST,
   CRYPTOPAY_BTC_TESTNET = false,
 } = process.env;
 
@@ -27,6 +26,9 @@ enum CryptopayCurrencies {
   BTC = 'BTC',
   ETH = 'ETH',
 }
+
+const MAX_RATE_AGE = 60 * 60 * 0.1; // 10 minutes
+const MAX_ALLOWED_DIFF = 0.01; // Accept payments when the converted amount differs by this much (in percent)
 
 useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
 
@@ -44,9 +46,11 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
   });
   if (orderPayment) {
     // TODO: Check sum, only mark as paid if threshold met -> When contract is set, use that for calculation
-    if (currency === CryptopayCurrencies.ETH && contract) {
-      const ERC20Whitelist = CRYPTOPAY_ETH_ERC20_WHITELIST.split(',');
-      if (!ERC20Whitelist.includes(contract)) {
+    if (currency === CryptopayCurrencies.ETH && contract && contract !== '') {
+      const ERC20Currency = (await resolvedContext.modules.currencies.findCurrencies({})).filter(
+        (c) => c.contractAddress === contract,
+      );
+      if (!ERC20Currency.length) {
         paymentLogger.warn(`Cryptopay Plugin: ERC20 token address ${contract} not whitelisted.`);
         response.end(JSON.stringify({ success: false }));
         return;
@@ -59,10 +63,30 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
       calculation: order.calculation,
       currency: order.currency,
     });
-    const totalAmount = Math.round(pricing?.total({ useNetPrice: false }).amount / 10 || 0) * 10;
-    console.log(totalAmount);
-    await resolvedContext.modules.orders.payments.markAsPaid(orderPayment, {});
-    response.end(JSON.stringify({ success: true }));
+    const totalAmount = pricing?.total({ useNetPrice: false }).amount;
+    let convertedAmount;
+    if (order.currency === currency) {
+      convertedAmount = totalAmount;
+    } else {
+      // Need to convert
+      const rate = await resolvedContext.modules.products.prices.rates.getRate(
+        order.currency,
+        currency,
+        MAX_RATE_AGE,
+      );
+      if (rate) {
+        convertedAmount = totalAmount * rate;
+      }
+    }
+    if (convertedAmount && convertedAmount >= totalAmount * (1 - MAX_ALLOWED_DIFF)) {
+      await resolvedContext.modules.orders.payments.markAsPaid(orderPayment, {});
+      response.end(JSON.stringify({ success: true }));
+    } else {
+      paymentLogger.warn(
+        `Cryptopay Plugin: OrderPayment ${orderPayment._id} not marked as paid. Converted amount is ${convertedAmount}`,
+      );
+      response.end(JSON.stringify({ success: false }));
+    }
   } else {
     paymentLogger.info(
       `Cryptopay Plugin: No orderPayment with address ${address} and currency ${currency} found`,
