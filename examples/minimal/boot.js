@@ -25,6 +25,8 @@ import "meteor/unchained:core-orders/plugins/order-delivery";
 import "meteor/unchained:core-orders/plugins/order-payment";
 import "meteor/unchained:core-products/plugins/product-catalog-price";
 import "meteor/unchained:core-products/plugins/product-price-coinbase-exchange";
+import "meteor/unchained:core-products/plugins/product-price-cryptopay";
+import "meteor/unchained:core-products/plugins/product-price-rateconversion";
 import "meteor/unchained:core-products/plugins/product-discount";
 import "meteor/unchained:core-products/plugins/product-swiss-tax";
 import "meteor/unchained:core-delivery/plugins/delivery-swiss-tax";
