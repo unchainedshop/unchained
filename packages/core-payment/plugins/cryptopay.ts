@@ -131,8 +131,14 @@ const Cryptopay: IPaymentAdapter = {
 
       sign: async () => {
         const { orderPayment } = params.paymentContext;
+        if (orderPayment?.context.length) {
+          // Do not derive address a second time for order payment, return existing address
+          const existingAddresses = orderPayment.context.filter((c) => c.currency);
+          if (existingAddresses) {
+            return JSON.stringify(existingAddresses);
+          }
+        }
         const cryptoAddresses: { currency: CryptopayCurrencies; address: string }[] = [];
-
         if (CRYPTOPAY_BTC_XPUB) {
           const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
           const bip32 = BIP32Factory(ecc);
