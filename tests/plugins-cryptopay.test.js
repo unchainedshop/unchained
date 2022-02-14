@@ -35,9 +35,9 @@ describe("Plugins: Cryptopay Payments", () => {
       commerce: {
         pricing: [
           {
-            amount: 100,
+            amount: 10 ** 7, // 0.1 BTC
             maxQuantity: 0,
-            isTaxable: true,
+            isTaxable: false,
             isNetPrice: false,
             currencyCode: 'BTC',
             countryCode: 'CH',
@@ -76,7 +76,7 @@ describe("Plugins: Cryptopay Payments", () => {
         {
           category: 'ITEM',
           amount: 10 ** 7, // 0.1 BTC
-          isTaxable: true,
+          isTaxable: false,
           isNetPrice: false,
           meta: {
             adapter: 'shop.unchained.pricing.product-price',
@@ -287,6 +287,26 @@ describe("Plugins: Cryptopay Payments", () => {
       expect(orderPayment.status).toBe("PAID");
     }, 10000);
 
+    it("Pay too little for converted prices", async () => {
+      const result = await fetch("http://localhost:3000/graphql/cryptopay", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currency: 'ETH',
+          contract: SHIBCurrency.contractAddress,
+          decimals: 18,
+          address: ETH_DERIVATIONS[1],
+          amount: 1844337882700110748172344, // 50 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          secret: 'secret'
+        }),
+      });
+      expect(await result.json()).toMatchObject({ success: false });
+      const orderPayment = await db.collection("order_payments").findOne({ _id: "cryptopay-payment2" });
+      expect(orderPayment.status).not.toBe("PAID");
+    }, 10000);
+
     it("Pay product with fiat prices in SHIB", async () => {
       const result = await fetch("http://localhost:3000/graphql/cryptopay", {
         method: "POST",
@@ -298,7 +318,7 @@ describe("Plugins: Cryptopay Payments", () => {
           contract: SHIBCurrency.contractAddress,
           decimals: 18,
           address: ETH_DERIVATIONS[1],
-          amount: 11857248247879012000000000, // 321.45 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          amount: 11857248247879012000000000, // 107.15 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
           secret: 'secret'
         }),
       });
