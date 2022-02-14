@@ -65,7 +65,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
     const totalAmount = pricing?.total({ useNetPrice: false }).amount;
     let convertedAmount: number;
     if (order.currency === currency) {
-      convertedAmount = amount / 10 ** (decimals - 8);
+      convertedAmount = amount / 10 ** (decimals - 8); // All crypto native prices denoted with 8 decimals
     } else {
       // Need to convert
       const rate = await resolvedContext.modules.products.prices.rates.getRate(
@@ -74,7 +74,9 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
         MAX_RATE_AGE,
       );
       if (rate) {
-        convertedAmount = (amount / 10 ** decimals) * rate;
+        // We assume that we are converting to a fiat currency here (with 2 decimals).
+        // Paying an order with prices in crypto in another crypto is not supported.
+        convertedAmount = Math.round((amount / 10 ** decimals) * rate * 100);
       }
     }
     if (convertedAmount && convertedAmount >= totalAmount * (1 - MAX_ALLOWED_DIFF)) {

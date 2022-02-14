@@ -21,6 +21,15 @@ describe("Plugins: Cryptopay Payments", () => {
 
     await db.collection("currencies").findOrInsertOne(BTCCurrency);
 
+    await db.collection("currencies").findOrInsertOne(SHIBCurrency);
+
+    await db.collection("product_rates").findOrInsertOne({
+      baseCurrency: "CHF",
+      quoteCurrency: SHIBCurrency.contractAddress,
+      rate: 0.00002711,
+      timestamp: Math.round(Date.now() / 1000),
+    })
+
     const SimpleBtcProduct = {
       ...SimpleProduct,
       commerce: {
@@ -127,7 +136,7 @@ describe("Plugins: Cryptopay Payments", () => {
   });
 
   describe("Mutation.sign (Cryptopay)", () => {
-    xit("Derive address for first order", async () => {
+    it("Derive address for first order", async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
             mutation signPaymentProviderForCheckout(
@@ -148,7 +157,7 @@ describe("Plugins: Cryptopay Payments", () => {
       ]);
     }, 10000);
 
-    xit("Derive address for second order", async () => {
+    it("Derive address for second order", async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
             mutation signPaymentProviderForCheckout(
@@ -169,7 +178,7 @@ describe("Plugins: Cryptopay Payments", () => {
       ]);
     }, 10000);
 
-    xit("Immutable derivations: Address for order payments should not change", async () => {
+    it("Immutable derivations: Address for order payments should not change", async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
             mutation signPaymentProviderForCheckout(
@@ -238,7 +247,7 @@ describe("Plugins: Cryptopay Payments", () => {
       expect(orderPayment.status).not.toBe("PAID");
     }, 10000);
 
-    it("Pay too less for product with crypto prices", async () => {
+    it("Pay too little for product with crypto prices", async () => {
       const result = await fetch("http://localhost:3000/graphql/cryptopay", {
         method: "POST",
         headers: {
@@ -275,6 +284,26 @@ describe("Plugins: Cryptopay Payments", () => {
       });
       expect(await result.json()).toMatchObject({ success: true });
       const orderPayment = await db.collection("order_payments").findOne({ _id: "cryptopay-payment" });
+      expect(orderPayment.status).toBe("PAID");
+    }, 10000);
+
+    it("Pay product with fiat prices in SHIB", async () => {
+      const result = await fetch("http://localhost:3000/graphql/cryptopay", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currency: 'ETH',
+          contract: SHIBCurrency.contractAddress,
+          decimals: 18,
+          address: ETH_DERIVATIONS[1],
+          amount: 11857248247879012000000000, // 321.45 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+          secret: 'secret'
+        }),
+      });
+      expect(await result.json()).toMatchObject({ success: true });
+      const orderPayment = await db.collection("order_payments").findOne({ _id: "cryptopay-payment2" });
       expect(orderPayment.status).toBe("PAID");
     }, 10000);
   });
