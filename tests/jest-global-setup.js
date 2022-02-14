@@ -21,6 +21,13 @@ const startAndWaitForMeteor = async () => {
           DATATRANS_SIGN_KEY: '1337',
           DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
           APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
+          CRYPTOPAY_SECRET: 'test',
+          CRYPTOPAY_BTC_XPUB:
+            'tpubDDsGg7jiaNfukcctBwCogVUqdfU7p7X4Uoge2FNCk64YD6THTBxdGahRuAq9uuJxFErJuihg7RdgbG3YHW5AgT17f7m6MAQjauiUAPJytQG',
+          CRYPTOPAY_ETH_XPUB:
+            'xpub6DWGtXnV4tfoCvDZyao1zh4664ZZ7hw2TFgGiKskeAZ1ga2Uen8epiDQzaHYrFkn2X5wf6sbTgpHqsNzaTuGstEhmN2nR2szqGyoWuiYHrf',
+          CRYPTOPAY_BTC_TESTNET: 'true',
+
         },
       });
       global.__SUBPROCESS_METEOR__.stdout.on('data', (data) => {
