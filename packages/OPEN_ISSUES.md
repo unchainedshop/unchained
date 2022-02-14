@@ -13,5 +13,3 @@ _(Discussed between Pascal & Joel on Jan, 27th 2022)_
 4. Not yet migrated plugins:
 
 - DatatransV2
-- Datatrans
-- Coinbase

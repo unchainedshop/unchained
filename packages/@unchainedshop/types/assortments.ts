@@ -317,5 +317,5 @@ export type AssortmentsModule = {
  */
 
 export interface AssortmentsSettingsOptions {
-  zipTree: (data: any) => any;
+  zipTree?: (data: any) => any;
 }

@@ -256,7 +256,9 @@ declare module 'meteor/unchained:core-file-upload' {
  */
 
 declare module 'meteor/unchained:core-accountsjs' {
-  function configureAccountsModule(options: AccountsSettingsOptions): Promise<AccountsModule>;
+  function configureAccountsModule(
+    params: ModuleInput<AccountsSettingsOptions>,
+  ): Promise<AccountsModule>;
 
   function configureAccountServer(context: Context): any;
 
@@ -357,7 +359,7 @@ declare module 'meteor/unchained:core-languages' {
 }
 
 declare module 'meteor/unchained:core-messaging' {
-  function configureMessagingsModule(): MessagingModule;
+  function configureMessagingModule(params: ModuleInput<Record<string, never>>): MessagingModule;
 
   const MessagingDirector: IMessagingDirector;
 
