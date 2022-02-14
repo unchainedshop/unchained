@@ -46,10 +46,11 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
   });
   if (orderPayment) {
     if (currency === CryptopayCurrencies.ETH && contract && contract !== '') {
-      const ERC20Currency = (await resolvedContext.modules.currencies.findCurrencies({})).filter(
-        (c) => c.contractAddress === contract,
-      );
-      if (!ERC20Currency.length) {
+      const ERC20CurrencyCount = await resolvedContext.modules.currencies.count({
+        includeInactive: false,
+        contractAddress: contract,
+      });
+      if (!ERC20CurrencyCount) {
         paymentLogger.warn(`Cryptopay Plugin: ERC20 token address ${contract} not whitelisted.`);
         response.end(JSON.stringify({ success: false }));
         return;
