@@ -241,7 +241,7 @@ export type AssortmentsModule = {
       doc: AssortmentProduct,
       options?: { skipInvalidation?: boolean },
       userId?: string,
-    ) => Promise<string>;
+    ) => Promise<AssortmentProduct>;
 
     delete: (
       assortmentProductId: string,

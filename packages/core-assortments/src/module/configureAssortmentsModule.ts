@@ -436,7 +436,7 @@ export const configureAssortmentsModule = async ({
       findFilteredAssortments: async ({ limit, offset, assortmentIds, assortmentSelector, sort }) => {
         const assortments = await findPreservingIds(Assortments)(assortmentSelector, assortmentIds, {
           limit,
-          offset,
+          skip: offset,
           sort,
         });
 

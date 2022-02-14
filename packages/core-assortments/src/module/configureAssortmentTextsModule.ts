@@ -90,7 +90,7 @@ export const configureAssortmentTextsModule = ({
 
       await Assortments.updateMany(
         {
-          _id: { $ne: assortmentSelector },
+          _id: { $ne: assortmentId },
           slugs: slug,
         },
         {
