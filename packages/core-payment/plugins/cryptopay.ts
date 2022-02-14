@@ -65,7 +65,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
     const totalAmount = pricing?.total({ useNetPrice: false }).amount;
     let convertedAmount: number;
     if (order.currency === currency) {
-      convertedAmount = amount / 10 ** decimals;
+      convertedAmount = amount / 10 ** (decimals - 8);
     } else {
       // Need to convert
       const rate = await resolvedContext.modules.products.prices.rates.getRate(
