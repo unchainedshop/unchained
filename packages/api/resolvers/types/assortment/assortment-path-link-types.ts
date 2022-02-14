@@ -4,7 +4,6 @@ import {
   AssortmentLink as AssortmentLinkType,
   AssortmentText,
 } from '@unchainedshop/types/assortments';
-import { Locale } from 'locale';
 
 type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
 

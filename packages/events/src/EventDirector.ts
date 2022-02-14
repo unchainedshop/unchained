@@ -74,15 +74,15 @@ export const EventDirector: IEventDirector = {
     logger.verbose(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
   },
 
-  subscribe: (eventName: string, callBack: () => void): void => {
-    const currentSubscription = eventName + callBack?.toString(); // used to avaoid registering the same event handler callback
+  subscribe: (eventName: string, callback: () => void): void => {
+    const currentSubscription = eventName + callback?.toString(); // used to avaoid registering the same event handler callback
 
     if (!RegisteredEventsSet.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
 
     if (!RegisteredCallbacksSet.has(currentSubscription)) {
-      Adapter?.subscribe(eventName, callBack);
-      HistoryAdapter?.subscribe(eventName, callBack);
+      Adapter?.subscribe(eventName, callback);
+      HistoryAdapter?.subscribe(eventName, callback);
       RegisteredCallbacksSet.add(currentSubscription);
       logger.verbose(`EventDirector -> Subscribed to ${eventName}`);
     }

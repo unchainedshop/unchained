@@ -33,7 +33,7 @@ export type ProductVariationOption = {
 
 export type ProductVariationsModule = {
   // Queries
-  findProductVariationByKey: (query: { productId: string, key: string }) => Promise<ProductVariation>;
+  findProductVariationByKey: (query: { productId: string; key: string }) => Promise<ProductVariation>;
   findProductVariation: (query: { productVariationId: string }) => Promise<ProductVariation>;
 
   findProductVariations: (query: {
