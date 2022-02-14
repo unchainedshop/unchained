@@ -35,7 +35,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
 useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response) => {
   // Return a 200 response to acknowledge receipt of the event
   const resolvedContext = request.unchainedContext as Context;
-  const { currency, contract, address, amount, secret } = request.body;
+  const { currency, contract, decimals, address, amount, secret } = request.body;
   if (secret !== CRYPTOPAY_SECRET) {
     paymentLogger.warn(`Cryptopay Plugin: Invalid Cryptopay Secret provided`);
     response.end(JSON.stringify({ success: false }));
@@ -63,9 +63,9 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
       currency: order.currency,
     });
     const totalAmount = pricing?.total({ useNetPrice: false }).amount;
-    let convertedAmount;
+    let convertedAmount: number;
     if (order.currency === currency) {
-      convertedAmount = totalAmount;
+      convertedAmount = amount / 10 ** decimals;
     } else {
       // Need to convert
       const rate = await resolvedContext.modules.products.prices.rates.getRate(
@@ -74,7 +74,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
         MAX_RATE_AGE,
       );
       if (rate) {
-        convertedAmount = totalAmount * rate;
+        convertedAmount = (amount / 10 ** decimals) * rate;
       }
     }
     if (convertedAmount && convertedAmount >= totalAmount * (1 - MAX_ALLOWED_DIFF)) {
