@@ -36,6 +36,7 @@ const bulkImportMiddleware = async (req, res) => {
                   payloadId: file._id,
                   payloadSize: file.length,
                   createShouldUpsertIfIDExists: !!req.query?.createShouldUpsertIfIDExists,
+                  skipCacheInvalidation: !!req.query?.skipCacheInvalidation,
                   remoteAddress: resolvedContext.remoteAddress,
                 },
                 retries: 0,

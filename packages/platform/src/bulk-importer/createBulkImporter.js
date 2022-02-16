@@ -42,6 +42,7 @@ export const BulkImportPayloads = createBucket('bulk_import_payloads');
 export const createBulkImporter = (options, requestContext) => {
   const bulkOperations = {};
   const preparationIssues = [];
+  const processedOperations = {};
   const { logger } = options;
 
   const bulk = (Collection) => {
@@ -56,7 +57,7 @@ export const createBulkImporter = (options, requestContext) => {
   };
 
   logger.info(
-    `Configure event import with options: createShouldUpsertIfIDExists=${options.createShouldUpsertIfIDExists}`,
+    `Configure event import with options: createShouldUpsertIfIDExists=${options.createShouldUpsertIfIDExists} skipCacheInvalidation=${options.skipCacheInvalidation}`,
   );
 
   return {
@@ -78,6 +79,9 @@ export const createBulkImporter = (options, requestContext) => {
 
       try {
         await runPrepareAsync(entity, operation, event, context, requestContext);
+        if (!processedOperations[entity]) processedOperations[entity] = {};
+        if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
+        processedOperations[entity][operation].push(event.payload._id);
         logger.verbose(`${operation} ${entity} ${event.payload._id} [SUCCESS]`);
       } catch (e) {
         logger.verbose(`${operation} ${entity} ${event.payload._id} [FAILED]: ${e.message}`);
@@ -96,7 +100,10 @@ export const createBulkImporter = (options, requestContext) => {
     },
     execute: async () => {
       logger.info(`Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`);
-      const operationResults = await Promise.all(Object.values(bulkOperations).map((o) => o.execute()));
+      const operationResults = {
+        processedOperations,
+        processedBulkOperations: Promise.all(Object.values(bulkOperations).map((o) => o.execute())),
+      };
       if (preparationIssues?.length) {
         logger.error(
           `${preparationIssues.length} issues occured while preparing events, import finished with errors`,
@@ -115,6 +122,7 @@ export const createBulkImporter = (options, requestContext) => {
       ];
     },
     invalidateCaches: async () => {
+      if (options?.skipCacheInvalidation) return;
       await requestContext.modules.assortments.invalidateCache();
       await requestContext.modules.filters.invalidateCache({}, requestContext);
     },

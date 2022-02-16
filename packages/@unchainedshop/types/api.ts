@@ -58,6 +58,7 @@ export interface UnchainedServerOptions {
 
 export interface Migration {
   id: number;
+  name: string;
   up: (params: { logger: Logger | Console; unchainedAPI: UnchainedAPI }) => Promise<void>;
 }
 

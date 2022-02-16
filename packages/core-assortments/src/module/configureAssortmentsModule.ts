@@ -8,7 +8,7 @@ import {
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbMutations, generateDbFilterById, findPreservingIds } from 'meteor/unchained:utils';
-import { configureEmptyMigration } from '../migrations/configureEmptyMigration';
+import { addMigrations } from '../migrations/addMigrations';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 import { AssortmentsSchema } from '../db/AssortmentsSchema';
 import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule';
@@ -69,10 +69,10 @@ export const configureAssortmentsModule = async ({
   registerEvents(ASSORTMENT_EVENTS);
 
   // Settings
-  assortmentsSettings.configureSettings(assortmentOptions);
+  await assortmentsSettings.configureSettings(assortmentOptions, db);
 
   // Migration
-  configureEmptyMigration(migrationRepository);
+  addMigrations(migrationRepository, db);
 
   // Collections & Mutations
   const { Assortments, AssortmentTexts, AssortmentProducts, AssortmentLinks, AssortmentFilters } =

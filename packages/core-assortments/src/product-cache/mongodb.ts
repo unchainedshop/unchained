@@ -1,0 +1,40 @@
+import { Db } from '@unchainedshop/types/common';
+import { AssortmentsCollection } from '../db/AssortmentsCollection';
+
+const eqSet = (as, bs) => {
+  return [...as].join(',') === [...bs].join(',');
+};
+
+export default async function mongodbCache(db: Db) {
+  const { AssortmentProductIdCache } = await AssortmentsCollection(db);
+
+  return {
+    async getCachedProductIds(assortmentId) {
+      const assortmentProductIdCache = await AssortmentProductIdCache.findOne({
+        _id: assortmentId,
+      });
+      return assortmentProductIdCache?.productIds;
+    },
+    async setCachedProductIds(assortmentId, productIds) {
+      const assortmentProductIdCache = await AssortmentProductIdCache.findOne({
+        _id: assortmentId,
+      });
+      if (
+        assortmentProductIdCache &&
+        eqSet(new Set(productIds), new Set(assortmentProductIdCache.productIds))
+      ) {
+        return 0;
+      }
+      const { result } = await AssortmentProductIdCache.updateOne(
+        { _id: assortmentId },
+        {
+          $set: {
+            productIds,
+          },
+        },
+        { upsert: true },
+      );
+      return result.nModified;
+    },
+  };
+}

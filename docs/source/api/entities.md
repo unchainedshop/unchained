@@ -3,7 +3,7 @@ title: 'PIM Connector Framework'
 description: Import Data from any PIM
 ---
 
-We have created a special API to upload large amounts of data, for example from a PIM or ERP system, to the Unchained Engine. 
+We have created a special API to upload large amounts of data, for example from a PIM or ERP system, to the Unchained Engine.
 
 ## Bulk Import API
 
@@ -70,6 +70,7 @@ Try to always send as many events at a time, so Unchained can optimize write ope
 Options:
 
 - `createShouldUpsertIfIDExists`: In some situations, this can be helpful programming forgiving sync code. If you set `createShouldUpsertIfIDExists` to true, CREATE operations will not fail if the entity with the payloadId already exists and the bulk importer instead tries to merge the new product with the existing one by using update methods.
+- `skipCacheInvalidation`: In some situations, this can be helpful skipping because it can add a lot of weight to the BULK_IMPORT operation and sometimes it's not needed for example availability syncs to have updated filter and assortment caches.
 
 ## JSON Reference
 

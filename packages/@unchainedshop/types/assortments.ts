@@ -44,6 +44,11 @@ export type AssortmentProduct = {
   tags: Array<string>;
 } & TimestampFields;
 
+export type AssortmentProductIdCacheRecord = {
+  _id?: _ID;
+  productIds: Array<string>;
+} & TimestampFields;
+
 export type AssortmentText = {
   _id?: _ID;
   assortmentId: string;
