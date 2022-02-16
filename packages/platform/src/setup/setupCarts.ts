@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 
-const { UNCHAINED_INVALIDATE_PROVIDERS = true, UNCHAINED_ASSIGN_CART_FOR_USERS = false } = process.env;
+const { UNCHAINED_DISABLE_PROVIDER_INVALIDATION, UNCHAINED_ASSIGN_CART_FOR_USERS } = process.env;
 
 export interface SetupCartsOptions {
   invalidateProviders?: boolean;
@@ -8,11 +8,11 @@ export interface SetupCartsOptions {
 }
 
 export const setupCarts = async (options: SetupCartsOptions = {}, unchainedAPI: Context) => {
-  if (options.invalidateProviders ?? !!UNCHAINED_INVALIDATE_PROVIDERS) {
+  if (options.invalidateProviders ?? !UNCHAINED_DISABLE_PROVIDER_INVALIDATION) {
     await unchainedAPI.modules.orders.invalidateProviders(unchainedAPI);
   }
 
-  if (options.assignCartForUsers ?? !!UNCHAINED_ASSIGN_CART_FOR_USERS) {
+  if (options.assignCartForUsers ?? Boolean(UNCHAINED_ASSIGN_CART_FOR_USERS)) {
     const users = await unchainedAPI.modules.users.findUsers({});
 
     await Promise.all(

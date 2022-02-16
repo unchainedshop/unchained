@@ -22,11 +22,7 @@ import 'meteor/unchained:core-messaging/workers/MessageWorker';
 
 export { MessageTypes };
 
-const {
-  NODE_ENV,
-  UNCHAINED_DISABLE_EMAIL_INTERCEPTION = false,
-  UNCHAINED_DISABLE_WORKER = false,
-} = process.env;
+const { NODE_ENV, UNCHAINED_DISABLE_EMAIL_INTERCEPTION, UNCHAINED_DISABLE_WORKER } = process.env;
 
 const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
   if (options?.disableWorker) return false;
