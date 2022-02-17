@@ -13,6 +13,7 @@ import { FiltersCollection } from '../db/FiltersCollection';
 import { FiltersSchema } from '../db/FiltersSchema';
 import { configureFilterSearchModule } from './configureFilterSearchModule';
 import { configureFilterTextsModule } from './configureFilterTextsModule';
+import createFilterValueParser from '../filter-value-parsers';
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
@@ -124,22 +125,11 @@ export const configureFiltersModule = async ({
 
     const { allProductIds, productIds } = getProductIds;
 
-    if (filter.type === FilterType.SWITCH) {
-      const [stringifiedBoolean] = values;
-      if (stringifiedBoolean !== undefined) {
-        if (!stringifiedBoolean || stringifiedBoolean === 'false' || stringifiedBoolean === '0') {
-          return productIds.false;
-        }
-        return productIds.true;
-      }
-      return allProductIds;
-    }
-
-    const reducedByValues = values.reduce((accumulator, value) => {
+    const parse = createFilterValueParser(filter.type);
+    return parse(values, Object.keys(productIds)).reduce((accumulator, value) => {
       const additionalValues = value === undefined ? allProductIds : productIds[value];
       return [...accumulator, ...(additionalValues || [])];
     }, []);
-    return reducedByValues;
   };
 
   const invalidateProductIdCache = async (filter: Filter, requestContext: Context) => {

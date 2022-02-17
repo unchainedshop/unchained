@@ -1,20 +1,19 @@
-import { UnchainedAPI } from '@unchainedshop/types/api';
-import { Db } from '@unchainedshop/types/common';
+import { UnchainedAPI, Migration } from '@unchainedshop/types/api';
+import { MigrationRepository } from '@unchainedshop/types/common';
 import { createLogger } from 'meteor/unchained:logger';
 import { generateDbFilterById } from 'meteor/unchained:utils';
 import { createMigrationRunner } from './createMigrationRunner';
-import { migrationRepository } from './migrationRepository';
 
 export const runMigrations = async ({
-  db,
+  migrationRepository,
   logger = createLogger('unchained:migrations'),
   unchainedAPI,
 }: {
-  db: Db;
+  migrationRepository: MigrationRepository<Migration>;
   logger?: any;
   unchainedAPI: UnchainedAPI;
 }) => {
-  const LastMigration = db.collection('last-migration');
+  const LastMigration = migrationRepository.db.collection('last-migration');
 
   const findCurrentId = async () => {
     const last = await LastMigration.findOne({ category: 'unchained' }, { sort: { _id: -1 } });

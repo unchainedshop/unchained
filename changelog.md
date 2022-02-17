@@ -3,9 +3,6 @@
 This is our first major release, it covers all features needed to build highly flexible e-commerce
 solutions.
 
-- [core] `UNCHAINED_INVALIDATE_PROVIDERS` has been removed in order for an inverted
-  `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`
-
 ## Breaking changes
 
 - [platform, api, core] Refactor Unchained Engine's core with the goal to add typescript support, get rid
@@ -13,6 +10,8 @@ solutions.
   new SW architecture. The event director and the databse are initialised in the platform and injected
   into the core modules and services. The modules provide a well-defined module API to manage the data
   and the custom services make use of the modules to fetch and manipulate.
+- [core] `UNCHAINED_INVALIDATE_PROVIDERS` has been removed in order for an inverted
+  `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`
 - [core] NEW core module `core-files-next` that uses [minio cloud object storage](https://min.io/)
   compatible with [amazon s3 cloud storage api](https://aws.amazon.com/s3/). This update provides a
   scalable files storage solution for all the projects that use it. All the previous file management APIs
@@ -79,6 +78,14 @@ solutions.
 
 ## Major
 
+- [core] Bulk Importer now supports skipping the built-in cache invalidation run at the end by using
+  `skipCacheInvalidation`
+- [api] A new `RANGE` filter type has been added. A range filter parses filter query values differently
+  in searchProducts than MULTI_SELECT and allows to do open-end filtering on decimal values by using `:`.
+  As an example, `0:500` will match all option values between 0 and 500.
+- [core] Assortment to Product Id cache now resides in a special collection to optimize performance and
+  can be further customized to cache these caches in a custom cache module. See new settings in
+  assortments: `setCachedProductIds` & `getCachedProductIds`
 - [examples] Updated Meteor to latest version 2.4 from 2.2 for the minimal project (see
   https://docs.meteor.com/changelog.html#v2420210915)
 - [api] Added support for Two Factor Auth with TOTP:

@@ -8,7 +8,9 @@ import {
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbMutations, generateDbFilterById, findPreservingIds } from 'meteor/unchained:utils';
-import { configureEmptyMigration } from '../migrations/configureEmptyMigration';
+import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase';
+import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';
+import { addMigrations } from '../migrations/addMigrations';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 import { AssortmentsSchema } from '../db/AssortmentsSchema';
 import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule';
@@ -56,10 +58,6 @@ const buildFindSelector = ({
   return selector;
 };
 
-const eqSet = (as: Set<string>, bs: Set<string>) => {
-  return [...as].join(',') === [...bs].join(',');
-};
-
 export const configureAssortmentsModule = async ({
   db,
   migrationRepository,
@@ -69,10 +67,10 @@ export const configureAssortmentsModule = async ({
   registerEvents(ASSORTMENT_EVENTS);
 
   // Settings
-  assortmentsSettings.configureSettings(assortmentOptions);
+  await assortmentsSettings.configureSettings(assortmentOptions, db);
 
   // Migration
-  configureEmptyMigration(migrationRepository);
+  addMigrations(migrationRepository);
 
   // Collections & Mutations
   const { Assortments, AssortmentTexts, AssortmentProducts, AssortmentLinks, AssortmentFilters } =
@@ -136,6 +134,12 @@ export const configureAssortmentsModule = async ({
     return [...ownProductIds, ...productIds];
   };
 
+  const buildProductIds = async (assortment: Assortment) => {
+    const collectedProductIdTree = (await collectProductIdCacheTree(assortment)) || [];
+    const assortmentSet = new Set<string>(assortmentsSettings.zipTree(collectedProductIdTree));
+    return [...assortmentSet];
+  };
+
   const findProductIds = async (
     assortment: Assortment,
     { forceLiveCollection = false, ignoreChildAssortments = false } = {},
@@ -144,14 +148,11 @@ export const configureAssortmentsModule = async ({
       const productAssignments = await findProductAssignments(assortment);
       return productAssignments.map(({ productId }) => productId);
     }
-    if (assortmentsSettings.zipTree && (!assortment._cachedProductIds || forceLiveCollection)) {
-      // get array of assortment products and child assortment links to products
-      const collectedProductIdTree = (await collectProductIdCacheTree(assortment)) || [];
-
-      const assortmentSet = new Set<string>(assortmentsSettings.zipTree(collectedProductIdTree));
-      return [...assortmentSet];
+    if (!forceLiveCollection) {
+      const cachedProductIds = await assortmentsSettings.getCachedProductIds(assortment._id);
+      if (cachedProductIds) return cachedProductIds;
     }
-    return assortment._cachedProductIds;
+    return buildProductIds(assortment);
   };
 
   const invalidateProductIdCache = async (
@@ -161,26 +162,13 @@ export const configureAssortmentsModule = async ({
     },
     userId?: string,
   ) => {
-    const linkedAssortments = await findLinkedAssortments(assortment);
-    const productIds = await findProductIds(assortment, {
-      forceLiveCollection: true,
-    });
+    const productIds = await buildProductIds(assortment);
 
-    if (eqSet(new Set(productIds), new Set(assortment._cachedProductIds))) {
-      return 0;
-    }
-
-    const updatedResult = await Assortments.updateOne(generateDbFilterById(assortment._id), {
-      $set: {
-        updated: new Date(),
-        updatedBy: userId,
-        _cachedProductIds: productIds,
-      },
-    });
-
-    let updateCount = updatedResult.modifiedCount;
+    let updateCount = await assortmentsSettings.setCachedProductIds(assortment._id, productIds);
 
     if (cacheOptions.skipUpstreamTraversal) return updateCount;
+
+    const linkedAssortments = await findLinkedAssortments(assortment);
 
     const filteredLinkedAssortments = linkedAssortments.filter(
       ({ childAssortmentId }) => childAssortmentId === assortment._id,
@@ -295,35 +283,8 @@ export const configureAssortmentsModule = async ({
     },
 
     breadcrumbs: async (params) => {
-      const resolveAssortmentLink = async (assortmentId: string, childAssortmentId: string) => {
-        const links = AssortmentLinks.find(
-          { childAssortmentId: assortmentId },
-          {
-            projection: { childAssortmentId: 1, parentAssortmentId: 1 },
-            sort: { childAssortmentId: 1, sortKey: 1 },
-          },
-        );
-
-        const parentIds = await links.map((link) => link.parentAssortmentId).toArray();
-
-        return {
-          assortmentId,
-          childAssortmentId,
-          parentIds,
-        };
-      };
-
-      const resolveAssortmentProducts = async (productId: string) => {
-        const products = AssortmentProducts.find(
-          { productId },
-          {
-            projection: { _id: true, assortmentId: true },
-            sort: { sortKey: 1 },
-          },
-        );
-
-        return products.toArray();
-      };
+      const resolveAssortmentLink = resolveAssortmentLinkFromDatabase(AssortmentLinks);
+      const resolveAssortmentProducts = resolveAssortmentProductFromDatabase(AssortmentProducts);
 
       const buildBreadcrumbs = makeAssortmentBreadcrumbsBuilder({
         resolveAssortmentLink,

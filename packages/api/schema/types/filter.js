@@ -15,6 +15,11 @@ export default [
       Multi-choice
       """
       MULTI_CHOICE
+
+      """
+      Range
+      """
+      RANGE
     }
 
     type FilterTexts {

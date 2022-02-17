@@ -42,6 +42,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
       const {
         events,
         createShouldUpsertIfIDExists = false,
+        skipCacheInvalidation = false,
         authorId = 'root',
       } = rawPayload.payloadId ? await unpackPayload(rawPayload) : rawPayload;
 
@@ -52,6 +53,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
           logger,
           authorId,
           createShouldUpsertIfIDExists,
+          skipCacheInvalidation,
         },
         requestContext,
       );

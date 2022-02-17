@@ -6,6 +6,7 @@ import {
   AssortmentProduct,
   AssortmentLink,
   AssortmentFilter,
+  AssortmentProductIdCacheRecord,
 } from '@unchainedshop/types/assortments';
 
 export const AssortmentsCollection = async (db: Db) => {
@@ -14,6 +15,9 @@ export const AssortmentsCollection = async (db: Db) => {
   const AssortmentProducts = db.collection<AssortmentProduct>('assortment_products');
   const AssortmentLinks = db.collection<AssortmentLink>('assortment_links');
   const AssortmentFilters = db.collection<AssortmentFilter>('assortment_filters');
+  const AssortmentProductIdCache = db.collection<AssortmentProductIdCacheRecord>(
+    'assortment_productId_cache',
+  );
 
   // Assortment Indexes
   await buildDbIndexes(Assortments, [
@@ -60,5 +64,6 @@ export const AssortmentsCollection = async (db: Db) => {
     AssortmentProducts,
     AssortmentLinks,
     AssortmentFilters,
+    AssortmentProductIdCache,
   };
 };

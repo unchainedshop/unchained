@@ -47,6 +47,7 @@ export type Indexes<T extends Document> = Array<{
  */
 
 export interface MigrationRepository<Migration> {
+  db: Db;
   migrations: Map<number, Migration>;
   register: (migration: Migration) => void;
   allMigrations: () => Array<Migration>;
