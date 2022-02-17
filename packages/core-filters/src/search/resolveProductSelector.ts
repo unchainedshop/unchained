@@ -4,10 +4,9 @@ import { Query } from '@unchainedshop/types/common';
 import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters';
 
 const defaultSelector = ({ includeInactive }: SearchQuery, { modules }: Context) => {
-  const selector: Query = modules.products.search.buildActiveDraftStatusFilter();
-  if (!includeInactive) {
-    selector.status = modules.products.search.buildActiveStatusFilter();
-  }
+  const selector: Query = !includeInactive
+    ? modules.products.search.buildActiveStatusFilter()
+    : modules.products.search.buildActiveDraftStatusFilter();
   return selector;
 };
 
