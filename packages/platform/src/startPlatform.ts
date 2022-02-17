@@ -13,7 +13,7 @@ import { setupAutoScheduling } from './setup/setupAutoScheduling';
 import { setupCarts, SetupCartsOptions } from './setup/setupCarts';
 import { MessageTypes, setupTemplates } from './setup/setupTemplates';
 import { setupWorkqueue, SetupWorkqueueOptions } from './setup/setupWorkqueue';
-import { migrationRepository } from './migrations/migrationRepository';
+import { createMigrationRepository } from './migrations/migrationRepository';
 
 // Workers
 import './worker/BulkImportWorker';
@@ -58,6 +58,9 @@ export const startPlatform = async (
 
   // Configure database
   const db = initDb();
+
+  // Prepare Migrations
+  const migrationRepository = createMigrationRepository(db);
 
   // Initialise core api using the database
   const unchainedAPI = await initCore({

@@ -58,10 +58,6 @@ const buildFindSelector = ({
   return selector;
 };
 
-const eqSet = (as: Set<string>, bs: Set<string>) => {
-  return [...as].join(',') === [...bs].join(',');
-};
-
 export const configureAssortmentsModule = async ({
   db,
   migrationRepository,
@@ -74,7 +70,7 @@ export const configureAssortmentsModule = async ({
   await assortmentsSettings.configureSettings(assortmentOptions, db);
 
   // Migration
-  addMigrations(migrationRepository, db);
+  addMigrations(migrationRepository);
 
   // Collections & Mutations
   const { Assortments, AssortmentTexts, AssortmentProducts, AssortmentLinks, AssortmentFilters } =

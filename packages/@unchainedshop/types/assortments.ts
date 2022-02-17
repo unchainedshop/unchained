@@ -324,4 +324,6 @@ export type AssortmentsModule = {
 
 export interface AssortmentsSettingsOptions {
   zipTree?: (data: any) => any;
+  setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
+  getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
 }
