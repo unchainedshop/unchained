@@ -281,16 +281,30 @@ export const configureProductPricesModule = ({
         });
 
         let rate = null;
-        if (currencyRateBase && currencyRateBase.timestamp >= Date.now() / 1000 - maxAge) {
+        if (
+          currencyRateBase &&
+          (!currencyRateBase.timestamp || currencyRateBase.timestamp >= Date.now() / 1000 - maxAge)
+        ) {
           rate = currencyRateBase.rate;
-        } else if (currencyRateInv && currencyRateInv.timestamp >= Date.now() / 1000 - maxAge) {
+        } else if (
+          currencyRateInv &&
+          (!currencyRateInv.timestamp || currencyRateInv.timestamp >= Date.now() / 1000 - maxAge)
+        ) {
           rate = 1 / currencyRateInv.rate;
         }
         return rate;
       },
-      getRates: async () => {
+      updateRate: async (rate) => {
         const priceRates = await ProductPriceRates(db);
-        return priceRates.ProductRates;
+        const { baseCurrency, quoteCurrency } = rate;
+        try {
+          await priceRates.ProductRates.replaceOne({ baseCurrency, quoteCurrency }, rate, {
+            upsert: true,
+          });
+          return true;
+        } catch (e) {
+          return false;
+        }
       },
     },
   };

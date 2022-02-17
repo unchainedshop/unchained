@@ -257,7 +257,7 @@ export type ProductsModule = {
 
     rates: {
       getRate(baseCurrency: string, quoteCurrency: string, maxAge: number): Promise<number | null>;
-      getRates(): Promise<Collection<ProductPriceRate>>;
+      updateRate(rate: ProductPriceRate): Promise<boolean>;
     };
   };
 

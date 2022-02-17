@@ -70,5 +70,5 @@ export type ProductPriceRate = {
   baseCurrency: string;
   quoteCurrency: string;
   rate: number;
-  timestamp: number;
+  timestamp: number | null;
 };
