@@ -33,7 +33,7 @@ In contrast to Bitcoin, many Ethereum wallets do not expose the extended public 
 
 The payment plugin supports products that have a crypto price (including ERC20 tokens, where the `contractAddress` is set on the currency), but also those that only have a fiat price. When the product has a crypto price, it is assumed that the price is recorded with 8 decimal places. For instance, the following `UpdateProductCommercePricingInput` would be used for a product that costs 1 ETH:
 
-```json
+```javascript
 {
     amount: 10 ** 8,
     maxQuantity: 0,
