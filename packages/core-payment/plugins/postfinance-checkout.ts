@@ -8,6 +8,7 @@ import {
   PaymentError,
   paymentLogger,
 } from 'meteor/unchained:core-payment';
+import { PostFinanceCheckout } from 'postfinancecheckout';
 
 const {
   PFCHECKOUT_SPACE_ID,
@@ -43,13 +44,29 @@ const PostfinanceCheckout: IPaymentAdapter = {
   actions: (params) => {
     const { modules } = params.context;
 
+    const getConfig = () => {
+      return {
+        space_id: PFCHECKOUT_SPACE_ID,
+        user_id: PFCHECKOUT_USER_ID,
+        api_secret: PFCHECKOUT_SECRET,
+      };
+    };
+
+    const getTransactionService = () => {
+      return new PostFinanceCheckout.api.TransactionService(getConfig());
+    };
+
+    const getTransactionPaymentPageService = () => {
+      return new PostFinanceCheckout.api.TransactionPaymentPageService(getConfig());
+    };
+
     const adapter = {
       ...PaymentAdapter.actions(params),
 
       // eslint-disable-next-line
       configurationError() {
         // eslint-disable-line
-        if (!PFCHECKOUT_SPACE_ID || !PFCHECKOUT_USER_ID || !PFCHECKOUT_SECRET) {
+        if (!PFCHECKOUT_SPACE_ID || !PFCHECKOUT_USER_ID || !PFCHECKOUT_SECRET) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
         return null;
@@ -65,21 +82,21 @@ const PostfinanceCheckout: IPaymentAdapter = {
       },
 
       validate: async ({ token }) => {
-        
+
       },
 
       register: async () => {
-        
+
       },
 
       sign: async (transactionContext = {}) => {
-        
+
       },
 
       charge: async () => {
 
       },
-        
+
     };
 
     return adapter;

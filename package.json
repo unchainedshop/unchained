@@ -80,5 +80,8 @@
   },
   "eslintConfig": {
     "extends": "@meteorjs/eslint-config-meteor"
+  },
+  "dependencies": {
+    "postfinancecheckout": "^3.0.5"
   }
 }
