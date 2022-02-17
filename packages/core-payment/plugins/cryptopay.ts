@@ -20,6 +20,8 @@ const {
   CRYPTOPAY_BTC_XPUB,
   CRYPTOPAY_ETH_XPUB,
   CRYPTOPAY_BTC_TESTNET = false,
+  CRYPTOPAY_MAX_RATE_AGE = '360', // seconds
+  CRYPTOPAY_MAX_CONV_DIFF = '0.01',
 } = process.env;
 
 enum CryptopayCurrencies {
@@ -27,8 +29,8 @@ enum CryptopayCurrencies {
   ETH = 'ETH',
 }
 
-const MAX_RATE_AGE = 60 * 60 * 0.1; // 10 minutes
-const MAX_ALLOWED_DIFF = 0.01; // Accept payments when the converted amount differs by this much (in percent)
+const MAX_RATE_AGE = parseInt(CRYPTOPAY_MAX_RATE_AGE, 10);
+const MAX_ALLOWED_DIFF = parseFloat(CRYPTOPAY_MAX_CONV_DIFF); // Accept payments when the converted amount differs by this much (in percent)
 
 useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
 
