@@ -1,7 +1,9 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
 import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-products';
 
-const MAX_RATE_AGE = 60 * 60 * 0.1; // 10 minutes
+const { RATECONVERSION_MAX_AGE = '360' } = process.env;
+
+const MAX_RATE_AGE = parseInt(RATECONVERSION_MAX_AGE, 10);
 
 const ProductPriceRateConversion: IProductPricingAdapter = {
   ...ProductPricingAdapter,
