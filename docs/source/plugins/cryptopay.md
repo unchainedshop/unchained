@@ -28,6 +28,35 @@ You have to set `CRYPTOPAY_SECRET`, `CRYPTOPAY_BTC_XPUB` (if you want to accept 
 ### Ethereum Address Derivation
 
 In contrast to Bitcoin, many Ethereum wallets do not expose the extended public key to you. However, it is very easy to generate a wallet and retrieve it with Python or JavaScript.
+In JavaScript when using `ethers.js`, the code to do so looks like this:
+```javascript
+let HDNode = require('ethers').utils.HDNode;
+let mnemonic = "<redacted>";
+let masterNode = HDNode.fromMnemonic(mnemonic);
+let hardenedMaster = masterNode.derivePath("m/44'/60'/0'");
+
+// Extended public key (of hardened master node, i.e. path "m/44'/60'/0'")
+let xpub = hardenedMaster.neuter().extendedKey;
+```
+
+Similarly, `bip-utils` can be used in Python:
+```python
+import binascii
+from bip_utils import Bip39SeedGenerator, Bip44Coins, Bip44
+
+# Generate from mnemonic
+mnemonic = "<redacted>"
+seed_bytes = Bip39SeedGenerator(mnemonic).Generate()
+# Or specify seed manually
+# seed_bytes = binascii.unhexlify(b"<seed>")
+# Derivation path returned: m
+bip44_mst_ctx = Bip44.FromSeed(seed_bytes, Bip44Coins.ETHEREUM)
+xpub = bip44_mst_ctx.Purpose().Coin().Account(0).PublicKey().ToExtended() # m/44'/60'/0'
+```
+
+**Note that for security reasons, the extended public key should never be generated on a system that is publicly accessible.**
+You should always do this offline and only reference the extended public key on publicly accessible systems.
+Then, an attacker cannot access your funds, even if your system is completely compromised.
 
 ## Usage
 
