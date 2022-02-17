@@ -14,5 +14,5 @@ export const createMigrationRepository = (db: Db): MigrationRepository<Migration
         return left.id - right.id;
       });
     },
-  }
-});
+  };
+};

@@ -8,8 +8,8 @@ import {
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbMutations, generateDbFilterById, findPreservingIds } from 'meteor/unchained:utils';
-import resolveAssortmentLinkFromDatabase from 'src/utils/breadcrumbs/resolveAssortmentLinkFromDatabase';
-import resolveAssortmentProductFromDatabase from 'src/utils/breadcrumbs/resolveAssortmentProductFromDatabase';
+import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase';
+import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';
 import { addMigrations } from '../migrations/addMigrations';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 import { AssortmentsSchema } from '../db/AssortmentsSchema';

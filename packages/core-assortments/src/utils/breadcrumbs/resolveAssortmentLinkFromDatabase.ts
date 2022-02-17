@@ -1,7 +1,7 @@
 import { AssortmentLink } from '@unchainedshop/types/assortments';
 import { Collection, QuerySelector } from 'mongodb';
 
-export default function resolveAssortmentLinkFromDatabase(
+export function resolveAssortmentLinkFromDatabase(
   AssortmentLinks: Collection<AssortmentLink>,
   selector: QuerySelector<AssortmentLink> = {},
 ) {
