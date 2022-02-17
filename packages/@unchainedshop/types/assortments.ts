@@ -1,3 +1,4 @@
+import { QuerySelector } from 'mongodb';
 import { AssortmentMediaModule } from './assortments.media';
 import { Filter, FindOptions, Query, TimestampFields, _ID } from './common';
 
@@ -42,6 +43,11 @@ export type AssortmentProduct = {
   productId: string;
   sortKey: number;
   tags: Array<string>;
+} & TimestampFields;
+
+export type AssortmentProductIdCacheRecord = {
+  _id?: _ID;
+  productIds: Array<string>;
 } & TimestampFields;
 
 export type AssortmentText = {
@@ -241,7 +247,7 @@ export type AssortmentsModule = {
       doc: AssortmentProduct,
       options?: { skipInvalidation?: boolean },
       userId?: string,
-    ) => Promise<string>;
+    ) => Promise<AssortmentProduct>;
 
     delete: (
       assortmentProductId: string,
@@ -317,5 +323,7 @@ export type AssortmentsModule = {
  */
 
 export interface AssortmentsSettingsOptions {
-  zipTree: (data: any) => any;
+  zipTree?: (data: any) => any;
+  setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
+  getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
 }

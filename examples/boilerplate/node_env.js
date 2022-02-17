@@ -1,8 +1,9 @@
+const suppress = process.env.SUPPRESS_ENV_ERRORS
 require('dotenv-extended').load({
-  silent: process.env.SUPPRESS_ENV_ERRORS,
-  errorOnMissing: !process.env.SUPPRESS_ENV_ERRORS,
-  errorOnRegex: !process.env.SUPPRESS_ENV_ERRORS,
-  errorOnExtra: !process.env.SUPPRESS_ENV_ERRORS,
+  silent: suppress,
+  errorOnMissing: !suppress,
+  errorOnRegex: !suppress,
+  errorOnExtra: !suppress,
   includeProcessEnv: true,
 });
 require('./file_env.js');

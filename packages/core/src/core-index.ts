@@ -26,7 +26,10 @@ export const initCore = async ({
   bulkImporter,
   options = {},
 }: UnchainedCoreOptions) => {
-  const accounts = await configureAccountsModule();
+  const accounts = await configureAccountsModule({
+    db,
+    options: options.accounts,
+  });
   const assortments = await configureAssortmentsModule({
     db,
     options: options.assortments,

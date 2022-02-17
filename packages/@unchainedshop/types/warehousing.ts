@@ -102,7 +102,10 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
   ) => Promise<Array<WarehousingProvider>>;
   findInterface: (query: WarehousingProvider) => WarehousingInterface;
   findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
-  configurationError: (provider: WarehousingProvider, requestContext: Context) => Promise<WarehousingError>;
+  configurationError: (
+    provider: WarehousingProvider,
+    requestContext: Context,
+  ) => Promise<WarehousingError>;
   estimatedDispatch: (
     provider: WarehousingProvider,
     context: WarehousingContext,

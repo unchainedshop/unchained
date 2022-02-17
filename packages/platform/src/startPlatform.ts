@@ -13,7 +13,7 @@ import { setupAutoScheduling } from './setup/setupAutoScheduling';
 import { setupCarts, SetupCartsOptions } from './setup/setupCarts';
 import { MessageTypes, setupTemplates } from './setup/setupTemplates';
 import { setupWorkqueue, SetupWorkqueueOptions } from './setup/setupWorkqueue';
-import { migrationRepository } from './migrations/migrationRepository';
+import { createMigrationRepository } from './migrations/migrationRepository';
 
 // Workers
 import './worker/BulkImportWorker';
@@ -22,11 +22,7 @@ import 'meteor/unchained:core-messaging/workers/MessageWorker';
 
 export { MessageTypes };
 
-const {
-  NODE_ENV,
-  UNCHAINED_DISABLE_EMAIL_INTERCEPTION = false,
-  UNCHAINED_DISABLE_WORKER = false,
-} = process.env;
+const { NODE_ENV, UNCHAINED_DISABLE_EMAIL_INTERCEPTION, UNCHAINED_DISABLE_WORKER } = process.env;
 
 const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
   if (options?.disableWorker) return false;
@@ -63,6 +59,9 @@ export const startPlatform = async (
   // Configure database
   const db = initDb();
 
+  // Prepare Migrations
+  const migrationRepository = createMigrationRepository(db);
+
   // Initialise core api using the database
   const unchainedAPI = await initCore({
     bulkImporter: {
@@ -75,7 +74,7 @@ export const startPlatform = async (
   });
 
   if (isWorkQueueEnabled) {
-    await runMigrations({ db, unchainedAPI });
+    await runMigrations({ migrationRepository, unchainedAPI });
   }
 
   // Setup accountsjs specific extensions and event handlers

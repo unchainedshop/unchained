@@ -3,6 +3,7 @@ import { Filter, FilterAdapterActions } from '@unchainedshop/types/filters';
 import { FilterType } from '../db/FilterType';
 import { intersectSet } from '../utils/intersectSet';
 import { FilterProductIds } from './search';
+import createFilterValueParser from '../filter-value-parsers';
 
 const findLoadedOptions = async (
   filter: Filter,
@@ -17,35 +18,38 @@ const findLoadedOptions = async (
 ) => {
   const { values, forceLiveCollection, productIdSet } = params;
 
-  const filterOptions = (filter.type === FilterType.SWITCH && ['true', 'false']) || filter.options || [];
-
+  const allOptions = (filter.type === FilterType.SWITCH && ['true', 'false']) || filter.options || [];
   const mappedOptions = await Promise.all(
-    filterOptions.map(async (value) => {
-      const filterOptionProductIds = await filterProductIds(
-        filter,
-        {
-          values: [value],
-          forceLiveCollection,
-        },
-        requestContext,
-      );
-
-      const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
-      if (!filteredProductIds.size) return null;
-
-      const filteredProductsCount = filterActions.aggregateProductIds({
-        productIds: [...filteredProductIds],
-      }).length;
-      return {
-        definition: () => ({ filterOption: value, ...filter }),
-        filteredProducts: filteredProductsCount,
-        filteredProductsCount,
-        isSelected: values ? values.indexOf(value) !== -1 : false,
-      };
-    }),
+    allOptions
+      .map(async (value) => {
+        const filterOptionProductIds = await filterProductIds(
+          filter,
+          {
+            values: [value],
+            forceLiveCollection,
+          },
+          requestContext,
+        );
+        const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
+        if (!filteredProductIds.size) return null;
+        const filteredProductsCount = filterActions.aggregateProductIds({
+          productIds: [...filteredProductIds],
+        }).length;
+        return {
+          definition: () => ({ filterOption: value, ...filter }),
+          filteredProducts: filteredProductsCount,
+          filteredProductsCount,
+          isSelected: () => {
+            if (!values) return false;
+            const parse = createFilterValueParser(filter.type);
+            const normalizedValues = parse(values, [value]);
+            return normalizedValues.indexOf(value) !== -1;
+          },
+        };
+      })
+      .filter(Boolean),
   );
-
-  return mappedOptions.filter(Boolean);
+  return mappedOptions;
 };
 
 export const loadFilter = async (

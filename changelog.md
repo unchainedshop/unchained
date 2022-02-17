@@ -1,24 +1,47 @@
 # vNEXT
 
-This is our first major release, it covers all features needed to build highly flexible e-commerce solutions.
-
+This is our first major release, it covers all features needed to build highly flexible e-commerce
+solutions.
 
 ## Breaking changes
-- [platform, api, core] Refactor Unchained Engine's core with the goal to add typescript support, get rid of classes and reduce the usage of meteor package depedencies to a minimum. This leads to a completely new SW architecture. The event director and the databse are initialised in the platform and injected into the core modules and services. The modules provide a well-defined module API to manage the data and the custom services make use of the modules to fetch and manipulate.  
-- [core] NEW core module `core-files-next` that uses [minio cloud object storage](https://min.io/) compatible with [amazon s3 cloud storage api](https://aws.amazon.com/s3/). This update provides a scalable files storage solution for all the projects that use it. All the previous file management APIs now use this module under the hood in addition there are few new endpoint added that support signed put url based upload namely `prepareUserAvatarUpload`, `prepareProductMediaUpload`, `prepareAssortmentMediaUpload` and `confirmMediaUpload` that can be used to generate signed PUT url for file upload. to learn more on how to use this module refer to [docs](https://docs.unchained.shop/)
-- [api] `Date` values that previously were returned as timestamps are now converted to UTC compliant with the date-time format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar to mitigate issues related to timezone. while mutations that passed timestamp value will not cause an issue, the frontend code that expects UNIX timestamp value for the `DateTime` value needs to be updated. this included but not only
-      - `created`, `updated`, `deleted` values on all entities that previously exposed this fields
-      - `order.ordered`, `order.confirmed`
-      - `product.published`
-      - `quotation.expires`, `quotation.fulfilled`, `quotation.rejected`
-      - `subscription.updated`
-- [core] Upgrade to new GraphQL multi-part standard with graphql-upload pinning to v12, please use the latest graphql-upload-client
-- [core] Environment variables `LANG`, `COUNTRY` & `CURRENCY` have to be prefixed with `UNCHAINED_` to prevent a conflict that may occur with other systems environment variables.
-- [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore, explicitly set it by providing a slug property
+
+- [platform, api, core] Refactor Unchained Engine's core with the goal to add typescript support, get rid
+  of classes and reduce the usage of meteor package depedencies to a minimum. This leads to a completely
+  new SW architecture. The event director and the databse are initialised in the platform and injected
+  into the core modules and services. The modules provide a well-defined module API to manage the data
+  and the custom services make use of the modules to fetch and manipulate.
+- [core] `UNCHAINED_INVALIDATE_PROVIDERS` has been removed in order for an inverted
+  `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`
+- [core] NEW core module `core-files-next` that uses [minio cloud object storage](https://min.io/)
+  compatible with [amazon s3 cloud storage api](https://aws.amazon.com/s3/). This update provides a
+  scalable files storage solution for all the projects that use it. All the previous file management APIs
+  now use this module under the hood in addition there are few new endpoint added that support signed put
+  url based upload namely `prepareUserAvatarUpload`, `prepareProductMediaUpload`,
+  `prepareAssortmentMediaUpload` and `confirmMediaUpload` that can be used to generate signed PUT url for
+  file upload. to learn more on how to use this module refer to [docs](https://docs.unchained.shop/)
+- [api] `Date` values that previously were returned as timestamps are now converted to UTC compliant with
+  the date-time format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for
+  representation of dates and times using the Gregorian calendar to mitigate issues related to timezone.
+  while mutations that passed timestamp value will not cause an issue, the frontend code that expects
+  UNIX timestamp value for the `DateTime` value needs to be updated. this included but not only -
+  `created`, `updated`, `deleted` values on all entities that previously exposed this fields -
+  `order.ordered`, `order.confirmed` - `product.published` - `quotation.expires`, `quotation.fulfilled`,
+  `quotation.rejected` - `subscription.updated`
+- [core] Upgrade to new GraphQL multi-part standard with graphql-upload pinning to v12, please use the
+  latest graphql-upload-client
+- [core] Environment variables `LANG`, `COUNTRY` & `CURRENCY` have to be prefixed with `UNCHAINED_` to
+  prevent a conflict that may occur with other systems environment variables.
+- [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore,
+  explicitly set it by providing a slug property
 - [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
-- [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule` has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed from subscription settings and replaced with `autoSchedulingSchedule`
-- [core] `core-subscriptions` package is now obsolete and a new `core-enrollments` package with the same functionality has been added. This is to counterfeit problems with GraphQL Subscriptions from the spec.
-- [api] The meta field has been removed, this will affect the following types that previously had a `meta` field
+- [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule`
+  has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define
+  schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed
+  from subscription settings and replaced with `autoSchedulingSchedule`
+- [core] `core-subscriptions` package is now obsolete and a new `core-enrollments` package with the same
+  functionality has been added. This is to counterfeit problems with GraphQL Subscriptions from the spec.
+- [api] The meta field has been removed, this will affect the following types that previously had a
+  `meta` field
   ```
   Assortment.meta
   AssortmentProduct.meta
@@ -36,7 +59,8 @@ This is our first major release, it covers all features needed to build highly f
   OrderDelivery.meta
   OrderPayment.meta
   ```
-- [schema] SPECIAL ATTENTION REQUIRED: `Money` type has been completely removed and was replaced with `Price`, this simplifies reading out prices but involves changing potentially a lot of FRONTEND CODE!.
+- [schema] SPECIAL ATTENTION REQUIRED: `Money` type has been completely removed and was replaced with
+  `Price`, this simplifies reading out prices but involves changing potentially a lot of FRONTEND CODE!.
   This change will affect the following types and any other type that has fields of this types
 
   ```
@@ -53,7 +77,17 @@ This is our first major release, it covers all features needed to build highly f
   ```
 
 ## Major
-- [examples] Updated Meteor to latest version 2.4 from 2.2 for the minimal project (see https://docs.meteor.com/changelog.html#v2420210915)
+
+- [core] Bulk Importer now supports skipping the built-in cache invalidation run at the end by using
+  `skipCacheInvalidation`
+- [api] A new `RANGE` filter type has been added. A range filter parses filter query values differently
+  in searchProducts than MULTI_SELECT and allows to do open-end filtering on decimal values by using `:`.
+  As an example, `0:500` will match all option values between 0 and 500.
+- [core] Assortment to Product Id cache now resides in a special collection to optimize performance and
+  can be further customized to cache these caches in a custom cache module. See new settings in
+  assortments: `setCachedProductIds` & `getCachedProductIds`
+- [examples] Updated Meteor to latest version 2.4 from 2.2 for the minimal project (see
+  https://docs.meteor.com/changelog.html#v2420210915)
 - [api] Added support for Two Factor Auth with TOTP:
   ```
   Mutation.buildSecretTOTPAuthURL
@@ -61,27 +95,62 @@ This is our first major release, it covers all features needed to build highly f
   Mutation.enableTOTP
   User.isTwoFactorEnabled
   ```
-- [core] We have added a new Datatrans v2 plugin which is based on the new Datatrans JSON based API and allows advanced integration processes like marketplace fee splits and secure fields. Datatrans v2 will always use deferred settlement mode when possible, this makes it almost impossible to have the "order checkout failed but still charged" issue that was possible before depending on how the payment process was implemented client-side, leading to manual work and potential client frustration.
+- [core] We have added a new Datatrans v2 plugin which is based on the new Datatrans JSON based API and
+  allows advanced integration processes like marketplace fee splits and secure fields. Datatrans v2 will
+  always use deferred settlement mode when possible, this makes it almost impossible to have the "order
+  checkout failed but still charged" issue that was possible before depending on how the payment process
+  was implemented client-side, leading to manual work and potential client frustration.
 - [core] orderNumber, quotationNumber and enrollmentNumber generation can now be customized, see config
-- [controlpanel] Now it's possible to add external links to an extended version of Unchained Admin UI or any other site you want to access through the `controlpanel` by providing JSON using the env `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of external link definitions in the form of objects with href and title properties (`[{ href: string, title: string}]`). If an external link file object is found its content will appear in the top menu of the `controlpanel`
-- [api] `query.productReviews` is extended to support searching/filtering with title or review and sorting all valid fields of product review.
+- [controlpanel] Now it's possible to add external links to an extended version of Unchained Admin UI or
+  any other site you want to access through the `controlpanel` by providing JSON using the env
+  `EXTERNAL_LINKS` variable inside `example/minimal`. The JSON to be provided has to be an array of
+  external link definitions in the form of objects with href and title properties
+  (`[{ href: string, title: string}]`). If an external link file object is found its content will appear
+  in the top menu of the `controlpanel`
+- [api] `query.productReviews` is extended to support searching/filtering with title or review and
+  sorting all valid fields of product review.
 - [api] New mutation `logoutAllSession` added that can be used to remove all tokens of current user
 - [platform] Assortment bulk import updated to handle assortment media.
 - [api,core] Add support for remotePort and userAgent in context and heartbeat #118
-- [api,core,controlpanel] Users with admin roles can now search for specific orders by userId,orderId,orderNumber & status through the controlpanel #319
-- [core] NEW core module `events` allows to listen to various elementary events and trigger custom code based on those. See the documentation here https://docs.unchained.shop/config/events/. We also provide two default event backend integrations, one for the local Node.js event emitter and one for Redis. In some cases you will only want to react to an event on a worker instance or even completely fire and forget and let another software pick up the events, for these cases we strongly suggest to use the Redis plugin. An additional MongoDB based event log is available through queries and can be inspected through the controlpanel. We will drop support for the MongoDB logging in the future so please make sure that you don't tail the Unchained Logs collection, consider migrating to `events` instead.
-- [core] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of products variations assigned for a particular configurable(proxy) product based on the parameters provided to them.
-- [core] Now experimental it's possible to ensure users to always have a cart assigned to them by setting the module config option `ensureUserHasCart` on the orders module to true.
+- [api,core,controlpanel] Users with admin roles can now search for specific orders by
+  userId,orderId,orderNumber & status through the controlpanel #319
+- [core] NEW core module `events` allows to listen to various elementary events and trigger custom code
+  based on those. See the documentation here https://docs.unchained.shop/config/events/. We also provide
+  two default event backend integrations, one for the local Node.js event emitter and one for Redis. In
+  some cases you will only want to react to an event on a worker instance or even completely fire and
+  forget and let another software pick up the events, for these cases we strongly suggest to use the
+  Redis plugin. An additional MongoDB based event log is available through queries and can be inspected
+  through the controlpanel. We will drop support for the MongoDB logging in the future so please make
+  sure that you don't tail the Unchained Logs collection, consider migrating to `events` instead.
+- [core] `simulatePriceRange` and `catalogPriceRange` helpers added that will return price range of
+  products variations assigned for a particular configurable(proxy) product based on the parameters
+  provided to them.
+- [core] Now experimental it's possible to ensure users to always have a cart assigned to them by setting
+  the module config option `ensureUserHasCart` on the orders module to true.
 - [core] The query `workQueue` now allows to further narrow the result set based on a creation date range
-- [api] We have added a special mutation called `pageView` that you can use to trigger server-side pageView tracking events. That way you can connect Unchained with Trackers like Google Analytics or Matomo in a private way without cookies.
-- [api] New default queries were added for all kind of "count" cases so you don't have to query a whole list just to get the amount of items, this can be quite helpful for pagination: `assortmentsCounts`, `countriesCount`, `currenciesCount`, `deliveryProvidersCount`, `filtersCount`, `languagesCount`, `logsCount`, `ordersCount`, `paymentProvidersCount`, `productReviewsCount`, `productsCount`, `quotationsCount`, `subscriptionsCount`, `usersCount`,`warehousingProvidersCount`,`eventsCount`
-- [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
-- [api] three new fields added `ConfigurableProduct.simulatedPriceRange` , `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices` `PlanProduct.leveledCatalogPrices`
-- [platform] Additionally related with the above feature it's possible to assign carts for all existing users in the system at boot time by passing `assignCartForUsers` boolean value to `startPlafom` or using the environment variable `UNCHAINED_ASSIGN_CART_FOR_USERS`
-- [platform] You can now disable the invalidation of orders at boot time by passing `invalidateProviders` boolean value to `startPlafom` or using the environment variable `UNCHAINED_INVALIDATE_PROVIDERS`
+- [api] We have added a special mutation called `pageView` that you can use to trigger server-side
+  pageView tracking events. That way you can connect Unchained with Trackers like Google Analytics or
+  Matomo in a private way without cookies.
+- [api] New default queries were added for all kind of "count" cases so you don't have to query a whole
+  list just to get the amount of items, this can be quite helpful for pagination: `assortmentsCounts`,
+  `countriesCount`, `currenciesCount`, `deliveryProvidersCount`, `filtersCount`, `languagesCount`,
+  `logsCount`, `ordersCount`, `paymentProvidersCount`, `productReviewsCount`, `productsCount`,
+  `quotationsCount`, `subscriptionsCount`, `usersCount`,`warehousingProvidersCount`,`eventsCount`
+- [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly
+  (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
+- [api] three new fields added `ConfigurableProduct.simulatedPriceRange` ,
+  `ConfigurableProduct.catalogPriceRange`, `SimulateProduct.leveledCatalogPrices`
+  `PlanProduct.leveledCatalogPrices`
+- [platform] Additionally related with the above feature it's possible to assign carts for all existing
+  users in the system at boot time by passing `assignCartForUsers` boolean value to `startPlafom` or
+  using the environment variable `UNCHAINED_ASSIGN_CART_FOR_USERS`
+- [platform] You can now disable the invalidation of orders at boot time by passing `invalidateProviders`
+  boolean value to `startPlafom` or using the environment variable
+  `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`
 - [core] It's is now possible to assign media files for assortments.
 - [controlpanel] Assortment media upload, remove & reorder functionalities are available.
 - [api] Added the following query and mutations that can be used to manage assortment medias
+
 ```
 Query.translatedAssortmentMediaTexts
 Mutation.addAssortmentMedia
@@ -98,17 +167,22 @@ ReorderAssortmentMediaInput
 
 ## Minor
 
-- [core] accountsjs's accountsPassword and accountsServer options can now be configured through the normal module configuration of unchained by providing `server` and `password` objects with options.
-- [core] The logging of payment providers has been streamlined and is now more verbose by default to help track down payment issues
+- [core] accountsjs's accountsPassword and accountsServer options can now be configured through the
+  normal module configuration of unchained by providing `server` and `password` objects with options.
+- [core] The logging of payment providers has been streamlined and is now more verbose by default to help
+  track down payment issues
 - [core] The password has been changed notify e-mail template is now available in English
 - [docs] Improved documentation for orders, accounts, events, subscriptions and email-templating
 - [examples] The minimal example now uses Meteor 2.2
 - [examples] We created an experimental Matomo Tracker Plugin that is part of the minimal example
 - [controlpanel] Fixed various issues, especially with loadMore behavior, user search and UX glitches
-- [*] Various additional bugfixes and enhancements between the undocumented releases of 0.61.1 and 0.61.19 mostly targeting bulk-import and accountsjs stabilization.
+- [*] Various additional bugfixes and enhancements between the undocumented releases of 0.61.1 and
+  0.61.19 mostly targeting bulk-import and accountsjs stabilization.
 - [core] Update ostrio:files to 2.0.1 to mitigate various download issues
 - [controlpanel] Find issues with assortment and order lists
-- [controlpanel] Ambiguity of where to set environment variable is fixed. Now you can set environment related with the Unchained Admin UI at the root directory of `controlpanel` and environemt variables related with the engine under root directory of `minimal`.
+- [controlpanel] Ambiguity of where to set environment variable is fixed. Now you can set environment
+  related with the Unchained Admin UI at the root directory of `controlpanel` and environemt variables
+  related with the engine under root directory of `minimal`.
 - [controlpanel] Fix logout with server-side cookies
 - [core] Fix issue with price id's beeing null (broke stuff that we didn't want to brake)
 - [core] Fix an issue with scheduling jobs based on past or future dates
@@ -126,9 +200,15 @@ This is a bugfix release based on learnings from upgrading client projects
 
 ## Breaking changes
 
-- [api] Fix `logout` regression with not falling back to the current token when used without explicit token
-- [core] `Users.createUser` now sends messages by default, you have to explicitly bail out by either providing an option `skipMessaging` to true or set the new `autoMessagingAfterUserCreation` module param of users to `false`. Take a look at your seed scripts.
-- [platform] Certain fields like `emails` and `services` are now blocked from passing to `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to skip e-mail verification forcefully, use `initialPassword: true`. See the changes in the minimal example seed file to get a glimpse.
+- [api] Fix `logout` regression with not falling back to the current token when used without explicit
+  token
+- [core] `Users.createUser` now sends messages by default, you have to explicitly bail out by either
+  providing an option `skipMessaging` to true or set the new `autoMessagingAfterUserCreation` module
+  param of users to `false`. Take a look at your seed scripts.
+- [platform] Certain fields like `emails` and `services` are now blocked from passing to
+  `Users.createUser`. If you have used `emails` in `createUser` seeding before, use email. If you want to
+  skip e-mail verification forcefully, use `initialPassword: true`. See the changes in the minimal
+  example seed file to get a glimpse.
 
 ## Minor
 
@@ -149,18 +229,22 @@ This is a bugfix release based on learnings from upgrading client projects
 
 ## Minor
 
-- [api] Re-introduce `context` field to startPlatform, allowing access to the unchained context function so it's possible to adjust the Apollo Server context freely
+- [api] Re-introduce `context` field to startPlatform, allowing access to the unchained context function
+  so it's possible to adjust the Apollo Server context freely
 - [core] Fix regression with forced sortKey parameters when modifying links, filters or products
 - [core] Fix regression with enrollment of users triggering verification e-mail #307
-- [core] Sends custom AccountsJs Hooks `LoginTokenCreated` and `VerifyEmailSuccess` to hook into E-Mail verification (re-enables features based on that prior Unchained < 0.61.0)
+- [core] Sends custom AccountsJs Hooks `LoginTokenCreated` and `VerifyEmailSuccess` to hook into E-Mail
+  verification (re-enables features based on that prior Unchained < 0.61.0)
 
 # v0.60.0
 
-We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types.
+We are currently rebuilding parts of Unchained under the hood with a new code structure that helps
+developers to easily add new resolvers and access the core API's through typescript types.
 
 ## Breaking Changes
 
-- [platform] Account Action E-Mail templates now receive different actions than before, for ex. `verifyEmail` is now `verify-email`
+- [platform] Account Action E-Mail templates now receive different actions than before, for ex.
+  `verifyEmail` is now `verify-email`
 - [api] `Mutation.setBaseLanguage` removed, base language now set through env `LANG`
 - [api] `Mutation.setBaseCountry` removed, base language now set through env `COUNTRY`
 - [api] `isBase` removed for countries and languages
@@ -169,25 +253,39 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 - [core] Removed Assortment helpers `addFilter`, `removeFilter`, `searchProducts`
 - [core] Removed Assortment Filter helper `assortmentFilter.filter`
 - [core] `findProviderById` & `findReviewById` removed
-- [core] You cannot `import 'meteor/unchained:core-worker/plugins/heartbeat'` anymore without typescript package
-- [api] NotFoundErrors have been removed from various queries which return an optional single entity, like Query.product(...): Product #299, affects `Query.country`, `Query.currency`, `Query.deliveryProvider`, `Query.filter`, `Query.language`, `Query.order`, `Query.paymentProvider`, `Query.product`, `Query.productCatalogPrices`, `Query.productReview`, `Query.quotation`, `Query.searchProducts (assortmentId)`, `Query.subscription`, `Query.user`, `Query.warehousingProvider`, `Query.work`
+- [core] You cannot `import 'meteor/unchained:core-worker/plugins/heartbeat'` anymore without typescript
+  package
+- [api] NotFoundErrors have been removed from various queries which return an optional single entity,
+  like Query.product(...): Product #299, affects `Query.country`, `Query.currency`,
+  `Query.deliveryProvider`, `Query.filter`, `Query.language`, `Query.order`, `Query.paymentProvider`,
+  `Query.product`, `Query.productCatalogPrices`, `Query.productReview`, `Query.quotation`,
+  `Query.searchProducts (assortmentId)`, `Query.subscription`, `Query.user`, `Query.warehousingProvider`,
+  `Query.work`
 
 ## Major
 
 - [api] Add Assortment.childrenCount to get a number of child assortments
 - [api] New Query.activeWorkTypes to query for all active work types without introspection
 - [api] Support for Data Loader
-- [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now accessible through the Apollo GraphQL context
+- [api,bookmarks] The Bookmarks core module has been completely refactored, all business logic is now
+  accessible through the Apollo GraphQL context
 - [utils] Multiple functions have been moved to utils from core.
-- [core] The "core" package now is an umbrella for all core modules and does not provide any other functions except for the function that loads all modules in order and ties together the typescript types
-- [roles] Roles package got refactored only keeping a fraction of the previous APIs.
-  We are currently rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily add new resolvers and access the core API's through typescript types
-- [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core packages
+- [core] The "core" package now is an umbrella for all core modules and does not provide any other
+  functions except for the function that loads all modules in order and ties together the typescript
+  types
+- [roles] Roles package got refactored only keeping a fraction of the previous APIs. We are currently
+  rebuilding parts of Unchained under the hood with a new code structure that helps developers to easily
+  add new resolvers and access the core API's through typescript types
+- [api,core] Business logic and db calls are now wrapped in functions and moved from api to the core
+  packages
 - [pricing] New open-source pricing plugins:
   - - EUR catalog price auto conversion with ECB rates
   - - Crypto catalog price auto conversion with Coinbase rates
   - - Mercantile Rounding
-- [payment] Our official Datatrans plugin now supports all different security modes for signing a transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here <https://docs.datatrans.ch/v1.0.1/docs/getting-started-home>
+- [payment] Our official Datatrans plugin now supports all different security modes for signing a
+  transaction through env `DATATRANS_SECURITY` and `DATATRANS_SIGN2_KEY`. In the meantime Datatrans has
+  released a new modern JSON based 2.0 API. Our Plugin still only supports the legacy API described here
+  <https://docs.datatrans.ch/v1.0.1/docs/getting-started-home>
 
 ## Minor
 
@@ -224,7 +322,8 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 
 ## Minor
 
-- [platform] If you used `user.setPassword` before, that function is now async and does not return the user object anymore
+- [platform] If you used `user.setPassword` before, that function is now async and does not return the
+  user object anymore
 - [platform] If you used `Users.createUser` before, that function is now async
 - [api] setPassword mutation now also supports plain passwords if needed.
 
@@ -235,19 +334,28 @@ We are currently rebuilding parts of Unchained under the hood with a new code st
 
 # v0.55.0
 
-Attention: If you have used Meteor Accounts specific extensions to extend login functionalities for your Unchained-based project, you will have to rewrite all code that depends on Meteor's accounts packages and extend the functionality through accounts-js config, strategies and hooks (<https://www.accountsjs.com/docs/introduction>).
+Attention: If you have used Meteor Accounts specific extensions to extend login functionalities for your
+Unchained-based project, you will have to rewrite all code that depends on Meteor's accounts packages and
+extend the functionality through accounts-js config, strategies and hooks
+(<https://www.accountsjs.com/docs/introduction>).
 
-Look for `Accounts.registerLoginHandler`, `Accounts.onLogin` or Meteor Accounts Password based features like `Accounts.setUsername` or `Accounts.setPassword` to find out if you are affected.
+Look for `Accounts.registerLoginHandler`, `Accounts.onLogin` or Meteor Accounts Password based features
+like `Accounts.setUsername` or `Accounts.setPassword` to find out if you are affected.
 
 ## Breaking Changes
 
-- [api] Auth-related Errors in signup, signin, lost password etc. have other Error Codes now. See https://www.accountsjs.com/docs/api/server/globals#enumerations for more information.
-- [users] `addEmail` and `updateEmail` no longer send out email verification; you need to trigger the verification using `sendVerificationEmail` mutation.
-- [users] `enrollUser` doesn't send out the enrollment email by default anymore. You need to trigger it using `sendEnrollmentEmail` mutation.
+- [api] Auth-related Errors in signup, signin, lost password etc. have other Error Codes now. See
+  https://www.accountsjs.com/docs/api/server/globals#enumerations for more information.
+- [users] `addEmail` and `updateEmail` no longer send out email verification; you need to trigger the
+  verification using `sendVerificationEmail` mutation.
+- [users] `enrollUser` doesn't send out the enrollment email by default anymore. You need to trigger it
+  using `sendEnrollmentEmail` mutation.
 - [api] The functions `getConnection` and `callMethod` have been removed
 - [api] `Mutation.resendVerificationEmail` has been renamed to `Mutation.sendVerificationEmail`
 - [api] More specific exceptions when using wrong Id's
-- [platform] New unchained instances now generate an admin user with an E-Mail of `admin@unchained.local` to solve various issues with frontends and services that don't accept addresses like `user@toplevel`. Also it's now very important to seed your database AFTER startPlatform.
+- [platform] New unchained instances now generate an admin user with an E-Mail of `admin@unchained.local`
+  to solve various issues with frontends and services that don't accept addresses like `user@toplevel`.
+  Also it's now very important to seed your database AFTER startPlatform.
 
 You have to remove meteor's native accounts packages from the project to use the new unchained version:
 
@@ -258,17 +366,20 @@ meteor remove accounts-base accounts-password accounts-oauth
 ## Minor
 
 - [users] `sendEnrollmentEmail` mutation is now available to trigger enrollment emails.
-- [api] Enhanced Query.users which now allows to query for users with a fulltext search that takes E-mail addresses into account
+- [api] Enhanced Query.users which now allows to query for users with a fulltext search that takes E-mail
+  addresses into account
 - [api] Better integration tests that cover more business logic than before
 
 ## Patches
 
 - [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package
 - [great-purge-of-meteor] Implement new accountsjs package
-- [great-purge-of-meteor] Convert all authentication related mutations within `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
+- [great-purge-of-meteor] Convert all authentication related mutations within
+  `api/resolvers/mutations/accounts/loginWithPassword.js` to use accounts-js.
 - [great-purge-of-meteor] Convert any Users collection helpers to use accounts-js.
 - [api] Fixed an issue which prevented Query.subscription from working at all
-- [assortments] Fixed an issue that resulted in totally wrong breadcrumbs in some special edge case (assortmentPaths)
+- [assortments] Fixed an issue that resulted in totally wrong breadcrumbs in some special edge case
+  (assortmentPaths)
 
 ---
 
@@ -321,7 +432,8 @@ Minor tweaks and fixes
 
 ## Breaking Changes
 
-The new experimental Bulk Import API allows to import a big list of entities (filters, assortments & products) at the same time.
+The new experimental Bulk Import API allows to import a big list of entities (filters, assortments &
+products) at the same time.
 
 ## Minor
 
@@ -341,17 +453,17 @@ The new experimental Bulk Import API allows to import a big list of entities (fi
 
 # v0.53.0
 
-This new Release is published along our new Documentation Page:
-<https://docs.unchained.shop>
+This new Release is published along our new Documentation Page: <https://docs.unchained.shop>
 
 Contributions by: @Mikearaya @harryadel @schmidsi @pozylon
 
 ## Breaking Changes
 
-New Exceptions: A new exception handling #188 now consistently throws much more intelligent errors with machine-readable error codes than before. This is potentially breaking if you were evaluating the errors thrown in GraphQL Mutations and Queries before.
+New Exceptions: A new exception handling #188 now consistently throws much more intelligent errors with
+machine-readable error codes than before. This is potentially breaking if you were evaluating the errors
+thrown in GraphQL Mutations and Queries before.
 
-Datalayer changes:
-The following functions now require an authorId to work properly:
+Datalayer changes: The following functions now require an authorId to work properly:
 
 - Assortments.createAssortment
 - assortment.addProduct
@@ -371,7 +483,8 @@ The following functions now require an authorId to work properly:
 - product.upsertLocalizedText
 - productVariation.upsertLocalizedText
 
-New factory methods to create new Entities (please don't use Entity.insert anymore if you're writing sync code!), they also require authorId now:
+New factory methods to create new Entities (please don't use Entity.insert anymore if you're writing sync
+code!), they also require authorId now:
 
 - Countries.createCountry
 - Currencies.createCurrency
@@ -379,7 +492,8 @@ New factory methods to create new Entities (please don't use Entity.insert anymo
 - ProductVariations.createVariation
 - ProductMedia.createMedia
 
-Changes to Filter Plugins: The async method search on a FilterAdapter is now searchProducts (!). Additionally it's possible to override full-text search of Assortments through searchAssortments.
+Changes to Filter Plugins: The async method search on a FilterAdapter is now searchProducts (!).
+Additionally it's possible to override full-text search of Assortments through searchAssortments.
 
 ## Minor
 
@@ -390,7 +504,8 @@ Changes to Filter Plugins: The async method search on a FilterAdapter is now sea
 - [api] Exception Handling #188
 - [api] Extend Query.users with queryString, allowing to do fulltext searches on users as admin #228
 - [core] Refactoring on the underlying Datalayer #190
-- [core] It's now possible to control the tax categories for switzerland (mwst, see product-swiss-tax and delivery-swiss-tax plugins)
+- [core] It's now possible to control the tax categories for switzerland (mwst, see product-swiss-tax and
+  delivery-swiss-tax plugins)
 - [examples] Controlpanel Enhancements #162, #227
 - [docs] Add Documentation Beta #205
 - [docs] Add documenting comments to the GraphQL schema
@@ -400,7 +515,8 @@ Changes to Filter Plugins: The async method search on a FilterAdapter is now sea
 ## Patches
 
 - [api] Fix edge case with Query.search when slugs is set to null
-- [api] Fix privileges when using Mutation.updateProductReview, Mutation.answerQuotation, Mutation.removeBookmark, Mutation.addPaymentCredentials which were supposed to work as non-admin users
+- [api] Fix privileges when using Mutation.updateProductReview, Mutation.answerQuotation,
+  Mutation.removeBookmark, Mutation.addPaymentCredentials which were supposed to work as non-admin users
 - [api] Fix float problem edge case with super long numbers in Money type
 - [core] Fix Sort Order when Faceting #211
 - [core] Fix Controlpanel Next.js Warnings #201 #209
@@ -421,19 +537,29 @@ Contributions by: @harryadelb, @Mikearaya & @pozylon
 
 ## Breaking Changes
 
-We will rename all unchained core specific env variables and prefix them with UNCHAINED\_ in the future, for now:
+We will rename all unchained core specific env variables and prefix them with UNCHAINED\_ in the future,
+for now:
 
 - [api] Siblings return only active products by default now
-- [payment] The existing Stripe v1 plugin has been removed because it was unsafe to use and depended on an old API
-- [messaging] The architecture of the messaging core plugin has been completely revamped, also the default notification e-mail templates are now loaded as part of the platform package reducing the boilerplate code needed when bootstrapping a fresh Unchained project. For example the send-mail delivery provider cannot be used anymore due to refactoring of the messaging system. There is a new one ("send-message") that needs to be used for this case.
-- [api] assignments behaves now exactly the same as products, returning only assignments with active products if not specified explicitly with includeInactive = true
+- [payment] The existing Stripe v1 plugin has been removed because it was unsafe to use and depended on
+  an old API
+- [messaging] The architecture of the messaging core plugin has been completely revamped, also the
+  default notification e-mail templates are now loaded as part of the platform package reducing the
+  boilerplate code needed when bootstrapping a fresh Unchained project. For example the send-mail
+  delivery provider cannot be used anymore due to refactoring of the messaging system. There is a new one
+  ("send-message") that needs to be used for this case.
+- [api] assignments behaves now exactly the same as products, returning only assignments with active
+  products if not specified explicitly with includeInactive = true
 
 ## Minor
 
-- [api] Product.siblings now support a parameter "includeInactive" to return inactive products (same like for Assortment.products & search)
-- [filters] Search now supports a new parameter "ignoreChildAssortments". When activated it will only consider directly linked products for search, ignoring sub-assortment products.
+- [api] Product.siblings now support a parameter "includeInactive" to return inactive products (same like
+  for Assortment.products & search)
+- [filters] Search now supports a new parameter "ignoreChildAssortments". When activated it will only
+  consider directly linked products for search, ignoring sub-assortment products.
 - [messaging] New Messaging (#163)
-- [filter] The filter plugins are now also called when the queryString is empty, allowing cases like user-specific hiding or showing of products system-wide
+- [filter] The filter plugins are now also called when the queryString is empty, allowing cases like
+  user-specific hiding or showing of products system-wide
 - [cp] It's now possible to search for products (#178 )
 - [tests] Added a whole lot of integration tests (#177 , #176 , #175, #174)
 - [api] Improve error reporting when id's (filters, products) don't exist when provided to a mutation
@@ -441,11 +567,13 @@ We will rename all unchained core specific env variables and prefix them with UN
 - [payment] Stripe v2 has landed, supporting stored credentials (#179)
 - [payment, delivery] Allow to further customize supported providers #161
 - Improve performance by using lru-caches at bottleneck points throughout the system
-- [worker] It's now possible to define an autoscheduling rule for jobs and the system automatically takes care of setting up the jobs
+- [worker] It's now possible to define an autoscheduling rule for jobs and the system automatically takes
+  care of setting up the jobs
 
 ## Patches
 
-- [examples] Fix a regression bug (simple-schema / seeds) when trying to start the minimal example the first time
+- [examples] Fix a regression bug (simple-schema / seeds) when trying to start the minimal example the
+  first time
 - [ci] Skip caching in CI and dev
 - [cp] Various small ui fixes
 - [platform] Fixes carts on bootup when a delivery / payment provider is not valid anymore.
@@ -457,13 +585,18 @@ We will rename all unchained core specific env variables and prefix them with UN
 
 ## Breaking Changes
 
-We will rename all Unchained core specific env variables and prefix them with UNCHAINED\_ in the future, for now:
+We will rename all Unchained core specific env variables and prefix them with UNCHAINED\_ in the future,
+for now:
 
 - The Environment variable DISABLE_WORKER has been renamed to UNCHAINED_DISABLE_WORKER
 - The Environment variable WORKER_ID has been renamed to UNCHAINED_WORKER_ID
-- The Environment variable WORKER_CRON_TEXT has been removed, provide `cronText` as option to startPlatform to configure, use your own env var if still needed.
-- The Environment variable FIXTURES has been removed, we will remove the fixtures and faker helpers in the future.
-- [platform] These 3 worker plugins are automatically loaded and started: EventListenerWorker, CronWorker, FailedRescheduler. Please remove the worker boot code from your project like this: <https://github.com/unchainedshop/unchained/commit/89278ce018bcc8ef5861e60f91cf5fde9d2caec9#diff-0f4e94ac3eacf892b0b4f09738a49635>
+- The Environment variable WORKER_CRON_TEXT has been removed, provide `cronText` as option to
+  startPlatform to configure, use your own env var if still needed.
+- The Environment variable FIXTURES has been removed, we will remove the fixtures and faker helpers in
+  the future.
+- [platform] These 3 worker plugins are automatically loaded and started: EventListenerWorker,
+  CronWorker, FailedRescheduler. Please remove the worker boot code from your project like this:
+  <https://github.com/unchainedshop/unchained/commit/89278ce018bcc8ef5861e60f91cf5fde9d2caec9#diff-0f4e94ac3eacf892b0b4f09738a49635>
 - [api] `getCart` now returns a promise
 - [users] the `orders` helper now returns a promise
 - [payment] Signature of sign changed slightly, takes transactionContext in first property
@@ -473,18 +606,28 @@ We will rename all Unchained core specific env variables and prefix them with UN
 ## Minor
 
 - [subscriptions] Introduce Subscriptions Core Module: Please see PR #158
-- [payment,user,subscriptions] Stored Credentials: The Payment and User modules have been enhanced to support storing payment credentials like creditcards, tokens or aliases used to do fast checkouts. PR #158
+- [payment,user,subscriptions] Stored Credentials: The Payment and User modules have been enhanced to
+  support storing payment credentials like creditcards, tokens or aliases used to do fast checkouts. PR
+  #158
 - [api] All product types now support siblings
 - [payment] Datatrans plugin supports aliasing for subscriptions
-- [worker] The worker now supports recurring jobs and exposes `configureAutoscheduling` that allows to run a specific plugin continously, first used by subscriptions generating orders at a specific rate
+- [worker] The worker now supports recurring jobs and exposes `configureAutoscheduling` that allows to
+  run a specific plugin continously, first used by subscriptions generating orders at a specific rate
 - [platform] startPlatform now supports module specific configuration
-- [worker] Heartbeat worker supports waiting for a timeout before completion (helpful for integration tests)
-- [examples] The Dockerfile in minimal now supports proper layer caching and speeds up builds in CI if supported by the CI system and the dependencies did not change.
-- [assortments] The zipTree function of assortments can now be configured with `modules.assortments.zipTree`
-- [delivery] It's now possible to customize the sort order of supported delivery providers `modules.delivery.sortProviders`
-- [payment] It's now possible to customize the sort order of supported payment providers `modules.payment.sortProviders`
+- [worker] Heartbeat worker supports waiting for a timeout before completion (helpful for integration
+  tests)
+- [examples] The Dockerfile in minimal now supports proper layer caching and speeds up builds in CI if
+  supported by the CI system and the dependencies did not change.
+- [assortments] The zipTree function of assortments can now be configured with
+  `modules.assortments.zipTree`
+- [delivery] It's now possible to customize the sort order of supported delivery providers
+  `modules.delivery.sortProviders`
+- [payment] It's now possible to customize the sort order of supported payment providers
+  `modules.payment.sortProviders`
 - [filters] Filters now fallback to no invalidation on startup if not configured
-- [logs] Added an index on the created field for logs and also make the log collection expire with a MongoDB native feature (<https://docs.mongodb.com/manual/tutorial/expire-data/>). This should improve db log performance and disk usage
+- [logs] Added an index on the created field for logs and also make the log collection expire with a
+  MongoDB native feature (<https://docs.mongodb.com/manual/tutorial/expire-data/>). This should improve
+  db log performance and disk usage
 
 ## Patches
 

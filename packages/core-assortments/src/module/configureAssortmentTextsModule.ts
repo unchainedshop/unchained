@@ -90,7 +90,7 @@ export const configureAssortmentTextsModule = ({
 
       await Assortments.updateMany(
         {
-          _id: { $ne: assortmentSelector },
+          _id: { $ne: assortmentId },
           slugs: slug,
         },
         {
@@ -104,9 +104,8 @@ export const configureAssortmentTextsModule = ({
         },
       );
     }
-
     return AssortmentTexts.findOne(
-      updateResult.upsertedId ? { _id: updateResult.upsertedId._id } : selector,
+      updateResult.upsertedId ? { _id: (updateResult.upsertedId as any)._id } : selector,
     );
   };
 

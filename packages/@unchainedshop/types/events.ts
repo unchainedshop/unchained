@@ -1,15 +1,19 @@
 import { FindOptions, ModuleCreateMutation, Query, Sort, TimestampFields, _ID } from './common';
 
+export type EventPayload = {
+  context?: Record<string, unknown>;
+  payload?: Record<string, unknown>;
+};
+
 export type Event = {
   _id?: _ID;
   type: string;
-  context?: Record<string, unknown>;
-  payload?: Record<string, unknown>;
-} & TimestampFields;
+} & EventPayload &
+  TimestampFields;
 
 export interface EmitAdapter {
-  publish(eventName: string, payload: Record<string, unknown>): void;
-  subscribe(eventName: string, callBack: (payload?: Record<string, unknown>) => void): void;
+  publish(eventName: string, data: EventPayload): void;
+  subscribe(eventName: string, callback: (payload?: Record<string, unknown>) => void): void;
 }
 export type ContextNormalizerFunction = (context: any) => any;
 
@@ -22,7 +26,7 @@ export interface EventDirector {
   setContextNormalizer: (fn: ContextNormalizerFunction) => void;
   setEmitAdapter: (adapter: EmitAdapter) => void;
   setEmitHistoryAdapter: (adapter: EmitAdapter) => void;
-  subscribe: (eventName: string, callBack: (payload?: Record<string, unknown>) => void) => void;
+  subscribe: (eventName: string, callback: (payload?: Record<string, unknown>) => void) => void;
 }
 
 export interface EventsModule extends ModuleCreateMutation<Event> {

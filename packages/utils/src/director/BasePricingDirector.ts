@@ -14,7 +14,7 @@ export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,
   AdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>
+  PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>,
 >(
   directorName: string,
 ): IBasePricingDirector<DirectorContext, AdapterContext, Calculation, PricingAdapter> => {

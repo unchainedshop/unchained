@@ -13,8 +13,6 @@ export const AssortmentsSchema = new SimpleSchema(
     'slugs.$': String,
     tags: Array,
     'tags.$': String,
-    _cachedProductIds: Array,
-    '_cachedProductIds.$': String,
     ...Schemas.timestampFields,
   },
   { requiredByDefault: false },

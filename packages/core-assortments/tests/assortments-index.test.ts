@@ -8,9 +8,7 @@ describe('Test exports', () => {
 
   before(async () => {
     const db = initDb();
-    module = await configureAssortmentsModule({ db }).catch((error) => {
-      console.error(error);
-    });
+    module = await configureAssortmentsModule({ db });
   });
 
   it('Insert assortment', async () => {
