@@ -28,6 +28,14 @@ const getTransactionLightboxService = () => {
   return new PostFinanceCheckout.api.TransactionLightboxService(getConfig());
 };
 
+export const getTransaction = async (
+  transactionId: number,
+): Promise<PostFinanceCheckout.model.Transaction> => {
+  const transactionService = getTransactionService();
+  const transaction = await transactionService.read(SPACE_ID, transactionId);
+  return transaction.body;
+};
+
 export const createTransaction = async (
   transaction: PostFinanceCheckout.model.TransactionCreate,
 ): Promise<number> => {

@@ -9,11 +9,13 @@ export type SignResponse = {
   location: string | null;
 };
 
+export type listenerEntityTechnicalNames = 'TransactionCompletion';
+
 export type WebhookData = {
   eventId: number;
   entityId: number;
   listenerEntityId: number;
-  listenerEntityTechnicalName: string;
+  listenerEntityTechnicalName: listenerEntityTechnicalNames;
   spaceId: number;
   webhookListenerId: number;
   timestamp: string; // "YYYY-MM-DDTHH:MM:ss+0000", e.g. "2022-02-18T12:40:42+0000"

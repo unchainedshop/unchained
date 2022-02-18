@@ -76,6 +76,9 @@ const PostfinanceCheckout: IPaymentAdapter = {
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         const transaction = new PostFinanceCheckout.model.TransactionCreate();
         transaction.currency = order.currency;
+        transaction.metaData = {
+          orderPaymentId: orderPayment._id,
+        };
         if (totalAmount) {
           const lineItemSum = new PostFinanceCheckout.model.LineItemCreate();
           lineItemSum.name = `Bestellung ${orderPayment.orderId}`;
