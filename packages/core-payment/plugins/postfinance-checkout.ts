@@ -35,6 +35,11 @@ enum IntegrationModes {
   PaymentPage = 'PaymentPage',
   Lightbox = 'Lightbox',
   iFrame = 'iFrame',
+}
+
+type SignResponse = {
+  transactionId: number;
+  location: string | null;
 };
 
 const PostfinanceCheckout: IPaymentAdapter = {
@@ -70,6 +75,14 @@ const PostfinanceCheckout: IPaymentAdapter = {
       return new PostFinanceCheckout.api.TransactionPaymentPageService(getConfig());
     };
 
+    const getTransactionIframeService = () => {
+      return new PostFinanceCheckout.api.TransactionIframeService(getConfig());
+    };
+
+    const getTransactionLightboxService = () => {
+      return new PostFinanceCheckout.api.TransactionLightboxService(getConfig());
+    };
+
     const adapter = {
       ...PaymentAdapter.actions(params),
 
@@ -99,14 +112,12 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
       },
 
-      sign: async (context: any = {}) => {
-        const { integrationMode }: { integrationMode: IntegrationModes } =
-          context.transactionContext || {};
+      sign: async (transactionContext: any = {}) => {
+        const { integrationMode = IntegrationModes.PaymentPage }: { integrationMode: IntegrationModes } =
+          transactionContext;
         // Option for fetching payment methods (iFrame / Lightbox) -> Return id, JS url, possible payment methods
         const { orderPayment } = params.paymentContext;
-        // Return redirect url
         const transactionService = getTransactionService();
-        const transactionPaymentPageService = getTransactionPaymentPageService();
         const order = await modules.orders.findOrder({
           orderId: orderPayment.orderId,
         });
@@ -115,6 +126,8 @@ const PostfinanceCheckout: IPaymentAdapter = {
           currency: order.currency,
         });
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
+        const transaction = new PostFinanceCheckout.model.TransactionCreate();
+        transaction.currency = order.currency;
         if (totalAmount) {
           const lineItemSum = new PostFinanceCheckout.model.LineItemCreate();
           lineItemSum.name = `Bestellung ${orderPayment.orderId}`;
@@ -122,26 +135,40 @@ const PostfinanceCheckout: IPaymentAdapter = {
           lineItemSum.quantity = 1;
           lineItemSum.uniqueId = orderPayment.orderId;
           lineItemSum.amountIncludingTax = totalAmount / 100;
-          const transaction = new PostFinanceCheckout.model.TransactionCreate();
-          transaction.currency = order.currency;
           transaction.lineItems = [lineItemSum];
-          const transactionCreateRes = await transactionService.create(SPACE_ID, transaction);
-          const transactionCreate = transactionCreateRes.body;
+        }
+        const transactionCreateRes = await transactionService.create(SPACE_ID, transaction);
+        const transactionCreate = transactionCreateRes.body;
+        const transactionId = transactionCreate.id;
+        let location = null;
+        if (integrationMode === IntegrationModes.PaymentPage) {
+          const transactionPaymentPageService = getTransactionPaymentPageService();
           const paymentPageUrl = await transactionPaymentPageService.paymentPageUrl(
             SPACE_ID,
-            transactionCreate.id,
+            transactionId,
           );
-          const redirectUrl = paymentPageUrl.body;
-          return redirectUrl;
+          location = paymentPageUrl.body;
+        } else if (integrationMode === IntegrationModes.Lightbox) {
+          const transactionLightboxService = getTransactionLightboxService();
+          const javascriptUrl = await transactionLightboxService.javascriptUrl(SPACE_ID, transactionId);
+          location = javascriptUrl.body;
+        } else if (integrationMode === IntegrationModes.iFrame) {
+          const transactionIframeService = getTransactionIframeService();
+          const iframeUrl = await transactionIframeService.javascriptUrl(SPACE_ID, transactionId);
+          location = iframeUrl.body;
         }
+        const res: SignResponse = {
+          transactionId,
+          location,
+        };
+
+        return JSON.stringify(res);
       },
 
       charge: async () => {
         // if you return true, the status will be changed to PAID
-
         // if you return false, the order payment status stays the
         // same but the order status might change
-
         // if you throw an error, you cancel the checkout process
       },
 
