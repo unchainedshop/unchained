@@ -2,6 +2,10 @@
 title: 'Plugin: Payment through PostFinance Checkout'
 description: Configuration Options for our PostFinance Checkout Integration
 ---
+# Configuration
+
+## Postfinance Checkout
+You have to configure the [webhooks](https://checkout.postfinance.ch/space/select?target=/webhook/listener/list) for accepted payments ("Verbuchung der Transaktion" -> "Erfolgreich") and failed payments ("Verbuchung der Transaktion" -> "Fehlgeschlagen").
 
 # Usage
 
