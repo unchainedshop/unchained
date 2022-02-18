@@ -63,3 +63,10 @@ export type IProductPricingDirector = IPricingDirector<
   ProductPricingCalculation,
   IProductPricingAdapter
 >;
+
+export type ProductPriceRate = {
+  baseCurrency: string;
+  quoteCurrency: string;
+  rate: number;
+  timestamp: number | null;
+};
