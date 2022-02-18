@@ -9,10 +9,12 @@ const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURREN
 
 type FindQuery = {
   includeInactive?: boolean;
+  contractAddress?: string;
 };
-const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true; deleted: null } = { deleted: null };
+const buildFindSelector = ({ includeInactive = false, contractAddress }: FindQuery) => {
+  const selector: { isActive?: true; deleted: null; contractAddress?: string } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
+  if (contractAddress) selector.contractAddress = contractAddress;
   return selector;
 };
 
@@ -33,8 +35,8 @@ export const configureCurrenciesModule = async ({
       return Currencies.findOne(currencyId ? generateDbFilterById(currencyId) : { isoCode });
     },
 
-    findCurrencies: async ({ limit, offset, includeInactive }) => {
-      const currencies = Currencies.find(buildFindSelector({ includeInactive }), {
+    findCurrencies: async ({ limit, offset, includeInactive, contractAddress }) => {
+      const currencies = Currencies.find(buildFindSelector({ includeInactive, contractAddress }), {
         skip: offset,
         limit,
       });

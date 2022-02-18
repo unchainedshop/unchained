@@ -162,6 +162,8 @@ AssortmentMedia
 UpdateAssortmentMediaTextInput
 ReorderAssortmentMediaInput
 ```
+- [core] New module `products.prices.rates` for currency rates and a generic `ProductPriceRateConversion` plugin that consumes these rates.
+- [core] New Cryptopay pricing and payment plugin to support the self-hosted, decentralized Crypto Payment Gateway for payments in BTC, ETH, and arbitrary ERC20 tokens.
 
 ## Minor
 
@@ -190,6 +192,7 @@ ReorderAssortmentMediaInput
 - [core] Extended events module to make it possible to transform context for specific needs
 - [core] Reduce core-events logging verbosity
 - [core] Upstream hotfixes from 61.x
+- [core] Support for currencies that are based on a contract with the new `contractAddress` field for currencies. Used by the Cryptopay plugins to determine the supported ERC20 tokens.
 
 # v0.61.1
 

@@ -68,6 +68,7 @@ export default [
 
     input CreateCurrencyInput {
       isoCode: String!
+      contractAddress: String
     }
     input UpdateCurrencyInput {
       isoCode: String!

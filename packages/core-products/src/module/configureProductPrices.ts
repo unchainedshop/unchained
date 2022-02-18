@@ -3,15 +3,18 @@ import crypto from 'crypto';
 import { ProductPricingDirector } from '../director/ProductPricingDirector';
 import { getPriceLevels } from './utils/getPriceLevels';
 import { getPriceRange } from './utils/getPriceRange';
+import { ProductPriceRates } from '../db/ProductPriceRates';
 
 export const configureProductPricesModule = ({
   proxyProducts,
+  db,
 }: {
   proxyProducts: (
     product: Product,
     vectors: Array<ProductConfiguration>,
     options: { includeInactive?: boolean },
   ) => Promise<Array<Product>>;
+  db: any;
 }): ProductsModule['prices'] => {
   const mapPrice: ProductsModule['prices']['price'] = async (
     product,
@@ -87,7 +90,7 @@ export const configureProductPricesModule = ({
     const calculated = await pricingDirector.calculate();
     if (!calculated || !calculated.length) return null;
 
-    const pricing = ProductPricingDirector.resultSheet(calculated);
+    const pricing = pricingDirector.resultSheet();
     const userPrice = pricing.unitPrice({ useNetPrice });
 
     return {
@@ -266,6 +269,43 @@ export const configureProductPricesModule = ({
           },
         };
       });
+    },
+
+    rates: {
+      getRate: async (baseCurrency, quoteCurrency, maxAge) => {
+        const priceRates = await (await ProductPriceRates(db)).ProductRates;
+        const currencyRateBase = await priceRates.findOne({ baseCurrency, quoteCurrency });
+        const currencyRateInv = await priceRates.findOne({
+          baseCurrency: quoteCurrency,
+          quoteCurrency: baseCurrency,
+        });
+
+        let rate = null;
+        if (
+          currencyRateBase &&
+          (!currencyRateBase.timestamp || currencyRateBase.timestamp >= Date.now() / 1000 - maxAge)
+        ) {
+          rate = currencyRateBase.rate;
+        } else if (
+          currencyRateInv &&
+          (!currencyRateInv.timestamp || currencyRateInv.timestamp >= Date.now() / 1000 - maxAge)
+        ) {
+          rate = 1 / currencyRateInv.rate;
+        }
+        return rate;
+      },
+      updateRate: async (rate) => {
+        const priceRates = await ProductPriceRates(db);
+        const { baseCurrency, quoteCurrency } = rate;
+        try {
+          await priceRates.ProductRates.replaceOne({ baseCurrency, quoteCurrency }, rate, {
+            upsert: true,
+          });
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
     },
   };
 };
