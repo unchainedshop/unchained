@@ -15,7 +15,13 @@ import {
 } from './api';
 import { IntegrationModes, SignResponse } from './types';
 
-const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
+const {
+  PFCHECKOUT_SPACE_ID,
+  PFCHECKOUT_USER_ID,
+  PFCHECKOUT_SECRET,
+  PFCHECKOUT_SUCCESS_URL,
+  PFCHECKOUT_FAILED_URL,
+} = process.env;
 
 const PostfinanceCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
@@ -79,6 +85,8 @@ const PostfinanceCheckout: IPaymentAdapter = {
         transaction.metaData = {
           orderPaymentId: orderPayment._id,
         };
+        transaction.successUrl = PFCHECKOUT_SUCCESS_URL;
+        transaction.failedUrl = PFCHECKOUT_FAILED_URL;
         if (totalAmount) {
           const lineItemSum = new PostFinanceCheckout.model.LineItemCreate();
           lineItemSum.name = `Bestellung ${orderPayment.orderId}`;
