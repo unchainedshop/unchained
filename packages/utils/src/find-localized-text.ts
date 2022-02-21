@@ -31,7 +31,9 @@ const findLocalizedText = async <T extends Document>(
 
   if (cachedText) return cachedText as T;
 
-  const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale), {});
+  const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale), {
+    sort: { updated: -1 },
+  });
   if (exactTranslation) {
     textCache.set(cacheKey, exactTranslation);
     return exactTranslation as T;
@@ -40,7 +42,9 @@ const findLocalizedText = async <T extends Document>(
   if (systemLocale.normalized !== locale.normalized) {
     const fallbackTranslation = await collection.findOne(
       extendSelectorWithLocale(selector, systemLocale),
-      {},
+      {
+        sort: { updated: -1 },
+      },
     );
     if (fallbackTranslation) {
       textCache.set(cacheKey, fallbackTranslation);
@@ -48,7 +52,9 @@ const findLocalizedText = async <T extends Document>(
     }
   }
 
-  const foundText = await collection.findOne(selector, {});
+  const foundText = await collection.findOne(selector, {
+    sort: { updated: -1 },
+  });
   textCache.set(cacheKey, foundText);
   return foundText as T;
 };
