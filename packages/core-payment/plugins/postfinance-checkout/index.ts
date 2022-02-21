@@ -13,6 +13,7 @@ import {
   getLightboxJavascriptUrl,
   getPaymentPageUrl,
 } from './api';
+import './middleware';
 import { IntegrationModes, SignResponse } from './types';
 
 const {

@@ -30,7 +30,7 @@ useMiddlewareWithCurrentContext(PFCHECKOUT_WEBHOOK_PATH, async (req, res) => {
         currency: order.currency,
       });
       const totalAmount = pricing?.total({ useNetPrice: false }).amount / 100;
-      if (transactionIsPaid(transactionId, order.currency, totalAmount)) {
+      if (await transactionIsPaid(transaction, order.currency, totalAmount)) {
         await context.modules.orders.payments.markAsPaid(orderPayment, { transactionId });
         res.writeHead(200);
         logger.info(

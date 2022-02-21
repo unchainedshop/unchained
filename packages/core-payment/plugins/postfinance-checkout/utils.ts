@@ -12,5 +12,5 @@ export const transactionIsPaid = async (
       transaction.currency === expectedCurrency
     );
   }
-  return true;
+  return false;
 };

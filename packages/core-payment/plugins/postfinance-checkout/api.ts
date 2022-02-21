@@ -1,8 +1,8 @@
 import { PostFinanceCheckout } from 'postfinancecheckout';
 
 const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
-const SPACE_ID = parseInt(PFCHECKOUT_SPACE_ID, 10);
-const USER_ID = parseInt(PFCHECKOUT_USER_ID, 10);
+const SPACE_ID = parseInt(PFCHECKOUT_SPACE_ID as string, 10);
+const USER_ID = parseInt(PFCHECKOUT_USER_ID as string, 10);
 
 const getConfig = () => {
   return {
@@ -38,11 +38,11 @@ export const getTransaction = async (
 
 export const createTransaction = async (
   transaction: PostFinanceCheckout.model.TransactionCreate,
-): Promise<number> => {
+): Promise<number | null> => {
   const transactionService = getTransactionService();
   const transactionCreateRes = await transactionService.create(SPACE_ID, transaction);
   const transactionCreate = transactionCreateRes.body;
-  return transactionCreate.id;
+  return transactionCreate.id || null;
 };
 
 export const getPaymentPageUrl = async (transactionId: number): Promise<string> => {
