@@ -11,7 +11,9 @@ import {
   getIframeJavascriptUrl,
   getLightboxJavascriptUrl,
   getPaymentPageUrl,
+  getTransaction,
 } from './api';
+import { markOrderAsPaid } from './utils';
 import './middleware';
 import { IntegrationModes, SignResponse } from './types';
 
@@ -37,8 +39,6 @@ const PostfinanceCheckout: IPaymentAdapter = {
   actions: (params) => {
     const { modules } = params.context;
 
-    const SPACE_ID = parseInt(PFCHECKOUT_SPACE_ID, 10);
-
     const adapter = {
       ...PaymentAdapter.actions(params),
 
@@ -58,14 +58,6 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
       isPayLaterAllowed() {
         return false;
-      },
-
-      validate: async ({ token }) => {
-
-      },
-
-      register: async () => {
-
       },
 
       sign: async (transactionContext: any = {}) => {
@@ -107,16 +99,20 @@ const PostfinanceCheckout: IPaymentAdapter = {
           location,
         };
 
+        await modules.orders.updateContext(order._id, { transactionId }, params.context);
+
         return JSON.stringify(res);
       },
 
-      charge: async ({ transactionId }) => {
-        // if you return true, the status will be changed to PAID
-        // if you return false, the order payment status stays the
-        // same but the order status might change
-        // if you throw an error, you cancel the checkout process
+      charge: async () => {
+        const { order } = params.paymentContext;
+        const transactionId = order.context?.transactionId;
+        if (!transactionId) {
+          return false;
+        }
+        const transaction = await getTransaction(transactionId);
+        return markOrderAsPaid(transaction, modules.orders);
       },
-
     };
 
     return adapter;
