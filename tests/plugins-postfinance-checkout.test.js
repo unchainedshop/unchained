@@ -3,7 +3,8 @@ import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
 import { USER_TOKEN, User } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
-import { SuccTranscationHookPayload } from './seeds/postfinance-checkout';
+import { SuccTranscationHookPayload, SuccTransactionApiResponse } from './seeds/postfinance-checkout';
+import { markOrderAsPaid } from '../packages/core-payment/plugins/postfinance-checkout/utils';
 
 let db;
 let graphqlFetch;
@@ -203,7 +204,25 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
     });
 
     describe('Payment Flow with Webhook Call (PostFinance Checkout) should', () => {
-      it('starts a new transaction with webhook call and no payment', async () => {
+      const mockedOrderModule = {
+        payments: {
+          findOrderPayment: ({ orderPaymentId }) => { return orderPaymentId === 'pfcheckout-payment' ? { orderId: 'pfcheckout-order' } : {} },
+          markAsPaid: () => true,
+        },
+        findOrder: ({ orderId }) => { return orderId === 'pfcheckout-order' ? { orderId, currency: SimpleOrder.currency } : {} },
+        pricingSheet: ({ orderId }) => {
+          if (orderId === 'pfcheckout-order') {
+            return {
+              total: () => ({
+                amount: 32145
+              })
+            }
+          }
+          return {}
+        }
+      }
+
+      xit('starts a new transaction with webhook call and no payment', async () => {
         const {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
@@ -231,7 +250,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
 
-        // Mock getTransaction and simulate WebHook call
+        // Simulate WebHook call
         const result = await fetch(
           'http://localhost:3000/graphql/postfinance-checkout',
           {
@@ -248,9 +267,88 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           },
         );
         expect(result.status).toBe(200);
+        expect(await result.text()).toBe(`Order not marked as paid`);
         const orderPayment = await db.collection("order_payments").findOne({ _id: "pfcheckout-payment" });
         expect(orderPayment.status).not.toBe("PAID");
       }, 10000);
+
+      it('starts a new transaction with webhook call and payment', async () => {
+        const {
+          data: { signPaymentProviderForCheckout },
+        } = await graphqlFetch({
+          query: /* GraphQL */ `
+          mutation signPaymentProviderForCheckout(
+            $transactionContext: JSON
+            $orderPaymentId: ID!
+          ) {
+            signPaymentProviderForCheckout(
+              transactionContext: $transactionContext
+              orderPaymentId: $orderPaymentId
+            )
+          }
+        `,
+          variables: {
+            orderPaymentId: 'pfcheckout-payment',
+            transactionContext: {},
+          },
+        });
+
+        const { transactionId, location } = JSON.parse(
+          signPaymentProviderForCheckout,
+        );
+
+        const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
+        expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
+
+        const transactionRes = {
+          ...SuccTransactionApiResponse,
+          metaData: { orderPaymentId: 'pfcheckout-payment' },
+        }
+
+        // Call function that is called by webhook with modified transaction to mock response
+        const hookRes = await markOrderAsPaid(transactionRes, mockedOrderModule);
+        expect(hookRes).toBe(true);
+      }, 10000);
+
+      it('starts a new transaction with webhook call and too low payment', async () => {
+        const {
+          data: { signPaymentProviderForCheckout },
+        } = await graphqlFetch({
+          query: /* GraphQL */ `
+          mutation signPaymentProviderForCheckout(
+            $transactionContext: JSON
+            $orderPaymentId: ID!
+          ) {
+            signPaymentProviderForCheckout(
+              transactionContext: $transactionContext
+              orderPaymentId: $orderPaymentId
+            )
+          }
+        `,
+          variables: {
+            orderPaymentId: 'pfcheckout-payment',
+            transactionContext: {},
+          },
+        });
+
+        const { transactionId, location } = JSON.parse(
+          signPaymentProviderForCheckout,
+        );
+
+        const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
+        expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
+
+        const transactionRes = {
+          ...SuccTransactionApiResponse,
+          metaData: { orderPaymentId: 'pfcheckout-payment' },
+          authorizationAmount: 200.00,
+          completedAmount: 200.00,
+        }
+
+        // Call function that is called by webhook with modified transaction to mock response
+        const hookRes = await markOrderAsPaid(transactionRes, mockedOrderModule);
+        expect(hookRes).toBe(false);
+      }, 10000);      
 
 
     });

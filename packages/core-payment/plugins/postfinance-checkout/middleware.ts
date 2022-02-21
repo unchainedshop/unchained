@@ -1,11 +1,10 @@
 import bodyParser from 'body-parser';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 import { Context } from '@unchainedshop/types/api';
 import { createLogger } from 'meteor/unchained:logger';
 import { WebhookData } from './types';
 import { getTransaction } from './api';
-import { transactionIsPaid } from './utils';
+import { markOrderAsPaid } from './utils';
 
 const { PFCHECKOUT_WEBHOOK_PATH = '/graphql/postfinance-checkout' } = process.env;
 
@@ -20,28 +19,16 @@ useMiddlewareWithCurrentContext(PFCHECKOUT_WEBHOOK_PATH, async (req, res) => {
     const transactionId = data.entityId;
     try {
       const transaction = await getTransaction(transactionId);
-      const { orderPaymentId } = transaction.metaData;
-      const orderPayment = await context.modules.orders.payments.findOrderPayment({
-        orderPaymentId,
-      });
-      const order = await context.modules.orders.findOrder({ orderId: orderPayment.orderId });
-      const pricing = OrderPricingSheet({
-        calculation: order.calculation,
-        currency: order.currency,
-      });
-      const totalAmount = pricing?.total({ useNetPrice: false }).amount / 100;
-      if (await transactionIsPaid(transaction, order.currency, totalAmount)) {
-        await context.modules.orders.payments.markAsPaid(orderPayment, { transactionId });
-        res.writeHead(200);
+      if (await markOrderAsPaid(transaction, context.modules.orders)) {
         logger.info(
-          `PostFinance Checkout Webhook: Unchained confirmed checkout for order ${order.orderNumber}`,
-          {
-            orderId: order._id,
-          },
+          `PostFinance Checkout Webhook: Transaction ${transactionId} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
         );
-        res.end(JSON.stringify(order));
+        res.writeHead(200);
+        res.end(`Order marked as paid`);
       } else {
-        logger.info(`PostFinance Checkout Webhook: Order ${order.orderNumber} not marked as paid`);
+        logger.info(
+          `PostFinance Checkout Webhook: Invalid transaction ${transactionId} with order payment ID ${transaction.metaData.orderPaymentId} not marked as paid`,
+        );
         res.writeHead(200);
         res.end(`Order not marked as paid`);
       }

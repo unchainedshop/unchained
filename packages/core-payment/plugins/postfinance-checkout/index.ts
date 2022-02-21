@@ -1,5 +1,4 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 import {
   PaymentAdapter,
   PaymentDirector,
@@ -76,10 +75,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
         const order = await modules.orders.findOrder({
           orderId: orderPayment.orderId,
         });
-        const pricing = OrderPricingSheet({
-          calculation: order.calculation,
-          currency: order.currency,
-        });
+        const pricing = modules.orders.pricingSheet(order);
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         const transaction = new PostFinanceCheckout.model.TransactionCreate();
         transaction.currency = order.currency;
