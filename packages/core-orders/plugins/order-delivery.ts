@@ -9,7 +9,7 @@ const OrderDelivery: IOrderPricingAdapter = {
   label: 'Add Delivery Fees to Order',
   orderIndex: 10,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return true;
   },
 

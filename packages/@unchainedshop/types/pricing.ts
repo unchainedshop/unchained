@@ -96,7 +96,7 @@ export type IPricingAdapter<
 > = IBaseAdapter & {
   orderIndex: number;
 
-  isActivatedFor: (context: PricingContext) => Promise<boolean>;
+  isActivatedFor: (context: PricingContext) => boolean;
 
   actions: (params: {
     context: PricingContext;

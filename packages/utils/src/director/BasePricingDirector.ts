@@ -33,7 +33,7 @@ export const BasePricingDirector = <
       return {
         calculate: async () => {
           const Adapters = baseDirector.getAdapters({
-            adapterFilter: async (Adapter) => {
+            adapterFilter: (Adapter) => {
               return Adapter.isActivatedFor(context);
             },
           });

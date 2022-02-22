@@ -47,6 +47,23 @@ const getTaxRate = (context: DeliveryPricingAdapterContext) => {
   return SwissTaxCategories.DEFAULT.rate(date);
 };
 
+const isDeliveryAddressInSwitzerland = async ({ order, country, modules }) => {
+  let countryCode = country?.toUpperCase().trim();
+
+  if (order) {
+    const orderDelivery = await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    });
+    const address = orderDelivery?.context?.address || order.billingAddress;
+
+    if (address?.countryCode > '') {
+      countryCode = address.countryCode?.toUpperCase().trim();
+    }
+  }
+
+  return countryCode === 'CH' || countryCode === 'LI';
+};
+
 export const DeliverySwissTax: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,
 
@@ -55,21 +72,8 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
   label: 'Apply Swiss Tax on Delivery Fees',
   orderIndex: 20,
 
-  isActivatedFor: async ({ order, country, modules }) => {
-    let countryCode = country?.toUpperCase().trim();
-
-    if (order) {
-      const orderDelivery = await modules.orders.deliveries.findDelivery({
-        orderDeliveryId: order.deliveryId,
-      });
-      const address = orderDelivery?.context?.address || order.billingAddress;
-
-      if (address?.countryCode > '') {
-        countryCode = address.countryCode?.toUpperCase().trim();
-      }
-    }
-
-    return countryCode === 'CH' || countryCode === 'LI';
+  isActivatedFor: () => {
+    return true;
   },
 
   actions: (params) => {
@@ -80,10 +84,11 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
+        if (!(await isDeliveryAddressInSwitzerland(context))) {
+          return pricingAdapter.calculate();
+        }
         const taxRate = getTaxRate(context);
-
         DeliveryPricingAdapter.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
-
         pricingAdapter
           .calculationSheet()
           .filterBy({ isTaxable: true })

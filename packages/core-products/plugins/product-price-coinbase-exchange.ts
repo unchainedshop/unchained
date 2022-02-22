@@ -25,7 +25,7 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
   label: 'Convert fiat/crypto to crypto with current exchange rate',
   orderIndex: 1,
 
-  isActivatedFor: async (context) => {
+  isActivatedFor: (context) => {
     return SUPPORTED_CURRENCIES.indexOf(context.currency.toUpperCase()) !== -1;
   },
 

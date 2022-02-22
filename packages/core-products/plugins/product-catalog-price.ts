@@ -9,7 +9,7 @@ const ProductPrice: IProductPricingAdapter = {
   label: 'Add Gross Price to Product',
   orderIndex: 0,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return true;
   },
 

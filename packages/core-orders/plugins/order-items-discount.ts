@@ -48,7 +48,7 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
   label: 'Apply Discounts on Total Value Of Goods',
   orderIndex: 89,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return true;
   },
 

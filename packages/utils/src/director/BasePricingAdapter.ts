@@ -16,7 +16,7 @@ export const BasePricingAdapter = <
   version: '',
   orderIndex: 0,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return false;
   },
 

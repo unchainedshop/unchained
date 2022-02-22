@@ -17,7 +17,7 @@ const ProductDiscount: IProductPricingAdapter = {
   label: 'Apply Discounts on Product Price',
   orderIndex: 10,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return true;
   },
 

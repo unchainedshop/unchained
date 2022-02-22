@@ -43,6 +43,23 @@ const getTaxRate = (context: ProductPricingAdapterContext) => {
   return SwissTaxCategories.DEFAULT.rate(date);
 };
 
+const isDeliveryAddressInSwitzerland = async ({ order, country, modules }) => {
+  let countryCode = country?.toUpperCase().trim();
+
+  if (order) {
+    const orderDelivery = await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    });
+    const address = orderDelivery?.context?.address || order.billingAddress;
+
+    if (address?.countryCode > '') {
+      countryCode = address.countryCode?.toUpperCase().trim();
+    }
+  }
+
+  return countryCode === 'CH' || countryCode === 'LI';
+};
+
 const ProductSwissTax: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
@@ -51,31 +68,21 @@ const ProductSwissTax: IProductPricingAdapter = {
   label: 'Apply Swiss Tax on Product',
   orderIndex: 20,
 
-  isActivatedFor: async ({ country, order, modules }) => {
-    let countryCode = country?.toUpperCase().trim();
-    if (order) {
-      const orderDelivery = await modules.orders.deliveries.findDelivery({
-        orderDeliveryId: order.deliveryId,
-      });
-
-      const address = orderDelivery?.context?.address || order.billingAddress;
-
-      if (address?.countryCode !== undefined) {
-        countryCode = address.countryCode.toUpperCase().trim();
-      }
-    }
-
-    return countryCode === 'CH' || countryCode === 'LI';
+  isActivatedFor: ({ country, order, modules }) => {
+    return true;
   },
 
   actions: (params) => {
     const pricingAdapter = ProductPricingAdapter.actions(params);
-
+    const { context } = params;
     return {
       ...pricingAdapter,
 
       calculate: async () => {
-        const taxRate = getTaxRate(params.context);
+        if (!(await isDeliveryAddressInSwitzerland(context))) {
+          return pricingAdapter.calculate();
+        }
+        const taxRate = getTaxRate(context);
         ProductPricingAdapter.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
         pricingAdapter
           .calculationSheet()
