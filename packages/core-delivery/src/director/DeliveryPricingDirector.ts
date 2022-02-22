@@ -19,15 +19,15 @@ const baseDirector = BasePricingDirector<
 export const DeliveryPricingDirector: IDeliveryPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: async (
+  async buildPricingContext(
     {
       item,
       ...rest
     }: {
       item: OrderDelivery;
-    },
+    } & DeliveryPricingContext,
     requestContext,
-  ) => {
+  ) {
     const { modules } = requestContext;
     const { providerContext, currency, ...context } = rest as any;
 
@@ -49,7 +49,6 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     const user = await modules.users.findUser({
       userId: order.userId,
     });
-
     const discounts = await modules.orders.discounts.findOrderDiscounts({
       orderId: item.orderId,
     });
@@ -57,30 +56,29 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     return {
       country: order.countryCode,
       currency: currency || order.currency,
-      discounts,
       order,
       provider,
       user,
+      discounts,
       ...item.context,
       ...context,
       ...requestContext,
     };
   },
 
-  actions: async (pricingContext, requestContext) => {
-    return baseDirector.actions(
-      pricingContext,
-      requestContext,
-      DeliveryPricingDirector.buildPricingContext,
-    );
-  },
+  async actions(pricingContext, requestContext) {
+    const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
+    return {
+      ...actions,
+      resultSheet() {
+        const calculation = actions.getCalculation();
+        const context = actions.getContext();
 
-  resultSheet() {
-    const pricingSheet = DeliveryPricingSheet({
-      calculation: baseDirector.getCalculation(),
-      currency: baseDirector.getContext().currency,
-    });
-
-    return pricingSheet;
+        return DeliveryPricingSheet({
+          calculation,
+          currency: context.currency,
+        });
+      },
+    };
   },
 };

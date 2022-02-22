@@ -7,9 +7,14 @@ import 'meteor/unchained:core-delivery/plugins/post';
 import 'meteor/unchained:core-delivery/plugins/pick-mup';
 import 'meteor/unchained:core-delivery/plugins/send-message';
 import 'meteor/unchained:core-delivery/plugins/stores';
+import 'meteor/unchained:core-delivery/plugins/free-delivery';
+import 'meteor/unchained:core-delivery/plugins/delivery-swiss-tax';
+
 import 'meteor/unchained:core-warehousing/plugins/google-sheets';
+
 import 'meteor/unchained:core-orders/plugins/discount-half-price-manual';
 import 'meteor/unchained:core-orders/plugins/discount-100-off';
+
 import 'meteor/unchained:core-payment/plugins/invoice';
 import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
 // import 'meteor/unchained:core-payment/plugins/datatrans-v2';
@@ -19,21 +24,27 @@ import { configureAppleTransactionsModule } from 'meteor/unchained:core-payment/
 import 'meteor/unchained:core-payment/plugins/stripe';
 import 'meteor/unchained:core-payment/plugins/stripe-charges';
 import { configureBityModule } from 'meteor/unchained:core-payment/plugins/bity';
+import 'meteor/unchained:core-payment/plugins/free-payment';
+
 import 'meteor/unchained:core-orders/plugins/order-items';
 import 'meteor/unchained:core-orders/plugins/order-discount';
 import 'meteor/unchained:core-orders/plugins/order-delivery';
 import 'meteor/unchained:core-orders/plugins/order-payment';
+
 import 'meteor/unchained:core-products/plugins/product-catalog-price';
 import 'meteor/unchained:core-products/plugins/product-price-coinbase-exchange';
 import 'meteor/unchained:core-products/plugins/product-price-cryptopay';
 import 'meteor/unchained:core-products/plugins/product-price-rateconversion';
 import 'meteor/unchained:core-products/plugins/product-discount';
 import 'meteor/unchained:core-products/plugins/product-swiss-tax';
-import 'meteor/unchained:core-delivery/plugins/delivery-swiss-tax';
+
 import 'meteor/unchained:core-filters/plugins/strict-equal';
 import 'meteor/unchained:core-filters/plugins/local-search';
+
 import 'meteor/unchained:core-quotations/plugins/manual';
+
 import 'meteor/unchained:core-enrollments/plugins/licensed';
+
 import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
@@ -57,7 +68,7 @@ const context = async ({ req, unchainedContextFn, ...rest }) => {
     if (type === 'Bearer' && userToken) {
       const [username, secret] = userToken.split(':');
       const user = await unchainedContext.modules.users.findUser({ username });
-      if (user?.services.token?.secret === secret) {
+      if (secret && user?.services.token?.secret === secret) {
         newContext.userId = user._id;
         newContext.user = user;
       }
