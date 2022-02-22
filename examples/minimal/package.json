@@ -33,7 +33,7 @@
   "dependencies": {
     "@babel/runtime": "^7.14.8",
     "@paypal/checkout-server-sdk": "^1.0.2",
-    "@unchainedshop/controlpanel": "^1.0.0-beta15",
+    "@unchainedshop/controlpanel": "^1.0.0-beta16",
     "apollo-server-express": "^2.25.2",
     "bcrypt": "^5.0.1",
     "bip32": "^3.0.1",
