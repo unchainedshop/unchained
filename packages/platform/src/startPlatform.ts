@@ -29,8 +29,8 @@ const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
   return !UNCHAINED_DISABLE_WORKER;
 };
 
-const isEmailInterceptionEnabled = (options) => {
-  if (options?.disableEmailInterception) return false;
+const checkEmailInterceptionEnabled = (disableEmailInterception) => {
+  if (disableEmailInterception) return false;
   return NODE_ENV !== 'production' && !UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
 };
 
@@ -45,40 +45,50 @@ type PlatformOptions = {
   options: UnchainedCoreOptions['options'];
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
+  disableEmailInterception?: any;
 };
 export const startPlatform = async (
-  { modules, additionalTypeDefs = [], options = {}, ...otherOptions }: PlatformOptions = {
+  {
+    modules,
+    additionalTypeDefs = [],
+    options = {},
+    rolesOptions,
+    accountsOptions,
+    workQueueOptions,
+    disableEmailInterception,
+    context,
+  }: PlatformOptions = {
     modules: {},
     additionalTypeDefs: [],
     options: {},
   },
 ) => {
-  const isWorkQueueEnabled = checkWorkQueueEnabled(otherOptions.workQueueOptions);
-  const emailInterceptionIsEnabled = isEmailInterceptionEnabled(otherOptions);
-
   // Configure database
   const db = initDb();
 
   // Prepare Migrations
   const migrationRepository = createMigrationRepository(db);
 
+  const bulkImporter = {
+    BulkImportPayloads,
+  };
+
   // Initialise core api using the database
   const unchainedAPI = await initCore({
-    bulkImporter: {
-      BulkImportPayloads,
-    },
+    bulkImporter,
     db,
     migrationRepository,
     modules,
     options,
   });
 
+  const isWorkQueueEnabled = checkWorkQueueEnabled(workQueueOptions);
   if (isWorkQueueEnabled) {
     await runMigrations({ migrationRepository, unchainedAPI });
   }
 
   // Setup accountsjs specific extensions and event handlers
-  setupAccounts(otherOptions.accountsOptions, unchainedAPI);
+  setupAccounts(accountsOptions, unchainedAPI);
 
   // Setup email templates
   setupTemplates();
@@ -87,15 +97,21 @@ export const startPlatform = async (
   const typeDefs = [...generateEventTypeDefs(), ...generateWorkerTypeDefs(), ...additionalTypeDefs];
 
   // Start the graphQL server
-  startAPIServer({ ...options, typeDefs, unchainedAPI });
+  startAPIServer({
+    unchainedAPI,
+    bulkImporter,
+    rolesOptions,
+    typeDefs,
+    context,
+  });
 
-  if (emailInterceptionIsEnabled) interceptEmails();
+  if (checkEmailInterceptionEnabled(disableEmailInterception)) interceptEmails();
 
   // Setup work queues for scheduled work
   if (isWorkQueueEnabled) {
-    const handlers = setupWorkqueue(otherOptions.workQueueOptions, unchainedAPI);
+    const handlers = setupWorkqueue(workQueueOptions, unchainedAPI);
     handlers.forEach((handler) => queueWorkers.push(handler));
-    await setupCarts(otherOptions.workQueueOptions, unchainedAPI);
+    await setupCarts(workQueueOptions, unchainedAPI);
 
     setupAutoScheduling();
   }

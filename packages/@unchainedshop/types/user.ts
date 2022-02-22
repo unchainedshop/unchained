@@ -69,6 +69,7 @@ export type UsersModule = {
   findUser: (
     query: {
       userId?: _ID;
+      username?: string;
       resetToken?: string;
       hashedToken?: string;
     },
