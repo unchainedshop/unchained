@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-payment',
-  version: '1.0.0-beta15',
+  version: '1.0.0-beta16',
   summary: 'Unchained Engine Core: Payment',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -16,9 +16,9 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-beta15');
-  api.use('unchained:events@1.0.0-beta15');
-  api.use('unchained:logger@1.0.0-beta15');
+  api.use('unchained:utils@1.0.0-beta16');
+  api.use('unchained:events@1.0.0-beta16');
+  api.use('unchained:logger@1.0.0-beta16');
 
   api.mainModule('src/payment-index.ts', 'server');
 });

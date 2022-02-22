@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '1.0.0-beta15',
+  version: '1.0.0-beta16',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -24,17 +24,11 @@ Package.onUse((api) => {
   api.use('check');
   api.use('typescript');
 
-  api.use('unchained:events@1.0.0-beta15');
-  api.use('unchained:logger@1.0.0-beta15');
+  api.use('unchained:events@1.0.0-beta16');
+  api.use('unchained:logger@1.0.0-beta16');
 
-  api.use('unchained:core@1.0.0-beta15');
-  api.use('unchained:roles@1.0.0-beta15');
+  api.use('unchained:core@1.0.0-beta16');
+  api.use('unchained:roles@1.0.0-beta16');
 
   api.mainModule('api.ts', 'server');
-});
-
-Package.onTest((api) => {
-  api.use('ecmascript');
-  api.use('unchained:api');
-  api.mainModule('api-tests.js');
 });

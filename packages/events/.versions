@@ -1,4 +1,4 @@
-babel-compiler@7.8.0
+babel-compiler@7.8.1
 babel-runtime@1.5.0
 dynamic-import@0.7.2
 ecmascript@0.16.1
@@ -7,16 +7,12 @@ ecmascript-runtime-client@0.12.1
 ecmascript-runtime-server@0.11.0
 fetch@0.1.1
 inter-process-messaging@0.1.1
-local-test:unchained:utils@1.0.0-beta16
 meteor@1.10.0
-meteortesting:browser-tests@0.1.2
-meteortesting:mocha@0.4.4
 modern-browsers@0.1.7
 modules@0.18.0
 modules-runtime@0.12.0
-practicalmeteor:mocha-core@1.0.1
 promise@0.12.0
 react-fast-refresh@0.2.2
 typescript@4.4.1
+unchained:events@1.0.0-beta16
 unchained:logger@1.0.0-beta16
-unchained:utils@1.0.0-beta16
