@@ -28,9 +28,9 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
   return loggingMatched || false;
 };
 
-const myFormat = printf(({ level, message, label: _label, timestamp: _timestamp, ...rest }) => {
+const myFormat = printf(({ level, message, label: _label, timestamp: _timestamp, ...rest }) => { //eslint-disable-line
   const otherPropsString = stringify(rest);
-  return `${_timestamp} [${_label}] ${level}: ${message} ${otherPropsString}`;
+  return `[${_label}] ${level}: ${message} ${otherPropsString}`;
 });
 
 const UnchainedLogFormats = {
