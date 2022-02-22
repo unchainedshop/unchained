@@ -1,1 +1,1 @@
-rm -Rf packages/*/.npm && rm -Rf packags/*/node_modules
+rm -Rf packages/*/.npm && rm -Rf packages/*/node_modules

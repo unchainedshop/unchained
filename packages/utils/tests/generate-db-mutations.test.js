@@ -11,7 +11,7 @@ const testSchema = new SimpleSchema({
   users: { type: Array, defaultValue: [] },
   'users.$': String,
   ...Schemas.timestampFields,
-});
+}, { requiredByDefault: false });
 
 const testCollection = {
   insertOne: () =>

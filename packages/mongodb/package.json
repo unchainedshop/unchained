@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "npm run build --watch",
-    "test": "TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+    "test": "METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
     "type": "git",

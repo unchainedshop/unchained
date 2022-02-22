@@ -11,7 +11,6 @@ Npm.depends({
   hashids: '2.2.8',
   locale: '0.1.0',
   'simpl-schema': '1.12.0',
-  fibers: '5.0.0',
   bson: '4.5.4',
 });
 
