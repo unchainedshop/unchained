@@ -22,7 +22,13 @@ export default async (remoteToken) => {
       }),
     });
     const json = await result.json();
-    if (thisDomain === json?.data?.controlConsumeSingleSignOnToken?.domain) {
+    if (json?.errors?.length > 0) {
+      throw new Error(json.errors[0].message);
+    }
+    if (
+      thisDomain === 'localhost' ||
+      !thisDomain === json?.data?.controlConsumeSingleSignOnToken?.domain
+    ) {
       // create sso user if not exist and login
       const ssoUser =
         Users.findOne({ username: 'sso' }) ||
