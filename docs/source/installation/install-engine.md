@@ -51,7 +51,7 @@ Unchained engine <--
 5. Install the npm packages
 
 ```bash
-meteor npm install
+npm install
 ```
 
 The installation script downloads, installs and initialises all files and packages required to build and run a new Meteor app that has the Unchained Engine backed in.
@@ -59,7 +59,7 @@ The installation script downloads, installs and initialises all files and packag
 ## Step 2: Start the Unchained Engine
 
 ```bash
-meteor npm run dev
+npm run dev
 ```
 
 Open [localhost:4010](http://localhost:4010) to check if your meteor app is running correctly. You should see an **Login Screen**. Well, log-in!

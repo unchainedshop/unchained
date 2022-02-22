@@ -31,7 +31,7 @@
     "dev:minimal": "cd examples/minimal && npm run dev",
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",
     "install": "run-p --print-label install:*",
-    "install:minimal": "cd examples/minimal && meteor npm install",
+    "install:minimal": "cd examples/minimal && npm install",
     "install:controlpanel": "cd examples/controlpanel && npm install",
     "typecheck": "tsc",
     "typecheck:watch": "tsc --watch"
