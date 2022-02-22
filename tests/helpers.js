@@ -41,8 +41,6 @@ export const connect = async () => {
   connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    poolSize: 1,
-    autoReconnect: false,
     keepAlive: true,
   });
 };
