@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { startAPIServer } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
 import { initDb } from 'meteor/unchained:mongodb';
-import { BulkImportPayloads } from './bulk-importer/createBulkImporter';
+import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
 import { interceptEmails } from './interceptEmails';
 import { runMigrations } from './migrations/runMigrations';
 import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
@@ -46,7 +46,11 @@ type PlatformOptions = {
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
   disableEmailInterception?: any;
+  interception?: boolean;
+  playground?: boolean;
+  tracing?: boolean;
 };
+
 export const startPlatform = async (
   {
     modules,
@@ -57,6 +61,9 @@ export const startPlatform = async (
     workQueueOptions,
     disableEmailInterception,
     context,
+    interception,
+    playground,
+    tracing,
   }: PlatformOptions = {
     modules: {},
     additionalTypeDefs: [],
@@ -68,16 +75,13 @@ export const startPlatform = async (
 
   // Prepare Migrations
   const migrationRepository = createMigrationRepository(db);
-
-  const bulkImporter = {
-    BulkImportPayloads,
-  };
+  const bulkImporter = createBulkImporterFactory(db);
 
   // Initialise core api using the database
   const unchainedAPI = await initCore({
-    bulkImporter,
     db,
     migrationRepository,
+    bulkImporter,
     modules,
     options,
   });
@@ -99,10 +103,12 @@ export const startPlatform = async (
   // Start the graphQL server
   startAPIServer({
     unchainedAPI,
-    bulkImporter,
     rolesOptions,
     typeDefs,
     context,
+    interception,
+    playground,
+    tracing,
   });
 
   if (checkEmailInterceptionEnabled(disableEmailInterception)) interceptEmails();

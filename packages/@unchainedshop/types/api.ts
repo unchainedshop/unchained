@@ -54,6 +54,9 @@ export interface UnchainedServerOptions {
   rolesOptions?: any;
   typeDefs: Array<string>;
   context?: any;
+  interception?: boolean;
+  playground?: boolean;
+  tracing?: boolean;
 }
 
 export interface Migration {

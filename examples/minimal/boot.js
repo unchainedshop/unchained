@@ -84,6 +84,8 @@ const context = async ({ req, unchainedContextFn, ...rest }) => {
 Meteor.startup(async () => {
   const unchainedApi = await startPlatform({
     introspection: true,
+    playground: true,
+    tracing: true,
     modules: {
       bity: {
         configure: configureBityModule,
