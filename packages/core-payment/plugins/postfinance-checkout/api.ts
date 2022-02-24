@@ -1,4 +1,6 @@
 import { PostFinanceCheckout } from 'postfinancecheckout';
+import { RefundCreate } from 'postfinancecheckout/src/models/RefundCreate';
+import { RefundType } from 'postfinancecheckout/src/models/RefundType';
 
 const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
 const SPACE_ID = parseInt(PFCHECKOUT_SPACE_ID as string, 10);
@@ -14,6 +16,14 @@ const getConfig = () => {
 
 const getTransactionService = () => {
   return new PostFinanceCheckout.api.TransactionService(getConfig());
+};
+
+const getTransactionVoidService = () => {
+  return new PostFinanceCheckout.api.TransactionVoidService(getConfig());
+};
+
+const getRefundService = () => {
+  return new PostFinanceCheckout.api.RefundService(getConfig());
 };
 
 const getTransactionPaymentPageService = () => {
@@ -43,6 +53,36 @@ export const createTransaction = async (
   const transactionCreateRes = await transactionService.create(SPACE_ID, transaction);
   const transactionCreate = transactionCreateRes.body;
   return transactionCreate.id || null;
+};
+
+export const voidTransaction = async (transactionId: number): Promise<boolean> => {
+  const transactionVoidService = getTransactionVoidService();
+  try {
+    await transactionVoidService.voidOnline(SPACE_ID, transactionId);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const refundTransaction = async (
+  transactionId: number,
+  orderId: string,
+  amount: number,
+): Promise<boolean> => {
+  const refundService = getRefundService();
+  const refund: RefundCreate = {
+    transaction: transactionId,
+    externalId: orderId,
+    amount,
+    type: RefundType.MERCHANT_INITIATED_ONLINE,
+  };
+  try {
+    await refundService.refund(SPACE_ID, refund);
+    return true;
+  } catch (e) {
+    return false;
+  }
 };
 
 export const getPaymentPageUrl = async (transactionId: number): Promise<string> => {
