@@ -3,14 +3,13 @@ import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
 import { BaseAdapter } from 'meteor/unchained:utils';
 import yj from 'yieldable-json';
-import { BulkImportPayloads, createBulkImporter } from '../bulk-importer/createBulkImporter';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
-const unpackPayload = async ({ payloadId, ...options }) => {
+const unpackPayload = async ({ payloadId, ...options }, gridFSBucket) => {
   return new Promise((resolve, reject) => {
     const buffers = [];
-    const readStream = BulkImportPayloads.openDownloadStream(payloadId);
+    const readStream = gridFSBucket.openDownloadStream(payloadId);
     readStream.on('data', (buffer) => {
       buffers.push(buffer);
     });
@@ -37,25 +36,27 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
   version: '1.0',
   type: 'BULK_IMPORT',
 
-  doWork: async (rawPayload, requestContext) => {
+  doWork: async (rawPayload, unchainedAPI) => {
     try {
       const {
         events,
         createShouldUpsertIfIDExists = false,
         skipCacheInvalidation = false,
         authorId = 'root',
-      } = rawPayload.payloadId ? await unpackPayload(rawPayload) : rawPayload;
+      } = rawPayload.payloadId
+        ? await unpackPayload(rawPayload, unchainedAPI.bulkImporter.BulkImportPayloads)
+        : rawPayload;
 
       if (!events?.length) throw new Error('No events submitted');
 
-      const bulkImporter = createBulkImporter(
+      const bulkImporter = unchainedAPI.bulkImporter.createBulkImporter(
         {
           logger,
           authorId,
           createShouldUpsertIfIDExists,
           skipCacheInvalidation,
         },
-        requestContext,
+        unchainedAPI,
       );
       await events.reduce(async (currentEventPromise, nextEvent) => {
         await currentEventPromise;

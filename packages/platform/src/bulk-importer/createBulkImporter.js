@@ -1,4 +1,4 @@
-import { MongoInternals } from 'meteor/mongo';
+import mongodb from 'mongodb';
 import * as AssortmentHandlers from './handlers/assortment';
 import * as FilterHandlers from './handlers/filter';
 import * as ProductHandlers from './handlers/product';
@@ -27,17 +27,6 @@ const runPrepareAsync = async (entity, operation, event, context, requestContext
 
   return entityOperation(event.payload, context, requestContext);
 };
-
-export const createBucket = (bucketName) => {
-  // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
-  const options = { bucketName, chunkSizeBytes: 5 * 1024 * 1024 };
-  return new MongoInternals.NpmModule.GridFSBucket(
-    MongoInternals.defaultRemoteCollectionDriver().mongo.db,
-    options,
-  );
-};
-
-export const BulkImportPayloads = createBucket('bulk_import_payloads');
 
 export const createBulkImporter = (options, requestContext) => {
   const bulkOperations = {};
@@ -122,5 +111,16 @@ export const createBulkImporter = (options, requestContext) => {
       await requestContext.modules.assortments.invalidateCache();
       await requestContext.modules.filters.invalidateCache({}, requestContext);
     },
+  };
+};
+
+export const createBulkImporterFactory = (db) => {
+  // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
+  const options = { bucketName: 'bulk_import_payloads', chunkSizeBytes: 5 * 1024 * 1024 };
+  const BulkImportPayloads = new mongodb.GridFSBucket(db, options);
+
+  return {
+    BulkImportPayloads,
+    createBulkImporter,
   };
 };
