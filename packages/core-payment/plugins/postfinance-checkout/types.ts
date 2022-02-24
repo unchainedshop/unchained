@@ -4,6 +4,11 @@ export enum IntegrationModes {
   iFrame = 'iFrame',
 }
 
+export enum CompletionModes {
+  Immediate = 'Immediate',
+  Deferred = 'Deferred',
+}
+
 export type SignResponse = {
   transactionId: number;
   location: string | null;

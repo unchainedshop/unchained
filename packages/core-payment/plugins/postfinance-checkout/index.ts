@@ -17,7 +17,10 @@ import {
 } from './api';
 import { markOrderAsPaid } from './utils';
 import './middleware';
-import { IntegrationModes, SignResponse } from './types';
+import { CompletionModes, IntegrationModes, SignResponse } from './types';
+import { OrderStatus } from '@unchainedshop/types/orders';
+import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
+import { TransactionCompletionBehavior } from 'postfinancecheckout/src/models/TransactionCompletionBehavior';
 
 const {
   PFCHECKOUT_SPACE_ID,
@@ -63,8 +66,10 @@ const PostfinanceCheckout: IPaymentAdapter = {
       },
 
       sign: async (transactionContext: any = {}) => {
-        const { integrationMode = IntegrationModes.PaymentPage }: { integrationMode: IntegrationModes } =
-          transactionContext;
+        const {
+          integrationMode = IntegrationModes.PaymentPage,
+          completionMode = CompletionModes.Immediate,
+        }: { integrationMode: IntegrationModes; completionMode: CompletionModes } = transactionContext;
         const { orderPayment } = params.paymentContext;
         const order = await modules.orders.findOrder({
           orderId: orderPayment.orderId,
@@ -81,6 +86,11 @@ const PostfinanceCheckout: IPaymentAdapter = {
         transaction.customerId = params.context.user._id;
         transaction.tokenizationMode =
           PostFinanceCheckout.model.TokenizationMode.ALLOW_ONE_CLICK_PAYMENT;
+        if (completionMode === CompletionModes.Immediate) {
+          transaction.completionBehavior = TransactionCompletionBehavior.COMPLETE_IMMEDIATELY;
+        } else if (completionMode === CompletionModes.Deferred) {
+          transaction.completionBehavior = TransactionCompletionBehavior.COMPLETE_DEFERRED;
+        }
         if (totalAmount) {
           const lineItemSum = new PostFinanceCheckout.model.LineItemCreate();
           lineItemSum.name = `Bestellung ${orderPayment.orderId}`;
@@ -106,7 +116,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
         await modules.orders.payments.updateContext(
           orderPayment._id,
-          { orderId: order._id, context: transactionId },
+          { orderId: order._id, context: { transactionId } },
           params.context,
         );
 
@@ -136,10 +146,38 @@ const PostfinanceCheckout: IPaymentAdapter = {
           return false;
         }
         const voidRes = await voidTransaction(transactionId);
-        if (!voidRes && refund) {
-          return refundTransaction(transactionId, order._id, totalAmount);
+        if (voidRes) {
+          const info = `PostFinance Transaction ${transactionId} voided`;
+          await modules.orders.updateStatus(
+            order._id,
+            { status: OrderStatus.OPEN, info },
+            params.context,
+          );
+          await modules.orders.payments.updateStatus(
+            orderPayment._id,
+            { status: OrderPaymentStatus.REFUNDED, info },
+            params.context.user._id,
+          );
+          return true;
         }
-        return voidRes;
+        if (refund) {
+          const refundRes = await refundTransaction(transactionId, order._id, totalAmount / 100);
+          if (refundRes) {
+            const info = `PostFinance Transaction ${transactionId} refunded`;
+            await modules.orders.updateStatus(
+              order._id,
+              { status: OrderStatus.OPEN, info },
+              params.context,
+            );
+            await modules.orders.payments.updateStatus(
+              orderPayment._id,
+              { status: OrderPaymentStatus.REFUNDED, info },
+              params.context.user._id,
+            );
+            return true;
+          }
+        }
+        return false;
       },
     };
 
