@@ -18,6 +18,10 @@ const getTransactionService = () => {
   return new PostFinanceCheckout.api.TransactionService(getConfig());
 };
 
+const getTransactionCompletionService = () => {
+  return new PostFinanceCheckout.api.TransactionCompletionService(getConfig());
+};
+
 const getTransactionVoidService = () => {
   return new PostFinanceCheckout.api.TransactionVoidService(getConfig());
 };
@@ -79,6 +83,16 @@ export const refundTransaction = async (
   };
   try {
     await refundService.refund(SPACE_ID, refund);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const confirmDeferredTransaction = async (transactionId: number): Promise<boolean> => {
+  const transactionCompletionService = getTransactionCompletionService();
+  try {
+    await transactionCompletionService.completeOnline(SPACE_ID, transactionId);
     return true;
   } catch (e) {
     return false;

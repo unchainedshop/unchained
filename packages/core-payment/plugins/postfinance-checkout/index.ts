@@ -7,6 +7,7 @@ import {
 } from 'meteor/unchained:core-payment';
 import { PostFinanceCheckout } from 'postfinancecheckout';
 import {
+  confirmDeferredTransaction,
   createTransaction,
   getIframeJavascriptUrl,
   getLightboxJavascriptUrl,
@@ -178,6 +179,15 @@ const PostfinanceCheckout: IPaymentAdapter = {
           }
         }
         return false;
+      },
+
+      confirm: async () => {
+        const { orderPayment } = params.paymentContext;
+        const transactionId = orderPayment.context?.transactionId;
+        if (!transactionId) {
+          return false;
+        }
+        return confirmDeferredTransaction(transactionId);
       },
     };
 
