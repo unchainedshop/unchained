@@ -839,6 +839,11 @@ export default [
       """
       signPaymentProviderForCheckout(orderPaymentId: ID!, transactionContext: JSON): String!
 
+      """
+      Cancel an order payment
+      """
+      cancelOrderPayment(orderPaymentId: ID!, transactionContext: JSON): Boolean
+
       prepareProductMediaUpload(mediaName: String!, productId: ID!): MediaUploadTicket!
       prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!
       prepareUserAvatarUpload(mediaName: String!, userId: ID): MediaUploadTicket!

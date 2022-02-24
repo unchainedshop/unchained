@@ -71,6 +71,7 @@ interface IPaymentActions {
   register: (transactionContext?: any) => Promise<any>;
   sign: (transactionContext?: any) => Promise<string>;
   validate: (token?: any) => Promise<boolean>;
+  cancel: (transactionContext?: any) => Promise<boolean>;
 }
 
 export type IPaymentAdapter = IBaseAdapter & {
@@ -168,6 +169,11 @@ export type PaymentModule = {
       requestContext: Context,
     ) => Promise<string>;
     validate: (
+      paymentProviderId: string,
+      paymentContext: PaymentContext,
+      requestContext: Context,
+    ) => Promise<boolean>;
+    cancel: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
       requestContext: Context,

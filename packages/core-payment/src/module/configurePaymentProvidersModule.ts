@@ -161,6 +161,11 @@ export const configurePaymentProvidersModule = (
       return adapter.validate();
     },
 
+    cancel: async (paymentProviderId, paymentContext, requestContext) => {
+      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
+      return adapter.cancel();
+    },
+
     // Mutations
     create: async (doc, userId) => {
       const Adapter = PaymentDirector.getAdapter(doc.adapterKey);

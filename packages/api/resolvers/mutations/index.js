@@ -143,6 +143,7 @@ import updateAssortmentMediaTexts from './assortments/updateAssortmentMediaTexts
 import prepareProductMediaUpload from './products/prepareProductMediaUpload';
 import prepareAssortmentMediaUpload from './assortments/prepareAssortmentMediaUpload';
 import prepareUserAvatarUpload from './users/prepareUserAvatarUpload';
+import cancelOrderPayment from './orders/cancelOrderPayment';
 
 export default {
   logout,
@@ -237,6 +238,7 @@ export default {
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
+  cancelOrderPayment: acl(actions.markOrderPaid)(cancelOrderPayment),
   deliverOrder: acl(actions.markOrderDelivered)(deliverOrder),
 
   createEnrollment: acl(actions.createEnrollment)(createEnrollment),
