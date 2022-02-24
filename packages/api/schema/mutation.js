@@ -844,6 +844,11 @@ export default [
       """
       cancelOrderPayment(orderPaymentId: ID!, transactionContext: JSON): Boolean
 
+      """
+      Confirm an order payment
+      """
+      confirmOrderPayment(orderPaymentId: ID!, transactionContext: JSON): Boolean
+
       prepareProductMediaUpload(mediaName: String!, productId: ID!): MediaUploadTicket!
       prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!
       prepareUserAvatarUpload(mediaName: String!, userId: ID): MediaUploadTicket!

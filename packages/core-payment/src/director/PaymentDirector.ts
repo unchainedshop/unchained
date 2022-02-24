@@ -69,6 +69,10 @@ export const PaymentDirector: IPaymentDirector = {
       cancel: async () => {
         return adapter.cancel(paymentContext.transactionContext);
       },
+
+      confirm: async () => {
+        return adapter.confirm(paymentContext.transactionContext);
+      },
     };
   },
 };
