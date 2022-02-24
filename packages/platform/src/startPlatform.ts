@@ -46,7 +46,11 @@ type PlatformOptions = {
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
   disableEmailInterception?: any;
+  interception?: boolean;
+  playground?: boolean;
+  tracing?: boolean;
 };
+
 export const startPlatform = async (
   {
     modules,
@@ -57,6 +61,9 @@ export const startPlatform = async (
     workQueueOptions,
     disableEmailInterception,
     context,
+    interception,
+    playground,
+    tracing,
   }: PlatformOptions = {
     modules: {},
     additionalTypeDefs: [],
@@ -99,6 +106,9 @@ export const startPlatform = async (
     rolesOptions,
     typeDefs,
     context,
+    interception,
+    playground,
+    tracing,
   });
 
   if (checkEmailInterceptionEnabled(disableEmailInterception)) interceptEmails();
