@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-unfetch';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN, User } from './seeds/users';
+import { USER_TOKEN } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 import { SuccTranscationHookPayload, SuccTransactionApiResponse } from './seeds/postfinance-checkout';
@@ -50,12 +50,13 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         paymentId: 'pfcheckout-payment',
       });
 
-      // Add a second demo order ready to checkout
+      // Add a second demo order that is paid
       await db.collection('order_payments').findOrInsertOne({
         ...SimplePayment,
         _id: 'pfcheckout-payment2',
         paymentProviderId: 'pfcheckout-payment-provider',
         orderId: 'pfcheckout-order2',
+        status: 'PAID',
       });
 
       await db.collection('order_positions').findOrInsertOne({
@@ -69,6 +70,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         _id: 'pfcheckout-order2',
         orderNumber: 'pfcheckout2',
         paymentId: 'pfcheckout-payment2',
+        status: 'CONFIRMED',
       });
     });
 
@@ -207,7 +209,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
       const mockedOrderModule = {
         payments: {
           findOrderPayment: ({ orderPaymentId }) => { return orderPaymentId === 'pfcheckout-payment' ? { orderId: 'pfcheckout-order' } : {} },
-          markAsPaid: () => true,
+          markAsPaid: jest.fn(),
         },
         findOrder: ({ orderId }) => { return orderId === 'pfcheckout-order' ? { orderId, currency: SimpleOrder.currency } : {} },
         pricingSheet: ({ orderId }) => {
@@ -268,8 +270,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         );
         expect(result.status).toBe(200);
         expect(await result.text()).toBe(`Order not marked as paid`);
-        const orderPayment = await db.collection("order_payments").findOne({ _id: "pfcheckout-payment" });
-        expect(orderPayment.status).not.toBe("PAID");
+        expect(mockedOrderModule.payments.markAsPaid.mock.calls.length).toBe(0);
       }, 10000);
 
       it('starts a new transaction with webhook call and payment', async () => {
@@ -308,6 +309,8 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         // Call function that is called by webhook with modified transaction to mock response
         const hookRes = await markOrderAsPaid(transactionRes, mockedOrderModule);
         expect(hookRes).toBe(true);
+        expect(mockedOrderModule.payments.markAsPaid.mock.calls.length).toBe(1);
+        expect(mockedOrderModule.payments.markAsPaid.mock.calls[0][0]).toEqual({ orderId: 'pfcheckout-order' });
       }, 10000);
 
       it('starts a new transaction with webhook call and too low payment', async () => {
