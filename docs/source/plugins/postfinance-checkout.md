@@ -51,3 +51,8 @@ checkoutCart(
 ```
 
 This gives Unchained Engine a (second) chance to process and settle the payment.
+
+## Saved Payment Methods
+
+The tokenization mode is set to `ALLOW_ONE_CLICK_PAYMENT` and the Unchained customer ID is passed to the PostFinance API.
+This gives the user the option to save a payment method. When he does this and orders for a second time, the saved method can be directly selected.

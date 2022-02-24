@@ -76,6 +76,9 @@ const PostfinanceCheckout: IPaymentAdapter = {
         };
         transaction.successUrl = PFCHECKOUT_SUCCESS_URL;
         transaction.failedUrl = PFCHECKOUT_FAILED_URL;
+        transaction.customerId = params.context.user._id;
+        transaction.tokenizationMode =
+          PostFinanceCheckout.model.TokenizationMode.ALLOW_ONE_CLICK_PAYMENT;
         if (totalAmount) {
           const lineItemSum = new PostFinanceCheckout.model.LineItemCreate();
           lineItemSum.name = `Bestellung ${orderPayment.orderId}`;
