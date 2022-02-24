@@ -12,6 +12,8 @@ import {
   getLightboxJavascriptUrl,
   getPaymentPageUrl,
   getTransaction,
+  refundTransaction,
+  voidTransaction,
 } from './api';
 import { markOrderAsPaid } from './utils';
 import './middleware';
@@ -102,19 +104,42 @@ const PostfinanceCheckout: IPaymentAdapter = {
           location,
         };
 
-        await modules.orders.updateContext(order._id, { transactionId }, params.context);
+        await modules.orders.payments.updateContext(
+          orderPayment._id,
+          { orderId: order._id, context: transactionId },
+          params.context,
+        );
 
         return JSON.stringify(res);
       },
 
       charge: async () => {
-        const { order } = params.paymentContext;
-        const transactionId = order.context?.transactionId;
+        const { orderPayment } = params.paymentContext;
+        const transactionId = orderPayment.context?.transactionId;
         if (!transactionId) {
           return false;
         }
         const transaction = await getTransaction(transactionId);
         return markOrderAsPaid(transaction, modules.orders);
+      },
+
+      cancel: async (transactionContext: any = {}) => {
+        const { refund = false } = transactionContext;
+        const { orderPayment } = params.paymentContext;
+        const order = await modules.orders.findOrder({
+          orderId: orderPayment.orderId,
+        });
+        const pricing = modules.orders.pricingSheet(order);
+        const totalAmount = pricing?.total({ useNetPrice: false }).amount;
+        const transactionId = orderPayment.context?.transactionId;
+        if (!transactionId) {
+          return false;
+        }
+        const voidRes = await voidTransaction(transactionId);
+        if (!voidRes && refund) {
+          return refundTransaction(transactionId, order._id, totalAmount);
+        }
+        return voidRes;
       },
     };
 
