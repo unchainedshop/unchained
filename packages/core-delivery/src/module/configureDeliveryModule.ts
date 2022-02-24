@@ -94,7 +94,7 @@ export const configureDeliveryModule = async ({
 
     findInterfaces: ({ type }) => {
       return DeliveryDirector.getAdapters({
-        adapterFilter: async (Adapter) => Adapter.typeSupported(type),
+        adapterFilter: (Adapter) => Adapter.typeSupported(type),
       }).map((Adapter) => ({
         _id: Adapter.key,
         label: Adapter.label,

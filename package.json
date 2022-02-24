@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "1.0.0-beta15",
+  "version": "1.0.0-beta16",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -25,13 +25,13 @@
     "test": "jest --runInBand --detectOpenHandles --forceExit tests/*",
     "test:ci": "npm run test:integration && npm run test:packages",
     "test:integration": "jest --ci --runInBand --detectOpenHandles --forceExit tests/*",
-    "test:packages": "jest --ci --runInBand --detectOpenHandles --forceExit packages/*",
+    "test:packages": "jest --ci --runInBand --detectOpenHandles --passWithNoTests --forceExit packages/*",
     "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --no-watchman --verbose tests/**",
     "dev": "run-p --print-label dev:*",
     "dev:minimal": "cd examples/minimal && npm run dev",
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",
     "install": "run-p --print-label install:*",
-    "install:minimal": "cd examples/minimal && meteor npm install",
+    "install:minimal": "cd examples/minimal && npm install",
     "install:controlpanel": "cd examples/controlpanel && npm install",
     "typecheck": "tsc",
     "typecheck:watch": "tsc --watch"

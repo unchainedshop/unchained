@@ -14,10 +14,17 @@ export const addMigrations = (repository: MigrationRepository<Migration>) => {
       ).toArray();
 
       assortments.forEach((assortment) => {
-        AssortmentProductIdCache.insertOne({
-          _id: assortment._id as any,
-          productIds: assortment._cachedProductIds,
-        });
+        AssortmentProductIdCache.updateOne(
+          {
+            _id: assortment._id as any,
+          },
+          {
+            $set: { productIds: assortment._cachedProductIds },
+          },
+          {
+            upsert: true,
+          },
+        );
       });
 
       Assortments.updateMany(

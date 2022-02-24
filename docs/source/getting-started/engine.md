@@ -33,7 +33,7 @@ Your project directory now contains a Meteor project with Unchained as a depende
 ## Step 2: Start the Unchained Engine
 
 ```bash
-meteor npm run dev
+npm run dev
 ```
 
 Open [localhost:4010](http://localhost:4010) to check if your meteor app is running correctly. You should see an **Login Screen**. Well, log-in!

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-countries',
-  version: '1.0.0-beta15',
+  version: '1.0.0-beta16',
   summary: 'Unchained Engine Core: Countries',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -18,10 +18,10 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-beta15');
-  api.use('unchained:events@1.0.0-beta15');
+  api.use('unchained:utils@1.0.0-beta16');
+  api.use('unchained:events@1.0.0-beta16');
 
-  api.use('unchained:core-currencies@1.0.0-beta15');
+  api.use('unchained:core-currencies@1.0.0-beta16');
 
   api.mainModule('src/countries-index.ts', 'server');
 });

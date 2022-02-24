@@ -9,7 +9,7 @@ const OrderPayment: IOrderPricingAdapter = {
   label: 'Add Payment Fees to Order',
   orderIndex: 20,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return true;
   },
 

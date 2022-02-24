@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-accountsjs',
-  version: '1.0.0-beta15',
+  version: '1.0.0-beta16',
   summary: 'Unchained Engine Core: Accounts',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -21,7 +21,7 @@ Package.onUse((api) => {
   api.use('typescript');
   api.use('mongo');
 
-  api.use('unchained:core-worker');
+  api.use('unchained:core-worker@1.0.0-beta16');
 
   api.mainModule('src/accounts-index.ts');
 });

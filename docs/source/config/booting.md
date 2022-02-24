@@ -1,5 +1,5 @@
 ---
-title: "Boot up"
+title: 'Boot up'
 description: Start the Unchained Engine
 ---
 
@@ -31,7 +31,7 @@ Other options are forwarded to the Apollo Engine, the available options are docu
 
 # Enable Controlpanel
 
-1. Add @unchainedshop/controlpanel as dependency (`meteor npm install @unchainedshop/controlpanel`)
+1. Add @unchainedshop/controlpanel as dependency (`npm install @unchainedshop/controlpanel`)
 
 2. Use the embedControlpanelInMeteorWebApp function after startPlatform
 

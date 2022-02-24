@@ -13,7 +13,7 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
   label: 'Generic rate conversion plugin that converts between rates if entry in DB exists.',
   orderIndex: 1,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return true;
   },
 

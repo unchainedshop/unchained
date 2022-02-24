@@ -39,7 +39,7 @@ export const ProductPriceRound: IProductPricingAdapter & {
   label: 'Round product price to the next precision number',
   orderIndex: 2,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return true;
   },
 

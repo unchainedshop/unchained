@@ -16,15 +16,17 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
   },
 
   async simulatedPrice(
-    obj,
+    deliveryProvider,
     { currency: currencyCode, orderId, useNetPrice, context: providerContext },
     requestContext,
   ) {
     const { modules, services, countryContext: country, user } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
-    const orderDelivery = await modules.orders.deliveries.findDelivery({
-      orderDeliveryId: order.deliveryId,
-    });
+    const orderDelivery =
+      order &&
+      (await modules.orders.deliveries.findDelivery({
+        orderDeliveryId: order.deliveryId,
+      }));
 
     const currency =
       currencyCode ||
@@ -40,7 +42,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
         country,
         currency,
         quantity: 1,
-        deliveryProvider: obj,
+        deliveryProvider,
         order,
         orderDelivery,
         providerContext,
@@ -50,9 +52,9 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     );
 
     const calculated = await pricingDirector.calculate();
-    if (!calculated) return null;
+    if (!calculated || !calculated.length) return null;
 
-    const pricing = DeliveryPricingDirector.resultSheet();
+    const pricing = pricingDirector.resultSheet();
 
     const orderPrice = pricing.total({ useNetPrice }) as {
       amount: number;
@@ -62,7 +64,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     return {
       _id: crypto
         .createHash('sha256')
-        .update([obj._id, country, useNetPrice, order ? order._id : ''].join(''))
+        .update([deliveryProvider._id, country, useNetPrice, order ? order._id : ''].join(''))
         .digest('hex'),
       amount: orderPrice.amount,
       currencyCode: orderPrice.currency,

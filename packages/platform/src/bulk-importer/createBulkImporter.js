@@ -102,7 +102,9 @@ export const createBulkImporter = (options, requestContext) => {
       logger.info(`Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`);
       const operationResults = {
         processedOperations,
-        processedBulkOperations: Promise.all(Object.values(bulkOperations).map((o) => o.execute())),
+        processedBulkOperations: await Promise.all(
+          Object.values(bulkOperations).map((o) => o.execute()),
+        ),
       };
       if (preparationIssues?.length) {
         logger.error(
@@ -110,16 +112,10 @@ export const createBulkImporter = (options, requestContext) => {
         );
         const errors = {};
         errors.preparationIssues = preparationIssues;
-        return [
-          operationResults.reduce((currentResults, result) => ({ ...currentResults, ...result }), {}),
-          errors,
-        ];
+        return [operationResults, errors];
       }
       logger.info(`Import finished without errors`);
-      return [
-        operationResults.reduce((currentResults, result) => ({ ...currentResults, ...result }), {}),
-        null,
-      ];
+      return [operationResults, null];
     },
     invalidateCaches: async () => {
       if (options?.skipCacheInvalidation) return;

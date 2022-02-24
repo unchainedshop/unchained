@@ -19,7 +19,18 @@ const baseDirector = BasePricingDirector<
 export const PaymentPricingDirector: IPaymentPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: async ({ item }: { item: OrderPayment }, requestContext) => {
+  async buildPricingContext({ item, ...rest }: { item: OrderPayment }, requestContext) {
+    const { providerContext, currency, ...context } = rest as any;
+
+    if (!item)
+      return {
+        discounts: [],
+        providerContext,
+        currency,
+        ...context,
+        ...requestContext,
+      };
+
     const order = await requestContext.modules.orders.findOrder({
       orderId: item.orderId,
     });
@@ -29,30 +40,39 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
     const user = await requestContext.modules.users.findUser({
       userId: order.userId,
     });
+    const discounts = await requestContext.modules.orders.discounts.findOrderDiscounts({
+      orderId: item.orderId,
+    });
 
     return {
-      orderPayment: item,
+      country: order.countryCode,
+      currency: currency || order.currency,
       order,
       provider,
       user,
-      discounts: [],
+      discounts,
       ...item.context,
+      ...context,
       ...requestContext,
     };
   },
 
-  actions: async (pricingContext, requestContext) => {
-    return baseDirector.actions(
-      pricingContext,
-      requestContext,
-      PaymentPricingDirector.buildPricingContext,
-    );
-  },
+  async actions(pricingContext, requestContext) {
+    if (!requestContext.modules) {
+      throw new Error('HERE');
+    }
+    const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
+    return {
+      ...actions,
+      resultSheet() {
+        const calculation = actions.getCalculation();
+        const context = actions.getContext();
 
-  resultSheet: () => {
-    return PaymentPricingSheet({
-      calculation: baseDirector.getCalculation(),
-      currency: baseDirector.getContext().order.currency,
-    });
+        return PaymentPricingSheet({
+          calculation,
+          currency: context.currency,
+        });
+      },
+    };
   },
 };

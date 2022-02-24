@@ -41,7 +41,15 @@ export const configureUsersModule = async ({
       return userCount;
     },
 
-    findUser: async ({ userId, resetToken, hashedToken }, options) => {
+    findUser: async ({ userId, username, resetToken, hashedToken }, options) => {
+      if (username) {
+        return Users.findOne(
+          {
+            username: username,
+          },
+          options,
+        );
+      }
       if (hashedToken) {
         return Users.findOne(
           {

@@ -10,7 +10,8 @@ Licensed under the EUPL 1.2
 
 ## Code of conduct
 
-See our [Contributor Covenant Code of Conduct](/code_of_conduct.md) to view our pledge, standards, responsibilites & more.
+See our [Contributor Covenant Code of Conduct](/code_of_conduct.md) to view our pledge, standards,
+responsibilites & more.
 
 ## Contributing
 
@@ -27,10 +28,11 @@ Please see our [Contribution Guidelines](/contributing.md).
 
 ```bash
 git clone https://github.com/unchainedshop/unchained.git
-meteor npm install
-meteor npm run dev
+npm install
+npm run dev
 ```
 
-1. Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user: admin@unchained.local / password: password
+1. Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user:
+   admin@unchained.local / password: password
 
 2. Navigate to http://localhost:4010/graphql to view the GraphQL Playground

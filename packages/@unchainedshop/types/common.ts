@@ -126,7 +126,7 @@ export interface IBaseAdapter {
 }
 
 export interface IBaseDirector<Adapter extends IBaseAdapter> {
-  getAdapters: (options?: { adapterFilter?: (adapter: Adapter) => Promise<boolean> }) => Array<Adapter>;
+  getAdapters: (options?: { adapterFilter?: (adapter: Adapter) => boolean }) => Array<Adapter>;
   getAdapter: (key: string) => Adapter;
   registerAdapter: (A: Adapter) => void;
 }

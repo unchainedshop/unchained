@@ -9,7 +9,7 @@ const OrderItems: IOrderPricingAdapter = {
   label: 'Add Total Value Of Goods to Order',
   orderIndex: 0,
 
-  isActivatedFor: async () => {
+  isActivatedFor: () => {
     return true;
   },
 

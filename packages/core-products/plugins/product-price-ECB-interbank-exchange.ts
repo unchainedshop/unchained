@@ -69,7 +69,7 @@ const ProductPriceECBIntraBankExchange: IProductPricingAdapter = {
   label: 'Convert EUR to X with current exchange rate',
   orderIndex: 1,
 
-  isActivatedFor: async (context) => {
+  isActivatedFor: (context) => {
     return SUPPORTED_CURRENCIES.indexOf(context.currency) !== -1;
   },
 
