@@ -27,9 +27,9 @@ useMiddlewareWithCurrentContext('/minio/', async (req, res) => {
         const { size, contentType: type } = object;
         const [fileId] = object.key.split('.');
         const { services } = req.unchainedContext;
-        const link = await services.files.linkFile({ fileId, type, size }, req.unchainedContext);
+        await services.files.linkFile({ fileId, type, size }, req.unchainedContext);
         res.writeHead(200);
-        res.end(link);
+        res.end();
       }
     }
     res.writeHead(404);

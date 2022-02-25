@@ -1,9 +1,10 @@
 import { UpdateUserAvatarAfterUploadService } from '@unchainedshop/types/user';
 
 export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadService = async (
-  { userId, file },
+  { file },
   { modules, userId: currentUserId },
 ) => {
+  const { userId } = file.meta as { userId: string };
   const user = await modules.users.findUser({ userId });
 
   if (user?.avatarId) {

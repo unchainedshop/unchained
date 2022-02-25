@@ -31,9 +31,9 @@ useMiddlewareWithCurrentContext('/gridfs', async (req, res) => {
           file.name,
         );
         const { length } = await promisePipe(req, writeStream);
-        const link = await services.files.linkFile({ fileId, size: length }, req.unchainedContext);
+        await services.files.linkFile({ fileId, size: length }, req.unchainedContext);
         res.writeHead(200);
-        res.end(link);
+        res.end();
         return;
       }
       res.writeHead(403);
