@@ -17,7 +17,7 @@ import 'meteor/unchained:core-orders/plugins/discount-100-off';
 
 import 'meteor/unchained:core-payment/plugins/invoice';
 import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
-// import 'meteor/unchained:core-payment/plugins/datatrans-v2';
+import 'meteor/unchained:core-payment/plugins/datatrans-v2';
 import 'meteor/unchained:core-payment/plugins/paypal-checkout';
 import 'meteor/unchained:core-payment/plugins/cryptopay';
 import { configureAppleTransactionsModule } from 'meteor/unchained:core-payment/plugins/apple-iap';
