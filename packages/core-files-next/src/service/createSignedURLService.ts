@@ -17,5 +17,10 @@ export const createSignedURLService: CreateSignedURLService = async (
   );
   const fileData = getFileFromFileData(preparedFileData, meta);
   const fileId = await files.create(fileData, userId);
-  return files.findFile({ fileId });
+
+  const file = files.findFile({ fileId });
+  return {
+    ...file,
+    url: preparedFileData.putURL,
+  };
 };
