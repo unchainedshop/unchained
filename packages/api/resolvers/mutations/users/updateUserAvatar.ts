@@ -15,6 +15,8 @@ export default async function updateUserAvatar(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
+  const user = await modules.users.findUser({ userId: normalizedUserId });
+
   const file = await services.files.uploadFileFromStream(
     {
       directoryName: 'user-avatars',
@@ -22,8 +24,17 @@ export default async function updateUserAvatar(
       meta: { userId: normalizedUserId },
       userId,
     },
-    context
+    context,
   );
+
+  if (user?.avatarId) {
+    await services.files.removeFiles(
+      {
+        fileIds: [user.avatarId as string],
+      },
+      context,
+    );
+  }
 
   return modules.users.updateAvatar(normalizedUserId, file._id, userId);
 }

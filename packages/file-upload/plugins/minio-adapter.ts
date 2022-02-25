@@ -127,11 +127,15 @@ export const MinioAdapter: IFileAdapter = {
     };
   },
 
-  // async removeFiles(composedFileIds) {
-  //   if (!client) throw new Error('Minio not connected, check env variables');
-  //   // TODO: Fix ID's
-  //   await client.removeObjects(MINIO_BUCKET_NAME, composedFileIds);
-  // },
+  async removeFiles(files) {
+    if (!client) throw new Error('Minio not connected, check env variables');
+
+    const fileIds = files.map(({ path, _id }) => {
+      return `${path}/${_id}`;
+    });
+
+    await client.removeObjects(MINIO_BUCKET_NAME, fileIds);
+  },
 
   async uploadFileFromStream(directoryName: string, rawFile: any) {
     if (!client) throw new Error('Minio not connected, check env variables');

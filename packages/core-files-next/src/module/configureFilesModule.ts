@@ -2,9 +2,9 @@ import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common
 import { File, FilesModule } from '@unchainedshop/types/files';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
-import { FileDirector } from 'meteor/unchained:file-upload';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
+import { getFileAdapter } from '../utils/getFileAdapter';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
@@ -15,13 +15,26 @@ export const configureFilesModule = async ({
 
   const Files = await MediaObjectsCollection(db);
 
-  // const fileUploadAdapter = getFileAdapter();
+  const fileUploadAdapter = getFileAdapter();
 
   const mutations = generateDbMutations<File>(Files, MediaObjectsSchema) as ModuleMutations<File>;
 
   return {
     findFile: async ({ fileId }, options) => {
       return Files.findOne(generateDbFilterById(fileId), options);
+    },
+
+    findFiles: async (selector) => {
+      return Files.find(selector).toArray();
+    },
+
+    deleteMany: async (fileIds, userId) => {
+      await Promise.all(
+        fileIds.map(async (fileId) => {
+          await mutations.delete(fileId, userId);
+          emit('FILE_REMOVE', { fileId });
+        }),
+      );
     },
 
     findFilesByMetaData: async ({ meta }, options) => {
@@ -59,31 +72,6 @@ export const configureFilesModule = async ({
       const deletedCount = await mutations.delete(fileId, userId);
       emit('FILE_REMOVE', { fileId });
       return deletedCount;
-    },
-
-    removeFiles: async ({ externalFileIds }) => {
-      return 0;
-      // if (externalFileIds && typeof externalFileIds !== 'string' && !Array.isArray(externalFileIds))
-      //   throw Error('Media id/s to be removed not provided as a string or array');
-
-      // const selector: Query = {};
-      // if (typeof externalFileIds === 'string') {
-      //   selector._id = externalFileIds;
-      // } else {
-      //   selector._id = { $in: externalFileIds };
-      // }
-
-      // const files = Files.find(selector, {
-      //   projection: {
-      //     _id: 1,
-      //     externalFieldId: 1,
-      //     url: 1,
-      //   },
-      // });
-
-      // await fileUploadAdapter.removeFiles(files);
-      // const deletedFilesResult = await Files.deleteMany(selector);
-      // return deletedFilesResult.deletedCount;
     },
   };
 };

@@ -12,5 +12,10 @@ export const configureGridFSFileUploadModule = ({ db }) => {
       const bucket = new mongodb.GridFSBucket(db, options);
       return bucket.openDownloadStream(fileId);
     },
+    removeFile: async (directoryName, fileId) => {
+      const options = { bucketName: `file_uploads_${directoryName}`, chunkSizeBytes: 5 * 1024 * 1024 };
+      const bucket = new mongodb.GridFSBucket(db, options);
+      return bucket.delete(fileId);
+    },
   };
 };
