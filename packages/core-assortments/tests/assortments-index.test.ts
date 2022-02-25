@@ -7,7 +7,7 @@ describe('Test exports', () => {
   let module: AssortmentsModule;
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     module = await configureAssortmentsModule({ db });
   });
 

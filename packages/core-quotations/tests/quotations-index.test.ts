@@ -26,7 +26,7 @@ describe('Test exports', () => {
   };
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     const quotationsModule = await configureQuotationsModule({ db }).catch(
       (error) => {
         console.error(error);

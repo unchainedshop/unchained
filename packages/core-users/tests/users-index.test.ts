@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
 import { configureUsersModule } from 'meteor/unchained:core-users';
-import { Mongo } from 'meteor/mongo';
 import { UsersModule } from '@unchainedshop/types/user';
 import { Db } from '@unchainedshop/types/common';
 
@@ -11,7 +10,7 @@ describe('Test exports', () => {
   let userId: string;
 
   before(async () => {
-    db = initDb();
+    db = await initDb();
     module = await configureUsersModule({ db });
     assert.ok(module);
   });

@@ -3,7 +3,7 @@ import { initDb } from "meteor/unchained:mongodb"
 
 describe('Test exports', () => {
   it('initDb', () => {
-    const db = initDb()
+    const db = await initDb()
     assert.isDefined(rawDb);
 
     const testCollection = db.collection('test')

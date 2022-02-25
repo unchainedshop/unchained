@@ -1,13 +1,12 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
 import { configurePaymentModule } from 'meteor/unchained:core-payment';
-import { Mongo } from 'meteor/mongo';
 
 describe('Test exports', () => {
   let module;
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     module = await configurePaymentModule({ db });
   });
 

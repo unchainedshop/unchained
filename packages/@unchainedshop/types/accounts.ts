@@ -19,6 +19,7 @@ export interface UserData {
  */
 
 export interface AccountsModule {
+  dbManager: any;
   emit: (event: string, meta: any) => Promise<void>;
 
   // Mutations

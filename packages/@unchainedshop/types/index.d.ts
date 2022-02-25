@@ -481,5 +481,5 @@ declare module 'meteor/unchained:api' {
 }
 
 declare module 'meteor/unchained:mongodb' {
-  function initDb(): Db;
+  function initDb(): Promise<Db>;
 }

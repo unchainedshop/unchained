@@ -71,7 +71,7 @@ export const startPlatform = async (
   },
 ) => {
   // Configure database
-  const db = initDb();
+  const db = await initDb();
 
   // Prepare Migrations
   const migrationRepository = createMigrationRepository(db);

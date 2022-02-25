@@ -24,7 +24,7 @@ describe('Test exports', () => {
   let user: User
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     const enrollmentsModule = await configureEnrollmentsModule({ db }).catch(
       (error) => {
         console.error(error);
