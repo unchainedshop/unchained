@@ -10,6 +10,7 @@ import {
 } from 'meteor/unchained:utils';
 import { ProductMediaCollection } from '../db/ProductMediaCollection';
 import { ProductMediaSchema } from '../db/ProductMediaSchema';
+import { FileDirector } from 'meteor/unchained:file-upload';
 
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',
@@ -17,6 +18,16 @@ const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_REORDER_MEDIA',
   'PRODUCT_UPDATE_MEDIA_TEXT',
 ];
+
+FileDirector.registerFileUploadCallback('product-media', async (file, { modules }: Context) => {
+  await modules.products.media.create(
+    {
+      productId,
+      mediaId: file._id,
+    },
+    userId,
+  );
+});
 
 export const configureProductMediaModule = async ({
   db,

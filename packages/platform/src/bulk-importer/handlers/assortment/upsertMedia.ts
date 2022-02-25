@@ -3,22 +3,21 @@ import { AssortmentMediaText } from '@unchainedshop/types/assortments.media';
 import { File } from '@unchainedshop/types/files';
 
 const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Context) => {
-  const { modules, userId } = unchainedAPI;
+  const { modules, services, userId } = unchainedAPI;
   const { _id, fileName, url, ...assetData } = asset;
   const fileId = _id;
   try {
     if (_id && (await modules.files.findFile({ fileId }))) throw new Error('Media already exists');
 
-    const assetObject = await modules.files.uploadFileFromURL(
-      'assortment-media',
-      {
+    const assetObject = await services.files.uploadFileFromURL({
+      directoryName: 'assortment-media',
+      fileInput: {
         fileLink: url,
         fileName,
       },
-      {
-        fileId,
-      },
-    );
+      meta: { fileId },
+      userId
+    }, unchainedAPI);
 
     if (!assetObject) throw new Error('Media not created');
     return assetObject;

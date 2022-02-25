@@ -60,7 +60,7 @@ unchained:core-currencies@1.0.0-beta16
 unchained:core-delivery@1.0.0-beta16
 unchained:core-enrollments@1.0.0-beta16
 unchained:core-events@1.0.0-beta16
-unchained:core-file-upload@1.0.0-beta16
+unchained:file-upload@1.0.0-beta16
 unchained:core-files-next@1.0.0-beta16
 unchained:core-filters@1.0.0-beta16
 unchained:core-languages@1.0.0-beta16

@@ -246,7 +246,7 @@ declare module 'meteor/unchained:events' {
   const subscribe: EventDirector['subscribe'];
 }
 
-declare module 'meteor/unchained:core-file-upload' {
+declare module 'meteor/unchained:file-upload' {
   const FileAdapter: Omit<IFileAdapter, 'key' | 'lable' | 'version'>;
   const FileDirector: IFileDirector;
 }

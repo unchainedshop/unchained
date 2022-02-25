@@ -1,5 +1,5 @@
 import { File, IFileAdapter } from '@unchainedshop/types/files';
-import { FileAdapter, FileDirector } from 'meteor/unchained:core-file-upload';
+import { FileAdapter, FileDirector } from 'meteor/unchained:file-upload';
 import crypto from 'crypto';
 import https from 'https';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -110,14 +110,7 @@ export const MinioAdapter: IFileAdapter = {
 
   ...FileAdapter,
 
-  // Returns the file name with extension from its ID and url bucket name is included in the ID on insert operation
-  composeFileName: (file: File) => {
-    return decodeURIComponent(file.externalId).concat(
-      file.url ? file.url.substr(file.url.lastIndexOf('.')) : '',
-    );
-  },
-
-  createSignedURL: async ({ directoryName = '', fileName }) => {
+  createSignedURL: async (directoryName = '', fileName) => {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const { hash, hashedName } = generateRandomFileName(fileName);
@@ -141,11 +134,11 @@ export const MinioAdapter: IFileAdapter = {
 
   async removeFiles(composedFileIds) {
     if (!client) throw new Error('Minio not connected, check env variables');
-
+    // TODO: Fix ID's
     await client.removeObjects(MINIO_BUCKET_NAME, composedFileIds);
   },
 
-  async uploadFileFromStream(directoryName: string, rawFile: any) {
+  async uploadFileFromStream(directoryName: string, rawFile: any, unchainedContext: any) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     let stream;

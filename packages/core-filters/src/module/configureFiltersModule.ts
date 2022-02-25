@@ -234,7 +234,7 @@ export const configureFiltersModule = async ({
       const filter = await Filters.findOne(generateDbFilterById(filterId));
 
       if (locale) {
-        filterTexts.upsertLocalizedText(
+        await filterTexts.upsertLocalizedText(
           { filterId },
           locale,
           { filterId, title, authorId, locale },
@@ -264,7 +264,7 @@ export const configureFiltersModule = async ({
         },
       });
 
-      filterTexts.upsertLocalizedText(
+      await filterTexts.upsertLocalizedText(
         { filterId, filterOptionValue: value },
         localeContext.language,
         { title, authorId: userId, filterId, filterOptionValue: value },

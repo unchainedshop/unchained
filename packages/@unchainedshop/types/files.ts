@@ -38,13 +38,13 @@ export type FilesModule = ModuleMutations<File> & {
 
   // Plugin
   createSignedURL: (
-    data: {
+    {
       directoryName: string;
       fileName: string;
       meta: any;
+      userId: string,
     },
-    userId: string,
-    uploadFileCallback: UploadFileCallback,
+    context: Context,
   ) => Promise<{
     _id: _ID;
     expires?: Date;
@@ -56,15 +56,20 @@ export type FilesModule = ModuleMutations<File> & {
     excludedFileIds?: Array<_ID>;
   }) => Promise<number>;
   uploadFileFromStream: (
-    params: { directoryName: string; rawFile: any; meta: any },
-    userId: string,
+    {
+      directoryName: string;
+      rawFile: any;
+      meta: any;
+      userId: string
+    },
+    context: Context,
   ) => Promise<File | null>;
-  uploadFileFromURL: (
+  uploadFileFromURL: ({
     directoryName: string,
-    file: { fileLink: string; fileName: string },
+    fileInput: { fileLink: string; fileName: string },
     meta?: any,
     userId?: string,
-  ) => Promise<File | null>;
+  }, context: Context) => Promise<File | null>;
 };
 
 /*
@@ -72,7 +77,7 @@ export type FilesModule = ModuleMutations<File> & {
  */
 
 export type LinkFileService = (
-  params: { fileId: string; size: number; type: string },
+  { fileId: string; size: number; type: string },
   context: Context,
 ) => Promise<File>;
 
@@ -96,13 +101,13 @@ export interface UploadFileData {
 }
 
 export interface IFileAdapter extends IBaseAdapter {
-  composeFileName: (file: File) => string;
-  createSignedURL: (data: { directoryName: string; fileName: string }) => Promise<UploadFileData | null>;
-  removeFiles: (composedFileIds: Array<string>) => Promise<void>;
-  uploadFileFromStream: (directoryName: string, rawFile: any) => Promise<UploadFileData | null>;
+  createSignedURL: (directoryName: string, fileName: string, unchainedContext: Context) => Promise<UploadFileData | null>;
+  removeFiles: (composedFileIds: Array<string>, unchainedContext: Context) => Promise<void>;
+  uploadFileFromStream: (directoryName: string, rawFile: any, unchainedContext: Context) => Promise<UploadFileData | null>;
   uploadFileFromURL: (
     directoryName: string,
-    file: { fileLink: string; fileName: string },
+    fileInput: { fileLink: string; fileName: string },
+    unchainedContext: Context
   ) => Promise<UploadFileData | null>;
 }
 

@@ -14,6 +14,7 @@ import {
 } from 'meteor/unchained:utils';
 import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
 import { AssortmentMediasSchema } from '../db/AssortmentMediasSchema';
+import { FileDirector } from 'meteor/unchained:file-upload';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',
@@ -21,6 +22,16 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_REORDER_MEDIA',
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
+
+FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules }: Context) => {
+  await modules.assortments.media.create(
+    {
+      assortmentId,
+      mediaId: file._id,
+    },
+    userId,
+  );
+});
 
 export const configureAssortmentMediaModule = async ({
   db,

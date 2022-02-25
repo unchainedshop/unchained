@@ -52,8 +52,11 @@ import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 import 'meteor/unchained:core-worker/plugins/sms';
 
-import 'meteor/unchained:core-file-upload/plugins/minio-adapter';
-import 'meteor/unchained:core-file-upload/plugins/minio-webhook';
+import 'meteor/unchained:file-upload/plugins/gridfs/gridfs-adapter';
+import 'meteor/unchained:file-upload/plugins/gridfs/gridfs-webhook';
+import { configureGridFSFileUploadModule } from 'meteor/unchained:file-upload/plugins/gridfs';
+// import 'meteor/unchained:file-upload/plugins/minio-adapter';
+// import 'meteor/unchained:file-upload/plugins/minio-webhook';
 
 import 'meteor/unchained:events/plugins/node-event-emitter';
 
@@ -93,6 +96,9 @@ Meteor.startup(async () => {
       },
       appleTransactions: {
         configure: configureAppleTransactionsModule,
+      },
+      gridfsFileUploads: {
+        configure: configureGridFSFileUploadModule,
       },
     },
     options: {

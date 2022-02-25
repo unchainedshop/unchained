@@ -2,24 +2,23 @@ import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
 import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media';
 
-const upsertAsset = async (asset: File & { fileName: string }, { modules, userId }: Context) => {
+const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Context) => {
+  const { modules, services, userId } = unchainedAPI;
   const { _id, fileName, url, ...assetData } = asset;
   const fileId = _id;
 
   try {
     if (_id && (await modules.files.findFile({ fileId }))) throw new Error('Media already exists');
 
-    const assetObject = await modules.files.uploadFileFromURL(
-      'product-media',
-      {
-        fileName,
+    const assetObject = await services.files.uploadFileFromURL({
+      directoryName: 'product-media',
+      fileInput: {
         fileLink: url,
+        fileName,
       },
-      {
-        fileId,
-      },
-      userId,
-    );
+      meta: { fileId },
+      userId
+    }, unchainedAPI)
 
     if (!assetObject) throw new Error('Media not created');
     return assetObject;

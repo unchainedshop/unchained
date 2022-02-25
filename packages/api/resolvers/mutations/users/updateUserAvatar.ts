@@ -5,8 +5,9 @@ import { UserNotFoundError } from '../../../errors';
 export default async function updateUserAvatar(
   root: Root,
   params: { avatar: any; userId: string },
-  { modules, userId }: Context,
+  context: Context,
 ) {
+  const { modules, services, userId } = context;
   const normalizedUserId = params.userId || userId;
 
   log(`mutation updateUserAvatar ${normalizedUserId}`, { userId });
@@ -14,13 +15,14 @@ export default async function updateUserAvatar(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  const file = await modules.files.uploadFileFromStream(
+  const file = await services.files.uploadFileFromStream(
     {
       directoryName: 'user-avatars',
       rawFile: params.avatar,
       meta: { userId: normalizedUserId },
+      userId,
     },
-    userId,
+    context
   );
 
   return modules.users.updateAvatar(normalizedUserId, file._id, userId);

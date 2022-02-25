@@ -2,21 +2,11 @@ import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common
 import { File, FilesModule, UploadFileData } from '@unchainedshop/types/files';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
-import { FileDirector } from 'meteor/unchained:core-file-upload';
+import { FileDirector } from 'meteor/unchained:file-upload';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
-
-const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
-  externalId: encodeURIComponent(`${fileData.directoryName}/${fileData.hash}`),
-  expires: meta.expiryDate || fileData.expiryDate,
-  name: fileData.fileName,
-  size: fileData.size,
-  type: fileData.type || undefined,
-  url: fileData.url,
-  meta,
-});
 
 export const configureFilesModule = async ({
   db,
@@ -25,21 +15,13 @@ export const configureFilesModule = async ({
 
   const Files = await MediaObjectsCollection(db);
 
-  const getFileAdapter = () => {
-    const adapters = FileDirector.getAdapters();
-    if (adapters.length === 0) throw Error('No file adapter found.');
-
-    // For now we return the first file upload adapter without further filter options
-    return adapters[0];
-  };
-
-  const fileUploadAdapter = getFileAdapter();
+  // const fileUploadAdapter = getFileAdapter();
 
   const mutations = generateDbMutations<File>(Files, MediaObjectsSchema) as ModuleMutations<File>;
 
   return {
-    findFile: async ({ fileId, externalId }, options) => {
-      return Files.findOne(fileId ? generateDbFilterById(fileId) : { externalId }, options);
+    findFile: async ({ fileId }, options) => {
+      return Files.findOne(generateDbFilterById(fileId), options);
     },
 
     findFilesByMetaData: async ({ meta }, options) => {
@@ -79,74 +61,28 @@ export const configureFilesModule = async ({
       return deletedCount;
     },
 
-    // Plugin
-    createSignedURL: async ({ directoryName, fileName, meta }, userId, uploadFileCallback) => {
-      const { url: putURL, ...preparedFileData } = await fileUploadAdapter.createSignedURL({
-        directoryName,
-        fileName,
-      });
-
-      const fileData = getFileFromFileData(preparedFileData, meta);
-      const fileId = await mutations.create(fileData, userId);
-
-      FileDirector.registerFileUploadCallback(directoryName, uploadFileCallback);
-
-      return {
-        _id: fileId,
-        expires: fileData.expires,
-        externalId: fileData.externalId,
-        putURL,
-      };
-    },
-
-    removeFiles: async ({ externalFileIds, excludedFileIds }) => {
-      if (externalFileIds && typeof externalFileIds !== 'string' && !Array.isArray(externalFileIds))
-        throw Error('Media id/s to be removed not provided as a string or array');
-
-      const selector: Query = excludedFileIds ? { _id: { $nin: excludedFileIds } } : {};
-
-      if (externalFileIds) {
-        if (typeof externalFileIds === 'string') {
-          selector.externalId = externalFileIds;
-        } else {
-          selector.externalId = { externalId: { $in: externalFileIds } };
-        }
-      }
-
-      const files = Files.find(selector, {
-        projection: {
-          _id: 1,
-          externalFieldId: 1,
-          url: 1,
-        },
-      });
-
-      const idList = await files.map(fileUploadAdapter.composeFileName).toArray();
-
-      await fileUploadAdapter.removeFiles(idList);
-
-      const deletedFilesResult = await Files.deleteMany(selector);
-
-      return deletedFilesResult.deletedCount;
-    },
-
-    uploadFileFromStream: async ({ directoryName, rawFile, meta }, userId) => {
-      const uploadFileData = await fileUploadAdapter.uploadFileFromStream(directoryName, rawFile);
-      const fileData = getFileFromFileData(uploadFileData, meta);
-
-      const fileId = await mutations.create(fileData, userId);
-
-      return Files.findOne(generateDbFilterById(fileId), {});
-    },
-
-    uploadFileFromURL: async (directoryName, fileInput, meta, userId) => {
-      const uploadFileData = await fileUploadAdapter.uploadFileFromURL(directoryName, fileInput);
-
-      const fileData = getFileFromFileData(uploadFileData, meta);
-
-      const fileId = await mutations.create(fileData, userId);
-
-      return Files.findOne(generateDbFilterById(fileId), {});
-    },
+    // removeFiles: async ({ externalFileIds }) => {
+    //   if (externalFileIds && typeof externalFileIds !== 'string' && !Array.isArray(externalFileIds))
+    //     throw Error('Media id/s to be removed not provided as a string or array');
+    //
+    //   const selector: Query = {};
+    //   if (typeof externalFileIds === 'string') {
+    //     selector._id = externalFileIds;
+    //   } else {
+    //     selector._id = { $in: externalFileIds };
+    //   }
+    //
+    //   const files = Files.find(selector, {
+    //     projection: {
+    //       _id: 1,
+    //       externalFieldId: 1,
+    //       url: 1,
+    //     },
+    //   });
+    //
+    //   await fileUploadAdapter.removeFiles(files);
+    //   const deletedFilesResult = await Files.deleteMany(selector);
+    //   return deletedFilesResult.deletedCount;
+    // },
   };
 };

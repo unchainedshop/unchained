@@ -26,6 +26,8 @@ useMiddlewareWithCurrentContext('/minio/', async (req) => {
       const [currentId] = object.key.split('.');
       const { services } = req.unchainedContext;
       services.files.linkFile({ externalId: currentId, type, size }, req.unchainedContext);
+      res.end(200);
     }
   }
+  res.end(500);
 });

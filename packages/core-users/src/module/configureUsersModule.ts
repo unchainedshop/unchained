@@ -9,6 +9,7 @@ import {
   systemLocale,
 } from 'meteor/unchained:utils';
 import { UsersCollection } from '../db/UsersCollection';
+import { FileDirector } from 'meteor/unchained:file-upload';
 
 const buildFindSelector = ({ username, includeGuests, queryString }: UserQuery) => {
   const selector: Query = username ? { username } : { username };
@@ -26,6 +27,8 @@ const getUserLocale = (user: User, params: { localeContext?: Locale } = {}) => {
     systemLocale;
   return locale;
 };
+
+FileDirector.registerFileUploadCallback('user-avatars', async (file, { services }: Context) => services.users.updateUserAvatarAfterUpload({ file }, context));
 
 export const configureUsersModule = async ({
   db,

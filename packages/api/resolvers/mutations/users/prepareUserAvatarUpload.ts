@@ -6,7 +6,7 @@ export default async function prepareUserAvatarUpload(
   params: { mediaName: string; userId: string },
   context: Context,
 ) {
-  const { modules, services, userId } = context;
+  const { services, userId } = context;
   const normalizedUserId = params.userId || userId;
 
   log(`mutation prepareUserAvatarUpload ${normalizedUserId}`, {
@@ -14,13 +14,13 @@ export default async function prepareUserAvatarUpload(
     userId,
   });
 
-  return modules.files.createSignedURL(
+  return services.files.createSignedURL(
     {
       directoryName: 'user-avatars',
       fileName: params.mediaName,
       meta: { userId: normalizedUserId },
+      userId,
     },
-    userId,
-    (file) => services.users.updateUserAvatarAfterUpload({ file }, context),
+    context
   );
 }
