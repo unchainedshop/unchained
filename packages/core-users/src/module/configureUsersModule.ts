@@ -8,8 +8,8 @@ import {
   Schemas,
   systemLocale,
 } from 'meteor/unchained:utils';
-import { UsersCollection } from '../db/UsersCollection';
 import { FileDirector } from 'meteor/unchained:file-upload';
+import { UsersCollection } from '../db/UsersCollection';
 
 const buildFindSelector = ({ username, includeGuests, queryString }: UserQuery) => {
   const selector: Query = username ? { username } : { username };
@@ -28,7 +28,9 @@ const getUserLocale = (user: User, params: { localeContext?: Locale } = {}) => {
   return locale;
 };
 
-FileDirector.registerFileUploadCallback('user-avatars', async (file, { services }: Context) => services.users.updateUserAvatarAfterUpload({ file }, context));
+FileDirector.registerFileUploadCallback('user-avatars', async (file, { services }: Context) =>
+  services.users.updateUserAvatarAfterUpload({ userId: file.meta.userId, file }, context),
+);
 
 export const configureUsersModule = async ({
   db,
@@ -48,7 +50,7 @@ export const configureUsersModule = async ({
       if (username) {
         return Users.findOne(
           {
-            username: username,
+            username,
           },
           options,
         );

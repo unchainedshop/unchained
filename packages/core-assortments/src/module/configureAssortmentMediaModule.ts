@@ -12,9 +12,9 @@ import {
   generateDbMutations,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
+import { FileDirector } from 'meteor/unchained:file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
 import { AssortmentMediasSchema } from '../db/AssortmentMediasSchema';
-import { FileDirector } from 'meteor/unchained:file-upload';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',
@@ -23,10 +23,10 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
 
-FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules }: Context) => {
+FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules, userId }) => {
   await modules.assortments.media.create(
     {
-      assortmentId,
+      assortmentId: file.meta.assortmentId,
       mediaId: file._id,
     },
     userId,

@@ -16,6 +16,6 @@ export default async function prepareProductMediaUpload(
       meta: { productId },
       userId,
     },
-    context
+    context,
   );
 }

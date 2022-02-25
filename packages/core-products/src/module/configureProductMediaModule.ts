@@ -8,9 +8,9 @@ import {
   generateDbMutations,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
+import { FileDirector } from 'meteor/unchained:file-upload';
 import { ProductMediaCollection } from '../db/ProductMediaCollection';
 import { ProductMediaSchema } from '../db/ProductMediaSchema';
-import { FileDirector } from 'meteor/unchained:file-upload';
 
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',
@@ -19,10 +19,10 @@ const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_UPDATE_MEDIA_TEXT',
 ];
 
-FileDirector.registerFileUploadCallback('product-media', async (file, { modules }: Context) => {
+FileDirector.registerFileUploadCallback('product-media', async (file, { modules, userId }) => {
   await modules.products.media.create(
     {
-      productId,
+      productId: file.meta.productId,
       mediaId: file._id,
     },
     userId,

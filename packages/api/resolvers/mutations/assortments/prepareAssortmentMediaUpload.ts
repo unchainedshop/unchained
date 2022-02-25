@@ -16,7 +16,7 @@ export default async function prepareAssortmentMediaUpload(
       meta: { assortmentId },
       userId,
     },
-    context
+    context,
   );
 
   return preparedFile;

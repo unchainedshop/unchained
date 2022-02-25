@@ -1,5 +1,5 @@
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { File, FilesModule, UploadFileData } from '@unchainedshop/types/files';
+import { File, FilesModule } from '@unchainedshop/types/files';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { FileDirector } from 'meteor/unchained:file-upload';
@@ -61,28 +61,29 @@ export const configureFilesModule = async ({
       return deletedCount;
     },
 
-    // removeFiles: async ({ externalFileIds }) => {
-    //   if (externalFileIds && typeof externalFileIds !== 'string' && !Array.isArray(externalFileIds))
-    //     throw Error('Media id/s to be removed not provided as a string or array');
-    //
-    //   const selector: Query = {};
-    //   if (typeof externalFileIds === 'string') {
-    //     selector._id = externalFileIds;
-    //   } else {
-    //     selector._id = { $in: externalFileIds };
-    //   }
-    //
-    //   const files = Files.find(selector, {
-    //     projection: {
-    //       _id: 1,
-    //       externalFieldId: 1,
-    //       url: 1,
-    //     },
-    //   });
-    //
-    //   await fileUploadAdapter.removeFiles(files);
-    //   const deletedFilesResult = await Files.deleteMany(selector);
-    //   return deletedFilesResult.deletedCount;
-    // },
+    removeFiles: async ({ externalFileIds }) => {
+      return 0;
+      // if (externalFileIds && typeof externalFileIds !== 'string' && !Array.isArray(externalFileIds))
+      //   throw Error('Media id/s to be removed not provided as a string or array');
+
+      // const selector: Query = {};
+      // if (typeof externalFileIds === 'string') {
+      //   selector._id = externalFileIds;
+      // } else {
+      //   selector._id = { $in: externalFileIds };
+      // }
+
+      // const files = Files.find(selector, {
+      //   projection: {
+      //     _id: 1,
+      //     externalFieldId: 1,
+      //     url: 1,
+      //   },
+      // });
+
+      // await fileUploadAdapter.removeFiles(files);
+      // const deletedFilesResult = await Files.deleteMany(selector);
+      // return deletedFilesResult.deletedCount;
+    },
   };
 };

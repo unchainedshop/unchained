@@ -21,6 +21,6 @@ export default async function prepareUserAvatarUpload(
       meta: { userId: normalizedUserId },
       userId,
     },
-    context
+    context,
   );
 }
