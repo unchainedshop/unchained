@@ -48,6 +48,13 @@ const PostfinanceCheckout: IPaymentAdapter = {
     const adapter = {
       ...PaymentAdapter.actions(params),
 
+      getCompletionMode(): CompletionModes {
+        return (
+          (params.config.find((item) => item.key === 'completionMode')?.value as CompletionModes) ||
+          CompletionModes.Immediate
+        );
+      },
+
       // eslint-disable-next-line
       configurationError() {
         // eslint-disable-line
@@ -67,10 +74,9 @@ const PostfinanceCheckout: IPaymentAdapter = {
       },
 
       sign: async (transactionContext: any = {}) => {
-        const {
-          integrationMode = IntegrationModes.PaymentPage,
-          completionMode = CompletionModes.Immediate,
-        }: { integrationMode: IntegrationModes; completionMode: CompletionModes } = transactionContext;
+        const { integrationMode = IntegrationModes.PaymentPage }: { integrationMode: IntegrationModes } =
+          transactionContext;
+        const completionMode = adapter.getCompletionMode();
         const { orderPayment } = params.paymentContext;
         const order = await modules.orders.findOrder({
           orderId: orderPayment.orderId,

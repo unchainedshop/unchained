@@ -24,6 +24,16 @@ You have to configure the [webhooks](https://checkout.postfinance.ch/space/selec
 
 For test environments, the space ID needs to be set to the corresponding space ID.
 
+## Instantiate a provider
+
+When instantiating the provider, you can configure the completion mode (see below for details) with the configuration option `completionMode`. If no value is specified, immediate completion is used. To use deferred completion, you would use:
+```/*graphql*/
+updatePaymentProvider(paymentProviderId: "id of the provider", 
+                      paymentProvider: {configuration: {key: "completionMode", value: "Deferred"}}) {
+    _id
+}
+```
+
 # Usage
 
 To start a new PostFinance Checkout transaction, the mutation `signPaymentProviderForCheckout` is used. The plugin accepts two parameters in the `transactionContext` which control the behavior of the transaction: `integrationMode` and `completionMode`.
@@ -72,13 +82,7 @@ checkoutCart(
 This gives Unchained Engine a (second) chance to process and settle the payment.
 
 ## Completion Mode
-With `completionMode`, you can configure if the transaction should be completed immediately (default behavior if nothing is specified explicitly, value `Immediate`) or if only a reservation should be created (`Deferred`) that can be voided / completed later. To create a deferred transaction, you would therefore use:
-```/*graphql*/
-signPaymentProviderForCheckout(
-    orderPaymentId: "order payment id of the cart you want to checkout",
-    transactionContext: {completionMode: "Deferred"}
-)
-```
+The completion mode that is configured when instantiating a provider (see above for details) determines if transactions are completed immediately (default behavior if nothing is specified explicitly, value `Immediate`) or if only a reservation is created (`Deferred`) that can be voided / completed later.
 *Note that not all payment methods support deferred settlements. Alternatively, you can also use refunds.*
 
 When you use deferred completion, the order is not marked as paid after the user has authorized the transaction.
