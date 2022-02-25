@@ -40,3 +40,10 @@ useMiddlewareWithCurrentContext('/minio/', async (req, res) => {
     res.end(JSON.stringify(e));
   }
 });
+
+/*
+
+curl -X PUT -T /Users/pozylon/Desktop/Bildschirmfoto\ 2022-02-17\ um\ 16.47.22.png  http://localhost:4010/gridfs/3e0cd78ac07f0028890ce36c391057dd0c5fb46f4c147fb73e54bd8a7ffee389/user-avatars/avatar.png?e=1645883865878&s=e7466b30039593e5790e23cab92878e0144289c3710344a55b78c9a916e2f78c
+curl -X PUT -T /Users/pozylon/Desktop/Bildschirmfoto\ 2022-02-17\ um\ 16.47.22.png  https://minio.dev.shared.ucc.dev/unchained-test-bucket/user-avatars/9aedd551499b2850e9483b07cd4c8cff7ad1d710f49933c183861bf40183bc5a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=unchained-test%2F20220225%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220225T140957Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=22807026db1210370170cd5cf49bfbb9e86010425c9d1834a56e049faf39b368
+
+*/

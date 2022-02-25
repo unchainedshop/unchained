@@ -107,7 +107,8 @@ export const MinioAdapter: IFileAdapter = {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const expiryDate = getExpiryDate();
-    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
+    const [, ...ext] = fileName.split('.');
+    const _id = `${hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`)}.${ext.join('.')}`;
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
@@ -136,29 +137,29 @@ export const MinioAdapter: IFileAdapter = {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     let stream;
-    let fname;
+    let fileName;
     if (rawFile instanceof Promise) {
-      const { filename, createReadStream } = await rawFile;
-      fname = filename;
+      const { filename: fname, createReadStream } = await rawFile;
+      fileName = fname;
       stream = createReadStream();
     } else {
-      fname = rawFile.filename;
+      fileName = rawFile.filename;
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
     }
 
     const expiryDate = getExpiryDate();
-    const _id = hash(`${directoryName}-${fname}-${expiryDate.getTime()}`);
+    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
 
     await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream);
 
     const { size } = await getObjectStats(`${directoryName}/${_id}`);
-    const type = getMimeType(fname);
+    const type = getMimeType(fileName);
 
     return {
       _id,
       directoryName,
       expiryDate,
-      fileName: fname,
+      fileName,
       size,
       type,
       url: generateMinioUrl(directoryName, _id),
