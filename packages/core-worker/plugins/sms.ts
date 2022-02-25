@@ -4,7 +4,7 @@ import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import Twilio from 'twilio';
 import { BaseWorkerPlugin } from './base';
 
-const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
+const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;
 
 const logger = createLogger('unchained:core-worker');
 
@@ -27,6 +27,16 @@ const SmsWorkerPlugin: IWorkerAdapter<
   doWork: async ({ from, to, text }) => {
     logger.debug(`${SmsWorkerPlugin.key} -> doWork: ${from} -> ${to}`);
 
+    if (!TWILIO_SMS_FROM) {
+      return {
+        success: false,
+        error: {
+          name: 'SENDER_REQUIRED',
+          message: 'SMS requires a from, TWILIO_SMS_FROM not set',
+        },
+      };
+    }
+
     if (!to) {
       return {
         success: false,
@@ -41,7 +51,7 @@ const SmsWorkerPlugin: IWorkerAdapter<
       const client = Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
       const result = await client.messages.create({
         body: text,
-        from,
+        from: TWILIO_SMS_FROM,
         to,
       });
       return { success: true, result };
