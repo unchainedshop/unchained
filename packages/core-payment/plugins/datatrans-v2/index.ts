@@ -31,6 +31,7 @@ const throwIfResponseError = (result) => {
     throw newDatatransError(rawError);
   }
 };
+
 const Datatrans: IPaymentAdapter = {
   ...PaymentAdapter,
 
@@ -50,19 +51,17 @@ const Datatrans: IPaymentAdapter = {
   },
 
   actions: (params) => {
-    const { modules } = params.context;
+    const getMerchantId = (): string | undefined => {
+      return params.config.find((item) => item.key === 'merchantId')?.value;
+    };
 
     const api = () => {
       if (!DATATRANS_SECRET) throw new Error('Credentials not Set');
       return createDatatransAPI(
         DATATRANS_API_ENDPOINT || 'https://api.sandbox.datatrans.com',
-        this.getMerchantId(),
+        getMerchantId(),
         DATATRANS_SECRET,
       );
-    };
-
-    const getMerchantId = (): string | undefined => {
-      return params.config.find((item) => item.key === 'merchantId')?.value;
     };
 
     const shouldSettleInUnchained = () => {
@@ -94,12 +93,12 @@ const Datatrans: IPaymentAdapter = {
 
     const authorize = async ({ paymentCredentials, extensions }): Promise<string> => {
       const splits = getMarketplaceSplits();
-      const { order, userId } = this.context;
-      const orderPayment = order.payment();
+      const { userId } = params.context;
+      const { order, orderPayment } = params.paymentContext;
       const refno = orderPayment._id;
       const refno2 = userId;
       const { currency, amount } = roundedAmountFromOrder(order);
-      const result = await this.api.authorize({
+      const result = await api().authorize({
         ...extensions,
         amount,
         currency,
@@ -120,15 +119,10 @@ const Datatrans: IPaymentAdapter = {
       return (result as AuthorizeResponseSuccess).transactionId;
     };
 
-    const authorizeAuthenticated = async ({
-      transactionId,
-      refno,
-      refno2,
-      extensions,
-    }): Promise<string> => {
-      const { order } = this.context;
+    const authorizeAuth = async ({ transactionId, refno, refno2, extensions }): Promise<string> => {
+      const { order } = params.paymentContext;
       const { currency, amount } = roundedAmountFromOrder(order);
-      const result = await this.api.authorizeAuthenticated({
+      const result = await api().authorizeAuthenticated({
         ...extensions,
         transactionId,
         amount,
@@ -142,7 +136,7 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const isTransactionAmountValid = (transaction: StatusResponseSuccess): boolean => {
-      const { order } = this.context;
+      const { order } = params.paymentContext;
       const { currency, amount } = roundedAmountFromOrder(order);
       if (
         transaction.currency !== currency ||
@@ -164,7 +158,7 @@ const Datatrans: IPaymentAdapter = {
       transactionId: string,
       transaction: StatusResponseSuccess,
     ): void => {
-      if (!this.isTransactionAmountValid(transaction)) {
+      if (!isTransactionAmountValid(transaction)) {
         logger.error(
           `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`,
         );
@@ -176,10 +170,10 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const settle = async ({ transactionId, refno, refno2, extensions }): Promise<boolean> => {
-      const splits = this.getMarketplaceSplits();
-      const { order } = this.context;
+      const splits = getMarketplaceSplits();
+      const { order } = params.paymentContext;
       const { currency, amount } = roundedAmountFromOrder(order);
-      const result = await this.api.settle({
+      const result = await api().settle({
         transactionId,
         amount,
         refno,
@@ -197,7 +191,7 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const cancel = async ({ transactionId, refno }): Promise<boolean> => {
-      const result = await this.api.cancel({
+      const result = await api().cancel({
         transactionId,
         refno,
       });
@@ -227,15 +221,15 @@ const Datatrans: IPaymentAdapter = {
       async sign(context: any = {}) {
         const { useSecureFields = false, ...additionalInitPayload } = context.transactionContext || {};
 
-        const { orderPayment, paymentProviderId, userId } = this.context;
-        const order = orderPayment?.order();
+        const { userId } = params.context;
+        const { orderPayment, paymentProviderId, order } = params.paymentContext;
         const refno = orderPayment ? orderPayment._id : paymentProviderId;
         const refno2 = userId;
 
         const price: { amount?: number; currency?: string } = order ? roundedAmountFromOrder(order) : {};
 
         if (useSecureFields) {
-          const result = await this.api.secureFields({
+          const result = await api().secureFields({
             ...additionalInitPayload,
             currency: price.currency || 'CHF',
             refno,
@@ -248,7 +242,7 @@ const Datatrans: IPaymentAdapter = {
           throwIfResponseError(result);
           return JSON.stringify(result as InitResponseSuccess);
         }
-        const result = await this.api.init({
+        const result = await api().init({
           ...additionalInitPayload,
           currency: price.currency || 'CHF',
           refno,
@@ -263,9 +257,9 @@ const Datatrans: IPaymentAdapter = {
       },
 
       async validate(token) {
-        if (!this.context.meta) return false;
-        const { objectKey, currency } = this.context.meta;
-        const result = await this.api.validate({
+        if (!params.paymentContext.meta) return false;
+        const { objectKey, currency } = params.paymentContext.meta;
+        const result = await api().validate({
           refno: `valid-${new Date().getTime()}`,
           currency,
           [objectKey]: JSON.parse(token),
@@ -275,7 +269,7 @@ const Datatrans: IPaymentAdapter = {
 
       async register(transactionResponse) {
         const { transactionId } = transactionResponse;
-        const result = (await this.api.status({
+        const result = (await api().status({
           transactionId,
         })) as StatusResponseSuccess;
         if (result.transactionId) {
@@ -299,12 +293,12 @@ const Datatrans: IPaymentAdapter = {
 
         const transactionId =
           rawTransactionId ||
-          (await this.authorize({
+          (await authorize({
             paymentCredentials,
             extensions,
           }));
 
-        const transaction: StatusResponseSuccess = (await this.api.status({
+        const transaction: StatusResponseSuccess = (await api().status({
           transactionId,
         })) as StatusResponseSuccess;
         throwIfResponseError(transaction);
@@ -322,8 +316,8 @@ const Datatrans: IPaymentAdapter = {
 
         if (status === 'authenticated') {
           if (authorizeAuthenticated) {
-            this.checkIfTransactionAmountValid(transactionId, transaction);
-            await this.authorizeAuthenticated({
+            checkIfTransactionAmountValid(transactionId, transaction);
+            await authorizeAuth({
               transactionId,
               refno: transaction.refno,
               refno2: transaction.refno2,
@@ -344,11 +338,11 @@ const Datatrans: IPaymentAdapter = {
         if (status === 'authorized') {
           // either settle or cancel
           try {
-            this.checkIfTransactionAmountValid(transactionId, transaction);
-            if (this.shouldSettleInUnchained()) {
+            checkIfTransactionAmountValid(transactionId, transaction);
+            if (shouldSettleInUnchained()) {
               // if further deferred settlement is active, don't settle in unchained and hand off
               // settlement to other systems
-              await this.settle({
+              await settle({
                 transactionId,
                 refno: transaction.refno,
                 refno2: transaction.refno2,
@@ -358,7 +352,7 @@ const Datatrans: IPaymentAdapter = {
             }
           } catch (e) {
             try {
-              await this.cancel({
+              await cancel({
                 transactionId,
                 refno: transaction.refno,
               });
@@ -377,7 +371,7 @@ const Datatrans: IPaymentAdapter = {
           // at the dumbest possible moment
           try {
             credentials = parseRegistrationData(settledTransaction);
-            const result = await this.api.status({
+            const result = await api().status({
               transactionId,
             });
             if ((result as ResponseError)?.error) {
@@ -412,6 +406,8 @@ const Datatrans: IPaymentAdapter = {
         return false;
       },
     };
+
+    return adapterActions;
   },
 };
 
