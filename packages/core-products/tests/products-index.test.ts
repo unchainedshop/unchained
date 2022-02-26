@@ -7,7 +7,7 @@ describe('Test exports', () => {
   let module: ProductsModule;
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     module = await configureProductsModule({ db }).catch((error) => {
       console.error(error);
 

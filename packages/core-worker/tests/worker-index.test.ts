@@ -7,14 +7,14 @@ import {
 } from 'meteor/unchained:core-worker';
 import { initDb } from 'meteor/unchained:mongodb';
 
-import ExternalWorkerPlugin from '../plugins/external';
+import { ExternalWorkerPlugin } from '../plugins/external';
 
 describe('Test exports', () => {
   let module: WorkerModule;
   let db: Db;
 
   before(async () => {
-    db = initDb();
+    db = await initDb();
     module = await configureWorkerModule({ db }).catch((error) => {
       console.warn('ERROR', error);
       return null;

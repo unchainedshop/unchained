@@ -215,15 +215,18 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
       }
 
       res.writeHead(200);
-      return res.end();
+      res.end();
+      return;
     } catch (e) {
       paymentLogger.warn(`Apple IAP Webhook: ${e.message}`, e);
       res.writeHead(503);
-      return res.end(JSON.stringify(e));
+      res.end(JSON.stringify(e));
+      return;
     }
   }
   res.writeHead(404);
-  return res.end();
+  res.end();
+  return;
 });
 
 const AppleIAP: IPaymentAdapter = {

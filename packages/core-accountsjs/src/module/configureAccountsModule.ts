@@ -4,13 +4,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { accountsSettings } from '../accounts-settings';
 import { accountsPassword } from '../accounts/accountsPassword';
 import { accountsServer } from '../accounts/accountsServer';
-import { dbManager } from '../accounts/dbManager';
+import { createDbManager } from '../accounts/dbManager';
 import { evaluateContext } from './utils/evaluateContext';
 import { filterContext } from './utils/filterContext';
 import { hashPassword } from './utils/hashPassword';
 
-export const configureAccountsModule = async (): Promise<AccountsModule> => {
+export const configureAccountsModule = async ({ db }): Promise<AccountsModule> => {
+  const dbManager = createDbManager(db);
+
   return {
+    dbManager,
+
     emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
 
     // Mutations
