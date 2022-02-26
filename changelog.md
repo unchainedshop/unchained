@@ -193,6 +193,7 @@ ReorderAssortmentMediaInput
 - [core] Reduce core-events logging verbosity
 - [core] Upstream hotfixes from 61.x
 - [core] Support for currencies that are based on a contract with the new `contractAddress` field for currencies. Used by the Cryptopay plugins to determine the supported ERC20 tokens.
+- [core] New twilio plugin to send SMS.
 
 # v0.61.1
 

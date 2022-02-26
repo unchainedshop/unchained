@@ -49,6 +49,7 @@ import 'meteor/unchained:core-worker/plugins/external';
 import 'meteor/unchained:core-worker/plugins/http-request';
 import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
+import 'meteor/unchained:core-worker/plugins/sms';
 
 import 'meteor/unchained:core-file-upload/plugins/minio-adapter';
 import 'meteor/unchained:core-file-upload/plugins/minio-webhook';
