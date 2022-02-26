@@ -4,7 +4,6 @@ import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
-import { getFileAdapter } from '../utils/getFileAdapter';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
@@ -14,8 +13,6 @@ export const configureFilesModule = async ({
   registerEvents(FILE_EVENTS);
 
   const Files = await MediaObjectsCollection(db);
-
-  const fileUploadAdapter = getFileAdapter();
 
   const mutations = generateDbMutations<File>(Files, MediaObjectsSchema) as ModuleMutations<File>;
 
@@ -28,14 +25,8 @@ export const configureFilesModule = async ({
       return Files.find(selector).toArray();
     },
 
-    deleteMany: async (fileIds, userId) => {
-      console.log('remove', { fileIds });
-      await Promise.all(
-        fileIds.map(async (fileId) => {
-          await mutations.delete(fileId, userId);
-          emit('FILE_REMOVE', { fileId });
-        }),
-      );
+    deleteMany: async (fileIds) => {
+      await Files.deleteMany({ _id: { $in: fileIds } });
     },
 
     findFilesByMetaData: async ({ meta }, options) => {
@@ -69,8 +60,8 @@ export const configureFilesModule = async ({
       emit('FILE_UPDATE', { fileId });
       return fileId;
     },
-    delete: async (fileId, userId) => {
-      const deletedCount = await mutations.delete(fileId, userId);
+    delete: async (fileId) => {
+      const { deletedCount } = await Files.deleteOne({ _id: fileId });
       emit('FILE_REMOVE', { fileId });
       return deletedCount;
     },

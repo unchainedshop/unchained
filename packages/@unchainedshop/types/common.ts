@@ -66,7 +66,6 @@ export interface ModuleCreateMutation<T> {
 export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
   update: (_id: string, doc: UpdateFilter<T> | T, userId?: string) => Promise<string>;
   delete: (_id: string, userId?: string) => Promise<number>;
-  deleteHard: (_id: string, userId?: string) => Promise<number>;
 }
 
 export interface ModuleMutationsWithReturnDoc<T> {

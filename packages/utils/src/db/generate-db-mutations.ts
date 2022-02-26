@@ -61,19 +61,6 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           return _id;
         },
 
-    deleteHard: hasCreateOnly
-      ? undefined
-      : async (_id, userId) => {
-          checkId(_id);
-          const filter = generateDbFilterById(_id, { delete: null });
-          const modifier = { $set: { deleted: new Date(), deletedBy: userId } };
-          const values = schema.clean(modifier, { isModifier: true });
-
-          const result = await collection.deleteOne(filter, values);
-
-          return result.deletedCount;
-        },
-
     delete: hasCreateOnly
       ? undefined
       : async (_id, userId) => {
