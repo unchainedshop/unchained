@@ -53,8 +53,8 @@ export const GridFSAdapter: IFileAdapter = {
     const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
     const signature = sign(directoryName, _id, expiryDate.getTime());
 
-    const putURL = `${ROOT_URL}gridfs/${_id}/${directoryName}/${fileName}?e=${expiryDate.getTime()}&s=${signature}`;
-    const url = `${ROOT_URL}gridfs/${_id}/${directoryName}/${fileName}`;
+    const putURL = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}?e=${expiryDate.getTime()}&s=${signature}`;
+    const url = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}`;
 
     return {
       _id,
@@ -85,7 +85,7 @@ export const GridFSAdapter: IFileAdapter = {
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
 
     const file = await promisePipe(stream, writeStream);
-    const url = `${ROOT_URL}gridfs/${_id}/${directoryName}/${fileName}`;
+    const url = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}`;
 
     return {
       _id,
@@ -111,7 +111,7 @@ export const GridFSAdapter: IFileAdapter = {
 
     const file = await promisePipe(downloadStream, writeStream);
 
-    const url = `${ROOT_URL}gridfs/${_id}/${directoryName}/${fileName}`;
+    const url = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}`;
 
     return {
       _id,

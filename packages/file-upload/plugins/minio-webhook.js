@@ -30,14 +30,17 @@ useMiddlewareWithCurrentContext('/minio/', async (req, res) => {
         await services.files.linkFile({ fileId, type, size }, req.unchainedContext);
         res.writeHead(200);
         res.end();
+        return;
       }
     }
     res.writeHead(404);
     res.end();
+    return;
   } catch (e) {
     log(e.message, { level: LogLevel.Error });
     res.writeHead(503);
     res.end(JSON.stringify(e));
+    return;
   }
 });
 

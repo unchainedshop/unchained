@@ -6,7 +6,7 @@ describe('Test exports', () => {
   let module;
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     module = await configureDeliveryModule({ db });
   });
 

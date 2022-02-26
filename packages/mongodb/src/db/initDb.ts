@@ -13,7 +13,7 @@ import { Db /* MongoClient */ } from 'mongodb';
 // };
 
 const initDbMeteor = async (): Promise<Db> => {
-  return MongoInternals.defaultRemoteCollectionDriver().mongo.db as unknown as Db;
+  return MongoInternals.defaultRemoteCollectionDriver().mongo.db as Db;
 };
 
 const initDb = initDbMeteor;
