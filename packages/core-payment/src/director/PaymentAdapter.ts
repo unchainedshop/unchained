@@ -46,6 +46,14 @@ export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> 
       validate: async () => {
         return false;
       },
+
+      cancel: async () => {
+        return false;
+      },
+
+      confirm: async () => {
+        return false;
+      },
     };
   },
 

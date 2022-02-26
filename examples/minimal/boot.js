@@ -23,6 +23,7 @@ import 'meteor/unchained:core-payment/plugins/cryptopay';
 import { configureAppleTransactionsModule } from 'meteor/unchained:core-payment/plugins/apple-iap';
 import 'meteor/unchained:core-payment/plugins/stripe';
 import 'meteor/unchained:core-payment/plugins/stripe-charges';
+import 'meteor/unchained:core-payment/plugins/postfinance-checkout';
 import { configureBityModule } from 'meteor/unchained:core-payment/plugins/bity';
 import 'meteor/unchained:core-payment/plugins/free-payment';
 
