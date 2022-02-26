@@ -29,6 +29,7 @@ export const configureFilesModule = async ({
     },
 
     deleteMany: async (fileIds, userId) => {
+      console.log('remove', { fileIds });
       await Promise.all(
         fileIds.map(async (fileId) => {
           await mutations.delete(fileId, userId);

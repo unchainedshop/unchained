@@ -158,7 +158,18 @@ export const configureProductMediaModule = async ({
         selector._id = { $nin: excludedProductMediaIds };
       }
 
+      const ids = await ProductMedias.find(selector, { projection: { _id: true } })
+        .map((m) => m._id)
+        .toArray();
+
       const deletedResult = await ProductMedias.deleteMany(selector);
+
+      ids.forEach((assortmentMediaId) => {
+        emit('PRODUCT_REMOVE_MEDIA', {
+          assortmentMediaId,
+        });
+      });
+
       return deletedResult.deletedCount;
     },
 

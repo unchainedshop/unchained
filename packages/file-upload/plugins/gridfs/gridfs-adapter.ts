@@ -125,11 +125,9 @@ export const GridFSAdapter: IFileAdapter = {
   },
 
   async removeFiles(files, { modules }: any) {
-    const fileIds = files.map(({ path, _id }) => {
-      return `${path}/${_id}`;
-    });
-
-    await Promise.all(fileIds.map(async (fileId) => modules.gridfsFileUploads.removeFile(fileId)));
+    await Promise.all(
+      files.map(async ({ _id, path }) => modules.gridfsFileUploads.removeFileFromBucket(path, _id)),
+    );
   },
 };
 

@@ -19,7 +19,11 @@ export const removeFilesService: RemoveFilesService = async ({ fileIds }, reques
 
   const fileObjects = await files.findFiles(selector);
 
-  await fileUploadAdapter.removeFiles(fileObjects, requestContext);
+  try {
+    await fileUploadAdapter.removeFiles(fileObjects, requestContext);
+  } catch (e) {
+    console.warn(e);
+  }
 
   const fileIdsToDelete = fileObjects.map((f) => f._id).filter(Boolean);
 

@@ -16,6 +16,7 @@ const startAndWaitForMeteor = async () => {
           ...process.env,
           NODE_ENV: 'development',
           METEOR_PACKAGE_DIRS: '../../packages',
+          UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
           UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
           DATATRANS_SECRET: 'secret',
           DATATRANS_SIGN_KEY: '1337',

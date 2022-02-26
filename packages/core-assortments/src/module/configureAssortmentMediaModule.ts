@@ -167,7 +167,18 @@ export const configureAssortmentMediaModule = async ({
         selector._id = { $nin: excludedAssortmentMediaIds };
       }
 
+      const ids = await AssortmentMedias.find(selector, { projection: { _id: true } })
+        .map((m) => m._id)
+        .toArray();
+
       const deletedResult = await AssortmentMedias.deleteMany(selector);
+
+      ids.forEach((assortmentMediaId) => {
+        emit('ASSORTMENT_REMOVE_MEDIA', {
+          assortmentMediaId,
+        });
+      });
+
       return deletedResult.deletedCount;
     },
 

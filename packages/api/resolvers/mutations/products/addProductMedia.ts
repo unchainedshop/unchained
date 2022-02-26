@@ -2,11 +2,7 @@ import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { ProductNotFoundError, InvalidIdError } from '../../../errors';
 
-export default async function addProductMedia(
-  root: Root,
-  { media, productId },
-  context: Context,
-) {
+export default async function addProductMedia(root: Root, { media, productId }, context: Context) {
   const { modules, services, userId } = context;
   log(`mutation addProductMedia ${productId}`, { userId });
 
@@ -19,10 +15,10 @@ export default async function addProductMedia(
     {
       directoryName: 'product-media',
       rawFile: media,
-      meta: { authorId: userId },
+      meta: { productId },
       userId,
     },
-    context
+    context,
   );
 
   return modules.products.media.create({ productId, mediaId: file._id }, userId);

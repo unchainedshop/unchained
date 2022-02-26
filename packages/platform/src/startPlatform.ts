@@ -17,6 +17,8 @@ import { createMigrationRepository } from './migrations/migrationRepository';
 
 // Workers
 import './worker/BulkImportWorker';
+import './worker/ZombieKillerWorker';
+
 import 'meteor/unchained:core-enrollments/workers/GenerateOrderWorker';
 import 'meteor/unchained:core-messaging/workers/MessageWorker';
 

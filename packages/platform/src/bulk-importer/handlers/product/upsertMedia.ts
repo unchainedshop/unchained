@@ -4,21 +4,24 @@ import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.me
 
 const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Context) => {
   const { modules, services, userId } = unchainedAPI;
-  const { _id, fileName, url, ...assetData } = asset;
+  const { _id, fileName, url, meta, ...assetData } = asset;
   const fileId = _id;
 
   try {
     if (_id && (await modules.files.findFile({ fileId }))) throw new Error('Media already exists');
 
-    const assetObject = await services.files.uploadFileFromURL({
-      directoryName: 'product-media',
-      fileInput: {
-        fileLink: url,
-        fileName,
+    const assetObject = await services.files.uploadFileFromURL(
+      {
+        directoryName: 'product-media',
+        fileInput: {
+          fileLink: url,
+          fileName,
+        },
+        meta: { ...meta, fileId },
+        userId,
       },
-      meta: { fileId },
-      userId
-    }, unchainedAPI)
+      unchainedAPI,
+    );
 
     if (!assetObject) throw new Error('Media not created');
     return assetObject;
@@ -44,7 +47,10 @@ export default async function upsertMedia({ media, authorId, productId }, unchai
 
   const productMediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
-      const file = await upsertAsset(asset, unchainedAPI);
+      const file = await upsertAsset(
+        { meta: { ...(asset.meta || {}), productId }, ...asset },
+        unchainedAPI,
+      );
       if (!file) throw new Error(`Unable to create binary ${asset._id}`);
       const fileId = file._id;
       const productMedia = await upsertProductMedia(

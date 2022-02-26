@@ -91,6 +91,7 @@ export interface FileServices {
  */
 
 export interface UploadFileData {
+  _id?: _ID;
   directoryName: string;
   expiryDate: Date;
   fileName: string;
