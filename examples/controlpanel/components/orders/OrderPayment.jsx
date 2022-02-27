@@ -30,14 +30,11 @@ const OrderPayment = ({
           <Icon name="ship" />
           <Link href={`/payment-providers/edit?_id=${provider._id}`}>
             <a href={`/payment-providers/edit?_id=${provider._id}`}>
-              {provider.interface.label} {provider.interface.version} (
-              {provider.type})
+              {provider.interface.label} {provider.interface.version} ({provider.type})
             </a>
           </Link>
         </Label>
-        <p>
-          Date of Payment with Provider: {paid ? format(paid, 'Pp') : 'n/a'}
-        </p>
+        <p>Date of Payment with Provider: {paid ? format(new Date(paid), 'Pp') : 'n/a'}</p>
       </List.Item>
     </List>
     {status === 'OPEN' && orderStatus !== 'OPEN' && (
@@ -71,7 +68,7 @@ export default compose(
       options: {
         refetchQueries: ['orders', 'order'],
       },
-    }
+    },
   ),
   graphql(gql`
     query order($orderId: ID!) {
@@ -115,5 +112,5 @@ export default compose(
     statusColor: colorForStatus(order.payment && order.payment.status),
     orderStatus: order.status,
     ...order.payment,
-  }))
+  })),
 )(OrderPayment);

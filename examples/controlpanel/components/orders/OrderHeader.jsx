@@ -4,15 +4,7 @@ import Link from 'next/link';
 import { graphql } from '@apollo/client/react/hoc';
 import { format } from 'date-fns';
 import React from 'react';
-import {
-  List,
-  Segment,
-  Menu,
-  Dropdown,
-  Label,
-  Icon,
-  Grid,
-} from 'semantic-ui-react';
+import { List, Segment, Menu, Dropdown, Label, Icon, Grid } from 'semantic-ui-react';
 import Address from '../Address';
 import BtnRemoveOrder from './BtnRemoveOrder';
 
@@ -53,19 +45,10 @@ const OrderHeader = ({
       <Dropdown item icon="wrench" simple>
         <Dropdown.Menu>
           <Dropdown.Header>Options</Dropdown.Header>
-          <BtnRemoveOrder
-            orderId={_id}
-            Component={Dropdown.Item}
-            disabled={status !== 'OPEN'}
-          >
+          <BtnRemoveOrder orderId={_id} Component={Dropdown.Item} disabled={status !== 'OPEN'}>
             Delete
           </BtnRemoveOrder>
-          <Dropdown.Item
-            primary
-            fluid
-            disabled={status !== 'PENDING'}
-            onClick={confirmOrder}
-          >
+          <Dropdown.Item primary fluid disabled={status !== 'PENDING'} onClick={confirmOrder}>
             Confirm
           </Dropdown.Item>
         </Dropdown.Menu>
@@ -79,15 +62,11 @@ const OrderHeader = ({
           <List relaxed>
             <List.Item>
               <List.Icon name="money" />
-              <List.Content>
-                Currency: {currency && currency.isoCode}
-              </List.Content>
+              <List.Content>Currency: {currency && currency.isoCode}</List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="world" />
-              <List.Content>
-                Shop: {country && `${country.flagEmoji} (${country.isoCode})`}
-              </List.Content>
+              <List.Content>Shop: {country && `${country.flagEmoji} (${country.isoCode})`}</List.Content>
             </List.Item>
             {user && (
               <List.Item>
@@ -95,9 +74,7 @@ const OrderHeader = ({
                 <List.Content>
                   User:&nbsp;
                   <Link href={`/users/edit?_id=${user._id}`}>
-                    <a href={`/users/edit?_id=${user._id}`}>
-                      {`${user.name || user._id}`}
-                    </a>
+                    <a href={`/users/edit?_id=${user._id}`}>{`${user.name || user._id}`}</a>
                   </Link>
                 </List.Content>
               </List.Item>
@@ -124,27 +101,22 @@ const OrderHeader = ({
           <List>
             <List.Item>
               <List.Icon name="add to calendar" />
-              <List.Content>
-                Created: {created ? format(new Date(created), 'Pp') : 'n/a'}
-              </List.Content>
+              <List.Content>Created: {created ? format(new Date(created), 'Pp') : 'n/a'}</List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="plus cart" />
-              <List.Content>
-                Ordered: {ordered ? format(new Date(ordered), 'Pp') : 'n/a'}
-              </List.Content>
+              <List.Content>Ordered: {ordered ? format(new Date(ordered), 'Pp') : 'n/a'}</List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="thumbs outline up" />
               <List.Content>
-                Confirmed:{' '}
-                {confirmed ? format(new Date(confirmed), 'Pp') : 'n/a'}
+                Confirmed: {confirmed ? format(new Date(confirmed), 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="checkmark box" />
               <List.Content>
-                Fullfilled: {fullfilled ? format(fullfilled, 'Pp') : 'n/a'}
+                Fullfilled: {fullfilled ? format(new Date(fullfilled), 'Pp') : 'n/a'}
               </List.Content>
             </List.Item>
           </List>
@@ -177,7 +149,7 @@ export default compose(
       options: {
         refetchQueries: ['orders', 'order'],
       },
-    }
+    },
   ),
   graphql(gql`
     query order($orderId: ID!) {
@@ -235,5 +207,5 @@ export default compose(
     confirmOrder,
     ...order,
   })),
-  pure
+  pure,
 )(OrderHeader);
