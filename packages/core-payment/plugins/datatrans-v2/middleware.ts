@@ -63,7 +63,7 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
           const paymentCredentials = await services.payment.registerPaymentCredentials(
             transaction.refno,
             { transactionContext: { transactionId: transaction.transactionId } },
-            resolvedContext,
+            { ...resolvedContext, userId },
           );
           logger.info(`Datatrans Webhook: Unchained registered payment credentials for ${userId}`, {
             userId,
