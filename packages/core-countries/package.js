@@ -21,8 +21,6 @@ Package.onUse((api) => {
   api.use('unchained:utils@1.0.0-rc.1');
   api.use('unchained:events@1.0.0-rc.1');
 
-  api.use('unchained:core-currencies@1.0.0-rc.1');
-
   api.mainModule('src/countries-index.ts', 'server');
 });
 

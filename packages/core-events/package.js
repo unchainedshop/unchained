@@ -29,5 +29,5 @@ Package.onTest((api) => {
   api.use('unchained:mongodb');
   api.use('unchained:core-events');
 
-  api.mainModule('test/events-index.test.ts');
+  api.mainModule('tests/events-index.test.ts');
 });
