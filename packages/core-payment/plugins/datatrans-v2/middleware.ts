@@ -3,6 +3,7 @@ import { OrderPayments } from 'meteor/unchained:core-orders';
 import bodyParser from 'body-parser';
 import { createLogger } from 'meteor/unchained:logger';
 import { PaymentCredentials } from 'meteor/unchained:core-payment';
+import { Context } from '@unchainedshop/types/api';
 import getPaths from './getPaths';
 import generateSignature, { Security } from './generateSignature';
 
@@ -34,6 +35,8 @@ useMiddlewareWithCurrentContext(successUrl, bodyParser.urlencoded({ extended: fa
 useMiddlewareWithCurrentContext(returnUrl, bodyParser.urlencoded({ extended: false }));
 
 useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
+  const resolvedContext = req.unchainedContext as Context;
+  const { services } = resolvedContext;
   const signature = req.headers['datatrans-signature'];
   if (req.method === 'POST' && signature) {
     const [rawTimestamp, rawHash] = signature.split(',');
@@ -59,11 +62,11 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
 
       try {
         if (transaction.type === 'card_check') {
-          const paymentCredentials = PaymentCredentials.registerPaymentCredentials({
-            paymentProviderId: transaction.refno,
-            paymentContext: { transactionId: transaction.transactionId },
-            userId,
-          });
+          const paymentCredentials = await services.payment.registerPaymentCredentials(
+            transaction.refno,
+            { transactionContext: { transactionId: transaction.transactionId } },
+            resolvedContext,
+          );
           logger.info(`Datatrans Webhook: Unchained registered payment credentials for ${userId}`, {
             userId,
           });
