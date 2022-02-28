@@ -97,7 +97,7 @@ const Datatrans: IPaymentAdapter = {
       const { order, orderPayment } = params.paymentContext;
       const refno = orderPayment._id;
       const refno2 = userId;
-      const { currency, amount } = roundedAmountFromOrder(order);
+      const { currency, amount } = roundedAmountFromOrder(order, params.context);
       const result = await api().authorize({
         ...extensions,
         amount,
@@ -121,7 +121,7 @@ const Datatrans: IPaymentAdapter = {
 
     const authorizeAuth = async ({ transactionId, refno, refno2, extensions }): Promise<string> => {
       const { order } = params.paymentContext;
-      const { currency, amount } = roundedAmountFromOrder(order);
+      const { currency, amount } = roundedAmountFromOrder(order, params.context);
       const result = await api().authorizeAuthenticated({
         ...extensions,
         transactionId,
@@ -137,7 +137,7 @@ const Datatrans: IPaymentAdapter = {
 
     const isTransactionAmountValid = (transaction: StatusResponseSuccess): boolean => {
       const { order } = params.paymentContext;
-      const { currency, amount } = roundedAmountFromOrder(order);
+      const { currency, amount } = roundedAmountFromOrder(order, params.context);
       if (
         transaction.currency !== currency ||
         (transaction.detail.authorize as any)?.amount !== amount
@@ -172,7 +172,7 @@ const Datatrans: IPaymentAdapter = {
     const settle = async ({ transactionId, refno, refno2, extensions }): Promise<boolean> => {
       const splits = getMarketplaceSplits();
       const { order } = params.paymentContext;
-      const { currency, amount } = roundedAmountFromOrder(order);
+      const { currency, amount } = roundedAmountFromOrder(order, params.context);
       const result = await api().settle({
         transactionId,
         amount,
@@ -226,7 +226,9 @@ const Datatrans: IPaymentAdapter = {
         const refno = orderPayment ? orderPayment._id : paymentProviderId;
         const refno2 = userId;
 
-        const price: { amount?: number; currency?: string } = order ? roundedAmountFromOrder(order) : {};
+        const price: { amount?: number; currency?: string } = order
+          ? roundedAmountFromOrder(order, params.context)
+          : {};
 
         if (useSecureFields) {
           const result = await api().secureFields({
