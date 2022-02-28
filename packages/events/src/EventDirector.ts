@@ -75,7 +75,7 @@ export const EventDirector: IEventDirector = {
   },
 
   subscribe: (eventName: string, callback: () => void): void => {
-    const currentSubscription = eventName + callback?.toString(); // used to avaoid registering the same event handler callback
+    const currentSubscription = `${eventName}${callback?.toString()}`; // used to avaoid registering the same event handler callback
 
     if (!RegisteredEventsSet.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);

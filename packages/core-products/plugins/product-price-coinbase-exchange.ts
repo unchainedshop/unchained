@@ -66,14 +66,16 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
 
         const rate = await getFiatexchangeRateForCrypto(defaultCurrency, currency);
 
-        const convertedAmount = productPrice?.amount * rate;
-        pricingAdapter.resetCalculation();
-        pricingAdapter.resultSheet().addItem({
-          amount: convertedAmount * quantity,
-          isTaxable: productPrice?.isTaxable,
-          isNetPrice: productPrice?.isNetPrice,
-          meta: { adapter: ProductPriceCoinbaseExchange.key },
-        });
+        if (rate > 0) {
+          const convertedAmount = productPrice.amount * rate;
+          pricingAdapter.resetCalculation();
+          pricingAdapter.resultSheet().addItem({
+            amount: convertedAmount * quantity,
+            isTaxable: productPrice?.isTaxable,
+            isNetPrice: productPrice?.isNetPrice,
+            meta: { adapter: ProductPriceCoinbaseExchange.key },
+          });
+        }
 
         return pricingAdapter.calculate();
       },

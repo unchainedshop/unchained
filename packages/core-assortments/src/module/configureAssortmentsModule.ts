@@ -160,7 +160,7 @@ export const configureAssortmentsModule = async ({
     cacheOptions: { skipUpstreamTraversal: boolean } = {
       skipUpstreamTraversal: false,
     },
-    userId?: string,
+    userId: string = undefined,
   ) => {
     const productIds = await buildProductIds(assortment);
 

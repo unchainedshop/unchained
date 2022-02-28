@@ -164,7 +164,7 @@ export const configureEnrollmentsModule = async ({
 
   const sendStatusToCustomer = async (
     enrollment: Enrollment,
-    params: { locale?: Locale; reason?: string } = { reason: 'status_change' },
+    params: { locale?: Locale; reason?: string },
     requestContext: Context,
   ) => {
     const { modules, userId } = requestContext;
@@ -182,7 +182,7 @@ export const configureEnrollmentsModule = async ({
         type: 'MESSAGE',
         retries: 0,
         input: {
-          reason: params.reason,
+          reason: params.reason || 'status_change',
           locale,
           template: 'ENROLLMENT_STATUS',
           enrollmentId: enrollment._id,

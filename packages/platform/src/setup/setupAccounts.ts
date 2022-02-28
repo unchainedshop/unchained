@@ -14,8 +14,8 @@ export interface SetupAccountsOptions {
 }
 
 export const setupAccounts = (
-  options: SetupAccountsOptions = { mergeUserCartsOnLogin: true },
   unchainedAPI: Context,
+  options: SetupAccountsOptions = { mergeUserCartsOnLogin: true },
 ) => {
   const accountsServer = configureAccountServer(unchainedAPI);
 
@@ -35,6 +35,7 @@ export const setupAccounts = (
           profile: {},
           password: null,
           initialPassword: true,
+          lastBillingAddress: {},
         },
         {},
       );

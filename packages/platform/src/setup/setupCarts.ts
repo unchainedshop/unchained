@@ -7,7 +7,7 @@ export interface SetupCartsOptions {
   assignCartForUsers?: boolean;
 }
 
-export const setupCarts = async (options: SetupCartsOptions = {}, unchainedAPI: Context) => {
+export const setupCarts = async (unchainedAPI: Context, options: SetupCartsOptions = {}) => {
   if (options.invalidateProviders ?? !UNCHAINED_DISABLE_PROVIDER_INVALIDATION) {
     await unchainedAPI.modules.orders.invalidateProviders(unchainedAPI);
   }

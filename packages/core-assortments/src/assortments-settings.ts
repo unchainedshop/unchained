@@ -9,10 +9,10 @@ export const assortmentsSettings = {
   getCachedProductIds: null,
   configureSettings: async (
     {
-      zipTree = zipTreeByDeepness,
       setCachedProductIds,
       getCachedProductIds,
-    }: AssortmentsSettingsOptions = {},
+      zipTree = zipTreeByDeepness,
+    }: AssortmentsSettingsOptions,
     db: Db,
   ) => {
     const defaultCache = await makeMongoDBCache(db);

@@ -117,9 +117,9 @@ export const startPlatform = async (
 
   // Setup work queues for scheduled work
   if (isWorkQueueEnabled) {
-    const handlers = setupWorkqueue(workQueueOptions, unchainedAPI);
+    const handlers = setupWorkqueue(unchainedAPI, workQueueOptions);
     handlers.forEach((handler) => queueWorkers.push(handler));
-    await setupCarts(workQueueOptions, unchainedAPI);
+    await setupCarts(unchainedAPI, workQueueOptions);
 
     setupAutoScheduling();
   }

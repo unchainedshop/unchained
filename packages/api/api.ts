@@ -24,7 +24,7 @@ export type UnchainedServerContext = UnchainedLocaleContext &
   UnchainedLoaders &
   UnchainedAPI;
 
-const UNCHAINED_API_VERSION = '1.0.0-beta16'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '1.0.0-rc.1'; // eslint-disable-line
 
 const createContextResolver =
   (unchainedAPI: UnchainedAPI) =>

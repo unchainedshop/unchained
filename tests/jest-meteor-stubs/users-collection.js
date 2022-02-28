@@ -1,5 +1,5 @@
-import sinon from 'sinon';
-import 'sinon-mongo';
+const sinon = require('sinon'); // eslint-disable-line
+require('sinon-mongo');
 
 const Users = sinon.mongo.collection({
   update: sinon

@@ -31,7 +31,7 @@ export const markOrderAsPaid = async (
   });
   const order = await orderModule.findOrder({ orderId: orderPayment.orderId });
   const pricing = orderModule.pricingSheet(order);
-  const totalAmount = pricing?.total({ useNetPrice: false }).amount / 100;
+  const totalAmount = pricing.total({ useNetPrice: false }).amount / 100;
   if (await transactionIsPaid(transaction, order.currency, totalAmount)) {
     await orderModule.payments.markAsPaid(orderPayment, { transactionId });
     return true;

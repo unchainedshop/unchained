@@ -1,7 +1,9 @@
-# vNEXT
+# v1.0
 
 This is our first major release, it covers all features needed to build highly flexible e-commerce
-solutions.
+solutions. Unchained 1.0 is an almost complete rewrite from javascript to typescript and is many ways
+breaking existing code based on the older versions. It's also a major step toward a Meteor-free future of
+Unchained.
 
 ## Breaking changes
 
@@ -162,10 +164,16 @@ AssortmentMedia
 UpdateAssortmentMediaTextInput
 ReorderAssortmentMediaInput
 ```
-- [core] New module `products.prices.rates` for currency rates and a generic `ProductPriceRateConversion` plugin that consumes these rates.
-- [core] New Cryptopay pricing and payment plugin to support the self-hosted, decentralized Crypto Payment Gateway for payments in BTC, ETH, and arbitrary ERC20 tokens.
-- [api] New mutations `cancelOrderPayment` and `confirmOrderPayment` to support deferred settlements / reservations and payment refunds.
-- [core] New [PostFinance Checkout](https://www.postfinance.ch/de/unternehmen/produkte/e-commerce/postfinance-checkout-flex.html) payment plugin with support for deferred settlements and refunds.
+
+- [core] New module `products.prices.rates` for currency rates and a generic `ProductPriceRateConversion`
+  plugin that consumes these rates.
+- [core] New Cryptopay pricing and payment plugin to support the self-hosted, decentralized Crypto
+  Payment Gateway for payments in BTC, ETH, and arbitrary ERC20 tokens.
+- [api] New mutations `cancelOrderPayment` and `confirmOrderPayment` to support deferred settlements /
+  reservations and payment refunds.
+- [core] New
+  [PostFinance Checkout](https://www.postfinance.ch/de/unternehmen/produkte/e-commerce/postfinance-checkout-flex.html)
+  payment plugin with support for deferred settlements and refunds.
 
 ## Minor
 
@@ -194,7 +202,8 @@ ReorderAssortmentMediaInput
 - [core] Extended events module to make it possible to transform context for specific needs
 - [core] Reduce core-events logging verbosity
 - [core] Upstream hotfixes from 61.x
-- [core] Support for currencies that are based on a contract with the new `contractAddress` field for currencies. Used by the Cryptopay plugins to determine the supported ERC20 tokens.
+- [core] Support for currencies that are based on a contract with the new `contractAddress` field for
+  currencies. Used by the Cryptopay plugins to determine the supported ERC20 tokens.
 - [core] New twilio plugin to send SMS.
 
 # v0.61.1

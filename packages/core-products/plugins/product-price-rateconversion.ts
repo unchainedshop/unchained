@@ -57,8 +57,8 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
           MAX_RATE_AGE,
         );
 
-        if (rate) {
-          const convertedAmount = productPrice?.amount * rate;
+        if (rate > 0) {
+          const convertedAmount = productPrice.amount * rate;
           pricingAdapter.resetCalculation();
           pricingAdapter.resultSheet().addItem({
             amount: convertedAmount * quantity,

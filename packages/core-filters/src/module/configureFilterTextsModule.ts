@@ -79,7 +79,7 @@ export const configureFilterTextsModule = ({
     },
 
     // Mutations
-    updateTexts: async (params, texts = [], userId) => {
+    updateTexts: async (params, texts, userId) => {
       const filterTexts = await Promise.all(
         texts.map((text) =>
           upsertLocalizedText(

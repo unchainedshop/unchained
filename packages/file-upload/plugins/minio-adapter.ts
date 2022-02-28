@@ -103,7 +103,7 @@ export const MinioAdapter: IFileAdapter = {
 
   ...FileAdapter,
 
-  async createSignedURL(directoryName = '', fileName) {
+  async createSignedURL(directoryName, fileName) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const expiryDate = getExpiryDate();

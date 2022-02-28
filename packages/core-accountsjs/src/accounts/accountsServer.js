@@ -52,6 +52,7 @@ export class UnchainedAccountsServer extends AccountsServer {
     return (loginExpirationInDays || this.DEFAULT_LOGIN_EXPIRATION_DAYS) * 24 * 60 * 60 * 1000;
   }
 
+  // eslint-disable-next-line
   hashLoginToken = (stampedLoginToken) => {
     const hash = crypto.createHash('sha256');
     hash.update(stampedLoginToken);

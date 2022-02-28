@@ -10,8 +10,8 @@ export interface SetupWorkqueueOptions {
 }
 
 export const setupWorkqueue = (
-  { workerId, batchCount, schedule }: SetupWorkqueueOptions = {},
   unchainedAPI: Context,
+  { workerId, batchCount, schedule }: SetupWorkqueueOptions = {},
 ) => {
   const handlers = [
     FailedRescheduler.actions(unchainedAPI),

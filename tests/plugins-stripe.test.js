@@ -182,7 +182,7 @@ if (STRIPE_SECRET) {
           user: { _id: 'user' },
         });
 
-        const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
+        const { data, error } =
           await graphqlFetch({
             query: /* GraphQL */ `
               mutation addAndCheckout(
@@ -216,6 +216,10 @@ if (STRIPE_SECRET) {
               },
             },
           });
+
+        console.log(data, error)
+        const { addCartProduct, updateCart, checkoutCart } = data;
+
         expect(addCartProduct).toMatchObject(expect.anything());
         expect(updateCart).toMatchObject({
           status: 'OPEN',

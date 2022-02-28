@@ -48,7 +48,7 @@ export const GridFSAdapter: IFileAdapter = {
 
   ...FileAdapter,
 
-  async createSignedURL(directoryName = '', fileName) {
+  async createSignedURL(directoryName, fileName) {
     const expiryDate = getExpiryDate();
     const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
     const signature = sign(directoryName, _id, expiryDate.getTime());

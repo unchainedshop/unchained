@@ -156,7 +156,7 @@ export type FiltersModule = {
     // Mutations
     updateTexts: (
       query: { filterId: string; filterOptionValue?: string },
-      texts: Array<{ locale: string; title?: string; subtitle?: string }>,
+      texts: Array<FilterText>,
       userId?: string,
     ) => Promise<Array<FilterText>>;
 

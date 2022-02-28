@@ -300,7 +300,12 @@ const Bity: IPaymentAdapter = {
           calculation: order.calculation,
           currency: order.currency,
         });
-        const totalAmount = Math.round(pricing?.total({ useNetPrice: false }).amount / 10 || 0) * 10;
+
+        if (!pricing) {
+          throw new Error('Price calculation of order invalid');
+        }
+
+        const totalAmount = Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) * 10;
 
         const payload = await estimateBityOrder(
           {
@@ -336,9 +341,14 @@ const Bity: IPaymentAdapter = {
           calculation: order.calculation,
           currency: order.currency,
         });
+
+        if (!pricing) {
+          throw new Error('Price calculation of order invalid');
+        }
+
         const totalAmount =
           Math.round(
-            pricing?.total({
+            pricing.total({
               useNetPrice: false,
             }).amount / 10 || 0,
           ) * 10;

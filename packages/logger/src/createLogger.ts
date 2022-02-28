@@ -11,10 +11,7 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
   if (!debugString) return false;
   const loggingMatched = debugString.split(',').reduce((accumulator: any, name: string) => {
     if (accumulator === false) return accumulator;
-    const nameRegex = name
-      .replace(new RegExp('-', 'i'), '\\-?')
-      .replace(new RegExp(':*', 'i'), '\\:?*')
-      .replace(/\*/i, '.*');
+    const nameRegex = name.replace(/-/i, '\\-?').replace(/:\*/i, '\\:?*').replace(/\*/i, '.*');
     const regExp = new RegExp(`^${nameRegex}$`, 'm');
     if (regExp.test(moduleName)) {
       if (name.slice(0, 1) === '-') {

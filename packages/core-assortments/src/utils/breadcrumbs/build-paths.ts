@@ -1,5 +1,5 @@
 const walkAssortmentLinks = (resolveAssortmentLink) => async (rootAssortmentId) => {
-  const walk = async (assortmentId, initialPaths = [], childAssortmentId) => {
+  const walk = async (assortmentId, initialPaths: string[], childAssortmentId?: string) => {
     const assortmentLink = await resolveAssortmentLink(assortmentId, childAssortmentId);
     if (!assortmentLink) return initialPaths;
 
