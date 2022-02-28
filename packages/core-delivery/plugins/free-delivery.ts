@@ -1,9 +1,5 @@
 import { DeliveryPricingAdapter, DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
-import {
-  DeliveryPricingAdapterContext,
-  IDeliveryPricingAdapter,
-} from '@unchainedshop/types/delivery.pricing';
-import moment from 'moment';
+import { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing';
 
 export const DeliveryFreePrice: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,
@@ -18,7 +14,6 @@ export const DeliveryFreePrice: IDeliveryPricingAdapter = {
   },
 
   actions: (params) => {
-
     const pricingAdapter = DeliveryPricingAdapter.actions(params);
     return {
       ...pricingAdapter,

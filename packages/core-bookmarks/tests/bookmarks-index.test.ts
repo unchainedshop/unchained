@@ -1,13 +1,12 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
 import { configureBookmarksModule } from 'meteor/unchained:core-bookmarks';
-import { Mongo } from 'meteor/mongo';
 
 describe('Test exports', () => {
   let module;
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     module = await configureBookmarksModule({ db });
   });
 

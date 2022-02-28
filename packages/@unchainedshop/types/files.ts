@@ -11,7 +11,7 @@ import {
 export type File = {
   _id?: _ID;
   expires?: Date;
-  externalId: string;
+  path: string;
   meta?: Record<string, unknown>;
   name: string;
   size?: number;
@@ -19,15 +19,19 @@ export type File = {
   url?: string;
 } & TimestampFields;
 
+export type SignedFileUpload = File & {
+  putURL: string;
+};
+
 /*
  * Module
  */
 
-type UploadFileCallback = (file: File) => Promise<void>;
+type UploadFileCallback = (file: File, context: Context) => Promise<void>;
 
 export type FilesModule = ModuleMutations<File> & {
   // Query
-  findFile: (params: { fileId?: string; externalId?: string }, options?: FindOptions) => Promise<File>;
+  findFile: (params: { fileId?: string }, options?: FindOptions) => Promise<File>;
 
   findFilesByMetaData: (
     params: {
@@ -36,35 +40,9 @@ export type FilesModule = ModuleMutations<File> & {
     options?: FindOptions,
   ) => Promise<Array<File>>;
 
-  // Plugin
-  createSignedURL: (
-    data: {
-      directoryName: string;
-      fileName: string;
-      meta: any;
-    },
-    userId: string,
-    uploadFileCallback: UploadFileCallback,
-  ) => Promise<{
-    _id: _ID;
-    expires?: Date;
-    externalId: string;
-    putURL: string;
-  } | null>;
-  removeFiles: (params: {
-    externalFileIds?: string | Array<string>;
-    excludedFileIds?: Array<_ID>;
-  }) => Promise<number>;
-  uploadFileFromStream: (
-    params: { directoryName: string; rawFile: any; meta: any },
-    userId: string,
-  ) => Promise<File | null>;
-  uploadFileFromURL: (
-    directoryName: string,
-    file: { fileLink: string; fileName: string },
-    meta?: any,
-    userId?: string,
-  ) => Promise<File | null>;
+  findFiles: (selector: any) => Promise<Array<File>>;
+
+  deleteMany: (fileIds: Array<_ID>, userId: string) => Promise<void>;
 };
 
 /*
@@ -76,8 +54,34 @@ export type LinkFileService = (
   context: Context,
 ) => Promise<File>;
 
+export type CreateSignedURLService = (
+  params: { directoryName: string; fileName: string; meta?: any; userId?: string },
+  context: Context,
+) => Promise<SignedFileUpload>;
+
+export type UploadFileFromStreamService = (
+  params: { directoryName: string; rawFile: any; meta?: any; userId?: string },
+  context: Context,
+) => Promise<File>;
+
+export type RemoveFilesService = (params: { fileIds: Array<_ID> }, context: Context) => Promise<number>;
+
+export type UploadFileFromURLService = (
+  params: {
+    directoryName: string;
+    fileInput: { fileLink: string; fileName: string };
+    meta?: any;
+    userId?: string;
+  },
+  context: Context,
+) => Promise<File>;
+
 export interface FileServices {
   linkFile: LinkFileService;
+  uploadFileFromStream: UploadFileFromStreamService;
+  uploadFileFromURL: UploadFileFromURLService;
+  createSignedURL: CreateSignedURLService;
+  removeFiles: RemoveFilesService;
 }
 
 /*
@@ -85,6 +89,7 @@ export interface FileServices {
  */
 
 export interface UploadFileData {
+  _id?: _ID;
   directoryName: string;
   expiryDate: Date;
   fileName: string;
@@ -96,13 +101,21 @@ export interface UploadFileData {
 }
 
 export interface IFileAdapter extends IBaseAdapter {
-  composeFileName: (file: File) => string;
-  createSignedURL: (data: { directoryName: string; fileName: string }) => Promise<UploadFileData | null>;
-  removeFiles: (composedFileIds: Array<string>) => Promise<void>;
-  uploadFileFromStream: (directoryName: string, rawFile: any) => Promise<UploadFileData | null>;
+  createSignedURL: (
+    directoryName: string,
+    fileName: string,
+    unchainedContext: Context,
+  ) => Promise<UploadFileData | null>;
+  removeFiles: (files: Array<File>, unchainedContext: Context) => Promise<void>;
+  uploadFileFromStream: (
+    directoryName: string,
+    rawFile: any,
+    unchainedContext: Context,
+  ) => Promise<UploadFileData | null>;
   uploadFileFromURL: (
     directoryName: string,
-    file: { fileLink: string; fileName: string },
+    fileInput: { fileLink: string; fileName: string },
+    unchainedContext: Context,
   ) => Promise<UploadFileData | null>;
 }
 

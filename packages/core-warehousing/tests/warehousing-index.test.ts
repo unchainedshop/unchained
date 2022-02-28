@@ -9,11 +9,11 @@ describe('Test exports', () => {
   let db: Db;
 
   before(async () => {
-    db = initDb();
+    db = await initDb();
     module = await configureWarehousingModule({ db });
     assert.ok(module);
   });
-  
+
 
   it('Check queries', async () => {
     assert.isFunction(await module.providerExists);

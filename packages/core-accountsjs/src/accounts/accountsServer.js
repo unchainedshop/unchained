@@ -2,7 +2,6 @@ import { AccountsServer, ServerHooks } from '@accounts/server';
 import crypto from 'crypto';
 import { accountsPassword } from './accountsPassword';
 import { accountsServerOptions } from './accountsServerOptions';
-import { dbManager } from './dbManager';
 import { randomValueHex } from './utils/helpers';
 
 export class UnchainedAccountsServer extends AccountsServer {
@@ -111,15 +110,9 @@ export class UnchainedAccountsServer extends AccountsServer {
 let accountsServer = null;
 
 export const configureAccountServer = (requestContext) => {
-  accountsServer = new UnchainedAccountsServer(
-    {
-      db: dbManager,
-      ...accountsServerOptions(requestContext),
-    },
-    {
-      password: accountsPassword,
-    },
-  );
+  accountsServer = new UnchainedAccountsServer(accountsServerOptions(requestContext), {
+    password: accountsPassword,
+  });
 
   return accountsServer;
 };

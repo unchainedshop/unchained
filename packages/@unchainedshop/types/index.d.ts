@@ -246,7 +246,7 @@ declare module 'meteor/unchained:events' {
   const subscribe: EventDirector['subscribe'];
 }
 
-declare module 'meteor/unchained:core-file-upload' {
+declare module 'meteor/unchained:file-upload' {
   const FileAdapter: Omit<IFileAdapter, 'key' | 'lable' | 'version'>;
   const FileDirector: IFileDirector;
 }
@@ -481,5 +481,5 @@ declare module 'meteor/unchained:api' {
 }
 
 declare module 'meteor/unchained:mongodb' {
-  function initDb(): Db;
+  function initDb(): Promise<Db>;
 }

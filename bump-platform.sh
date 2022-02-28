@@ -15,7 +15,7 @@ cd ../core-countries && meteor publish &&
 cd ../core-currencies && meteor publish &&
 cd ../core-delivery && meteor publish &&
 cd ../core-enrollments && meteor publish &&
-cd ../core-file-upload && meteor publish &&
+cd ../file-upload && meteor publish &&
 cd ../core-files-next && meteor publish &&
 cd ../core-filters && meteor publish &&
 cd ../core-languages && meteor publish &&

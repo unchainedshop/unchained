@@ -12,6 +12,7 @@ import {
   generateDbMutations,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
+import { FileDirector } from 'meteor/unchained:file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
 import { AssortmentMediasSchema } from '../db/AssortmentMediasSchema';
 
@@ -21,6 +22,16 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_REORDER_MEDIA',
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
+
+FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules, userId }) => {
+  await modules.assortments.media.create(
+    {
+      assortmentId: file.meta.assortmentId,
+      mediaId: file._id,
+    },
+    file.updatedBy || file.createdBy || userId,
+  );
+});
 
 export const configureAssortmentMediaModule = async ({
   db,
@@ -156,7 +167,18 @@ export const configureAssortmentMediaModule = async ({
         selector._id = { $nin: excludedAssortmentMediaIds };
       }
 
+      const ids = await AssortmentMedias.find(selector, { projection: { _id: true } })
+        .map((m) => m._id)
+        .toArray();
+
       const deletedResult = await AssortmentMedias.deleteMany(selector);
+
+      ids.forEach((assortmentMediaId) => {
+        emit('ASSORTMENT_REMOVE_MEDIA', {
+          assortmentMediaId,
+        });
+      });
+
       return deletedResult.deletedCount;
     },
 

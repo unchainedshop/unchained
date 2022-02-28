@@ -203,7 +203,7 @@ describe("Plugins: Cryptopay Payments", () => {
   describe("Payments Webhook (Cryptopay)", () => {
     // Setup addresses for tests
     beforeEach(async () => {
-      await db.collection("order_payments").update(
+      await db.collection("order_payments").updateOne(
         { _id: 'cryptopay-payment' },
         {
           $set: {
@@ -214,7 +214,7 @@ describe("Plugins: Cryptopay Payments", () => {
           }
         }
       );
-      await db.collection("order_payments").update(
+      await db.collection("order_payments").updateOne(
         { _id: 'cryptopay-payment2' },
         {
           $set: {

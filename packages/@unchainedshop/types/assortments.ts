@@ -1,4 +1,3 @@
-import { QuerySelector } from 'mongodb';
 import { AssortmentMediaModule } from './assortments.media';
 import { Filter, FindOptions, Query, TimestampFields, _ID } from './common';
 

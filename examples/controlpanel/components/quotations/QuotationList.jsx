@@ -59,11 +59,7 @@ const QuotationList = ({ loading, updateHasMore, ...rest }) => (
             </Link>
           )}
         </Table.Cell>
-        <Table.Cell>
-          {quotation.expires
-            ? format(new Date(quotation.expires), 'Ppp')
-            : 'n/a'}
-        </Table.Cell>
+        <Table.Cell>{quotation.expires ? format(new Date(quotation.expires), 'Ppp') : 'n/a'}</Table.Cell>
         <Table.Cell>{quotation.status}</Table.Cell>
       </Table.Row>
     )}
@@ -106,5 +102,5 @@ export default compose(
         }
       }
     `,
-  })
+  }),
 )(QuotationList);

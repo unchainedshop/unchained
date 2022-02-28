@@ -108,7 +108,7 @@ export type UsersModule = {
  */
 
 export type UpdateUserAvatarAfterUploadService = (
-  params: { file: File; userId: string },
+  params: { file: File },
   context: Context,
 ) => Promise<void>;
 

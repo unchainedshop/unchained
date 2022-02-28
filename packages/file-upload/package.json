@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/core-file-upload",
+  "name": "@unchainedshop/file-upload",
   "version": "1.0.3",
   "main": "lib/file-upload-index.js",
   "types": "lib/file-upload-index.d.ts",

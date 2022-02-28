@@ -6,7 +6,7 @@ import { emit, registerEvents, getEmitHistoryAdapter } from 'meteor/unchained:ev
 describe('Test exports', () => {
   let module;
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     module = await configureEventsModule({ db });
 
     registerEvents(['TEST EVENT']);

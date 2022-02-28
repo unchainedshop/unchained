@@ -3,21 +3,23 @@ import { AssortmentMediaText } from '@unchainedshop/types/assortments.media';
 import { File } from '@unchainedshop/types/files';
 
 const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Context) => {
-  const { modules, userId } = unchainedAPI;
-  const { _id, fileName, url, ...assetData } = asset;
+  const { modules, services, userId } = unchainedAPI;
+  const { _id, fileName, url, meta, ...assetData } = asset;
   const fileId = _id;
   try {
     if (_id && (await modules.files.findFile({ fileId }))) throw new Error('Media already exists');
 
-    const assetObject = await modules.files.uploadFileFromURL(
-      'assortment-media',
+    const assetObject = await services.files.uploadFileFromURL(
       {
-        fileLink: url,
-        fileName,
+        directoryName: 'assortment-media',
+        fileInput: {
+          fileLink: url,
+          fileName,
+        },
+        meta: { ...meta, fileId },
+        userId,
       },
-      {
-        fileId,
-      },
+      unchainedAPI,
     );
 
     if (!assetObject) throw new Error('Media not created');
@@ -42,7 +44,10 @@ export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) 
   const { modules, userId } = unchainedAPI;
   const mediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
-      const file = await upsertAsset(asset, unchainedAPI);
+      const file = await upsertAsset(
+        { meta: { ...(asset.meta || {}), assortmentId }, ...asset },
+        unchainedAPI,
+      );
       if (!file) throw new Error(`Unable to create binary ${asset._id}`);
 
       const mediaObject = await upsertMediaObject(

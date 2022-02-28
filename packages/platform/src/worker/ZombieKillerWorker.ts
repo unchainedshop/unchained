@@ -25,8 +25,8 @@ const ZombieKillerWorker: IWorkerAdapter<
   version: '1.0',
   type: 'ZOMBIE_KILLER',
 
-  doWork: async (_, requestContext) => {
-    const { modules } = requestContext;
+  doWork: async (_, unchainedAPI) => {
+    const { modules, services } = unchainedAPI;
 
     try {
       const error = false;
@@ -43,24 +43,46 @@ const ZombieKillerWorker: IWorkerAdapter<
         excludedAssortmentIds: assortments.map(mapId),
       });
 
-      // Remove unreferenced product files
-      const productMediaFiles = await modules.products.media.findProductMedias({}, findFileId);
-      const deletedProductFileCount = await modules.files.removeFiles({
-        excludedFileIds: productMediaFiles.map((m) => m.mediaId),
+      // Remove unreferenced files
+      const fileIdsToRemove = [];
+      const productMedia = await modules.products.media.findProductMedias({}, findFileId);
+      const assortmentMedia = await modules.assortments.media.findAssortmentMedias({}, findFileId);
+
+      const filesWithProductId = await modules.files.findFilesByMetaData({
+        meta: {
+          productId: { $exists: true },
+        },
+      });
+      const filesWithAssortmentId = await modules.files.findFilesByMetaData({
+        meta: {
+          assortmentId: { $exists: true },
+        },
       });
 
-      // Remove unreferended assortment files
-      const assortmentMediaFiles = await modules.assortments.media.findAssortmentMedias({}, findFileId);
-      const deletedAssortmentFileCount = await modules.files.removeFiles({
-        excludedFileIds: assortmentMediaFiles.map((m) => m.mediaId),
-      });
+      filesWithProductId
+        .concat(filesWithAssortmentId)
+        .filter((file) => {
+          const fileInProductMedia = productMedia.some((media) => media.mediaId === file._id);
+          const fileInAssortmentMedia = assortmentMedia.some((media) => media.mediaId === file._id);
+          return !fileInProductMedia && !fileInAssortmentMedia;
+        })
+        .forEach((m) => fileIdsToRemove.push(m._id));
+
+      const deletedFilesCount =
+        fileIdsToRemove.length > 0
+          ? await services.files.removeFiles(
+              {
+                fileIds: fileIdsToRemove,
+              },
+              unchainedAPI,
+            )
+          : 0;
 
       // Return delete count
       const result = {
         deletedProductMediaCount,
         deletedAssortmentMediaCount,
-        deletedProductFileCount,
-        deletedAssortmentFileCount,
+        deletedFilesCount,
       };
 
       if (error) {

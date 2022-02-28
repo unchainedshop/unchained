@@ -1,6 +1,6 @@
 import { Context } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
-import { Collection, FindOptions, Query, TimestampFields, Update, _ID } from './common';
+import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { DeliveryProvider, DeliveryProviderType } from './delivery';

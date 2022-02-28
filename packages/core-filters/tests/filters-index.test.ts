@@ -24,7 +24,7 @@ describe('Test exports', () => {
   let filterId: string;
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     context.modules.filters = await configureFiltersModule({ db }).catch(
       (error) => {
         console.error(error);

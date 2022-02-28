@@ -1,5 +1,5 @@
-import { File, IFileAdapter } from '@unchainedshop/types/files';
-import { FileAdapter, FileDirector } from 'meteor/unchained:core-file-upload';
+import { IFileAdapter } from '@unchainedshop/types/files';
+import { FileAdapter, FileDirector } from 'meteor/unchained:file-upload';
 import crypto from 'crypto';
 import https from 'https';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -10,6 +10,10 @@ import { URL } from 'url';
 
 const { MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_ENDPOINT, MINIO_BUCKET_NAME, NODE_ENV } = process.env;
 const PUT_URL_EXPIRY = 24 * 60 * 60;
+
+const hash = (fileName: string) => {
+  return crypto.createHash('sha256').update(fileName).digest('hex');
+};
 
 const connectToMinio = () => {
   if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT) {
@@ -76,17 +80,6 @@ const downloadFromUrlToBuffer = async (fileUrl: string) => {
   });
 };
 
-const generateRandomFileName = (fileName: string) => {
-  const random = crypto.randomBytes(16);
-  const hash = crypto.createHash('sha256').update([fileName, random].join('')).digest('hex');
-  const extension = fileName.substr(fileName.lastIndexOf('.'));
-  const hashedName = hash + extension;
-  return {
-    hash,
-    hashedName,
-  };
-};
-
 const getObjectStats = async (fileName: string) => {
   if (!client) throw new Error('Minio not connected, check env variables');
 
@@ -110,96 +103,95 @@ export const MinioAdapter: IFileAdapter = {
 
   ...FileAdapter,
 
-  // Returns the file name with extension from its ID and url bucket name is included in the ID on insert operation
-  composeFileName: (file: File) => {
-    return decodeURIComponent(file.externalId).concat(
-      file.url ? file.url.substr(file.url.lastIndexOf('.')) : '',
-    );
-  },
-
-  createSignedURL: async ({ directoryName = '', fileName }) => {
+  async createSignedURL(directoryName = '', fileName) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
-    const { hash, hashedName } = generateRandomFileName(fileName);
+    const expiryDate = getExpiryDate();
+    const [, ...ext] = fileName.split('.');
+    const _id = `${hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`)}.${ext.join('.')}`;
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
-      `${directoryName}/${hashedName}`,
+      `${directoryName}/${_id}`,
       PUT_URL_EXPIRY,
     );
 
     return {
+      _id,
       directoryName,
-      expiryDate: getExpiryDate(),
+      expiryDate,
       fileName,
-      hash,
-      hashedName,
       type: getMimeType(fileName),
-      url,
+      putURL: url,
+      url: generateMinioUrl(directoryName, _id),
     };
   },
 
-  async removeFiles(composedFileIds) {
+  async removeFiles(files) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
-    await client.removeObjects(MINIO_BUCKET_NAME, composedFileIds);
+    const fileIds = files.map(({ path, _id }) => {
+      return `${path}/${_id}`;
+    });
+
+    await client.removeObjects(MINIO_BUCKET_NAME, fileIds);
   },
 
   async uploadFileFromStream(directoryName: string, rawFile: any) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     let stream;
-    let fname;
+    let fileName;
     if (rawFile instanceof Promise) {
-      const { filename, createReadStream } = await rawFile;
-      fname = filename;
+      const { filename: fname, createReadStream } = await rawFile;
+      fileName = fname;
       stream = createReadStream();
     } else {
-      fname = rawFile.filename;
+      fileName = rawFile.filename;
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
     }
 
-    const { hash, hashedName } = generateRandomFileName(fname);
+    const expiryDate = getExpiryDate();
+    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
 
-    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${hashedName}`, stream);
+    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream);
 
-    const { size } = await getObjectStats(`${directoryName}/${hashedName}`);
-    const type = getMimeType(fname);
+    const { size } = await getObjectStats(`${directoryName}/${_id}`);
+    const type = getMimeType(fileName);
 
     return {
+      _id,
       directoryName,
-      expiryDate: getExpiryDate(),
-      fileName: fname,
-      hash,
-      hashedName,
+      expiryDate,
+      fileName,
       size,
       type,
-      url: generateMinioUrl(directoryName, hashedName),
+      url: generateMinioUrl(directoryName, _id),
     };
   },
 
-  async uploadFileFromURL(directoryName, { fileLink, fileName }) {
+  async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname }: any) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const { href } = new URL(fileLink);
-    const filename = fileName || href.split('/').pop();
-    const { hash, hashedName } = generateRandomFileName(filename);
+    const fileName = fname || href.split('/').pop();
+    const expiryDate = getExpiryDate();
+    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
 
     const buff = await downloadFromUrlToBuffer(fileLink);
     const stream = bufferToStream(buff);
-    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${hashedName}`, stream);
-    const { size } = await getObjectStats(`${directoryName}/${hashedName}`);
-    const type = getMimeType(filename);
+    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream);
+    const { size } = await getObjectStats(`${directoryName}/${_id}`);
+    const type = getMimeType(fileName);
 
     return {
+      _id,
       directoryName,
-      expiryDate: getExpiryDate(),
-      fileName: filename,
-      hash,
-      hashedName,
+      expiryDate,
+      fileName,
       size,
       type,
-      url: generateMinioUrl(directoryName, hashedName),
+      url: generateMinioUrl(directoryName, _id),
     };
   },
 };

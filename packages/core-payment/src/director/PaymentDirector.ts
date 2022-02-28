@@ -65,6 +65,14 @@ export const PaymentDirector: IPaymentDirector = {
         const validated = await adapter.validate(paymentContext.token);
         return !!validated;
       },
+
+      cancel: async () => {
+        return adapter.cancel(paymentContext.transactionContext);
+      },
+
+      confirm: async () => {
+        return adapter.confirm(paymentContext.transactionContext);
+      },
     };
   },
 };

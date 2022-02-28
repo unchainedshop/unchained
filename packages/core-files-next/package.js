@@ -19,7 +19,7 @@ Package.onUse((api) => {
 
   api.use('unchained:logger@1.0.0-beta16');
   api.use('unchained:events@1.0.0-beta16');
-  api.use('unchained:core-file-upload@1.0.0-beta16');
+  api.use('unchained:file-upload@1.0.0-beta16');
 
   api.mainModule('src/files-next-index.ts', 'server');
 });

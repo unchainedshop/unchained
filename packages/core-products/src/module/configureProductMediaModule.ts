@@ -8,6 +8,7 @@ import {
   generateDbMutations,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
+import { FileDirector } from 'meteor/unchained:file-upload';
 import { ProductMediaCollection } from '../db/ProductMediaCollection';
 import { ProductMediaSchema } from '../db/ProductMediaSchema';
 
@@ -17,6 +18,16 @@ const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_REORDER_MEDIA',
   'PRODUCT_UPDATE_MEDIA_TEXT',
 ];
+
+FileDirector.registerFileUploadCallback('product-media', async (file, { modules, userId }) => {
+  await modules.products.media.create(
+    {
+      productId: file.meta.productId,
+      mediaId: file._id,
+    },
+    userId || file.updatedBy || file.createdBy,
+  );
+});
 
 export const configureProductMediaModule = async ({
   db,
@@ -147,7 +158,18 @@ export const configureProductMediaModule = async ({
         selector._id = { $nin: excludedProductMediaIds };
       }
 
+      const ids = await ProductMedias.find(selector, { projection: { _id: true } })
+        .map((m) => m._id)
+        .toArray();
+
       const deletedResult = await ProductMedias.deleteMany(selector);
+
+      ids.forEach((assortmentMediaId) => {
+        emit('PRODUCT_REMOVE_MEDIA', {
+          assortmentMediaId,
+        });
+      });
+
       return deletedResult.deletedCount;
     },
 

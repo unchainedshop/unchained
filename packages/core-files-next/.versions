@@ -46,7 +46,7 @@ routepolicy@1.1.1
 socket-stream-client@0.4.0
 tracker@1.2.0
 typescript@4.4.1
-unchained:core-file-upload@1.0.0-beta16
+unchained:file-upload@1.0.0-beta16
 unchained:core-files-next@1.0.0-beta16
 unchained:events@1.0.0-beta16
 unchained:logger@1.0.0-beta16

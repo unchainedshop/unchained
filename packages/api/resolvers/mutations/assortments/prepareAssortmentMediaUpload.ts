@@ -4,26 +4,19 @@ import { log } from 'meteor/unchained:logger';
 export default async function prepareAssortmentMediaUpload(
   root: Root,
   { mediaName, assortmentId }: { mediaName: string; assortmentId: string },
-  { modules, userId }: Context,
+  context: Context,
 ) {
+  const { services, userId } = context;
   log('mutation prepareAssortmentMediaUpload', { mediaName, userId });
 
-  const preparedFile = await modules.files.createSignedURL(
+  const preparedFile = await services.files.createSignedURL(
     {
       directoryName: 'assortment-media',
       fileName: mediaName,
       meta: { assortmentId },
+      userId,
     },
-    userId,
-    async (file) => {
-      await modules.assortments.media.create(
-        {
-          assortmentId,
-          mediaId: file._id,
-        },
-        userId,
-      );
-    },
+    context,
   );
 
   return preparedFile;

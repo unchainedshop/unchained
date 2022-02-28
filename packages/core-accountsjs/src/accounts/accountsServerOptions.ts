@@ -2,6 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { User } from '@unchainedshop/types/user';
 
 export const accountsServerOptions = (requestContext: Context) => ({
+  db: requestContext.modules.accounts.dbManager,
   useInternalUserObjectSanitizer: false,
   siteUrl: process.env.ROOT_URL,
   prepareMail: (to: string, token: string, user: User & { id: string }, pathFragment: string) => {

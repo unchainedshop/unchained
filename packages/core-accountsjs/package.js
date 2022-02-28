@@ -19,7 +19,6 @@ Package.onUse((api) => {
 
   api.use('ecmascript');
   api.use('typescript');
-  api.use('mongo');
 
   api.use('unchained:core-worker@1.0.0-beta16');
 

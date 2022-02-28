@@ -4,14 +4,13 @@ import {
   configureFilesModule,
   fileServices,
 } from 'meteor/unchained:core-files-next';
-import { Mongo } from 'meteor/mongo';
 import { FilesModule } from '@unchainedshop/types/files';
 
 describe('Test exports', () => {
   let module: FilesModule;
 
   before(async () => {
-    const db = initDb();
+    const db = await initDb();
     module = await configureFilesModule({ db });
   });
 

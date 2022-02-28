@@ -4,7 +4,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   uploadFormData,
-  uploadToMinio,
+  putFile,
 } from "./helpers";
 import { ADMIN_TOKEN, USER_TOKEN } from "./seeds/users";
 import { PngAssortmentMedia, SimpleAssortment } from "./seeds/assortments";
@@ -205,7 +205,7 @@ describe("AssortmentMedia", () => {
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
     }, 20000);
 
-    it("upload to minio successfully", async () => {
+    it.only("upload file via PUT successfully", async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
@@ -230,11 +230,11 @@ describe("AssortmentMedia", () => {
         },
       });
 
-      await uploadToMinio(
+      await putFile(
         assortmentMediaFile2,
         prepareAssortmentMediaUpload.putURL
       );
-
+      
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
     }, 20000);
 
@@ -263,7 +263,7 @@ describe("AssortmentMedia", () => {
         },
       });
 
-      await uploadToMinio(
+      await putFile(
         assortmentMediaFile3,
         prepareAssortmentMediaUpload.putURL
       );

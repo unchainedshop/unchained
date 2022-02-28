@@ -199,15 +199,17 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_INIT_PATH, async (req, res) => {
       res.writeHead(302, {
         Location: uri,
       });
-      return res.end();
+      res.end();
+      return;
     } catch (e) {
       paymentLogger.warn(`Bity Webhook: Failed with ${e.message}`);
       res.writeHead(503);
-      return res.end(JSON.stringify(e));
+      res.end(JSON.stringify(e));
+      return;
     }
   }
   res.writeHead(404);
-  return res.end();
+  res.end();
 });
 
 useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res, next) => {
@@ -223,15 +225,17 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res) => {
       const user = await bityAuthClient.code.getToken(req.originalUrl);
       await upsertBityCredentials(user, resolvedContext);
       res.writeHead(200);
-      return res.end('Bity Credentials Setup Complete');
+      res.end('Bity Credentials Setup Complete');
+      return;
     } catch (e) {
       paymentLogger.warn(`Bity Webhook: Failed with ${e.message}`);
       res.writeHead(503);
-      return res.end(JSON.stringify(e));
+      res.end(JSON.stringify(e));
+      return;
     }
   }
   res.writeHead(404);
-  return res.end();
+  res.end();
 });
 
 let bityAuthClient;
