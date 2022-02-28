@@ -9,7 +9,6 @@ export default async function updateAssortmentMediaTexts(
   { modules, userId }: Context,
 ) {
   log(`mutation updateAssortmentMediaTexts ${assortmentMediaId}`, {
-    modules,
     userId,
   });
 

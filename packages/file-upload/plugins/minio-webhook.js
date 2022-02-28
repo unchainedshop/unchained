@@ -40,7 +40,6 @@ useMiddlewareWithCurrentContext('/minio/', async (req, res) => {
     log(e.message, { level: LogLevel.Error });
     res.writeHead(503);
     res.end(JSON.stringify(e));
-    return;
   }
 });
 

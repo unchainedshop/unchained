@@ -68,7 +68,7 @@ const ProductSwissTax: IProductPricingAdapter = {
   label: 'Apply Swiss Tax on Product',
   orderIndex: 20,
 
-  isActivatedFor: ({ country, order, modules }) => {
+  isActivatedFor: () => {
     return true;
   },
 

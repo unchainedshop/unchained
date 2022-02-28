@@ -3,17 +3,17 @@ export default async (readStream, writeStream) => {
     try {
       readStream
         .on('error', (e) => {
-          reject(e)
+          reject(e);
         })
         .pipe(writeStream)
         .on('error', (e) => {
-          reject(e)
+          reject(e);
         })
         .on('finish', async (file) => {
-          resolve(file)
+          resolve(file);
         });
     } catch (e) {
       reject(e);
     }
   });
-}
+};

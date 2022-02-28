@@ -517,9 +517,9 @@ describe('Bulk Importer', () => {
 
       const productLinkHasBeenReplaced = await intervalUntilTimeout(
         async () => {
-          const productLinksCount = await AssortmentProducts.find({
+          const productLinksCount = await AssortmentProducts.countDocuments({
             assortmentId: 'Assortment A',
-          }).count();
+          });
           return productLinksCount === 1;
         },
         3000,

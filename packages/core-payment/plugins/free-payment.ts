@@ -1,9 +1,5 @@
-import moment from 'moment';
 import { PaymentPricingAdapter, PaymentPricingDirector } from 'meteor/unchained:core-payment';
-import {
-  PaymentPricingAdapterContext,
-  IPaymentPricingAdapter,
-} from '@unchainedshop/types/payments.pricing';
+import { IPaymentPricingAdapter } from '@unchainedshop/types/payments.pricing';
 
 export const PaymentFreePrice: IPaymentPricingAdapter = {
   ...PaymentPricingAdapter,

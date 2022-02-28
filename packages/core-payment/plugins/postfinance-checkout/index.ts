@@ -1,10 +1,8 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import {
-  PaymentAdapter,
-  PaymentDirector,
-  PaymentError,
-  paymentLogger,
-} from 'meteor/unchained:core-payment';
+import { PaymentAdapter, PaymentDirector, PaymentError } from 'meteor/unchained:core-payment';
+import { OrderStatus } from '@unchainedshop/types/orders';
+import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
+import { TransactionCompletionBehavior } from 'postfinancecheckout/src/models/TransactionCompletionBehavior';
 import { PostFinanceCheckout } from 'postfinancecheckout';
 import {
   confirmDeferredTransaction,
@@ -19,9 +17,6 @@ import {
 import { markOrderAsPaid } from './utils';
 import './middleware';
 import { CompletionModes, IntegrationModes, SignResponse } from './types';
-import { OrderStatus } from '@unchainedshop/types/orders';
-import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
-import { TransactionCompletionBehavior } from 'postfinancecheckout/src/models/TransactionCompletionBehavior';
 
 const {
   PFCHECKOUT_SPACE_ID,

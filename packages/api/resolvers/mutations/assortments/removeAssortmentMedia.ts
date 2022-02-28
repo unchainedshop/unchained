@@ -8,7 +8,6 @@ export default async function removeAssortmentMedia(
   { modules, userId }: Context,
 ) {
   log(`mutation removeAssortmentMedia ${assortmentMediaId}`, {
-    modules,
     userId,
   });
 

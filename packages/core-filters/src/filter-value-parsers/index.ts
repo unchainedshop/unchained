@@ -9,6 +9,6 @@ export default (type) => {
     case FilterType.RANGE:
       return createRangeFilterParser;
     default:
-      return (values, allKeys) => values;
+      return (values /* , allKeys */) => values;
   }
 };

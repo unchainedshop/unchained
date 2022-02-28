@@ -205,7 +205,7 @@ describe("AssortmentMedia", () => {
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
     }, 20000);
 
-    it("upload to minio successfully", async () => {
+    it.only("upload file via PUT successfully", async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
@@ -234,7 +234,7 @@ describe("AssortmentMedia", () => {
         assortmentMediaFile2,
         prepareAssortmentMediaUpload.putURL
       );
-
+      
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
     }, 20000);
 

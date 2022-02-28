@@ -129,9 +129,6 @@ export const putFile = async (file, url) => {
   const response = await fetch(url, {
     method: 'PUT',
     body: file,
-    headers: {
-      'Content-Length': file.bytesRead,
-    },
   });
   if (response.ok) {
     return Promise.resolve({});

@@ -210,7 +210,6 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_INIT_PATH, async (req, res) => {
   }
   res.writeHead(404);
   res.end();
-  return;
 });
 
 useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res, next) => {

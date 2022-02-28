@@ -226,7 +226,6 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
   }
   res.writeHead(404);
   res.end();
-  return;
 });
 
 const AppleIAP: IPaymentAdapter = {

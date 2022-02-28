@@ -2,11 +2,7 @@ import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
 
-export default async function addAssortmentMedia(
-  root: Root,
-  { media, assortmentId },
-  context: Context,
-) {
+export default async function addAssortmentMedia(root: Root, { media, assortmentId }, context: Context) {
   const { modules, services, userId } = context;
   log(`mutation addAssortmentMedia ${assortmentId}`, { userId });
 
@@ -22,7 +18,7 @@ export default async function addAssortmentMedia(
       meta: { authorId: userId },
       userId,
     },
-    context
+    context,
   );
 
   const assortmentMedia = await modules.assortments.media.create(

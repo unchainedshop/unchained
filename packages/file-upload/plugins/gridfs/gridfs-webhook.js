@@ -7,7 +7,7 @@ import promisePipe from './promisePipe';
 const { ROOT_URL } = process.env;
 
 /*
-curl -X PUT -T /Users/pozylon/Downloads/grafik.png http://localhost:4010/gridfs/upload/user-avatars/1bfade8a16934ba39720c4b931e1462dc0af4f4f0409a0d441d1fff89102f5a1?e=1645732641282&s=9ec4e1a450db3e3d7e833475b2f6882ba7fd4c1265fe3e574bfc609666565458
+curl -vvv -X PUT -T /Users/pozylon/Downloads/grafik.png http://localhost:3000//gridfs/afb3ae348f8b73efbb023b3c8a29d2d12f4949cbe0ffb35ca2cef2136f815fae/assortment-media/test-media?e=1646130576221&s=1384ffb4d33721b60cfaac5ee1ef977fbeff2437f2caa071d1bf9ce86cb84e29
 */
 
 useMiddlewareWithCurrentContext('/gridfs', async (req, res) => {

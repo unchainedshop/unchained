@@ -25,7 +25,7 @@ FileDirector.registerFileUploadCallback('product-media', async (file, { modules,
       productId: file.meta.productId,
       mediaId: file._id,
     },
-    userId,
+    userId || file.updatedBy || file.createdBy,
   );
 });
 

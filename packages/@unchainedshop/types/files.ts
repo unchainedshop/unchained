@@ -19,17 +19,15 @@ export type File = {
   url?: string;
 } & TimestampFields;
 
+export type SignedFileUpload = File & {
+  putURL: string;
+};
+
 /*
  * Module
  */
 
 type UploadFileCallback = (file: File, context: Context) => Promise<void>;
-
-type SignedFileUpload = {
-  _id: _ID;
-  expires?: Date;
-  putURL: string;
-};
 
 export type FilesModule = ModuleMutations<File> & {
   // Query
@@ -59,7 +57,7 @@ export type LinkFileService = (
 export type CreateSignedURLService = (
   params: { directoryName: string; fileName: string; meta?: any; userId?: string },
   context: Context,
-) => Promise<File>;
+) => Promise<SignedFileUpload>;
 
 export type UploadFileFromStreamService = (
   params: { directoryName: string; rawFile: any; meta?: any; userId?: string },

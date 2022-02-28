@@ -409,4 +409,10 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
 
     });
   });
+} else {
+  describe.skip('Plugins: Postfinance Checkout Payments', () => {
+    it('Skipped because secret not set', async () => {
+      console.log('skipped'); // eslint-disable-line
+    });
+  });
 }

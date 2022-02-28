@@ -29,7 +29,7 @@ FileDirector.registerFileUploadCallback('assortment-media', async (file, { modul
       assortmentId: file.meta.assortmentId,
       mediaId: file._id,
     },
-    userId,
+    file.updatedBy || file.createdBy || userId,
   );
 });
 

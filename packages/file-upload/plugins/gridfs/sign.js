@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+
 const { UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET } = process.env;
 
 const sign = (directoryName, hash, expiryTimestamp) => {

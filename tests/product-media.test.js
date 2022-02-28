@@ -147,7 +147,7 @@ describe('ProductsVariation', () => {
       expect(prepareProductMediaUpload.putURL).not.toBe(null);
     }, 10000);
 
-    it('upload to minio successfully', async () => {
+    it('upload file via PUT successfully', async () => {
       const {
         data: { prepareProductMediaUpload },
       } = await graphqlFetch({
