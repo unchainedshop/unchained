@@ -312,18 +312,6 @@ export default [
       """
       Search products
       """
-      search(
-        queryString: String
-        filterQuery: [FilterQueryInput!]
-        assortmentId: ID
-        orderBy: SearchOrderBy
-        includeInactive: Boolean = false
-        ignoreChildAssortments: Boolean = false
-      ): SearchResult! @deprecated(reason: "Please use searchProducts instead")
-
-      """
-      Search products
-      """
       searchProducts(
         queryString: String
         filterQuery: [FilterQueryInput!]

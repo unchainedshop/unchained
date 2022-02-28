@@ -35,13 +35,6 @@ export default [
       assortmentPaths: [AssortmentPath!]!
       children(includeInactive: Boolean = false): [Assortment!]
       childrenCount(includeInactive: Boolean = false): Int!
-      search(
-        queryString: String
-        filterQuery: [FilterQueryInput!]
-        includeInactive: Boolean = false
-        ignoreChildAssortments: Boolean = false
-        orderBy: SearchOrderBy
-      ): SearchResult! @deprecated(reason: "Please use searchProducts instead")
       searchProducts(
         queryString: String
         filterQuery: [FilterQueryInput!]

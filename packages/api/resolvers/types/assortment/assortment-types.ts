@@ -128,10 +128,18 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
-  search: async (obj, query, context) => {
-    return context.modules.filters.search.searchProducts(query, {}, context);
-  },
   searchProducts: async (obj, query, context) => {
-    return context.modules.filters.search.searchProducts(query, {}, context);
+    const productIds = await context.modules.assortments.findProductIds({
+      assortmentId: obj._id,
+      ignoreChildAssortments: query.ignoreChildAssortments,
+    });
+    const filterIds = await context.modules.assortments.filters.findFilterIds({
+      assortmentId: obj._id,
+    });
+    return context.modules.filters.search.searchProducts(
+      { ...query, productIds, filterIds },
+      {},
+      context,
+    );
   },
 };
