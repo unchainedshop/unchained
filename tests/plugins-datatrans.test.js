@@ -7,8 +7,7 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 let db;
 let graphqlFetch;
 
-// TODO: Migrate datatrans plugin
-xdescribe('Plugins: Datatrans Payments', () => {
+describe('Plugins: Datatrans Payments', () => {
   const merchantId = '1100004624';
   const amount = '20000';
   const currency = 'CHF';
@@ -155,7 +154,6 @@ xdescribe('Plugins: Datatrans Payments', () => {
           body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${paymentProviderId}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
         },
       );
-
       expect(result.status).toBe(200);
 
       const paymentCredential = await db
@@ -235,8 +233,26 @@ xdescribe('Plugins: Datatrans Payments', () => {
       expect(orderPayment.status).toBe('PAID');
     });
   });
+
   describe('Checkout', () => {
     it('checkout with stored alias', async () => {
+      const paymentProviderId = 'datatrans-payment-provider';
+      const transactionId = 'card_check_authorized';
+      const userId = User._id;
+      const sign =
+        '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
+      const result = await fetch(
+        'http://localhost:3000/payment/datatrans/webhook',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'datatrans-signature': `t=12424123412,s0=${sign}`,
+          },
+          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${paymentProviderId}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+        },
+      );
+      expect(result.status).toBe(200);
       const { data: { me } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -268,7 +284,7 @@ xdescribe('Plugins: Datatrans Payments', () => {
           paymentMethod: 'VIS',
           currency: 'CHF',
           language: 'de',
-          type: 'payment',
+          type: 'card_check',
         },
         token: expect.anything(),
         isValid: false,
