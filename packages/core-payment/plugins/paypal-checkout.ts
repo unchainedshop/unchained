@@ -6,7 +6,7 @@ import {
   paymentLogger,
 } from 'meteor/unchained:core-payment';
 
-const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
+const checkoutNodeJssdk = require('@paypal/checkout-server-sdk'); // eslint-disable-line
 
 const { PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_ENVIRONMENT = 'sandbox' } = process.env;
 

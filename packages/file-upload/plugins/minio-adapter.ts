@@ -48,7 +48,6 @@ const getMimeType = (extension) => {
 };
 
 const client: Minio.Client = connectToMinio();
-/* @ts-ignore */
 if (NODE_ENV === 'development') client?.traceOn(process.stdout);
 
 const downloadFromUrlToBuffer = async (fileUrl: string) => {

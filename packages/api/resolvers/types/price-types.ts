@@ -1,4 +1,3 @@
-/* @ts-ignore */
 import accounting from 'accounting';
 
 type PriceType = {

@@ -46,6 +46,7 @@ routepolicy@1.1.1
 socket-stream-client@0.4.0
 tracker@1.2.0
 typescript@4.4.1
+unchained:logger@1.0.0-rc.1
 unchained:mongodb@1.0.0-rc.1
 unchained:utils@1.0.0-rc.1
 underscore@1.0.10

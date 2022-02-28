@@ -22,7 +22,7 @@ export const removeFilesService: RemoveFilesService = async ({ fileIds }, reques
   try {
     await fileUploadAdapter.removeFiles(fileObjects, requestContext);
   } catch (e) {
-    console.warn(e);
+    console.warn(e); // eslint-disable-line
   }
 
   const fileIdsToDelete = fileObjects.map((f) => f._id).filter(Boolean);

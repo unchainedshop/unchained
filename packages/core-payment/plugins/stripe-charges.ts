@@ -26,7 +26,7 @@ stripe listen --forward-to http://localhost:3000/graphql/stripe
 stripe trigger payment_intent.succeeded
 */
 
-const stripe = require('stripe')(STRIPE_SECRET);
+const stripe = require('stripe')(STRIPE_SECRET); // eslint-disable-line
 
 useMiddlewareWithCurrentContext(
   STRIPE_CHARGES_WEBHOOK_PATH,

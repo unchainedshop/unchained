@@ -1,5 +1,5 @@
 allow-deny@1.1.1
-babel-compiler@7.8.0
+babel-compiler@7.8.1
 babel-runtime@1.5.0
 base64@1.0.12
 binary-heap@1.0.11
@@ -30,7 +30,7 @@ minimongo@1.8.0
 modern-browsers@0.1.7
 modules@0.18.0
 modules-runtime@0.12.0
-mongo@1.14.0
+mongo@1.14.6
 mongo-decimal@0.1.2
 mongo-dev-server@1.1.0
 mongo-id@1.0.8
@@ -51,5 +51,5 @@ unchained:logger@1.0.0-rc.1
 unchained:mongodb@1.0.0-rc.1
 unchained:utils@1.0.0-rc.1
 underscore@1.0.10
-webapp@1.13.0
+webapp@1.13.1
 webapp-hashing@1.1.0

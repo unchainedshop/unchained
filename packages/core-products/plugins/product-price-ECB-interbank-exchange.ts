@@ -42,7 +42,7 @@ const SUPPORTED_CURRENCIES = [
 ];
 
 const cache = new Cache(CACHE_PERIOD);
-const xmlJs = require('xml-js');
+const xmlJs = require('xml-js'); // eslint-disable-line
 
 const getEURexchangeRateForCurrency = async (currency) => {
   const response = cache.get(currency, () =>

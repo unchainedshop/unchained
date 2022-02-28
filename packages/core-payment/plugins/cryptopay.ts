@@ -24,7 +24,7 @@ const {
   CRYPTOPAY_MAX_CONV_DIFF = '0.01',
 } = process.env;
 
-enum CryptopayCurrencies {
+enum CryptopayCurrencies { // eslint-disable-line
   BTC = 'BTC',
   ETH = 'ETH',
 }
