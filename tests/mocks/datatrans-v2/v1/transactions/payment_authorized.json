@@ -8,7 +8,7 @@
   "paymentMethod": "VIS",
   "detail": {
     "authorize": {
-      "amount": 20000,
+      "amount": 32145,
       "acquirerAuthorizationCode": "131704"
     }
   },
