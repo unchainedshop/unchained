@@ -1,8 +1,7 @@
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-import { OrderPayments } from 'meteor/unchained:core-orders';
 import bodyParser from 'body-parser';
 import { createLogger } from 'meteor/unchained:logger';
-import { PaymentCredentials } from 'meteor/unchained:core-payment';
+import { Context } from '@unchainedshop/types/api';
 import getPaths from './getPaths';
 import generateSignature, { Security } from './generateSignature';
 
@@ -34,6 +33,8 @@ useMiddlewareWithCurrentContext(successUrl, bodyParser.urlencoded({ extended: fa
 useMiddlewareWithCurrentContext(returnUrl, bodyParser.urlencoded({ extended: false }));
 
 useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
+  const resolvedContext = req.unchainedContext as Context;
+  const { services, modules } = resolvedContext;
   const signature = req.headers['datatrans-signature'];
   if (req.method === 'POST' && signature) {
     const [rawTimestamp, rawHash] = signature.split(',');
@@ -59,11 +60,11 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
 
       try {
         if (transaction.type === 'card_check') {
-          const paymentCredentials = PaymentCredentials.registerPaymentCredentials({
-            paymentProviderId: transaction.refno,
-            paymentContext: { transactionId: transaction.transactionId },
-            userId,
-          });
+          const paymentCredentials = await services.payment.registerPaymentCredentials(
+            transaction.refno,
+            { transactionContext: { transactionId: transaction.transactionId } },
+            { ...resolvedContext, userId },
+          );
           logger.info(`Datatrans Webhook: Unchained registered payment credentials for ${userId}`, {
             userId,
           });
@@ -72,12 +73,15 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
           return;
         }
         if (transaction.type === 'payment') {
-          const orderPayment = OrderPayments.findOne({
-            _id: transaction.refno,
+          const orderPayment = await modules.orders.payments.findOrderPayment({
+            orderPaymentId: transaction.refno,
           });
-          const order = await orderPayment.order().checkout({
-            paymentContext: { transactionId: transaction.transactionId },
-          });
+          const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
+          await modules.orders.checkout(
+            order,
+            { paymentContext: { transactionId: transaction.transactionId } },
+            resolvedContext,
+          );
           res.writeHead(200);
           logger.info(`Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {
             orderId: order._id,

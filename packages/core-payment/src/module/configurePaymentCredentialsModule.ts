@@ -57,7 +57,7 @@ export const configurePaymentCredentialsModule = (
     },
 
     upsertCredentials: async ({ userId, paymentProviderId, _id, token, ...meta }) => {
-      const paymentCredentialsId = generateDbObjectId();
+      const insertedId = _id || generateDbObjectId();
       const result = await PaymentCredentials.updateOne(
         _id
           ? generateDbFilterById(_id, {
@@ -70,7 +70,7 @@ export const configurePaymentCredentialsModule = (
             },
         {
           $setOnInsert: {
-            _id: paymentCredentialsId,
+            _id: insertedId,
             userId,
             paymentProviderId,
             isPreferred: false,
@@ -92,9 +92,9 @@ export const configurePaymentCredentialsModule = (
       if (result.upsertedCount > 0) {
         await markPreferred({
           userId,
-          paymentCredentialsId,
+          paymentCredentialsId: insertedId,
         });
-        return paymentCredentialsId;
+        return insertedId;
       }
       return null;
     },
