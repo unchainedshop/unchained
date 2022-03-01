@@ -47,7 +47,7 @@ socket-stream-client@0.4.0
 tracker@1.2.0
 typescript@4.4.1
 unchained:core-enrollments@1.0.0-rc.2
-unchained:core-users@1.0.0-rc.2
+unchained:core-users@1.0.0-beta16
 unchained:events@1.0.0-rc.2
 unchained:logger@1.0.0-rc.2
 unchained:mongodb@1.0.0-rc.2

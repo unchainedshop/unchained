@@ -31,8 +31,8 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb');
-  api.use('unchained:core-users');
+  api.use('unchained:mongodb@1.0.0-rc.2');
+  api.use('unchained:core-users@1.0.0-rc.2');
   api.use('unchained:core-enrollments');
 
   api.mainModule('tests/enrollments-index.test.ts');

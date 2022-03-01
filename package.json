@@ -79,13 +79,11 @@
     "tiny-secp256k1": "^2.2.1",
     "ts-jest": "^27.0.4",
     "twilio": "^3.75.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "sinon": "^13.0.1",
+    "sinon-mongo": "^2.1.0"
   },
   "eslintConfig": {
     "extends": "@meteorjs/eslint-config-meteor"
-  },
-  "dependencies": {
-    "sinon": "^13.0.1",
-    "sinon-mongo": "^2.1.0"
   }
 }

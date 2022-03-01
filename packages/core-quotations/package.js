@@ -28,7 +28,7 @@ Package.onTest((api) => {
   api.use('typescript');
 
   api.use('unchained:mongodb');
-  api.use('unchained:core-users');
+  api.use('unchained:core-users@1.0.0-rc.2');
   api.use('unchained:core-quotations');
 
   api.mainModule('tests/quotations-index.test.ts');

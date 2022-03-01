@@ -26,7 +26,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb');
+  api.use('unchained:mongodb@1.0.0-rc.2');
   api.use('unchained:core-currencies');
 
   api.mainModule('tests/currencies-index.test.ts');
