@@ -77,10 +77,10 @@ const context = async ({ req, unchainedContextFn, ...rest }) => {
       if (secret && user?.services.token?.secret === secret) {
         newContext.userId = user._id;
         newContext.user = user;
+      } else {
+        // eslint-disable-next-line
+        console.warn('Token login failed');
       }
-    } else {
-      // eslint-disable-next-line
-      console.warn('Token login failed');
     }
   }
   return newContext;

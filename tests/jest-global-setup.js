@@ -14,6 +14,7 @@ const startAndWaitForMeteor = async () => {
         cwd: `${process.cwd()}/examples/minimal`,
         env: {
           ...process.env,
+          MONGO_URL: `${process.env.MONGO_URL}${global.__MONGOD__.opts.instance.dbName}`,
           NODE_ENV: 'development',
           METEOR_PACKAGE_DIRS: '../../packages',
           UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
