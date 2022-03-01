@@ -10,7 +10,7 @@ const allProviders = ({ providers }) => {
 
 export const paymentProviderSettings = {
   filterSupportedProviders: null,
-  configureSettings({ sortProviders, filterSupportedProviders = allProviders } = {}) {
+  configureSettings({ sortProviders = undefined, filterSupportedProviders = allProviders } = {}) {
     if (sortProviders) {
       paymentLogger.warn('sortProviders is deprecated, please specifc filterSupportedProviders instead');
       this.filterSupportedProviders = ({ providers }) => {

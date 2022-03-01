@@ -194,6 +194,5 @@ export interface DeliverySettingsOptions {
 
 export interface DeliverySettings {
   filterSupportedProviders: FilterProviders | null;
-
   configureSettings: (options?: DeliverySettingsOptions) => void;
 }

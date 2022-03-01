@@ -14,19 +14,13 @@ const allProviders: FilterProviders = ({ providers }) => {
 export const deliverySettings: DeliverySettings = {
   filterSupportedProviders: null,
 
-  configureSettings(
-    { sortProviders, filterSupportedProviders = allProviders } = {
-      sortProviders: undefined,
-    },
-  ) {
+  configureSettings({ sortProviders, filterSupportedProviders = allProviders }) {
     if (sortProviders) {
       logger.warn('sortProviders is deprecated, please specifc filterSupportedProviders instead');
-      const filterSortedProviders: FilterProviders = ({ providers }) => {
+      this.filterSupportedProviders = ({ providers }) => {
         return providers.sort(sortProviders);
       };
-      this.filterSupportedProviders = filterSortedProviders;
-    } else {
-      this.filterSupportedProviders = filterSupportedProviders;
     }
+    this.filterSupportedProviders = filterSupportedProviders;
   },
 };

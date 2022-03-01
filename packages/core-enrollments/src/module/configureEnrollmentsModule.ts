@@ -24,7 +24,7 @@ const ENROLLMENT_EVENTS: string[] = [
 
 export const configureEnrollmentsModule = async ({
   db,
-  options: enrollmentOptions,
+  options: enrollmentOptions = {},
 }: ModuleInput<EnrollmentsSettingsOptions>): Promise<EnrollmentsModule> => {
   registerEvents(ENROLLMENT_EVENTS);
 

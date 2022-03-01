@@ -13,10 +13,7 @@ export interface SetupAccountsOptions {
   mergeUserCartsOnLogin?: boolean;
 }
 
-export const setupAccounts = (
-  unchainedAPI: Context,
-  options: SetupAccountsOptions = { mergeUserCartsOnLogin: true },
-) => {
+export const setupAccounts = (unchainedAPI: Context, options: SetupAccountsOptions = {}) => {
   const accountsServer = configureAccountServer(unchainedAPI);
 
   accountsSettings.configureSettings(accountsServer, options);

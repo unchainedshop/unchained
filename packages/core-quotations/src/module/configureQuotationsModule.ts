@@ -26,7 +26,7 @@ const isExpired: QuotationsModule['isExpired'] = (quotation, { referenceDate }) 
 
 export const configureQuotationsModule = async ({
   db,
-  options: quotationsOptions,
+  options: quotationsOptions = {},
 }: ModuleInput<QuotationsSettingsOptions>): Promise<QuotationsModule> => {
   registerEvents(QUOTATION_EVENTS);
 

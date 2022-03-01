@@ -245,8 +245,8 @@ export interface PaymentServices {
  */
 
 export interface PaymentProvidersSettingsOptions {
-  sortProviders: any;
-  filterSupportedProviders: (params: { providers: Array<PaymentProvider> }) => Array<PaymentProvider>;
+  sortProviders?: any;
+  filterSupportedProviders?: (params: { providers: Array<PaymentProvider> }) => Array<PaymentProvider>;
 }
 
 /*

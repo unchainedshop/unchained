@@ -24,7 +24,7 @@ import { configureOrderModuleTransformations } from './configureOrdersModule-tra
 
 export const configureOrdersModule = async ({
   db,
-  options: orderOptions,
+  options: orderOptions = {},
 }: ModuleInput<OrdersSettingsOptions>): Promise<OrdersModule> => {
   ordersSettings.configureSettings(orderOptions);
 

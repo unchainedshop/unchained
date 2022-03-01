@@ -7,10 +7,12 @@ const defaultAutoMessagingAfterUserCreation = true;
 export const accountsSettings = {
   autoMessagingAfterUserCreation: null,
   configureSettings: ({
+    mergeUserCartsOnLogin = true,
     autoMessagingAfterUserCreation = defaultAutoMessagingAfterUserCreation,
     server = {},
     password = {},
-  } = {}) => {
+  }) => {
+    accountsSettings.mergeUserCartsOnLogin = mergeUserCartsOnLogin;
     accountsSettings.autoMessagingAfterUserCreation =
       autoMessagingAfterUserCreation ?? defaultAutoMessagingAfterUserCreation;
 

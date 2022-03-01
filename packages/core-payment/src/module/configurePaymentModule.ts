@@ -7,7 +7,7 @@ import { configurePaymentProvidersModule } from './configurePaymentProvidersModu
 
 export const configurePaymentModule = async ({
   db,
-  options: paymentProviderOptions,
+  options: paymentProviderOptions = {},
 }: ModuleInput<PaymentProvidersSettingsOptions>): Promise<PaymentModule> => {
   const PaymentProviders = await PaymentProvidersCollection(db);
   const PaymentCredentials = await PaymentCredentialsCollection(db);

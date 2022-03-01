@@ -94,7 +94,7 @@ export const startPlatform = async (
   }
 
   // Setup accountsjs specific extensions and event handlers
-  setupAccounts(accountsOptions, unchainedAPI);
+  setupAccounts(unchainedAPI, accountsOptions);
 
   // Setup email templates
   setupTemplates();

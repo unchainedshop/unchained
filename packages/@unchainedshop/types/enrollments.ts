@@ -233,7 +233,7 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
  */
 
 export interface EnrollmentsSettingsOptions {
-  autoSchedulingSchedule: WorkerSchedule;
-  autoSchedulingInput: () => any;
-  enrollmentNumberHashFn: (enrollment: Enrollment, index: number) => string;
+  autoSchedulingSchedule?: WorkerSchedule;
+  autoSchedulingInput?: () => any;
+  enrollmentNumberHashFn?: (enrollment: Enrollment, index: number) => string;
 }

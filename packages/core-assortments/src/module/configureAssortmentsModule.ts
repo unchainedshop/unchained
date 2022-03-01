@@ -61,7 +61,7 @@ const buildFindSelector = ({
 export const configureAssortmentsModule = async ({
   db,
   migrationRepository,
-  options: assortmentOptions,
+  options: assortmentOptions = {},
 }: ModuleInput<AssortmentsSettingsOptions>): Promise<AssortmentsModule> => {
   // Events
   registerEvents(ASSORTMENT_EVENTS);
