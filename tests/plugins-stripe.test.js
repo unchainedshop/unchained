@@ -167,7 +167,6 @@ if (STRIPE_SECRET) {
             }
           `,
         });
-        console.log(me);
         const credentials = me?.paymentCredentials?.[0];
 
         expect(credentials).toMatchObject({
@@ -217,7 +216,6 @@ if (STRIPE_SECRET) {
             },
           });
 
-        console.log(data, error)
         const { addCartProduct, updateCart, checkoutCart } = data;
 
         expect(addCartProduct).toMatchObject(expect.anything());

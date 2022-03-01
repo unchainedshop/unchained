@@ -345,7 +345,7 @@ describe('cart checkout', () => {
       });
       expect(makeQuotationProposal).toMatchObject({
         status: 'PROPOSED',
-        isExpired: true,
+        isExpired: false,
         fullfilled: null,
         rejected: null,
         documents: [],
