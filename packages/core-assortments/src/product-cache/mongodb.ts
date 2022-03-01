@@ -34,7 +34,8 @@ export default async function mongodbCache(db: Db) {
         },
         { upsert: true },
       );
-      return result.nModified;
+      // TODO: Check mongodb migration
+      return result?.nModified;
     },
   };
 }

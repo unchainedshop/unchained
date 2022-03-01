@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '1.0.0-rc.2',
+  version: '1.0.0-rc.2.1',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -13,7 +13,7 @@ Npm.depends({
   locale: '0.1.0',
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',
-  'graphql-scalars': '1.9.0',
+  // 'graphql-scalars': '1.9.0', // needs to be peer dep!
 });
 
 Package.onUse((api) => {

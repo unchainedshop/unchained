@@ -11,36 +11,27 @@
     "noEmit": true,
 
     /* Strict Type-Checking Options */
-    "strict": true,
-    "noImplicitAny": false,
+    "strict": false,
+    "noImplicitAny": true,
     "strictNullChecks": true,
 
     /* Additional Checks */
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "noImplicitReturns": false,
     "noFallthroughCasesInSwitch": false,
 
     /* Module Resolution Options */
     "baseUrl": ".",
     "paths": {
-      // Resolve types for meteor node stubs
-      "meteor/unchained:*": ["node_modules/@unchainedshop/types/index.d.ts"],
-
       /* Support absolute /imports/* with a leading '/' */
       "/*": ["*"]
     },
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "typeRoots": ["./node_modules/@types", "./node_modules/@unchainedshop/types"],
+    "types": ["node", "meteor", "mocha"],
     "esModuleInterop": true,
     "preserveSymlinks": true
   },
-  "exclude": ["examples/**"],
-  "include": [
-    "packages/**/src/*",
-    "packages/**/test/*",
-    "packages/**/plugins/*",
-    "packages/**/workers/*"
-  ]
+  "exclude": ["./.meteor/**", "./packages/**", "/node_modules"]
 }
