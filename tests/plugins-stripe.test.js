@@ -92,7 +92,7 @@ if (STRIPE_SECRET) {
         );
         idAndSecret =
           signPaymentProviderForCredentialRegistration.split('_secret_');
-      });
+      }, 10000);
       it('Confirm the setup intent', async () => {
         const stripe = Stripe(STRIPE_SECRET);
         const method = await stripe.paymentMethods.create({
@@ -143,7 +143,7 @@ if (STRIPE_SECRET) {
           isValid: true,
           isPreferred: true,
         });
-      });
+      }, 10000);
 
       it('checkout with stored alias', async () => {
         const { data: { me } = {} } = await graphqlFetch({
@@ -232,7 +232,7 @@ if (STRIPE_SECRET) {
         expect(checkoutCart).toMatchObject({
           status: 'CONFIRMED',
         });
-      });
+      }, 10000);
     });
 
     describe('Mutation.signPaymentProviderForCheckout (Stripe)', () => {

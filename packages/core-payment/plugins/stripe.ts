@@ -239,18 +239,22 @@ const Stripe: IPaymentAdapter = {
           orderPaymentId: order.paymentId,
         });
 
+        const pricing = await modules.orders.pricingSheet(order);
+
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)
-          : await createOrderPaymentIntent(orderPayment, {
-              customer: paymentCredentials.meta?.customer,
-              confirm: true,
-              payment_method: paymentCredentials.token,
+          : await createOrderPaymentIntent(
+              { orderPayment, order, pricing },
+              {
+                customer: paymentCredentials.meta?.customer,
+                confirm: true,
+                payment_method: paymentCredentials.token,
               payment_method_types: paymentCredentials.meta?.payment_method_types, // eslint-disable-line
               payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
-            });
+              },
+            );
 
-        const orderPricing = modules.orders.pricingSheet(order);
-        const { currency, amount } = orderPricing.total({ useNetPrice: false });
+        const { currency, amount } = pricing.total({ useNetPrice: false });
 
         if (
           paymentIntentObject.currency !== currency.toLowerCase() ||
