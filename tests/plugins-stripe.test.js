@@ -254,7 +254,7 @@ if (STRIPE_SECRET) {
         expect(signPaymentProviderForCheckout).not.toBe(null);
         expect(signPaymentProviderForCheckout).not.toBe(undefined);
         idAndSecret = signPaymentProviderForCheckout.split('_secret_');
-      });
+      }, 10000);
       it('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);
         const method = await stripe.paymentMethods.create({
@@ -295,7 +295,7 @@ if (STRIPE_SECRET) {
         expect(checkoutCart).toMatchObject({
           status: 'CONFIRMED',
         });
-      });
+      }, 10000);
     });
   });
 } else {

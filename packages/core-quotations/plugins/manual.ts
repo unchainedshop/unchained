@@ -17,7 +17,7 @@ const ManualOffering: IQuotationAdapter = {
 
       quote: async () => {
         return {
-          expires: new Date(new Date().getTime() + 1000 * 3600),
+          expires: new Date(new Date().getTime() + 1000 * 3600 * 1000),
         };
       },
     };

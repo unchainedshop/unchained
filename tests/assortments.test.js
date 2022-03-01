@@ -85,7 +85,7 @@ describe('Assortments', () => {
               children {
                 _id
               }
-              search {
+              searchProducts {
                 totalProducts
                 filteredProducts
                 filters {
@@ -339,7 +339,7 @@ describe('Assortments', () => {
               children {
                 _id
               }
-              search {
+              searchProducts {
                 totalProducts
                 filteredProducts
                 filters {
@@ -588,7 +588,7 @@ describe('Assortments', () => {
               children {
                 _id
               }
-              search {
+              searchProducts {
                 totalProducts
               }
             }
@@ -687,7 +687,7 @@ describe('Assortments', () => {
               children {
                 _id
               }
-              search {
+              searchProducts {
                 totalProducts
               }
             }
@@ -842,7 +842,7 @@ describe('Assortments', () => {
               children {
                 _id
               }
-              search {
+              searchProducts {
                 totalProducts
               }
             }
@@ -954,7 +954,7 @@ describe('Assortments', () => {
               children {
                 _id
               }
-              search {
+              searchProducts {
                 totalProducts
               }
             }
