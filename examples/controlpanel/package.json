@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/controlpanel",
   "description": "Admin UI for Unchained Engine",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "main": "index.js",

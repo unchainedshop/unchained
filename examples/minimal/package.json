@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -33,7 +33,7 @@
   "dependencies": {
     "@babel/runtime": "^7.17.2",
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@unchainedshop/controlpanel": "^1.0.0-rc.2",
+    "@unchainedshop/controlpanel": "^1.0.0-rc.3",
     "apollo-server-express": "^2.25.3",
     "bcrypt": "^5.0.1",
     "bip32": "^3.0.1",
@@ -44,7 +44,7 @@
     "dotenv-extended": "^2.9.0",
     "ethers": "^5.5.4",
     "graphql": "^15.8.0",
-    "graphql-scalars": "^1.14.1",
+    "graphql-scalars": "^1.15.0",
     "graphql-upload": "^12.0.0",
     "isomorphic-unfetch": "^3.1.0",
     "locale": "^0.1.0",
@@ -63,7 +63,7 @@
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
     "@babel/register": "^7.17.0",
-    "@unchainedshop/types": "^1.0.0-rc.2",
+    "@unchainedshop/types": "^1.0.0-rc.3",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",

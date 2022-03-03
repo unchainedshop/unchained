@@ -40,7 +40,8 @@ export const queueWorkers = [];
 
 type PlatformOptions = {
   accountsOptions?: SetupAccountsOptions;
-  additionalTypeDefs: Array<string>;
+  typeDefs: Array<string>;
+  resolvers: any;
   bulkImporter?: any;
   context?: any;
   modules: UnchainedCoreOptions['modules'];
@@ -51,12 +52,15 @@ type PlatformOptions = {
   interception?: boolean;
   playground?: boolean;
   tracing?: boolean;
+  cacheControl?: any;
+  corsOrigins?: any;
 };
 
 export const startPlatform = async (
   {
     modules,
-    additionalTypeDefs = [],
+    typeDefs = [],
+    resolvers = [],
     options = {},
     rolesOptions,
     accountsOptions,
@@ -66,9 +70,12 @@ export const startPlatform = async (
     interception,
     playground,
     tracing,
+    cacheControl,
+    corsOrigins,
   }: PlatformOptions = {
     modules: {},
-    additionalTypeDefs: [],
+    typeDefs: [],
+    resolvers: [],
     options: {},
   },
 ) => {
@@ -99,18 +106,20 @@ export const startPlatform = async (
   // Setup email templates
   setupTemplates();
 
-  // Combine type defs for graphQL schema
-  const typeDefs = [...generateEventTypeDefs(), ...generateWorkerTypeDefs(), ...additionalTypeDefs];
+  const generatedTypeDefs = [...generateEventTypeDefs(), ...generateWorkerTypeDefs()];
 
   // Start the graphQL server
   startAPIServer({
     unchainedAPI,
     rolesOptions,
-    typeDefs,
+    typeDefs: [...generatedTypeDefs, ...typeDefs],
+    resolvers,
     context,
     interception,
     playground,
     tracing,
+    corsOrigins,
+    cacheControl,
   });
 
   if (checkEmailInterceptionEnabled(disableEmailInterception)) interceptEmails();
