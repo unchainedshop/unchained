@@ -116,7 +116,7 @@ export const configureAssortmentProductsModule = ({
 
       if (!assortmentProduct) return [];
 
-      AssortmentProducts.deleteOne(selector);
+      await AssortmentProducts.deleteOne(selector);
 
       emit('ASSORTMENT_REMOVE_PRODUCT', {
         assortmentProductId: assortmentProduct._id,
@@ -136,7 +136,7 @@ export const configureAssortmentProductsModule = ({
         projection: { _id: 1, assortmentId: 1 },
       }).toArray();
 
-      AssortmentProducts.deleteMany(selector);
+      await AssortmentProducts.deleteMany(selector);
       assortmentProducts.forEach((assortmentProduct) => {
         emit('ASSORTMENT_REMOVE_PRODUCT', {
           assortmentProductId: assortmentProduct._id,

@@ -356,7 +356,7 @@ export const configureAssortmentsModule = async ({
 
       await assortmentFilters.deleteMany({ assortmentId });
 
-      await assortmentTexts.deleteMany(assortmentId, userId);
+      await assortmentTexts.deleteMany({ assortmentId });
 
       const deletedResult = await Assortments.deleteOne(generateDbFilterById(assortmentId));
 

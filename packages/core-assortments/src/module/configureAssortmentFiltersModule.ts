@@ -93,7 +93,7 @@ export const configureAssortmentFiltersModule = ({
         projection: { _id: 1 },
       });
 
-      AssortmentFilters.deleteOne(selector);
+      await AssortmentFilters.deleteOne(selector);
 
       emit('ASSORTMENT_REMOVE_FILTER', {
         assortmentFilterId: assortmentFilter._id,
@@ -107,7 +107,7 @@ export const configureAssortmentFiltersModule = ({
         projection: { _id: 1 },
       }).toArray();
 
-      AssortmentFilters.deleteMany(selector);
+      await AssortmentFilters.deleteMany(selector);
 
       assortmentFilters.forEach((assortmentFilter) => {
         emit('ASSORTMENT_REMOVE_FILTER', {

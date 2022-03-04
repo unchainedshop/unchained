@@ -119,7 +119,7 @@ export const configureAssortmentLinksModule = ({
         projection: { _id: 1, parentAssortmentId: 1 },
       });
 
-      AssortmentLinks.deleteOne(selector);
+      await AssortmentLinks.deleteOne(selector);
 
       emit('ASSORTMENT_REMOVE_LINK', {
         assortmentLinkId: assortmentLink._id,
@@ -139,7 +139,7 @@ export const configureAssortmentLinksModule = ({
         projection: { _id: 1, parentAssortmentId: 1 },
       }).toArray();
 
-      AssortmentLinks.deleteMany(selector);
+      await AssortmentLinks.deleteMany(selector);
       assortmentLinks.forEach((assortmentLink) => {
         emit('ASSORTMENT_REMOVE_LINK', {
           assortmentLinkId: assortmentLink._id,

@@ -17,17 +17,18 @@ export const configureBookmarksModule = async ({
   const mutations = generateDbMutations<Bookmark>(
     Bookmarks,
     BookmarkSchema,
+    { permanentlyDeleteByDefault: true }
   ) as ModuleMutations<Bookmark>;
 
   return {
     // Queries
-    findByUserId: async (userId) => Bookmarks.find({ userId, deleted: null }).toArray(),
+    findByUserId: async (userId) => Bookmarks.find({ userId }).toArray(),
     findByUserIdAndProductId: async ({ userId, productId }) =>
-      Bookmarks.findOne({ userId, productId, deleted: null }),
+      Bookmarks.findOne({ userId, productId }),
     findById: async (bookmarkId) => {
       let bookmark: Bookmark;
       if (bookmarkId) {
-        const filter = generateDbFilterById(bookmarkId, { deleted: null });
+        const filter = generateDbFilterById(bookmarkId);
         bookmark = await Bookmarks.findOne(filter);
       }
       return bookmark;
@@ -38,9 +39,9 @@ export const configureBookmarksModule = async ({
     existsByUserIdAndProductId: async ({ productId, userId }) => {
       let selector = {};
       if (productId && userId) {
-        selector = { userId, productId, deleted: null };
+        selector = { userId, productId};
       } else if (userId) {
-        selector = { userId, deleted: null };
+        selector = { userId };
       }
       const bookmarkCount = await Bookmarks.find(selector, {
         limit: 1,
@@ -52,7 +53,7 @@ export const configureBookmarksModule = async ({
     // Mutations
     replaceUserId: async (fromUserId, toUserId, userId) => {
       const result = await Bookmarks.updateMany(
-        { userId: fromUserId, deleted: null },
+        { userId: fromUserId },
         {
           $set: {
             userId: toUserId,
@@ -65,17 +66,11 @@ export const configureBookmarksModule = async ({
     },
 
     deleteByUserId: async (toUserId, userId) => {
-      const result = await Bookmarks.updateMany(
+      const result = await Bookmarks.deleteMany(
         { userId: toUserId },
-        {
-          $set: {
-            deleted: new Date(),
-            deletedBy: userId,
-          },
-        },
       );
 
-      return result.modifiedCount;
+      return result.deletedCount;
     },
 
     create: async (doc: Bookmark, userId: string) => {

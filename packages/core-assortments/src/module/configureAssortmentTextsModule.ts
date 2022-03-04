@@ -171,7 +171,7 @@ export const configureAssortmentTextsModule = ({
     upsertLocalizedText,
     makeSlug,
 
-    deleteMany: async (assortmentId) => {
+    deleteMany: async ({ assortmentId }) => {
       const deletedResult = await AssortmentTexts.deleteMany({ assortmentId });
 
       return deletedResult.deletedCount;
