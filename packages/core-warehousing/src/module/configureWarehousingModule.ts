@@ -21,8 +21,8 @@ type FindQuery = {
   deleted?: Date | null;
 };
 
-const buildFindSelector = ({ type, deleted = null }: FindQuery = {}) => {
-  const query = type ? { type, deleted } : { deleted };
+const buildFindSelector = ({ type, deleted }: FindQuery = {}) => {
+  const query = type ? { type, deleted: null } : { deleted: null };
   return query;
 };
 
