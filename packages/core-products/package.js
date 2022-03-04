@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-products',
-  version: '1.0.0-rc.3',
+  version: '1.0.0-rc.4',
   summary: 'Unchained Engine Core: Products',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -17,9 +17,9 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.3');
-  api.use('unchained:events@1.0.0-rc.3');
-  api.use('unchained:file-upload@1.0.0-rc.3');
+  api.use('unchained:utils@1.0.0-rc.4');
+  api.use('unchained:events@1.0.0-rc.4');
+  api.use('unchained:file-upload@1.0.0-rc.4');
 
   api.mainModule('src/products-index.ts', 'server');
 });
