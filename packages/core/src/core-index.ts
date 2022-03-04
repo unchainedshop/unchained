@@ -23,6 +23,7 @@ export const initCore = async ({
   db,
   migrationRepository,
   modules,
+  services,
   bulkImporter,
   options = {},
 }: UnchainedCoreOptions) => {
@@ -81,7 +82,6 @@ export const initCore = async ({
 
   return {
     modules: {
-      ...customModules,
       accounts,
       assortments,
       bookmarks,
@@ -101,6 +101,7 @@ export const initCore = async ({
       users,
       warehousing,
       worker,
+      ...customModules,
     },
     services: {
       bookmarks: bookmarkServices,
@@ -110,6 +111,7 @@ export const initCore = async ({
       payment: paymentServices,
       products: productServices,
       users: userServices,
+      ...services
     },
     bulkImporter,
     options,

@@ -3,18 +3,17 @@ import { Event, EmitAdapter } from '@unchainedshop/types/events';
 
 import { getEmitHistoryAdapter, setEmitHistoryAdapter } from 'meteor/unchained:events';
 
-export const configureEventHistoryAdapter = (Events: Collection<Event>) => {
+export const configureEventHistoryAdapter = (mutations: ModuleMutations<Event>) => {
   if (!getEmitHistoryAdapter()) {
     const adapter: EmitAdapter = {
       subscribe: () => {
         // Do nothing
       },
       publish: async (eventName, { payload, context = {} }) => {
-        await Events.insertOne({
+        await mutations.create({
           type: eventName,
           payload,
           context,
-          created: new Date(),
         });
       },
     };

@@ -15,7 +15,6 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
   schema: SimpleSchema,
   options?: {
     hasCreateOnly?: boolean;
-    shouldReturnDocument?: boolean;
   },
 ): ModuleMutations<T> | ModuleCreateMutation<T> => {
   if (!collection) throw new Error('Collection is missing');
@@ -65,7 +64,7 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
       ? undefined
       : async (_id, userId) => {
           checkId(_id);
-          const filter = generateDbFilterById(_id, { delete: null });
+          const filter = generateDbFilterById(_id, { deleted: null });
           const modifier = { $set: { deleted: new Date(), deletedBy: userId } };
           const values = schema.clean(modifier, { isModifier: true });
 

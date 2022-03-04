@@ -45,6 +45,7 @@ type PlatformOptions = {
   bulkImporter?: any;
   context?: any;
   modules: UnchainedCoreOptions['modules'];
+  services: UnchainedCoreOptions['modules'];
   options: UnchainedCoreOptions['options'];
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
@@ -58,7 +59,8 @@ type PlatformOptions = {
 
 export const startPlatform = async (
   {
-    modules,
+    modules = {},
+    services = {},
     typeDefs = [],
     resolvers = [],
     options = {},
@@ -74,6 +76,7 @@ export const startPlatform = async (
     corsOrigins,
   }: PlatformOptions = {
     modules: {},
+    services: {},
     typeDefs: [],
     resolvers: [],
     options: {},
@@ -92,6 +95,7 @@ export const startPlatform = async (
     migrationRepository,
     bulkImporter,
     modules,
+    services,
     options,
   });
 

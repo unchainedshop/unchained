@@ -1,5 +1,5 @@
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
-import { ModuleInput, Filter } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations, Filter } from '@unchainedshop/types/common';
 import { Event, EventsModule } from '@unchainedshop/types/events';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
@@ -17,9 +17,12 @@ export const configureEventsModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<EventsModule> => {
   const Events = await EventsCollection(db);
 
-  configureEventHistoryAdapter(Events);
+  const mutations = generateDbMutations<Event>(Events, EventsSchema, { hasCreateOnly: true }) as ModuleMutations<Event>;
+
+  configureEventHistoryAdapter(mutations);
 
   return {
+    ...mutations,
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? generateDbFilterById(eventId) : rest;
       if (!Object.keys(selector)?.length) return null;
@@ -38,16 +41,12 @@ export const configureEventsModule = async ({
         skip: offset,
         limit,
         sort,
-      });
-
-      return events.toArray();
+      }).toArray();
     },
 
     count: async (query) => {
       const count = await Events.countDocuments(buildFindSelector(query));
       return count;
     },
-
-    ...generateDbMutations(Events, EventsSchema, { hasCreateOnly: true }),
   };
 };

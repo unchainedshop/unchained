@@ -69,6 +69,7 @@ export interface UnchainedCoreOptions {
   db: Db;
   migrationRepository: MigrationRepository<Migration>;
   modules: Record<string, { configure: ({ db }: { db: Db }) => any }>;
+  services: Record<string, any>;
   options: {
     accounts?: AccountsSettingsOptions;
     assortments?: AssortmentsSettingsOptions;
