@@ -47,7 +47,7 @@ describe('Test exports', () => {
   it('Check backwards compatibility', async () => {
     const Bookmarks = new Mongo.Collection<any>('bookmarks');
 
-    const meteorBookmarkId = Bookmarks.insert({
+    const meteorBookmarkId = Bookmarks.insertOne({
       userId: 'Legacy-Test-User-1',
       productId: 'Legacy-Product-22',
       created: new Date(),

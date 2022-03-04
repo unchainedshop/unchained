@@ -3,7 +3,7 @@ import { generateDbObjectId } from 'meteor/unchained:utils';
 import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransactionsCollection';
 
 export interface AppleTransactionsModule {
-  findTransactions: (query: { transactionIdentifier: string }) => Promise<Array<AppleTransaction>>;
+  findTransactionById: (transactionIdentifier: string) => Promise<AppleTransaction>;
 
   createTransaction: (doc: AppleTransaction, userId: string) => Promise<string | null>;
 }
@@ -16,15 +16,12 @@ export const configureAppleTransactionsModule = async ({
   const AppleTransactions = await AppleTransactionsCollection(db);
 
   return {
-    findTransactions: async ({ transactionIdentifier }) => {
-      return AppleTransactions.find({ transactionIdentifier }).toArray();
+    findTransactionById: async (transactionIdentifier) => {
+      return AppleTransactions.findOne({ _id: transactionIdentifier });
     },
 
     createTransaction: async (doc, userId) => {
-      const transactionId = generateDbObjectId();
-
       await AppleTransactions.insertOne({
-        _id: transactionId,
         ...doc,
         created: new Date(),
         createdBy: userId,

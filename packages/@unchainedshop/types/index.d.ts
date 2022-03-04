@@ -139,8 +139,6 @@ declare module 'meteor/unchained:utils' {
       | undefined,
   ): void;
 
-  function dbIdToString(_id: _ID): string;
-
   function findUnusedSlug(
     checkSlugIsUniqueFn: (slug: string) => Promise<boolean>,
     options: { slugify?: (text: string) => string },
