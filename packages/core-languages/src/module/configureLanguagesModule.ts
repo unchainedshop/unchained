@@ -44,7 +44,9 @@ export const configureLanguagesModule = async ({
     },
 
     languageExists: async ({ languageId }) => {
-      const languageCount = await Languages.find(generateDbFilterById(languageId, { deleted: null }), { limit: 1 }).count();
+      const languageCount = await Languages.find(generateDbFilterById(languageId, { deleted: null }), {
+        limit: 1,
+      }).count();
       return !!languageCount;
     },
 

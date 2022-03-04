@@ -22,11 +22,9 @@ export const configureOrderDeliveriesModule = ({
 }): OrderDeliveriesModule => {
   registerEvents(ORDER_DELIVERY_EVENTS);
 
-  const mutations = generateDbMutations<OrderDelivery>(
-    OrderDeliveries,
-    OrderDeliveriesSchema,
-    { permanentlyDeleteByDefault: true }
-  ) as ModuleMutations<OrderDelivery>;
+  const mutations = generateDbMutations<OrderDelivery>(OrderDeliveries, OrderDeliveriesSchema, {
+    permanentlyDeleteByDefault: true,
+  }) as ModuleMutations<OrderDelivery>;
 
   const updateStatus: OrderDeliveriesModule['updateStatus'] = async (
     orderDeliveryId,

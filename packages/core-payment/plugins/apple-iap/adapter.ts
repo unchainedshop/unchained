@@ -329,7 +329,7 @@ const AppleIAP: IPaymentAdapter = {
         const transactions =
           receiptResponse?.latest_receipt_info || // eslint-disable-line
           paymentCredentials?.meta?.latestReceiptInfo;
-        const matchedTransaction = transactions.find(
+        const matchedTransaction = transactions?.find(
           (transaction) => transaction?.transaction_id === transactionIdentifier // eslint-disable-line
         );
         if (!matchedTransaction) {
@@ -363,9 +363,11 @@ const AppleIAP: IPaymentAdapter = {
         if (!isMatchesTransaction)
           throw new Error('Apple IAP Plugin: Product in order does not match transaction');
 
-        const alreadyProcessedTransaction = await appleTransactions.findTransactionById(transactionIdentifier);
+        const alreadyProcessedTransaction = await appleTransactions.findTransactionById(
+          transactionIdentifier,
+        );
 
-        if (transactionAlreadyProcessed)
+        if (alreadyProcessedTransaction)
           throw new Error('Apple IAP Plugin: Transaction already processed');
 
         // All good

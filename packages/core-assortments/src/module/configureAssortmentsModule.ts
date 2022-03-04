@@ -344,7 +344,7 @@ export const configureAssortmentsModule = async ({
       return assortmentId;
     },
 
-    delete: async (assortmentId, options, userId) => {
+    delete: async (assortmentId, options) => {
       await assortmentLinks.deleteMany(
         {
           $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],

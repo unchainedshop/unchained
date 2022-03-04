@@ -14,17 +14,15 @@ export const configureBookmarksModule = async ({
 
   const Bookmarks = await BookmarksCollection(db);
 
-  const mutations = generateDbMutations<Bookmark>(
-    Bookmarks,
-    BookmarkSchema,
-    { permanentlyDeleteByDefault: true }
-  ) as ModuleMutations<Bookmark>;
+  const mutations = generateDbMutations<Bookmark>(Bookmarks, BookmarkSchema, {
+    permanentlyDeleteByDefault: true,
+  }) as ModuleMutations<Bookmark>;
 
   return {
     // Queries
+    ...mutations,
     findByUserId: async (userId) => Bookmarks.find({ userId }).toArray(),
-    findByUserIdAndProductId: async ({ userId, productId }) =>
-      Bookmarks.findOne({ userId, productId }),
+    findByUserIdAndProductId: async ({ userId, productId }) => Bookmarks.findOne({ userId, productId }),
     findById: async (bookmarkId) => {
       let bookmark: Bookmark;
       if (bookmarkId) {
@@ -39,7 +37,7 @@ export const configureBookmarksModule = async ({
     existsByUserIdAndProductId: async ({ productId, userId }) => {
       let selector = {};
       if (productId && userId) {
-        selector = { userId, productId};
+        selector = { userId, productId };
       } else if (userId) {
         selector = { userId };
       }
@@ -66,9 +64,7 @@ export const configureBookmarksModule = async ({
     },
 
     deleteByUserId: async (toUserId, userId) => {
-      const result = await Bookmarks.deleteMany(
-        { userId: toUserId },
-      );
+      const result = await Bookmarks.deleteMany({ userId: toUserId });
 
       return result.deletedCount;
     },

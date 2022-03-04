@@ -32,7 +32,9 @@ export const configureFiltersModule = async ({
 
   const { Filters, FilterTexts } = await FiltersCollection(db);
 
-  const mutations = generateDbMutations<Filter>(Filters, FiltersSchema, { permanentlyDeleteByDefault: true }) as ModuleMutations<Filter>;
+  const mutations = generateDbMutations<Filter>(Filters, FiltersSchema, {
+    permanentlyDeleteByDefault: true,
+  }) as ModuleMutations<Filter>;
 
   const findProductIds = async (
     filter: Filter,
@@ -274,8 +276,7 @@ export const configureFiltersModule = async ({
       return Filters.findOne(selector, {});
     },
 
-    delete: async (filterId) => {
-      const { userId } = requestContext;
+    delete: async (filterId, userId) => {
       await filterTexts.deleteMany(filterId, userId);
       const deletedCount = await mutations.delete(filterId, userId);
       emit('FILTER_REMOVE', { filterId });

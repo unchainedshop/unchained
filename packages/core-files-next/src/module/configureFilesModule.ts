@@ -14,7 +14,9 @@ export const configureFilesModule = async ({
 
   const Files = await MediaObjectsCollection(db);
 
-  const mutations = generateDbMutations<File>(Files, MediaObjectsSchema, { permanentlyDeleteByDefault: true }) as ModuleMutations<File>;
+  const mutations = generateDbMutations<File>(Files, MediaObjectsSchema, {
+    permanentlyDeleteByDefault: true,
+  }) as ModuleMutations<File>;
 
   return {
     findFile: async ({ fileId }, options) => {

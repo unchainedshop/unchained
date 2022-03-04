@@ -5,8 +5,9 @@ import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeFilter(
   root: Root,
   { filterId }: { filterId: string },
-  { modules, userId }: Context,
+  requestContext: Context,
 ) {
+  const { modules, userId } = requestContext;
   log(`mutation removeFilter ${filterId}`, { userId });
 
   if (!filterId) throw new InvalidIdError({ filterId });
@@ -16,7 +17,6 @@ export default async function removeFilter(
 
   await modules.assortments.filters.deleteMany({ filterId }, userId);
   const deletedCount = await modules.filters.delete(filterId, userId);
-
   if (deletedCount === 1) {
     await modules.filters.invalidateCache({}, requestContext);
   }

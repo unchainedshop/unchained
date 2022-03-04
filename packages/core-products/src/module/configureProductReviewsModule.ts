@@ -23,11 +23,7 @@ const SORT_DIRECTIONS = {
   ASC: 1,
   DESC: -1,
 };
-const buildFindSelector = ({
-  productId,
-  authorId,
-  queryString,
-}: ProductReviewQuery = {}) => {
+const buildFindSelector = ({ productId, authorId, queryString }: ProductReviewQuery = {}) => {
   const selector: Query = {
     ...(productId ? { productId } : {}),
     ...(authorId ? { authorId } : {}),

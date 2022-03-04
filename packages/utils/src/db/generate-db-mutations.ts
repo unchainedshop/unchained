@@ -15,19 +15,23 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
   schema: SimpleSchema,
   options?: {
     hasCreateOnly?: boolean;
+    permanentlyDeleteByDefault?: boolean;
   },
 ): ModuleMutations<T> | ModuleCreateMutation<T> => {
   if (!collection) throw new Error('Collection is missing');
   if (!schema) throw new Error('Schema is missing');
 
-  const { hasCreateOnly, permanentlyDeleteByDefault } = options || { hasCreateOnly: false, permanentlyDeleteByDefault: false };
+  const { hasCreateOnly, permanentlyDeleteByDefault } = options || {
+    hasCreateOnly: false,
+    permanentlyDeleteByDefault: false,
+  };
 
-  const permanentlyDelete = async (_id, userId) => {
-      checkId(_id);
-      const filter = generateDbFilterById(_id);
-      const result = await collection.deleteOne(filter);
-      return result.deletedCount;
-    };
+  const deletePermanently = async (_id) => {
+    checkId(_id);
+    const filter = generateDbFilterById(_id);
+    const result = await collection.deleteOne(filter);
+    return result.deletedCount;
+  };
 
   return {
     create: async (doc, userId) => {
@@ -68,15 +72,13 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           return _id;
         },
 
-    permanentlyDelete: hasCreateOnly
-      ? undefined
-      : permanentlyDelete
+    deletePermanently: hasCreateOnly ? undefined : deletePermanently,
 
     delete: hasCreateOnly
       ? undefined
       : async (_id, userId) => {
           if (permanentlyDeleteByDefault) {
-            return permanentlyDelete(_id, userId);
+            return deletePermanently(_id);
           }
           checkId(_id);
           const filter = generateDbFilterById(_id, { deleted: null });

@@ -108,11 +108,7 @@ export type FiltersModule = {
     options?: { skipInvalidation?: boolean },
   ) => Promise<Filter>;
 
-  delete: (
-    filterId: string,
-    requestContext: Context,
-    options?: { skipInvalidation?: boolean },
-  ) => Promise<number>;
+  delete: (filterId: string, userId?: string) => Promise<number>;
 
   removeFilterOption: (
     params: {

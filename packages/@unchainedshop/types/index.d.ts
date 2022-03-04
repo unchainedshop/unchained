@@ -160,7 +160,7 @@ declare module 'meteor/unchained:utils' {
   function generateDbMutations<T extends { _id?: _ID }>(
     collection: Collection<T>,
     schema: SimpleSchema,
-    options?: { hasCreateOnly: boolean, permanentlyDeleteByDefault: boolean },
+    options?: { hasCreateOnly: boolean; permanentlyDeleteByDefault: boolean },
   ): ModuleMutations<T> | ModuleCreateMutation<T>;
 
   function buildDbIndexes<T extends Document>(

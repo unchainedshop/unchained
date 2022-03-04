@@ -1,5 +1,4 @@
 import { Filter, Query, _ID } from '@unchainedshop/types/common';
-import { ObjectId } from 'bson';
 
 export const generateDbFilterById = (
   id: unknown,

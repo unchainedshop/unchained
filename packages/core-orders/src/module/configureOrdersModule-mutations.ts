@@ -32,7 +32,9 @@ export const configureOrderModuleMutations = ({
 }): OrderMutations => {
   registerEvents(ORDER_EVENTS);
 
-  const mutations = generateDbMutations<Order>(Orders, OrdersSchema, { permanentlyDeleteByDefault: true }) as ModuleMutations<Order>;
+  const mutations = generateDbMutations<Order>(Orders, OrdersSchema, {
+    permanentlyDeleteByDefault: true,
+  }) as ModuleMutations<Order>;
 
   return {
     create: async ({ orderNumber, currency, countryCode, billingAddress, contact }, userId) => {

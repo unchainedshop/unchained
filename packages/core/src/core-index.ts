@@ -111,7 +111,7 @@ export const initCore = async ({
       payment: paymentServices,
       products: productServices,
       users: userServices,
-      ...services
+      ...services,
     },
     bulkImporter,
     options,

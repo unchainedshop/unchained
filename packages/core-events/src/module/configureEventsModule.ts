@@ -17,7 +17,9 @@ export const configureEventsModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<EventsModule> => {
   const Events = await EventsCollection(db);
 
-  const mutations = generateDbMutations<Event>(Events, EventsSchema, { hasCreateOnly: true }) as ModuleMutations<Event>;
+  const mutations = generateDbMutations<Event>(Events, EventsSchema, {
+    hasCreateOnly: true,
+  }) as ModuleMutations<Event>;
 
   configureEventHistoryAdapter(mutations);
 
@@ -37,7 +39,7 @@ export const configureEventsModule = async ({
       },
       ...query
     }) => {
-      const events = Events.find(buildFindSelector(query as FindQuery), {
+      return Events.find(buildFindSelector(query as FindQuery), {
         skip: offset,
         limit,
         sort,

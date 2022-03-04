@@ -1,5 +1,4 @@
 import { Db } from '@unchainedshop/types/common';
-import { generateDbObjectId } from 'meteor/unchained:utils';
 import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransactionsCollection';
 
 export interface AppleTransactionsModule {
@@ -26,8 +25,7 @@ export const configureAppleTransactionsModule = async ({
         created: new Date(),
         createdBy: userId,
       });
-
-      return transactionId;
+      return doc._id;
     },
   };
 };

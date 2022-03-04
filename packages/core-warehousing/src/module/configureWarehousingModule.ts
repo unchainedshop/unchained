@@ -21,7 +21,7 @@ type FindQuery = {
   deleted?: Date | null;
 };
 
-const buildFindSelector = ({ type, deleted }: FindQuery = {}) => {
+const buildFindSelector = ({ type }: FindQuery = {}) => {
   const query = type ? { type, deleted: null } : { deleted: null };
   return query;
 };
@@ -40,6 +40,7 @@ export const configureWarehousingModule = async ({
 
   return {
     // Queries
+    ...mutations,
     count: async (query) => {
       const providerCount = await WarehousingProviders.find(buildFindSelector(query)).count();
       return providerCount;

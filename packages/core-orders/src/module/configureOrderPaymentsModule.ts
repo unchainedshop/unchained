@@ -40,11 +40,9 @@ export const configureOrderPaymentsModule = ({
 }): OrderPaymentsModule => {
   registerEvents(ORDER_PAYMENT_EVENTS);
 
-  const mutations = generateDbMutations<OrderPayment>(
-    OrderPayments,
-    OrderPaymentsSchema,
-    { permanentlyDeleteByDefault: true }
-  ) as ModuleMutations<OrderPayment>;
+  const mutations = generateDbMutations<OrderPayment>(OrderPayments, OrderPaymentsSchema, {
+    permanentlyDeleteByDefault: true,
+  }) as ModuleMutations<OrderPayment>;
 
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,

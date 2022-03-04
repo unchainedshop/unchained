@@ -26,11 +26,9 @@ export const configureOrderPositionsModule = ({
 }): OrderPositionsModule => {
   registerEvents(ORDER_POSITION_EVENTS);
 
-  const mutations = generateDbMutations<OrderPosition>(
-    OrderPositions,
-    OrderPositionsSchema,
-    { permanentlyDeleteByDefault: true }
-  ) as ModuleMutations<OrderPosition>;
+  const mutations = generateDbMutations<OrderPosition>(OrderPositions, OrderPositionsSchema, {
+    permanentlyDeleteByDefault: true,
+  }) as ModuleMutations<OrderPosition>;
 
   return {
     // Queries

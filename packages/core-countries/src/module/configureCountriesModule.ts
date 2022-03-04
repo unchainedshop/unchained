@@ -47,7 +47,9 @@ export const configureCountriesModule = async ({
     },
 
     countryExists: async ({ countryId }) => {
-      const countryCount = await Countries.find(generateDbFilterById(countryId, { deleted: null }), { limit: 1 }).count();
+      const countryCount = await Countries.find(generateDbFilterById(countryId, { deleted: null }), {
+        limit: 1,
+      }).count();
       return !!countryCount;
     },
 

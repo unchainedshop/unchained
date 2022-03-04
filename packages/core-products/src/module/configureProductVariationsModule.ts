@@ -30,11 +30,9 @@ export const configureProductVariationsModule = async ({
 
   const { ProductVariations, ProductVariationTexts } = await ProductVariationsCollection(db);
 
-  const mutations = generateDbMutations<ProductVariation>(
-    ProductVariations,
-    ProductVariationsSchema,
-    { permanentlyDeleteByDefault: true }
-  ) as ModuleMutations<ProductVariation>;
+  const mutations = generateDbMutations<ProductVariation>(ProductVariations, ProductVariationsSchema, {
+    permanentlyDeleteByDefault: true,
+  }) as ModuleMutations<ProductVariation>;
 
   const upsertLocalizedText = async (
     { productVariationId, productVariationOptionValue = null, locale, ...text }: ProductVariationText,
