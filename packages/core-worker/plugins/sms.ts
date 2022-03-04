@@ -27,7 +27,7 @@ const SmsWorkerPlugin: IWorkerAdapter<
   doWork: async ({ from, to, text }) => {
     logger.debug(`${SmsWorkerPlugin.key} -> doWork: ${from} -> ${to}`);
 
-    if (!TWILIO_SMS_FROM) {
+    if (!TWILIO_SMS_FROM && !from) {
       return {
         success: false,
         error: {
@@ -49,12 +49,27 @@ const SmsWorkerPlugin: IWorkerAdapter<
 
     try {
       const client = Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-      const result = await client.messages.create({
+      const { sid, errorMessage } = await client.messages.create({
         body: text,
-        from: TWILIO_SMS_FROM,
+        from: from || TWILIO_SMS_FROM,
         to,
       });
-      return { success: true, result };
+      if (errorMessage) {
+        return {
+          success: false,
+          error: {
+            name: 'TWILIO_ERROR',
+            message: errorMessage.toString(),
+          },
+        };
+      }
+      return {
+        success: true,
+        result: {
+          sid,
+        },
+        error: null,
+      };
     } catch (err) {
       return {
         success: false,
