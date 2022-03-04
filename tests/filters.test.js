@@ -622,6 +622,7 @@ describe('Filters', () => {
           mutation RemoveFilter($filterId: ID!) {
             removeFilter(filterId: $filterId) {
               _id
+              deleted
               updated
               created
               isActive
@@ -663,7 +664,7 @@ describe('Filters', () => {
         },
       });
 
-      expect(filter).toBe(null);
+      expect(filter.deleted).not.toBe(undefined);
     });
 
     it('return not found error when passed non existing filter ID', async () => {

@@ -43,7 +43,7 @@ describe('Test exports', () => {
 
   afterEach(async () => {
     if (filterId) {
-      await context.modules.filters.delete(filterId, context as Context);
+      await context.modules.filters.delete(filterId);
     }
   });
 

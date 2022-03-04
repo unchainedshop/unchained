@@ -15,7 +15,11 @@ export default async function removeFilter(
   if (!filter) throw new FilterNotFoundError({ filterId });
 
   await modules.assortments.filters.deleteMany({ filterId }, userId);
-  await modules.filters.delete(filterId, userId);
+  const deletedCount = await modules.filters.delete(filterId, userId);
+
+  if (deletedCount === 1) {
+    await modules.filters.invalidateCache({}, requestContext);
+  }
 
   return filter;
 }

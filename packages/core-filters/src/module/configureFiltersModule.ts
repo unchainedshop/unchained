@@ -274,20 +274,11 @@ export const configureFiltersModule = async ({
       return Filters.findOne(selector, {});
     },
 
-    delete: async (filterId, requestContext, options) => {
+    delete: async (filterId) => {
       const { userId } = requestContext;
-
       await filterTexts.deleteMany(filterId, userId);
-
       const deletedCount = await mutations.delete(filterId, userId);
-
-      if (deletedCount === 1 && !options?.skipInvalidation) {
-        // Invalidate all filters
-        invalidateCache({}, requestContext);
-      }
-
       emit('FILTER_REMOVE', { filterId });
-
       return deletedCount;
     },
 

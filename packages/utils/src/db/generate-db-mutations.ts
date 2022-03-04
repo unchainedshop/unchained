@@ -21,6 +21,14 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
   if (!schema) throw new Error('Schema is missing');
 
   const { hasCreateOnly, permanentlyDeleteByDefault } = options || { hasCreateOnly: false, permanentlyDeleteByDefault: false };
+
+  const permanentlyDelete = async (_id, userId) => {
+      checkId(_id);
+      const filter = generateDbFilterById(_id);
+      const result = await collection.deleteOne(filter);
+      return result.deletedCount;
+    };
+
   return {
     create: async (doc, userId) => {
       const values = schema.clean(doc);
@@ -62,18 +70,13 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
 
     permanentlyDelete: hasCreateOnly
       ? undefined
-      : async (_id, userId) => {
-          checkId(_id);
-          const filter = generateDbFilterById(_id);
-          const result = await collection.deleteOne(filter);
-          return result.deletedCount;
-        },
+      : permanentlyDelete
 
     delete: hasCreateOnly
       ? undefined
       : async (_id, userId) => {
           if (permanentlyDeleteByDefault) {
-            return this.permanentlyDelete(_id, userId);
+            return permanentlyDelete(_id, userId);
           }
           checkId(_id);
           const filter = generateDbFilterById(_id, { deleted: null });
