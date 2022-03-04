@@ -33,6 +33,7 @@ export const configureProductVariationsModule = async ({
   const mutations = generateDbMutations<ProductVariation>(
     ProductVariations,
     ProductVariationsSchema,
+    { permanentlyDeleteByDefault: true }
   ) as ModuleMutations<ProductVariation>;
 
   const upsertLocalizedText = async (

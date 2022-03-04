@@ -83,6 +83,7 @@ export const configureProductsModule = async ({
     const selector: Query = productId
       ? generateDbFilterById(productId, { status: ProductStatus.DELETED })
       : { _id: { $nin: excludedProductIds } };
+
     const deletedResult = await Products.deleteOne(selector);
 
     return deletedResult.deletedCount;
@@ -308,6 +309,10 @@ export const configureProductsModule = async ({
     ) => {
       if (productData._id) {
         // Remove deleted product by _id before creating a new one.
+        // TODO: Fix
+        // productTexts.removeMany(productData._id);
+        // productReviews.removeMany(productData._id);
+
         await deleteProductsPermanently({
           productId: productData._id as string,
         });

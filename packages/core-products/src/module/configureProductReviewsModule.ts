@@ -26,13 +26,12 @@ const SORT_DIRECTIONS = {
 const buildFindSelector = ({
   productId,
   authorId,
-  deleted = null,
   queryString,
 }: ProductReviewQuery = {}) => {
   const selector: Query = {
     ...(productId ? { productId } : {}),
     ...(authorId ? { authorId } : {}),
-    deleted,
+    deleted: null,
   };
 
   if (queryString) {
@@ -99,7 +98,7 @@ export const configureProductReviewsModule = async ({
 
     reviewExists: async ({ productReviewId }) => {
       const productReviewCount = await ProductReviews.find(
-        generateDbFilterById(productReviewId),
+        generateDbFilterById(productReviewId, { deleted: null }),
       ).count();
 
       return !!productReviewCount;
