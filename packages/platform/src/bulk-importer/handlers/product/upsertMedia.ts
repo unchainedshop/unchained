@@ -26,14 +26,19 @@ const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Con
     if (!assetObject) throw new Error('Media not created');
     return assetObject;
   } catch (e) {
-    await modules.files.update(fileId, { fileName, url, ...assetData }, userId);
-    return modules.files.findFile({ fileId });
+    if (fileId) {
+      await modules.files.update(fileId, { meta: { ...meta, fileId }, ...assetData }, userId);
+      const file = await modules.files.findFile({ fileId });
+      return file;
+    }
+    return null;
   }
 };
 
 const upsertProductMedia = async (productMedia: ProductMedia, { modules, userId }: Context) => {
   try {
-    return modules.products.media.create(productMedia, userId);
+    const productMediaObj = await modules.products.media.create(productMedia, userId);
+    return productMediaObj;
   } catch (e) {
     const { _id, ...productMediaData } = productMedia;
     const productMediaId = _id;
@@ -62,7 +67,6 @@ export default async function upsertMedia({ media, authorId, productId }, unchai
         } as ProductMedia,
         unchainedAPI,
       );
-
       if (!productMedia) throw new Error(`Unable to create product media object for file ${fileId}`);
 
       if (content) {
