@@ -25,8 +25,8 @@ type FindQuery = {
   deleted?: Date | null;
 };
 
-const buildFindSelector = ({ type, deleted = null }: FindQuery = {}) => {
-  return { ...(type ? { type } : {}), deleted };
+const buildFindSelector = ({ type }: FindQuery = {}) => {
+  return { ...(type ? { type } : {}), deleted: null };
 };
 
 const getDefaultContext = (context?: PaymentContext): PaymentContext => {
@@ -103,7 +103,7 @@ export const configurePaymentProvidersModule = (
     },
 
     findSupported: async ({ order }, requestContext) => {
-      const providers = await PaymentProviders.find({})
+      const providers = await PaymentProviders.find({ deleted: null })
         .filter((provider: PaymentProvider) => {
           const director = PaymentDirector.actions(provider, getDefaultContext(order), requestContext);
           return director.isActive();
