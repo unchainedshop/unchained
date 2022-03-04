@@ -70,6 +70,10 @@ export const resolveOrderConfirmationTemplate: TemplateResolver = async (
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
 
+  if (order.status === 'PENDING') {
+    return [];
+  }
+
   const formatPrice = (price: number) => {
     const fixedPrice = price / 100;
     return `${order.currency} ${fixedPrice}`;

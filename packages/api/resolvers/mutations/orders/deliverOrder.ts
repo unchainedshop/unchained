@@ -39,6 +39,5 @@ export default async function deliverOrder(
   }
 
   await modules.orders.deliveries.markAsDelivered(orderDelivery);
-
   return modules.orders.processOrder(order, {}, context);
 }

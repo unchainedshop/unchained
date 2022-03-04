@@ -202,11 +202,7 @@ export const configureOrderModuleProcessing = ({
         },
         requestContext,
       );
-      updatedOrder = await modules.orders.sendOrderConfirmationToCustomer(
-        updatedOrder,
-        { locale },
-        requestContext,
-      );
+
       updatedOrder =
         (await modules.orders.ensureCartForUser(
           {
@@ -220,15 +216,10 @@ export const configureOrderModuleProcessing = ({
     },
 
     confirm: async (order, params, requestContext) => {
-      const { modules, localeContext } = requestContext;
+      const { modules } = requestContext;
       const orderId = order._id;
 
       if (order.status !== OrderStatus.PENDING) return order;
-
-      const user = await modules.users.findUser({ userId: order.userId });
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
 
       // Process order confirmation
       let updatedOrder = await modules.orders.updateContext(
@@ -249,11 +240,14 @@ export const configureOrderModuleProcessing = ({
         },
         requestContext,
       );
-      updatedOrder = await modules.orders.sendOrderConfirmationToCustomer(
-        updatedOrder,
-        { locale },
-        requestContext,
-      );
+      // Force sending the message when updated order has not changes
+      if (updatedOrder.status === OrderStatus.CONFIRMED) {
+        await modules.orders.sendOrderConfirmationToCustomer(
+          updatedOrder,
+          params,
+          requestContext,
+        );
+      }
 
       return updatedOrder;
     },
@@ -431,21 +425,40 @@ export const configureOrderModuleProcessing = ({
         // ???
       }
 
-      return updateStatus(order._id, { status: nextStatus, info: 'order processed' }, requestContext);
+      order = await updateStatus(
+        order._id,
+        { status: nextStatus, info: 'order processed' },
+        requestContext,
+      );
+
+      if (initialOrder.status !== order.status) {
+        await modules.orders.sendOrderConfirmationToCustomer(
+          order,
+          params,
+          requestContext,
+        );
+      }
+
+      return order;
     },
 
-    sendOrderConfirmationToCustomer: async (order, params, requestContext) => {
-      await requestContext.modules.worker.addWork(
+    sendOrderConfirmationToCustomer: async (order, params, { modules, localeContext, userId }) => {
+      const user = await modules.users.findUser({ userId: order.userId });
+      const locale = modules.users.userLocale(user, {
+        localeContext,
+      });
+      await modules.worker.addWork(
         {
           type: 'MESSAGE',
           retries: 0,
           input: {
-            locale: params.locale,
+            ...params,
+            locale,
             template: 'ORDER_CONFIRMATION',
             orderId: order._id,
           },
         },
-        requestContext.userId,
+        userId,
       );
 
       return order;

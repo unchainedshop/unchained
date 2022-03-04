@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { Address, Contact, FindOptions, LogFields, Locale, TimestampFields, _ID } from './common';
+import { Address, Contact, FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { OrderDeliveriesModule } from './orders.deliveries';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
 import { OrderPaymentsModule } from './orders.payments';
@@ -114,7 +114,7 @@ export interface OrderProcessing {
     requestContext: Context,
   ) => Promise<Order>;
   processOrder: OrderContextParams<OrderTransactionContext>;
-  sendOrderConfirmationToCustomer: OrderContextParams<{ locale: Locale }>;
+  sendOrderConfirmationToCustomer: OrderContextParams<OrderTransactionContext>;
 }
 
 export interface OrderMutations {
