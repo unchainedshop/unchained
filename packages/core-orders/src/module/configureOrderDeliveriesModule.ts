@@ -25,6 +25,7 @@ export const configureOrderDeliveriesModule = ({
   const mutations = generateDbMutations<OrderDelivery>(
     OrderDeliveries,
     OrderDeliveriesSchema,
+    { permanentlyDeleteByDefault: true }
   ) as ModuleMutations<OrderDelivery>;
 
   const updateStatus: OrderDeliveriesModule['updateStatus'] = async (

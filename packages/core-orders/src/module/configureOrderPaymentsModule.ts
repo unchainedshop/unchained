@@ -1,8 +1,6 @@
 import { Collection, Filter, ModuleMutations, Query, Update } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderPayment, OrderPaymentsModule } from '@unchainedshop/types/orders.payments';
-// import { PaymentPricingDirector } from 'meteor/unchained:core-payment';
-// import { PaymentDirector } from 'meteor/unchained:core-payment';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
@@ -45,6 +43,7 @@ export const configureOrderPaymentsModule = ({
   const mutations = generateDbMutations<OrderPayment>(
     OrderPayments,
     OrderPaymentsSchema,
+    { permanentlyDeleteByDefault: true }
   ) as ModuleMutations<OrderPayment>;
 
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
@@ -184,11 +183,6 @@ export const configureOrderPaymentsModule = ({
       }
 
       return orderPayment;
-    },
-
-    delete: async (orderPaymentId, userId) => {
-      const deletedCount = await mutations.delete(orderPaymentId, userId);
-      return deletedCount;
     },
 
     logEvent: async (orderPaymentId, event) => {

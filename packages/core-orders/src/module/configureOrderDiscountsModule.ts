@@ -36,6 +36,7 @@ export const configureOrderDiscountsModule = ({
   const mutations = generateDbMutations<OrderDiscount>(
     OrderDiscounts,
     OrderDiscountsSchema,
+    { permanentlyDeleteByDefault: true }
   ) as ModuleMutations<OrderDiscount>;
 
   const getAdapter = async (orderDiscount: OrderDiscount, requestContext: Context) => {

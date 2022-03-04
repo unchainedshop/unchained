@@ -29,6 +29,7 @@ export const configureOrderPositionsModule = ({
   const mutations = generateDbMutations<OrderPosition>(
     OrderPositions,
     OrderPositionsSchema,
+    { permanentlyDeleteByDefault: true }
   ) as ModuleMutations<OrderPosition>;
 
   return {
