@@ -203,8 +203,7 @@ export const configureEnrollmentsModule = async ({
 
       await mutations.update(enrollmentId, { $set: { [fieldKey]: fieldValue } }, userId);
 
-      const selector = generateDbFilterById(enrollmentId);
-      const enrollment = await Enrollments.findOne(selector, {});
+      const enrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId), {});
 
       emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
 
@@ -214,7 +213,7 @@ export const configureEnrollmentsModule = async ({
   return {
     // Queries
     count: async () => {
-      const enrollmentCount = await Enrollments.find({}).count();
+      const enrollmentCount = await Enrollments.find({ deleted: null }).count();
       return enrollmentCount;
     },
 
@@ -227,7 +226,10 @@ export const configureEnrollmentsModule = async ({
     },
 
     findEnrollments: async ({ status, userId, limit, offset }) => {
-      const selector: Query = status ? { status: { $in: status } } : {};
+      const selector: Query = { deleted: null };
+      if (status) {
+        selector.status = { $in: status };
+      }
       if (userId) {
         selector.userId = userId;
       }

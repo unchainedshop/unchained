@@ -26,8 +26,8 @@ type FindQuery = {
   deleted?: Date | null;
 };
 
-const buildFindSelector = ({ type, deleted = null }: FindQuery = {}) => {
-  return { ...(type ? { type } : {}), deleted };
+const buildFindSelector = ({ type }: FindQuery = {}) => {
+  return { ...(type ? { type } : {}), deleted: null };
 };
 
 const getDefaultContext = (context?: DeliveryContext): DeliveryContext => {
@@ -103,7 +103,7 @@ export const configureDeliveryModule = async ({
     },
 
     findSupported: async ({ order }, requestContext) => {
-      const providers = await DeliveryProviders.find({})
+      const providers = await DeliveryProviders.find(buildFindSelector({}))
         .filter((provider: DeliveryProvider) => {
           const director = DeliveryDirector.actions(
             provider,
@@ -149,11 +149,8 @@ export const configureDeliveryModule = async ({
         },
         userId,
       );
-
       const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(deliveryProviderId));
-
       emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
-
       return deliveryProvider;
     },
 
@@ -161,16 +158,13 @@ export const configureDeliveryModule = async ({
       await mutations.update(_id, doc, userId);
       const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id));
       emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
-
       return deliveryProvider;
     },
 
     delete: async (_id, userId) => {
       await mutations.delete(_id, userId);
       const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id));
-
       emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
-
       return deliveryProvider;
     },
   };
