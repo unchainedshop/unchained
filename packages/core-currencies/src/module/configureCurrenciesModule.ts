@@ -49,11 +49,12 @@ export const configureCurrenciesModule = async ({
     },
 
     currencyExists: async ({ currencyId }) => {
-      const currencyCount = await Currencies.find({ _id: currencyId }, { limit: 1 }).count();
+      const currencyCount = await Currencies.find(generateDbFilterById(currencyId, { deleted: null }), { limit: 1 }).count();
       return !!currencyCount;
     },
 
     create: async (doc: Currency, userId: string) => {
+      await Currencies.removeOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const currencyId = await mutations.create(
         { ...doc, isoCode: doc.isoCode.toUpperCase(), isActive: true },
         userId,

@@ -60,16 +60,23 @@ export const generateDbMutations = <T extends { _id?: _ID }>(
           return _id;
         },
 
-    delete: hasCreateOnly
+    permanentlyDelete: hasCreateOnly
       ? undefined
       : async (_id, userId) => {
           checkId(_id);
-          const filter = generateDbFilterById(_id, { deleted: null });
-          if (permanentlyDeleteByDefault) {
-            const result = await collection.deleteOne(filter);
-            return result.deletedCount;
-          }
+          const filter = generateDbFilterById(_id);
+          const result = await collection.deleteOne(filter);
+          return result.deletedCount;
+        },
 
+    delete: hasCreateOnly
+      ? undefined
+      : async (_id, userId) => {
+          if (permanentlyDeleteByDefault) {
+            return this.permanentlyDelete(_id, userId);
+          }
+          checkId(_id);
+          const filter = generateDbFilterById(_id, { deleted: null });
           const modifier = { $set: { deleted: new Date(), deletedBy: userId } };
           const values = schema.clean(modifier, { isModifier: true });
           const result = await collection.updateOne(filter, values);

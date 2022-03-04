@@ -66,12 +66,14 @@ export interface ModuleCreateMutation<T> {
 export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
   update: (_id: string, doc: UpdateFilter<T> | T, userId?: string) => Promise<string>;
   delete: (_id: string, userId?: string) => Promise<number>;
+  deletePermanently: (_id: string, userId?: string) => Promise<number>;
 }
 
 export interface ModuleMutationsWithReturnDoc<T> {
   create: (doc: T, userId?: string) => Promise<T>;
   update: (_id: _ID, doc: UpdateFilter<T> | T, userId?: string) => Promise<T>;
   delete: (_id: _ID, userId?: string) => Promise<T>;
+  deletePermanently: (_id: string, userId?: string) => Promise<T>;
 }
 
 /*

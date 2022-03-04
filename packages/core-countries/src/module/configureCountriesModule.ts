@@ -13,7 +13,7 @@ type FindQuery = {
   includeInactive?: boolean;
 };
 const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true } = {};
+  const selector: { isActive?: true } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
   return selector;
 };
@@ -47,7 +47,7 @@ export const configureCountriesModule = async ({
     },
 
     countryExists: async ({ countryId }) => {
-      const countryCount = await Countries.find(generateDbFilterById(countryId), { limit: 1 }).count();
+      const countryCount = await Countries.find(generateDbFilterById(countryId, { deleted: null }), { limit: 1 }).count();
       return !!countryCount;
     },
 
@@ -62,6 +62,7 @@ export const configureCountriesModule = async ({
     },
 
     create: async (doc: Country, userId: string) => {
+      await Countries.removeOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const countryId = await mutations.create(
         {
           ...doc,

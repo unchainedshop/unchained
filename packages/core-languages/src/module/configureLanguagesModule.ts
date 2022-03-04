@@ -11,7 +11,7 @@ type FindQuery = {
   includeInactive?: boolean;
 };
 const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true } = {};
+  const selector: { isActive?: true } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
   return selector;
 };
@@ -31,12 +31,11 @@ export const configureLanguagesModule = async ({
     },
 
     findLanguages: async ({ limit, offset, includeInactive }, options) => {
-      const languages = Languages.find(buildFindSelector({ includeInactive }), {
+      return Languages.find(buildFindSelector({ includeInactive }), {
         skip: offset,
         limit,
         ...options,
-      });
-      return languages.toArray();
+      }).toArray();
     },
 
     count: async (query) => {
@@ -45,7 +44,7 @@ export const configureLanguagesModule = async ({
     },
 
     languageExists: async ({ languageId }) => {
-      const languageCount = await Languages.find({ _id: languageId }, { limit: 1 }).count();
+      const languageCount = await Languages.find(generateDbFilterById(languageId, { deleted: null }), { limit: 1 }).count();
       return !!languageCount;
     },
 
@@ -54,6 +53,7 @@ export const configureLanguagesModule = async ({
     },
 
     create: async (doc: Language, userId?: string) => {
+      await Languages.removeOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
       const languageId = await mutations.create(
         {
           ...doc,
