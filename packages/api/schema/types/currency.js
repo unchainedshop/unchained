@@ -2,7 +2,7 @@ export default [
   /* GraphQL */ `
     type Currency {
       _id: ID!
-      isoCode: String
+      isoCode: String!
       isActive: Boolean
       contractAddress: String
     }

@@ -5,7 +5,7 @@ export type Currency = {
   isoCode: string;
   isActive: boolean;
   authorId: string;
-  contractAddress: string;
+  contractAddress?: string;
 } & TimestampFields;
 
 type CurrencyQuery = {
