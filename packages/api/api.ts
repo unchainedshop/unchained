@@ -40,6 +40,8 @@ const createContextResolver =
     const localeContext = await getLocaleContext(req, unchainedAPI);
 
     return {
+      req,
+      res,
       ...apolloContext,
       ...unchainedAPI,
       ...loaders,
@@ -65,7 +67,7 @@ export const startAPIServer = (options: UnchainedServerOptions) => {
 
   context = customContext
     ? ({ req, res }) => {
-        return customContext({ req, res, unchainedContextFn: contextResolver });
+        return customContext({ req, res }, contextResolver);
       }
     : contextResolver;
 

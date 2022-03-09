@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { startPlatform } from 'meteor/unchained:platform';
+import { startPlatform, withAccessToken } from 'meteor/unchained:platform';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
@@ -64,28 +64,6 @@ import 'meteor/unchained:events/plugins/node-event-emitter';
 import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
 
-const context = async ({ req, unchainedContextFn, ...rest }) => {
-  const unchainedContext = await unchainedContextFn({ req, ...rest });
-  const newContext = {
-    ...unchainedContext,
-  };
-  if (!unchainedContext.userId && req.headers.authorization) {
-    const [type, userToken] = req.headers.authorization.split(' ');
-    if (type === 'Bearer' && userToken) {
-      const [username, secret] = userToken.split(':');
-      const user = await unchainedContext.modules.users.findUser({ username });
-      if (secret && user?.services.token?.secret === secret) {
-        newContext.userId = user._id;
-        newContext.user = user;
-      } else {
-        // eslint-disable-next-line
-        console.warn('Token login failed');
-      }
-    }
-  }
-  return newContext;
-};
-
 Meteor.startup(async () => {
   const unchainedApi = await startPlatform({
     introspection: true,
@@ -124,7 +102,7 @@ Meteor.startup(async () => {
         },
       },
     },
-    context,
+    context: withAccessToken(),
   });
 
   seed(unchainedApi);

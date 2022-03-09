@@ -1,1 +1,2 @@
-export { startPlatform } from './startPlatform';
+export * from './startPlatform';
+export * from './context';
