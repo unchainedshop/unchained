@@ -27,8 +27,6 @@ export const configureAccountsModule = async ({ db }, options): Promise<Accounts
   return {
     dbManager,
 
-    getSettings: () => accountsSettings,
-
     getAccountsServer: () => accountsServer,
 
     emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
