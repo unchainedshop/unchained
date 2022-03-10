@@ -277,7 +277,10 @@ export const configureOrderModuleProcessing = ({
       });
       await modules.payment.paymentProviders.cancel(
         orderPayment.paymentProviderId,
-        params.paymentContext,
+        {
+          ...params.paymentContext,
+          transactionContext: { refund: true },
+        },
         requestContext,
       );
       await modules.orders.sendOrderRejectionToCustomer(updatedOrder, params, requestContext);
