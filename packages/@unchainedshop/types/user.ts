@@ -1,3 +1,4 @@
+import { Filter } from 'mongodb';
 import { Context } from './api';
 import {
   Address,
@@ -53,8 +54,7 @@ export type User = {
   username?: string;
 } & TimestampFields;
 
-type UserQuery = {
-  username?: string;
+export type UserQuery = Filter<User> & {
   includeGuests?: boolean;
   queryString?: string;
 };
@@ -68,13 +68,7 @@ export type UsersModule = {
   count: (query: UserQuery) => Promise<number>;
   findUserById: (userId: _ID) => Promise<User>;
   findUserByToken: (query: { resetToken?: string; hashedToken?: string }) => Promise<User>;
-  findUser: (
-    query: {
-      userId?: _ID;
-      username?: string;
-    },
-    options?: FindOptions,
-  ) => Promise<User>;
+  findUser: (selector: UserQuery, options?: FindOptions) => Promise<User>;
   findUsers: (
     query: UserQuery & {
       limit?: number;

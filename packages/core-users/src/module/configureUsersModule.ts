@@ -12,8 +12,8 @@ import { FileDirector } from 'meteor/unchained:file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
 
-const buildFindSelector = ({ username, includeGuests, queryString }: UserQuery) => {
-  const selector: Query = username ? { username } : { username };
+const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
+  const selector: Query = { ...rest };
   if (!includeGuests) selector.guest = { $ne: true };
   if (queryString) {
     selector.$text = { $search: queryString };
@@ -69,23 +69,16 @@ export const configureUsersModule = async ({
       return null;
     },
 
-    findUser: async ({ userId, username }, options) => {
-      if (username) {
-        return Users.findOne(
-          {
-            username,
-          },
-          options,
-        );
-      }
+    findUser: async (query, options) => {
+      const selector = buildFindSelector(query);
 
-      return Users.findOne(generateDbFilterById(userId), options);
+      return Users.findOne(selector, options);
     },
 
-    findUsers: async ({ limit, offset, includeGuests, queryString }) => {
-      const selector = buildFindSelector({ includeGuests, queryString });
+    findUsers: async ({ limit, offset, ...query }) => {
+      const selector = buildFindSelector(query);
 
-      if (queryString) {
+      if (query.queryString) {
         return Users.find(selector, {
           skip: offset,
           limit,
