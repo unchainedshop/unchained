@@ -151,6 +151,64 @@ describe('Order: Management', () => {
     });
   });
 
+  describe('Mutation.rejectOrder', () => {
+    beforeAll(async () => {
+      await setupDatabase();
+    });
+
+    it('cannot reject an already confirmed order', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation rejectOrder($orderId: ID!) {
+            rejectOrder(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: ConfirmedOrder._id,
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderWrongStatusError');
+    });
+
+    it('reject a pending order', async () => {
+      const { data: { rejectOrder } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation rejectOrder($orderId: ID!) {
+            rejectOrder(orderId: $orderId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          orderId: PendingOrder._id,
+        },
+      });
+      expect(rejectOrder).toMatchObject({
+        _id: PendingOrder._id,
+        status: 'REJECTED',
+      });
+    });
+
+    it('return not found error when passed non existing orderId', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation rejectOrder($orderId: ID!) {
+            rejectOrder(orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: 'non-existing-id',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('OrderNotFoundError');
+    });
+  });
+
   describe('Mutation.payOrder', () => {
     it('pay a confirmed order', async () => {
       const { data: { payOrder } = {} } = await graphqlFetch({
