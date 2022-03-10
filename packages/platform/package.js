@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:platform',
-  version: '1.0.0-rc.5',
+  version: '1.0.0-rc.5.1',
   summary: 'Unchained Engine',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -20,7 +20,7 @@ Package.onUse((api) => {
   api.use('check');
   api.use('email');
 
-  api.use('unchained:utils@1.0.0-rc.5');
+  api.use('unchained:utils@1.0.0-rc.5.1');
   api.use('unchained:logger@1.0.0-rc.5');
   api.use('unchained:events@1.0.0-rc.5');
 
@@ -29,7 +29,7 @@ Package.onUse((api) => {
   api.use('unchained:api@1.0.0-rc.5');
 
   api.use('unchained:core-worker@1.0.0-rc.5');
-  api.use('unchained:core-accountsjs@1.0.0-rc.5');
+  api.use('unchained:core-accountsjs@1.0.0-rc.5.1');
   api.use('unchained:core-messaging@1.0.0-rc.5');
 
   api.mainModule('src/platform-index.ts', 'server');
