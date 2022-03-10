@@ -14,7 +14,7 @@ export const getOrderCart = async (params: { orderId?: string; user?: User }, co
     return order;
   }
 
-  const user = params.user || (await modules.users.findUser({ userId }));
+  const user = params.user || (await modules.users.findUserById(userId));
   if (!user) throw new UserNotFoundError({ userId });
 
   const cart = await modules.orders.cart({ countryContext }, user);

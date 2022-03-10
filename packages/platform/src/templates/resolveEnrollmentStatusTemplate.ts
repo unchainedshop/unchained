@@ -18,7 +18,7 @@ export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
 ) => {
   const { modules } = context;
   const enrollment = await modules.enrollments.findEnrollment({ enrollmentId });
-  const user = await modules.users.findUser({ userId: enrollment.userId });
+  const user = await modules.users.findUserById(enrollment.userId);
 
   const subject = `${EMAIL_WEBSITE_NAME}: Updated Enrollment / ${enrollment.enrollmentNumber}`;
 

@@ -6,7 +6,7 @@ export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadServ
 ) => {
   const { modules, services, userId: currentUserId } = context;
   const { userId } = file.meta as { userId: string };
-  const user = await modules.users.findUser({ userId });
+  const user = await modules.users.findUserById(userId);
 
   if (user?.avatarId) {
     await services.files.removeFiles(

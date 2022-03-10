@@ -11,10 +11,10 @@ export default async function updateEmail(
 
   log(`mutation updateEmail ${params.email} ${normalizedUserId}`, { userId });
 
-  const user = await modules.users.findUser({ userId: normalizedUserId });
+  const user = await modules.users.findUserById(normalizedUserId);
   if (!user) throw new UserNotFoundError({ userId: normalizedUserId });
 
   await modules.accounts.updateEmail(normalizedUserId, params.email, user);
 
-  return modules.users.findUser({ userId: normalizedUserId });
+  return modules.users.findUserById(normalizedUserId);
 }

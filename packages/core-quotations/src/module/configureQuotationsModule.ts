@@ -177,9 +177,7 @@ export const configureQuotationsModule = async ({
   const sendStatusToCustomer = async (quotation: Quotation, requestContext: Context) => {
     const { modules, userId } = requestContext;
 
-    const user = await modules.users.findUser({
-      userId: quotation.userId,
-    });
+    const user = await modules.users.findUserById(quotation.userId);
     const locale = modules.users.userLocale(user, requestContext);
 
     await modules.worker.addWork(

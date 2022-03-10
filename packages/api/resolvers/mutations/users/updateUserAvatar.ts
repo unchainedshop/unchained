@@ -15,7 +15,7 @@ export default async function updateUserAvatar(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  const user = await modules.users.findUser({ userId: normalizedUserId });
+  const user = await modules.users.findUserById(normalizedUserId);
 
   const file = await services.files.uploadFileFromStream(
     {

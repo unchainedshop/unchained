@@ -73,9 +73,7 @@ export const configureProductPricesModule = ({
         requestContext,
       ));
 
-    const user = await requestContext.modules.users.findUser({
-      userId: requestContext.userId,
-    });
+    const user = await requestContext.modules.users.findUserById(requestContext.userId);
     const pricingDirector = await ProductPricingDirector.actions(
       {
         product,

@@ -218,7 +218,7 @@ const Stripe: IPaymentAdapter = {
           return paymentIntent.client_secret;
         }
 
-        const user = await modules.users.findUser({ userId });
+        const user = await modules.users.findUserById(userId);
         const email = modules.users.primaryEmail(user)?.address;
         const name = user.profile.displayName || user.username || email;
 

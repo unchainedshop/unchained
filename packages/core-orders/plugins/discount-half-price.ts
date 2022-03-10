@@ -24,9 +24,7 @@ const HalfPrice: IDiscountAdapter = {
 
     isValidForSystemTriggering: async () => {
       const { order } = context;
-      const user = await context.modules.users.findUser({
-        userId: order.userId,
-      });
+      const user = await context.modules.users.findUserById(order.userId);
       const isUserEligibleForHalfPrice = user?.tags && user.tags.indexOf('half-price') !== -1;
       return !!isUserEligibleForHalfPrice;
     },

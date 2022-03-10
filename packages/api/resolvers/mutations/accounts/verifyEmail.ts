@@ -9,9 +9,7 @@ export default async function verifyEmail(root: Root, { token }: { token: any },
   const unverifiedUser = await modules.accounts.findUnverifiedUserByToken(token);
 
   await modules.accounts.verifyEmail(token);
-  const verifiedUser = await modules.users.findUser({
-    userId: unverifiedUser.id,
-  });
+  const verifiedUser = await modules.users.findUserById(unverifiedUser.id);
   await modules.accounts.emit('VerifyEmailSuccess', verifiedUser);
 
   const tokenData = await modules.accounts.createLoginToken(unverifiedUser.id, context);

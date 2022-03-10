@@ -31,5 +31,5 @@ export const Enrollment: EnrollmentHelperTypes = {
 
   currency: (obj, _, { modules }) => modules.currencies.findCurrency({ isoCode: obj.currencyCode }),
 
-  user: (obj, _, { modules }) => modules.users.findUser({ userId: obj.userId }),
+  user: (obj, _, { modules }) => modules.users.findUserById(obj.userId),
 };

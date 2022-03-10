@@ -45,9 +45,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
     const order = await modules.orders.findOrder({
       orderId: orderPosition.orderId,
     });
-    const user = await modules.users.findUser({
-      userId: order.userId,
-    });
+    const user = await modules.users.findUserById(order.userId);
     const discounts = await modules.orders.discounts.findOrderDiscounts({
       orderId: orderPosition.orderId,
     });

@@ -46,9 +46,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     const provider = modules.delivery.findProvider({
       deliveryProviderId: item.deliveryProviderId,
     });
-    const user = await modules.users.findUser({
-      userId: order.userId,
-    });
+    const user = await modules.users.findUserById(order.userId);
     const discounts = await modules.orders.discounts.findOrderDiscounts({
       orderId: item.orderId,
     });

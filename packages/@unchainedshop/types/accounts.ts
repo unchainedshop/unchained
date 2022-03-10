@@ -58,6 +58,7 @@ export interface AccountsModule {
     tokenExpires: Date;
   }>;
   logout: (params: { token?: string }, context: Context) => Promise<{ success: boolean; error: any }>;
+  createHashLoginToken: (loginToken: string) => string;
 
   // User Management
   setUsername: (userId: string, username: string) => Promise<void>;

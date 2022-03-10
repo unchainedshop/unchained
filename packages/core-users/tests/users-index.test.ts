@@ -41,7 +41,7 @@ describe('Test exports', () => {
     assert.isFalse(await module.userExists({ userId: '123123133123ABCD' }));
     assert.equal(await module.count({ queryString: 'Test' }), 1);
     assert.equal(await module.count({ queryString: 'Urrghh' }), 0);
-    assert.ok(await module.findUser({ userId }));
+    assert.ok(await module.findUserById(userId));
     assert.lengthOf(await module.findUsers({ limit: 10 }), 1);
   });
 });

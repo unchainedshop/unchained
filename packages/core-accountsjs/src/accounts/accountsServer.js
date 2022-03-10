@@ -99,7 +99,7 @@ export class UnchainedAccountsServer extends AccountsServer {
     try {
       await this.destroyToken(userId, token);
       this.hooks.emit(ServerHooks.LogoutSuccess, {
-        user: await this.users.findUser({ userId }),
+        user: await this.users.findUserById(userId),
       });
     } catch (error) {
       this.hooks.emit(ServerHooks.LogoutError, error);

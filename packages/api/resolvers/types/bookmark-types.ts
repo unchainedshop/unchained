@@ -15,6 +15,6 @@ export const Bookmark: BookmarkHelperTypes = {
     return modules.products.findProduct({ productId: obj.productId });
   },
   user: async (obj, _, { modules }) => {
-    return modules.users.findUser({ userId: obj.userId });
+    return modules.users.findUserById(obj.userId);
   },
 };

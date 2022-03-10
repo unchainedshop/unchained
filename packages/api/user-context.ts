@@ -27,7 +27,7 @@ export const getUserContext = async (
     // the hashed token is the key to find the possible current user in the db
     const hashedToken = unchainedAPI.modules.accounts.createHashLoginToken(loginToken);
 
-    const currentUser = await unchainedAPI.modules.users.findUser({
+    const currentUser = await unchainedAPI.modules.users.findUserByToken({
       hashedToken,
     });
 

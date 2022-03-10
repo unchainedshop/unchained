@@ -2,9 +2,7 @@ import { PaymentCredentialsHelperTypes } from '@unchainedshop/types/payments';
 
 export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   async user(obj, _, { modules }) {
-    return modules.users.findUser({
-      userId: obj.userId,
-    });
+    return modules.users.findUserById(obj.userId);
   },
 
   async paymentProvider(obj, _, { modules }) {

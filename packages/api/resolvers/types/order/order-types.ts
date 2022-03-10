@@ -97,8 +97,5 @@ export const Order: OrderHelperTypes = {
     };
   },
 
-  user: async (obj, _, { modules }) =>
-    modules.users.findUser({
-      userId: obj.userId,
-    }),
+  user: async (obj, _, { modules }) => modules.users.findUserById(obj.userId),
 };

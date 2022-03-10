@@ -17,7 +17,7 @@ export interface ProductReviewHelperTypes {
 }
 export const ProductReview: ProductReviewHelperTypes = {
   author: async (obj, _, { modules }) => {
-    return modules.users.findUser({ userId: obj.authorId });
+    return modules.users.findUserById(obj.authorId);
   },
 
   product: async (obj, _, { modules }) => {

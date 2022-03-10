@@ -12,5 +12,5 @@ export default async function enableTOTP(
 
   await modules.accounts.enableTOTP(userId, params.secretBase32, params.code);
 
-  return modules.users.findUser({ userId });
+  return modules.users.findUserById(userId);
 }

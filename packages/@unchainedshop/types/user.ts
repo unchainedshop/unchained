@@ -66,12 +66,12 @@ type UserQuery = {
 export type UsersModule = {
   // Queries
   count: (query: UserQuery) => Promise<number>;
+  findUserById: (userId: _ID) => Promise<User>;
+  findUserByToken: (query: { resetToken?: string; hashedToken?: string }) => Promise<User>;
   findUser: (
     query: {
       userId?: _ID;
       username?: string;
-      resetToken?: string;
-      hashedToken?: string;
     },
     options?: FindOptions,
   ) => Promise<User>;

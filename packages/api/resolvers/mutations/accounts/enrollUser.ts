@@ -21,5 +21,5 @@ export default async function enrollUser(root: Root, params: UserData, context: 
     skipMessaging: !!mappedUserData.password,
   });
 
-  return modules.users.findUser({ userId });
+  return modules.users.findUserById(userId);
 }

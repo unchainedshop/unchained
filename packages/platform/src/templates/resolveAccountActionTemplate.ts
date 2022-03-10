@@ -116,7 +116,7 @@ export const resolveAccountActionTemplate: TemplateResolver = async (
 ) => {
   if (!token || !action) return [];
 
-  const user = await modules.users.findUser({ userId });
+  const user = await modules.users.findUserById(userId);
   const locale = modules.users.userLocale(user);
 
   const { url } = emailConfig[action];

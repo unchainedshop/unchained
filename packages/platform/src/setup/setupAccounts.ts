@@ -36,9 +36,7 @@ export const setupAccounts = (unchainedAPI: Context, options: SetupAccountsOptio
         },
         {},
       );
-      return unchainedAPI.modules.users.findUser({
-        userId: guestUserId,
-      });
+      return unchainedAPI.modules.users.findUserById(guestUserId);
     },
   };
 
@@ -55,7 +53,7 @@ export const setupAccounts = (unchainedAPI: Context, options: SetupAccountsOptio
       countryContext,
     });
 
-    const user = await unchainedAPI.modules.users.findUser({ userId });
+    const user = await unchainedAPI.modules.users.findUserById(userId);
     const context = {
       ...unchainedAPI,
       countryContext,
@@ -64,7 +62,7 @@ export const setupAccounts = (unchainedAPI: Context, options: SetupAccountsOptio
     };
 
     if (userIdBeforeLogin) {
-      const userBeforeLogin = await unchainedAPI.modules.users.findUser({ userId: userIdBeforeLogin });
+      const userBeforeLogin = await unchainedAPI.modules.users.findUserById(userIdBeforeLogin);
 
       await unchainedAPI.services.orders.migrateOrderCarts(
         {

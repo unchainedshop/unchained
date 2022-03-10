@@ -21,9 +21,7 @@ export const OrderPricingDirector: IOrderPricingDirector = {
 
   buildPricingContext: async ({ order }: { order: Order }, requestContext) => {
     const { modules } = requestContext;
-    const user = await modules.users.findUser({
-      userId: order.userId,
-    });
+    const user = await modules.users.findUserById(order.userId);
 
     const orderPositions = await modules.orders.positions.findOrderPositions({
       orderId: order._id,

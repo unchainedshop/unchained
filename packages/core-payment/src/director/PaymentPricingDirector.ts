@@ -37,9 +37,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
     const provider = await requestContext.modules.payment.paymentProviders.findProvider({
       paymentProviderId: item.paymentProviderId,
     });
-    const user = await requestContext.modules.users.findUser({
-      userId: order.userId,
-    });
+    const user = await requestContext.modules.users.findUserById(order.userId);
     const discounts = await requestContext.modules.orders.discounts.findOrderDiscounts({
       orderId: item.orderId,
     });

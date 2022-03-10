@@ -140,9 +140,7 @@ export const configureEnrollmentsModule = async ({
   ) => {
     const { modules, userId } = requestContext;
 
-    // const user = await modules.users.findUser({
-    //   userId: enrollment.userId,
-    // });
+    // const user = await modules.users.findUserById(enrollment.userId);
     // const locale = modules.users.userLocale(user, requestContext);
     // const reason = "new_enrollment";
 
@@ -171,9 +169,7 @@ export const configureEnrollmentsModule = async ({
 
     let { locale } = params;
     if (!locale) {
-      const user = await modules.users.findUser({
-        userId: enrollment.userId,
-      });
+      const user = await modules.users.findUserById(enrollment.userId);
       locale = modules.users.userLocale(user, requestContext);
     }
 

@@ -13,7 +13,7 @@ export default async function disableTOTP(
     userId,
   });
 
-  const user = await modules.users.findUser({ userId: normalizedUserId });
+  const user = await modules.users.findUserById(normalizedUserId);
   if (!user) throw new UserNotFoundError({ userId: normalizedUserId });
 
   await modules.accounts.disableTOTP(normalizedUserId, params.code);

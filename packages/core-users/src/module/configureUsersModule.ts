@@ -48,28 +48,32 @@ export const configureUsersModule = async ({
       return userCount;
     },
 
-    findUser: async ({ userId, username, resetToken, hashedToken }, options) => {
+    async findUserById(userId) {
+      if (!userId) return null;
+      return Users.findOne(generateDbFilterById(userId), {});
+    },
+
+    async findUserByToken({ resetToken, hashedToken }) {
+      if (hashedToken) {
+        return Users.findOne({
+          'services.resume.loginTokens.hashedToken': hashedToken,
+        });
+      }
+
+      if (resetToken) {
+        return Users.findOne({
+          'services.password.reset.token': resetToken,
+        });
+      }
+
+      return null;
+    },
+
+    findUser: async ({ userId, username }, options) => {
       if (username) {
         return Users.findOne(
           {
             username,
-          },
-          options,
-        );
-      }
-      if (hashedToken) {
-        return Users.findOne(
-          {
-            'services.resume.loginTokens.hashedToken': hashedToken,
-          },
-          options,
-        );
-      }
-
-      if (resetToken) {
-        return Users.findOne(
-          {
-            'services.password.reset.token': resetToken,
           },
           options,
         );

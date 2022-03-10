@@ -48,8 +48,5 @@ export const Quotation: QuotationHelperTypes = {
 
   status: (obj, _, { modules }) => modules.quotations.normalizedStatus(obj),
 
-  user: (obj, _, { modules }) =>
-    modules.users.findUser({
-      userId: obj.userId,
-    }),
+  user: (obj, _, { modules }) => modules.users.findUserById(obj.userId),
 };

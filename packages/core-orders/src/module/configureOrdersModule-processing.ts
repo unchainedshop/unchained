@@ -182,7 +182,7 @@ export const configureOrderModuleProcessing = ({
         throw new Error(errors[0]);
       }
 
-      const user = await modules.users.findUser({ userId: order.userId });
+      const user = await modules.users.findUserById(order.userId);
       const locale = modules.users.userLocale(user, {
         localeContext,
       });
@@ -242,11 +242,7 @@ export const configureOrderModuleProcessing = ({
       );
       // Force sending the message when updated order has not changes
       if (updatedOrder.status === OrderStatus.CONFIRMED) {
-        await modules.orders.sendOrderConfirmationToCustomer(
-          updatedOrder,
-          params,
-          requestContext,
-        );
+        await modules.orders.sendOrderConfirmationToCustomer(updatedOrder, params, requestContext);
       }
 
       return updatedOrder;
@@ -432,18 +428,14 @@ export const configureOrderModuleProcessing = ({
       );
 
       if (initialOrder.status !== order.status) {
-        await modules.orders.sendOrderConfirmationToCustomer(
-          order,
-          params,
-          requestContext,
-        );
+        await modules.orders.sendOrderConfirmationToCustomer(order, params, requestContext);
       }
 
       return order;
     },
 
     sendOrderConfirmationToCustomer: async (order, params, { modules, localeContext, userId }) => {
-      const user = await modules.users.findUser({ userId: order.userId });
+      const user = await modules.users.findUserById(order.userId);
       const locale = modules.users.userLocale(user, {
         localeContext,
       });
