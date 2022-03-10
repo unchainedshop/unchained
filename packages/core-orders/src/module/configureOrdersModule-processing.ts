@@ -272,6 +272,14 @@ export const configureOrderModuleProcessing = ({
         },
         requestContext,
       );
+      const orderPayment = await modules.orders.payments.findOrderPayment({
+        orderPaymentId: order.paymentId,
+      });
+      await modules.payment.paymentProviders.cancel(
+        orderPayment.paymentProviderId,
+        params.paymentContext,
+        requestContext,
+      );
       await modules.orders.sendOrderRejectionToCustomer(updatedOrder, params, requestContext);
 
       return updatedOrder;
