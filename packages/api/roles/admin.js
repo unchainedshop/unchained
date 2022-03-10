@@ -36,6 +36,7 @@ export const admin = (role, actions) => {
   role.allow(actions.updateOrderDelivery, () => true);
   role.allow(actions.updateOrderPayment, () => true);
   role.allow(actions.markOrderConfirmed, () => true);
+  role.allow(actions.markOrderRejected, () => true);
   role.allow(actions.markOrderPaid, () => true);
   role.allow(actions.markOrderDelivered, () => true);
   role.allow(actions.viewLogs, () => true);

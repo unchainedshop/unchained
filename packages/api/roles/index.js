@@ -69,6 +69,7 @@ const actions = [
   'updateOrderDiscount',
   'updateOrderItem',
   'markOrderConfirmed',
+  'markOrderRejected',
   'markOrderPaid',
   'markOrderDelivered',
   'viewAssortments',

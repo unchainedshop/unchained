@@ -145,6 +145,7 @@ import prepareAssortmentMediaUpload from './assortments/prepareAssortmentMediaUp
 import prepareUserAvatarUpload from './users/prepareUserAvatarUpload';
 import cancelOrderPayment from './orders/cancelOrderPayment';
 import confirmOrderPayment from './orders/confirmOrderPayment';
+import rejectOrder from './orders/rejectOrder';
 
 export default {
   logout,
@@ -238,6 +239,7 @@ export default {
   updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(updateOrderPaymentInvoice),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
+  rejectOrder: acl(actions.markOrderRejected)(rejectOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
   confirmOrderPayment: acl(actions.markOrderPaid)(confirmOrderPayment),
   cancelOrderPayment: acl(actions.markOrderPaid)(cancelOrderPayment),

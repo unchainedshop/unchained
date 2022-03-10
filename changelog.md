@@ -174,6 +174,7 @@ ReorderAssortmentMediaInput
 - [core] New
   [PostFinance Checkout](https://www.postfinance.ch/de/unternehmen/produkte/e-commerce/postfinance-checkout-flex.html)
   payment plugin with support for deferred settlements and refunds.
+- [api] New mutation `rejectOrder` and corresponding e-mail template `ORDER_REJECTION` to manually reject an order with status `PENDING`.
 
 ## Minor
 

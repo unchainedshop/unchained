@@ -12,6 +12,11 @@ export default [
       PENDING
 
       """
+      Order has been rejected
+      """
+      REJECTED
+
+      """
       Order has been confirmed
       """
       CONFIRMED
@@ -54,6 +59,11 @@ export default [
       Order Confirmation
       """
       ORDER_CONFIRMATION
+
+      """
+      Order Rejection
+      """
+      ORDER_REJECTION
 
       """
       Delivery Note

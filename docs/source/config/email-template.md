@@ -13,6 +13,7 @@ existing message templates are defined [here](https://github.com/unchainedshop/u
 - ACCOUNT_ACTION
 - DELIVERY
 - ORDER_CONFIRMATION
+- ORDER_REJECTION
 - QUOTATION_STATUS
 - ENROLLMENT_STATUS
 

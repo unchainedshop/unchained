@@ -248,6 +248,46 @@ export const configureOrderModuleProcessing = ({
       return updatedOrder;
     },
 
+    reject: async (order, params, requestContext) => {
+      const { modules } = requestContext;
+      const orderId = order._id;
+
+      if (order.status !== OrderStatus.PENDING) return order;
+
+      let updatedOrder = await modules.orders.updateContext(
+        orderId,
+        params.orderContext,
+        requestContext,
+      );
+      updatedOrder = await modules.orders.updateStatus(
+        orderId,
+        { status: OrderStatus.REJECTED, info: 'rejected manually' },
+        requestContext,
+      );
+      updatedOrder = await modules.orders.processOrder(
+        updatedOrder,
+        {
+          paymentContext: params.paymentContext,
+          deliveryContext: params.deliveryContext,
+        },
+        requestContext,
+      );
+      const orderPayment = await modules.orders.payments.findOrderPayment({
+        orderPaymentId: order.paymentId,
+      });
+      await modules.payment.paymentProviders.cancel(
+        orderPayment.paymentProviderId,
+        {
+          ...params.paymentContext,
+          transactionContext: { refund: true },
+        },
+        requestContext,
+      );
+      await modules.orders.sendOrderRejectionToCustomer(updatedOrder, params, requestContext);
+
+      return updatedOrder;
+    },
+
     ensureCartForUser: async ({ user, countryCode }, requestContext) => {
       const { modules, services } = requestContext;
 
@@ -447,6 +487,28 @@ export const configureOrderModuleProcessing = ({
             ...params,
             locale,
             template: 'ORDER_CONFIRMATION',
+            orderId: order._id,
+          },
+        },
+        userId,
+      );
+
+      return order;
+    },
+
+    sendOrderRejectionToCustomer: async (order, params, { modules, localeContext, userId }) => {
+      const user = await modules.users.findUserById(order.userId);
+      const locale = modules.users.userLocale(user, {
+        localeContext,
+      });
+      await modules.worker.addWork(
+        {
+          type: 'MESSAGE',
+          retries: 0,
+          input: {
+            ...params,
+            locale,
+            template: 'ORDER_REJECTION',
             orderId: order._id,
           },
         },

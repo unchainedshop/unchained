@@ -12,10 +12,12 @@ export enum OrderStatus {
   PENDING = 'PENDING',
   CONFIRMED = 'CONFIRMED',
   FULLFILLED = 'FULLFILLED',
+  REJECTED = 'REJECTED',
 }
 
 export enum OrderDocumentType {
   ORDER_CONFIRMATION = 'ORDER_CONFIRMATION',
+  ORDER_REJECTION = 'ORDER_REJECTION',
   DELIVERY_NOTE = 'DELIVERY_NOTE',
   INVOICE = 'INVOICE',
   RECEIPT = 'RECEIPT',
@@ -101,6 +103,7 @@ export interface OrderTransformations {
 export interface OrderProcessing {
   checkout: OrderContextParams<OrderTransactionContext>;
   confirm: OrderContextParams<OrderTransactionContext>;
+  reject: OrderContextParams<OrderTransactionContext>;
   ensureCartForUser: (
     params: { user: User; countryCode?: string },
     requestContext: Context,
@@ -115,6 +118,7 @@ export interface OrderProcessing {
   ) => Promise<Order>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<OrderTransactionContext>;
+  sendOrderRejectionToCustomer: OrderContextParams<OrderTransactionContext>;
 }
 
 export interface OrderMutations {
