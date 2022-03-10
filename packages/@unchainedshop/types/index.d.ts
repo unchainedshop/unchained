@@ -258,11 +258,7 @@ declare module 'meteor/unchained:core-accountsjs' {
     params: ModuleInput<AccountsSettingsOptions>,
   ): Promise<AccountsModule>;
 
-  function configureAccountServer(context: Context): any;
-
   const accountsSettings: AccountsSettings;
-
-  function randomValueHex(len: number): string;
 }
 
 declare module 'meteor/unchained:core-assortments' {

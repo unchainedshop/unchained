@@ -1,8 +1,6 @@
 import { AccountsServer, ServerHooks } from '@accounts/server';
 import crypto from 'crypto';
-import { accountsPassword } from './accountsPassword';
-import { accountsServerOptions } from './accountsServerOptions';
-import { randomValueHex } from './utils/helpers';
+import { randomValueHex } from 'meteor/unchained:utils';
 
 export class UnchainedAccountsServer extends AccountsServer {
   DEFAULT_LOGIN_EXPIRATION_DAYS = 30;
@@ -107,15 +105,3 @@ export class UnchainedAccountsServer extends AccountsServer {
     }
   }
 }
-
-let accountsServer = null;
-
-export const configureAccountServer = (requestContext) => {
-  accountsServer = new UnchainedAccountsServer(accountsServerOptions(requestContext), {
-    password: accountsPassword,
-  });
-
-  return accountsServer;
-};
-
-export { accountsServer };

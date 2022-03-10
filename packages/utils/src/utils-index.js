@@ -10,6 +10,7 @@ export { default as findUnusedSlug } from './find-unused-slug';
 export { default as slugify } from './slugify';
 export { default as pipePromises } from './pipe-promises';
 export { default as generateRandomHash } from './generate-random-hash';
+export { default as randomValueHex } from './random-value-hex';
 
 /*
  * Db utils

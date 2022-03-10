@@ -1,24 +1,44 @@
 import { Context } from '@unchainedshop/types/api';
 import { User } from '@unchainedshop/types/user';
 import { check, Match } from 'meteor/check';
-import {
-  accountsSettings,
-  configureAccountServer,
-  randomValueHex,
-} from 'meteor/unchained:core-accountsjs';
+import { randomValueHex } from 'meteor/unchained:utils';
+import { accountsSettings } from 'meteor/unchained:core-accountsjs';
 import moniker from 'moniker';
 
-export interface SetupAccountsOptions {
-  autoMessagingAfterUserCreation?: boolean;
-  mergeUserCartsOnLogin?: boolean;
-}
-
-export const setupAccounts = (unchainedAPI: Context, options: SetupAccountsOptions = {}) => {
-  const accountsServer = configureAccountServer(unchainedAPI);
-
-  accountsSettings.configureSettings(accountsServer, options);
+export const setupAccounts = (unchainedAPI: Context) => {
+  const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();
 
   accountsServer.users = unchainedAPI.modules.users;
+
+  accountsServer.options.prepareMail = (
+    to: string,
+    token: string,
+    user: User & { id: string },
+    pathFragment: string,
+  ) => {
+    return {
+      template: 'ACCOUNT_ACTION',
+      recipientEmail: to,
+      action: pathFragment,
+      userId: user.id || user._id,
+      token,
+      skipMessaging: !!user.guest && pathFragment === 'verify-email',
+    };
+  };
+
+  accountsServer.options.sendMail = (input: any) => {
+    if (!input) return true;
+    if (input.skipMessaging) return true;
+
+    return unchainedAPI.modules.worker.addWork(
+      {
+        type: 'MESSAGE',
+        retries: 0,
+        input,
+      },
+      unchainedAPI.userId,
+    );
+  };
 
   accountsServer.services.guest = {
     async authenticate(params: { email?: string | null }) {
@@ -68,7 +88,7 @@ export const setupAccounts = (unchainedAPI: Context, options: SetupAccountsOptio
         {
           fromUser: userBeforeLogin,
           toUser: user,
-          shouldMerge: options.mergeUserCartsOnLogin,
+          shouldMerge: accountsSettings.mergeUserCartsOnLogin,
         },
         context,
       );
@@ -77,7 +97,7 @@ export const setupAccounts = (unchainedAPI: Context, options: SetupAccountsOptio
         {
           fromUser: userBeforeLogin,
           toUser: user,
-          shouldMerge: options.mergeUserCartsOnLogin,
+          shouldMerge: accountsSettings.mergeUserCartsOnLogin,
         },
         context,
       );

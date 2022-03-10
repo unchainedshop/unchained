@@ -20,6 +20,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
+  api.use('unchained:utils@1.0.0-rc.5');
   api.use('unchained:core-worker@1.0.0-rc.5');
 
   api.mainModule('src/accounts-index.ts');

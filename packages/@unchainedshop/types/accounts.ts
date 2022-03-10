@@ -15,11 +15,30 @@ export interface UserData {
 }
 
 /*
+ * Settings
+ */
+
+export interface AccountsSettingsOptions {
+  autoMessagingAfterUserCreation?: boolean;
+  mergeUserCartsOnLogin?: boolean;
+  server?: any;
+  password?: any;
+}
+export interface AccountsSettings {
+  autoMessagingAfterUserCreation: boolean;
+  mergeUserCartsOnLogin: boolean;
+  configureSettings: (options?: AccountsSettingsOptions) => void;
+}
+
+/*
  * Module
  */
 
 export interface AccountsModule {
   dbManager: any;
+
+  getAccountsServer: () => any;
+
   emit: (event: string, meta: any) => Promise<void>;
 
   // Mutations
@@ -32,6 +51,7 @@ export interface AccountsModule {
   verifyEmail: (token: string) => Promise<void>;
   findUnverifiedUserByToken: (token: string) => Promise<AccountsUser>;
   sendVerificationEmail: (email: string) => Promise<void>;
+  sendEnrollmentEmail: (email: string) => Promise<void>;
 
   // Authentication
   createLoginToken: (
@@ -88,18 +108,4 @@ export interface AccountsModule {
   buildTOTPSecret: () => string;
   enableTOTP: (userId: string, secret: string, code: string) => Promise<boolean>;
   disableTOTP: (userId: string, code: string) => Promise<boolean>;
-}
-
-/*
- * Settings
- */
-
-export interface AccountsSettingsOptions {
-  autoMessagingAfterUserCreation?: boolean;
-  server?: any;
-  password?: any;
-}
-export interface AccountsSettings {
-  autoMessagingAfterUserCreation: boolean;
-  configureSettings: (options?: AccountsSettingsOptions) => void;
 }

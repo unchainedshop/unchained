@@ -3,17 +3,33 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 import { v4 as uuidv4 } from 'uuid';
 import { accountsSettings } from '../accounts-settings';
 import { accountsPassword } from '../accounts/accountsPassword';
-import { accountsServer } from '../accounts/accountsServer';
+import { UnchainedAccountsServer } from '../accounts/accountsServer';
 import { createDbManager } from '../accounts/dbManager';
 import { evaluateContext } from './utils/evaluateContext';
 import { filterContext } from './utils/filterContext';
 import { hashPassword } from './utils/hashPassword';
 
-export const configureAccountsModule = async ({ db }): Promise<AccountsModule> => {
+export const configureAccountsModule = async ({ db }, options): Promise<AccountsModule> => {
   const dbManager = createDbManager(db);
+
+  const accountsServer = new UnchainedAccountsServer(
+    { 
+      db: dbManager,
+      useInternalUserObjectSanitizer: false,
+      siteUrl: process.env.ROOT_URL
+    {
+      password: accountsPassword,
+    },
+  );
+
+  accountsSettings.configureSettings(options || {}, { accountsPassword, accountsServer });
 
   return {
     dbManager,
+
+    getSettings: () => accountsSettings,
+
+    getAccountsServer: () => accountsServer,
 
     emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
 

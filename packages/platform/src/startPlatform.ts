@@ -8,7 +8,7 @@ import { interceptEmails } from './interceptEmails';
 import { runMigrations } from './migrations/runMigrations';
 import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
 import { generateWorkerTypeDefs } from './setup/generateWorkTypeDefs';
-import { setupAccounts, SetupAccountsOptions } from './setup/setupAccounts';
+import { setupAccounts } from './setup/setupAccounts';
 import { setupAutoScheduling } from './setup/setupAutoScheduling';
 import { setupCarts, SetupCartsOptions } from './setup/setupCarts';
 import { MessageTypes, setupTemplates } from './setup/setupTemplates';
@@ -39,7 +39,6 @@ const checkEmailInterceptionEnabled = (disableEmailInterception) => {
 export const queueWorkers = [];
 
 type PlatformOptions = {
-  accountsOptions?: SetupAccountsOptions;
   typeDefs: Array<string>;
   resolvers: any;
   bulkImporter?: any;
@@ -65,7 +64,6 @@ export const startPlatform = async (
     resolvers = [],
     options = {},
     rolesOptions,
-    accountsOptions,
     workQueueOptions,
     disableEmailInterception,
     context,
@@ -105,7 +103,7 @@ export const startPlatform = async (
   }
 
   // Setup accountsjs specific extensions and event handlers
-  setupAccounts(unchainedAPI, accountsOptions);
+  setupAccounts(unchainedAPI);
 
   // Setup email templates
   setupTemplates();
