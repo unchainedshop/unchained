@@ -15,7 +15,7 @@
     "import/core-modules": ["meteor"],
     "import/resolver": {
       "meteor": {
-        "extensions": [".jsx", ".js"]
+        "extensions": [".jsx", ".js", ".ts", ".tsx"]
       }
     }
   },

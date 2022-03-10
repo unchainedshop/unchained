@@ -205,7 +205,7 @@ describe("AssortmentMedia", () => {
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
     }, 20000);
 
-    it.only("upload file via PUT successfully", async () => {
+    it("upload file via PUT successfully", async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({

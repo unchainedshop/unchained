@@ -1,10 +1,9 @@
 import cookie from 'cookie';
 import fetch from 'isomorphic-unfetch';
-import { Users } from 'meteor/unchained:core-users';
 
 const { ROOT_URL, NODE_ENV, UNCHAINED_CLOUD_ENDPOINT } = process.env;
 
-export default async (remoteToken) => {
+export default async (remoteToken, unchainedAPI) => {
   try {
     const thisDomain = new URL(ROOT_URL).hostname;
     const result = await fetch(UNCHAINED_CLOUD_ENDPOINT, {
@@ -31,8 +30,8 @@ export default async (remoteToken) => {
     ) {
       // create sso user if not exist and login
       const ssoUser =
-        Users.findOne({ username: 'sso' }) ||
-        (await Users.createUser(
+        (await unchainedAPI.modules.users.findUser({ username: 'sso' })) ||
+        (await unchainedAPI.modules.users.createUser(
           {
             username: 'sso',
             roles: ['admin'],
@@ -43,7 +42,11 @@ export default async (remoteToken) => {
           {},
           { skipMessaging: true },
         ));
-      const { tokenExpires, token } = await Users.createLoginToken(ssoUser, {});
+      const { tokenExpires, token } =
+        await unchainedAPI.modules.users.createLoginToken(
+          ssoUser,
+          unchainedAPI,
+        );
       const expires = new Date(tokenExpires || new Date().getTime() + 100000);
       const authCookie = cookie.serialize('token', token, {
         domain: thisDomain || 'localhost',

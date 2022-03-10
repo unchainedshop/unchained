@@ -2,7 +2,6 @@ import { hashPassword } from 'meteor/unchained:api';
 import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
 import { PaymentProviderType } from 'meteor/unchained:core-payment';
 import { v4 as uuidv4 } from 'uuid';
-import { Context } from '@unchainedshop/types/api';
 
 const logger = console;
 const {
@@ -19,7 +18,7 @@ const seedPassword =
     ? uuidv4().split('-').pop()
     : UNCHAINED_SEED_PASSWORD;
 
-export default async (unchainedApi: Context) => {
+export default async (unchainedApi) => {
   const { modules } = unchainedApi;
   try {
     if ((await modules.users.count({ username: 'admin' })) > 0) {

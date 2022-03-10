@@ -14,7 +14,7 @@ modules-runtime@0.12.0
 promise@0.12.0
 react-fast-refresh@0.2.2
 typescript@4.4.1
-unchained:core-accountsjs@1.0.0-rc.4
-unchained:core-worker@1.0.0-rc.4
-unchained:logger@1.0.0-rc.4
-unchained:utils@1.0.0-rc.4
+unchained:core-accountsjs@1.0.0-rc.5
+unchained:core-worker@1.0.0-rc.5
+unchained:logger@1.0.0-rc.5
+unchained:utils@1.0.0-rc.5
