@@ -9,7 +9,7 @@ import { evaluateContext } from './utils/evaluateContext';
 import { filterContext } from './utils/filterContext';
 import { hashPassword } from './utils/hashPassword';
 
-export const configureAccountsModule = async ({ db }, options): Promise<AccountsModule> => {
+export const configureAccountsModule = async ({ db, options }): Promise<AccountsModule> => {
   const dbManager = createDbManager(db);
 
   const accountsServer = new UnchainedAccountsServer(
