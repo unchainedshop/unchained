@@ -14,7 +14,7 @@ import {
   refundTransaction,
   voidTransaction,
 } from './api';
-import { markOrderAsPaid } from './utils';
+import { orderIsPaid } from './utils';
 import './middleware';
 import { CompletionModes, IntegrationModes, SignResponse } from './types';
 
@@ -132,7 +132,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           return false;
         }
         const transaction = await getTransaction(transactionId);
-        return markOrderAsPaid(transaction, modules.orders);
+        return orderIsPaid(transaction, modules.orders);
       },
 
       cancel: async (transactionContext: any = {}) => {
