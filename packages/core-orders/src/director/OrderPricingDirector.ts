@@ -19,7 +19,7 @@ const baseDirector = BasePricingDirector<
 export const OrderPricingDirector: IOrderPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: async ({ order }: { order: Order }, requestContext) => {
+  buildPricingContext: async ({ order, ...context }: { order: Order }, requestContext) => {
     const { modules } = requestContext;
     const user = await modules.users.findUserById(order.userId);
 
@@ -40,14 +40,16 @@ export const OrderPricingDirector: IOrderPricingDirector = {
     });
 
     return {
+      country: order.countryCode,
       currency: order.currency,
+      ...context,
+      ...requestContext,
       discounts,
       order,
       orderDelivery,
       orderPositions,
       orderPayment,
       user,
-      ...requestContext,
     };
   },
 

@@ -19,14 +19,10 @@ const baseDirector = BasePricingDirector<
 export const PaymentPricingDirector: IPaymentPricingDirector = {
   ...baseDirector,
 
-  async buildPricingContext({ item, ...rest }: { item: OrderPayment }, requestContext) {
-    const { providerContext, currency, ...context } = rest as any;
-
+  async buildPricingContext({ item, ...context }: { item: OrderPayment }, requestContext) {
     if (!item)
       return {
         discounts: [],
-        providerContext,
-        currency,
         ...context,
         ...requestContext,
       };
@@ -44,14 +40,14 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
 
     return {
       country: order.countryCode,
-      currency: currency || order.currency,
+      currency: order.currency,
+      ...context,
+      ...requestContext,
       order,
+      orderPayment: item,
       provider,
       user,
       discounts,
-      ...item.context,
-      ...context,
-      ...requestContext,
     };
   },
 

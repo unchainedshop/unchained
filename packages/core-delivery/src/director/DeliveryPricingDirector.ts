@@ -22,20 +22,17 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
   async buildPricingContext(
     {
       item,
-      ...rest
+      ...context
     }: {
       item: OrderDelivery;
     } & DeliveryPricingContext,
     requestContext,
   ) {
     const { modules } = requestContext;
-    const { providerContext, currency, ...context } = rest as any;
 
     if (!item)
       return {
         discounts: [],
-        providerContext,
-        currency,
         ...context,
         ...requestContext,
       };
@@ -53,14 +50,14 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
 
     return {
       country: order.countryCode,
-      currency: currency || order.currency,
+      currency: order.currency,
+      ...context,
+      ...requestContext,
       order,
+      orderDelivery: item,
       provider,
       user,
       discounts,
-      ...item.context,
-      ...context,
-      ...requestContext,
     };
   },
 

@@ -22,7 +22,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
   async buildPricingContext(
     {
       item: orderPosition,
-      ...pricingContext
+      ...context
     }: {
       item: OrderPosition;
     } & ProductPricingContext,
@@ -33,7 +33,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
     if (!orderPosition) {
       return {
         discounts: [],
-        ...pricingContext,
+        ...context,
         ...requestContext,
       } as ProductPricingAdapterContext;
     }
@@ -53,12 +53,13 @@ export const ProductPricingDirector: IProductPricingDirector = {
     return {
       country: order.countryCode,
       currency: order.currency,
+      ...context,
+      ...requestContext,
       discounts,
       order,
       product,
       quantity: orderPosition.quantity,
       user,
-      ...requestContext,
     };
   },
 
