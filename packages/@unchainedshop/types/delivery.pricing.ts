@@ -44,11 +44,10 @@ export type DeliveryPricingContext =
   | {
       country?: string;
       currency?: string;
-      deliveryProvider: DeliveryProvider;
+      provider: DeliveryProvider;
       order: Order;
       orderDelivery: OrderDelivery;
       providerContext?: any;
-      quantity: number;
       user: User;
     }
   | { item: OrderDelivery };
