@@ -7,7 +7,7 @@ export default async function heartbeat(
   _: any,
   { countryContext, localeContext, modules, remoteAddress, remotePort, userAgent, userId }: Context,
 ) {
-  log(`mutation updateHeartbeat ${remoteAddress}`, { userId });
+  log(`mutation heartbeat ${remoteAddress}`, { userId });
 
   if (!userId) throw new UserNotFoundError({ userId });
 
