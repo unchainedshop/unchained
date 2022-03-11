@@ -83,7 +83,14 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
       }
     }
     if (convertedAmount && convertedAmount >= totalAmount * (1 - MAX_ALLOWED_DIFF)) {
-      await resolvedContext.modules.orders.payments.markAsPaid(orderPayment, {});
+      await resolvedContext.modules.orders.checkout(
+        order,
+        {
+          transactionContext: { address },
+          paymentContext: { address },
+        },
+        resolvedContext,
+      );
       response.end(JSON.stringify({ success: true }));
     } else {
       paymentLogger.warn(
