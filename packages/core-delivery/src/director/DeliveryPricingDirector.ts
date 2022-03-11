@@ -40,7 +40,7 @@ export const DeliveryPricingDirector: IDeliveryPricingDirector = {
     const order = await modules.orders.findOrder({
       orderId: item.orderId,
     });
-    const provider = modules.delivery.findProvider({
+    const provider = await modules.delivery.findProvider({
       deliveryProviderId: item.deliveryProviderId,
     });
     const user = await modules.users.findUserById(order.userId);
