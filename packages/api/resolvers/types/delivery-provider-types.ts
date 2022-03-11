@@ -42,7 +42,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
         country,
         currency,
         quantity: 1,
-        deliveryProvider,
+        provider: deliveryProvider,
         order,
         orderDelivery,
         providerContext,

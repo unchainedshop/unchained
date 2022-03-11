@@ -1,8 +1,7 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import fetch from 'isomorphic-unfetch';
-import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import { BaseWorkerPlugin } from './base';
 
 const postFetch = async (url, { data, headers }) => {
   return fetch(url, {
@@ -23,7 +22,7 @@ const HttpRequestWorkerPlugin: IWorkerAdapter<
   { url?: string; data?: any; headers?: any; method: 'POST' | 'GET' },
   any
 > = {
-  ...BaseWorkerPlugin,
+  ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.http-request',
   label: 'Request a resource via http request. 200 = success',

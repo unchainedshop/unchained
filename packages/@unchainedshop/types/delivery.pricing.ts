@@ -32,7 +32,7 @@ export interface DeliveryPricingCalculation extends PricingCalculation {
 export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext {
   country?: string;
   currency?: string;
-  deliveryProvider: DeliveryProvider;
+  provider: DeliveryProvider;
   discounts: Array<OrderDiscount>;
   order: Order;
   orderDelivery: OrderDelivery;

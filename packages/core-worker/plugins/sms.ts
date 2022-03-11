@@ -1,8 +1,7 @@
-import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import Twilio from 'twilio';
-import { BaseWorkerPlugin } from './base';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;
 
@@ -16,7 +15,7 @@ const SmsWorkerPlugin: IWorkerAdapter<
   },
   any
 > = {
-  ...BaseWorkerPlugin,
+  ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.sms',
   label: 'Send a SMS through Twilio',

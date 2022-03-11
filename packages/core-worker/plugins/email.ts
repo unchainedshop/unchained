@@ -1,8 +1,7 @@
-import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
 import { Email } from 'meteor/email';
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { BaseWorkerPlugin } from './base';
 
 const logger = createLogger('unchained:core-worker');
 
@@ -15,7 +14,7 @@ const EmailWorkerPlugin: IWorkerAdapter<
   },
   void
 > = {
-  ...BaseWorkerPlugin,
+  ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.email',
   label: 'Send a Mail through Meteor Mailer',

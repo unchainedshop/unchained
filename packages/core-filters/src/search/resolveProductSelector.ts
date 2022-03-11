@@ -16,5 +16,5 @@ export const resolveProductSelector = async (
   requestContext: Context,
 ) => {
   const selector = defaultSelector(searchQuery, requestContext);
-  return filterActions.transformProductSelector(selector);
+  return filterActions.transformProductSelector(selector, {});
 };

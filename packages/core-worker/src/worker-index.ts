@@ -1,6 +1,7 @@
 export { configureWorkerModule } from './module/configureWorkerModule';
 
 export { WorkerDirector } from './director/WorkerDirector';
+export { WorkerAdapter } from './director/WorkerAdapter';
 export { WorkStatus } from './director/WorkStatus';
 
 export { FailedRescheduler } from './schedulers/FailedRescheduler';
