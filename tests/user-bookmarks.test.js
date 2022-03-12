@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { UnpublishedProduct, SimpleProduct } from './seeds/products';
+import { UnpublishedProduct, SimpleProduct, PlanProduct } from './seeds/products';
 import { ADMIN_TOKEN, User, Admin } from './seeds/users';
 
 let db;
@@ -22,6 +22,9 @@ describe('User Bookmarks', () => {
               user {
                 _id
               }
+              product {
+                _id
+              }
             }
           }
         `,
@@ -34,6 +37,9 @@ describe('User Bookmarks', () => {
         user: {
           _id: User._id,
         },
+        product: {
+          _id: UnpublishedProduct._id,
+        }
       });
     });
 
@@ -109,7 +115,7 @@ describe('User Bookmarks', () => {
           bookmarkId: bookmark._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('BookmarkNotFoundError');
     });
 
     it('return not found error when passed non existin bookmarkId', async () => {
@@ -156,6 +162,9 @@ describe('User Bookmarks', () => {
               user {
                 _id
               }
+              product {
+                _id
+              }
             }
           }
         `,
@@ -167,6 +176,9 @@ describe('User Bookmarks', () => {
       expect(bookmark).toMatchObject({
         user: {
           _id: Admin._id,
+        },
+        product: {
+          _id: SimpleProduct._id,
         },
       });
     });
@@ -226,6 +238,10 @@ describe('User Bookmarks', () => {
         },
       });
       expect(bookmarks.length).toEqual(2);
+      expect(bookmarks).toMatchObject([
+        { product: { _id: SimpleProduct._id } },
+        { product: { _id: PlanProduct._id } },
+      ])
     });
   });
 });

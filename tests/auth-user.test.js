@@ -52,6 +52,7 @@ describe('Auth for logged in users', () => {
         _id: User._id,
       });
     });
+
     it('does not allow a user to just retrieve data of other users', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -65,7 +66,7 @@ describe('Auth for logged in users', () => {
           userId: Admin._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -104,6 +105,7 @@ describe('Auth for logged in users', () => {
         success: true,
       });
     });
+
     it('cannot send a verification e-mail to an e-mail not owned by the logged in user', async () => {
       const { data: { sendVerificationEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -162,6 +164,7 @@ describe('Auth for logged in users', () => {
         success: true,
       });
     });
+
     it('verifies the e-mail of user', async () => {
       // Reset the password with that token
       const Users = db.collection('users');
@@ -193,9 +196,12 @@ describe('Auth for logged in users', () => {
         },
       });
       expect(verifyEmail).toMatchObject({
-        user: {},
+        user: {
+          _id: 'userthatmustverifyemail'
+        },
       });
     });
+
     it('e-mail is tagged as verified', async () => {
       // Reset the password with that token
       const Users = db.collection('users');
@@ -276,6 +282,7 @@ describe('Auth for logged in users', () => {
       } = user;
       expect(loginTokens.length).toEqual(1);
     });
+    
     it('log out userthatlogsout without explicit token', async () => {
       const Users = db.collection('users');
       await Users.findOrInsertOne({

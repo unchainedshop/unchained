@@ -216,6 +216,7 @@ describe('Products', () => {
       });
       expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
     });
+
     it('return error for non-existing product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
@@ -355,7 +356,7 @@ describe('Products', () => {
           productId: SimpleProductDraft._id,
         },
       });
-      expect(errors.length).toBe(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductWrongStatusError');
     });
 
     it('return not found error when passed non-existing product id', async () => {
@@ -691,8 +692,10 @@ describe('Products', () => {
           productId: 'simpleproduct',
         },
       });
-
-      expect(product?.simulatedPrice?.currency).toEqual('CHF');
+      expect(product?.simulatedPrice).toMatchObject({
+        currency: 'CHF',
+        amount: 10000,
+      });
     });
 
     it('return null when passed unsupported currency to simulatedPrice of SIMPLE_PRODUCT type', async () => {
@@ -743,7 +746,10 @@ describe('Products', () => {
           productId: 'plan-product',
         },
       });
-      expect(product?.simulatedPrice?.currency).toEqual('CHF');
+      expect(product?.simulatedPrice).toMatchObject({
+        currency: 'CHF',
+        amount: 10000,
+      });    
     });
 
     it('return null when passed unsupported currency to simulatedPrice of PLAN_PRODUCT type', async () => {
@@ -1208,6 +1214,7 @@ describe('Products', () => {
               includeDrafts: $includeDrafts
             ) {
               _id
+              status
             }
           }
         `,
@@ -1217,6 +1224,7 @@ describe('Products', () => {
       });
 
       expect(products.length).toEqual(10);
+      expect(products.filter(p => p.status === "DRAFT").length).not.toBe(0);
     });
   });
 

@@ -185,6 +185,7 @@ describe("basic setup of internationalization and localization context", () => {
           query {
             currencies {
               isoCode
+              isActive
             }
           }
         `,
@@ -193,9 +194,11 @@ describe("basic setup of internationalization and localization context", () => {
       expect(currencies).toEqual([
         {
           isoCode: "CHF",
+          isActive: true,
         },
         {
           isoCode: "LTC",
+          isActive: true,
         },
       ]);
       await Currencies.deleteOne({ _id: "ltc" });

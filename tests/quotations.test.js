@@ -5,6 +5,7 @@ import {
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
 import { ProposedQuotation } from './seeds/quotations';
+import { SimpleProduct } from './seeds/products';
 
 let graphqlFetch;
 let graphqlAnonymousFetch;
@@ -61,6 +62,18 @@ describe('TranslatedFilterTexts', () => {
         variables: {},
       });
       expect(quotations.length).toEqual(2);
+      expect(quotations).toMatchObject([
+        {
+          quotationNumber: 'K271P03',
+          status: 'PROCESSING',
+          product: { _id: SimpleProduct._id },
+        },
+        {
+          quotationNumber: 'WGE9DLE7',
+          status: 'PROPOSED',
+          product: { _id: SimpleProduct._id },
+        },
+      ]);
     });
   });
 

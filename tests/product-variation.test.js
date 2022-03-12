@@ -43,8 +43,21 @@ describe('ProductsVariation', () => {
             productVariationId: ProductVariations[0]._id,
           },
         });
-
       expect(translatedProductVariationTexts.length).toEqual(2);
+      expect(translatedProductVariationTexts).toMatchObject([
+        {
+          _id: 'variation-color-1',
+          locale: 'en',
+          title: 'product color variation title',
+          subtitle: null
+        },
+        {
+          _id: 'variation-color-7',
+          locale: 'de',
+          title: 'product color variation title',
+          subtitle: null
+        }
+      ]);
     });
 
     it('return empty array when no match is found', async () => {
@@ -86,6 +99,9 @@ describe('ProductsVariation', () => {
                 productVariationOptionValue: $productVariationOptionValue
               ) {
                 _id
+                locale
+                title
+                subtitle
               }
             }
           `,
@@ -93,7 +109,12 @@ describe('ProductsVariation', () => {
             productVariationId: ProductVariations[1]._id,
           },
         });
-      expect(translatedProductVariationTexts.length).toEqual(1);
+      expect(translatedProductVariationTexts).toMatchObject([{
+        _id: 'variation-text-3',
+        locale: 'en',
+        subtitle: null,
+        title: 'product text variation title ',
+      }]);
     });
   });
 
@@ -233,6 +254,7 @@ describe('ProductsVariation', () => {
       expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
     });
   });
+
   describe('mutation.createProductVariation for anonymous user should', () => {
     it('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
@@ -259,7 +281,7 @@ describe('ProductsVariation', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -284,6 +306,10 @@ describe('ProductsVariation', () => {
                 key
                 options {
                   _id
+                  value
+                  texts {
+                    title
+                  }
                 }
               }
             }
@@ -296,8 +322,14 @@ describe('ProductsVariation', () => {
             },
           },
         });
-
-      expect(createProductVariationOption._id).not.toBe(null);
+      expect(createProductVariationOption._id).toBe(ProductVariations[0]._id);
+      expect(createProductVariationOption.options[createProductVariationOption.options.length - 1]).toMatchObject({
+        _id: 'product-color-variation-1:key-1',
+        value: 'key-1',
+        texts: {
+          title: 'product variation option title',
+        }
+      })
     });
 
     it('return error when passed invalid product variation ID', async () => {
@@ -328,6 +360,7 @@ describe('ProductsVariation', () => {
       );
     });
   });
+
   describe('mutation.createProductVariationOption for anonymous user should', () => {
     it('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
@@ -354,7 +387,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -499,7 +532,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -544,6 +577,7 @@ describe('ProductsVariation', () => {
           },
         });
       expect(removeProductVariationOption.options.length).toEqual(1);
+      expect(removeProductVariationOption.options.filter(o => o.value === 'variation-option-1-value').length).toEqual(0);
     });
 
     it('return error when passed invalid product variation ID', async () => {
@@ -618,7 +652,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -660,7 +694,7 @@ describe('ProductsVariation', () => {
           productVariationId: ProductVariations[0]._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('ProductVariationNotFoundError');
     });
 
     it('return not found error when passed non existing productVariationId', async () => {
@@ -713,7 +747,7 @@ describe('ProductsVariation', () => {
           productVariationId: ProductVariations[0]._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

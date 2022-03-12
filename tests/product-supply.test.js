@@ -7,10 +7,11 @@ import { ADMIN_TOKEN } from './seeds/users';
 import { PlanProduct, SimpleProduct } from './seeds/products';
 
 let graphqlFetch;
+let db;
 
 describe('ProductsSupply', () => {
   beforeAll(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
@@ -65,6 +66,13 @@ describe('ProductsSupply', () => {
       });
 
       expect(updateProductSupply._id).toEqual(SimpleProduct._id);
+      const updatedProduct = await (db.collection('products')).findOne({ _id: SimpleProduct._id });
+      expect(updatedProduct.supply).toEqual({
+        weightInGram: 100,
+        heightInMillimeters: 200,
+        lengthInMillimeters: 300,
+        widthInMillimeters: 400,
+      });
     });
 
     it('return error when passed non SIMPLE_PRODUCT type', async () => {
@@ -175,7 +183,7 @@ describe('ProductsSupply', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

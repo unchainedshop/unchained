@@ -39,8 +39,11 @@ describe('TranslatedFilterTexts', () => {
           filterId: MultiChoiceFilter._id,
         },
       });
-
       expect(translatedFilterTexts.length).toEqual(2);
+      expect(translatedFilterTexts).toMatchObject([
+        { _id: 'german', locale: 'de', title: 'Special', subtitle: null },
+        { _id: 'french', locale: 'fr', title: null, subtitle: null }
+      ]);
     });
 
     it('return empty array for non-existing id is passed', async () => {
@@ -90,7 +93,7 @@ describe('TranslatedFilterTexts', () => {
           filterId: 'non-existing-id',
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

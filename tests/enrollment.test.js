@@ -108,6 +108,7 @@ describe('Enrollments', () => {
       });
     });
   });
+
   describe('Mutation.createEnrollment', () => {
     it('create a new enrollment manually will not activate automatically because of missing order', async () => {
       const { data: { createEnrollment } = {} } = await graphqlFetchAsAdminUser(
@@ -181,7 +182,9 @@ describe('Enrollments', () => {
           product: {
             _id: PlanProduct._id,
           },
+          quantity: 1,
         },
+        isExpired: false,
       });
     });
 
@@ -221,6 +224,7 @@ describe('Enrollments', () => {
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
+  
   describe('Mutation.terminateEnrollment for admin user should', () => {
     it('change ACTIVE enrollment status to TERMINATED', async () => {
       const {
@@ -609,8 +613,10 @@ describe('Enrollments', () => {
           enrollmentId: 'initialenrollment',
         },
       });
-
-      expect(activateEnrollment._id).not.toBe(true);
+      expect(activateEnrollment).toMatchObject({
+        _id: InitialEnrollment._id,
+        status: 'ACTIVE',
+      });
     });
 
     it('return  EnrollmentWrongStatusError error when trying to activate ACTIVE enrollment', async () => {
@@ -875,6 +881,7 @@ describe('Enrollments', () => {
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
+
   describe('query.enrollment for admin user should', () => {
     it('return enrollment specified by Id', async () => {
       const {

@@ -42,7 +42,15 @@ describe('WarehousingProviders', () => {
         `,
         variables: {},
       });
-      expect(Array.isArray(warehousingProviders)).toBe(true);
+      expect(warehousingProviders).toMatchObject([
+        {
+          _id: SimpleWarehousingProvider._id,
+          type: SimpleWarehousingProvider.type,
+          configuration: [],
+          configurationError: null,
+          isActive: true
+        }
+      ]);
     });
 
     it('return list of warehousingProviders based on the given type', async () => {
@@ -76,7 +84,7 @@ describe('WarehousingProviders', () => {
         `,
         variables: {},
       });
-      expect(warehousingProvidersCount > 0).toBe(true);
+      expect(warehousingProvidersCount).toEqual(1);
     });
 
     it('return total number of warehousingProviders based on the given type', async () => {
@@ -96,7 +104,7 @@ describe('WarehousingProviders', () => {
     });
   });
 
-  describe('Query.warehousingProvider when loged in should', () => {
+  describe('Query.warehousingProvider when logged in should', () => {
     it('return single warehousingProvider when ID is provided', async () => {
       const {
         data: { warehousingProvider },

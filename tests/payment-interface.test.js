@@ -31,8 +31,11 @@ describe('PaymentInterface', () => {
           type: 'INVOICE',
         },
       });
-
-      expect(Array.isArray(paymentInterfaces)).toBe(true);
+      expect(paymentInterfaces.length).not.toBe(0);
+      expect(paymentInterfaces).toMatchObject([
+        { _id: 'shop.unchained.invoice' },
+        { _id: 'shop.unchained.invoice-prepaid' },
+      ]);
     });
   });
 
@@ -52,7 +55,7 @@ describe('PaymentInterface', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

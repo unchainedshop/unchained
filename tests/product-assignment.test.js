@@ -383,8 +383,7 @@ describe('ProductAssignment', () => {
             vectors: [{ key: 'key-3', value: 'value-3' }],
           },
         });
-
-      expect(removeProductAssignment._id).not.toBe(null);
+      expect(removeProductAssignment._id).toBe(ConfigurableProduct._id);
     });
 
     it('return error when passed non CONFIGURABLE_PRODUCT type id', async () => {

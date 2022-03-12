@@ -63,7 +63,10 @@ describe('ProductsVariation', () => {
         data: { addProductMedia },
       } = await uploadFormData({ token: ADMIN_TOKEN, body });
 
-      expect(addProductMedia?.file.name).toEqual('image.jpg');
+      expect(addProductMedia?.file).toMatchObject({
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      });
     }, 10000);
 
     it('return ProductNotFoundError when passed non existing product ID', async () => {
@@ -392,7 +395,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -519,7 +522,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -566,7 +569,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('ProductMediaNotFoundError');
     }, 10000);
 
     it('return not found error when passed non existing productMediaId', async () => {
@@ -621,7 +624,7 @@ describe('ProductsVariation', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

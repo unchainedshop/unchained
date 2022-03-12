@@ -56,8 +56,14 @@ describe('FilterOption', () => {
         },
       });
       expect(
-        createFilterOption.options[createFilterOption.options.length - 1]._id,
-      ).toEqual('multichoice-filter:test-filter-option');
+        createFilterOption.options[createFilterOption.options.length - 1],
+      ).toMatchObject({
+        _id: 'multichoice-filter:test-filter-option',
+        value: 'test-filter-option',
+        texts: {
+          title: 'test-filter-option-title',
+        }
+      });
     });
 
     it('return not found error when passed non existing filterId', async () => {
@@ -129,7 +135,7 @@ describe('FilterOption', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -172,6 +178,7 @@ describe('FilterOption', () => {
         },
       });
       expect(removeFilterOption.options.length).toEqual(3);
+      expect(removeFilterOption.options.filter(o => o.value === 'test-filter-option').length).toEqual(0);
     });
 
     it('return not found error when passed non existing filter ID', async () => {
@@ -222,7 +229,7 @@ describe('FilterOption', () => {
   });
 
   describe('mutation.removeFilterOption for anonymous users should', () => {
-    it('remove filter option successfuly when passed valid filter ID', async () => {
+    it('return error when passed valid filter ID', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -243,7 +250,7 @@ describe('FilterOption', () => {
           filterOptionValue: 'test-filter-option',
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

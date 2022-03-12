@@ -4,7 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
-import { SimpleDeliveryProvider } from './seeds/deliveries';
+import { PickupDeliveryProvider, SendMailDeliveryProvider, SimpleDeliveryProvider } from './seeds/deliveries';
 
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
@@ -51,7 +51,24 @@ describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      expect(deliveryProviders.length).toEqual(3);
+      expect(deliveryProviders).toMatchObject([
+        {
+          _id: SimpleDeliveryProvider._id,
+          configurationError: null,
+          type: 'SHIPPING',
+        },
+        {
+          _id: SendMailDeliveryProvider._id,
+          configurationError: null,
+          type: 'SHIPPING',
+        },
+        {
+          _id: PickupDeliveryProvider._id,
+          configurationError: null,
+          type: 'PICKUP',
+        },
+      ]);
+      expect(deliveryProviders.every(d => typeof d.isActive === 'boolean')).toBe(true);
     });
 
     it('return list of deliveryProviders based on the given type', async () => {
@@ -69,7 +86,10 @@ describe('DeliveryProviders', () => {
           type: 'SHIPPING',
         },
       });
-      expect(deliveryProviders.length).toEqual(2);
+      expect(deliveryProviders).toMatchObject([
+        { _id: SimpleDeliveryProvider._id },
+        { _id: SendMailDeliveryProvider._id },
+      ]);
     });
   });
 
@@ -168,7 +188,11 @@ describe('DeliveryProviders', () => {
           deliveryProviderId: SimpleDeliveryProvider._id,
         },
       });
-      expect(deliveryProvider._id).toEqual(SimpleDeliveryProvider._id);
+      expect(deliveryProvider).toMatchObject({
+        _id: SimpleDeliveryProvider._id,
+        type: 'SHIPPING',
+        configurationError: null,
+      });
     });
 
     it('return value for simulatedPrice with the country default currency when no argument is passed', async () => {
@@ -251,7 +275,7 @@ describe('DeliveryProviders', () => {
         `,
         variables: {},
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

@@ -11,6 +11,7 @@ import { PngAssortmentMedia, SimpleAssortment } from "./seeds/assortments";
 
 let graphqlFetch;
 const fs = require("fs");
+const crypto = require('crypto');
 const path = require("path");
 
 const assortmentMediaFile = fs.createReadStream(
@@ -64,7 +65,14 @@ describe("AssortmentMedia", () => {
       const {
         data: { addAssortmentMedia },
       } = await uploadFormData({ token: ADMIN_TOKEN, body });
-      expect(addAssortmentMedia?.file.name).toEqual("image.jpg");
+      expect(addAssortmentMedia?.file).toMatchObject({
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      });
+      const hash = crypto.createHash('sha256');
+      const download = (await fetch(addAssortmentMedia.file.url)).body;
+      download.on('data', chunk => hash.update(chunk));
+      download.on('end', () => expect(hash.digest('hex')).toBe('f0d184ed4614ccfad07d2193d20c15dd6df9e3a5136cd62afdab2545cae6a0a2'));
     }, 20000);
 
     it("return AssortmentNotFoundError when passed non existing assortment ID", async () => {
@@ -234,8 +242,32 @@ describe("AssortmentMedia", () => {
         assortmentMediaFile2,
         prepareAssortmentMediaUpload.putURL
       );
-      
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
+      const {
+        data: { assortment },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query assortment($assortmentId: ID!) {
+            assortment(assortmentId: $assortmentId) {
+              _id
+              media {
+                file {
+                  name
+                  url
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          assortmentId: SimpleAssortment[0]._id,
+        },
+      });
+      expect(assortment.media[2].file.name).toBe('test-media');
+      const hash = crypto.createHash('sha256');
+      const download = (await fetch(assortment.media[2].file.url)).body;
+      download.on('data', chunk => hash.update(chunk));
+      download.on('end', () => expect(hash.digest('hex')).toBe('f0d184ed4614ccfad07d2193d20c15dd6df9e3a5136cd62afdab2545cae6a0a2'));
     }, 20000);
 
     it("link uploaded media file with assortment media successfully", async () => {
@@ -396,7 +428,7 @@ describe("AssortmentMedia", () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -525,7 +557,7 @@ describe("AssortmentMedia", () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -574,7 +606,9 @@ describe("AssortmentMedia", () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual(
+        "AssortmentMediaNotFoundError"
+      );
     }, 99999);
 
     it("return not found error when passed non existing assortmentMediaId", async () => {
@@ -631,7 +665,7 @@ describe("AssortmentMedia", () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

@@ -24,7 +24,7 @@ describe('Order: Management', () => {
           orderId: ConfirmedOrder._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('OrderWrongStatusError');
     });
 
     it('remove a cart', async () => {
@@ -43,6 +43,7 @@ describe('Order: Management', () => {
       });
       expect(removeOrder).toMatchObject({
         _id: SimpleOrder._id,
+        status: 'OPEN',
       });
     });
 

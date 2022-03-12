@@ -374,6 +374,10 @@ describe('Order: Deliveries', () => {
                 meta: $meta
               ) {
                 _id
+                address {
+                  firstName
+                  lastName
+                }
               }
             }
           `,
@@ -390,6 +394,10 @@ describe('Order: Deliveries', () => {
         });
       expect(updateOrderDeliveryShipping).toMatchObject({
         _id: SimpleDelivery._id,
+        address: {
+          firstName: 'Will',
+          lastName: 'Turner',
+        }
       });
     });
   });
@@ -592,6 +600,10 @@ describe('Order: Deliveries', () => {
                 meta: $meta
               ) {
                 _id
+                activePickUpLocation {
+                  _id
+                  name
+                }
               }
             }
           `,
@@ -605,6 +617,10 @@ describe('Order: Deliveries', () => {
         });
       expect(updateOrderDeliveryPickUp).toMatchObject({
         _id: PickupDelivery._id,
+        activePickUpLocation: {
+          _id: 'zurich',
+          name: 'Zurich',
+        }
       });
     });
   });

@@ -35,8 +35,26 @@ describe('TranslatedAssortmentsText', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-
+      console.log(translatedAssortmentTexts);
       expect(translatedAssortmentTexts.length).toEqual(2);
+      expect(translatedAssortmentTexts).toMatchObject([
+        {
+          _id: 'german',
+          title: 'simple assortment de',
+          description: 'text-de',
+          locale: 'de',
+          subtitle: 'subsimple assortment de',
+          slug: 'slug-de'
+        },
+        {
+          _id: 'french',
+          title: 'title-fr',
+          description: 'text-fr-1',
+          locale: 'fr',
+          subtitle: 'subtitle-fr',
+          slug: 'slug-fr'
+        }
+      ]);
     });
 
     it('return empty array when non-existing id is passed', async () => {
@@ -58,6 +76,7 @@ describe('TranslatedAssortmentsText', () => {
       expect(translatedAssortmentTexts.length).toEqual(0);
     });
   });
+
   describe('Query.translatedAssortmentTexts for anonymous user should', () => {
     it('return error', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
@@ -73,7 +92,7 @@ describe('TranslatedAssortmentsText', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

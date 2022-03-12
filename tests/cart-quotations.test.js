@@ -2,6 +2,7 @@ import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
 import { SimpleOrder } from './seeds/orders';
 import { USER_TOKEN } from './seeds/users';
 import { ProposedQuotation } from './seeds/quotations';
+import { SimpleProduct } from './seeds/products';
 
 let graphqlFetch;
 
@@ -54,11 +55,11 @@ describe('Cart: Quotations', () => {
         },
       });
       expect(addCartQuotation).toMatchObject({
-        product: {},
-        order: {},
+        product: { _id: SimpleProduct._id },
+        order: { _id: SimpleOrder._id },
         quantity: 1,
-        originalProduct: {},
-        quotation: {},
+        originalProduct: { _id: SimpleProduct._id },
+        quotation: { _id: ProposedQuotation._id },
         unitPrice: {},
         total: {},
         configuration: null,

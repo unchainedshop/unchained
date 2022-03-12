@@ -53,6 +53,10 @@ describe('ProductsWarehousing', () => {
               siblings {
                 _id
               }
+              ... on SimpleProduct {
+                sku
+                baseUnit
+              }
             }
           }
         `,
@@ -65,7 +69,11 @@ describe('ProductsWarehousing', () => {
         },
       });
 
-      expect(updateProductWarehousing._id).toEqual(SimpleProduct._id);
+      expect(updateProductWarehousing).toMatchObject({
+        _id: SimpleProduct._id,
+        sku: 'SKU-100',
+        baseUnit: 'Kg',
+      });
     });
 
     it('return error when passed non SIMPLE_PRODUCT type', async () => {
@@ -180,7 +188,7 @@ describe('ProductsWarehousing', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });
