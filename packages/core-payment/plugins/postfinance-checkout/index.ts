@@ -53,7 +53,13 @@ const PostfinanceCheckout: IPaymentAdapter = {
       // eslint-disable-next-line
       configurationError() {
         // eslint-disable-line
-        if (!PFCHECKOUT_SPACE_ID || !PFCHECKOUT_USER_ID || !PFCHECKOUT_SECRET) {
+        if (
+          !PFCHECKOUT_SPACE_ID ||
+          !PFCHECKOUT_USER_ID ||
+          !PFCHECKOUT_SECRET ||
+          !PFCHECKOUT_SUCCESS_URL ||
+          !PFCHECKOUT_FAILED_URL
+        ) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
         return null;
