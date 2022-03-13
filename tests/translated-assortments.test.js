@@ -35,7 +35,6 @@ describe('TranslatedAssortmentsText', () => {
           assortmentId: SimpleAssortment[0]._id,
         },
       });
-      console.log(translatedAssortmentTexts);
       expect(translatedAssortmentTexts.length).toEqual(2);
       expect(translatedAssortmentTexts).toMatchObject([
         {
