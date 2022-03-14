@@ -416,7 +416,7 @@ describe('Auth for admin users', () => {
     it('update the profile of a foreign user', async () => {
       const profile = {
         displayName: 'Administratörli',
-        birthday: new Date('01.03.37'),
+        birthday: new Date('2037-01-02'),
         phoneMobile: '+414114141',
         gender: 'm',
         address: {
@@ -458,7 +458,7 @@ describe('Auth for admin users', () => {
         name: profile.displayName,
         profile: {
           ...profile,
-          birthday: profile.birthday.getTime(),
+          birthday: "2037-01-02",
         },
       });
     });
@@ -512,7 +512,7 @@ describe('Auth for admin users', () => {
       // length of two means only the enrollment got triggered
       expect(work).toHaveLength(1);
     }, 10000);
-  
+
     it('should fire off the enrollment email', async () => {
       const email = 'admin3@unchained.local';
 

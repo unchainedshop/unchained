@@ -9,7 +9,7 @@ import { BTC_DERIVATIONS, ETH_DERIVATIONS, BTCCurrency, SHIBCurrency } from "./s
 let db;
 let graphqlFetch;
 
-describe("Plugins: Cryptopay Payments", () => {
+describe.skip("Plugins: Cryptopay Payments", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
