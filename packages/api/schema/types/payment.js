@@ -49,6 +49,7 @@ export default [
       interface: PaymentInterface
       configuration: JSON
       configurationError: PaymentProviderError
+      isActive: Boolean
     }
   `,
 ];

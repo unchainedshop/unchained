@@ -111,6 +111,11 @@ export const configureDeliveryModule = async ({
       });
     },
 
+    configurationError: async (deliveryProvider, requestContext) => {
+      const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+      return director.configurationError();
+    },
+
     isActive: (deliveryProvider, requestContext) => {
       const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
       return Boolean(director.isActive());

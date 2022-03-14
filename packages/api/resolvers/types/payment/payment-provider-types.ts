@@ -7,7 +7,13 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
     return Interface;
   },
 
-  async configurationError(obj, _, context) {
-    return context.modules.payment.paymentProviders.configurationError(obj, context);
+  async configurationError(obj, _, requestContext) {
+    const { modules } = requestContext;
+    return modules.payment.paymentProviders.configurationError(obj, requestContext);
+  },
+
+  isActive(obj, _, requestContext) {
+    const { modules } = requestContext;
+    return modules.payment.paymentProviders.isActive(obj, requestContext);
   },
 };

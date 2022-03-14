@@ -20,6 +20,11 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     return modules.delivery.isActive(deliveryProvider, requestContext);
   },
 
+  async configurationError(obj, _, requestContext) {
+    const { modules } = requestContext;
+    return modules.delivery.configurationError(obj, requestContext);
+  },
+
   async simulatedPrice(
     deliveryProvider,
     { currency: currencyCode, orderId, useNetPrice, context: providerContext },

@@ -29,10 +29,6 @@ const buildFindSelector = ({ type }: FindQuery = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 
-const getDefaultContext = (context?: PaymentContext): PaymentContext => {
-  return context || {};
-};
-
 export const configurePaymentProvidersModule = (
   PaymentProviders: Collection<PaymentProvider>,
   paymentProviderOptions: PaymentProvidersSettingsOptions,
@@ -105,7 +101,7 @@ export const configurePaymentProvidersModule = (
     findSupported: async ({ order }, requestContext) => {
       const providers = await PaymentProviders.find({ deleted: null })
         .filter((provider: PaymentProvider) => {
-          const director = PaymentDirector.actions(provider, getDefaultContext(order), requestContext);
+          const director = PaymentDirector.actions(provider, { order }, requestContext);
           return director.isActive();
         })
         .toArray();
@@ -119,11 +115,7 @@ export const configurePaymentProvidersModule = (
     // Payment Adapter
 
     configurationError: async (paymentProvider, requestContext) => {
-      return PaymentDirector.actions(
-        paymentProvider,
-        getDefaultContext(),
-        requestContext,
-      ).configurationError();
+      return PaymentDirector.actions(paymentProvider, {}, requestContext).configurationError();
     },
 
     calculate: async (pricingContext, requestContext) => {
