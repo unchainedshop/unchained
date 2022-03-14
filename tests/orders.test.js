@@ -218,7 +218,7 @@ describe("Order: Management", () => {
         order.supportedDeliveryProviders?.[0]?.simulatedPrice
       ).toMatchObject({
         currency: "CHF",
-        amount: 32145
+        amount: 0
       });
     });
 
