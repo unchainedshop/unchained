@@ -26,6 +26,12 @@ export const configureOrderDeliveriesModule = ({
     permanentlyDeleteByDefault: true,
   }) as ModuleMutations<OrderDelivery>;
 
+  const normalizedStatus: OrderDeliveriesModule['normalizedStatus'] = (orderDelivery) => {
+    return orderDelivery.status === null
+      ? OrderDeliveryStatus.OPEN
+      : (orderDelivery.status as OrderDeliveryStatus);
+  },
+
   const updateStatus: OrderDeliveriesModule['updateStatus'] = async (
     orderDeliveryId,
     { status, info },
@@ -88,11 +94,7 @@ export const configureOrderDeliveriesModule = ({
       return true;
     },
 
-    normalizedStatus: (orderDelivery) => {
-      return orderDelivery.status === null
-        ? OrderDeliveryStatus.OPEN
-        : (orderDelivery.status as OrderDeliveryStatus);
-    },
+    normalizedStatus,
 
     pricingSheet: (orderDelivery, currency) => {
       return OrderPricingSheet({
@@ -119,7 +121,7 @@ export const configureOrderDeliveriesModule = ({
     },
 
     markAsDelivered: async (orderDelivery, userId) => {
-      if (orderDelivery.status !== null /* OrderDeliveryStatus.OPEN */) return;
+      if (normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN) return;
       const updatedOrderDelivery = await updateStatus(
         orderDelivery._id,
         {
@@ -132,7 +134,7 @@ export const configureOrderDeliveriesModule = ({
     },
 
     send: async (orderDelivery, { order, deliveryContext }, requestContext) => {
-      if (orderDelivery.status !== OrderDeliveryStatus.OPEN) return orderDelivery;
+      if (normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN) return orderDelivery;
 
       const deliveryProvider = await requestContext.modules.delivery.findProvider({
         deliveryProviderId: orderDelivery.deliveryProviderId,

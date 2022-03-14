@@ -44,6 +44,12 @@ export const configureOrderPaymentsModule = ({
     permanentlyDeleteByDefault: true,
   }) as ModuleMutations<OrderPayment>;
 
+  const normalizedStatus: OrderPaymentsModule['normalizedStatus'] = (orderPayment) => {
+    return orderPayment.status === null
+      ? OrderPaymentStatus.OPEN
+      : (orderPayment.status as OrderPaymentStatus);
+  }
+
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,
     { status, info },
@@ -117,11 +123,7 @@ export const configureOrderPaymentsModule = ({
       return true;
     },
 
-    normalizedStatus: (orderPayment) => {
-      return orderPayment.status === null
-        ? OrderPaymentStatus.OPEN
-        : (orderPayment.status as OrderPaymentStatus);
-    },
+    normalizedStatus,
     pricingSheet: (orderPayment, currency) => {
       return OrderPricingSheet({
         calculation: orderPayment.calculation,
@@ -145,7 +147,7 @@ export const configureOrderPaymentsModule = ({
     charge: async (orderPayment, { transactionContext, order }, requestContext) => {
       const { modules, services } = requestContext;
 
-      if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
+      if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
         return orderPayment;
       }
 
@@ -201,7 +203,7 @@ export const configureOrderPaymentsModule = ({
     },
 
     markAsPaid: async (orderPayment, meta, userId) => {
-      if (orderPayment.status !== null /* OrderPaymentStatus.OPEN */) return;
+      if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) return;
 
       await updateStatus(
         orderPayment._id,
