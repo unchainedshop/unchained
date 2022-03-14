@@ -105,6 +105,11 @@ export const OrderItem: OrderItemHelperTypes = {
     return modules.products.findProduct({ productId: obj.productId });
   },
 
+  quotation: async (obj, _, { modules }) => {
+    if (!obj.quotationId) return null;
+    return modules.quotations.findQuotation({ quotationId: obj.quotationId });
+  },
+
   total: async (obj, { category }, context) => {
     const pricingSheet = await getPricingSheet(obj, context);
 

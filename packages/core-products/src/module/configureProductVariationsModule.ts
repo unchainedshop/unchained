@@ -45,12 +45,14 @@ export const configureProductVariationsModule = async ({
       },
       locale,
     };
+
     await ProductVariationTexts.updateOne(
       selector,
       {
         $set: {
           updated: new Date(),
           updatedBy: userId,
+          authorId: userId,
           ...text,
         },
         $setOnInsert: {
@@ -128,7 +130,6 @@ export const configureProductVariationsModule = async ({
 
       await upsertLocalizedText(
         {
-          authorId,
           locale,
           productVariationId,
           title,
@@ -187,7 +188,6 @@ export const configureProductVariationsModule = async ({
 
       await upsertLocalizedText(
         {
-          authorId: userId,
           locale: localeContext.language,
           productVariationId,
           productVariationOptionValue: value,
@@ -201,7 +201,7 @@ export const configureProductVariationsModule = async ({
         {},
       );
 
-      emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation });
+      emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation, value });
 
       return productVariation;
     },
@@ -245,7 +245,7 @@ export const configureProductVariationsModule = async ({
 
         const selector: Query = { productVariationId };
         if (productVariationOptionValue > '') {
-          selector.procuctVariationOptionValue = productVariationOptionValue;
+          selector.productVariationOptionValue = productVariationOptionValue;
         }
         const text = await findLocalizedText<ProductVariationText>(
           ProductVariationTexts,
@@ -263,7 +263,6 @@ export const configureProductVariationsModule = async ({
             upsertLocalizedText(
               {
                 ...text,
-                authorId: userId,
                 locale,
                 productVariationId,
                 productVariationOptionValue,
@@ -290,10 +289,10 @@ export const configureProductVariationsModule = async ({
       ) =>
         upsertLocalizedText(
           {
+            ...text,
             productVariationId,
             productVariationOptionValue,
             locale,
-            ...text,
           },
           userId,
         ),
