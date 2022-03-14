@@ -34,7 +34,7 @@ export default async function updateOrderPaymentInvoice(
 
   return modules.orders.payments.updateContext(
     orderPayment._id,
-    { orderId: orderPayment.orderId, context: meta },
+    { orderId: orderPayment.orderId, context: { meta } },
     context,
   );
 }
