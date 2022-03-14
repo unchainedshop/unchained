@@ -30,10 +30,6 @@ const buildFindSelector = ({ type }: FindQuery = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 
-const getDefaultContext = (context?: DeliveryContext): DeliveryContext => {
-  return context || {};
-};
-
 export const configureDeliveryModule = async ({
   db,
   options: deliveryOptions = {},
@@ -105,11 +101,7 @@ export const configureDeliveryModule = async ({
     findSupported: async ({ order }, requestContext) => {
       const providers = await DeliveryProviders.find(buildFindSelector({}))
         .filter((provider: DeliveryProvider) => {
-          const director = DeliveryDirector.actions(
-            provider,
-            getDefaultContext({ order }),
-            requestContext,
-          );
+          const director = DeliveryDirector.actions(provider, { order }, requestContext);
           return director.isActive();
         })
         .toArray();
@@ -119,12 +111,14 @@ export const configureDeliveryModule = async ({
       });
     },
 
+    isActive: (deliveryProvider, requestContext) => {
+      const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+      return Boolean(director.isActive());
+    },
+
     isAutoReleaseAllowed: (deliveryProvider, requestContext) => {
       const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
-
-      if (director.isAutoReleaseAllowed()) return false;
-
-      return true;
+      return Boolean(director.isAutoReleaseAllowed());
     },
 
     calculate: async (pricingContext, requestContext) => {
