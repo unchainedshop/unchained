@@ -101,15 +101,16 @@ export const configureOrderPaymentsModule = ({
     isBlockingOrderConfirmation: async (orderPayment, requestContext) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
 
-      const isPayLaterAllowed = await requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
-        orderPayment.paymentProviderId,
-        {},
+      const provider = await requestContext.modules.payment.paymentProviders.findProvider({
+        paymentProviderId: orderPayment.paymentProviderId,
+      });
+
+      const isPayLaterAllowed = requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
+        provider,
         requestContext,
       );
 
-      if (isPayLaterAllowed) return false;
-
-      return true;
+      return !isPayLaterAllowed;
     },
     isBlockingOrderFullfillment: (orderPayment) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;

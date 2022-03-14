@@ -76,7 +76,12 @@ export const configureOrderDeliveriesModule = ({
         deliveryProviderId: orderDelivery.deliveryProviderId,
       });
 
-      return requestContext.modules.delivery.isAutoReleaseAllowed(provider, requestContext);
+      const isAutoReleaseAllowed = requestContext.modules.delivery.isAutoReleaseAllowed(
+        provider,
+        requestContext,
+      );
+
+      return !isAutoReleaseAllowed;
     },
     isBlockingOrderFullfillment: (orderDelivery) => {
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;

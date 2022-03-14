@@ -26,7 +26,7 @@ describe('Enrollments', () => {
   });
 
   describe('Mutation.createCart (Enrollment)', () => {
-    it('checking out a plan product generates a new enrollment', async () => {
+    it.only('checking out a plan product generates a new enrollment', async () => {
       const { data: { createCart } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation {
@@ -224,7 +224,7 @@ describe('Enrollments', () => {
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
-  
+
   describe('Mutation.terminateEnrollment for admin user should', () => {
     it('change ACTIVE enrollment status to TERMINATED', async () => {
       const {

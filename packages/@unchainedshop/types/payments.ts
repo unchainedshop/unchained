@@ -136,11 +136,7 @@ export type PaymentModule = {
 
     isActive: (paymentProvider: PaymentProvider, requestContext: Context) => boolean;
 
-    isPayLaterAllowed: (
-      paymentProviderId: string,
-      paymentContext: PaymentContext,
-      requestContext: Context,
-    ) => Promise<boolean>;
+    isPayLaterAllowed: (paymentProvider: PaymentProvider, requestContext: Context) => boolean;
 
     calculate: (
       pricingContext: PaymentPricingContext,

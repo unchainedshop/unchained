@@ -127,9 +127,8 @@ export const configurePaymentProvidersModule = (
       return PaymentDirector.actions(paymentProvider, {}, requestContext).isActive();
     },
 
-    isPayLaterAllowed: async (paymentProviderId, paymentContext, requestContext) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
-      return adapter.isPayLaterAllowed();
+    isPayLaterAllowed: (paymentProvider, requestContext) => {
+      return PaymentDirector.actions(paymentProvider, {}, requestContext).isPayLaterAllowed();
     },
 
     charge: async (paymentProviderId, paymentContext, requestContext) => {
