@@ -253,6 +253,8 @@ const loadToken = async (context: Context) => {
   return currentToken;
 };
 
+let token;
+
 const Bity: IPaymentAdapter = {
   ...PaymentAdapter,
 
@@ -267,15 +269,16 @@ const Bity: IPaymentAdapter = {
   },
 
   actions: (params) => {
+    loadToken(params.context).then((t) => {
+      token = t;
+    });
     const adapter = {
       ...PaymentAdapter.actions(params),
 
       configurationError: () => {
-        // TODO: Async is not allowed in this
-        // const token = await loadToken(params.context);
-        // if (!token) {
-        //   return PaymentError.INCOMPLETE_CONFIGURATION;
-        // }
+        if (!token) {
+          return PaymentError.INCOMPLETE_CONFIGURATION;
+        }
         return null;
       },
 

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-currencies',
-  version: '1.0.0-rc.7',
+  version: '1.0.0-rc.8',
   summary: 'Unchained Engine Core: Currencies',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -15,8 +15,8 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.7');
-  api.use('unchained:events@1.0.0-rc.7');
+  api.use('unchained:utils@1.0.0-rc.8');
+  api.use('unchained:events@1.0.0-rc.8');
 
   api.mainModule('src/currencies-index.ts', 'server');
 });
@@ -26,7 +26,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb@1.0.0-rc.7');
+  api.use('unchained:mongodb@1.0.0-rc.8');
   api.use('unchained:core-currencies');
 
   api.mainModule('tests/currencies-index.test.ts');

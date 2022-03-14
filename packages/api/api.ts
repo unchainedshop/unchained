@@ -24,32 +24,32 @@ export type UnchainedServerContext = UnchainedLocaleContext &
   UnchainedLoaders &
   UnchainedAPI;
 
-const UNCHAINED_API_VERSION = '1.0.0-rc.7'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '1.0.0-rc.8'; // eslint-disable-line
 
 const createContextResolver =
   (unchainedAPI: UnchainedAPI) =>
-    // eslint-disable-next-line
+  // eslint-disable-next-line
     async ({ req, res, ...apolloContext }): Promise<UnchainedServerContext> => {
-      const loaders = await instantiateLoaders(req, unchainedAPI);
-      // const intermediateContext: Partial<UnchainedServerContext> = {
-      //   ...unchained,
-      //   ...loaders,
-      // };
+    const loaders = await instantiateLoaders(req, unchainedAPI);
+    // const intermediateContext: Partial<UnchainedServerContext> = {
+    //   ...unchained,
+    //   ...loaders,
+    // };
 
-      const userContext = await getUserContext(req, unchainedAPI);
-      const localeContext = await getLocaleContext(req, unchainedAPI);
+    const userContext = await getUserContext(req, unchainedAPI);
+    const localeContext = await getLocaleContext(req, unchainedAPI);
 
-      return {
-        req,
-        res,
-        ...apolloContext,
-        ...unchainedAPI,
-        ...loaders,
-        ...userContext,
-        ...localeContext,
-        version: UNCHAINED_API_VERSION,
-      };
+    return {
+      req,
+      res,
+      ...apolloContext,
+      ...unchainedAPI,
+      ...loaders,
+      ...userContext,
+      ...localeContext,
+      version: UNCHAINED_API_VERSION,
     };
+  };
 
 let context;
 
@@ -67,8 +67,8 @@ export const startAPIServer = (options: UnchainedServerOptions) => {
 
   context = customContext
     ? ({ req, res }) => {
-      return customContext({ req, res }, contextResolver);
-    }
+        return customContext({ req, res }, contextResolver);
+      }
     : contextResolver;
 
   const apolloGraphQLServer = createGraphQLServer({

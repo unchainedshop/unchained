@@ -13,10 +13,11 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
   const dbManager = createDbManager(db);
 
   const accountsServer = new UnchainedAccountsServer(
-    { 
+    {
       db: dbManager,
       useInternalUserObjectSanitizer: false,
-      siteUrl: process.env.ROOT_URL
+      siteUrl: process.env.ROOT_URL,
+    },
     {
       password: accountsPassword,
     },
