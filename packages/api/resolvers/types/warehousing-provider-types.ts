@@ -7,8 +7,8 @@ export const WarehousingProvider: WarehousingProviderHelperTypes = {
     return Interface;
   },
 
-  async configurationError(obj, _, context) {
-    return context.modules.warehousing.configurationError(obj, context);
+  configurationError(obj, _, requestContext) {
+    return requestContext.modules.warehousing.configurationError(obj, requestContext);
   },
 
   isActive(obj, _, context) {

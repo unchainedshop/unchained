@@ -22,11 +22,11 @@ const SendMessage: IDeliveryAdapter = {
     return {
       ...DeliveryAdapter.actions(config, context),
 
-      isActive: async () => {
+      isActive: () => {
         return true;
       },
 
-      configurationError: async () => {
+      configurationError: () => {
         return null;
       },
 

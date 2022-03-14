@@ -62,7 +62,7 @@ export const configureFilesModule = async ({
       emit('FILE_UPDATE', { fileId });
       return fileId;
     },
-    delete: async (fileId) => {
+    delete: async (fileId: string, userId: string) => {
       const deletedCount = await mutations.delete(fileId, userId);
       emit('FILE_REMOVE', { fileId });
       return deletedCount;

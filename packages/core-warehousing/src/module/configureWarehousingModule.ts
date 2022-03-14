@@ -93,7 +93,7 @@ export const configureWarehousingModule = async ({
       });
     },
 
-    configurationError: async (provider, requestContext) => {
+    configurationError: (provider, requestContext) => {
       return WarehousingDirector.actions(provider, {}, requestContext).configurationError();
     },
 
@@ -106,7 +106,7 @@ export const configureWarehousingModule = async ({
       return director.estimatedDispatch();
     },
 
-    isActive: async (warehousingProvider, requestContext) => {
+    isActive: (warehousingProvider, requestContext) => {
       return WarehousingDirector.actions(warehousingProvider, {}, requestContext).isActive();
     },
 

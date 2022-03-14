@@ -83,6 +83,11 @@ export const User: UserHelperTypes = {
     return getPrimaryEmail(user);
   },
 
+  email: async (user, params, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    return getPrimaryEmail(user);
+  },
+
   isEmailVerified: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     log('user.isEmailVerified is deprecated, please use user.primaryEmail.verified', {

@@ -11,7 +11,7 @@ export const DeliveryAdapter: Omit<IDeliveryAdapter, 'key' | 'label' | 'version'
 
   actions: () => {
     return {
-      configurationError: async () => {
+      configurationError: () => {
         return DeliveryError.NOT_IMPLEMENTED;
       },
 
@@ -19,7 +19,7 @@ export const DeliveryAdapter: Omit<IDeliveryAdapter, 'key' | 'label' | 'version'
         return 0;
       },
 
-      isActive: async () => {
+      isActive: () => {
         return false;
       },
 

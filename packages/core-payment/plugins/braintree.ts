@@ -73,7 +73,7 @@ const BraintreeDirect: IPaymentAdapter = {
     const adapter = {
       ...PaymentAdapter.actions(params),
 
-      configurationError: async () => {
+      configurationError: () => {
         const publicCredentialsValid =
           getAccessToken() || (getMerchantId() && getPublicKey() && getPrivateKey());
 
@@ -83,8 +83,8 @@ const BraintreeDirect: IPaymentAdapter = {
         return null;
       },
 
-      isActive: async () => {
-        if ((await adapter.configurationError()) === null) return true;
+      isActive: () => {
+        if (adapter.configurationError() === null) return true;
         return false;
       },
 

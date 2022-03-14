@@ -41,7 +41,7 @@ export const WarehousingDirector: IWarehousingDirector = {
     };
 
     return {
-      configurationError: async () => {
+      configurationError: () => {
         try {
           const error = adapter.configurationError();
           return error;
@@ -50,7 +50,7 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
-      isActive: async () => {
+      isActive: () => {
         try {
           return adapter.isActive();
         } catch (error) {

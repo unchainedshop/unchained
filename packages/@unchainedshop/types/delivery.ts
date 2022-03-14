@@ -81,9 +81,9 @@ export interface DeliveryLocation {
 }
 
 interface DeliveryAdapterActions {
-  configurationError: (transactionContext?: any) => Promise<DeliveryError>;
+  configurationError: (transactionContext?: any) => DeliveryError;
   estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number>;
-  isActive: () => Promise<boolean>;
+  isActive: () => boolean;
   isAutoReleaseAllowed: () => boolean;
   pickUpLocationById: (locationId: string) => Promise<DeliveryLocation>;
   pickUpLocations: () => Promise<Array<DeliveryLocation>>;

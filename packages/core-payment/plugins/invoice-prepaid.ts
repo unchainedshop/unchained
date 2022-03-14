@@ -18,11 +18,11 @@ const InvoicePrepaid: IPaymentAdapter = {
     return {
       ...PaymentAdapter.actions(params),
 
-      configurationError: async () => {
+      configurationError: () => {
         return null;
       },
 
-      isActive: async () => {
+      isActive: () => {
         return true;
       },
 

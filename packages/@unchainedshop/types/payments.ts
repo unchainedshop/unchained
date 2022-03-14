@@ -65,8 +65,8 @@ export interface PaymentContext {
 
 interface IPaymentActions {
   charge: (transactionContext?: any) => Promise<any>;
-  configurationError: (transactionContext?: any) => Promise<PaymentError>;
-  isActive: (transactionContext?: any) => Promise<boolean>;
+  configurationError: (transactionContext?: any) => PaymentError;
+  isActive: (transactionContext?: any) => boolean;
   isPayLaterAllowed: (transactionContext?: any) => boolean;
   register: (transactionContext?: any) => Promise<any>;
   sign: (transactionContext?: any) => Promise<string>;
@@ -132,16 +132,9 @@ export type PaymentModule = {
     findInterface: (query: PaymentProvider) => PaymentInterface;
     findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
 
-    configurationError: (
-      paymentProvider: PaymentProvider,
-      requestContext: Context,
-    ) => Promise<PaymentError>;
+    configurationError: (paymentProvider: PaymentProvider, requestContext: Context) => PaymentError;
 
-    isActive: (
-      paymentProviderId: string,
-      paymentContext: PaymentContext,
-      requestContext: Context,
-    ) => Promise<boolean>;
+    isActive: (paymentProvider: PaymentProvider, requestContext: Context) => boolean;
 
     isPayLaterAllowed: (
       paymentProviderId: string,
@@ -263,7 +256,7 @@ export interface PaymentProviderHelperTypes {
     label: string;
     version: string;
   };
-  configurationError: (provider: PaymentProvider, _: never, context: Context) => Promise<PaymentError>;
+  configurationError: (provider: PaymentProvider, _: never, context: Context) => PaymentError;
 }
 
 export interface PaymentCredentialsHelperTypes {

@@ -125,11 +125,11 @@ const GoogleSheets: IWarehousingAdapter = {
     // ];
 
     return {
-      isActive: async () => {
+      isActive: () => {
         return true;
       },
 
-      configurationError: async () => {
+      configurationError: () => {
         return null;
       },
 

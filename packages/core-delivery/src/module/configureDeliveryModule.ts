@@ -111,7 +111,7 @@ export const configureDeliveryModule = async ({
       });
     },
 
-    configurationError: async (deliveryProvider, requestContext) => {
+    configurationError: (deliveryProvider, requestContext) => {
       const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
       return director.configurationError();
     },

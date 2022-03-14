@@ -168,8 +168,8 @@ const Stripe: IPaymentAdapter = {
         return null;
       },
 
-      isActive: async () => {
-        if ((await adapter.configurationError()) === null) return true;
+      isActive: () => {
+        if (configurationError() === null) return true;
         return false;
       },
 
@@ -249,8 +249,8 @@ const Stripe: IPaymentAdapter = {
                 customer: paymentCredentials.meta?.customer,
                 confirm: true,
                 payment_method: paymentCredentials.token,
-              payment_method_types: paymentCredentials.meta?.payment_method_types, // eslint-disable-line
-              payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
+                payment_method_types: paymentCredentials.meta?.payment_method_types, // eslint-disable-line
+                payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
               },
             );
 

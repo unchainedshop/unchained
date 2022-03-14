@@ -65,8 +65,8 @@ const PostfinanceCheckout: IPaymentAdapter = {
         return null;
       },
 
-      isActive: async () => {
-        if (adapter.configurationError() === null) return true;
+      isActive() {
+        if (configurationError() === null) return true;
         return false;
       },
 

@@ -11,11 +11,11 @@ export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> 
 
   actions: () => {
     return {
-      configurationError: async () => {
+      configurationError: () => {
         return PaymentError.NOT_IMPLEMENTED;
       },
 
-      isActive: async () => {
+      isActive: () => {
         return false;
       },
 

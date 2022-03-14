@@ -15,10 +15,9 @@ export const DeliveryDirector: IDeliveryDirector = {
     const adapter = Adapter.actions(deliveryProvider.configuration, context);
 
     return {
-      configurationError: async () => {
+      configurationError: () => {
         try {
-          const error = await adapter.configurationError();
-          return error;
+          return adapter.configurationError();
         } catch (error) {
           return DeliveryError.ADAPTER_NOT_FOUND;
         }
@@ -26,7 +25,8 @@ export const DeliveryDirector: IDeliveryDirector = {
 
       estimatedDeliveryThroughput: async (warehousingThroughputTime) => {
         try {
-          return adapter.estimatedDeliveryThroughput(warehousingThroughputTime);
+          const throughput = await adapter.estimatedDeliveryThroughput(warehousingThroughputTime);
+          return throughput;
         } catch (error) {
           log('Delivery Director -> Error while estimating delivery throughput', {
             level: LogLevel.Warning,
@@ -36,7 +36,7 @@ export const DeliveryDirector: IDeliveryDirector = {
         }
       },
 
-      isActive: async () => {
+      isActive: () => {
         try {
           return adapter.isActive();
         } catch (error) {

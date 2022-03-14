@@ -270,16 +270,17 @@ const Bity: IPaymentAdapter = {
     const adapter = {
       ...PaymentAdapter.actions(params),
 
-      configurationError: async () => {
-        const token = await loadToken(params.context);
-        if (!token) {
-          return PaymentError.INCOMPLETE_CONFIGURATION;
-        }
+      configurationError: () => {
+        // TODO: Async is not allowed in this
+        // const token = await loadToken(params.context);
+        // if (!token) {
+        //   return PaymentError.INCOMPLETE_CONFIGURATION;
+        // }
         return null;
       },
 
-      isActive: async () => {
-        if ((await adapter.configurationError()) === null) return true;
+      isActive: () => {
+        if (adapter.configurationError() === null) return true;
         return false;
       },
 

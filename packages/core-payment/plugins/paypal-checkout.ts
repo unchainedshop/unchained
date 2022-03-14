@@ -42,7 +42,7 @@ const PaypalCheckout: IPaymentAdapter = {
     const adapter = {
       ...PaymentAdapter.actions(params),
 
-      configurationError: async () => {
+      configurationError: () => {
         const publicCredentialsValid = PAYPAL_CLIENT_ID && PAYPAL_SECRET;
 
         if (!publicCredentialsValid) {
@@ -51,8 +51,8 @@ const PaypalCheckout: IPaymentAdapter = {
         return null;
       },
 
-      isActive: async () => {
-        if ((await adapter.configurationError()) === null) return true;
+      isActive: () => {
+        if (adapter.configurationError() === null) return true;
         return false;
       },
 

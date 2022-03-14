@@ -63,7 +63,7 @@ const fixPeriods = async (
   const adjustedEnrollmentPeriods = relevantTransactions
     .map((transaction) => {
       return {
-        isTrial: transaction.is_trial_period === "true", // eslint-disable-line
+        isTrial: transaction.is_trial_period === 'true', // eslint-disable-line
         start: new Date(parseInt(transaction.purchase_date_ms, 10)),
         end: new Date(parseInt(transaction.expires_date_ms, 10)),
         orderId: transaction.transaction_id === transactionId ? orderId : null,
@@ -330,7 +330,7 @@ const AppleIAP: IPaymentAdapter = {
           receiptResponse?.latest_receipt_info || // eslint-disable-line
           paymentCredentials?.meta?.latestReceiptInfo;
         const matchedTransaction = transactions?.find(
-          (transaction) => transaction?.transaction_id === transactionIdentifier // eslint-disable-line
+          (transaction) => transaction?.transaction_id === transactionIdentifier, // eslint-disable-line
         );
         if (!matchedTransaction) {
           throw new Error(

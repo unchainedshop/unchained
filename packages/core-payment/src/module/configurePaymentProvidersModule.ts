@@ -114,7 +114,7 @@ export const configurePaymentProvidersModule = (
 
     // Payment Adapter
 
-    configurationError: async (paymentProvider, requestContext) => {
+    configurationError: (paymentProvider, requestContext) => {
       return PaymentDirector.actions(paymentProvider, {}, requestContext).configurationError();
     },
 
@@ -123,13 +123,12 @@ export const configurePaymentProvidersModule = (
       return pricing.calculate();
     },
 
-    isActive: async (paymentProviderId, paymentContext, requestContext) => {
-      const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
-      return adapter.isActive();
+    isActive: (paymentProvider, requestContext) => {
+      return PaymentDirector.actions(paymentProvider, {}, requestContext).isActive();
     },
+
     isPayLaterAllowed: async (paymentProviderId, paymentContext, requestContext) => {
       const adapter = await getPaymentAdapter(paymentProviderId, paymentContext, requestContext);
-
       return adapter.isPayLaterAllowed();
     },
 

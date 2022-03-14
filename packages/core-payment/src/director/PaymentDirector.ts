@@ -22,16 +22,16 @@ export const PaymentDirector: IPaymentDirector = {
     });
 
     return {
-      configurationError: async () => {
+      configurationError: () => {
         try {
-          const error = await adapter.configurationError();
+          const error = adapter.configurationError();
           return error;
         } catch (error) {
           return PaymentError.ADAPTER_NOT_FOUND;
         }
       },
 
-      isActive: async () => {
+      isActive: () => {
         try {
           return adapter.isActive(paymentContext.transactionContext);
         } catch (error) {
