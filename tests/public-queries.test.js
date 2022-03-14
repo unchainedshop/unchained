@@ -1,4 +1,5 @@
 import { setupDatabase, createAnonymousGraphqlFetch } from './helpers';
+import { SimpleProduct } from './seeds/products';
 
 let graphqlFetch;
 
@@ -23,8 +24,9 @@ describe('public queries', () => {
     expect(data.products.length).toBeGreaterThan(0);
 
     const [product] = data.products;
-    expect(product).toBeTruthy();
-    expect(product._id).toBe('simpleproduct');
+    expect(product).toMatchObject({
+      _id: SimpleProduct._id,
+    });
   });
 
   it('product', async () => {
@@ -40,8 +42,9 @@ describe('public queries', () => {
 
     expect(errors).toEqual(undefined);
     const { product } = data;
-    expect(product).toBeTruthy();
-    expect(product._id).toBe('simpleproduct');
+    expect(product).toMatchObject({
+      _id: SimpleProduct._id,
+    });
   });
 
   it('query.productCatalogPrices', async () => {
@@ -60,9 +63,12 @@ describe('public queries', () => {
     });
 
     expect(errors).toEqual(undefined);
-    const { amount, currency } = data.productCatalogPrices[0];
-    expect(amount).toBe(10000);
-    expect(currency.isoCode).toBe('CHF');
+    expect(data.productCatalogPrices[0]).toMatchObject({
+      amount: 10000,
+      currency: {
+        isoCode: 'CHF',
+      }
+    });
   });
 
   it('query.productCatalogPrices return error when passed invalid productId', async () => {
@@ -97,14 +103,16 @@ describe('public queries', () => {
     });
 
     expect(errors).toEqual(undefined);
-    const de = data.translatedProductTexts.find(
-      (texts) => texts.locale === 'de',
-    );
-    const fr = data.translatedProductTexts.find(
-      (texts) => texts.locale === 'fr',
-    );
-    expect(de.slug).toBe('slug-de');
-    expect(fr.slug).toBe('slug-fr');
+    expect(data.translatedProductTexts).toMatchObject([
+      {
+        locale: 'de',
+        slug: 'slug-de',
+      },
+      {
+        locale: 'fr',
+        slug: 'slug-fr',
+      }
+    ]);
   });
 
   it('translatedProductMediaTexts', async () => {
@@ -120,13 +128,15 @@ describe('public queries', () => {
     });
 
     expect(errors).toEqual(undefined);
-    const de = data.translatedProductMediaTexts.find(
-      (texts) => texts.locale === 'de',
-    );
-    const fr = data.translatedProductMediaTexts.find(
-      (texts) => texts.locale === 'fr',
-    );
-    expect(de.title).toBe('product-media-title-de');
-    expect(fr.title).toBe('product-media-title-fr');
+    expect(data.translatedProductMediaTexts).toMatchObject([
+      {
+        locale: 'de',
+        title: 'product-media-title-de',
+      },
+      {
+        locale: 'fr',
+        title: 'product-media-title-fr',
+      }
+    ]);
   });
 });

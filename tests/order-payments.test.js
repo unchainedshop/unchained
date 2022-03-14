@@ -146,6 +146,12 @@ describe('Order: Payments', () => {
                 paymentProviderId: $paymentProviderId
               ) {
                 _id
+                payment {
+                  _id
+                  provider {
+                    _id
+                  }
+                }
               }
             }
           `,
@@ -156,6 +162,9 @@ describe('Order: Payments', () => {
         });
       expect(setOrderPaymentProvider).toMatchObject({
         _id: SimpleOrder._id,
+        payment: {
+          provider: { _id: PrePaidPaymentProvider._id },
+        }
       });
     });
   });
@@ -385,8 +394,7 @@ describe('Order: Payments', () => {
   });
 
   describe('Mutation.updateOrderPaymentGeneric for admin user should', () => {
-    // TODO: Migrate datatrans plugin
-    xit('update order payment successfuly when order payment provider type is generic', async () => {
+    it('update order payment successfuly when order payment provider type is generic', async () => {
       const { data: { updateOrderPaymentGeneric } = {} } =
         await graphqlFetchAsAdmin({
           query: /* GraphQL */ `
@@ -399,7 +407,6 @@ describe('Order: Payments', () => {
                 meta: $meta
               ) {
                 _id
-                sign
                 provider {
                   _id
                   type
@@ -416,12 +423,12 @@ describe('Order: Payments', () => {
         });
       expect(updateOrderPaymentGeneric).toMatchObject({
         _id: GenericPayment._id,
-        sign: '{"location":"https://pay.sandbox.datatrans.com/v1/start/new-transaction","transactionId":"new-transaction"}',
         provider: {
           type: 'GENERIC',
         },
       });
     });
+
     it('return error when order payment type is not GENERIC', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
@@ -515,7 +522,7 @@ describe('Order: Payments', () => {
 
   describe('Mutation.updateOrderPaymentCard', () => {
     it.todo(
-      'All test senarios tests for the other endpoints above including role based',
+      'All test senarios tests for the other endpoints above including role based', // Currently no payment provider with type CARD implemented
     );
   });
 });

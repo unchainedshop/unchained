@@ -98,7 +98,7 @@ describe('AssortmentProduct', () => {
           ],
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -135,7 +135,11 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(data?.addAssortmentProduct._id).not.toBe(null);
+      expect(data?.addAssortmentProduct).toMatchObject({
+        tags: ['assortment-product-et'],
+        assortment: { _id: SimpleAssortment[1]._id },
+        product: { _id: SimpleProduct._id }
+      });
     });
 
     it('return not found error when passed non existing product id', async () => {
@@ -207,6 +211,7 @@ describe('AssortmentProduct', () => {
 
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
+
     it('return not found error when passed non existing assortment id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -286,7 +291,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -323,7 +328,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentProductNotFoundError');
     });
 
     it('return not found error when passed non existing assortment product id', async () => {
@@ -378,7 +383,7 @@ describe('AssortmentProduct', () => {
           assortmentProductId: AssortmentProduct._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

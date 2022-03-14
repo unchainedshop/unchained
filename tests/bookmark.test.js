@@ -3,7 +3,7 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
+import { Admin, ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { ConfigurableProduct } from './seeds/products';
 import { SimpleBookmarks } from './seeds/bookmark';
 
@@ -121,6 +121,14 @@ describe('Bookmark', () => {
           bookmarked: false,
         },
       });
+      expect(bookmark).toMatchObject({
+        user: {
+          _id: Admin._id,
+        },
+        product: {
+          _id: 'simpleproduct',
+        }
+      })
 
       const {
         data: {
@@ -185,6 +193,23 @@ describe('Bookmark', () => {
       });
 
       expect(bookmark).not.toBe(null);
+      const {
+        data: {
+          user: { bookmarks },
+        },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query userBookmarks {
+            user {
+              bookmarks {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {},
+      });
+      expect(bookmarks.length).toEqual(2);
     });
 
     it('remove bookmark when provided valid bookmark ID', async () => {
@@ -242,7 +267,7 @@ describe('Bookmark', () => {
           bookmarkId: SimpleBookmarks[3]._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions.code).toEqual('BookmarkNotFoundError');
     });
   });
 
@@ -311,6 +336,9 @@ describe('Bookmark', () => {
           mutation Bookmark($productId: ID!, $bookmarked: Boolean = true) {
             bookmark(productId: $productId, bookmarked: $bookmarked) {
               _id
+              product {
+                _id
+              }
             }
           }
         `,
@@ -318,8 +346,7 @@ describe('Bookmark', () => {
           productId: ConfigurableProduct._id,
         },
       });
-
-      expect(bookmark).not.toBe(null);
+      expect(bookmark.product._id).toBe(ConfigurableProduct._id);
     });
 
     it("remove bookmark when provided valid bookmark ID", async () => {
@@ -350,7 +377,7 @@ describe('Bookmark', () => {
           bookmarkId: SimpleBookmarks[3]._id,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions.code).toEqual('BookmarkNotFoundError');
     });
   });
 

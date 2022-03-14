@@ -111,6 +111,7 @@ describe('ProductBundleItem', () => {
         required: 'BUNDLE_PRODUCT',
       });
     });
+
     it('return not found error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -226,7 +227,7 @@ describe('ProductBundleItem', () => {
           },
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -356,7 +357,7 @@ describe('ProductBundleItem', () => {
           index: 0,
         },
       });
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

@@ -129,7 +129,11 @@ describe('PaymentProviders', () => {
           paymentProviderId: SimplePaymentProvider._id,
         },
       });
-      expect(paymentProvider._id).toEqual(SimplePaymentProvider._id);
+      expect(paymentProvider).toMatchObject({
+        _id: SimplePaymentProvider._id,
+        type: SimplePaymentProvider.type,
+        configurationError: null,
+      });
     });
 
     it('return error when passed invalid paymentProviderId', async () => {

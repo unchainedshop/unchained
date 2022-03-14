@@ -3,7 +3,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
 } from "./helpers";
-import { SimpleOrder } from "./seeds/orders";
+import { ConfirmedOrder, PendingOrder, SimpleOrder } from "./seeds/orders";
 import { USER_TOKEN, ADMIN_TOKEN } from "./seeds/users";
 
 let graphqlFetch;
@@ -121,6 +121,16 @@ describe("Order: Management", () => {
         variables: {},
       });
       expect(orders.length).toEqual(2);
+      expect(orders).toMatchObject([
+        {
+          _id: ConfirmedOrder._id,
+          status: ConfirmedOrder.status,
+        },
+        {
+          _id: PendingOrder._id,
+          status: PendingOrder.status,
+        }
+      ]);
     });
 
     it("return single user order", async () => {
@@ -178,9 +188,9 @@ describe("Order: Management", () => {
           orderId: SimpleOrder._id,
         },
       });
-
       expect(order._id).toEqual(SimpleOrder._id);
     });
+
     it("return simulatedPrice for supportedDeliveryProviders using default country currency when currency is not provided", async () => {
       const {
         data: { order },
@@ -204,10 +214,12 @@ describe("Order: Management", () => {
           orderId: SimpleOrder._id,
         },
       });
-
       expect(
-        order.supportedDeliveryProviders?.[0]?.simulatedPrice?.currency
-      ).toEqual("CHF");
+        order.supportedDeliveryProviders?.[0]?.simulatedPrice
+      ).toMatchObject({
+        currency: "CHF",
+        amount: 32145
+      });
     });
 
     it("return simulatedPrice for supportedDeliveryProviders using the provided currency when currency is provided", async () => {

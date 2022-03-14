@@ -47,7 +47,15 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(reorderAssortmentFilters[0].sortKey).toEqual(11);
+      expect(reorderAssortmentFilters[0]).toEqual(
+        {
+          _id: AssortmentFilters[0]._id,
+          sortKey: 11,
+          tags: AssortmentFilters[0].tags,
+          assortment: { _id: AssortmentFilters[0].assortmentId },
+          filter: { _id: AssortmentFilters[0].filterId }
+        }
+      );
     });
 
     it('skip when passed invalid assortment filter ID', async () => {
@@ -99,8 +107,8 @@ describe('AssortmentFilter', () => {
           ],
         },
       });
-
       expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -139,7 +147,11 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(addAssortmentFilter._id).not.toBe(null);
+      expect(addAssortmentFilter).toMatchObject({
+        tags: ['assortment-filter-1'],
+        assortment: { _id: SimpleAssortment[0]._id },
+        filter: { _id: MultiChoiceFilter._id }
+      });
     });
 
     it('return error when passed assortment ID that do not exists', async () => {
@@ -166,6 +178,7 @@ describe('AssortmentFilter', () => {
         },
       });
 
+      expect(errors.length).toEqual(1);
       expect(errors[0].extensions?.code).toEqual('AssortmentNotFoundError');
     });
 
@@ -192,6 +205,7 @@ describe('AssortmentFilter', () => {
           tags: ['assortment-filter-1'],
         },
       });
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('FilterNotFoundError');
     });
 
@@ -218,8 +232,10 @@ describe('AssortmentFilter', () => {
           tags: ['assortment-filter-1'],
         },
       });
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
+
     it('return error when passed invalid assortment ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -244,6 +260,7 @@ describe('AssortmentFilter', () => {
         },
       });
 
+      expect(errors.length).toEqual(1);
       expect(errors[0].extensions?.code).toEqual('InvalidIdError');
     });
   });
@@ -276,6 +293,7 @@ describe('AssortmentFilter', () => {
       });
 
       expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -317,8 +335,10 @@ describe('AssortmentFilter', () => {
           assortmentFilterId: AssortmentFilters[0]._id,
         },
       });
-
       expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual(
+        'AssortmentFilterNotFoundError',
+      );
     });
 
     it('return not found error when passed non existing assortmentFilterId', async () => {
@@ -335,6 +355,7 @@ describe('AssortmentFilter', () => {
         },
       });
 
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual(
         'AssortmentFilterNotFoundError',
       );
@@ -354,6 +375,7 @@ describe('AssortmentFilter', () => {
         },
       });
 
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
@@ -382,6 +404,7 @@ describe('AssortmentFilter', () => {
         },
       });
       expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

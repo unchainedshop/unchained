@@ -77,6 +77,9 @@ describe('AssortmentLink', () => {
       });
 
       expect(reorderAssortmentLinks.length).toEqual(1);
+      expect(reorderAssortmentLinks[0]).toEqual({
+        _id: AssortmentLinks[0]._id
+      });
     });
   });
 
@@ -104,6 +107,7 @@ describe('AssortmentLink', () => {
       });
 
       expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -142,7 +146,11 @@ describe('AssortmentLink', () => {
         },
       });
 
-      expect(addAssortmentLink._id).not.toBe(null);
+      expect(addAssortmentLink).toMatchObject({
+        parent: {_id: SimpleAssortment[0]._id},
+        child: {_id: SimpleAssortment[3]._id},
+        tags: ['assortment-link-test'],
+      });
     });
 
     it('return not found error when passed non existing parent assortment ID is passed', async () => {
@@ -168,6 +176,7 @@ describe('AssortmentLink', () => {
           tags: ['assortment-link-test'],
         },
       });
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
     });
 
@@ -194,6 +203,7 @@ describe('AssortmentLink', () => {
           tags: ['assortment-link-test'],
         },
       });
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
@@ -220,6 +230,7 @@ describe('AssortmentLink', () => {
           tags: ['assortment-link-test'],
         },
       });
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('AssortmentNotFoundError');
     });
 
@@ -246,6 +257,7 @@ describe('AssortmentLink', () => {
           tags: ['assortment-link-test'],
         },
       });
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
@@ -278,6 +290,7 @@ describe('AssortmentLink', () => {
       });
 
       expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -320,6 +333,9 @@ describe('AssortmentLink', () => {
         },
       });
       expect(errors.length).toEqual(1);
+      expect(errors[0]?.extensions?.code).toEqual(
+        'AssortmentLinkNotFoundError',
+      );
     });
 
     it('return not found error when passed non existing assortmentLinkId', async () => {
@@ -335,6 +351,7 @@ describe('AssortmentLink', () => {
           assortmentLinkId: AssortmentLinks[0]._id,
         },
       });
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual(
         'AssortmentLinkNotFoundError',
       );
@@ -353,6 +370,7 @@ describe('AssortmentLink', () => {
           assortmentLinkId: '',
         },
       });
+      expect(errors.length).toEqual(1);
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
@@ -373,6 +391,7 @@ describe('AssortmentLink', () => {
         },
       });
       expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

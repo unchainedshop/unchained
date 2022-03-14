@@ -54,6 +54,14 @@ describe('ProductsCommerce', () => {
                 siblings {
                   _id
                 }
+                ... on SimpleProduct {
+                  catalogPrice {
+                    amount
+                    isTaxable
+                    isNetPrice
+                    currency
+                  }
+                }
               }
             }
           `,
@@ -74,7 +82,15 @@ describe('ProductsCommerce', () => {
           },
         });
 
-      expect(updateProductCommerce._id).toEqual(SimpleProduct._id);
+      expect(updateProductCommerce).toMatchObject({
+        _id: SimpleProduct._id,
+        catalogPrice: {
+          amount: 100,
+          isTaxable: true,
+          isNetPrice: false,
+          currency: 'CHY',
+        }
+      });
     });
 
     it('return not found error when attempting to update non existing product', async () => {
@@ -173,7 +189,7 @@ describe('ProductsCommerce', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

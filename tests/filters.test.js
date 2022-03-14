@@ -81,6 +81,7 @@ describe('Filters', () => {
               includeInactive: $includeInactive
             ) {
               _id
+              isActive
             }
           }
         `,
@@ -89,6 +90,12 @@ describe('Filters', () => {
         },
       });
       expect(filters.length).toEqual(1);
+      expect(filters).toMatchObject([
+        {
+          _id: expect.anything(),
+          isActive: false,
+        }
+      ])
     });
   });
 
@@ -176,7 +183,6 @@ describe('Filters', () => {
               }
               type
               key
-              key
               options {
                 _id
                 texts {
@@ -194,7 +200,12 @@ describe('Filters', () => {
           filterId: MultiChoiceFilter._id,
         },
       });
-      expect(filter._id).toEqual(MultiChoiceFilter._id);
+      expect(filter).toMatchObject({
+        _id: MultiChoiceFilter._id,
+        isActive: MultiChoiceFilter.isActive,
+        type: MultiChoiceFilter.type,
+        key: MultiChoiceFilter.key,
+      });
     });
 
     it('return error when passed invalid filterId', async () => {
@@ -219,7 +230,7 @@ describe('Filters', () => {
   });
 
   describe('Query.Filters for anonymous user should', () => {
-    it('return error', async () => {
+    it('return empty array', async () => {
       const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
       const {
         data: { filters },
@@ -241,7 +252,7 @@ describe('Filters', () => {
         `,
         variables: {},
       });
-      expect(Array.isArray(filters)).toBe(true);
+      expect(filters.length).toBe(0);
     });
   });
 
@@ -287,11 +298,18 @@ describe('Filters', () => {
       });
 
       expect(updateFilterTexts.length).toEqual(2);
-      expect(updateFilterTexts[0]).toMatchObject({
-        locale: 'en',
-        title: 'english-filter-text',
-        subtitle: 'english-filter-text-subtitle',
-      });
+      expect(updateFilterTexts).toMatchObject([
+        {
+          locale: 'en',
+          title: 'english-filter-text',
+          subtitle: 'english-filter-text-subtitle',
+        },
+        {
+          locale: 'am',
+          title: 'amharic-filter-text',
+          subtitle: 'amharic-filter-text-subtitle',
+        },
+      ]);
     });
 
     it('return not found error when passed non existing filter ID', async () => {
@@ -391,7 +409,7 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -545,7 +563,10 @@ describe('Filters', () => {
         },
       });
 
-      expect(updateFilter.key).toEqual('999');
+      expect(updateFilter).toMatchObject({
+        key: '999',
+        isActive: true,
+      });
     });
 
     it('return not found error when passed non existing filter ID', async () => {
@@ -611,7 +632,7 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -716,7 +737,7 @@ describe('Filters', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

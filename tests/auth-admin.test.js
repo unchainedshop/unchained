@@ -9,6 +9,7 @@ import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 import { intervalUntilTimeout } from './lib/wait';
 
 const fs = require('fs');
+const crypto = require('crypto');
 const path = require('path');
 
 let db;
@@ -53,7 +54,10 @@ describe('Auth for admin users', () => {
           }
         `,
       });
-      expect(users.length).toEqual(2);
+      expect(users).toEqual([
+        { _id: 'admin', name: 'admin@unchained.local' },
+        { _id: 'user', name: 'user@unchained.local' },
+      ]);
     });
     it('returns 1 additional guest when using includeGuests', async () => {
       const { data: { users } = {} } = await graphqlFetchAsAdminUser({
@@ -66,7 +70,11 @@ describe('Auth for admin users', () => {
           }
         `,
       });
-      expect(users.length).toEqual(3);
+      expect(users).toEqual([
+        { _id: 'admin', name: 'admin@unchained.local' },
+        { _id: 'user', name: 'user@unchained.local' },
+        { _id: 'guest', name: 'guest@localhost' },
+      ]);
     });
 
     it('returns users by queryString', async () => {
@@ -86,6 +94,7 @@ describe('Auth for admin users', () => {
       expect(users.length).toEqual(1);
       expect(users[0]).toMatchObject({
         _id: 'guest',
+        name: 'guest@localhost',
       });
     });
   });
@@ -211,6 +220,7 @@ describe('Auth for admin users', () => {
               _id
               avatar {
                 name
+                url
               }
             }
           }
@@ -234,6 +244,10 @@ describe('Auth for admin users', () => {
           name: 'image.jpg',
         },
       });
+      const hash = crypto.createHash('sha256');
+      const download = (await fetch(updateUserAvatar.avatar.url)).body;
+      download.on('data', chunk => hash.update(chunk));
+      download.on('end', () => expect(hash.digest('hex')).toBe('f0d184ed4614ccfad07d2193d20c15dd6df9e3a5136cd62afdab2545cae6a0a2'));
     }, 99999);
   });
 
@@ -498,6 +512,7 @@ describe('Auth for admin users', () => {
       // length of two means only the enrollment got triggered
       expect(work).toHaveLength(1);
     }, 10000);
+  
     it('should fire off the enrollment email', async () => {
       const email = 'admin3@unchained.local';
 

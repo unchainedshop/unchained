@@ -53,6 +53,7 @@ describe("Auth for anonymous users", () => {
 
       expect(result.data.loginAsGuest).toMatchObject({});
     });
+
     it("user has guest flag", async () => {
       const Users = db.collection("users");
       const user = await Users.findOne({
@@ -71,6 +72,7 @@ describe("Auth for anonymous users", () => {
 
   describe("Mutation.createUser", () => {
     it("create a new user", async () => {
+      const birthday = new Date().toISOString().split('T')[0];
       const {
         data: { createUser },
       } = await graphqlFetch({
@@ -91,8 +93,12 @@ describe("Auth for anonymous users", () => {
               token
               user {
                 _id
+                username
+                email
                 profile {
                   displayName
+                  phoneMobile
+                  gender
                 }
               }
             }
@@ -104,7 +110,7 @@ describe("Auth for anonymous users", () => {
           password: "password",
           profile: {
             displayName: "New User",
-            birthday: new Date(),
+            birthday,
             phoneMobile: "+410000000",
             gender: "m",
             address: null,
@@ -114,7 +120,14 @@ describe("Auth for anonymous users", () => {
       });
       expect(createUser).toMatchObject({
         user: {
-          profile: {},
+          username: "newuser",
+          email: "newuser@unchained.local",
+          profile: {
+            displayName: "New User",
+            birthday,
+            phoneMobile: "+410000000",
+            gender: "m",
+          },
         },
       });
     });

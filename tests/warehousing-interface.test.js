@@ -31,8 +31,12 @@ describe('WarehousingInterfaces', () => {
           type: 'PHYSICAL',
         },
       });
-
-      expect(Array.isArray(warehousingInterfaces)).toBe(true);
+      expect(warehousingInterfaces).toMatchObject([
+        {
+          _id: 'shop.unchained.warehousing.google-sheets',
+          label: 'Google Sheets',
+        }
+      ]);
     });
   });
 
@@ -52,7 +56,7 @@ describe('WarehousingInterfaces', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });

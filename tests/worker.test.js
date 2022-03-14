@@ -36,6 +36,7 @@ describe('Worker Module', () => {
         },
       });
 
+      expect(addWorkResult.data.addWork.type).toBe('HEARTBEAT');
       expect(addWorkResult.errors).toBeUndefined();
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
@@ -182,6 +183,7 @@ describe('Worker Module', () => {
 
       expect(finishWork.status).toBe('SUCCESS');
     });
+
     it('return error when passed invalid workId', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -244,6 +246,7 @@ describe('Worker Module', () => {
         },
       });
 
+      expect(addWorkResult.data.addWork.type).toBe('EXTERNAL');
       expect(addWorkResult.errors).toBeUndefined();
 
       const allocateWorkResult = await graphqlFetchAsAdminUser({
@@ -333,6 +336,7 @@ describe('Worker Module', () => {
         },
       });
 
+      expect(addWorkResult.data.addWork.type).toBe('HEARTBEAT');
       expect(addWorkResult.errors).toBeUndefined();
 
       const { data: { workQueue: workQueueBefore } = {} } =

@@ -31,8 +31,15 @@ describe('DeliveryInterfaces', () => {
           type: 'PICKUP',
         },
       });
-
-      expect(Array.isArray(deliveryInterfaces)).toBe(true);
+      expect(deliveryInterfaces).toMatchObject([
+        {
+          _id: 'shop.unchained.pick-mup',
+        },
+        {
+          _id: 'shop.unchained.stores',
+        }
+      ]
+      );
     });
   });
 
@@ -51,8 +58,7 @@ describe('DeliveryInterfaces', () => {
           type: 'PICKUP',
         },
       });
-
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions.code).toEqual("NoPermissionError");
     });
   });
 });

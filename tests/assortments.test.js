@@ -4,7 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
-import { SimpleAssortment } from './seeds/assortments';
+import { SimpleAssortment, GermanAssortmentText } from './seeds/assortments';
 
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
@@ -32,7 +32,6 @@ describe('Assortments', () => {
         `,
         variables: {},
       });
-
       expect(assortments.length).toEqual(4);
     });
 
@@ -118,6 +117,7 @@ describe('Assortments', () => {
       });
       expect(result.data.assortments.length).toEqual(5);
     });
+
     it("Return all assortments and without leaves", async () => {
       const {
         data: { assortments },
@@ -147,6 +147,7 @@ describe('Assortments', () => {
 
       expect(assortments.length).toEqual(8);
     });
+
     it("Return all assortments and include leaves", async () => {
       const {
         data: { assortments },
@@ -215,6 +216,7 @@ describe('Assortments', () => {
       });
       expect(assortmentsCount).toEqual(5);
     });
+
     it('Return number assortments of without leaves including inactives', async () => {
       const {
         data: { assortmentsCount },
@@ -238,6 +240,7 @@ describe('Assortments', () => {
 
       expect(assortmentsCount).toEqual(8);
     });
+
     it('Return number of all assortments and include leaves', async () => {
       const {
         data: { assortmentsCount },
@@ -372,6 +375,7 @@ describe('Assortments', () => {
       });
       expect(assortment._id).toBe(SimpleAssortment[0]._id);
     });
+
     it('return single assortment based on slug', async () => {
       const {
         data: { assortment },
@@ -515,8 +519,16 @@ describe('Assortments', () => {
           queryString: 'simple-assortment',
         },
       });
-
-      expect(Array.isArray(assortments)).toBe(true);
+      expect(assortments.length).toBe(1);
+      expect(assortments[0]).toEqual({
+        _id: SimpleAssortment[0]._id,
+        isActive: SimpleAssortment[0].isActive,
+        texts: {
+          _id: GermanAssortmentText._id,
+          title: GermanAssortmentText.title,
+          description: GermanAssortmentText.description,
+        } 
+      });
     });
   });
 
@@ -535,8 +547,7 @@ describe('Assortments', () => {
         `,
         variables: {},
       });
-
-      expect(Array.isArray(assortments)).toBe(true);
+      expect(assortments.length).toBe(4);
     });
   });
 
@@ -562,6 +573,7 @@ describe('Assortments', () => {
                 slug
                 subtitle
                 description
+                title
               }
               productAssignments {
                 _id
@@ -606,6 +618,8 @@ describe('Assortments', () => {
         'test-assrtment-1',
         'test-assortment-2',
       ]);
+      expect(createAssortment.isRoot).toBe(true);
+      expect(createAssortment.texts.title).toBe('test assortment');
     });
   });
 
@@ -629,7 +643,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -706,6 +720,8 @@ describe('Assortments', () => {
         'test-assrtment-1',
         'test-assortment-2',
       ]);
+      expect(updateAssortment.isRoot).toBe(false);
+      expect(updateAssortment.isActive).toBe(true);
     });
 
     it('return not found error when passed none existing assortment Id', async () => {
@@ -904,7 +920,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 
@@ -1032,7 +1048,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(errors.length).toEqual(1);
+      expect(errors[0].extensions?.code).toEqual('NoPermissionError');
     });
   });
 });
