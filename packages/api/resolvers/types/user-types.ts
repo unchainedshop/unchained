@@ -59,7 +59,6 @@ const getPrimaryEmail = (user: UserType) => {
 
 export const User: UserHelperTypes = {
   _id: checkTypeResolver(viewUserPublicInfos, '_id'),
-  email: checkTypeResolver(viewUserPrivateInfos, 'email'),
   emails: checkTypeResolver(viewUserPrivateInfos, 'emails'),
   lastBillingAddress: checkTypeResolver(viewUserPrivateInfos, 'lastBillingAddress'),
   lastContact: checkTypeResolver(viewUserPrivateInfos, 'lastContact'),

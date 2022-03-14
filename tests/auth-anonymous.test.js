@@ -96,6 +96,7 @@ describe("Auth for anonymous users", () => {
                 username
                 email
                 profile {
+                  birthday
                   displayName
                   phoneMobile
                   gender

@@ -3,6 +3,7 @@ export default [
     scalar JSON
     scalar Upload
     scalar DateTime
+    scalar Date
     scalar Timestamp
   `,
 ];
