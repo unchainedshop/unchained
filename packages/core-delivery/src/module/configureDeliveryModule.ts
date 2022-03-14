@@ -133,7 +133,7 @@ export const configureDeliveryModule = async ({
 
     send: async (deliveryProviderId, deliveryContext, requestContext) => {
       const adapter = await getDeliveryAdapter(deliveryProviderId, deliveryContext, requestContext);
-      adapter.send();
+      return adapter.send();
     },
 
     // Mutations

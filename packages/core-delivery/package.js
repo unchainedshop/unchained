@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-delivery',
-  version: '1.0.0-rc.8',
+  version: '1.0.0-rc.8.1',
   summary: 'Unchained Engine Core: Delivery',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
