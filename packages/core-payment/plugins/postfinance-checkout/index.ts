@@ -14,7 +14,7 @@ import {
   refundTransaction,
   voidTransaction,
 } from './api';
-import { markOrderAsPaid } from './utils';
+import { orderIsPaid } from './utils';
 import './middleware';
 import { CompletionModes, IntegrationModes, SignResponse } from './types';
 
@@ -53,7 +53,13 @@ const PostfinanceCheckout: IPaymentAdapter = {
       // eslint-disable-next-line
       configurationError() {
         // eslint-disable-line
-        if (!PFCHECKOUT_SPACE_ID || !PFCHECKOUT_USER_ID || !PFCHECKOUT_SECRET) {
+        if (
+          !PFCHECKOUT_SPACE_ID ||
+          !PFCHECKOUT_USER_ID ||
+          !PFCHECKOUT_SECRET ||
+          !PFCHECKOUT_SUCCESS_URL ||
+          !PFCHECKOUT_FAILED_URL
+        ) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
         return null;
@@ -132,7 +138,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           return false;
         }
         const transaction = await getTransaction(transactionId);
-        return markOrderAsPaid(transaction, modules.orders);
+        return orderIsPaid(transaction, modules.orders);
       },
 
       cancel: async (transactionContext: any = {}) => {

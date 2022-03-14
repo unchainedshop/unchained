@@ -4,7 +4,7 @@ import { Context } from '@unchainedshop/types/api';
 import { createLogger } from 'meteor/unchained:logger';
 import { WebhookData } from './types';
 import { getTransaction } from './api';
-import { markOrderAsPaid } from './utils';
+import { orderIsPaid } from './utils';
 
 const { PFCHECKOUT_WEBHOOK_PATH = '/graphql/postfinance-checkout' } = process.env;
 
@@ -19,7 +19,24 @@ useMiddlewareWithCurrentContext(PFCHECKOUT_WEBHOOK_PATH, async (req, res) => {
     const transactionId = data.entityId;
     try {
       const transaction = await getTransaction(transactionId);
-      if (await markOrderAsPaid(transaction, context.modules.orders)) {
+      if (await orderIsPaid(transaction, context.modules.orders)) {
+        const { orderPaymentId } = transaction.metaData as { orderPaymentId: string };
+        const orderPayment = await context.modules.orders.payments.findOrderPayment({
+          orderPaymentId,
+        });
+        const order = await context.modules.orders.findOrder({ orderId: orderPayment.orderId });
+        await context.modules.orders.checkout(
+          order,
+          {
+            transactionContext: {
+              postfinanceTransactionId: transactionId,
+            },
+            paymentContext: {
+              postfinanceTransactionId: transactionId,
+            },
+          },
+          context,
+        );
         logger.info(
           `PostFinance Checkout Webhook: Transaction ${transactionId} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
         );

@@ -17,11 +17,10 @@ export const transactionIsPaid = async (
   return false;
 };
 
-export const markOrderAsPaid = async (
+export const orderIsPaid = async (
   transaction: Transaction,
   orderModule: OrdersModule,
 ): Promise<boolean> => {
-  const transactionId = transaction.id;
   const { orderPaymentId } = transaction.metaData as { orderPaymentId: string };
   if (!orderPaymentId) {
     return false;
@@ -32,9 +31,5 @@ export const markOrderAsPaid = async (
   const order = await orderModule.findOrder({ orderId: orderPayment.orderId });
   const pricing = orderModule.pricingSheet(order);
   const totalAmount = pricing.total({ useNetPrice: false }).amount / 100;
-  if (await transactionIsPaid(transaction, order.currency, totalAmount)) {
-    await orderModule.payments.markAsPaid(orderPayment, { transactionId });
-    return true;
-  }
-  return false;
+  return transactionIsPaid(transaction, order.currency, totalAmount);
 };

@@ -4,7 +4,7 @@ import { USER_TOKEN } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 import { SuccTranscationHookPayload, SuccTransactionApiResponse } from './seeds/postfinance-checkout';
-import { markOrderAsPaid } from '../packages/core-payment/plugins/postfinance-checkout/utils';
+import { orderIsPaid } from '../packages/core-payment/plugins/postfinance-checkout/utils';
 
 let db;
 let graphqlFetch;
@@ -307,10 +307,8 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         }
 
         // Call function that is called by webhook with modified transaction to mock response
-        const hookRes = await markOrderAsPaid(transactionRes, mockedOrderModule);
+        const hookRes = await orderIsPaid(transactionRes, mockedOrderModule);
         expect(hookRes).toBe(true);
-        expect(mockedOrderModule.payments.markAsPaid.mock.calls.length).toBe(1);
-        expect(mockedOrderModule.payments.markAsPaid.mock.calls[0][0]).toEqual({ orderId: 'pfcheckout-order' });
       }, 10000);
 
       it('starts a new transaction with webhook call and too low payment', async () => {
@@ -349,7 +347,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         }
 
         // Call function that is called by webhook with modified transaction to mock response
-        const hookRes = await markOrderAsPaid(transactionRes, mockedOrderModule);
+        const hookRes = await orderIsPaid(transactionRes, mockedOrderModule);
         expect(hookRes).toBe(false);
       }, 10000);
 
@@ -405,7 +403,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         expect(orderPayment.status).not.toBe("PAID");
       }, 10000);
 
-      // Succesful case not tested here, charge calls same function (markOrderAsPaid) as webhook call
+      // Succesful case not tested here, charge calls same function (orderIsPaid) as webhook call
 
     });
   });
