@@ -22,7 +22,6 @@ import 'meteor/unchained:core-payment/plugins/paypal-checkout';
 import 'meteor/unchained:core-payment/plugins/cryptopay';
 import { configureAppleTransactionsModule } from 'meteor/unchained:core-payment/plugins/apple-iap';
 import 'meteor/unchained:core-payment/plugins/stripe';
-import 'meteor/unchained:core-payment/plugins/stripe-charges';
 import 'meteor/unchained:core-payment/plugins/postfinance-checkout';
 import { configureBityModule } from 'meteor/unchained:core-payment/plugins/bity';
 import 'meteor/unchained:core-payment/plugins/free-payment';
@@ -112,14 +111,12 @@ Meteor.startup(async () => {
   // remove the following lines
   WebApp.connectHandlers.use('/', (req, res, next) => {
     if (req.query?.token) {
-      loginWithSingleSignOn(req.query.token, unchainedApi).then(
-        (authCookie) => {
-          if (res?.setHeader) {
-            res.setHeader('Set-Cookie', authCookie);
-            next();
-          }
-        },
-      );
+      loginWithSingleSignOn(req.query.token, unchainedApi).then((authCookie) => {
+        if (res?.setHeader) {
+          res.setHeader('Set-Cookie', authCookie);
+          next();
+        }
+      });
     } else {
       next();
     }
