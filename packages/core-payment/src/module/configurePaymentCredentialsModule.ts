@@ -52,8 +52,8 @@ export const configurePaymentCredentialsModule = (
     },
 
     findPaymentCredentials: async (query, options) => {
-      const credentials = PaymentCredentials.find(query, options);
-      return credentials.toArray();
+      const credentials = await PaymentCredentials.find(query, options).toArray();
+      return credentials;
     },
 
     upsertCredentials: async ({ userId, paymentProviderId, _id, token, ...meta }) => {

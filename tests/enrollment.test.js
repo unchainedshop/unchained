@@ -26,7 +26,7 @@ describe('Enrollments', () => {
   });
 
   describe('Mutation.createCart (Enrollment)', () => {
-    it.only('checking out a plan product generates a new enrollment', async () => {
+    it('checking out a plan product generates a new enrollment', async () => {
       const { data: { createCart } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation {

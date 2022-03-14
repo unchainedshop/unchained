@@ -189,11 +189,12 @@ const Stripe: IPaymentAdapter = {
         }
 
         const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
+
         if (setupIntent.status === 'succeeded') {
           return {
             token: setupIntent.payment_method,
             customer: setupIntent.customer,
-            payment_method_options: setupIntent.payment_method_options,
+            // payment_method_options: setupIntent.payment_method_options,
             payment_method_types: setupIntent.payment_method_types,
             usage: setupIntent.usage,
           };
@@ -250,7 +251,7 @@ const Stripe: IPaymentAdapter = {
                 confirm: true,
                 payment_method: paymentCredentials.token,
                 payment_method_types: paymentCredentials.meta?.payment_method_types, // eslint-disable-line
-                payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
+                // payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
               },
             );
 

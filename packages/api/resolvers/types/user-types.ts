@@ -78,6 +78,7 @@ export const User: UserHelperTypes = {
     const primaryEmail = getPrimaryEmail(user);
     return primaryEmail?.address || user._id;
   },
+
   primaryEmail: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return getPrimaryEmail(user);
@@ -85,7 +86,7 @@ export const User: UserHelperTypes = {
 
   email: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return getPrimaryEmail(user);
+    return getPrimaryEmail(user)?.address;
   },
 
   isEmailVerified: async (user, params, context) => {
