@@ -144,6 +144,44 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
+    cancel: async (orderPayment, { transactionContext, order }, requestContext) => {
+      const { modules, services } = requestContext;
+
+      const paymentProvider = await modules.payment.paymentProviders.findProvider({
+        paymentProviderId: orderPayment.paymentProviderId,
+      });
+
+      const paymentProviderId = paymentProvider._id;
+
+      const arbitraryResponseData = await services.payment.charge(
+        {
+          paymentProviderId,
+          paymentContext: {
+            order,
+            orderPayment,
+            transactionContext: {
+              ...(transactionContext || {}),
+              ...(orderPayment.context || {}),
+            },
+          },
+        },
+        requestContext,
+      );
+
+      if (arbitraryResponseData) {
+        return updateStatus(
+          orderPayment._id,
+          {
+            status: OrderPaymentStatus.REFUNDED,
+            info: JSON.stringify(arbitraryResponseData),
+          },
+          requestContext.userId,
+        );
+      }
+
+      return orderPayment;
+    },
+
     charge: async (orderPayment, { transactionContext, order }, requestContext) => {
       const { modules, services } = requestContext;
 

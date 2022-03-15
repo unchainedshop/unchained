@@ -272,17 +272,9 @@ export const configureOrderModuleProcessing = ({
         },
         requestContext,
       );
-      const orderPayment = await modules.orders.payments.findOrderPayment({
-        orderPaymentId: order.paymentId,
-      });
-      await modules.payment.paymentProviders.cancel(
-        orderPayment.paymentProviderId,
-        {
-          ...params.paymentContext,
-          transactionContext: { refund: true },
-        },
-        requestContext,
-      );
+
+      if (updatedOrder.status === OrderStatus.REJECTED) {
+      }
       await modules.orders.sendOrderRejectionToCustomer(updatedOrder, params, requestContext);
 
       return updatedOrder;
@@ -360,6 +352,19 @@ export const configureOrderModuleProcessing = ({
 
       order = await modules.orders.findOrder({ orderId });
       nextStatus = await findNextStatus(order, requestContext);
+
+      if (nextStatus === OrderStatus.REJECTED) {
+        // auto cancel during transition to rejected
+        const orderPayment = await modules.orders.payments.findOrderPayment({
+          orderPaymentId: order.paymentId,
+        });
+        await modules.orders.payments.cancel(
+          orderPayment,
+          { order, transactionContext: params.paymentContext },
+          requestContext,
+        );
+      }
+
       if (nextStatus === OrderStatus.CONFIRMED) {
         const orderDelivery = await modules.orders.deliveries.findDelivery({
           orderDeliveryId: order.deliveryId,

@@ -58,19 +58,21 @@ export type OrderPaymentsModule = {
   // Mutations
   create: (doc: OrderPayment, userId?: string) => Promise<OrderPayment>;
 
+  cancel: (
+    orderPayment: OrderPayment,
+    paymentContext: { order: Order; transactionContext: any },
+    requestContext: Context,
+  ) => Promise<OrderPayment>;
+
   charge: (
     orderPayment: OrderPayment,
     paymentContext: { order: Order; transactionContext: any },
     requestContext: Context,
   ) => Promise<OrderPayment>;
 
-  delete: (orderPaymentId: string, userId?: string) => Promise<number>;
-
   logEvent: (orderPaymentId: string, event: any, userId?: string) => Promise<boolean>;
 
   markAsPaid: (payment: OrderPayment, meta: any, userId?: string) => Promise<void>;
-
-  sign: (payment: OrderPayment, paymentContext: any, requestContext: Context) => Promise<string>;
 
   updateContext: (
     orderPaymentId: string,
