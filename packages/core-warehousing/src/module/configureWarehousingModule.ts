@@ -85,12 +85,14 @@ export const configureWarehousingModule = async ({
     },
 
     findSupported: async (warehousingContext, requestContext) => {
-      const providers = await WarehousingProviders.find(buildFindSelector({})).toArray();
-      return providers.filter((provider) => {
-        const Adapter = WarehousingDirector.actions(provider, warehousingContext, requestContext);
+      const providers = (await WarehousingProviders.find(buildFindSelector({})).toArray()).filter(
+        (provider) => {
+          const director = WarehousingDirector.actions(provider, warehousingContext, requestContext);
+          return director.isActive();
+        },
+      );
 
-        return Adapter.isActive();
-      });
+      return providers;
     },
 
     configurationError: (provider, requestContext) => {
@@ -115,7 +117,10 @@ export const configureWarehousingModule = async ({
       const Adapter = WarehousingDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
-      const warehousingProviderId = await mutations.create({ configuration: [], ...doc }, userId);
+      const warehousingProviderId = await mutations.create(
+        { configuration: Adapter.initialConfiguration, ...doc },
+        userId,
+      );
 
       const warehousingProvider = await WarehousingProviders.findOne(
         generateDbFilterById(warehousingProviderId),

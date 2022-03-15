@@ -9,6 +9,8 @@ export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 've
     return false;
   },
 
+  initialConfiguration: [],
+
   actions: () => {
     return {
       configurationError() {

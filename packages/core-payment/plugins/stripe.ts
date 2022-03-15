@@ -169,7 +169,7 @@ const Stripe: IPaymentAdapter = {
       },
 
       isActive: () => {
-        if (configurationError() === null) return true;
+        if (adapterActions.configurationError() === null) return true;
         return false;
       },
 

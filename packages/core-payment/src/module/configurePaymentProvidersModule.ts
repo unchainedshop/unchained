@@ -99,12 +99,12 @@ export const configurePaymentProvidersModule = (
     },
 
     findSupported: async ({ order }, requestContext) => {
-      const providers = await PaymentProviders.find({ deleted: null })
-        .filter((provider: PaymentProvider) => {
+      const providers = (await PaymentProviders.find({ deleted: null }).toArray()).filter(
+        (provider: PaymentProvider) => {
           const director = PaymentDirector.actions(provider, { order }, requestContext);
           return director.isActive();
-        })
-        .toArray();
+        },
+      );
 
       return paymentProviderSettings.filterSupportedProviders({
         providers,

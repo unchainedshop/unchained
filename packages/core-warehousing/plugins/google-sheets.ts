@@ -116,14 +116,14 @@ const GoogleSheets: IWarehousingAdapter = {
     return type === WarehousingProviderType.PHYSICAL;
   },
 
-  actions: (_, context) => {
-    // const initialConfiguration = [
-    //   {
-    //     key: 'address',
-    //     value: null,
-    //   },
-    // ];
+  initialConfiguration: [
+    {
+      key: 'sheetId',
+      value: null,
+    },
+  ],
 
+  actions: (_, context) => {
     return {
       isActive: () => {
         return true;

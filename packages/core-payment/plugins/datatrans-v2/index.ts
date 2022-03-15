@@ -210,7 +210,7 @@ const Datatrans: IPaymentAdapter = {
       },
 
       isActive() {
-        if (this.configurationError() === null) return true;
+        if (adapterActions.configurationError() === null) return true;
         return false;
       },
 

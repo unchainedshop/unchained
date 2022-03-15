@@ -30,7 +30,7 @@ enum CryptopayCurrencies { // eslint-disable-line
 }
 
 const MAX_RATE_AGE = parseInt(CRYPTOPAY_MAX_RATE_AGE, 10);
-const MAX_ALLOWED_DIFF = parseFloat(CRYPTOPAY_MAX_CONV_DIFF); // Accept payments when the converted amount differs by this much (in percent)
+const MAX_ALLOWED_DIFF = parseFloat(CRYPTOPAY_MAX_CONV_DIFF); // Accept payments when the converted amount differs by adapterActions much (in percent)
 
 useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
 
@@ -133,7 +133,7 @@ const Cryptopay: IPaymentAdapter = {
       },
 
       isActive() {
-        if (this.configurationError() === null) return true;
+        if (adapterActions.configurationError() === null) return true;
         return false;
       },
 

@@ -14,12 +14,14 @@ export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',
 }
 
+export type WarehousingConfiguration = Array<{ key: string; value: string }>;
+
 export type WarehousingProvider = {
   _id?: _ID;
   type: WarehousingProviderType;
   adapterKey: string;
   authorId: string;
-  configuration: Array<{ key: string; value: string }>;
+  configuration: WarehousingConfiguration;
 } & TimestampFields;
 
 type WarehousingProviderQuery = {
@@ -43,10 +45,11 @@ export interface WarehousingContext {
 
 export type IWarehousingAdapter = IBaseAdapter & {
   orderIndex: number;
+  initialConfiguration: WarehousingConfiguration;
   typeSupported: (type: WarehousingProviderType) => boolean;
 
   actions: (
-    config: WarehousingProvider['configuration'],
+    config: WarehousingConfiguration,
     context: WarehousingContext & Context,
   ) => {
     configurationError: () => WarehousingError;

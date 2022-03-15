@@ -99,12 +99,12 @@ export const configureDeliveryModule = async ({
     },
 
     findSupported: async ({ order }, requestContext) => {
-      const providers = await DeliveryProviders.find(buildFindSelector({}))
-        .filter((provider: DeliveryProvider) => {
+      const providers = (await DeliveryProviders.find(buildFindSelector({})).toArray()).filter(
+        (provider: DeliveryProvider) => {
           const director = DeliveryDirector.actions(provider, { order }, requestContext);
           return director.isActive();
-        })
-        .toArray();
+        },
+      );
 
       return deliverySettings.filterSupportedProviders({
         providers,
