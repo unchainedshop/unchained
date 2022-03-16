@@ -19,7 +19,12 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Contex
       userId,
     );
   } catch (e) {
-    return modules.assortments.products.update(assortmentProduct._id, assortmentProduct);
+    return modules.assortments.products.update(
+      assortmentProduct._id,
+      assortmentProduct,
+      { skipInvalidation: true },
+      userId,
+    );
   }
 };
 

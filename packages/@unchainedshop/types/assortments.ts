@@ -108,7 +108,12 @@ export type AssortmentsModule = {
   // Mutations
   create: (doc: Assortment & { title: string; locale: string }, userId: string) => Promise<string>;
 
-  update: (assortmentId: string, doc: Assortment, userId: string) => Promise<string>;
+  update: (
+    assortmentId: string,
+    doc: Assortment,
+    userId: string,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<string>;
 
   delete: (
     assortmentId: string,
@@ -116,7 +121,7 @@ export type AssortmentsModule = {
     userId?: string,
   ) => Promise<number>;
 
-  invalidateCache: (params: { assortmentIds: Array<string> }, userId?: string) => void;
+  invalidateCache: (params: AssortmentQuery, options?: { skipUpstreamTraversal: boolean }) => void;
 
   setBase: (assortmentId: string, userId?: string) => Promise<void>;
 
@@ -195,14 +200,20 @@ export type AssortmentsModule = {
       assortmentLinkId: string,
       options?: { skipInvalidation?: boolean },
       userId?: string,
-    ) => Promise<Array<{ _id: _ID; parentAssortmentId: string }>>;
+    ) => Promise<AssortmentLink>;
+
     deleteMany: (
       selector: Filter<AssortmentLink>,
       options?: { skipInvalidation?: boolean },
       userId?: string,
-    ) => Promise<Array<{ _id: _ID; parentAssortmentId: string }>>;
+    ) => Promise<Array<AssortmentLink>>;
 
-    update: (assortmentLinkId: string, doc: AssortmentLink) => Promise<AssortmentLink>;
+    update: (
+      assortmentLinkId: string,
+      doc: AssortmentLink,
+      options?: { skipInvalidation?: boolean },
+      userId?: string,
+    ) => Promise<AssortmentLink>;
 
     updateManualOrder: (
       params: {
@@ -211,6 +222,7 @@ export type AssortmentsModule = {
           sortKey: number;
         }>;
       },
+      options?: { skipInvalidation?: boolean },
       userId?: string,
     ) => Promise<Array<AssortmentLink>>;
   };
@@ -223,11 +235,7 @@ export type AssortmentsModule = {
     // Queries
     findAssortmentIds: (params: { productId: string }) => Promise<Array<string>>;
 
-    findProduct: (
-      params: { assortmentProductId: string },
-
-      options?: { skipInvalidation?: boolean },
-    ) => Promise<AssortmentProduct>;
+    findProduct: (params: { assortmentProductId: string }) => Promise<AssortmentProduct | void>;
 
     findProducts: (
       params: {
@@ -253,13 +261,19 @@ export type AssortmentsModule = {
       options?: { skipInvalidation?: boolean },
       userId?: string,
     ) => Promise<Array<{ _id: _ID; assortmentId: string }>>;
+
     deleteMany: (
       selector: Filter<AssortmentProduct>,
       options?: { skipInvalidation?: boolean },
       userId?: string,
     ) => Promise<Array<{ _id: _ID; assortmentId: string }>>;
 
-    update: (assortmentProductId: string, doc: AssortmentProduct) => Promise<AssortmentProduct>;
+    update: (
+      assortmentProductId: string,
+      doc: AssortmentProduct,
+      options?: { skipInvalidation?: boolean },
+      userId?: string,
+    ) => Promise<AssortmentProduct>;
 
     updateManualOrder: (
       params: {
@@ -268,6 +282,7 @@ export type AssortmentsModule = {
           sortKey: number;
         }>;
       },
+      options?: { skipInvalidation?: boolean },
       userId?: string,
     ) => Promise<Array<AssortmentProduct>>;
   };

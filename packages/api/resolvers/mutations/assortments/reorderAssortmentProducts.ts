@@ -7,7 +7,11 @@ export default async function reorderAssortmentProducts(
   { modules, userId }: Context,
 ) {
   log('mutation reorderAssortmentProducts', { userId });
-  return modules.assortments.products.updateManualOrder({
-    sortKeys: params.sortKeys,
-  });
+  return modules.assortments.products.updateManualOrder(
+    {
+      sortKeys: params.sortKeys,
+    },
+    { skipInvalidation: false },
+    userId,
+  );
 }

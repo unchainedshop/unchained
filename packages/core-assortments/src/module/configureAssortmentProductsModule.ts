@@ -101,7 +101,10 @@ export const configureAssortmentProductsModule = ({
       emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
       if (!options.skipInvalidation) {
-        invalidateCache({ assortmentIds: [assortmentId] });
+        invalidateCache(
+          { assortmentIds: [assortmentProduct.assortmentId] },
+          { skipUpstreamTraversal: false },
+        );
       }
 
       return assortmentProduct;
@@ -123,9 +126,12 @@ export const configureAssortmentProductsModule = ({
       });
 
       if (!options.skipInvalidation) {
-        invalidateCache({
-          assortmentIds: [assortmentProduct.assortmentId],
-        });
+        invalidateCache(
+          { assortmentIds: [assortmentProduct.assortmentId] },
+          {
+            skipUpstreamTraversal: false,
+          },
+        );
       }
 
       return [assortmentProduct];
@@ -144,23 +150,42 @@ export const configureAssortmentProductsModule = ({
       });
 
       if (!options.skipInvalidation && assortmentProducts.length) {
-        invalidateCache({
-          assortmentIds: assortmentProducts.map((product) => product.assortmentId),
-        });
+        invalidateCache(
+          { assortmentIds: assortmentProducts.map((product) => product.assortmentId) },
+          {
+            skipUpstreamTraversal: false,
+          },
+        );
       }
 
       return assortmentProducts;
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (assortmentProductId, doc) => {
+    update: async (assortmentProductId, doc, options, userId) => {
       const selector = generateDbFilterById(assortmentProductId);
-      const modifier = { $set: doc };
+      const modifier = {
+        $set: {
+          ...doc,
+          updated: new Date(),
+          updatedBy: userId,
+        },
+      };
       await AssortmentProducts.updateOne(selector, modifier);
-      return AssortmentProducts.findOne(selector, {});
+
+      const assortmentProduct = await AssortmentProducts.findOne(selector, {});
+      if (!options.skipInvalidation) {
+        invalidateCache(
+          { assortmentIds: [assortmentProduct.assortmentId] },
+          {
+            skipUpstreamTraversal: false,
+          },
+        );
+      }
+      return assortmentProduct;
     },
 
-    updateManualOrder: async ({ sortKeys }, userId) => {
+    updateManualOrder: async ({ sortKeys }, options, userId) => {
       const changedAssortmentProductIds = await Promise.all(
         sortKeys.map(async ({ assortmentProductId, sortKey }) => {
           await AssortmentProducts.updateOne(generateDbFilterById(assortmentProductId), {
@@ -170,7 +195,6 @@ export const configureAssortmentProductsModule = ({
               updatedBy: userId,
             },
           });
-
           return assortmentProductId;
         }),
       );
@@ -178,6 +202,15 @@ export const configureAssortmentProductsModule = ({
       const assortmentProducts = await AssortmentProducts.find({
         _id: { $in: changedAssortmentProductIds },
       }).toArray();
+
+      if (!options.skipInvalidation && assortmentProducts.length) {
+        invalidateCache(
+          { assortmentIds: assortmentProducts.map((product) => product.assortmentId) },
+          {
+            skipUpstreamTraversal: false,
+          },
+        );
+      }
 
       emit('ASSORTMENT_REORDER_PRODUCTS', { assortmentProducts });
 

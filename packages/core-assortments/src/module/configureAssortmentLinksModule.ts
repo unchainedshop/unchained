@@ -105,19 +105,33 @@ export const configureAssortmentLinksModule = ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (assortmentLinkId, doc) => {
+    update: async (assortmentLinkId, doc, options, userId) => {
       const selector = generateDbFilterById(assortmentLinkId);
-      const modifier = { $set: doc };
+      const modifier = {
+        $set: {
+          ...doc,
+          updated: new Date(),
+          updatedBy: userId,
+        },
+      };
       await AssortmentLinks.updateOne(selector, modifier);
-      return AssortmentLinks.findOne(selector, {});
+
+      const assortmentLink = await AssortmentLinks.findOne(selector, {});
+      if (!options.skipInvalidation) {
+        invalidateCache(
+          { assortmentIds: [assortmentLink.childAssortmentId] },
+          {
+            skipUpstreamTraversal: false,
+          },
+        );
+      }
+      return assortmentLink;
     },
 
     delete: async (assortmentLinkId, options) => {
       const selector = generateDbFilterById(assortmentLinkId);
 
-      const assortmentLink = await AssortmentLinks.findOne(selector, {
-        projection: { _id: 1, parentAssortmentId: 1 },
-      });
+      const assortmentLink = await AssortmentLinks.findOne(selector, {});
 
       await AssortmentLinks.deleteOne(selector);
 
@@ -126,18 +140,19 @@ export const configureAssortmentLinksModule = ({
       });
 
       if (!options.skipInvalidation) {
-        invalidateCache({
-          assortmentIds: [assortmentLink.parentAssortmentId],
-        });
+        invalidateCache(
+          {
+            assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
+          },
+          { skipUpstreamTraversal: false },
+        );
       }
 
-      return [assortmentLink];
+      return assortmentLink;
     },
 
     deleteMany: async (selector, options) => {
-      const assortmentLinks = await AssortmentLinks.find(selector, {
-        projection: { _id: 1, parentAssortmentId: 1 },
-      }).toArray();
+      const assortmentLinks = await AssortmentLinks.find(selector, {}).toArray();
 
       await AssortmentLinks.deleteMany(selector);
       assortmentLinks.forEach((assortmentLink) => {
@@ -147,15 +162,21 @@ export const configureAssortmentLinksModule = ({
       });
 
       if (!options.skipInvalidation && assortmentLinks.length) {
-        invalidateCache({
-          assortmentIds: assortmentLinks.map((link) => link.parentAssortmentId),
-        });
+        invalidateCache(
+          {
+            assortmentIds: assortmentLinks.flatMap((link) => [
+              link.childAssortmentId,
+              link.parentAssortmentId,
+            ]),
+          },
+          { skipUpstreamTraversal: false },
+        );
       }
 
       return assortmentLinks;
     },
 
-    updateManualOrder: async ({ sortKeys }, userId) => {
+    updateManualOrder: async ({ sortKeys }, options, userId) => {
       const changedAssortmentLinkIds = await Promise.all(
         sortKeys.map(async ({ assortmentLinkId, sortKey }) => {
           await AssortmentLinks.updateOne(generateDbFilterById(assortmentLinkId), {
@@ -173,6 +194,15 @@ export const configureAssortmentLinksModule = ({
       const assortmentLinks = await AssortmentLinks.find({
         _id: { $in: changedAssortmentLinkIds },
       }).toArray();
+
+      if (!options.skipInvalidation && assortmentLinks.length) {
+        invalidateCache(
+          { assortmentIds: assortmentLinks.map((link) => link.childAssortmentId) },
+          {
+            skipUpstreamTraversal: false,
+          },
+        );
+      }
 
       emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks });
 

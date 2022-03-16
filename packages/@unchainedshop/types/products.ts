@@ -530,7 +530,7 @@ export interface SimpleProductHelperTypes extends PlanProductHelperTypes {
 }
 
 export interface ProductAssortmentPathHelperTypes {
-  assortmentProduct: (product: Product, _: never, context: Context) => Promise<AssortmentProduct>;
+  assortmentProduct: (product: Product, _: never, context: Context) => Promise<AssortmentProduct | void>;
 }
 
 export interface ProductBundleItemHelperTypes {

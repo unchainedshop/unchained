@@ -8,7 +8,10 @@ export default async function reorderAssortmentFilters(
 ) {
   log('mutation reorderAssortmentFilters', { userId });
 
-  return modules.assortments.filters.updateManualOrder({
-    sortKeys: params.sortKeys,
-  });
+  return modules.assortments.filters.updateManualOrder(
+    {
+      sortKeys: params.sortKeys,
+    },
+    userId,
+  );
 }

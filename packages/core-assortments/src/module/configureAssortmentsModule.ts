@@ -1,4 +1,4 @@
-import { Filter, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import {
   AssortmentsModule,
   Assortment,
@@ -120,7 +120,10 @@ export const configureAssortmentsModule = async ({
     const productIds = await childAssortments.reduce(
       async (currentProductIdsPromise, { childAssortmentId }) => {
         const currentProductIds = await currentProductIdsPromise;
-        const childAssortment = await Assortments.findOne(generateDbFilterById(childAssortmentId), {});
+        const childAssortment = await Assortments.findOne(
+          generateDbFilterById(childAssortmentId, { isActive: true }),
+          {},
+        );
 
         if (childAssortment) {
           const newProductIds = await collectProductIdCacheTree(childAssortment);
@@ -160,7 +163,6 @@ export const configureAssortmentsModule = async ({
     cacheOptions: { skipUpstreamTraversal: boolean } = {
       skipUpstreamTraversal: false,
     },
-    userId: string = undefined,
   ) => {
     const productIds = await buildProductIds(assortment);
 
@@ -179,7 +181,7 @@ export const configureAssortmentsModule = async ({
         const parent = await Assortments.findOne(generateDbFilterById(parentAssortmentId), {});
 
         if (parent) {
-          updateCount += await invalidateProductIdCache(parent, cacheOptions, userId);
+          updateCount += await invalidateProductIdCache(parent, cacheOptions);
         }
         return true;
       }),
@@ -188,15 +190,19 @@ export const configureAssortmentsModule = async ({
     return updateCount;
   };
 
-  const invalidateCache = async (selector: Filter<Assortment>, userId?: string) => {
+  const invalidateCache: AssortmentsModule['invalidateCache'] = async (selector, options) => {
     log('Assortments: Start invalidating assortment caches', {
       level: LogLevel.Verbose,
     });
 
-    const assortments = await Assortments.find(selector || {}).toArray();
+    const assortments = await Assortments.find(
+      buildFindSelector({ includeInactive: true, includeLeaves: true, ...selector }),
+    ).toArray();
 
     assortments.forEach((assortment) => {
-      invalidateProductIdCache(assortment, { skipUpstreamTraversal: true }, userId);
+      invalidateProductIdCache(assortment, {
+        skipUpstreamTraversal: options?.skipUpstreamTraversal ?? true,
+      });
     });
   };
 
@@ -334,29 +340,34 @@ export const configureAssortmentsModule = async ({
       }
 
       emit('ASSORTMENT_CREATE', { assortment });
-
       return assortmentId;
     },
 
-    update: async (_id: string, doc: Assortment, userId?: string) => {
+    update: async (_id, doc, userId, options) => {
       const assortmentId = await mutations.update(_id, doc, userId);
       emit('ASSORTMENT_UPDATE', { assortmentId });
+
+      if (!options?.skipInvalidation) {
+        const assortment = await Assortments.findOne({ _id: assortmentId });
+        invalidateProductIdCache(assortment, { skipUpstreamTraversal: false });
+      }
       return assortmentId;
     },
 
-    delete: async (assortmentId, options) => {
+    delete: async (assortmentId, options, userId) => {
       await assortmentLinks.deleteMany(
         {
           $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
         },
         { skipInvalidation: true },
+        userId,
       );
 
-      await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true });
+      await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true }, userId);
 
-      await assortmentFilters.deleteMany({ assortmentId });
+      await assortmentFilters.deleteMany({ assortmentId }, userId);
 
-      await assortmentTexts.deleteMany({ assortmentId });
+      await assortmentTexts.deleteMany({ assortmentId }, userId);
 
       const deletedResult = await Assortments.deleteOne(generateDbFilterById(assortmentId));
 

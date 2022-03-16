@@ -52,14 +52,14 @@ unchained:core-assortments@1.0.0-rc.8
 unchained:core-bookmarks@1.0.0-rc.8
 unchained:core-countries@1.0.0-rc.8
 unchained:core-currencies@1.0.0-rc.8
-unchained:core-delivery@1.0.0-rc.8
+unchained:core-delivery@1.0.0-rc.8.1
 unchained:core-enrollments@1.0.0-rc.8
 unchained:core-events@1.0.0-rc.8
 unchained:core-files-next@1.0.0-rc.8
 unchained:core-filters@1.0.0-rc.8
 unchained:core-languages@1.0.0-rc.8
 unchained:core-messaging@1.0.0-rc.8
-unchained:core-orders@1.0.0-rc.8
+unchained:core-orders@1.0.0-rc.8.2
 unchained:core-payment@1.0.0-rc.8
 unchained:core-products@1.0.0-rc.8
 unchained:core-quotations@1.0.0-rc.8
