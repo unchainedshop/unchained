@@ -58,7 +58,9 @@ describe('Test exports', () => {
         title: 'My Test Filter',
         locale: 'en',
       },
-      context as Context
+      context as Context,
+      { skipInvalidation: true },
+      'Test-User-1'
     );
 
     assert.ok(newFilter);

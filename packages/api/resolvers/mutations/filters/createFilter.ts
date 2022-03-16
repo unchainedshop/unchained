@@ -17,5 +17,7 @@ export default async function createFilter(
       authorId: userId,
     },
     context,
+    { skipInvalidation: false },
+    userId
   );
 }

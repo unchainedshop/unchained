@@ -16,5 +16,5 @@ export default async function updateFilter(
 
   if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
-  return modules.filters.update(filterId, filter, context);
+  return modules.filters.update(filterId, filter, context, { skipInvalidation: false }, userId);
 }

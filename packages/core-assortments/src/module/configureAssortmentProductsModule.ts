@@ -27,7 +27,7 @@ export const configureAssortmentProductsModule = ({
     },
 
     findProduct: async ({ assortmentProductId }) => {
-      return AssortmentProducts.findOne(generateDbFilterById(assortmentProductId));
+      return AssortmentProducts.findOne(generateDbFilterById(assortmentProductId), {});
     },
 
     findProducts: async ({ assortmentId }, options) => {

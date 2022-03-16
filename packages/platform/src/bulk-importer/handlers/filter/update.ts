@@ -22,6 +22,8 @@ export default async function updateFilter(
       authorId,
     },
     unchainedAPI,
+    { skipInvalidation: true },
+    unchainedAPI.userId,
   );
 
   if (content || options) {

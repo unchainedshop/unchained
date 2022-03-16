@@ -27,6 +27,8 @@ export default async function createFilter(
         authorId,
       },
       unchainedAPI,
+      { skipInvalidation: true },
+      unchainedAPI.userId,
     );
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
@@ -40,6 +42,8 @@ export default async function createFilter(
         authorId,
       },
       unchainedAPI,
+      { skipInvalidation: true },
+      unchainedAPI.userId,
     );
   }
 

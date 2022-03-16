@@ -93,6 +93,7 @@ export type FiltersModule = {
     doc: Filter & { title: string; locale: string },
     requestContext: Context,
     options?: { skipInvalidation?: boolean },
+    userId?: string,
   ) => Promise<Filter>;
 
   createFilterOption: (
@@ -106,6 +107,7 @@ export type FiltersModule = {
     doc: Filter,
     requestContext: Context,
     options?: { skipInvalidation?: boolean },
+    userId?: string,
   ) => Promise<Filter>;
 
   delete: (filterId: string, userId?: string) => Promise<number>;

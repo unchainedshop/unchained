@@ -91,8 +91,8 @@ export const configureFiltersModule = async ({
 
     if (!filterCache) return null;
 
-    if (filter._isCacheTransformed) { // eslint-disable-line
-      return filterCache as CleanedFilterCache;
+    if ((filter as any)._isCacheTransformed) { // eslint-disable-line
+      return filterCache as any as CleanedFilterCache;
     }
     if (filterCache.compressed) {
       const gunzip = util.promisify(zlib.gunzip);
@@ -110,8 +110,8 @@ export const configureFiltersModule = async ({
         {},
       ),
     };
-    filter._cache = cleanedCache; // eslint-disable-line
-    filter._isCacheTransformed = true; // eslint-disable-line
+    (filter as any)._cache = cleanedCache; // eslint-disable-line
+    (filter as any)._isCacheTransformed = true; // eslint-disable-line
 
     return cleanedCache;
   };
@@ -188,7 +188,7 @@ export const configureFiltersModule = async ({
   return {
     // Queries
     findFilter: async ({ filterId }) => {
-      return Filters.findOne(generateDbFilterById(filterId));
+      return Filters.findOne(generateDbFilterById(filterId), {});
     },
 
     findFilters: async ({ limit, offset, ...query }) => {
@@ -233,7 +233,7 @@ export const configureFiltersModule = async ({
         userId,
       );
 
-      const filter = await Filters.findOne(generateDbFilterById(filterId));
+      const filter = await Filters.findOne(generateDbFilterById(filterId), {});
 
       if (locale) {
         await filterTexts.upsertLocalizedText(
@@ -298,12 +298,10 @@ export const configureFiltersModule = async ({
       return Filters.findOne(selector, {});
     },
 
-    update: async (filterId, doc, requestContext, options) => {
-      const { userId } = requestContext;
-
+    update: async (filterId, doc, requestContext, options, userId) => {
       await mutations.update(filterId, doc, userId);
 
-      const filter = await Filters.findOne(generateDbFilterById(filterId));
+      const filter = await Filters.findOne(generateDbFilterById(filterId), {});
 
       if (!options?.skipInvalidation) {
         await invalidateProductIdCache(filter, requestContext);
