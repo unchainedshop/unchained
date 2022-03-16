@@ -11,7 +11,6 @@ export type Assortment = {
   sequence: number;
   slugs: Array<string>;
   tags: Array<string>;
-  _cachedProductIds: Array<string>;
 } & TimestampFields;
 
 export type AssortmentFilter = {

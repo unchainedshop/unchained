@@ -21,7 +21,6 @@ describe('Test exports', () => {
         sequence: 13,
         slugs: ['Test'],
         tags: [],
-        _cachedProductIds: [],
         title: 'Test',
         locale: 'de',
       },
