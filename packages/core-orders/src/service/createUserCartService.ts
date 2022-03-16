@@ -4,7 +4,7 @@ export const createUserCartService: CreateUserCartService = async (
   { user, orderNumber, countryCode },
   requestContext,
 ) => {
-  const { countryContext, modules, services, userId } = requestContext;
+  const { countryContext, modules, services } = requestContext;
 
   const normalizedCountryCode = countryCode || countryContext;
 
@@ -30,6 +30,6 @@ export const createUserCartService: CreateUserCartService = async (
             }
           : {}),
     },
-    userId,
+    user._id,
   );
 };
