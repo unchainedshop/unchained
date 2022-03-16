@@ -5,7 +5,7 @@ const TemplateResolvers = new Map<string, TemplateResolver>();
 
 export const MessagingDirector: IMessagingDirector = {
   registerTemplate: (templateName, templateResolver) => {
-    log(`MessagingDirector -> Registered custom template resolver for ${templateName}`);
+    log(`MessagingDirector -> Registered template resolver for ${templateName}`);
 
     TemplateResolvers.set(templateName, templateResolver);
   },
