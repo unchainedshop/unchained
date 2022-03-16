@@ -15,7 +15,7 @@ export const createUserCartService: CreateUserCartService = async (
     requestContext,
   );
 
-  return modules.orders.create(
+  const order = await modules.orders.create(
     {
       orderNumber,
       currency,
@@ -32,4 +32,7 @@ export const createUserCartService: CreateUserCartService = async (
     },
     user._id,
   );
+
+  await modules.orders.initProviders(order._id, requestContext);
+  return order;
 };
