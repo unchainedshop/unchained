@@ -48,7 +48,7 @@ export const configureOrderPaymentsModule = ({
     return orderPayment.status === null
       ? OrderPaymentStatus.OPEN
       : (orderPayment.status as OrderPaymentStatus);
-  }
+  };
 
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,

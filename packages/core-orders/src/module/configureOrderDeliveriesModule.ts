@@ -30,7 +30,7 @@ export const configureOrderDeliveriesModule = ({
     return orderDelivery.status === null
       ? OrderDeliveryStatus.OPEN
       : (orderDelivery.status as OrderDeliveryStatus);
-  },
+  };
 
   const updateStatus: OrderDeliveriesModule['updateStatus'] = async (
     orderDeliveryId,
