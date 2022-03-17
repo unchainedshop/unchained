@@ -10,48 +10,48 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     currency: params.currency,
     quantity: params.quantity,
 
-    getRawPricingSheet: () => {
+    getRawPricingSheet() {
       return calculation;
     },
 
-    isValid: () => {
+    isValid() {
       return calculation.length > 0;
     },
 
-    sum: (filter) => {
-      return pricingSheet
+    sum(filter) {
+      return this
         .filterBy(filter)
         .filter(Boolean)
         .reduce((sum: number, calculationRow: Calculation) => sum + calculationRow.amount, 0);
     },
 
-    taxSum: () => {
+    taxSum() {
       return 0;
     },
 
-    gross: () => {
-      return pricingSheet.sum();
+    gross() {
+      return this.sum();
     },
 
-    net: () => {
-      return pricingSheet.gross() - pricingSheet.taxSum();
+    net() {
+      return this.gross() - this.taxSum();
     },
 
-    total: ({ category, useNetPrice } = { useNetPrice: false }) => {
+    total({ category, useNetPrice } = { useNetPrice: false }) {
       if (!category) {
         return {
-          amount: Math.round(useNetPrice ? pricingSheet.net() : pricingSheet.gross()),
+          amount: Math.round(useNetPrice ? this.net() : this.gross()),
           currency: params.currency,
         };
       }
 
       return {
-        amount: Math.round(pricingSheet.sum({ category } as any)),
+        amount: Math.round(this.sum({ category } as any)),
         currency: params.currency,
       };
     },
 
-    filterBy: (filter) => {
+    filterBy(filter) {
       const filteredCalculation = Object.keys(filter || {}).reduce(
         (oldCalculation, filterKey) =>
           oldCalculation.filter(

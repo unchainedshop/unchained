@@ -56,6 +56,7 @@ export const configureOrderModuleMutations = ({
       );
 
       const order = await Orders.findOne(generateDbFilterById(orderId), {});
+
       emit('ORDER_CREATE', { order });
       return order;
     },

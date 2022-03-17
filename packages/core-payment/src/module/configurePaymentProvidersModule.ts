@@ -47,7 +47,7 @@ export const configurePaymentProvidersModule = (
     paymentContext: PaymentContext,
     requestContext: Context,
   ) => {
-    const provider = await PaymentProviders.findOne(generateDbFilterById(paymentProviderId));
+    const provider = await PaymentProviders.findOne(generateDbFilterById(paymentProviderId), {});
 
     return PaymentDirector.actions(provider, paymentContext, requestContext);
   };
