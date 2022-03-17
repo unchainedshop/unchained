@@ -21,7 +21,7 @@ promise@0.12.0
 react-fast-refresh@0.2.2
 routepolicy@1.1.1
 typescript@4.4.1
-unchained:api@1.0.0-rc.9.1
+unchained:api@1.0.0-rc.9.2
 unchained:core@1.0.0-rc.9
 unchained:core-accountsjs@1.0.0-rc.9
 unchained:core-assortments@1.0.0-rc.9
