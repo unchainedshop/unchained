@@ -42,19 +42,11 @@ export const OrderDiscount: OrderDiscountHelperTypes = {
     return modules.orders.findOrder({ orderId: obj.orderId });
   },
 
-  total: (obj) => {
-    const { total } = obj;
-    if (total) {
-      return {
-        _id: crypto
-          .createHash('sha256')
-          .update([`${obj._id}`, total.amount, total.currency].join(''))
-          .digest('hex'),
-        amount: total.amount,
-        currency: total.currency,
-      };
-    }
-    return null;
+  total: async (obj, _, context) => {
+    const order = await context.modules.orders.findOrder({
+      orderId: obj.orderId,
+    });
+    return context.modules.orders.discountTotal(order, obj, context);
   },
 
   discounted: async (obj, _, context) => {

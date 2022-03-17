@@ -76,6 +76,7 @@ export const SimpleProduct: SimpleProductHelperTypes = {
             deliveryProvider,
             product: obj,
             referenceDate,
+            warehousingProvider,
           };
 
           const stock = await WarehousingDirector.actions(
