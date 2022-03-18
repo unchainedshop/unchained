@@ -498,7 +498,7 @@ export const configureProductsModule = async ({
       countFilteredProducts: async ({ productIds, productSelector }) => {
         return Products.countDocuments({
           ...productSelector,
-          _id: { $in: productIds }
+          _id: { $in: productIds },
         });
       },
       findFilteredProducts: async ({ limit, offset, productIds, productSelector, sort }) => {

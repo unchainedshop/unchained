@@ -19,8 +19,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     },
 
     sum(filter) {
-      return this
-        .filterBy(filter)
+      return this.filterBy(filter)
         .filter(Boolean)
         .reduce((sum: number, calculationRow: Calculation) => sum + calculationRow.amount, 0);
     },

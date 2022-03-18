@@ -329,7 +329,7 @@ export type ProductsModule = {
     countFilteredProducts: (params: {
       productIds: Array<string>;
       productSelector: Query;
-    });
+    }) => Promise<number>;
     findFilteredProducts: (params: {
       limit: number;
       offset: number;

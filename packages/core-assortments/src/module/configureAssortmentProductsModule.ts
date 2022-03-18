@@ -20,9 +20,23 @@ export const configureAssortmentProductsModule = ({
 
   return {
     // Queries
-    findAssortmentIds: async ({ productId }) => {
-      return AssortmentProducts.find({ productId }, { projection: { assortmentId: true } })
+    findAssortmentIds: async ({ productId, tags }) => {
+      const selector = { productId };
+      if (tags) {
+        selector.tags = { $in: tags };
+      }
+      return AssortmentProducts.find(selector, { projection: { assortmentId: true } })
         .map(({ assortmentId }) => assortmentId)
+        .toArray();
+    },
+
+    findProductIds: async ({ assortmentId, tags }) => {
+      const selector = { assortmentId };
+      if (tags) {
+        selector.tags = { $in: tags };
+      }
+      return AssortmentProducts.find(selector, { projection: { productId: true } })
+        .map(({ productId }) => productId)
         .toArray();
     },
 

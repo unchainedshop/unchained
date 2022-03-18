@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-filters',
-  version: '1.0.0-rc.9',
+  version: '1.0.0-rc.9.1',
   summary: 'Unchained Engine Core: Filters',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

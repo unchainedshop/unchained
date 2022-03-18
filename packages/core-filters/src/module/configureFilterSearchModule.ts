@@ -160,7 +160,7 @@ export const configureFilterSearchModule = ({
         totalProducts: async () =>
           modules.products.search.countFilteredProducts({
             productSelector,
-            productIds: aggregatedTotalProductIds
+            productIds: aggregatedTotalProductIds,
           }),
         productsCount: async () =>
           modules.products.search.countFilteredProducts({

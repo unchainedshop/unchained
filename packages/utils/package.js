@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:utils',
-  version: '1.0.0-rc.9.1',
+  version: '1.0.0-rc.9.2',
   summary: 'Unchained Engine: Helper Functions',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
