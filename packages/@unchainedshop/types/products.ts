@@ -326,6 +326,10 @@ export type ProductsModule = {
   search: {
     buildActiveStatusFilter: () => Query;
     buildActiveDraftStatusFilter: () => Query;
+    countFilteredProducts: (params: {
+      productIds: Array<string>;
+      productSelector: Query;
+    });
     findFilteredProducts: (params: {
       limit: number;
       offset: number;

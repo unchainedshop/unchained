@@ -147,40 +147,41 @@ export const configureFilterSearchModule = ({
         searchConfiguration,
         requestContext,
       )(totalProductIds);
-      const aggregatedProductIds = filterActions.aggregateProductIds({
+
+      const aggregatedTotalProductIds = filterActions.aggregateProductIds({
+        productIds: totalProductIds,
+      });
+
+      const aggregatedFilteredProductIds = filterActions.aggregateProductIds({
         productIds: filteredProductIds,
       });
 
-      const countProducts = modules.products.count;
-
       return {
         totalProducts: async () =>
-          countProducts({
+          modules.products.search.countFilteredProducts({
             productSelector,
-            productIds: filterActions.aggregateProductIds({
-              productIds: totalProductIds,
-            }),
+            productIds: aggregatedTotalProductIds
           }),
         productsCount: async () =>
-          countProducts({
+          modules.products.search.countFilteredProducts({
             productSelector,
-            productIds: totalProductIds,
+            productIds: aggregatedTotalProductIds,
           }),
         filteredProducts: async () =>
-          countProducts({
+          modules.products.search.countFilteredProducts({
             productSelector,
-            productIds: aggregatedProductIds,
+            productIds: aggregatedFilteredProductIds,
           }),
         filteredProductsCount: async () =>
-          countProducts({
+          modules.products.search.countFilteredProducts({
             productSelector,
-            productIds: filteredProductIds,
+            productIds: aggregatedFilteredProductIds,
           }),
         products: async ({ offset, limit }) =>
           modules.products.search.findFilteredProducts({
             limit,
             offset,
-            productIds: aggregatedProductIds,
+            productIds: aggregatedFilteredProductIds,
             productSelector,
             sort: sortStage,
           }),
