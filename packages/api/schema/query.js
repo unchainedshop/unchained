@@ -336,10 +336,10 @@ export default [
       workQueue(
         limit: Int = 10
         offset: Int = 0
-        status: [WorkStatus] = [NEW]
-        selectTypes: [WorkType!] = []
+        status: [WorkStatus!] = [NEW]
+        selectTypes: [WorkType!]
         created: DateFilterInput
-      ): [Work]
+      ): [Work!]!
 
       """
       Get a specific work unit by ID

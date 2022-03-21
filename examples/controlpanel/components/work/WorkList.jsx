@@ -102,9 +102,7 @@ const WorkList = ({
         {...rest}
         cols={6}
         createPath={null}
-        rowRenderer={(work) => (
-          <WorkRow key={work._id} work={work} relativeDate={relativeDate} />
-        )}
+        rowRenderer={(work) => <WorkRow key={work._id} work={work} relativeDate={relativeDate} />}
       >
         <Table.Row>
           <Table.HeaderCell>Work #</Table.HeaderCell>
@@ -128,7 +126,7 @@ export default compose(
         $offset: Int
         $limit: Int
         $status: [WorkStatus!]!
-        $selectTypes: [WorkType!] = []
+        $selectTypes: [WorkType!]
         $created: DateFilterInput
       ) {
         workQueue(
@@ -148,5 +146,5 @@ export default compose(
         }
       }
     `,
-  })
+  }),
 )(WorkList);

@@ -20,8 +20,8 @@ const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const buildQuerySelector = ({
   created = { start: null, end: null },
-  selectTypes = [],
-  status = [],
+  selectTypes,
+  status,
   workId,
   ...rest
 }: Query & {

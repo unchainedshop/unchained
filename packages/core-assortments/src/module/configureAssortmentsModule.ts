@@ -29,10 +29,10 @@ const ASSORTMENT_EVENTS = [
 ];
 
 const buildFindSelector = ({
-  assortmentIds = [],
+  assortmentIds,
   assortmentSelector,
-  slugs = [],
-  tags = [],
+  slugs,
+  tags,
   includeLeaves = false,
   includeInactive = false,
 }: AssortmentQuery) => {
@@ -44,7 +44,9 @@ const buildFindSelector = ({
 
   if (slugs) {
     selector.slugs = { $in: slugs };
-  } else if (tags) {
+  }
+
+  if (tags) {
     if (Array.isArray(tags)) {
       selector.tags = { $all: tags };
     } else {

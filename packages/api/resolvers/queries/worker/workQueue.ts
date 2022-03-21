@@ -7,8 +7,8 @@ export default async function workers(
   {
     limit,
     offset,
-    status = [],
-    selectTypes = [],
+    status,
+    selectTypes,
     created,
   }: {
     limit?: number;

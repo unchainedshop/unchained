@@ -46,7 +46,9 @@ const buildFindSelector = ({
 
   if (slugs) {
     selector.slugs = { $in: slugs };
-  } else if (tags) {
+  }
+
+  if (tags) {
     if (Array.isArray(tags)) {
       selector.tags = { $all: tags };
     } else {
