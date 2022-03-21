@@ -62,7 +62,7 @@ const buildQuerySelector = ({
   let query: Query = statusQuery.$or.length > 0 ? statusQuery : {};
 
   query.$and = [
-    selectTypes?.length > 0 && { type: { $in: selectTypes } },
+    selectTypes && { type: { $in: selectTypes } },
     created?.end
       ? { created: { $gte: created.start, $lte: created.end } }
       : { created: { $gte: created?.start || new Date(0) } },

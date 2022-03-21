@@ -37,7 +37,7 @@ const LocalSearch: IFilterAdapter = {
               $text: { $search: queryString },
             };
 
-        if (productIds?.length) {
+        if (productIds) {
           selector.productId = { $in: [...new Set(productIds)] };
         }
 

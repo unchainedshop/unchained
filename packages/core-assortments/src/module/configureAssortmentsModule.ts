@@ -38,14 +38,18 @@ const buildFindSelector = ({
 }: AssortmentQuery) => {
   const selector: Query = assortmentSelector || {};
 
-  if (assortmentIds?.length > 0) {
+  if (assortmentIds) {
     selector._id = { $in: assortmentIds };
   }
 
-  if (slugs?.length > 0) {
+  if (slugs) {
     selector.slugs = { $in: slugs };
-  } else if (tags?.length > 0) {
-    selector.tags = { $all: tags };
+  } else if (tags) {
+    if (Array.isArray(tags)) {
+      selector.tags = { $all: tags };
+    } else {
+      selector.tags = tags;
+    }
   }
 
   if (!assortmentSelector && !includeLeaves) {

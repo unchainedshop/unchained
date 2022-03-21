@@ -40,14 +40,18 @@ const buildFindSelector = ({
 }: ProductQuery) => {
   const selector: Query = productSelector ? { ...productSelector, ...query } : query;
 
-  if (productIds?.length > 0) {
+  if (productIds) {
     selector._id = { $in: productIds };
   }
 
-  if (slugs?.length > 0) {
+  if (slugs) {
     selector.slugs = { $in: slugs };
-  } else if (Array.isArray(tags) && tags?.length > 0) {
-    selector.tags = { $all: tags };
+  } else if (tags) {
+    if (Array.isArray(tags)) {
+      selector.tags = { $all: tags };
+    } else {
+      selector.tags = tags;
+    }
   }
 
   if (!includeDrafts) {
@@ -174,14 +178,13 @@ export const configureProductsModule = async ({
 
     findProducts: async ({ limit, offset, ...query }) => {
       const options: FindOptions = { sort: { sequence: 1, published: -1 } };
-
-      if (!query.slugs?.length) {
-        options.skip = offset;
+      if (limit) {
         options.limit = limit;
       }
-
+      if (offset) {
+        offset.skip = offset;
+      }
       const products = Products.find(buildFindSelector(query), options);
-
       return products.toArray();
     },
 
