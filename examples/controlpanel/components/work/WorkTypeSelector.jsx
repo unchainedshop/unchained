@@ -4,7 +4,7 @@ import React from 'react';
 import { Dropdown } from 'semantic-ui-react';
 import { SEARCH_WORK_TYPES } from '../searchQueries';
 
-const WorkTypeSelector = ({ workTypes = [], onChange }) => {
+const WorkTypeSelector = ({ workTypes, onChange }) => {
   return (
     <Dropdown
       placeholder="Work types"
@@ -30,5 +30,5 @@ export default compose(
     loading,
     ...rest,
   })),
-  pure
+  pure,
 )(WorkTypeSelector);

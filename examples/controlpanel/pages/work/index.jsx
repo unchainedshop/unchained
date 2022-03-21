@@ -7,8 +7,8 @@ import connectApollo from '../../lib/connectApollo';
 
 export default connectApollo(({ ...rest }) => {
   const statusTypes = ['ALLOCATED', 'NEW', 'FAILED', 'SUCCESS'];
-  const [workStatusFilter, setWorkStatusFilter] = useState([]);
-  const [workTypeFilter, setWorkTypeFilter] = useState([]);
+  const [workStatusFilter, setWorkStatusFilter] = useState();
+  const [workTypeFilter, setWorkTypeFilter] = useState();
   const [dateRange, setDateRange] = useState({
     start: new Date(0),
     end: null,
@@ -16,9 +16,9 @@ export default connectApollo(({ ...rest }) => {
 
   const onFilterChange = ({ filterType, value }) => {
     if (filterType === 'workType') {
-      setWorkTypeFilter(value);
+      setWorkTypeFilter(value?.length ? value : undefined);
     } else if (filterType === 'status') {
-      setWorkStatusFilter(value);
+      setWorkStatusFilter(value?.length ? value : undefined);
     }
   };
 

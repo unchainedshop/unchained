@@ -19,7 +19,7 @@ const WorkList = ({
   queryOptions,
   ...rest
 }) => {
-  const [selectedTypeFilter, setSelectedTypeFilter] = useState([]);
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState();
   const [activeStatus, setActiveStatus] = useState(statusTypes);
   const [relativeDate, setDate] = useState(new Date());
   useEffect(() => {
@@ -125,7 +125,7 @@ export default compose(
       query workQueue(
         $offset: Int
         $limit: Int
-        $status: [WorkStatus!]!
+        $status: [WorkStatus!]
         $selectTypes: [WorkType!]
         $created: DateFilterInput
       ) {
