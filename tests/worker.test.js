@@ -41,18 +41,14 @@ describe('Worker Module', () => {
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus]) {
-            workQueue(status: $status) {
+          query {
+            workQueue(status: [NEW,SUCCESS]) {
               _id
               type
               status
             }
           }
         `,
-        variables: {
-          // Empty array as status queries the whole queue
-          status: [],
-        },
       });
 
       expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(
@@ -147,7 +143,7 @@ describe('Worker Module', () => {
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
-            workQueue {
+            workQueue(status: [NEW]) {
               _id
               type
             }
@@ -343,7 +339,7 @@ describe('Worker Module', () => {
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue {
+              workQueue(status: [NEW]) {
                 _id
                 worker
                 type
@@ -363,7 +359,7 @@ describe('Worker Module', () => {
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue {
+              workQueue(status: [NEW]) {
                 _id
                 status
                 type
@@ -384,7 +380,7 @@ describe('Worker Module', () => {
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue {
+              workQueue(status: [NEW]) {
                 _id
                 status
                 type
@@ -431,7 +427,7 @@ describe('Worker Module', () => {
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue {
+              workQueue(status: [NEW]) {
                 _id
                 status
                 type
@@ -461,7 +457,7 @@ describe('Worker Module', () => {
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue {
+              workQueue(status: [NEW]) {
                 _id
                 type
                 worker
@@ -471,6 +467,8 @@ describe('Worker Module', () => {
             }
           `,
         });
+
+      console.log({ workQueueAfter });
 
       expect(
         workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
@@ -524,18 +522,14 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus], $selectTypes: [WorkType!]) {
-            workQueue(status: $status, selectTypes: $selectTypes) {
+          query {
+            workQueue {
               _id
               type
               status
             }
           }
         `,
-        variables: {
-          status: [],
-          selectTypes: [],
-        },
       });
       expect(workQueue.length > 0).toBe(true);
     });
@@ -545,7 +539,7 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus], $selectTypes: [WorkType!]) {
+          query ($status: [WorkStatus!], $selectTypes: [WorkType!]) {
             workQueue(status: $status, selectTypes: $selectTypes) {
               _id
               type
@@ -554,7 +548,6 @@ describe('Worker Module', () => {
           }
         `,
         variables: {
-          status: [],
           selectTypes: ['EXTERNAL'],
         },
       });
@@ -566,7 +559,7 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus], $selectTypes: [WorkType!]) {
+          query ($status: [WorkStatus!], $selectTypes: [WorkType!]) {
             workQueue(status: $status, selectTypes: $selectTypes) {
               _id
               type
@@ -576,7 +569,7 @@ describe('Worker Module', () => {
         `,
         variables: {
           status: ['SUCCESS'],
-          selectTypes: [],
+          
         },
       });
       expect(workQueue.filter((e) => e.status !== 'SUCCESS').length).toEqual(0);
@@ -587,7 +580,7 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus], $selectTypes: [WorkType!]) {
+          query ($status: [WorkStatus!], $selectTypes: [WorkType!]) {
             workQueue(status: $status, selectTypes: $selectTypes) {
               _id
               type
@@ -611,17 +604,14 @@ describe('Worker Module', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus]) {
-            workQueue(status: $status) {
+          query {
+            workQueue {
               _id
               type
               status
             }
           }
         `,
-        variables: {
-          status: [],
-        },
       });
 
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
@@ -632,17 +622,14 @@ describe('Worker Module', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus]) {
-            workQueue(status: $status) {
+          query {
+            workQueue {
               _id
               type
               status
             }
           }
         `,
-        variables: {
-          status: [],
-        },
       });
 
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');

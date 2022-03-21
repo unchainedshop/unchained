@@ -336,7 +336,7 @@ export default [
       workQueue(
         limit: Int = 10
         offset: Int = 0
-        status: [WorkStatus!] = [NEW]
+        status: [WorkStatus!]
         selectTypes: [WorkType!]
         created: DateFilterInput
       ): [Work!]!

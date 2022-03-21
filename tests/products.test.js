@@ -1131,38 +1131,6 @@ describe('Products', () => {
       expect(products.length).toEqual(3);
     });
 
-    it('if both slug and tags are provided slugs should take precidence for the result ', async () => {
-      const {
-        data: { products },
-      } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          query products(
-            $tags: [String!]
-            $slugs: [String!]
-            $limit: Int
-            $offset: Int
-            $includeDrafts: Boolean
-          ) {
-            products(
-              tags: $tags
-              slugs: $slugs
-              limit: $limit
-              offset: $offset
-              includeDrafts: $includeDrafts
-            ) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          tags: ['test-tag'],
-          slugs: ['test-slug'],
-        },
-      });
-
-      expect(products.length).toEqual(2);
-    });
-
     it('return number of product if limit is specified as argument', async () => {
       const {
         data: { products },
@@ -1469,38 +1437,6 @@ describe('Products', () => {
       expect(products.length).toEqual(3);
     });
 
-    it('if both slug and tags are provided slugs should take precidence for the result ', async () => {
-      const {
-        data: { products },
-      } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          query products(
-            $tags: [String!]
-            $slugs: [String!]
-            $limit: Int
-            $offset: Int
-            $includeDrafts: Boolean
-          ) {
-            products(
-              tags: $tags
-              slugs: $slugs
-              limit: $limit
-              offset: $offset
-              includeDrafts: $includeDrafts
-            ) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          tags: ['test-tag'],
-          slugs: ['test-slug'],
-        },
-      });
-
-      expect(products.length).toEqual(2);
-    });
-
     it('return number of product if limit is specified as argument', async () => {
       const {
         data: { products },
@@ -1681,38 +1617,6 @@ describe('Products', () => {
       });
 
       expect(products.length).toEqual(3);
-    });
-
-    it('if both slug and tags are provided slugs should take precidence for the result ', async () => {
-      const {
-        data: { products },
-      } = await graphqlFetchAsAnonymousUser({
-        query: /* GraphQL */ `
-          query products(
-            $tags: [String!]
-            $slugs: [String!]
-            $limit: Int
-            $offset: Int
-            $includeDrafts: Boolean
-          ) {
-            products(
-              tags: $tags
-              slugs: $slugs
-              limit: $limit
-              offset: $offset
-              includeDrafts: $includeDrafts
-            ) {
-              _id
-            }
-          }
-        `,
-        variables: {
-          tags: ['test-tag'],
-          slugs: ['test-slug'],
-        },
-      });
-
-      expect(products.length).toEqual(2);
     });
 
     it('return number of product if limit is specified as argument', async () => {

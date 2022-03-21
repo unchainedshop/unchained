@@ -32,18 +32,15 @@ describe("Auth for anonymous users", () => {
 
       const { data: { workQueue } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus]) {
-            workQueue(status: $status) {
+          query {
+            workQueue {
               _id
               type
               status
             }
           }
         `,
-        variables: {
-          // Empty array as status queries the whole queue
-          status: [],
-        },
+        variables: {},
       });
 
       const work = workQueue.filter(

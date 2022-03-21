@@ -22,7 +22,7 @@ export default async function workers(
   },
   { modules, userId }: Context,
 ) {
-  log(`query workQueue ${limit} ${offset} [${status.join(', ')}] ${JSON.stringify(created)}`, {
+  log(`query workQueue ${limit} ${offset} [${status?.join(', ')}] ${JSON.stringify(created)}`, {
     userId,
   });
 

@@ -54,12 +54,12 @@ const buildQuerySelector = ({
   };
   const statusQuery = {
     $or: Object.entries(filterMap).reduce(
-      (acc, [key, filter]) => (status.includes(key as WorkStatus) ? [...acc, filter] : acc),
+      (acc, [key, filter]) => (status?.includes(key as WorkStatus) ? [...acc, filter] : acc),
       [],
     ),
   };
 
-  let query: Query = statusQuery.$or.length > 0 ? statusQuery : {};
+  let query: Query = statusQuery.$or.length > 0 ? statusQuery : { deleted: { $exists: false } };
 
   query.$and = [
     selectTypes && { type: { $in: selectTypes } },
