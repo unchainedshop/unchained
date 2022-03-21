@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:roles',
-  version: '1.0.0-rc.9',
+  version: '1.0.0-rc.10',
   summary: 'Unchained Engine: Roles',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -11,7 +11,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('1.12');
+  api.versionsFrom('2.5');
 
   api.use('ecmascript');
   api.use('typescript');

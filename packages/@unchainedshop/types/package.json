@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "1.0.0-rc.9.1",
+  "version": "1.0.0-rc.10",
   "description": "Types for unchained core meteor packages",
   "repository": {
     "type": "git",
@@ -9,6 +9,7 @@
   "main": "lin/index.js",
   "types": "index.d.ts",
   "scripts": {
+    "prepublishOnly": "npm install && npm run build",
     "build": "tsc"
   },
   "keywords": [

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:logger',
-  version: '1.0.0-rc.9',
+  version: '1.0.0-rc.10',
   summary: 'Unchained Engine: Logger',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -13,7 +13,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('2.2');
+  api.versionsFrom('2.5');
   api.use('ecmascript');
   api.use('typescript');
 
