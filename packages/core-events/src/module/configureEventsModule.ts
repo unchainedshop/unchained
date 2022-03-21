@@ -27,7 +27,6 @@ export const configureEventsModule = async ({
     ...mutations,
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? generateDbFilterById(eventId) : rest;
-      if (!Object.keys(selector)?.length) return null;
       return Events.findOne(selector as unknown as Filter<Event>, options);
     },
 
