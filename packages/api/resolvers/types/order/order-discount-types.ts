@@ -1,8 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
-import { Order, OrderPricingDiscount } from '@unchainedshop/types/orders';
+import { Order } from '@unchainedshop/types/orders';
 import { OrderDiscount as OrderDiscountType } from '@unchainedshop/types/orders.discounts';
-import { OrderPrice } from '@unchainedshop/types/orders.pricing';
-import crypto from 'crypto';
+import { OrderPrice, OrderPricingDiscount } from '@unchainedshop/types/orders.pricing';
 import { OrderDiscountDirector } from 'meteor/unchained:core-orders';
 
 type HelperType<P, T> = (orderDiscount: OrderDiscountType, params: P, context: Context) => T;

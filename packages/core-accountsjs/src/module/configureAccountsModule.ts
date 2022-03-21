@@ -33,10 +33,10 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
     emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
 
     // Mutations
-    createUser: async (userData, options = {}) => {
+    createUser: async (userData, { skipMessaging } = {}) => {
       const userId = await accountsPassword.createUser(userData);
 
-      const autoMessagingEnabled = options.skipMessaging
+      const autoMessagingEnabled = skipMessaging
         ? false
         : accountsSettings.autoMessagingAfterUserCreation && !!userData.email && !!userId;
 
