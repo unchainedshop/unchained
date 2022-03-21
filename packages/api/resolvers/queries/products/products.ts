@@ -18,6 +18,5 @@ export default async function products(
     } ${params.slugs?.join(',')}`,
     { userId },
   );
-
   return modules.products.findProducts(params);
 }

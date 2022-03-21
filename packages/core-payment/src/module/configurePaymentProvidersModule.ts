@@ -190,7 +190,7 @@ export const configurePaymentProvidersModule = (
 
     delete: async (_id, userId) => {
       await mutations.delete(_id, userId);
-      const paymentProvider = PaymentProviders.findOne(generateDbFilterById(_id));
+      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id));
 
       emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
 

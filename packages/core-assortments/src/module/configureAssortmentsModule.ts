@@ -332,8 +332,6 @@ export const configureAssortmentsModule = async ({
         userId,
       );
 
-      const assortment = Assortments.findOne(generateDbFilterById(assortmentId));
-
       if (locale) {
         await assortmentTexts.upsertLocalizedText(
           assortmentId,
@@ -343,6 +341,7 @@ export const configureAssortmentsModule = async ({
         );
       }
 
+      const assortment = await Assortments.findOne(generateDbFilterById(assortmentId));
       emit('ASSORTMENT_CREATE', { assortment });
       return assortmentId;
     },

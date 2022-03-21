@@ -31,10 +31,10 @@ const InternalProductStatus = {
 };
 
 const buildFindSelector = ({
-  slugs = [],
-  tags = [],
+  slugs,
+  tags,
   includeDrafts = false,
-  productIds = [],
+  productIds,
   productSelector,
   ...query
 }: ProductQuery) => {
@@ -182,7 +182,7 @@ export const configureProductsModule = async ({
         options.limit = limit;
       }
       if (offset) {
-        offset.skip = offset;
+        options.skip = offset;
       }
       const products = Products.find(buildFindSelector(query), options);
       return products.toArray();
