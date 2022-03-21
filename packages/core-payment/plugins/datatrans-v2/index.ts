@@ -144,9 +144,9 @@ const Datatrans: IPaymentAdapter = {
       ) {
         logger.verbose(
           `currency: ${transaction.currency} === ${currency} => ${
-            transaction.currency !== currency
+            transaction.currency === currency
           }, amount: ${(transaction.detail.authorize as any)?.amount} === ${amount} => ${
-            (transaction.detail.authorize as any)?.amount !== amount
+            (transaction.detail.authorize as any)?.amount === amount
           }`,
         );
         return false;
