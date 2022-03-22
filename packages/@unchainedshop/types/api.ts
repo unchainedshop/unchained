@@ -54,7 +54,7 @@ export interface UnchainedServerOptions {
   rolesOptions?: any;
   typeDefs: Array<string>;
   context?: any;
-  interception?: boolean;
+  introspection?: boolean;
   playground?: boolean;
   tracing?: boolean;
 }

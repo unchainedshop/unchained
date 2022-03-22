@@ -49,7 +49,7 @@ type PlatformOptions = {
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
   disableEmailInterception?: any;
-  interception?: boolean;
+  introspection?: boolean;
   playground?: boolean;
   tracing?: boolean;
   cacheControl?: any;
@@ -67,7 +67,7 @@ export const startPlatform = async (
     workQueueOptions,
     disableEmailInterception,
     context,
-    interception,
+    introspection,
     playground,
     tracing,
     cacheControl,
@@ -117,7 +117,7 @@ export const startPlatform = async (
     typeDefs: [...generatedTypeDefs, ...typeDefs],
     resolvers,
     context,
-    interception,
+    introspection,
     playground,
     tracing,
     corsOrigins,
