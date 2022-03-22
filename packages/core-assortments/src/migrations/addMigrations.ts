@@ -14,21 +14,23 @@ export const addMigrations = (repository: MigrationRepository<Migration>) => {
         { projection: { _id: true, _cachedProductIds: true } },
       ).toArray();
 
-      assortments.forEach((assortment) => {
-        AssortmentProductIdCache.updateOne(
-          {
-            _id: assortment._id as any,
-          },
-          {
+      await Promise.all(
+        assortments.map(async (assortment) => {
+          await AssortmentProductIdCache.updateOne(
+            {
+              _id: assortment._id as any,
+            },
+            {
             $set: { productIds: assortment._cachedProductIds }, // eslint-disable-line
-          },
-          {
-            upsert: true,
-          },
-        );
-      });
+            },
+            {
+              upsert: true,
+            },
+          );
+        }),
+      );
 
-      Assortments.updateMany(
+      await Assortments.updateMany(
         {},
         {
           $unset: { _cachedProductIds: 1 },
