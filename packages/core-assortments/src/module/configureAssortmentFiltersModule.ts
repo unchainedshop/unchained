@@ -38,7 +38,7 @@ export const configureAssortmentFiltersModule = ({
       return filters.toArray();
     },
     create: async (doc: AssortmentFilter, userId) => {
-      const { _id, assortmentId, filterId, ...rest } = doc;
+      const { _id, assortmentId, filterId, sortKey, ...rest } = doc;
 
       const selector = {
         ...(_id ? generateDbFilterById(_id) : {}),
@@ -67,7 +67,7 @@ export const configureAssortmentFiltersModule = ({
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentFilter.sortKey + 1;
       } else {
-        $set.sortKey = doc.sortKey;
+        $set.sortKey = sortKey;
       }
 
       await AssortmentFilters.updateOne(

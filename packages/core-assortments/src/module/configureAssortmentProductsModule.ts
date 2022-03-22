@@ -70,7 +70,7 @@ export const configureAssortmentProductsModule = ({
 
     // Mutations
     create: async (doc: AssortmentProduct, options, userId) => {
-      const { _id, assortmentId, productId, ...rest } = doc;
+      const { _id, assortmentId, productId, sortKey, ...rest } = doc;
 
       const selector = {
         ...(doc._id ? generateDbFilterById(doc._id) : {}),
@@ -90,7 +90,7 @@ export const configureAssortmentProductsModule = ({
         createdBy: userId,
       };
 
-      if (!doc.sortKey) {
+      if (!sortKey) {
         // Get next sort key
         const lastAssortmentProduct = (await AssortmentProducts.findOne(
           { assortmentId },
@@ -98,7 +98,7 @@ export const configureAssortmentProductsModule = ({
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentProduct.sortKey + 1;
       } else {
-        $set.sortKey = doc.sortKey;
+        $set.sortKey = sortKey;
       }
 
       await AssortmentProducts.updateOne(

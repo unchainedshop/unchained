@@ -50,7 +50,7 @@ export const configureAssortmentLinksModule = ({
 
     // Mutations
     create: async (doc, options, userId) => {
-      const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, ...rest } = doc;
+      const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, sortKey, ...rest } = doc;
 
       const selector = {
         ...(assortmentLinkId ? generateDbFilterById(assortmentLinkId) : {}),
@@ -71,7 +71,7 @@ export const configureAssortmentLinksModule = ({
         createdBy: userId,
       };
 
-      if (!doc.sortKey) {
+      if (!sortKey) {
         // Get next sort key
         const lastAssortmentLink = (await AssortmentLinks.findOne(
           { parentAssortmentId },
@@ -79,7 +79,7 @@ export const configureAssortmentLinksModule = ({
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentLink.sortKey + 1;
       } else {
-        $set.sortKey = doc.sortKey;
+        $set.sortKey = sortKey;
       }
 
       await AssortmentLinks.updateOne(
