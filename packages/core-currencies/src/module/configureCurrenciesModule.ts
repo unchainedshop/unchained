@@ -56,7 +56,7 @@ export const configureCurrenciesModule = async ({
     },
 
     create: async (doc: Currency, userId: string) => {
-      await Currencies.removeOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
+      await Currencies.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const currencyId = await mutations.create(
         { ...doc, isoCode: doc.isoCode.toUpperCase(), isActive: true },
         userId,

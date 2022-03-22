@@ -55,7 +55,7 @@ export const configureLanguagesModule = async ({
     },
 
     create: async (doc: Language, userId?: string) => {
-      await Languages.removeOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
+      await Languages.deleteOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
       const languageId = await mutations.create(
         {
           ...doc,

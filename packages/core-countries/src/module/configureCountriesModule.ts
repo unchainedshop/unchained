@@ -64,7 +64,7 @@ export const configureCountriesModule = async ({
     },
 
     create: async (doc: Country, userId: string) => {
-      await Countries.removeOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
+      await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const countryId = await mutations.create(
         {
           ...doc,
