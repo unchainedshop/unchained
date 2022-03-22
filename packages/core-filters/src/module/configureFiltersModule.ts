@@ -187,7 +187,7 @@ export const configureFiltersModule = async ({
       }
 
       if (!options?.skipInvalidation) {
-        invalidateProductIdCache(filter, requestContext);
+        await invalidateProductIdCache(filter, requestContext);
       }
 
       emit('FILTER_CREATE', { filter });

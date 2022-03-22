@@ -98,7 +98,7 @@ export const configureAssortmentLinksModule = ({
       emit('ASSORTMENT_ADD_LINK', { assortmentLink });
 
       if (!options.skipInvalidation) {
-        invalidateCache({ assortmentIds: [parentAssortmentId] });
+        await invalidateCache({ assortmentIds: [parentAssortmentId] });
       }
 
       return assortmentLink;
@@ -118,7 +118,7 @@ export const configureAssortmentLinksModule = ({
 
       const assortmentLink = await AssortmentLinks.findOne(selector, {});
       if (!options.skipInvalidation) {
-        invalidateCache(
+        await invalidateCache(
           { assortmentIds: [assortmentLink.childAssortmentId] },
           {
             skipUpstreamTraversal: false,
@@ -140,7 +140,7 @@ export const configureAssortmentLinksModule = ({
       });
 
       if (!options.skipInvalidation) {
-        invalidateCache(
+        await invalidateCache(
           {
             assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
           },
@@ -162,7 +162,7 @@ export const configureAssortmentLinksModule = ({
       });
 
       if (!options.skipInvalidation && assortmentLinks.length) {
-        invalidateCache(
+        await invalidateCache(
           {
             assortmentIds: assortmentLinks.flatMap((link) => [
               link.childAssortmentId,
@@ -196,7 +196,7 @@ export const configureAssortmentLinksModule = ({
       }).toArray();
 
       if (!options.skipInvalidation && assortmentLinks.length) {
-        invalidateCache(
+        await invalidateCache(
           { assortmentIds: assortmentLinks.map((link) => link.childAssortmentId) },
           {
             skipUpstreamTraversal: false,

@@ -205,11 +205,13 @@ export const configureAssortmentsModule = async ({
       buildFindSelector({ includeInactive: true, includeLeaves: true, ...selector }),
     ).toArray();
 
-    assortments.forEach((assortment) => {
-      invalidateProductIdCache(assortment, {
-        skipUpstreamTraversal: options?.skipUpstreamTraversal ?? true,
-      });
-    });
+    await Promise.all(
+      assortments.map(async (assortment) => {
+        await invalidateProductIdCache(assortment, {
+          skipUpstreamTraversal: options?.skipUpstreamTraversal ?? true,
+        });
+      }),
+    );
   };
 
   /*
@@ -354,7 +356,7 @@ export const configureAssortmentsModule = async ({
 
       if (!options?.skipInvalidation) {
         const assortment = await Assortments.findOne({ _id: assortmentId });
-        invalidateProductIdCache(assortment, { skipUpstreamTraversal: false });
+        await invalidateProductIdCache(assortment, { skipUpstreamTraversal: false });
       }
       return assortmentId;
     },
@@ -378,7 +380,7 @@ export const configureAssortmentsModule = async ({
 
       if (deletedResult.deletedCount === 1 && !options?.skipInvalidation) {
         // Invalidate all assortments
-        invalidateCache({});
+        await invalidateCache({});
       }
 
       emit('ASSORTMENT_REMOVE', { assortmentId });

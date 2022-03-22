@@ -121,7 +121,7 @@ export const uploadFormData = async ({ token = '', body }) => {
     body,
   })
     .then((response) => response.json())
-    .catch((e) => console.log(e)); // eslint-disable-line
+    .catch((e) => console.warn(e)); // eslint-disable-line
 };
 
 export const putFile = async (file, url) => {

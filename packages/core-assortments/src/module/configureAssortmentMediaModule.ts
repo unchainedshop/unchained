@@ -55,7 +55,7 @@ export const configureAssortmentMediaModule = async ({
       assortmentMediaId,
       locale,
     };
-    const textId = generateDbObjectId();
+
     const updsertResult = await AssortmentMediaTexts.updateOne(
       selector,
       {
@@ -65,7 +65,7 @@ export const configureAssortmentMediaModule = async ({
           ...text,
         },
         $setOnInsert: {
-          _id: textId,
+          _id: generateDbObjectId(),
           created: new Date(),
           createdBy: userId,
           assortmentMediaId,
@@ -78,7 +78,7 @@ export const configureAssortmentMediaModule = async ({
     );
 
     return AssortmentMediaTexts.findOne(
-      updsertResult.upsertedCount === 0 ? generateDbFilterById(textId) : selector,
+      updsertResult.upsertedId ? generateDbFilterById(updsertResult.upsertedId) : selector,
       {},
     );
   };
