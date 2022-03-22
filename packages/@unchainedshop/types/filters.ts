@@ -1,3 +1,4 @@
+import { Db } from 'mongodb';
 import { Context } from './api';
 import { Assortment } from './assortments';
 import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
@@ -9,7 +10,6 @@ export enum FilterType {
   MULTI_CHOICE = 'MULTI_CHOICE',
   RANGE = 'RANGE',
 }
-
 
 export type Filter = {
   _id?: _ID;
@@ -218,12 +218,20 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
 /* Settings */
 
 export interface FiltersSettingsOptions {
-  setCachedProductIds?: (filterId: string, productIds: Array<string>, productIdsMap: Record<string, Array<string>>) => Promise<number>;
+  setCachedProductIds?: (
+    filterId: string,
+    productIds: Array<string>,
+    productIdsMap: Record<string, Array<string>>,
+  ) => Promise<number>;
   getCachedProductIds?: (filterId: string) => Promise<[Array<string>, Record<string, Array<string>>]>;
 }
 
 export interface FiltersSettings {
-  setCachedProductIds?: (filterId: string, productIds: Array<string>, productIdsMap: Record<string, Array<string>>) => Promise<number>;
+  setCachedProductIds?: (
+    filterId: string,
+    productIds: Array<string>,
+    productIdsMap: Record<string, Array<string>>,
+  ) => Promise<number>;
   getCachedProductIds?: (filterId: string) => Promise<[Array<string>, Record<string, Array<string>>]>;
-  configureSettings: (options?: FiltersSettingsOptions, db: Db) => void;
+  configureSettings: (options?: FiltersSettingsOptions, db?: Db) => void;
 }

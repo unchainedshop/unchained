@@ -21,11 +21,9 @@ const buildFindSelector = ({ includeInactive = false }) => {
   return selector;
 };
 
-const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
-
 export const configureFiltersModule = async ({
   db,
-  options: filtersOptions = {}
+  options: filtersOptions = {},
 }: ModuleInput<FiltersSettingsOptions>): Promise<FiltersModule> => {
   registerEvents(FILTER_EVENTS);
 
@@ -63,19 +61,19 @@ export const configureFiltersModule = async ({
 
   const buildProductIdMap = async (filter: Filter, requestContext: Context) => {
     const allProductIds = await findProductIds(filter, {}, requestContext);
-    const productIdsMap = (filter.type === FilterType.SWITCH) ? {
-      true: await findProductIds(filter, { value: true }, requestContext),
-      false: await findProductIds(filter, { value: false }, requestContext),
-    } : (await (filter.options || []).reduce(
-      async (accumulatorPromise, option) => {
-        const accumulator = await accumulatorPromise;
-        return {
-          ...accumulator,
-          [option]: await findProductIds(filter, { value: option }, requestContext),
-        };
-      },
-      Promise.resolve({}),
-    ))
+    const productIdsMap =
+      filter.type === FilterType.SWITCH
+        ? {
+            true: await findProductIds(filter, { value: true }, requestContext),
+            false: await findProductIds(filter, { value: false }, requestContext),
+          }
+        : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
+            const accumulator = await accumulatorPromise;
+            return {
+              ...accumulator,
+              [option]: await findProductIds(filter, { value: option }, requestContext),
+            };
+          }, Promise.resolve({}));
 
     return [allProductIds, productIdsMap];
   };

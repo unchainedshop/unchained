@@ -20,33 +20,32 @@ const findLoadedOptions = async (
 
   const allOptions = (filter.type === FilterType.SWITCH && ['true', 'false']) || filter.options || [];
   const mappedOptions = await Promise.all(
-    allOptions
-      .map(async (value) => {
-        const filterOptionProductIds = await filterProductIds(
-          filter,
-          {
-            values: [value],
-            forceLiveCollection,
-          },
-          requestContext,
-        );
-        const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
-        if (!filteredProductIds.size) return null;
-        const filteredProductsCount = filterActions.aggregateProductIds({
-          productIds: [...filteredProductIds],
-        }).length;
-        return {
-          definition: () => ({ filterOption: value, ...filter }),
-          filteredProducts: filteredProductsCount,
-          filteredProductsCount,
-          isSelected: () => {
-            if (!values) return false;
-            const parse = createFilterValueParser(filter.type);
-            const normalizedValues = parse(values, [value]);
-            return normalizedValues.indexOf(value) !== -1;
-          },
-        };
-      }),
+    allOptions.map(async (value) => {
+      const filterOptionProductIds = await filterProductIds(
+        filter,
+        {
+          values: [value],
+          forceLiveCollection,
+        },
+        requestContext,
+      );
+      const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
+      if (!filteredProductIds.size) return null;
+      const filteredProductsCount = filterActions.aggregateProductIds({
+        productIds: [...filteredProductIds],
+      }).length;
+      return {
+        definition: () => ({ filterOption: value, ...filter }),
+        filteredProducts: filteredProductsCount,
+        filteredProductsCount,
+        isSelected: () => {
+          if (!values) return false;
+          const parse = createFilterValueParser(filter.type);
+          const normalizedValues = parse(values, [value]);
+          return normalizedValues.indexOf(value) !== -1;
+        },
+      };
+    }),
   );
   return mappedOptions.filter(Boolean);
 };
@@ -105,13 +104,13 @@ export const loadFilter = async (
 
   const filterProductIdsForValues = values
     ? await filterProductIds(
-      filter,
-      {
-        values,
-        forceLiveCollection,
-      },
-      requestContext,
-    )
+        filter,
+        {
+          values,
+          forceLiveCollection,
+        },
+        requestContext,
+      )
     : filteredProductIds;
 
   const filteredProductIdSet = intersectSet(

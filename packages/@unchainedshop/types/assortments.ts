@@ -1,3 +1,4 @@
+import { Db } from 'mongodb';
 import { AssortmentMediaModule } from './assortments.media';
 import { Filter, FindOptions, Query, TimestampFields, _ID } from './common';
 
@@ -346,5 +347,5 @@ export interface AssortmentsSettings {
   zipTree?: (data: any) => any;
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
-  configureSettings: (options?: AssortmentsSettingsOptions) => void;
+  configureSettings: (options?: AssortmentsSettingsOptions, db?: Db) => void;
 }

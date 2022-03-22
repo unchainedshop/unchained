@@ -5,9 +5,7 @@ import { Filter, FilterText, FilterProductIdCacheRecord } from '@unchainedshop/t
 export const FiltersCollection = async (db: Db) => {
   const Filters = db.collection<Filter>('filters');
   const FilterTexts = db.collection<FilterText>('filter_texts');
-  const FilterProductIdCache = db.collection<FilterProductIdCacheRecord>(
-    'filter_productId_cache',
-  );
+  const FilterProductIdCache = db.collection<FilterProductIdCacheRecord>('filter_productId_cache');
   // Filter Indexes
   await buildDbIndexes(Filters, [
     { index: { isActive: 1 } },
@@ -28,13 +26,11 @@ export const FiltersCollection = async (db: Db) => {
   ]);
 
   // FilterProductIdCache Indexes
-  await buildDbIndexes(FilterProductIdCache, [
-    { index: { productId: 1 } },
-  ]);
+  await buildDbIndexes(FilterProductIdCache, [{ index: { productId: 1 } }]);
 
   return {
     Filters,
     FilterTexts,
-    FilterProductIdCache
+    FilterProductIdCache,
   };
 };
