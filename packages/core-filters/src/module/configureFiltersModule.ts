@@ -143,14 +143,14 @@ export const configureFiltersModule = async ({
     },
 
     count: async (query) => {
-      const count = await Filters.find(buildFindSelector(query)).count();
+      const count = await Filters.countDocuments(buildFindSelector(query));
       return count;
     },
 
     filterExists: async ({ filterId }) => {
-      const filterCount = await Filters.find(generateDbFilterById(filterId), {
+      const filterCount = await Filters.countDocuments(generateDbFilterById(filterId), {
         limit: 1,
-      }).count();
+      });
       return !!filterCount;
     },
 

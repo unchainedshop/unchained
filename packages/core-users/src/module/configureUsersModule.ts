@@ -44,7 +44,7 @@ export const configureUsersModule = async ({
   return {
     // Queries
     count: async (query) => {
-      const userCount = await Users.find(buildFindSelector(query)).count();
+      const userCount = await Users.countDocuments(buildFindSelector(query));
       return userCount;
     },
 
@@ -92,7 +92,7 @@ export const configureUsersModule = async ({
 
     userExists: async ({ userId }) => {
       const selector = generateDbFilterById(userId);
-      const userCount = await Users.find(selector, { limit: 1 }).count();
+      const userCount = await Users.countDocuments(selector, { limit: 1 });
       return !!userCount;
     },
 

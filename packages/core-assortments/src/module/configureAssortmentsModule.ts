@@ -285,12 +285,12 @@ export const configureAssortmentsModule = async ({
       return findPreservingIds(Assortments)(selector, assortmentIds);
     },
 
-    count: async (query) => Assortments.find(buildFindSelector(query)).count(),
+    count: async (query) => Assortments.countDocuments(buildFindSelector(query)),
 
     assortmentExists: async ({ assortmentId }) => {
-      const assortmentCount = await Assortments.find(generateDbFilterById(assortmentId), {
+      const assortmentCount = await Assortments.countDocuments(generateDbFilterById(assortmentId), {
         limit: 1,
-      }).count();
+      });
       return !!assortmentCount;
     },
 
@@ -323,7 +323,7 @@ export const configureAssortmentsModule = async ({
     ) => {
       const assortmentId = await mutations.create(
         {
-          sequence: sequence || (await Assortments.find({}).count()) + 10,
+          sequence: sequence || (await Assortments.countDocuments({})) + 10,
           isBase,
           isActive,
           isRoot,

@@ -39,14 +39,17 @@ export const configureLanguagesModule = async ({
     },
 
     count: async (query) => {
-      const count = await Languages.find(buildFindSelector(query)).count();
+      const count = await Languages.countDocuments(buildFindSelector(query));
       return count;
     },
 
     languageExists: async ({ languageId }) => {
-      const languageCount = await Languages.find(generateDbFilterById(languageId, { deleted: null }), {
-        limit: 1,
-      }).count();
+      const languageCount = await Languages.countDocuments(
+        generateDbFilterById(languageId, { deleted: null }),
+        {
+          limit: 1,
+        },
+      );
       return !!languageCount;
     },
 

@@ -55,7 +55,7 @@ export const configurePaymentProvidersModule = (
   return {
     // Queries
     count: async (query) => {
-      const providerCount = await PaymentProviders.find(buildFindSelector(query)).count();
+      const providerCount = await PaymentProviders.countDocuments(buildFindSelector(query));
       return providerCount;
     },
 
@@ -72,10 +72,10 @@ export const configurePaymentProvidersModule = (
     },
 
     providerExists: async ({ paymentProviderId }) => {
-      const providerCount = await PaymentProviders.find(
+      const providerCount = await PaymentProviders.countDocuments(
         generateDbFilterById(paymentProviderId, { deleted: null }),
         { limit: 1 },
-      ).count();
+      );
       return !!providerCount;
     },
 

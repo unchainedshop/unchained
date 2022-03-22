@@ -204,14 +204,14 @@ export const configureProductsModule = async ({
     },
 
     count: async (query) => {
-      return Products.find(buildFindSelector(query)).count();
+      return Products.countDocuments(buildFindSelector(query));
     },
 
     productExists: async ({ productId, slug }) => {
       const selector: Query = productId ? generateDbFilterById(productId) : { slugs: slug };
       selector.status = { $ne: ProductStatus.DELETED };
 
-      const productCount = await Products.find(selector, { limit: 1 }).count();
+      const productCount = await Products.countDocuments(selector, { limit: 1 });
 
       return !!productCount;
     },
@@ -327,7 +327,7 @@ export const configureProductsModule = async ({
         {
           type: ProductTypes[type],
           status: InternalProductStatus.DRAFT,
-          sequence: sequence ?? (await Products.find({}).count()) + 10,
+          sequence: sequence ?? (await Products.countDocuments({})) + 10,
           authorId,
           ...productData,
         },

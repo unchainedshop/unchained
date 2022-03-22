@@ -156,10 +156,10 @@ export const configureWorkerModule = async ({
     },
 
     workExists: async ({ workId, originalWorkId }) => {
-      const queueCount = await WorkQueue.find(
+      const queueCount = await WorkQueue.countDocuments(
         workId ? generateDbFilterById(workId) : { originalWorkId },
         { limit: 1 },
-      ).count();
+      );
       return !!queueCount;
     },
 

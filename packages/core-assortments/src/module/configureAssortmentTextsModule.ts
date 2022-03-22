@@ -23,10 +23,13 @@ export const configureAssortmentTextsModule = ({
   const makeSlug = async ({ slug, title, assortmentId }) => {
     const checkSlugIsUnique = async (newPotentialSlug: string) => {
       return (
-        (await AssortmentTexts.find({
-          assortmentId: { $ne: assortmentId },
-          slug: newPotentialSlug,
-        }).count()) === 0
+        (await AssortmentTexts.countDocuments(
+          {
+            assortmentId: { $ne: assortmentId },
+            slug: newPotentialSlug,
+          },
+          { limit: 1 },
+        )) === 0
       );
     };
 

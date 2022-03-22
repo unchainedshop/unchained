@@ -89,13 +89,14 @@ export const configureProductReviewsModule = async ({
     },
 
     count: async (query) => {
-      return ProductReviews.find(buildFindSelector(query)).count();
+      return ProductReviews.countDocuments(buildFindSelector(query));
     },
 
     reviewExists: async ({ productReviewId }) => {
-      const productReviewCount = await ProductReviews.find(
+      const productReviewCount = await ProductReviews.countDocuments(
         generateDbFilterById(productReviewId, { deleted: null }),
-      ).count();
+        { limit: 1 },
+      );
 
       return !!productReviewCount;
     },

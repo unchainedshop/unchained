@@ -44,14 +44,17 @@ export const configureCurrenciesModule = async ({
     },
 
     count: async (query) => {
-      const count = await Currencies.find(buildFindSelector(query)).count();
+      const count = await Currencies.countDocuments(buildFindSelector(query));
       return count;
     },
 
     currencyExists: async ({ currencyId }) => {
-      const currencyCount = await Currencies.find(generateDbFilterById(currencyId, { deleted: null }), {
-        limit: 1,
-      }).count();
+      const currencyCount = await Currencies.countDocuments(
+        generateDbFilterById(currencyId, { deleted: null }),
+        {
+          limit: 1,
+        },
+      );
       return !!currencyCount;
     },
 
