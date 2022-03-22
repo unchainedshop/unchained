@@ -25,7 +25,7 @@ export default async function mongodbCache(db: Db) {
       ) {
         return 0;
       }
-      const { result } = await AssortmentProductIdCache.updateOne(
+      const updateResult = await AssortmentProductIdCache.updateOne(
         { _id: assortmentId },
         {
           $set: {
@@ -34,8 +34,7 @@ export default async function mongodbCache(db: Db) {
         },
         { upsert: true },
       );
-      // TODO: Check mongodb migration
-      return result?.nModified;
+      return updateResult.modifiedCount;
     },
   };
 }

@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
   '@accounts/database-manager': '0.33.1',
   '@accounts/mongo': '0.34.0',
+  '@accounts/mongo-password': '0.32.3',
   '@accounts/password': '0.32.1',
   '@accounts/server': '0.33.1',
   '@graphql-modules/core': '0.7.17',
