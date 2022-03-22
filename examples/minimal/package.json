@@ -31,7 +31,7 @@
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages UI_ENDPOINT=http://localhost:4000 SERVER_NODE_OPTIONS='-r ./node_env.js' meteor --exclude-archs web.browser.legacy,web.cordova,web.browser debug -p 4010"
   },
   "dependencies": {
-    "@babel/runtime": "^7.17.2",
+    "@babel/runtime": "^7.17.8",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@unchainedshop/controlpanel": "^1.0.0-rc.10",
     "apollo-server-express": "^2.25.3",
@@ -42,28 +42,28 @@
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
     "cookie": "^0.4.2",
     "dotenv-extended": "^2.9.0",
-    "ethers": "^5.6.0",
+    "ethers": "^5.6.1",
     "graphql": "^15.8.0",
     "graphql-scalars": "^1.15.0",
     "graphql-upload": "^12.0.0",
     "isomorphic-unfetch": "^3.1.0",
     "locale": "^0.1.0",
-    "meteor-node-stubs": "^1.1.0",
+    "meteor-node-stubs": "^1.2.1",
     "moment": "^2.29.1",
     "mongodb": "^4.4.1",
     "postfinancecheckout": "^3.0.5",
     "simpl-schema": "^1.12.0",
-    "stripe": "^8.208.0",
+    "stripe": "^8.210.0",
     "tiny-secp256k1": "^1.1.6",
     "twilio": "^3.75.1",
     "uuid": "^8.3.2",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.5",
+    "@babel/core": "^7.17.8",
     "@babel/preset-env": "^7.16.11",
-    "@babel/register": "^7.17.0",
-    "@unchainedshop/types": "^1.0.0-rc.10",
+    "@babel/register": "^7.17.7",
+    "@unchainedshop/types": "^1.0.0-rc.10.1",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
@@ -71,7 +71,7 @@
     "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^3.4.1",
-    "prettier": "^2.5.1",
+    "prettier": "^2.6.0",
     "typescript": "^4.6.2"
   }
 }

@@ -36,7 +36,6 @@ export const disconnect = async () => {
 };
 
 export const connect = async () => {
-  if (connection && connection.isConnected) return;
   const connectionUri = (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
   connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,

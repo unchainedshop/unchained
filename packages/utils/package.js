@@ -15,7 +15,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('2.5');
+  api.versionsFrom('2.6.1');
   api.use('ecmascript');
   api.use('typescript@4.4.0');
 

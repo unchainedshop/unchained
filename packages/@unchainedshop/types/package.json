@@ -28,7 +28,7 @@
     "@types/locale": "^0.1.1",
     "@types/node": "^16.7.10",
     "apollo-server-express": "^3.6.1",
-    "mongodb": "^4.2.1",
+    "mongodb": "^4.4.1",
     "simpl-schema": "^1.12.0",
     "typescript": "^4.4.2",
     "winston": "3.3.3",

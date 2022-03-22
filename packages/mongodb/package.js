@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('2.5');
+  api.versionsFrom('2.6.1');
   api.use('mongo');
   api.use('ecmascript');
   api.use('typescript');

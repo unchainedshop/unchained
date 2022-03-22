@@ -468,8 +468,6 @@ describe('Worker Module', () => {
           `,
         });
 
-      console.log({ workQueueAfter });
-
       expect(
         workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
       ).toHaveLength(1);
