@@ -10,15 +10,9 @@ export enum FilterType {
   RANGE = 'RANGE',
 }
 
-export type FilterCache = {
-  allProductIds?: Array<string>;
-  productIds?: Array<string>;
-  compressed?: any;
-};
 
 export type Filter = {
   _id?: _ID;
-  _cache?: FilterCache;
   authorId: string;
   isActive?: boolean;
   key: string;
@@ -220,3 +214,16 @@ export type IFilterAdapter = IBaseAdapter & {
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   actions: (filterContext: FilterContext, requestContext: Context) => FilterAdapterActions;
 };
+
+/* Settings */
+
+export interface FiltersSettingsOptions {
+  setCachedProductIds?: (filterId: string, productIds: Array<string>, productIdsMap: Record<string, Array<string>>) => Promise<number>;
+  getCachedProductIds?: (filterId: string) => Promise<[Array<string>, Record<string, Array<string>>]>;
+}
+
+export interface FiltersSettings {
+  setCachedProductIds?: (filterId: string, productIds: Array<string>, productIdsMap: Record<string, Array<string>>) => Promise<number>;
+  getCachedProductIds?: (filterId: string) => Promise<[Array<string>, Record<string, Array<string>>]>;
+  configureSettings: (options?: FiltersSettingsOptions, db: Db) => void;
+}

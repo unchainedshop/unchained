@@ -1,19 +1,17 @@
 import { Context } from '@unchainedshop/types/api';
 import { Filter as DbFilter, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { Filter, FilterCache, FiltersModule } from '@unchainedshop/types/filters';
+import { Filter, FiltersModule, FiltersSettingsOptions } from '@unchainedshop/types/filters';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
-import util from 'util';
-import zlib from 'zlib';
 import { FilterType } from '../db/FilterType';
 import { FilterDirector } from '../director/FilterDirector';
-import { CleanedFilterCache } from '../search/search';
 import { FiltersCollection } from '../db/FiltersCollection';
 import { FiltersSchema } from '../db/FiltersSchema';
 import { configureFilterSearchModule } from './configureFilterSearchModule';
 import { configureFilterTextsModule } from './configureFilterTextsModule';
 import createFilterValueParser from '../filter-value-parsers';
+import { filtersSettings } from '../filters-settings';
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
@@ -27,8 +25,12 @@ const MAX_UNCOMPRESSED_FILTER_PRODUCTS = 1000;
 
 export const configureFiltersModule = async ({
   db,
-}: ModuleInput<Record<string, never>>): Promise<FiltersModule> => {
+  options: filtersOptions = {}
+}: ModuleInput<FiltersSettingsOptions>): Promise<FiltersModule> => {
   registerEvents(FILTER_EVENTS);
+
+  // Settings
+  await filtersSettings.configureSettings(filtersOptions, db);
 
   const { Filters, FilterTexts } = await FiltersCollection(db);
 
@@ -60,60 +62,22 @@ export const configureFiltersModule = async ({
   };
 
   const buildProductIdMap = async (filter: Filter, requestContext: Context) => {
-    const filterCache: CleanedFilterCache = {
-      allProductIds: await findProductIds(filter, {}, requestContext),
-      productIds: {},
-    };
-
-    if (filter.type === FilterType.SWITCH) {
-      filterCache.productIds = {
-        true: await findProductIds(filter, { value: true }, requestContext),
-        false: await findProductIds(filter, { value: false }, requestContext),
-      };
-    } else {
-      filterCache.productIds = await (filter.options || []).reduce(
-        async (accumulatorPromise, option) => {
-          const accumulator = await accumulatorPromise;
-          return {
-            ...accumulator,
-            [option]: await findProductIds(filter, { value: option }, requestContext),
-          };
-        },
-        Promise.resolve({}),
-      );
-    }
-
-    return filterCache;
-  };
-
-  const cache = async (filter: Filter) => {
-    let filterCache = filter._cache;
-
-    if (!filterCache) return null;
-
-    if ((filter as any)._isCacheTransformed) { // eslint-disable-line
-      return filterCache as any as CleanedFilterCache;
-    }
-    if (filterCache.compressed) {
-      const gunzip = util.promisify(zlib.gunzip);
-      const buffer = await gunzip(filterCache.compressed);
-      filterCache = JSON.parse(buffer.toString());
-    }
-
-    const cleanedCache: CleanedFilterCache = {
-      allProductIds: filterCache.allProductIds,
-      productIds: filterCache.productIds.reduce(
-        (accumulator, [key, value]) => ({
+    const allProductIds = await findProductIds(filter, {}, requestContext);
+    const productIdsMap = (filter.type === FilterType.SWITCH) ? {
+      true: await findProductIds(filter, { value: true }, requestContext),
+      false: await findProductIds(filter, { value: false }, requestContext),
+    } : (await (filter.options || []).reduce(
+      async (accumulatorPromise, option) => {
+        const accumulator = await accumulatorPromise;
+        return {
           ...accumulator,
-          [key]: value,
-        }),
-        {},
-      ),
-    };
-    (filter as any)._cache = cleanedCache; // eslint-disable-line
-    (filter as any)._isCacheTransformed = true; // eslint-disable-line
+          [option]: await findProductIds(filter, { value: option }, requestContext),
+        };
+      },
+      Promise.resolve({}),
+    ))
 
-    return cleanedCache;
+    return [allProductIds, productIdsMap];
   };
 
   const filterProductIds = async (
@@ -122,12 +86,12 @@ export const configureFiltersModule = async ({
     requestContext: Context,
   ) => {
     const getProductIds =
-      (!forceLiveCollection && (await cache(filter))) ||
+      (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
       (await buildProductIdMap(filter, requestContext));
 
-    const { allProductIds, productIds } = getProductIds;
-
+    const [allProductIds, productIds] = getProductIds;
     const parse = createFilterValueParser(filter.type);
+
     return parse(values, Object.keys(productIds)).reduce((accumulator, value) => {
       const additionalValues = value === undefined ? allProductIds : productIds[value];
       return [...accumulator, ...(additionalValues || [])];
@@ -139,27 +103,8 @@ export const configureFiltersModule = async ({
 
     log(`Filters: Rebuilding ${filter.key}`, { level: LogLevel.Verbose });
 
-    const { productIds, allProductIds } = await buildProductIdMap(filter, requestContext);
-    const filterCache: FilterCache = {
-      allProductIds,
-      productIds: Object.values(productIds).flatMap((ids) => ids),
-    };
-
-    const gzip = util.promisify(zlib.gzip);
-    const compressedCache =
-      allProductIds.length > MAX_UNCOMPRESSED_FILTER_PRODUCTS
-        ? await gzip(JSON.stringify(filterCache))
-        : null;
-
-    await Filters.updateOne(generateDbFilterById(filter._id), {
-      $set: {
-        _cache: compressedCache
-          ? {
-              compressed: compressedCache,
-            }
-          : filterCache,
-      },
-    });
+    const [productIds, productIdMap] = await buildProductIdMap(filter, requestContext);
+    await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
   };
 
   const invalidateCache = async (selector: DbFilter<Filter>, requestContext: Context) => {
@@ -168,7 +113,6 @@ export const configureFiltersModule = async ({
     });
 
     const filters = await Filters.find(selector || {}).toArray();
-
     await Promise.all(filters.map((filter) => invalidateProductIdCache(filter, requestContext)));
   };
 

@@ -341,3 +341,10 @@ export interface AssortmentsSettingsOptions {
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
 }
+
+export interface AssortmentsSettings {
+  zipTree?: (data: any) => any;
+  setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
+  getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
+  configureSettings: (options?: AssortmentsSettingsOptions) => void;
+}

@@ -46,10 +46,9 @@ const findLoadedOptions = async (
             return normalizedValues.indexOf(value) !== -1;
           },
         };
-      })
-      .filter(Boolean),
+      }),
   );
-  return mappedOptions;
+  return mappedOptions.filter(Boolean);
 };
 
 export const loadFilter = async (
@@ -106,13 +105,13 @@ export const loadFilter = async (
 
   const filterProductIdsForValues = values
     ? await filterProductIds(
-        filter,
-        {
-          values,
-          forceLiveCollection,
-        },
-        requestContext,
-      )
+      filter,
+      {
+        values,
+        forceLiveCollection,
+      },
+      requestContext,
+    )
     : filteredProductIds;
 
   const filteredProductIdSet = intersectSet(

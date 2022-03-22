@@ -1,11 +1,13 @@
 import { Db } from '@unchainedshop/types/common';
 import { buildDbIndexes } from 'meteor/unchained:utils';
-import { Filter, FilterText } from '@unchainedshop/types/filters';
+import { Filter, FilterText, FilterProductIdCacheRecord } from '@unchainedshop/types/filters';
 
 export const FiltersCollection = async (db: Db) => {
   const Filters = db.collection<Filter>('filters');
   const FilterTexts = db.collection<FilterText>('filter_texts');
-
+  const FilterProductIdCache = db.collection<FilterProductIdCacheRecord>(
+    'filter_productId_cache',
+  );
   // Filter Indexes
   await buildDbIndexes(Filters, [
     { index: { isActive: 1 } },
@@ -25,8 +27,14 @@ export const FiltersCollection = async (db: Db) => {
     },
   ]);
 
+  // FilterProductIdCache Indexes
+  await buildDbIndexes(FilterProductIdCache, [
+    { index: { productId: 1 } },
+  ]);
+
   return {
     Filters,
     FilterTexts,
+    FilterProductIdCache
   };
 };

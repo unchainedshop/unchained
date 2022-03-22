@@ -1,9 +1,10 @@
+import { FiltersSettings, FiltersSettingsOptions } from '@unchainedshop/types/filters';
 import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
 import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
-import { AssortmentsModule, AssortmentsSettingsOptions } from './assortments';
+import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
 import { BookmarkServices, BookmarksModule } from './bookmarks';
 import {
   Collection,
@@ -133,9 +134,9 @@ declare module 'meteor/unchained:utils' {
     value: string,
     error?:
       | {
-          message: string;
-          path?: string | undefined;
-        }
+        message: string;
+        path?: string | undefined;
+      }
       | undefined,
   ): void;
 
@@ -206,14 +207,14 @@ declare module 'meteor/unchained:utils' {
   const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
-  >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
+    >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
 
   const BasePricingDirector: <
     PricingContext extends BasePricingContext,
     AdapterPricingContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
     Adapter extends IPricingAdapter<AdapterPricingContext, Calculation, IPricingSheet<Calculation>>,
-  >(
+    >(
     directorName: string,
   ) => IBasePricingDirector<PricingContext, AdapterPricingContext, Calculation, Adapter>;
 
@@ -266,7 +267,7 @@ declare module 'meteor/unchained:core-assortments' {
     params: ModuleInput<AssortmentsSettingsOptions>,
   ): Promise<AssortmentsModule>;
 
-  const assortmentsSettings;
+  const assortmentsSettings: AssortmentsSettings;
 }
 
 declare module 'meteor/unchained:core-bookmarks' {
@@ -338,10 +339,11 @@ declare module 'meteor/unchained:core-files-next' {
 }
 
 declare module 'meteor/unchained:core-filters' {
-  function configureFiltersModule(params: ModuleInput<Record<string, never>>): Promise<FiltersModule>;
+  function configureFiltersModule(params: ModuleInput<FiltersSettingsOptions>): Promise<FiltersModule>;
+
+  const filtersSettings: FiltersSettings;
 
   const FilterType: typeof FilterTypeType;
-
   const FilterAdapter: IFilterAdapter;
   const FilterDirector: IFilterDirector;
 }
