@@ -414,7 +414,7 @@ describe('Filters', () => {
   });
 
   describe('Mutation.createFilter', () => {
-    it.only('create a new single choice filter', async () => {
+    it('create a new single choice filter', async () => {
       const { data: { createFilter } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createFilter($filter: CreateFilterInput!) {
