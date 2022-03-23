@@ -36,9 +36,10 @@ export const configurePaymentCredentialsModule = (
     markPreferred,
 
     credentialsExists: async ({ paymentCredentialsId }) => {
-      const credentialsCount = await PaymentCredentials.find(
+      const credentialsCount = await PaymentCredentials.countDocuments(
         generateDbFilterById(paymentCredentialsId),
-      ).count();
+        { limit: 1 },
+      );
       return !!credentialsCount;
     },
 

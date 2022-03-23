@@ -29,7 +29,7 @@ export const configureCountriesModule = async ({
 
   return {
     count: async (query) => {
-      const countryCount = await Countries.find(buildFindSelector(query)).count();
+      const countryCount = await Countries.countDocuments(buildFindSelector(query));
       return countryCount;
     },
 
@@ -47,9 +47,12 @@ export const configureCountriesModule = async ({
     },
 
     countryExists: async ({ countryId }) => {
-      const countryCount = await Countries.find(generateDbFilterById(countryId, { deleted: null }), {
-        limit: 1,
-      }).count();
+      const countryCount = await Countries.countDocuments(
+        generateDbFilterById(countryId, { deleted: null }),
+        {
+          limit: 1,
+        },
+      );
       return !!countryCount;
     },
 
@@ -64,7 +67,7 @@ export const configureCountriesModule = async ({
     },
 
     create: async (doc: Country, userId: string) => {
-      await Countries.removeOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
+      await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const countryId = await mutations.create(
         {
           ...doc,

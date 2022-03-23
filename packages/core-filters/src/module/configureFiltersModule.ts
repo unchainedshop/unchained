@@ -111,7 +111,7 @@ export const configureFiltersModule = async ({
     });
 
     const filters = await Filters.find(selector || {}).toArray();
-    await Promise.all(filters.map((filter) => invalidateProductIdCache(filter, requestContext)));
+    await Promise.all(filters.map(async (filter) => invalidateProductIdCache(filter, requestContext)));
   };
 
   const filterSearch = configureFilterSearchModule({
@@ -143,14 +143,14 @@ export const configureFiltersModule = async ({
     },
 
     count: async (query) => {
-      const count = await Filters.find(buildFindSelector(query)).count();
+      const count = await Filters.countDocuments(buildFindSelector(query));
       return count;
     },
 
     filterExists: async ({ filterId }) => {
-      const filterCount = await Filters.find(generateDbFilterById(filterId), {
+      const filterCount = await Filters.countDocuments(generateDbFilterById(filterId), {
         limit: 1,
-      }).count();
+      });
       return !!filterCount;
     },
 
@@ -187,7 +187,7 @@ export const configureFiltersModule = async ({
       }
 
       if (!options?.skipInvalidation) {
-        invalidateProductIdCache(filter, requestContext);
+        await invalidateProductIdCache(filter, requestContext);
       }
 
       emit('FILTER_CREATE', { filter });

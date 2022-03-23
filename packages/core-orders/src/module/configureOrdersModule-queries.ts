@@ -30,7 +30,7 @@ export const configureOrdersModuleQueries = ({
   return {
     // Queries
     count: async (query) => {
-      const orderCount = await Orders.find(buildFindSelector(query)).count();
+      const orderCount = await Orders.countDocuments(buildFindSelector(query));
       return orderCount;
     },
 
@@ -62,9 +62,9 @@ export const configureOrdersModuleQueries = ({
     },
 
     orderExists: async ({ orderId }) => {
-      const orderCount = await Orders.find(generateDbFilterById(orderId), {
+      const orderCount = await Orders.countDocuments(generateDbFilterById(orderId), {
         limit: 1,
-      }).count();
+      });
       return !!orderCount;
     },
   };

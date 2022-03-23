@@ -20,7 +20,7 @@
   },
   "scripts": {
     "lint": "eslint packages tests --fix --ext=js --ext=ts",
-    "pretest": "npm run lint --silent && npm run typecheck",
+    "pretest": "npm run lint --silent",
     "lint:ci": "eslint packages tests --ext=jsx --ext=js",
     "test": "jest --runInBand --detectOpenHandles --forceExit tests/*",
     "test:ci": "npm run test:integration && npm run test:packages",
@@ -32,9 +32,7 @@
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",
     "install": "run-p --print-label install:*",
     "install:minimal": "cd examples/minimal && npm install",
-    "install:controlpanel": "cd examples/controlpanel && npm install",
-    "typecheck": "tsc",
-    "typecheck:watch": "tsc --watch"
+    "install:controlpanel": "cd examples/controlpanel && npm install"
   },
   "devDependencies": {
     "@apollo/client": "^3.5.10",
@@ -60,9 +58,7 @@
     "eslint": "^8.11.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-import-resolver-meteor": "^0.4.0",
     "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^4.0.0",
     "ethers": "^5.6.1",
     "form-data": "^4.0.0",
@@ -82,8 +78,5 @@
     "ts-jest": "^27.0.4",
     "twilio": "^3.75.1",
     "typescript": "^4.6.2"
-  },
-  "eslintConfig": {
-    "extends": "@meteorjs/eslint-config-meteor"
   }
 }

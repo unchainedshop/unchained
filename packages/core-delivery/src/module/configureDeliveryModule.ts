@@ -58,7 +58,7 @@ export const configureDeliveryModule = async ({
   return {
     // Queries
     count: async (query) => {
-      const providerCount = await DeliveryProviders.find(buildFindSelector(query)).count();
+      const providerCount = await DeliveryProviders.countDocuments(buildFindSelector(query));
       return providerCount;
     },
 
@@ -75,10 +75,10 @@ export const configureDeliveryModule = async ({
     },
 
     providerExists: async ({ deliveryProviderId }) => {
-      const providerCount = await DeliveryProviders.find(
+      const providerCount = await DeliveryProviders.countDocuments(
         generateDbFilterById(deliveryProviderId, { deleted: null }),
         { limit: 1 },
-      ).count();
+      );
       return !!providerCount;
     },
 

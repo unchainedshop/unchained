@@ -39,10 +39,12 @@ describe('Worker Module', () => {
       expect(addWorkResult.data.addWork.type).toBe('HEARTBEAT');
       expect(addWorkResult.errors).toBeUndefined();
 
+      await wait(100);
+
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
-            workQueue(status: [NEW,SUCCESS]) {
+            workQueue(status: [SUCCESS]) {
               _id
               type
               status
@@ -467,8 +469,6 @@ describe('Worker Module', () => {
             }
           `,
         });
-
-      console.log({ workQueueAfter });
 
       expect(
         workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),

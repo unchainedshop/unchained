@@ -1,11 +1,11 @@
 import { Context } from '@unchainedshop/types/api';
 import {
-  Assortment as AssortmentType,
+  AssortmentPathLink as AssortmentPathLinkType,
   AssortmentLink as AssortmentLinkType,
   AssortmentText,
 } from '@unchainedshop/types/assortments';
 
-type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
+type HelperType<P, T> = (assortmentPathLink: AssortmentPathLinkType, params: P, context: Context) => T;
 
 export interface AssortmentPathLinkHelperTypes {
   link: (

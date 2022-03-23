@@ -18,6 +18,7 @@ export const createDbManager = (db) => {
     convertUserIdToMongoObjectId: false,
     convertSessionIdToMongoObjectId: false,
     idProvider,
+    sessionIdProvider: idProvider,
     dateProvider,
   });
 

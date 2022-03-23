@@ -17,7 +17,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('2.5');
+  api.versionsFrom('2.6.1');
 
   api.use('ecmascript');
   api.use('webapp');
@@ -30,5 +30,5 @@ Package.onUse((api) => {
   api.use('unchained:core@1.0.0-rc.10');
   api.use('unchained:roles@1.0.0-rc.10');
 
-  api.mainModule('api.ts', 'server');
+  api.mainModule('src/api-index.ts', 'server');
 });

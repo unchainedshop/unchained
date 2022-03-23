@@ -39,7 +39,7 @@ export const configureEnrollmentsModule = async ({
 
   const findNewEnrollmentNumber = async (enrollment: Enrollment, index = 0): Promise<string> => {
     const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
-    if ((await Enrollments.find({ enrollmentNumber: newHashID }, { limit: 1 }).count()) === 0) {
+    if ((await Enrollments.countDocuments({ enrollmentNumber: newHashID }, { limit: 1 })) === 0) {
       return newHashID;
     }
     return findNewEnrollmentNumber(enrollment, index + 1);
@@ -209,7 +209,7 @@ export const configureEnrollmentsModule = async ({
   return {
     // Queries
     count: async () => {
-      const enrollmentCount = await Enrollments.find({ deleted: null }).count();
+      const enrollmentCount = await Enrollments.countDocuments({ deleted: null });
       return enrollmentCount;
     },
 

@@ -21,7 +21,6 @@ export const configureFilterTextsModule = ({
   ) => {
     const { filterId, filterOptionValue } = params;
 
-    const _id = generateDbObjectId();
     const modifier: any = {
       $set: {
         updated: new Date(),
@@ -30,7 +29,7 @@ export const configureFilterTextsModule = ({
         subtitle: text.subtitle,
       },
       $setOnInsert: {
-        _id,
+        _id: generateDbObjectId(),
         created: new Date(),
         createdBy: userId,
         filterId,
@@ -49,7 +48,9 @@ export const configureFilterTextsModule = ({
       upsert: true,
     });
 
-    return FilterTexts.findOne(updateResult.upsertedCount === 1 ? generateDbFilterById(_id) : selector);
+    return FilterTexts.findOne(
+      updateResult.upsertedId ? generateDbFilterById(updateResult.upsertedId) : selector,
+    );
   };
 
   return {

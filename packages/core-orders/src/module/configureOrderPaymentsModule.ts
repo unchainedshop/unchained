@@ -90,7 +90,7 @@ export const configureOrderPaymentsModule = ({
     countOrderPaymentsByContextData: async ({ context }, options) => {
       const selector = buildFindByContextDataSelector(context);
 
-      return OrderPayments.count(selector, options);
+      return OrderPayments.countDocuments(selector, options);
     },
     // Transformations
     discounts: (orderPayment, { order, orderDiscount }, { modules }) => {

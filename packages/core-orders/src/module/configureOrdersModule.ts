@@ -48,7 +48,7 @@ export const configureOrdersModule = async ({
 
   const findNewOrderNumber = async (order: Order, index = 0) => {
     const newHashID = ordersSettings.orderNumberHashFn(order, index);
-    if ((await Orders.find({ orderNumber: newHashID }, { limit: 1 }).count()) === 0) {
+    if ((await Orders.countDocuments({ orderNumber: newHashID }, { limit: 1 })) === 0) {
       return newHashID;
     }
     return findNewOrderNumber(order, index + 1);

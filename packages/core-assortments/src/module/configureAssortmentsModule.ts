@@ -205,11 +205,13 @@ export const configureAssortmentsModule = async ({
       buildFindSelector({ includeInactive: true, includeLeaves: true, ...selector }),
     ).toArray();
 
-    assortments.forEach((assortment) => {
-      invalidateProductIdCache(assortment, {
-        skipUpstreamTraversal: options?.skipUpstreamTraversal ?? true,
-      });
-    });
+    await Promise.all(
+      assortments.map(async (assortment) => {
+        await invalidateProductIdCache(assortment, {
+          skipUpstreamTraversal: options?.skipUpstreamTraversal ?? true,
+        });
+      }),
+    );
   };
 
   /*
@@ -285,12 +287,12 @@ export const configureAssortmentsModule = async ({
       return findPreservingIds(Assortments)(selector, assortmentIds);
     },
 
-    count: async (query) => Assortments.find(buildFindSelector(query)).count(),
+    count: async (query) => Assortments.countDocuments(buildFindSelector(query)),
 
     assortmentExists: async ({ assortmentId }) => {
-      const assortmentCount = await Assortments.find(generateDbFilterById(assortmentId), {
+      const assortmentCount = await Assortments.countDocuments(generateDbFilterById(assortmentId), {
         limit: 1,
-      }).count();
+      });
       return !!assortmentCount;
     },
 
@@ -323,7 +325,7 @@ export const configureAssortmentsModule = async ({
     ) => {
       const assortmentId = await mutations.create(
         {
-          sequence: sequence || (await Assortments.find({}).count()) + 10,
+          sequence: sequence || (await Assortments.countDocuments({})) + 10,
           isBase,
           isActive,
           isRoot,
@@ -354,7 +356,7 @@ export const configureAssortmentsModule = async ({
 
       if (!options?.skipInvalidation) {
         const assortment = await Assortments.findOne({ _id: assortmentId });
-        invalidateProductIdCache(assortment, { skipUpstreamTraversal: false });
+        await invalidateProductIdCache(assortment, { skipUpstreamTraversal: false });
       }
       return assortmentId;
     },
@@ -378,7 +380,7 @@ export const configureAssortmentsModule = async ({
 
       if (deletedResult.deletedCount === 1 && !options?.skipInvalidation) {
         // Invalidate all assortments
-        invalidateCache({});
+        await invalidateCache({});
       }
 
       emit('ASSORTMENT_REMOVE', { assortmentId });

@@ -1,5 +1,19 @@
-import { PaymentProviderHelperTypes } from '@unchainedshop/types/payments';
+import { Context } from '@unchainedshop/types/api';
+import { PaymentError, PaymentProvider as PaymentProviderType } from '@unchainedshop/types/payments';
 
+export interface PaymentProviderHelperTypes {
+  interface: (
+    provider: PaymentProviderType,
+    _: never,
+    context: Context,
+  ) => {
+    _id: string;
+    label: string;
+    version: string;
+  };
+  isActive: (provider: PaymentProviderType, _: never, context: Context) => boolean;
+  configurationError: (provider: PaymentProviderType, _: never, context: Context) => PaymentError;
+}
 export const PaymentProvider: PaymentProviderHelperTypes = {
   interface(obj, _, { modules }) {
     const Interface = modules.payment.paymentProviders.findInterface(obj);

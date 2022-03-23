@@ -508,8 +508,6 @@ describe('Filters', () => {
         productsCount: 1,
         filters: [
           {
-            filteredProducts: 1,
-            filteredProductsCount: 1,
             definition: {
               key: 'tags',
             },

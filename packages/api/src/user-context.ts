@@ -1,17 +1,17 @@
 import { UnchainedAPI, UnchainedUserContext } from '@unchainedshop/types/api';
-import { Request } from 'express';
+import { IncomingMessage } from 'http';
 import { check } from 'meteor/check';
 
 export const getUserContext = async (
-  req: Request,
+  req: IncomingMessage & { cookies?: any },
   unchainedAPI: UnchainedAPI,
 ): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
-  if (req.cookies.meteor_login_token) {
+  if (req.cookies?.meteor_login_token) {
     loginToken = req.cookies.meteor_login_token;
   }
-  if (req.cookies.token) {
+  if (req.cookies?.token) {
     loginToken = req.cookies.token;
   }
   if (req.headers.authorization) {

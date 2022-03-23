@@ -9,7 +9,6 @@ describe('Initialisation', () => {
 
     assert.ok(config.modules)
     assert.ok(config.services)
-    console.log(config);
   })
 
   it('Check global actions', async () => {

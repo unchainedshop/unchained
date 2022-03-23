@@ -37,9 +37,9 @@ export const configureBookmarksModule = async ({
       } else if (userId) {
         selector = { userId };
       }
-      const bookmarkCount = await Bookmarks.find(selector, {
+      const bookmarkCount = await Bookmarks.countDocuments(selector, {
         limit: 1,
-      }).count();
+      });
 
       return !!bookmarkCount;
     },

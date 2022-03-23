@@ -23,10 +23,13 @@ export const configureProductTextsModule = ({
   const makeSlug = async ({ slug, title, productId }) => {
     const checkSlugIsUnique = async (newPotentialSlug: string) => {
       return (
-        (await ProductTexts.find({
-          productId: { $ne: productId },
-          slug: newPotentialSlug,
-        }).count()) === 0
+        (await ProductTexts.countDocuments(
+          {
+            productId: { $ne: productId },
+            slug: newPotentialSlug,
+          },
+          { limit: 1 },
+        )) === 0
       );
     };
 

@@ -48,10 +48,10 @@ export default async function createFilter(
   }
 
   logger.debug('create localized content for filter', content);
-  await upsertFilterContent({ content, filter }, { authorId }, unchainedAPI);
+  await upsertFilterContent({ content, filter }, unchainedAPI);
 
   logger.debug('create localized content for filter options', content);
-  await upsertFilterOptionContent({ options, filter }, { authorId }, unchainedAPI);
+  await upsertFilterOptionContent({ options, filter }, unchainedAPI);
 
   return {
     entity: 'FILTER',

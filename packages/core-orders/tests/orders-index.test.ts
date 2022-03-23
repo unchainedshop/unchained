@@ -43,7 +43,6 @@ describe('Test exports', () => {
     const deletedCount = await module
       .delete(orderId, 'Test-User-1')
       .catch((error) => {
-        console.log(error);
         return 0;
       });
     assert.equal(deletedCount, 1);

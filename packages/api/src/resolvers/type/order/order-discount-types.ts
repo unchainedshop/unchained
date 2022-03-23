@@ -20,7 +20,7 @@ interface OrderDiscountHelperTypes {
 
   discounted: HelperType<never, Promise<Array<OrderPricingDiscount>>>;
   order: HelperType<never, Promise<Order>>;
-  total: HelperType<never, OrderPrice>;
+  total: HelperType<never, Promise<OrderPrice>>;
 }
 
 export const OrderDiscount: OrderDiscountHelperTypes = {

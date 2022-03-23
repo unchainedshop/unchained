@@ -39,14 +39,17 @@ export const configureLanguagesModule = async ({
     },
 
     count: async (query) => {
-      const count = await Languages.find(buildFindSelector(query)).count();
+      const count = await Languages.countDocuments(buildFindSelector(query));
       return count;
     },
 
     languageExists: async ({ languageId }) => {
-      const languageCount = await Languages.find(generateDbFilterById(languageId, { deleted: null }), {
-        limit: 1,
-      }).count();
+      const languageCount = await Languages.countDocuments(
+        generateDbFilterById(languageId, { deleted: null }),
+        {
+          limit: 1,
+        },
+      );
       return !!languageCount;
     },
 
@@ -55,7 +58,7 @@ export const configureLanguagesModule = async ({
     },
 
     create: async (doc: Language, userId?: string) => {
-      await Languages.removeOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
+      await Languages.deleteOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
       const languageId = await mutations.create(
         {
           ...doc,

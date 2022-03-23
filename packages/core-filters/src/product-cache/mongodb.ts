@@ -18,12 +18,12 @@ const updateIfHashChanged = async (Collection, selector, doc) => {
           hash,
         },
         $setOnInsert: {
-          _id: Object.values(selector).join(':'),
+          _id,
         },
       },
       { upsert: true },
     );
-  } catch (e) {} // eslint-disable-line
+  } catch (e) { } // eslint-disable-line
   return _id;
 };
 
@@ -55,7 +55,7 @@ export default async function mongodbCache(db: Db) {
         { productIds },
       );
       const cacheIds = await Promise.all(
-        Object.entries(productIdsMap).map(([filterOptionValue, optionProductIds]) =>
+        Object.entries(productIdsMap).map(async ([filterOptionValue, optionProductIds]) =>
           updateIfHashChanged(
             FilterProductIdCache,
             { filterId, filterOptionValue },
@@ -64,7 +64,7 @@ export default async function mongodbCache(db: Db) {
         ),
       );
       const allCacheRecords = cacheIds.concat([baseCacheId]).filter(Boolean);
-      await FilterProductIdCache.deleteMany({ filterId, _id: { $nin: allCacheRecords } });
+      // await FilterProductIdCache.deleteMany({ filterId, _id: { $nin: allCacheRecords } });
       return allCacheRecords.length;
     },
   } as {

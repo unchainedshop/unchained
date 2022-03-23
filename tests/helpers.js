@@ -36,7 +36,6 @@ export const disconnect = async () => {
 };
 
 export const connect = async () => {
-  if (connection && connection.isConnected) return;
   const connectionUri = (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
   connection = await MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
@@ -122,7 +121,7 @@ export const uploadFormData = async ({ token = '', body }) => {
     body,
   })
     .then((response) => response.json())
-    .catch((e) => console.log(e)); // eslint-disable-line
+    .catch((e) => console.warn(e)); // eslint-disable-line
 };
 
 export const putFile = async (file, url) => {

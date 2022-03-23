@@ -84,7 +84,6 @@ describe('Test exports', () => {
     const deletedCount = await context.modules.enrollments
       .delete(enrollmentId, 'Test-User-1')
       .catch((error) => {
-        console.log(error);
         return 0;
       });
     assert.equal(deletedCount, 1);

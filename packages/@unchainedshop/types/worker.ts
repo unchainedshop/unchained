@@ -40,7 +40,7 @@ export interface WorkData {
   scheduled?: Date;
 }
 
-interface WorkResult<Result> {
+export interface WorkResult<Result> {
   success: boolean;
   result?: Result;
   error?: any;

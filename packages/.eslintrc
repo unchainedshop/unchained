@@ -35,7 +35,6 @@
       {
         "allow": [
           "_id",
-          "_cache",
           "__MONGO_URI__",
           "__MONGO_DB_NAME__",
           "__SUBPROCESS_METEOR__",

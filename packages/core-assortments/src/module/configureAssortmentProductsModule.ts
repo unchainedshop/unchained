@@ -115,7 +115,7 @@ export const configureAssortmentProductsModule = ({
       emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
       if (!options.skipInvalidation) {
-        invalidateCache(
+        await invalidateCache(
           { assortmentIds: [assortmentProduct.assortmentId] },
           { skipUpstreamTraversal: false },
         );
@@ -140,7 +140,7 @@ export const configureAssortmentProductsModule = ({
       });
 
       if (!options.skipInvalidation) {
-        invalidateCache(
+        await invalidateCache(
           { assortmentIds: [assortmentProduct.assortmentId] },
           {
             skipUpstreamTraversal: false,
@@ -164,7 +164,7 @@ export const configureAssortmentProductsModule = ({
       });
 
       if (!options.skipInvalidation && assortmentProducts.length) {
-        invalidateCache(
+        await invalidateCache(
           { assortmentIds: assortmentProducts.map((product) => product.assortmentId) },
           {
             skipUpstreamTraversal: false,
@@ -189,7 +189,7 @@ export const configureAssortmentProductsModule = ({
 
       const assortmentProduct = await AssortmentProducts.findOne(selector, {});
       if (!options.skipInvalidation) {
-        invalidateCache(
+        await invalidateCache(
           { assortmentIds: [assortmentProduct.assortmentId] },
           {
             skipUpstreamTraversal: false,
@@ -218,7 +218,7 @@ export const configureAssortmentProductsModule = ({
       }).toArray();
 
       if (!options.skipInvalidation && assortmentProducts.length) {
-        invalidateCache(
+        await invalidateCache(
           { assortmentIds: assortmentProducts.map((product) => product.assortmentId) },
           {
             skipUpstreamTraversal: false,

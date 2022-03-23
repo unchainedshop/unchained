@@ -44,7 +44,7 @@ export const configureQuotationsModule = async ({
     // let i = 0;
     // while (!quotationNumber) {
     const newHashID = quotationsSettings.quotationNumberHashFn(quotation, index);
-    if ((await Quotations.find({ quotationNumber: newHashID }, { limit: 1 }).count()) === 0) {
+    if ((await Quotations.countDocuments({ quotationNumber: newHashID }, { limit: 1 })) === 0) {
       return newHashID;
     }
     return findNewQuotationNumber(quotation, index + 1);
@@ -220,7 +220,7 @@ export const configureQuotationsModule = async ({
   return {
     // Queries
     count: async (query) => {
-      const quotationCount = await Quotations.find(buildFindSelector(query)).count();
+      const quotationCount = await Quotations.countDocuments(buildFindSelector(query));
       return quotationCount;
     },
 
