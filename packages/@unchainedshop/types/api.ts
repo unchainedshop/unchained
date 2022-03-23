@@ -1,4 +1,5 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
+import { GraphQLOptions } from 'apollo-server-express';
 import { Db, Locale, MigrationRepository } from './common';
 import { AccountsSettingsOptions } from './accounts';
 import { AssortmentsSettingsOptions } from './assortments';
@@ -11,7 +12,6 @@ import { QuotationsSettingsOptions } from './quotations';
 import { Services } from './services';
 import { User } from './user';
 import { Logger } from './logs';
-import { GraphQLOptions } from "apollo-server-express";
 
 export declare type Root = Record<string, unknown>;
 export interface UnchainedUserContext {
@@ -65,7 +65,10 @@ export type UnchainedServerOptions = {
   corsOrigins: any;
   introspection: boolean;
   playground: boolean;
-} & Omit<GraphQLOptions<any, any>, 'context' | 'uploads' | 'formatError' | 'typeDefs' | 'resolvers' | 'cors' | 'schema' | 'schemaHash'>;
+} & Omit<
+  GraphQLOptions<any, any>,
+  'context' | 'uploads' | 'formatError' | 'typeDefs' | 'resolvers' | 'cors' | 'schema' | 'schemaHash'
+>;
 
 export interface Migration {
   id: number;

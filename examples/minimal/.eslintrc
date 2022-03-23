@@ -1,10 +1,7 @@
 {
   "parser": "babel-eslint",
   "plugins": ["prettier"],
-  "extends": [
-    "airbnb-base",
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["airbnb-base", "plugin:prettier/recommended"],
   "root": true,
   "env": {
     "node": true,
@@ -30,6 +27,7 @@
         "proseWrap": "always"
       }
     ],
+    "import/extensions": [0],
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
     "import/no-unresolved": ["error", { "ignore": ["meteor/"] }]
   }

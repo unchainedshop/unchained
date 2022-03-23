@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-worker',
-  version: '1.0.0-rc.10',
+  version: '1.0.0-rc.11',
   summary: 'Unchained Engine Core: Worker',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -16,8 +16,8 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.10');
-  api.use('unchained:logger@1.0.0-rc.10');
+  api.use('unchained:utils@1.0.0-rc.11');
+  api.use('unchained:logger@1.0.0-rc.11');
 
   api.mainModule('src/worker-index.ts', 'server');
 });
