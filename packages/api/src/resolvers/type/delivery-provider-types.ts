@@ -1,6 +1,38 @@
-import { DeliveryProviderHelperTypes } from '@unchainedshop/types/delivery';
+import { Context } from '@unchainedshop/types/api';
+import { DeliveryError, DeliveryProvider as DeliveryProviderType } from '@unchainedshop/types/delivery';
 import crypto from 'crypto';
 import { DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
+
+type HelperType<P, T> = (provider: DeliveryProviderType, params: P, context: Context) => T;
+
+export interface DeliveryProviderHelperTypes {
+  interface: HelperType<
+    never,
+    {
+      _id: string;
+      label: string;
+      version: string;
+    }
+  >;
+  isActive: HelperType<void, boolean>;
+  configurationError: HelperType<never, DeliveryError>;
+  simulatedPrice: HelperType<
+    {
+      currency?: string;
+      orderId: string;
+      useNetPrice?: boolean;
+      context: any;
+    },
+    Promise<{
+      _id: string;
+      amount: number;
+      currencyCode: string;
+      countryCode: string;
+      isTaxable: boolean;
+      isNetPrice: boolean;
+    }>
+  >;
+}
 
 export const DeliveryProvider: DeliveryProviderHelperTypes = {
   interface(obj, _, { modules }) {
@@ -20,9 +52,9 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     return modules.delivery.isActive(deliveryProvider, requestContext);
   },
 
-  configurationError(obj, _, requestContext) {
+  configurationError(deliveryProvider, _, requestContext) {
     const { modules } = requestContext;
-    return modules.delivery.configurationError(obj, requestContext);
+    return modules.delivery.configurationError(deliveryProvider, requestContext);
   },
 
   async simulatedPrice(
@@ -51,7 +83,6 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
       {
         country,
         currency,
-        quantity: 1,
         provider: deliveryProvider,
         order,
         orderDelivery,

@@ -2,7 +2,7 @@ import { GraphQLUpload } from 'graphql-upload';
 import { JSONResolver, TimestampResolver, DateTimeResolver, DateResolver } from 'graphql-scalars';
 import Query from './queries';
 import Mutation from './mutations';
-import Types from './types';
+import Types from './type';
 
 export default {
   ...Types,
@@ -13,4 +13,4 @@ export default {
   DateTime: DateTimeResolver,
   Date: DateResolver,
   Timestamp: TimestampResolver,
-};
+} as unknown as Record<string, any>;

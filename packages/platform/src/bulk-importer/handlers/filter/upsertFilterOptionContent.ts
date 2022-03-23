@@ -1,11 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { FilterText } from '@unchainedshop/types/filters';
 
-export default async function upsertFilterOptionContent(
-  { options, filter },
-  { authorId },
-  unchainedAPI: Context,
-) {
+export default async function upsertFilterOptionContent({ options, filter }, unchainedAPI: Context) {
   return Promise.all(
     (options || []).map(async ({ content: optionContent, value: optionValue }) => {
       await Promise.all(
@@ -15,7 +11,6 @@ export default async function upsertFilterOptionContent(
             locale,
             {
               ...localizedData,
-              authorId,
             },
             unchainedAPI.userId,
           );

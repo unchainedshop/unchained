@@ -1,6 +1,6 @@
 import { FiltersSettings, FiltersSettingsOptions } from '@unchainedshop/types/filters';
 import { ApolloServer } from 'apollo-server-express';
-import { Request } from 'express';
+import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
 import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
@@ -111,6 +111,7 @@ import {
   QuotationsSettingsOptions,
   QuotationStatus as QuotationStatusType,
 } from './quotations';
+import { RolesInterface, RoleInterface } from './roles';
 import { UserServices, UsersModule } from './user';
 import {
   IWarehousingAdapter,
@@ -130,6 +131,7 @@ import {
 } from './worker';
 
 declare module 'meteor/unchained:utils' {
+  function randomValueHex(len: number): string;
   function checkId(
     value: string,
     error?:
@@ -175,7 +177,7 @@ declare module 'meteor/unchained:utils' {
     headerCountry: string | string[],
     countries: Array<Country>,
   ): string;
-  function resolveUserRemoteAddress(req: Request): {
+  function resolveUserRemoteAddress(req: IncomingMessage): {
     remoteAddress: string;
     remotePort: string;
   };
@@ -478,4 +480,12 @@ declare module 'meteor/unchained:api' {
 
 declare module 'meteor/unchained:mongodb' {
   function initDb(): Promise<Db>;
+}
+
+declare module 'meteor/unchained:roles' {
+  const Roles: RolesInterface;
+  const Role: RoleInterfaceFactory;
+
+  function isFunction(func: () => any): boolean;
+  function has(obj: { [key: string]: any }, key: string): boolean;
 }

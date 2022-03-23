@@ -1,3 +1,4 @@
+import { IncomingMessage, OutgoingMessage } from 'http';
 import { Db, Locale, MigrationRepository } from './common';
 import { AccountsSettingsOptions } from './accounts';
 import { AssortmentsSettingsOptions } from './assortments';
@@ -10,9 +11,9 @@ import { QuotationsSettingsOptions } from './quotations';
 import { Services } from './services';
 import { User } from './user';
 import { Logger } from './logs';
+import { GraphQLOptions } from "apollo-server-express";
 
 export declare type Root = Record<string, unknown>;
-
 export interface UnchainedUserContext {
   loginToken?: string;
   userId?: string;
@@ -23,6 +24,11 @@ export interface UnchainedAPI {
   modules: Modules;
   services: Services;
   version?: string;
+}
+
+export interface UnchainedHTTPServerContext {
+  req: IncomingMessage;
+  res: OutgoingMessage;
 }
 
 export interface UnchainedLocaleContext {
@@ -46,18 +52,20 @@ export type Context = UnchainedAPI &
   UnchainedUserContext &
   UnchainedLocaleContext &
   UnchainedLoaders &
-  UnchainedBulkImport;
+  UnchainedBulkImport &
+  UnchainedHTTPServerContext;
 
-export interface UnchainedServerOptions {
+export type UnchainedServerOptions = {
   unchainedAPI: UnchainedAPI;
   bulkImporter?: any;
   rolesOptions?: any;
   typeDefs: Array<string>;
+  resolvers: Record<string, any>;
   context?: any;
-  introspection?: boolean;
-  playground?: boolean;
-  tracing?: boolean;
-}
+  corsOrigins: any;
+  introspection: boolean;
+  playground: boolean;
+} & Omit<GraphQLOptions<any, any>, 'context' | 'uploads' | 'formatError' | 'typeDefs' | 'resolvers' | 'cors' | 'schema' | 'schemaHash'>;
 
 export interface Migration {
   id: number;

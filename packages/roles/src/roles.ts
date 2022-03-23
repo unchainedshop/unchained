@@ -1,40 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import clone from 'lodash.clone';
-import { Context } from '@unchainedshop/types/api';
+import { RoleInterface, RolesInterface } from '@unchainedshop/types/roles';
 import { has } from './utils/has';
 import { isFunction } from './utils/isFunction';
-
-interface RoleInterface {
-  name: string;
-  allowRules: {
-    [name: string]: any;
-  };
-  helpers: Record<string, unknown>;
-}
-
-type CheckPermissionArgs = [obj?: any, params?: any];
-interface RolesInterface {
-  roles: {
-    [name: string]: RoleInterface;
-  };
-  actions: string[];
-  helpers: string[];
-  registerAction(name: string): void;
-  registerHelper(name: string): void;
-  getUserRoles(context: Context, roles: Array<string>, includeSpecial: boolean): string[];
-  allow(
-    context: Context,
-    roles: Array<string>,
-    action: string,
-    args: CheckPermissionArgs,
-  ): Promise<boolean>;
-  userHasPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<boolean>;
-  addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
-  checkPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<void | never>;
-  adminRole?: RoleInterface;
-  loggedInRole?: RoleInterface;
-  allRole?: RoleInterface;
-}
 
 export const Roles: RolesInterface = {
   roles: {},

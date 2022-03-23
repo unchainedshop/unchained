@@ -242,19 +242,6 @@ export interface PaymentProvidersSettingsOptions {
  * API Types
  */
 
-export interface PaymentProviderHelperTypes {
-  interface: (
-    provider: PaymentProvider,
-    _: never,
-    context: Context,
-  ) => {
-    _id: string;
-    label: string;
-    version: string;
-  };
-  configurationError: (provider: PaymentProvider, _: never, context: Context) => PaymentError;
-}
-
 export interface PaymentCredentialsHelperTypes {
   user(credentials: PaymentCredentials, _: never, context: Context): Promise<User>;
   paymentProvider(credentials: PaymentCredentials, _: never, context: Context): Promise<PaymentProvider>;

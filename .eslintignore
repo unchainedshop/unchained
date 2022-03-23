@@ -3,6 +3,3 @@
 **/*.test.js
 **/*.tests.ts
 **/*.test.ts
-
-packages/core-mongodb
-packages/core-mongodb-utils

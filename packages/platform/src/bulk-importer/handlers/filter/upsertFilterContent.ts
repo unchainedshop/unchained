@@ -1,11 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { FilterText } from '@unchainedshop/types/filters';
 
-export default async function upsertFilterContent(
-  { content, filter },
-  { authorId },
-  unchainedAPI: Context,
-) {
+export default async function upsertFilterContent({ content, filter }, unchainedAPI: Context) {
   return Promise.all(
     Object.entries(content).map(async ([locale, localizedData]: [string, FilterText]) => {
       return unchainedAPI.modules.filters.texts.upsertLocalizedText(
@@ -13,7 +9,6 @@ export default async function upsertFilterContent(
         locale,
         {
           ...localizedData,
-          authorId,
         },
         unchainedAPI.userId,
       );

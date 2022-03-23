@@ -1,28 +1,8 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-   "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".", // This must be specified if "paths" is.
-    "declaration": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "incremental": true,
-    "lib": ["esnext"],
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noErrorTruncation": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": false,
-    "outDir": "lib",
-    "paths": {
-      "meteor/unchained:*": ["node_modules/@unchainedshop/types/index.d.ts"]
-    },
-    "preserveWatchOutput": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "target": "esnext",
+    "noEmit": true,
     "types": ["node", "express"]
   },
-  "include": ["loaders", "resolvers", "roles", "schema"]
+  "include": ["src"]
 }

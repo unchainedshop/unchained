@@ -1,3 +1,4 @@
+import { CheckPermissionArgs } from '@unchainedshop/types/roles';
 import { checkUserHasPermission } from './roles';
 import { NoPermissionError, PermissionSystemError } from './errors';
 
@@ -7,7 +8,7 @@ const defaultOptions = {
 };
 
 const emptyObject = {};
-const emptyArray = [];
+const emptyArray: CheckPermissionArgs = [];
 
 const ensureActionExists = (action, userOptions) => {
   if (!action) {
@@ -24,7 +25,7 @@ const ensureIsFunction = (fn, action, options, key) => {
   }
 };
 
-const checkAction = async (context, action, args = emptyArray, options = emptyObject) => {
+const checkAction = async (context, action, args = emptyArray, options: any = emptyObject) => {
   const { key } = options || emptyObject;
 
   const hasPermission = await checkUserHasPermission(context, action, args);

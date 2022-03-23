@@ -1,5 +1,5 @@
 import { UnchainedAPI, UnchainedLocaleContext } from '@unchainedshop/types/api';
-import { Request } from 'express';
+import { IncomingMessage } from 'http';
 import { Locales } from 'locale';
 import LRU from 'lru-cache';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -20,7 +20,7 @@ const localeContextCache = new LRU({
 });
 
 export const getLocaleContext = async (
-  req: Request,
+  req: IncomingMessage,
   unchainedAPI: UnchainedAPI,
 ): Promise<UnchainedLocaleContext> => {
   const languages = await unchainedAPI.modules.languages.findLanguages(

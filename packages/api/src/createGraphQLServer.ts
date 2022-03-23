@@ -48,13 +48,7 @@ export default (options) => {
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
-    async context({ req, res }) {
-      return {
-        req,
-        res,
-        ...req.unchainedContext,
-      };
-    },
+    context,
     uploads: false,
     formatError: (error) => {
       logGraphQLServerError(error);
@@ -106,10 +100,6 @@ export default (options) => {
   });
 
   WebApp.connectHandlers.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
-  WebApp.connectHandlers.use(async (req, res, ...rest) => {
-    const resolvedContext = await context({ req, res });
-    req.unchainedContext = resolvedContext;
-    middleware(req, res, ...rest);
-  });
+  WebApp.connectHandlers.use(middleware);
   return server;
 };

@@ -103,7 +103,7 @@ const actions = [
 }, {});
 
 const configureRoles = ({ additionalRoles = {} }) => {
-  Object.entries(additionalRoles).forEach(([key, val]) => {
+  Object.entries(additionalRoles).forEach(([key, val]: [string, any]) => {
     allRoles[key] = new Role(key);
     val(allRoles[key], actions);
   });

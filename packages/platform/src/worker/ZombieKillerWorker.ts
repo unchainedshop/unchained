@@ -12,10 +12,9 @@ const mapId = (a: any) => a._id;
 const ZombieKillerWorker: IWorkerAdapter<
   never,
   {
-    deletedAssortmentFileCount: number;
-    deletedAssortmentMediaCount: number;
-    deletedProductFileCount: number;
     deletedProductMediaCount: number;
+    deletedAssortmentMediaCount: number;
+    deletedFilesCount: number;
   }
 > = {
   ...BaseAdapter,

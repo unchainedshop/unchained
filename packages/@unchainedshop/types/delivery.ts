@@ -109,7 +109,7 @@ export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
  * Module
  */
 
-interface DeliveryInterface {
+export interface DeliveryInterface {
   _id: string;
   label: string;
   versin: string;
@@ -138,6 +138,9 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   findInterfaces: (params: { type: DeliveryProviderType }) => Array<DeliveryInterface>;
   findSupported: (params: { order: Order }, requestContext: Context) => Promise<Array<DeliveryProvider>>;
 
+  isActive: (deliveryProvider: DeliveryProvider, requestContext: Context) => boolean;
+  configurationError: (deliveryProvider: DeliveryProvider, requestContext: Context) => DeliveryError;
+
   isAutoReleaseAllowed: (deliveryProvider: DeliveryProvider, requestContext: Context) => boolean;
   calculate: (
     pricingContext: DeliveryPricingContext,
@@ -149,35 +152,6 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
     requestContext: Context,
   ) => Promise<any>;
 };
-
-type HelperType<P, T> = (provider: DeliveryProvider, params: P, context: Context) => T;
-
-export interface DeliveryProviderHelperTypes {
-  interface: HelperType<
-    never,
-    {
-      _id: string;
-      label: string;
-      version: string;
-    }
-  >;
-  simulatedPrice: HelperType<
-    {
-      currency?: string;
-      orderId: string;
-      useNetPrice?: boolean;
-      context: any;
-    },
-    Promise<{
-      _id: string;
-      amount: number;
-      currencyCode: string;
-      countryCode: string;
-      isTaxable: boolean;
-      isNetPrice: boolean;
-    }>
-  >;
-}
 
 /*
  * Settings

@@ -1,8 +1,8 @@
 import { UnchainedAPI, UnchainedLoaders } from '@unchainedshop/types/api';
 import DataLoader from 'dataloader';
-import { Request } from 'express';
+import { IncomingMessage } from 'http';
 
-export default async (req: Request, unchainedAPI: UnchainedAPI): Promise<UnchainedLoaders> => {
+export default async (req: IncomingMessage, unchainedAPI: UnchainedAPI): Promise<UnchainedLoaders> => {
   return {
     bookmarksByQueryLoader: new DataLoader(async (queries) => {
       const results = await unchainedAPI.modules.bookmarks.find({

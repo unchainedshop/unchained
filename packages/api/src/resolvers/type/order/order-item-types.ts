@@ -4,6 +4,7 @@ import { Order } from '@unchainedshop/types/orders';
 import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/types/orders.positions';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 import { Product } from '@unchainedshop/types/products';
+import { Quotation } from '@unchainedshop/types/quotations';
 import { WarehousingProvider } from '@unchainedshop/types/warehousing';
 import crypto from 'crypto';
 
@@ -26,6 +27,7 @@ interface OrderItemHelperTypes {
   order: HelperType<never, Promise<Order>>;
   originalProduct: HelperType<never, Promise<Product>>;
   product: HelperType<never, Promise<Product>>;
+  quotation: HelperType<never, Promise<Quotation>>;
   total: HelperType<{ category: string }, Promise<OrderPrice>>;
   unitPrice: HelperType<never, Promise<OrderPrice>>;
 }

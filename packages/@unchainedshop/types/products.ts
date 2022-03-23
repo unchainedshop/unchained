@@ -15,7 +15,7 @@ import {
   ProductPricingContext,
 } from './products.pricing';
 import { ProductReview, ProductReviewsModule } from './products.reviews';
-import { ProductVariationsModule } from './products.variations';
+import { ProductVariationsModule, ProductVariation } from './products.variations';
 import { WarehousingProvider } from './warehousing';
 
 export enum ProductStatus {
@@ -439,6 +439,7 @@ export interface ConfigurableProductHelperTypes extends ProductHelperTypes {
     { vectors: Array<ProductConfiguration>; includeInactive: boolean },
     Promise<Array<Product>>
   >;
+  variations: HelperType<{ limit: number; offset: number }, Promise<Array<ProductVariation>>>;
   catalogPriceRange: HelperType<
     {
       currency?: string;

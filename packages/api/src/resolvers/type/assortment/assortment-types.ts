@@ -33,16 +33,6 @@ export interface AssortmentHelperTypes {
 
   productAssignments: HelperType<never, Promise<Array<AssortmentProduct>>>;
 
-  search: HelperType<
-    {
-      queryString?: string;
-      filterQuery?: SearchFilterQuery;
-      includeInactive: boolean;
-      ignoreChildAssortments: boolean;
-    },
-    Promise<SearchProducts>
-  >;
-
   searchProducts: HelperType<
     {
       queryString?: string;
