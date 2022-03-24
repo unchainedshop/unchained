@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:utils',
-  version: '1.0.0-rc.11',
+  version: '1.0.0-rc.12',
   summary: 'Unchained Engine: Helper Functions',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -19,7 +19,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript@4.4.0');
 
-  api.use('unchained:logger@1.0.0-rc.11');
+  api.use('unchained:logger@1.0.0-rc.12');
 
   api.mainModule('src/utils-index.js', 'server');
 });
@@ -29,7 +29,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript@4.4.0');
 
-  api.use('unchained:utils@1.0.0-rc.11');
+  api.use('unchained:utils@1.0.0-rc.12');
 
   api.mainModule('tests/utils-index.test.js');
 });

@@ -203,14 +203,13 @@ export const configureOrderModuleProcessing = ({
         requestContext,
       );
 
-      updatedOrder =
-        (await modules.orders.ensureCartForUser(
-          {
-            user,
-            countryCode: locale.country,
-          },
-          requestContext,
-        )) || updatedOrder;
+      await modules.orders.ensureCartForUser(
+        {
+          user,
+          countryCode: locale.country,
+        },
+        requestContext,
+      );
 
       return updatedOrder;
     },
