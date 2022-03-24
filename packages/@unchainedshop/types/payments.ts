@@ -218,6 +218,14 @@ export type ChargeService = (
   context: Context,
 ) => Promise<any>;
 
+export type CancelService = (
+  params: {
+    paymentContext: PaymentContext;
+    paymentProviderId: string;
+  },
+  context: Context,
+) => Promise<any>;
+
 export type RegisterPaymentCredentialsService = (
   paymentProviderId: string,
   paymentContext: PaymentContext,
@@ -226,6 +234,7 @@ export type RegisterPaymentCredentialsService = (
 
 export interface PaymentServices {
   charge: ChargeService;
+  cancel: CancelService;
   registerPaymentCredentials: RegisterPaymentCredentialsService;
 }
 
