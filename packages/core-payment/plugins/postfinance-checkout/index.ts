@@ -141,8 +141,8 @@ const PostfinanceCheckout: IPaymentAdapter = {
         return orderIsPaid(transaction, modules.orders);
       },
 
-      cancel: async (transactionContext: any = {}) => {
-        const { refund = false } = transactionContext;
+      cancel: async () => {
+        const refund = adapter.getCompletionMode() === CompletionModes.Immediate;
         const { orderPayment } = params.paymentContext;
         const order = await modules.orders.findOrder({
           orderId: orderPayment.orderId,
@@ -153,39 +153,11 @@ const PostfinanceCheckout: IPaymentAdapter = {
         if (!transactionId) {
           return false;
         }
-        const voidRes = await voidTransaction(transactionId);
-        if (voidRes) {
-          const info = `PostFinance Transaction ${transactionId} voided`;
-          await modules.orders.updateStatus(
-            order._id,
-            { status: OrderStatus.OPEN, info },
-            params.context,
-          );
-          await modules.orders.payments.updateStatus(
-            orderPayment._id,
-            { status: OrderPaymentStatus.REFUNDED, info },
-            params.context.user._id,
-          );
-          return true;
-        }
-        if (refund) {
-          const refundRes = await refundTransaction(transactionId, order._id, totalAmount / 100);
-          if (refundRes) {
-            const info = `PostFinance Transaction ${transactionId} refunded`;
-            await modules.orders.updateStatus(
-              order._id,
-              { status: OrderStatus.OPEN, info },
-              params.context,
-            );
-            await modules.orders.payments.updateStatus(
-              orderPayment._id,
-              { status: OrderPaymentStatus.REFUNDED, info },
-              params.context.user._id,
-            );
-            return true;
-          }
-        }
-        return false;
+        // For immediate settlements, try refunding. For deferred settlements, void the transaction.
+        return (
+          (refund && refundTransaction(transactionId, order._id, totalAmount / 100)) ||
+          voidTransaction(transactionId)
+        );
       },
 
       confirm: async () => {
