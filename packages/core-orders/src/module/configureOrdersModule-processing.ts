@@ -239,7 +239,9 @@ export const configureOrderModuleProcessing = ({
         },
         requestContext,
       );
-      // Force sending the message when updated order has not changes
+
+      // Force sending the message when updated order has not changed,
+      // otherwise it gets triggered through processOrder
       if (updatedOrder.status === OrderStatus.CONFIRMED) {
         await modules.orders.sendOrderConfirmationToCustomer(updatedOrder, params, requestContext);
       }
@@ -272,6 +274,8 @@ export const configureOrderModuleProcessing = ({
         requestContext,
       );
 
+      // Force sending the message when updated order has not changed,
+      // otherwise it gets triggered through processOrder
       if (updatedOrder.status === OrderStatus.REJECTED) {
         await modules.orders.sendOrderRejectionToCustomer(updatedOrder, params, requestContext);
       }

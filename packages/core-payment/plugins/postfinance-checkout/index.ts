@@ -144,7 +144,6 @@ const PostfinanceCheckout: IPaymentAdapter = {
       cancel: async () => {
         const refund = adapter.getCompletionMode() === CompletionModes.Immediate;
         const { orderPayment } = params.paymentContext;
-        if (!orderPayment) return false;
         const order = await modules.orders.findOrder({
           orderId: orderPayment.orderId,
         });
