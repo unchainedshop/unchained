@@ -1,11 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
+import { SetupCartsOptions } from '@unchainedshop/types/platform';
 
 const { UNCHAINED_DISABLE_PROVIDER_INVALIDATION, UNCHAINED_ASSIGN_CART_FOR_USERS } = process.env;
-
-export interface SetupCartsOptions {
-  invalidateProviders?: boolean;
-  assignCartForUsers?: boolean;
-}
 
 export const setupCarts = async (unchainedAPI: Context, options: SetupCartsOptions = {}) => {
   if (options.invalidateProviders ?? !UNCHAINED_DISABLE_PROVIDER_INVALIDATION) {

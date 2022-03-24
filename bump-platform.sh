@@ -15,7 +15,7 @@ cd ../core-bookmarks && meteor publish &&
 cd ../core-currencies && meteor publish &&
 cd ../core-countries && meteor publish &&
 cd ../core-delivery && meteor publish &&
-cd ../core-files-next && meteor publish &&
+cd ../core-files && meteor publish &&
 cd ../core-languages && meteor publish &&
 cd ../core-messaging && meteor publish &&
 cd ../core-orders && meteor publish &&

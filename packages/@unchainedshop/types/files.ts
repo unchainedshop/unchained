@@ -27,11 +27,13 @@ export type SignedFileUpload = File & {
  * Module
  */
 
-type UploadFileCallback = (file: File, context: Context) => Promise<void>;
+export type UploadFileCallback = (file: File, context: Context) => Promise<void>;
 
 export type FilesModule = ModuleMutations<File> & {
   // Query
   findFile: (params: { fileId?: string }, options?: FindOptions) => Promise<File>;
+
+  getUrl: (file: File, params: Record<string, any>) => string | null;
 
   findFilesByMetaData: (
     params: {
@@ -123,3 +125,14 @@ export type IFileDirector = IBaseDirector<IFileAdapter> & {
   registerFileUploadCallback: (directoryName: string, callback: UploadFileCallback) => void;
   getFileUploadCallback: (directoryName: string) => UploadFileCallback;
 };
+
+/* Settings */
+
+export interface FilesSettingsOptions {
+  transformUrl?: (url: string, params: Record<string, any>) => string;
+}
+
+export interface FilesSettings {
+  transformUrl?: (url: string, params: Record<string, any>) => string;
+  configureSettings: (options?: FilesSettingsOptions) => void;
+}

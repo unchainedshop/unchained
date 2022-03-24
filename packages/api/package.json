@@ -1,6 +1,6 @@
 {
   "name": "@unchained/api",
-  "version": "1.0.0-rc.11",
+  "version": "1.0.0-rc.12",
   "main": "lib/core-index.js",
   "types": "lib/core-index.d.ts",
   "type": "module",

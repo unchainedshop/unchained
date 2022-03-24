@@ -1,7 +1,7 @@
-import { IFileAdapter, IFileDirector } from '@unchainedshop/types/files';
+import { IFileAdapter, IFileDirector, UploadFileCallback } from '@unchainedshop/types/files';
 import { BaseDirector } from 'meteor/unchained:utils';
 
-const FileUploadRegistry = new Map<string, (params: any) => Promise<any>>();
+const FileUploadRegistry = new Map<string, UploadFileCallback>();
 
 const baseDirector = BaseDirector<IFileAdapter>('FileDirector');
 
