@@ -1,4 +1,10 @@
-import { LanguageHelperTypes } from '@unchainedshop/types/languages';
+import { Language as LanguageType } from '@unchainedshop/types/languages';
+import { Context } from '@unchainedshop/types/api';
+
+export interface LanguageHelperTypes {
+  isBase: (language: LanguageType, params: never, context: Context) => boolean;
+  name: (language: LanguageType, params: never, context: Context) => string;
+}
 
 export const Language: LanguageHelperTypes = {
   isBase(language, _, { modules }) {

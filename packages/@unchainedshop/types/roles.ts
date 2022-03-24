@@ -9,7 +9,7 @@ export interface RoleInterface {
 }
 
 export interface RoleInterfaceFactory {
-  new (): RoleInterface;
+  new (key: string): RoleInterface;
 }
 
 export type CheckPermissionArgs = [obj?: any, params?: any];

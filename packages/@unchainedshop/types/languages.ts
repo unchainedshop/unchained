@@ -26,8 +26,3 @@ export interface LanguagesModule extends ModuleMutations<Language> {
 
   isBase: (language: Language) => boolean;
 }
-
-export interface LanguageHelperTypes {
-  isBase: (language: Language, params: never, context: Context) => boolean;
-  name: (language: Language, params: never, context: Context) => string;
-}

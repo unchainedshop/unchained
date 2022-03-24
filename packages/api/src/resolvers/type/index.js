@@ -60,6 +60,7 @@ import { Stock } from './stock-types';
 import { User } from './user-types';
 import { WarehousingProvider } from './warehousing-provider-types';
 import { Work } from './work-types';
+import { Media } from './media-types';
 
 const types = {
   Assortment,
@@ -124,6 +125,7 @@ const types = {
   User,
   WarehousingProvider,
   Work,
+  Media,
 };
 
 export default types;

@@ -1,16 +1,21 @@
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { File, FilesModule } from '@unchainedshop/types/files';
+import { File, FilesModule, FilesSettingsOptions } from '@unchainedshop/types/files';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
+import { filesSettings } from '../files-settings';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
 export const configureFilesModule = async ({
   db,
-}: ModuleInput<Record<string, never>>): Promise<FilesModule> => {
+  options: filesOptions = {},
+}: ModuleInput<FilesSettingsOptions>): Promise<FilesModule> => {
   registerEvents(FILE_EVENTS);
+
+  // Settings
+  await filesSettings.configureSettings(filesOptions);
 
   const Files = await MediaObjectsCollection(db);
 
@@ -19,6 +24,11 @@ export const configureFilesModule = async ({
   }) as ModuleMutations<File>;
 
   return {
+    getUrl: (file, params) => {
+      if (!file?.url) return null;
+      return filesSettings.transformUrl(file.url, params);
+    },
+
     findFile: async ({ fileId }, options) => {
       return Files.findOne(generateDbFilterById(fileId), options);
     },
@@ -67,5 +77,6 @@ export const configureFilesModule = async ({
       emit('FILE_REMOVE', { fileId });
       return deletedCount;
     },
+    deletePermanently: mutations.deletePermanently,
   };
 };

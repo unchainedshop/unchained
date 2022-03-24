@@ -109,7 +109,7 @@ Meteor.startup(async () => {
   // The following lines will activate SSO from Unchained Cloud to your instance,
   // if you want to further secure your app and close this rabbit hole,
   // remove the following lines
-  WebApp.connectHandlers.use('/', (req, res, next) => {
+  WebApp.connectHandlers.use('/', (req: any, res, next) => {
     if (req.query?.token) {
       loginWithSingleSignOn(req.query.token, unchainedApi).then(
         (authCookie) => {

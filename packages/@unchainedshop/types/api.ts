@@ -12,6 +12,7 @@ import { QuotationsSettingsOptions } from './quotations';
 import { Services } from './services';
 import { User } from './user';
 import { Logger } from './logs';
+import { FilesSettingsOptions } from '@unchainedshop/types/files';
 
 export declare type Root = Record<string, unknown>;
 export interface UnchainedUserContext {
@@ -88,8 +89,9 @@ export interface UnchainedCoreOptions {
     filters?: { skipInvalidationOnStartup?: boolean };
     enrollments?: EnrollmentsSettingsOptions;
     orders?: OrdersSettingsOptions;
-    paymentProviders?: PaymentProvidersSettingsOptions;
     quotations?: QuotationsSettingsOptions;
+    files?: FilesSettingsOptions;
+    payment?: PaymentProvidersSettingsOptions;
   };
   [x: string]: any;
 }

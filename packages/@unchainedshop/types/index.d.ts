@@ -1,10 +1,11 @@
-import { FiltersSettings, FiltersSettingsOptions } from '@unchainedshop/types/filters';
 import { ApolloServer } from 'apollo-server-express';
 import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
-import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
+import { Context, UnchainedAPI, UnchainedCoreOptions, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
+import { MessageTypes, PlatformOptions } from './platform';
+
 import { BookmarkServices, BookmarksModule } from './bookmarks';
 import {
   Collection,
@@ -49,8 +50,22 @@ import {
   IEnrollmentDirector,
 } from './enrollments';
 import { EventDirector, EventsModule } from './events';
-import { FileServices, FilesModule, IFileAdapter, IFileDirector } from './files';
-import { FiltersModule, FilterType as FilterTypeType, IFilterAdapter, IFilterDirector } from './filters';
+import {
+  FileServices,
+  FilesSettings,
+  FilesSettingsOptions,
+  FilesModule,
+  IFileAdapter,
+  IFileDirector,
+} from './files';
+import {
+  FiltersModule,
+  FilterType as FilterTypeType,
+  IFilterAdapter,
+  IFilterDirector,
+  FiltersSettings,
+  FiltersSettingsOptions,
+} from './filters';
 import { LanguagesModule } from './languages';
 import { Logger, LogLevel as LogLevelType, LogOptions, Transports } from './logs';
 import { IMessagingDirector, MessagingModule } from './messaging';
@@ -136,9 +151,9 @@ declare module 'meteor/unchained:utils' {
     value: string,
     error?:
       | {
-          message: string;
-          path?: string | undefined;
-        }
+        message: string;
+        path?: string | undefined;
+      }
       | undefined,
   ): void;
 
@@ -209,14 +224,14 @@ declare module 'meteor/unchained:utils' {
   const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
-  >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
+    >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
 
   const BasePricingDirector: <
     PricingContext extends BasePricingContext,
     AdapterPricingContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
     Adapter extends IPricingAdapter<AdapterPricingContext, Calculation, IPricingSheet<Calculation>>,
-  >(
+    >(
     directorName: string,
   ) => IBasePricingDirector<PricingContext, AdapterPricingContext, Calculation, Adapter>;
 
@@ -334,10 +349,11 @@ declare module 'meteor/unchained:core-events' {
   function configureEventsModule(params: ModuleInput<Record<string, never>>): Promise<EventsModule>;
 }
 
-declare module 'meteor/unchained:core-files-next' {
-  function configureFilesModule(params: ModuleInput<Record<string, never>>): Promise<FilesModule>;
+declare module 'meteor/unchained:core-files' {
+  function configureFilesModule(params: ModuleInput<FilesSettingsOptions>): Promise<FilesModule>;
 
   const fileServices: FileServices;
+  const filesSettings: FilesSettings;
 }
 
 declare module 'meteor/unchained:core-filters' {
@@ -488,4 +504,12 @@ declare module 'meteor/unchained:roles' {
 
   function isFunction(func: () => any): boolean;
   function has(obj: { [key: string]: any }, key: string): boolean;
+}
+declare module 'meteor/unchained:platform' {
+  const MessageTypes: MessageTypes;
+  const queueWorkers: Array<any>;
+
+  function startPlatform(options: PlatformOptions): Promise<Context>;
+  function withAccessToken(fn?: (context: Context) => any): any;
+  function setAccessToken(unchainedAPI: Context, username: string, secret: string): Promise<void>;
 }

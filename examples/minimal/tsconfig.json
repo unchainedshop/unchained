@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-   "allowJs": true,
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".", // This must be specified if "paths" is.
     "declaration": true,
@@ -8,7 +8,9 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noErrorTruncation": true,
@@ -16,13 +18,20 @@
     "noUnusedLocals": false,
     "outDir": "lib",
     "paths": {
-      "meteor/unchained:*": ["node_modules/@unchainedshop/types/index.d.ts"]
+      "meteor/unchained:*": [
+        "node_modules/@unchainedshop/types/index.d.ts"
+      ]
     },
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
   },
-  "include": ["seed.ts"]
+  "include": [
+    "seed.ts",
+    "boot.ts"
+  ]
 }

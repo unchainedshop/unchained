@@ -21,7 +21,7 @@
   "meteor": {
     "mainModule": {
       "client": false,
-      "server": "boot.js"
+      "server": "boot.ts"
     }
   },
   "scripts": {

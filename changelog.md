@@ -14,7 +14,7 @@ Unchained.
   and the custom services make use of the modules to fetch and manipulate.
 - [core] `UNCHAINED_INVALIDATE_PROVIDERS` has been removed in order for an inverted
   `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`
-- [core] NEW core module `core-files-next` that uses [minio cloud object storage](https://min.io/)
+- [core] NEW core module `core-files` that uses [minio cloud object storage](https://min.io/)
   compatible with [amazon s3 cloud storage api](https://aws.amazon.com/s3/). This update provides a
   scalable files storage solution for all the projects that use it. All the previous file management APIs
   now use this module under the hood in addition there are few new endpoint added that support signed put

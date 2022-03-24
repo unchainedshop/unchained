@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'unchained:core-files-next',
+  name: 'unchained:core-files',
   version: '1.0.0-rc.11',
   summary: 'Unchained Engine: Files',
   git: 'https://github.com/unchainedshop/unchained',
@@ -21,7 +21,7 @@ Package.onUse((api) => {
   api.use('unchained:events@1.0.0-rc.11');
   api.use('unchained:file-upload@1.0.0-rc.11');
 
-  api.mainModule('src/files-next-index.ts', 'server');
+  api.mainModule('src/files-index.ts', 'server');
 });
 
 Package.onTest((api) => {
@@ -30,7 +30,7 @@ Package.onTest((api) => {
   api.use('typescript');
 
   api.use('unchained:mongodb@1.0.0-rc.11');
-  api.use('unchained:core-files-next@1.0.0-rc.11');
+  api.use('unchained:core-files@1.0.0-rc.11');
 
-  api.mainModule('tests/files-next-index.test.ts');
+  api.mainModule('tests/files-index.test.ts');
 });

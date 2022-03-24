@@ -1,4 +1,4 @@
-import { UnchainedCoreOptions } from '@unchainedshop/types/api';
+import { SetupWorkqueueOptions, PlatformOptions, MessageTypes } from '@unchainedshop/types/platform';
 import { Meteor } from 'meteor/meteor';
 import { startAPIServer } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
@@ -10,9 +10,9 @@ import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
 import { generateWorkerTypeDefs } from './setup/generateWorkTypeDefs';
 import { setupAccounts } from './setup/setupAccounts';
 import { setupAutoScheduling } from './setup/setupAutoScheduling';
-import { setupCarts, SetupCartsOptions } from './setup/setupCarts';
-import { MessageTypes, setupTemplates } from './setup/setupTemplates';
-import { setupWorkqueue, SetupWorkqueueOptions } from './setup/setupWorkqueue';
+import { setupCarts } from './setup/setupCarts';
+import { setupTemplates } from './setup/setupTemplates';
+import { setupWorkqueue } from './setup/setupWorkqueue';
 import { createMigrationRepository } from './migrations/migrationRepository';
 
 // Workers
@@ -37,24 +37,6 @@ const checkEmailInterceptionEnabled = (disableEmailInterception) => {
 };
 
 export const queueWorkers = [];
-
-type PlatformOptions = {
-  typeDefs: Array<string>;
-  resolvers: any;
-  bulkImporter?: any;
-  context?: any;
-  modules: UnchainedCoreOptions['modules'];
-  services: UnchainedCoreOptions['modules'];
-  options: UnchainedCoreOptions['options'];
-  rolesOptions?: any;
-  workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
-  disableEmailInterception?: any;
-  introspection?: boolean;
-  playground?: boolean;
-  tracing?: boolean;
-  cacheControl?: any;
-  corsOrigins?: any;
-};
 
 export const startPlatform = async (
   {

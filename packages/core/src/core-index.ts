@@ -7,7 +7,7 @@ import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
 import { configureDeliveryModule } from 'meteor/unchained:core-delivery';
 import { configureEnrollmentsModule } from 'meteor/unchained:core-enrollments';
 import { configureEventsModule } from 'meteor/unchained:core-events';
-import { configureFilesModule, fileServices } from 'meteor/unchained:core-files-next';
+import { configureFilesModule, fileServices } from 'meteor/unchained:core-files';
 import { configureFiltersModule } from 'meteor/unchained:core-filters';
 import { configureLanguagesModule } from 'meteor/unchained:core-languages';
 import { configureMessagingModule } from 'meteor/unchained:core-messaging';
@@ -48,8 +48,11 @@ export const initCore = async ({
     options: options.enrollments,
   });
   const events = await configureEventsModule({ db });
-  const files = await configureFilesModule({ db });
-  const filters = await configureFiltersModule({ db });
+  const files = await configureFilesModule({ db, options: options.files });
+  const filters = await configureFiltersModule({
+    db,
+    options: options.filters,
+  });
   const languages = await configureLanguagesModule({ db });
   const messaging = await configureMessagingModule({ db });
   const orders = await configureOrdersModule({
@@ -58,7 +61,7 @@ export const initCore = async ({
   });
   const payment = await configurePaymentModule({
     db,
-    options: options.paymentProviders,
+    options: options.payment,
   });
   const products = await configureProductsModule({ db });
   const quotations = await configureQuotationsModule({

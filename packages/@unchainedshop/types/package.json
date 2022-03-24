@@ -32,5 +32,8 @@
     "typescript": "^4.4.2",
     "winston": "3.3.3",
     "winston-transport": "4.4.0"
+  },
+  "dependencies": {
+    "@types/winston": "^2.4.4"
   }
 }

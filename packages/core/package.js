@@ -20,7 +20,7 @@ Package.onUse((api) => {
   api.use('unchained:core-delivery@1.0.0-rc.11');
   api.use('unchained:core-enrollments@1.0.0-rc.11');
   api.use('unchained:core-events@1.0.0-rc.11');
-  api.use('unchained:core-files-next@1.0.0-rc.11');
+  api.use('unchained:core-files@1.0.0-rc.11');
   api.use('unchained:core-filters@1.0.0-rc.11');
   api.use('unchained:core-languages@1.0.0-rc.11');
   api.use('unchained:core-messaging@1.0.0-rc.11');
@@ -41,7 +41,7 @@ Package.onUse((api) => {
     'unchained:core-delivery',
     'unchained:core-enrollments',
     'unchained:core-events',
-    'unchained:core-files-next',
+    'unchained:core-files',
     'unchained:core-filters',
     'unchained:core-languages',
     'unchained:core-messaging',
