@@ -153,7 +153,7 @@ export const configureOrderPaymentsModule = ({
 
       const paymentProviderId = paymentProvider._id;
 
-      const arbitraryResponseData = await services.payment.charge(
+      const arbitraryResponseData = await services.payment.cancel(
         {
           paymentProviderId,
           paymentContext: {

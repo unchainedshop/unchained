@@ -274,8 +274,8 @@ export const configureOrderModuleProcessing = ({
       );
 
       if (updatedOrder.status === OrderStatus.REJECTED) {
+        await modules.orders.sendOrderRejectionToCustomer(updatedOrder, params, requestContext);
       }
-      await modules.orders.sendOrderRejectionToCustomer(updatedOrder, params, requestContext);
 
       return updatedOrder;
     },
