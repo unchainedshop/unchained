@@ -169,8 +169,6 @@ ReorderAssortmentMediaInput
   plugin that consumes these rates.
 - [core] New Cryptopay pricing and payment plugin to support the self-hosted, decentralized Crypto
   Payment Gateway for payments in BTC, ETH, and arbitrary ERC20 tokens.
-- [api] New mutations `cancelOrderPayment` and `confirmOrderPayment` to support deferred settlements /
-  reservations and payment refunds.
 - [core] New
   [PostFinance Checkout](https://www.postfinance.ch/de/unternehmen/produkte/e-commerce/postfinance-checkout-flex.html)
   payment plugin with support for deferred settlements and refunds.

@@ -85,14 +85,7 @@ This gives Unchained Engine a (second) chance to process and settle the payment.
 The completion mode that is configured when instantiating a provider (see above for details) determines if transactions are completed immediately (default behavior if nothing is specified explicitly, value `Immediate`) or if only a reservation is created (`Deferred`) that can be voided / completed later.
 *Note that not all payment methods support deferred settlements. Alternatively, you can also use refunds.*
 
-When you use deferred completion, the order is not marked as paid after the user has authorized the transaction.
-To settle it, the mutation `confirmOrderPayment` is used:
-```/*graphql*/
-mutation confirmPayment {
-  confirmOrderPayment(orderPaymentId: "order payment id of the cart you want to checkout")
-}
-```
-It tries to complete the transaction and marks the order as paid if this was successful. For the cancelation of a transaction, `cancelOrderPayment` (see below) can be used.
+When you use deferred completion, it's your responsibility to confirm the order (e.g., in an ERP system that handles the payment flows).
 
 ## Cancellation / Refunds
 
@@ -100,14 +93,7 @@ An order payment can be cancelled in two cases:
 1. A transaction was started with deferred settlement (i.e., only a reservation was created) and it should not be completed.
 2. A transaction completed successfully, but there should be a refund to the user for some reason.
 
-In both cases, the mutation `cancelOrderPayment` can be used. Without any parameters or when setting `refund` inside the `transactionContext` to `false`, the mutation only tries to void reservations that were created because of a transaction with deferred settlement.
-If you pass `refund: true` inside the `transactionContext`, a refund is requested when voiding a reservation is not possible (e.g., because the transaction was already completed or direct settlement was used). If this succeeds, the status of the order is changed to `OPEN` again and the order payment has status `REFUNDED`.
-
-```/*graphql*/
-mutation cancelPayment {
-  cancelOrderPayment(orderPaymentId: "order payment id of the cart you want to checkout", transactionContext: {refund: true})
-}
-```
+In both cases, this is initiated when the order is rejected via `rejectOrder`.
 
 ## Saved Payment Methods
 
