@@ -13,16 +13,17 @@ export default async function signPaymentProviderForCredentialRegistration(
   log(`mutation signPaymentProviderForCredentialRegistration ${paymentProviderId}`, { userId });
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
-  if (
-    !(await modules.payment.paymentProviders.providerExists({
-      paymentProviderId,
-    }))
-  )
-    throw new PaymentProviderNotFoundError({ paymentProviderId });
+
+  const paymentProvider = await modules.payment.paymentProviders.findProvider({
+    paymentProviderId,
+  });
+  if (!paymentProvider) throw new PaymentProviderNotFoundError({ paymentProviderId });
 
   return modules.payment.paymentProviders.sign(
     paymentProviderId,
     {
+      paymentProviderId,
+      paymentProvider,
       transactionContext,
     },
     context,

@@ -15,12 +15,12 @@ export default async function registerPaymentCredentials(
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
 
-  if (
-    !(await modules.payment.paymentProviders.providerExists({
-      paymentProviderId,
-    }))
-  )
-    throw new PaymentProviderNotFoundError({ paymentProviderId });
+  const paymentProvider = await modules.payment.paymentProviders.findProvider({ paymentProviderId });
+  if (!paymentProvider) throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return services.payment.registerPaymentCredentials(paymentProviderId, { transactionContext }, context);
+  return services.payment.registerPaymentCredentials(
+    paymentProviderId,
+    { transactionContext, paymentProvider, paymentProviderId },
+    context,
+  );
 }

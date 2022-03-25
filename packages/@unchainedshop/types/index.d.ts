@@ -2,7 +2,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
-import { Context, UnchainedAPI, UnchainedCoreOptions, UnchainedServerOptions } from './api';
+import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
 import { MessageTypes, PlatformOptions } from './platform';
 
@@ -151,9 +151,9 @@ declare module 'meteor/unchained:utils' {
     value: string,
     error?:
       | {
-        message: string;
-        path?: string | undefined;
-      }
+          message: string;
+          path?: string | undefined;
+        }
       | undefined,
   ): void;
 
@@ -224,14 +224,14 @@ declare module 'meteor/unchained:utils' {
   const BasePricingAdapter: <
     AdapterContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
-    >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
+  >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
 
   const BasePricingDirector: <
     PricingContext extends BasePricingContext,
     AdapterPricingContext extends BasePricingAdapterContext,
     Calculation extends PricingCalculation,
     Adapter extends IPricingAdapter<AdapterPricingContext, Calculation, IPricingSheet<Calculation>>,
-    >(
+  >(
     directorName: string,
   ) => IBasePricingDirector<PricingContext, AdapterPricingContext, Calculation, Adapter>;
 

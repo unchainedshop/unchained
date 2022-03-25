@@ -1,5 +1,6 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { GraphQLOptions } from 'apollo-server-express';
+import { FilesSettingsOptions } from '@unchainedshop/types/files';
 import { Db, Locale, MigrationRepository } from './common';
 import { AccountsSettingsOptions } from './accounts';
 import { AssortmentsSettingsOptions } from './assortments';
@@ -12,7 +13,7 @@ import { QuotationsSettingsOptions } from './quotations';
 import { Services } from './services';
 import { User } from './user';
 import { Logger } from './logs';
-import { FilesSettingsOptions } from '@unchainedshop/types/files';
+import { FiltersSettingsOptions } from './filters';
 
 export declare type Root = Record<string, unknown>;
 export interface UnchainedUserContext {
@@ -86,7 +87,7 @@ export interface UnchainedCoreOptions {
     accounts?: AccountsSettingsOptions;
     assortments?: AssortmentsSettingsOptions;
     delivery?: DeliverySettingsOptions;
-    filters?: { skipInvalidationOnStartup?: boolean };
+    filters?: FiltersSettingsOptions;
     enrollments?: EnrollmentsSettingsOptions;
     orders?: OrdersSettingsOptions;
     quotations?: QuotationsSettingsOptions;

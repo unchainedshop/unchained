@@ -56,7 +56,7 @@ export default (options) => {
         message,
         extensions: { exception, code, ...extensions }, // eslint-disable-line
       } = error;
-      return new ApolloError(message, code, {
+      return new ApolloError(message, code as string, {
         code,
         ...extensions,
       });

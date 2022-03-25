@@ -80,7 +80,6 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async (
   const order = await modules.orders.findOrder({ orderId });
   const orderPricing = modules.orders.pricingSheet(order);
 
-  console.log({ systemLocale: systemLocale.normalized });
   const momentDate = moment(order.ordered);
   momentDate.locale(systemLocale.normalized);
   const orderDate = momentDate.format('lll');

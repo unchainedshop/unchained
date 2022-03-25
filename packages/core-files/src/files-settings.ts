@@ -4,7 +4,7 @@ export const defaultTransformUrl = (url) => url;
 
 export const filesSettings: FilesSettings = {
   transformUrl: null,
-  configureSettings: async ({ transformUrl }, db) => {
+  configureSettings: async ({ transformUrl }) => {
     filesSettings.transformUrl = transformUrl || defaultTransformUrl;
   },
 };

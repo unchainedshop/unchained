@@ -45,6 +45,8 @@ export default async function signPaymentProviderForCheckout(
       provider._id,
       {
         orderPayment,
+        paymentProvider: provider,
+        paymentProviderId: provider._id,
         transactionContext,
       },
       context,

@@ -14,9 +14,13 @@ export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   async isValid(obj, _, context) {
     const { modules, userId } = context;
 
+    const paymentProvider = await modules.payment.paymentProviders.findProvider({
+      paymentProviderId: obj.paymentProviderId,
+    });
+
     return modules.payment.paymentProviders.validate(
       obj.paymentProviderId,
-      { paymentProviderId: obj.paymentProviderId, userId, token: obj },
+      { paymentProviderId: obj.paymentProviderId, paymentProvider, userId, token: obj },
       context,
     );
   },

@@ -1,4 +1,3 @@
-import { UpdateResult } from 'mongodb';
 import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { Order } from './orders';
