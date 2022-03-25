@@ -1,4 +1,4 @@
-rm -Rf packages/*/.npm &&
+./clean-packages.sh &&
 cd packages/utils &&
 
 cd ../logger && meteor publish &&
