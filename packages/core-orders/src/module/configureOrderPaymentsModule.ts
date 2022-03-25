@@ -52,7 +52,7 @@ export const configureOrderPaymentsModule = ({
 
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,
-    { status, info },
+    { status, transactionId, info },
     userId,
   ) => {
     log(`OrderPayment ${orderPaymentId} -> New Status: ${status}`);
@@ -68,6 +68,9 @@ export const configureOrderPaymentsModule = ({
         },
       },
     };
+    if (transactionId) {
+      modifier.$set.transactionId = transactionId;
+    }
     if (status === OrderPaymentStatus.PAID) {
       modifier.$set.paid = date;
     }
@@ -144,6 +147,48 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
+    confirm: async (orderPayment, { transactionContext, order }, requestContext) => {
+      const { modules, services } = requestContext;
+
+      if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
+        return orderPayment;
+      }
+
+      const paymentProvider = await modules.payment.paymentProviders.findProvider({
+        paymentProviderId: orderPayment.paymentProviderId,
+      });
+
+      const paymentProviderId = paymentProvider._id;
+
+      const arbitraryResponseData = await services.payment.confirm(
+        {
+          paymentProviderId,
+          paymentContext: {
+            order,
+            orderPayment,
+            transactionContext: {
+              ...(transactionContext || {}),
+              ...(orderPayment.context || {}),
+            },
+          },
+        },
+        requestContext,
+      );
+
+      if (arbitraryResponseData) {
+        return updateStatus(
+          orderPayment._id,
+          {
+            status: OrderPaymentStatus.PAID,
+            info: JSON.stringify(arbitraryResponseData),
+          },
+          requestContext.userId,
+        );
+      }
+
+      return orderPayment;
+    },
+
     cancel: async (orderPayment, { transactionContext, order }, requestContext) => {
       const { modules, services } = requestContext;
 
@@ -211,11 +256,13 @@ export const configureOrderPaymentsModule = ({
       );
 
       if (arbitraryResponseData) {
+        const { transactionId, ...info } = arbitraryResponseData;
         return updateStatus(
           orderPayment._id,
           {
+            transactionId,
             status: OrderPaymentStatus.PAID,
-            info: JSON.stringify(arbitraryResponseData),
+            info: JSON.stringify(info),
           },
           requestContext.userId,
         );

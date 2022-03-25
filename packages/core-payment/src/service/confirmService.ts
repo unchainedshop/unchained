@@ -1,6 +1,6 @@
-import { ChargeService } from '@unchainedshop/types/payments';
+import { ConfirmService } from '@unchainedshop/types/payments';
 
-export const chargeService: ChargeService = async (
+export const confirmService: ConfirmService = async (
   { paymentContext, paymentProviderId },
   requestContext,
 ) => {
@@ -24,7 +24,7 @@ export const chargeService: ChargeService = async (
     },
   };
 
-  const result = await modules.payment.paymentProviders.charge(
+  const result = await modules.payment.paymentProviders.confirm(
     paymentProviderId,
     normalizedContext,
     requestContext,
@@ -32,16 +32,5 @@ export const chargeService: ChargeService = async (
 
   if (!result) return false;
 
-  const { credentials, ...strippedResult } = result;
-
-  if (credentials) {
-    const { token, ...meta } = credentials;
-    await modules.payment.paymentCredentials.upsertCredentials({
-      userId,
-      paymentProviderId,
-      token,
-      ...meta,
-    });
-  }
-  return strippedResult;
+  return result;
 };

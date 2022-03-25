@@ -42,12 +42,25 @@ const getTransactionLightboxService = () => {
   return new PostFinanceCheckout.api.TransactionLightboxService(getConfig());
 };
 
+const getTokenService = () => {
+  return new PostFinanceCheckout.api.TokenService(getConfig());
+};
+
 export const getTransaction = async (
-  transactionId: number,
+  transactionId: string,
 ): Promise<PostFinanceCheckout.model.Transaction> => {
   const transactionService = getTransactionService();
-  const transaction = await transactionService.read(SPACE_ID, transactionId);
+  const transaction = await transactionService.read(SPACE_ID, parseInt(transactionId, 10));
   return transaction.body;
+};
+
+export const getToken = async (
+  spaceId: number,
+  tokenId: number,
+): Promise<PostFinanceCheckout.model.Token> => {
+  const tokenService = getTokenService();
+  const token = await tokenService.read(spaceId || SPACE_ID, tokenId);
+  return token.body;
 };
 
 export const createTransaction = async (
@@ -59,10 +72,10 @@ export const createTransaction = async (
   return transactionCreate.id || null;
 };
 
-export const voidTransaction = async (transactionId: number): Promise<boolean> => {
+export const voidTransaction = async (transactionId: string): Promise<boolean> => {
   const transactionVoidService = getTransactionVoidService();
   try {
-    await transactionVoidService.voidOnline(SPACE_ID, transactionId);
+    await transactionVoidService.voidOnline(SPACE_ID, parseInt(transactionId, 10));
     return true;
   } catch (e) {
     return false;
@@ -70,13 +83,13 @@ export const voidTransaction = async (transactionId: number): Promise<boolean> =
 };
 
 export const refundTransaction = async (
-  transactionId: number,
+  transactionId: string,
   orderId: string,
   amount: number,
 ): Promise<boolean> => {
   const refundService = getRefundService();
   const refund: RefundCreate = {
-    transaction: transactionId,
+    transaction: parseInt(transactionId, 10),
     externalId: orderId,
     amount,
     type: RefundType.MERCHANT_INITIATED_ONLINE,
@@ -89,10 +102,10 @@ export const refundTransaction = async (
   }
 };
 
-export const confirmDeferredTransaction = async (transactionId: number): Promise<boolean> => {
+export const confirmDeferredTransaction = async (transactionId: string): Promise<boolean> => {
   const transactionCompletionService = getTransactionCompletionService();
   try {
-    await transactionCompletionService.completeOnline(SPACE_ID, transactionId);
+    await transactionCompletionService.completeOnline(SPACE_ID, parseInt(transactionId, 10));
     return true;
   } catch (e) {
     return false;

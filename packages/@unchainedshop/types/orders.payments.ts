@@ -1,3 +1,4 @@
+import { UpdateResult } from 'mongodb';
 import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { Order } from './orders';
@@ -15,6 +16,7 @@ export type OrderPayment = {
   orderId: string;
   context?: any;
   paid?: Date;
+  transactionId?: string;
   paymentProviderId?: string;
   status?: OrderPaymentStatus | null;
   calculation?: Array<any>;
@@ -64,6 +66,12 @@ export type OrderPaymentsModule = {
     requestContext: Context,
   ) => Promise<OrderPayment>;
 
+  confirm: (
+    orderPayment: OrderPayment,
+    paymentContext: { order: Order; transactionContext: any },
+    requestContext: Context,
+  ) => Promise<OrderPayment>;
+
   charge: (
     orderPayment: OrderPayment,
     paymentContext: { order: Order; transactionContext: any },
@@ -82,7 +90,7 @@ export type OrderPaymentsModule = {
 
   updateStatus: (
     orderPaymentId: string,
-    params: { status: OrderPaymentStatus; info?: string },
+    params: { transactionId?: string; status: OrderPaymentStatus; info?: string },
     userId?: string,
   ) => Promise<OrderPayment>;
 

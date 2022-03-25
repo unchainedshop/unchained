@@ -4,7 +4,6 @@ import { Context } from '@unchainedshop/types/api';
 import { createLogger } from 'meteor/unchained:logger';
 import { WebhookData } from './types';
 import { getTransaction } from './api';
-import { orderIsPaid } from './utils';
 
 const { PFCHECKOUT_WEBHOOK_PATH = '/graphql/postfinance-checkout' } = process.env;
 
@@ -18,37 +17,26 @@ useMiddlewareWithCurrentContext(PFCHECKOUT_WEBHOOK_PATH, async (req, res) => {
   if (data.listenerEntityTechnicalName === 'TransactionCompletion') {
     const transactionId = data.entityId;
     try {
-      const transaction = await getTransaction(transactionId);
-      if (await orderIsPaid(transaction, context.modules.orders)) {
-        const { orderPaymentId } = transaction.metaData as { orderPaymentId: string };
-        const orderPayment = await context.modules.orders.payments.findOrderPayment({
-          orderPaymentId,
-        });
-        const order = await context.modules.orders.findOrder({ orderId: orderPayment.orderId });
-        await context.modules.orders.checkout(
-          order,
-          {
-            transactionContext: {
-              postfinanceTransactionId: transactionId,
-            },
-            paymentContext: {
-              postfinanceTransactionId: transactionId,
-            },
+      const transaction = await getTransaction(String(transactionId));
+      const { orderPaymentId } = transaction.metaData as { orderPaymentId: string };
+      const orderPayment = await context.modules.orders.payments.findOrderPayment({
+        orderPaymentId,
+      });
+      const order = await context.modules.orders.findOrder({ orderId: orderPayment.orderId });
+      await context.modules.orders.checkout(
+        order,
+        {
+          paymentContext: {
+            transactionId,
           },
-          context,
-        );
-        logger.info(
-          `PostFinance Checkout Webhook: Transaction ${transactionId} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
-        );
-        res.writeHead(200);
-        res.end(`Order marked as paid`);
-      } else {
-        logger.info(
-          `PostFinance Checkout Webhook: Invalid transaction ${transactionId} with order payment ID ${transaction.metaData.orderPaymentId} not marked as paid`,
-        );
-        res.writeHead(200);
-        res.end(`Order not marked as paid`);
-      }
+        },
+        context,
+      );
+      logger.info(
+        `PostFinance Checkout Webhook: Transaction ${transactionId} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
+      );
+      res.writeHead(200);
+      res.end(`Order marked as paid`);
     } catch (e) {
       logger.error(`PostFinance Checkout Webhook: Unchained rejected to checkout with message`, e);
       res.writeHead(500);

@@ -9,7 +9,7 @@ export const PaymentDirector: IPaymentDirector = {
   ...baseDirector,
 
   actions: (paymentProvider, paymentContext, requestContext) => {
-    const Adapter = baseDirector.getAdapter(paymentProvider.adapterKey);
+    const Adapter = baseDirector.getAdapter(paymentProvider.adapterKey) as IPaymentAdapter;
 
     if (!Adapter) {
       throw new Error(`Payment Plugin ${paymentProvider.adapterKey} not available`);

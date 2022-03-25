@@ -17,7 +17,7 @@ const PickMup: IDeliveryAdapter = {
       return config.reduce((current, item) => {
         if (item.key === 'stores') return JSON.parse(item.value);
         return current;
-      }, {});
+      }, []);
     };
 
     return {
@@ -25,6 +25,10 @@ const PickMup: IDeliveryAdapter = {
 
       isActive() {
         return true;
+      },
+
+      isAutoReleaseAllowed() {
+        return false;
       },
 
       configurationError() {

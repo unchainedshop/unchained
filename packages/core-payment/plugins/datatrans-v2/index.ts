@@ -258,13 +258,13 @@ const Datatrans: IPaymentAdapter = {
         return JSON.stringify(result as InitResponseSuccess);
       },
 
-      async validate(token) {
-        if (!params.paymentContext.meta) return false;
-        const { objectKey, currency } = params.paymentContext.meta;
+      async validate(credentials) {
+        if (!credentials.meta) return false;
+        const { objectKey, currency } = credentials.meta;
         const result = await api().validate({
           refno: `valid-${new Date().getTime()}`,
           currency,
-          [objectKey]: JSON.parse(token),
+          [objectKey]: JSON.parse(credentials.token),
         });
         return (result as ValidateResponseSuccess)?.transactionId;
       },

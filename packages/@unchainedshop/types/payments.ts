@@ -55,7 +55,8 @@ export enum PaymentError {
 
 export interface PaymentContext {
   userId?: string;
-  paymentProviderId?: string;
+  paymentProviderId: string;
+  paymentProvider: PaymentProvider;
   order?: Order;
   orderPayment?: OrderPayment;
   transactionContext?: any; // User for singing and charging a payment
@@ -63,8 +64,19 @@ export interface PaymentContext {
   meta?: any;
 }
 
-interface IPaymentActions {
-  charge: (transactionContext?: any) => Promise<any>;
+export type ChargeResult = {
+  transactionId?: string;
+  [key: string]: any;
+};
+
+export type PaymentChargeActionResult = ChargeResult & {
+  credentials?: {
+    token: string;
+    [key: string]: any;
+  };
+};
+export interface IPaymentActions {
+  charge: (transactionContext?: any) => Promise<PaymentChargeActionResult | false>;
   configurationError: (transactionContext?: any) => PaymentError;
   isActive: (transactionContext?: any) => boolean;
   isPayLaterAllowed: (transactionContext?: any) => boolean;
@@ -147,7 +159,7 @@ export type PaymentModule = {
       paymentProviderId: string,
       paymentContext: PaymentContext,
       requestContext: Context,
-    ) => Promise<any>;
+    ) => Promise<PaymentChargeActionResult | false>;
     register: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
@@ -197,10 +209,13 @@ export type PaymentModule = {
     findPaymentCredentials: (query: Query, options?: FindOptions) => Promise<Array<PaymentCredentials>>;
 
     // Mutations
-
     markPreferred: (query: { userId: string; paymentCredentialsId: string }) => Promise<void>;
 
-    upsertCredentials: (doc: PaymentCredentials & { [x: string]: any }) => Promise<string | null>;
+    upsertCredentials: (
+      doc: Pick<PaymentCredentials, 'userId' | 'paymentProviderId' | '_id' | 'token'> & {
+        [x: string]: any;
+      },
+    ) => Promise<string | null>;
 
     removeCredentials: (paymentCredentialsId: string) => Promise<PaymentCredentials>;
   };
@@ -216,9 +231,17 @@ export type ChargeService = (
     paymentProviderId: string;
   },
   context: Context,
-) => Promise<any>;
+) => Promise<ChargeResult | false>;
 
 export type CancelService = (
+  params: {
+    paymentContext: PaymentContext;
+    paymentProviderId: string;
+  },
+  context: Context,
+) => Promise<any>;
+
+export type ConfirmService = (
   params: {
     paymentContext: PaymentContext;
     paymentProviderId: string;
@@ -235,6 +258,7 @@ export type RegisterPaymentCredentialsService = (
 export interface PaymentServices {
   charge: ChargeService;
   cancel: CancelService;
+  confirm: ConfirmService;
   registerPaymentCredentials: RegisterPaymentCredentialsService;
 }
 

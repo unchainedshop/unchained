@@ -369,6 +369,16 @@ export const configureOrderModuleProcessing = ({
       }
 
       if (nextStatus === OrderStatus.CONFIRMED) {
+        // confirm pre-authorized payments
+        const orderPayment = await modules.orders.payments.findOrderPayment({
+          orderPaymentId: order.paymentId,
+        });
+        await modules.orders.payments.confirm(
+          orderPayment,
+          { order, transactionContext: params.paymentContext },
+          requestContext,
+        );
+
         const orderDelivery = await modules.orders.deliveries.findDelivery({
           orderDeliveryId: order.deliveryId,
         });

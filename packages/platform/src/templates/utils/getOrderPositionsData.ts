@@ -4,7 +4,7 @@ import { Order } from '@unchainedshop/types/orders';
 
 export const getOrderPositionsData = async (
   order: Order,
-  params: { locale: Locale },
+  params: { locale?: Locale },
   context: Context,
 ) => {
   const { modules } = context;
@@ -21,11 +21,11 @@ export const getOrderPositionsData = async (
     orderPositions.map(async (orderPosition) => {
       const productTexts = await modules.products.texts.findLocalizedText({
         productId: orderPosition.productId,
-        locale: params.locale.normalized,
+        locale: params.locale?.normalized,
       });
       const originalProductTexts = await modules.products.texts.findLocalizedText({
         productId: orderPosition.originalProductId,
-        locale: params.locale.normalized,
+        locale: params.locale?.normalized,
       });
 
       const productTitle = productTexts?.title; // deprecated

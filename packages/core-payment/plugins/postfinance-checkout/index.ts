@@ -1,15 +1,17 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { IPaymentActions, IPaymentAdapter } from '@unchainedshop/types/payments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from 'meteor/unchained:core-payment';
-import { OrderStatus } from '@unchainedshop/types/orders';
-import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
 import { TransactionCompletionBehavior } from 'postfinancecheckout/src/models/TransactionCompletionBehavior';
 import { PostFinanceCheckout } from 'postfinancecheckout';
+import { createLogger } from 'meteor/unchained:logger';
+import { CreationEntityState } from 'postfinancecheckout/src/models/CreationEntityState';
+import { TransactionState } from 'postfinancecheckout/src/models/TransactionState';
 import {
   confirmDeferredTransaction,
   createTransaction,
   getIframeJavascriptUrl,
   getLightboxJavascriptUrl,
   getPaymentPageUrl,
+  getToken,
   getTransaction,
   refundTransaction,
   voidTransaction,
@@ -26,6 +28,14 @@ const {
   PFCHECKOUT_FAILED_URL,
 } = process.env;
 
+const logger = createLogger('unchained:core-payment:postfinance');
+
+const newError = ({ code, message }: { code: string; message: string }) => {
+  const error = new Error(message);
+  error.name = `POSTFINANCE_${code}`;
+  return error;
+};
+
 const PostfinanceCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
 
@@ -40,13 +50,15 @@ const PostfinanceCheckout: IPaymentAdapter = {
   actions: (params) => {
     const { modules } = params.context;
 
-    const adapter = {
+    const adapter: IPaymentActions & {
+      getCompletionMode: () => CompletionModes;
+    } = {
       ...PaymentAdapter.actions(params),
 
-      getCompletionMode(): CompletionModes {
+      getCompletionMode() {
         return (
           (params.config.find((item) => item.key === 'completionMode')?.value as CompletionModes) ||
-          CompletionModes.Immediate
+          CompletionModes.Deferred
         );
       },
 
@@ -72,6 +84,13 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
       isPayLaterAllowed() {
         return false;
+      },
+
+      async validate(credentials) {
+        if (!credentials.meta) return false;
+        const { linkedSpaceId } = credentials.meta;
+        const tokenData = await getToken(linkedSpaceId, credentials.token);
+        return tokenData.state === CreationEntityState.ACTIVE;
       },
 
       sign: async (transactionContext: any = {}) => {
@@ -122,37 +141,74 @@ const PostfinanceCheckout: IPaymentAdapter = {
           location,
         };
 
-        await modules.orders.payments.updateContext(
-          orderPayment._id,
-          { orderId: order._id, context: { transactionId } },
-          params.context,
-        );
-
         return JSON.stringify(res);
       },
 
-      charge: async () => {
+      charge: async ({
+        transactionId,
+        paymentCredentials,
+      }: {
+        transactionId: string;
+        paymentCredentials: any;
+      }) => {
+        if (paymentCredentials && !transactionId) {
+          // Directly charge the customer based on existing token!
+          throw new Error('Not implemented yet');
+        }
+        if (!transactionId) return false; // checkout without payment
+
+        const transaction = await getTransaction(transactionId);
+
+        if (!transaction) {
+          logger.error(`Transaction #${transactionId}: Transaction not found`);
+          throw newError({
+            code: `TRANSACTION_NOT_FOUND`,
+            message: 'Payment declined',
+          });
+        }
+
+        const isPaid = await orderIsPaid(params.paymentContext.order, transaction, modules.orders);
+        if (!isPaid) {
+          logger.error(`Transaction #${transactionId}: Invalid state / Amount incorrect`);
+          throw newError({
+            code: `STATE_${transaction.state?.toUpperCase()}`,
+            message: 'Invalid state / Amount incorrect',
+          });
+        }
+
+        if (transaction.metaData.orderPaymentId !== params.paymentContext.orderPayment._id) {
+          logger.error(`Transaction #${transactionId}: Invalid state / Amount incorrect`);
+          throw newError({
+            code: `TRANSACTION_ALREADY_USED`,
+            message: 'Transaction already used in previous checkout',
+          });
+        }
+
+        const { token: { id, ...tokenMeta } = {} } = transaction;
+
+        return {
+          transaction,
+          transactionId,
+          credentials: id && {
+            ...tokenMeta,
+            token: id,
+          },
+        };
+      },
+
+      cancel: async () => {
         const { orderPayment } = params.paymentContext;
-        const transactionId = orderPayment.context?.transactionId;
+        const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;
         }
         const transaction = await getTransaction(transactionId);
-        return orderIsPaid(transaction, modules.orders);
-      },
-
-      cancel: async () => {
-        const refund = adapter.getCompletionMode() === CompletionModes.Immediate;
-        const { orderPayment } = params.paymentContext;
+        const refund = transaction.state === TransactionState.FULFILL;
         const order = await modules.orders.findOrder({
           orderId: orderPayment.orderId,
         });
         const pricing = modules.orders.pricingSheet(order);
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
-        const transactionId = orderPayment.context?.transactionId;
-        if (!transactionId) {
-          return false;
-        }
         // For immediate settlements, try refunding. For deferred settlements, void the transaction.
         return (
           (refund && refundTransaction(transactionId, order._id, totalAmount / 100)) ||
@@ -162,11 +218,15 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
       confirm: async () => {
         const { orderPayment } = params.paymentContext;
-        const transactionId = orderPayment.context?.transactionId;
+        const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;
         }
-        return confirmDeferredTransaction(transactionId);
+        const transaction = await getTransaction(transactionId);
+        if (transaction.state === TransactionState.AUTHORIZED) {
+          return confirmDeferredTransaction(transactionId);
+        }
+        return false;
       },
     };
 

@@ -1,5 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 import moment from 'moment';
+import { systemLocale } from 'meteor/unchained:utils';
 import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
 import { getOrderPositionsData } from './utils/getOrderPositionsData';
 
@@ -72,15 +73,16 @@ const textTemplate = `
 `;
 
 export const resolveForwardDeliveryTemplate: TemplateResolver = async (
-  { config, locale, orderId, transactionContext },
+  { config, orderId, transactionContext },
   context,
 ) => {
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
   const orderPricing = modules.orders.pricingSheet(order);
 
+  console.log({ systemLocale: systemLocale.normalized });
   const momentDate = moment(order.ordered);
-  momentDate.locale('de-CH');
+  momentDate.locale(systemLocale.normalized);
   const orderDate = momentDate.format('lll');
 
   const attachments = await getOrderAttachmentsData(order, { fileType: 'DELIVERY_NOTE' }, context);
@@ -100,7 +102,7 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async (
   const data = {
     contact: order.contact || {},
     controlpanelLink,
-    items: getOrderPositionsData(order, { locale }, context),
+    items: getOrderPositionsData(order, { locale: systemLocale }, context),
     orderDate,
     orderNumber: order.orderNumber,
     shopName: EMAIL_WEBSITE_NAME,
