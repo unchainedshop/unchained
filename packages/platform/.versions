@@ -68,7 +68,7 @@ unchained:events@1.0.0-rc.13
 unchained:file-upload@1.0.0-rc.13
 unchained:logger@1.0.0-rc.13
 unchained:mongodb@1.0.0-rc.13
-unchained:platform@1.0.0-rc.13
+unchained:platform@1.0.0-rc.13.1
 unchained:roles@1.0.0-rc.13
 unchained:utils@1.0.0-rc.13
 underscore@1.0.10
