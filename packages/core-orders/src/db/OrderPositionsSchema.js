@@ -12,18 +12,6 @@ const calculationFields = {
     type: Object,
     blackbox: true,
   },
-  configuration: Array,
-  'configuration.$': {
-    type: Object,
-    required: true,
-  },
-  'configuration.$.key': {
-    type: String,
-    required: true,
-  },
-  'configuration.$.value': {
-    type: String,
-  },
 };
 
 export const OrderPositionsSchema = new SimpleSchema(
@@ -33,6 +21,18 @@ export const OrderPositionsSchema = new SimpleSchema(
     originalProductId: { type: String },
     quotationId: { type: String },
     quantity: Number,
+    configuration: Array,
+    'configuration.$': {
+      type: Object,
+      required: true,
+    },
+    'configuration.$.key': {
+      type: String,
+      required: true,
+    },
+    'configuration.$.value': {
+      type: String,
+    },
     ...calculationFields,
     ...Schemas.contextFields,
     ...Schemas.timestampFields,

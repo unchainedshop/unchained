@@ -59,6 +59,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
       order,
       product,
       quantity: orderPosition.quantity,
+      configuration: orderPosition.configuration,
       user,
     };
   },
