@@ -87,7 +87,7 @@ export const configureOrderDiscountsModule = ({
     await mutations.update(orderDiscountId, doc, userId);
 
     const selector = buildFindByIdSelector(orderDiscountId);
-    const discount = OrderDiscounts.findOne(selector, {});
+    const discount = await OrderDiscounts.findOne(selector, {});
     emit('ORDER_UPDATE_DISCOUNT', { discount });
     return discount;
   };
@@ -222,7 +222,7 @@ export const configureOrderDiscountsModule = ({
       await mutations.update(orderDiscountId, doc, userId);
 
       const selector = buildFindByIdSelector(orderDiscountId);
-      const discount = OrderDiscounts.findOne(selector, {});
+      const discount = await OrderDiscounts.findOne(selector, {});
       emit('ORDER_UPDATE_DISCOUNT', { discount });
       return discount;
     },
