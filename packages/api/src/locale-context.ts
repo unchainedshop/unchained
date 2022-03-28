@@ -1,6 +1,7 @@
 import { UnchainedAPI, UnchainedLocaleContext } from '@unchainedshop/types/api';
 import { IncomingMessage } from 'http';
 import { Locales } from 'locale';
+import 'abort-controller/polyfill';
 import LRU from 'lru-cache';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import {
@@ -12,7 +13,7 @@ import {
 
 const { NODE_ENV } = process.env;
 
-const ttl = NODE_ENV === 'production' ? 1000 * 60 : -1; // minute or second
+const ttl = NODE_ENV === 'production' ? 1000 * 60 : 0; // minute or second
 
 const localeContextCache = new LRU({
   max: 500,

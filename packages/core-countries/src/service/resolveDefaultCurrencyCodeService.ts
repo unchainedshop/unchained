@@ -1,12 +1,13 @@
 import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries';
 import { Modules } from '@unchainedshop/types/modules';
+import 'abort-controller/polyfill';
 import LRU from 'lru-cache';
 
 // REMARK: --> combines defaultCurrency and resolveDefaultCurrencyCode helpers
 
 const { NODE_ENV } = process.env;
 
-const ttl = NODE_ENV === 'production' ? 1000 * 60 : -1; // minute or second
+const ttl = NODE_ENV === 'production' ? 1000 * 60 : 0; // minute or second
 
 const currencyCodeCache = new LRU({
   max: 500,

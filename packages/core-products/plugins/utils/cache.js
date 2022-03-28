@@ -1,3 +1,4 @@
+import 'abort-controller/polyfill';
 import LRUCache from 'lru-cache';
 
 class Cache {

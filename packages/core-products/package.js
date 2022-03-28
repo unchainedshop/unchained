@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
   'lru-cache': '7.7.0',
+  'abort-controller': '3.0.0',
   'simpl-schema': '1.12.0',
 });
 

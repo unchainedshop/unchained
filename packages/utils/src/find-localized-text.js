@@ -1,3 +1,4 @@
+import 'abort-controller/polyfill';
 import LRU from 'lru-cache';
 import { systemLocale } from './locale-helpers';
 

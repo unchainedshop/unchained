@@ -10,6 +10,7 @@ Npm.depends({
   'emoji-flags': '1.3.0',
   'i18n-iso-countries': '6.4.0',
   'lru-cache': '7.7.0',
+  'abort-controller': '3.0.0',
   'simpl-schema': '1.12.0',
 });
 
