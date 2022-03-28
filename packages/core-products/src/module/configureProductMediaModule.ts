@@ -22,7 +22,7 @@ const PRODUCT_MEDIA_EVENTS = [
 FileDirector.registerFileUploadCallback('product-media', async (file, { modules, userId }) => {
   await modules.products.media.create(
     {
-      productId: file.meta.productId,
+      productId: file.meta?.productId as string,
       mediaId: file._id,
     },
     userId || file.updatedBy || file.createdBy,
