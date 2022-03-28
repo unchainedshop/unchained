@@ -101,7 +101,8 @@ const BraintreeDirect: IPaymentAdapter = {
       },
 
       charge: async ({ paypalPaymentMethodNonce }) => {
-        const { order, modules } = params.context;
+        const { modules } = params.context;
+        const { order } = params.paymentContext;
         if (!paypalPaymentMethodNonce)
           throw new Error('You have to provide paypalPaymentMethodNonce in paymentContext');
         const braintree = require('braintree'); // eslint-disable-line

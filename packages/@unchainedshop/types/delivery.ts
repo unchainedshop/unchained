@@ -112,7 +112,7 @@ export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
 export interface DeliveryInterface {
   _id: string;
   label: string;
-  versin: string;
+  version: string;
 }
 
 export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
@@ -157,10 +157,13 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
  * Settings
  */
 
-export type FilterProviders = (params: {
-  providers: Array<DeliveryProvider>;
-  order: Order;
-}) => Promise<Array<DeliveryProvider>>;
+export type FilterProviders = (
+  params: {
+    providers: Array<DeliveryProvider>;
+    order: Order;
+  },
+  context: Context,
+) => Promise<Array<DeliveryProvider>>;
 
 export interface DeliverySettingsOptions {
   sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;
@@ -168,6 +171,6 @@ export interface DeliverySettingsOptions {
 }
 
 export interface DeliverySettings {
-  filterSupportedProviders: FilterProviders | null;
+  filterSupportedProviders: FilterProviders;
   configureSettings: (options?: DeliverySettingsOptions) => void;
 }

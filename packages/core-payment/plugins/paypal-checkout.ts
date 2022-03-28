@@ -1,8 +1,8 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { PaymentDirector, PaymentAdapter, PaymentError } from 'meteor/unchained:core-payment';
+import { createLogger } from 'meteor/unchained:logger';
 
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk'); // eslint-disable-line
-import { createLogger } from 'meteor/unchained:logger';
 
 const logger = createLogger('unchained:core-payment');
 
@@ -63,7 +63,8 @@ const PaypalCheckout: IPaymentAdapter = {
       },
 
       charge: async ({ orderID }) => {
-        const { modules, order } = params.context;
+        const { modules } = params.context;
+        const { order } = params.paymentContext;
 
         if (!orderID) {
           logger.warn('Paypal Native Plugin: PRICE MATCH');
@@ -89,7 +90,7 @@ const PaypalCheckout: IPaymentAdapter = {
             JSON.stringify(paypalOrder.result, null, 2),
           );
 
-          logger.debug('Paypal Native Plugin: OUR ORDER', params.context.order);
+          logger.debug('Paypal Native Plugin: OUR ORDER', order);
           logger.debug('Paypal Native Plugin: OUR PRICE', pricing);
 
           throw new Error(`Payment mismatch`);

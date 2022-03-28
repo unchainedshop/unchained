@@ -7,7 +7,7 @@ const sortByCreationDate = (left: DeliveryProvider, right: DeliveryProvider) => 
   return new Date(left.created).getTime() - new Date(right.created).getTime();
 };
 
-const allProviders: FilterProviders = ({ providers }) => {
+const allProviders: FilterProviders = async ({ providers }) => {
   return providers.sort(sortByCreationDate);
 };
 

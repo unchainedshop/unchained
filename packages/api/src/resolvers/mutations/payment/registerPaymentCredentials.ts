@@ -18,9 +18,5 @@ export default async function registerPaymentCredentials(
   const paymentProvider = await modules.payment.paymentProviders.findProvider({ paymentProviderId });
   if (!paymentProvider) throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return services.payment.registerPaymentCredentials(
-    paymentProviderId,
-    { transactionContext, paymentProvider, paymentProviderId },
-    context,
-  );
+  return services.payment.registerPaymentCredentials(paymentProviderId, { transactionContext }, context);
 }

@@ -55,8 +55,6 @@ export enum PaymentError {
 
 export interface PaymentContext {
   userId?: string;
-  paymentProviderId: string;
-  paymentProvider: PaymentProvider;
   order?: Order;
   orderPayment?: OrderPayment;
   transactionContext?: any; // User for singing and charging a payment
@@ -94,7 +92,10 @@ export type IPaymentAdapter = IBaseAdapter & {
 
   actions: (params: {
     config: PaymentConfiguration;
-    paymentContext: PaymentContext;
+    paymentContext: PaymentContext & {
+      paymentProviderId: string;
+      paymentProvider: PaymentProvider;
+    };
     context: Context;
   }) => IPaymentActions;
 };
