@@ -6,11 +6,11 @@ import LRU from 'lru-cache';
 
 const { NODE_ENV } = process.env;
 
-const maxAge = NODE_ENV === 'production' ? 1000 * 60 : -1; // minute or second
+const ttl = NODE_ENV === 'production' ? 1000 * 60 : -1; // minute or second
 
 const currencyCodeCache = new LRU({
   max: 500,
-  maxAge,
+  ttl,
 });
 
 const { UNCHAINED_CURRENCY } = process.env;

@@ -6,9 +6,11 @@ import {
   IPricingAdapter,
   IPricingSheet,
   PricingCalculation,
+  IBasePricingSheet,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from './BaseDirector';
+import { BasePricingSheet } from './BasePricingSheet';
 
 export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,
@@ -22,12 +24,19 @@ export const BasePricingDirector = <
     adapterSortKey: 'orderIndex',
   });
 
-  const director = {
+  const director: IPricingDirector<DirectorContext, AdapterContext, Calculation, PricingAdapter> = {
     ...baseDirector,
+    buildPricingContext: async () => {
+      return {} as AdapterContext;
+    },
     actions: async (pricingContext, requestContext, buildPricingContext) => {
       const context = await buildPricingContext(pricingContext, requestContext);
 
       let calculation: Array<Calculation> = [];
+      const calculationSheet = BasePricingSheet({
+        calculation,
+      });
+      const resultSheet = BasePricingSheet({ calculation: [] });
 
       return {
         calculate: async () => {
@@ -72,7 +81,8 @@ export const BasePricingDirector = <
         },
         getCalculation: () => calculation,
         getContext: () => context,
-        resultSheet: () => null,
+        resultSheet: () => resultSheet,
+        calculationSheet: () => calculationSheet,
       };
     },
   };

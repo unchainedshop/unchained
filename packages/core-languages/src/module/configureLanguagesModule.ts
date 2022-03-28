@@ -11,7 +11,7 @@ type FindQuery = {
   includeInactive?: boolean;
 };
 const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true } = { deleted: null };
+  const selector: { isActive?: true; deleted?: Date } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
   return selector;
 };
@@ -27,7 +27,7 @@ export const configureLanguagesModule = async ({
 
   return {
     findLanguage: async ({ languageId, isoCode }) => {
-      return Languages.findOne(languageId ? generateDbFilterById(languageId) : { isoCode });
+      return Languages.findOne(languageId ? generateDbFilterById(languageId) : { isoCode }, {});
     },
 
     findLanguages: async ({ limit, offset, includeInactive }, options) => {
@@ -87,5 +87,6 @@ export const configureLanguagesModule = async ({
       emit('LANGUAGE_REMOVE', { languageId });
       return deletedCount;
     },
+    deletePermanently: mutations.deletePermanently,
   };
 };

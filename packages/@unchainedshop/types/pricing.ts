@@ -6,7 +6,6 @@ import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
 import { OrderPayment } from './orders.payments';
 import { OrderPosition } from './orders.positions';
-import { IProductPricingSheet } from './products.pricing';
 import { User } from './user';
 
 export interface BasePricingAdapterContext extends Context {

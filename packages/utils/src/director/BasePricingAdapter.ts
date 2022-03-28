@@ -26,6 +26,8 @@ export const BasePricingAdapter = <
     },
     calculationSheet: () => BasePricingSheet(params),
     resultSheet: () => BasePricingSheet(params),
+    getCalculation: () => params.calculation,
+    getContext: () => params.context,
   }),
 
   log(message: string, { level = LogLevel.Debug, ...options } = {}) {

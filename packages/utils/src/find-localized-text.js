@@ -3,9 +3,9 @@ import { systemLocale } from './locale-helpers';
 
 const { NODE_ENV } = process.env;
 
-const maxAge = NODE_ENV === 'production' ? 1000 * 30 : -1; // 5 seconds or 1 second
+const ttl = NODE_ENV === 'production' ? 1000 * 30 : 0; // 30 seconds or 1 second
 
-const textCache = new LRU({ max: 50000, maxAge });
+const textCache = new LRU({ max: 50000, ttl });
 
 const extendSelectorWithLocale = (selector, locale) => {
   const localeSelector = {

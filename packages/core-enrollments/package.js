@@ -7,7 +7,6 @@ Package.describe({
 });
 
 Npm.depends({
-  hashids: '2.2.1',
   later: '1.2.0',
   locale: '0.1.0',
   moment: '2.29.1',

@@ -10,7 +10,7 @@ import 'meteor/unchained:core-delivery/plugins/stores';
 import 'meteor/unchained:core-delivery/plugins/free-delivery';
 import 'meteor/unchained:core-delivery/plugins/delivery-swiss-tax';
 
-import 'meteor/unchained:core-warehousing/plugins/google-sheets';
+import 'meteor/unchained:core-warehousing/plugins/store';
 
 import 'meteor/unchained:core-orders/plugins/discount-half-price-manual';
 import 'meteor/unchained:core-orders/plugins/discount-100-off';

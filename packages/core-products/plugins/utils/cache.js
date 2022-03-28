@@ -4,7 +4,7 @@ class Cache {
   constructor(ttlSeconds = 60) {
     this.cache = new LRUCache({
       max: 500,
-      maxAge: ttlSeconds,
+      ttl: ttlSeconds * 1000,
     });
   }
 

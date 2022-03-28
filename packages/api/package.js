@@ -8,7 +8,7 @@ Package.describe({
 
 Npm.depends({
   accounting: '0.4.1',
-  'lru-cache': '6.0.0',
+  'lru-cache': '7.7.0',
   dataloader: '2.0.0',
   locale: '0.1.0',
   'lodash.isnumber': '3.0.3',

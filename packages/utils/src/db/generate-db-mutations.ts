@@ -5,12 +5,13 @@ import {
   ModuleCreateMutation,
   _ID,
   Update,
+  TimestampFields,
 } from '@unchainedshop/types/common';
 import { checkId } from './check-id';
 import { generateDbObjectId } from './generate-db-object-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';
 
-export const generateDbMutations = <T extends { _id?: _ID }>(
+export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
   collection: Collection<T>,
   schema: SimpleSchema,
   options?: {

@@ -10,7 +10,7 @@ import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 
 const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } = process.env;
 
-const maxAge = NODE_ENV === 'production' ? 1000 * 60 * 60 : -1; // 1 hour or 1 second
+const ttl = NODE_ENV === 'production' ? 1000 * 60 * 60 : -1; // 1 hour or 1 second
 
 const downloadSpreadsheet = async () => {
   if (!GOOGLE_SHEETS_PRIVATE_KEY_DATA || !GOOGLE_SHEETS_ID) return null;
@@ -21,7 +21,7 @@ const downloadSpreadsheet = async () => {
     await gs.authorizeJWT(authData);
     const delivery = await gs.tables('delivery!A:ZZZ');
     const inventory = await gs.tables('inventory!A:ZZZ');
-    log(`GoogleSheet: Updated cache with TTL: ${maxAge}`, {
+    log(`GoogleSheet: Updated cache with TTL: ${ttl}`, {
       level: LogLevel.Verbose,
     });
     return {
@@ -49,8 +49,8 @@ const updateGoogleCache = async (cache) => {
 
 const googleCache = new LRU({
   max: 500,
-  maxAge, // 1 second in dev
-  stale: true,
+  ttl, // 1 second in dev
+  allowStale: true,
   dispose: () => {
     updateGoogleCache(googleCache);
   },

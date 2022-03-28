@@ -7,11 +7,11 @@ Package.describe({
 });
 
 Npm.depends({
-  'lru-cache': '6.0.0',
-  hashids: '2.2.8',
+  'lru-cache': '7.7.0',
+  hashids: '2.2.10',
   locale: '0.1.0',
   'simpl-schema': '1.12.0',
-  bson: '4.5.4',
+  bson: '4.6.2',
 });
 
 Package.onUse((api) => {

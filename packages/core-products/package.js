@@ -7,9 +7,8 @@ Package.describe({
 });
 
 Npm.depends({
-  'lru-cache': '6.0.0',
+  'lru-cache': '7.7.0',
   'simpl-schema': '1.12.0',
-  hashids: '2.2.1',
 });
 
 Package.onUse((api) => {

@@ -12,11 +12,11 @@ import {
 
 const { NODE_ENV } = process.env;
 
-const maxAge = NODE_ENV === 'production' ? 1000 * 60 : -1; // minute or second
+const ttl = NODE_ENV === 'production' ? 1000 * 60 : -1; // minute or second
 
 const localeContextCache = new LRU({
   max: 500,
-  maxAge,
+  ttl,
 });
 
 export const getLocaleContext = async (
