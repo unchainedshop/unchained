@@ -88,9 +88,9 @@ export type UsersModule = {
   updateGuest: (user: User, guest: boolean) => Promise<void>;
   updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
   updateInitialPassword: (user: User, initialPassword: boolean) => Promise<void>;
-  updateLastBillingAddress: (_id: string, doc: Address, userId: string) => Promise<User>;
-  updateLastContact: (_id: string, doc: Contact, userId: string) => Promise<User>;
-  updateProfile: (_id: string, doc: Update<UserProfile>, userId: string) => Promise<User>;
+  updateLastBillingAddress: (_id: string, lastAddress: Address, userId: string) => Promise<User>;
+  updateLastContact: (_id: string, lastContact: Contact, userId: string) => Promise<User>;
+  updateProfile: (_id: string, profile: UserProfile, userId: string) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>, userId: string) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>, userId: string) => Promise<User>;
 

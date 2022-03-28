@@ -1,12 +1,10 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import {
-  PaymentDirector,
-  PaymentAdapter,
-  PaymentError,
-  paymentLogger,
-} from 'meteor/unchained:core-payment';
+import { PaymentDirector, PaymentAdapter, PaymentError } from 'meteor/unchained:core-payment';
 
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk'); // eslint-disable-line
+import { createLogger } from 'meteor/unchained:logger';
+
+const logger = createLogger('unchained:core-payment');
 
 const { PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_ENVIRONMENT = 'sandbox' } = process.env;
 
@@ -68,7 +66,7 @@ const PaypalCheckout: IPaymentAdapter = {
         const { modules, order } = params.context;
 
         if (!orderID) {
-          paymentLogger.warn('Paypal Native Plugin: PRICE MATCH');
+          logger.warn('Paypal Native Plugin: PRICE MATCH');
           throw new Error('You have to provide orderID in paymentContext');
         }
 
@@ -82,21 +80,21 @@ const PaypalCheckout: IPaymentAdapter = {
           const paypalTotal = paypalOrder.result.purchase_units[0].amount.value;
 
           if (ourTotal === paypalTotal) {
-            paymentLogger.info('Paypal Native Plugin: PRICE MATCH');
+            logger.info('Paypal Native Plugin: PRICE MATCH');
             return order;
           }
 
-          paymentLogger.warn(
+          logger.warn(
             'Paypal Native Plugin: Missmatch PAYPAL ORDER',
             JSON.stringify(paypalOrder.result, null, 2),
           );
 
-          paymentLogger.debug('Paypal Native Plugin: OUR ORDER', params.context.order);
-          paymentLogger.debug('Paypal Native Plugin: OUR PRICE', pricing);
+          logger.debug('Paypal Native Plugin: OUR ORDER', params.context.order);
+          logger.debug('Paypal Native Plugin: OUR PRICE', pricing);
 
           throw new Error(`Payment mismatch`);
         } catch (e) {
-          paymentLogger.warn('Paypal Native Plugin: Failed', e);
+          logger.warn('Paypal Native Plugin: Failed', e);
           throw new Error(e);
         }
       },

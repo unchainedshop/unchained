@@ -159,7 +159,8 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
 
 export type FilterProviders = (params: {
   providers: Array<DeliveryProvider>;
-}) => Array<DeliveryProvider>;
+  order: Order;
+}) => Promise<Array<DeliveryProvider>>;
 
 export interface DeliverySettingsOptions {
   sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;

@@ -266,9 +266,19 @@ export interface PaymentServices {
  * Settings
  */
 
-export interface PaymentProvidersSettingsOptions {
-  sortProviders?: any;
-  filterSupportedProviders?: (params: { providers: Array<PaymentProvider> }) => Array<PaymentProvider>;
+export type FilterProviders = (params: {
+  providers: Array<PaymentProvider>;
+  order: Order;
+}) => Promise<Array<PaymentProvider>>;
+
+export interface PaymentSettingsOptions {
+  sortProviders?: (a: PaymentProvider, b: PaymentProvider) => number;
+  filterSupportedProviders?: FilterProviders;
+}
+
+export interface PaymentSettings {
+  filterSupportedProviders: FilterProviders;
+  configureSettings: (options?: PaymentSettingsOptions) => void;
 }
 
 /*

@@ -2,12 +2,10 @@ import { Context } from '@unchainedshop/types/api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import bodyParser from 'body-parser';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-import {
-  PaymentAdapter,
-  PaymentDirector,
-  PaymentError,
-  paymentLogger,
-} from 'meteor/unchained:core-payment';
+import { PaymentAdapter, PaymentDirector, PaymentError } from 'meteor/unchained:core-payment';
+import { createLogger } from 'meteor/unchained:logger';
+
+const logger = createLogger('unchained:core-payment:stripe');
 
 const {
   STRIPE_SECRET,
@@ -70,7 +68,7 @@ useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, async (request, response) =
         resolvedContext,
       );
 
-      paymentLogger.info(`Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {
+      logger.info(`Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {
         orderId: order._id,
       });
     } else if (event.type === 'setup_intent.succeeded') {
@@ -87,7 +85,7 @@ useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, async (request, response) =
         resolvedContext,
       );
 
-      paymentLogger.info(`Stripe Webhook: Unchained registered payment credentials for ${userId}`, {
+      logger.info(`Stripe Webhook: Unchained registered payment credentials for ${userId}`, {
         userId,
       });
     } else {
@@ -200,7 +198,7 @@ const Stripe: IPaymentAdapter = {
           };
         }
 
-        paymentLogger.warn('Stripe Plugin: Registration declined', setupIntentId);
+        logger.warn('Stripe Plugin: Registration declined', setupIntentId);
         return null;
       },
 

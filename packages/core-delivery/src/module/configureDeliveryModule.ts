@@ -106,9 +106,13 @@ export const configureDeliveryModule = async ({
         },
       );
 
-      return deliverySettings.filterSupportedProviders({
-        providers,
-      });
+      return deliverySettings.filterSupportedProviders(
+        {
+          providers,
+          order,
+        },
+        requestContext,
+      );
     },
 
     configurationError: (deliveryProvider, requestContext) => {

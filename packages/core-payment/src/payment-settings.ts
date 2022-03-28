@@ -1,9 +1,9 @@
-import { DeliveryProvider, DeliverySettings, FilterProviders } from '@unchainedshop/types/delivery';
+import { PaymentProvider, PaymentSettings, FilterProviders } from '@unchainedshop/types/delivery';
 import { createLogger } from 'meteor/unchained:logger';
 
-const logger = createLogger('unchained:core-delivery');
+const logger = createLogger('unchained:core-payment');
 
-const sortByCreationDate = (left: DeliveryProvider, right: DeliveryProvider) => {
+const sortByCreationDate = () => (left: PaymentProvider, right: PaymentProvider) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();
 };
 
@@ -17,7 +17,7 @@ const defaultFilterSupportedProviders =
     return providers.sort(sortProviders);
   };
 
-export const deliverySettings: DeliverySettings = {
+export const paymentSettings: PaymentSettings = {
   filterSupportedProviders: null,
 
   configureSettings({ sortProviders = undefined, filterSupportedProviders = allProviders } = {}) {

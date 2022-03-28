@@ -2,17 +2,15 @@ import { Context } from '@unchainedshop/types/api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import bodyParser from 'body-parser';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-import {
-  PaymentAdapter,
-  PaymentDirector,
-  PaymentError,
-  paymentLogger,
-} from 'meteor/unchained:core-payment';
+import { PaymentAdapter, PaymentDirector, PaymentError } from 'meteor/unchained:core-payment';
 import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 import { ethers } from 'ethers';
 import BIP32Factory from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import * as bitcoin from 'bitcoinjs-lib';
+import { createLogger } from 'meteor/unchained:logger';
+
+const logger = createLogger('unchained:core-payment:cryptopay');
 
 const {
   CRYPTOPAY_SECRET,
@@ -39,7 +37,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
   const resolvedContext = request.unchainedContext as Context;
   const { currency, contract, decimals, address, amount, secret } = request.body;
   if (secret !== CRYPTOPAY_SECRET) {
-    paymentLogger.warn(`Cryptopay Plugin: Invalid Cryptopay Secret provided`);
+    logger.warn(`Cryptopay Plugin: Invalid Cryptopay Secret provided`);
     response.end(JSON.stringify({ success: false }));
     return;
   }
@@ -53,7 +51,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
         contractAddress: contract,
       });
       if (!ERC20CurrencyCount) {
-        paymentLogger.warn(`Cryptopay Plugin: ERC20 token address ${contract} not whitelisted.`);
+        logger.warn(`Cryptopay Plugin: ERC20 token address ${contract} not whitelisted.`);
         response.end(JSON.stringify({ success: false }));
         return;
       }
@@ -93,13 +91,13 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
       );
       response.end(JSON.stringify({ success: true }));
     } else {
-      paymentLogger.warn(
+      logger.warn(
         `Cryptopay Plugin: OrderPayment ${orderPayment._id} not marked as paid. Converted amount is ${convertedAmount}`,
       );
       response.end(JSON.stringify({ success: false }));
     }
   } else {
-    paymentLogger.info(
+    logger.info(
       `Cryptopay Plugin: No orderPayment with address ${address} and currency ${currency} found`,
     );
     response.end(JSON.stringify({ success: false }));

@@ -8,7 +8,7 @@ import { DeliverySettingsOptions } from './delivery';
 import { EnrollmentsSettingsOptions } from './enrollments';
 import { Modules } from './modules';
 import { OrdersSettingsOptions } from './orders';
-import { PaymentProvidersSettingsOptions } from './payments';
+import { PaymentSettingsOptions } from './payments';
 import { QuotationsSettingsOptions } from './quotations';
 import { Services } from './services';
 import { User } from './user';
@@ -92,7 +92,7 @@ export interface UnchainedCoreOptions {
     orders?: OrdersSettingsOptions;
     quotations?: QuotationsSettingsOptions;
     files?: FilesSettingsOptions;
-    payment?: PaymentProvidersSettingsOptions;
+    payment?: PaymentSettingsOptions;
   };
   [x: string]: any;
 }

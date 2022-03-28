@@ -1,11 +1,7 @@
-import {
-  PaymentDirector,
-  PaymentAdapter,
-  PaymentError,
-  paymentLogger,
-} from 'meteor/unchained:core-payment';
+import { PaymentDirector, PaymentAdapter, PaymentError } from 'meteor/unchained:core-payment';
 
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { createLogger } from 'meteor/unchained:logger';
 
 import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 import bodyParser from 'body-parser';
@@ -15,6 +11,8 @@ import fetch from 'isomorphic-unfetch';
 import ClientOAuth2 from 'client-oauth2';
 import { Context } from '@unchainedshop/types/api';
 import { BityModule } from './module/configureBityModule';
+
+const logger = createLogger('unchained:core-payment:bity');
 
 const { checkAction } = acl;
 const { actions } = roles;
@@ -156,7 +154,7 @@ const createBityOrder = async (data: any, context: Context) => {
   );
 
   if (response?.status !== 201) {
-    paymentLogger.error('Bity Plugin: Response invalid', {
+    logger.error('Bity Plugin: Response invalid', {
       data,
       route: '/orders',
       response,
@@ -177,7 +175,7 @@ const estimateBityOrder = async (data: any, context: Context) => {
   );
 
   if (response?.status !== 200) {
-    paymentLogger.error('Bity Plugin: Response invalid', {
+    logger.error('Bity Plugin: Response invalid', {
       data,
       route: '/orders/estimate',
       response,
@@ -195,14 +193,14 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_INIT_PATH, async (req, res) => {
 
       const bityAuthClient = createBityAuth();
       const uri = bityAuthClient.code.getUri();
-      paymentLogger.info(`Bity Webhook: Login ${uri}`);
+      logger.info(`Bity Webhook: Login ${uri}`);
       res.writeHead(302, {
         Location: uri,
       });
       res.end();
       return;
     } catch (e) {
-      paymentLogger.warn(`Bity Webhook: Failed with ${e.message}`);
+      logger.warn(`Bity Webhook: Failed with ${e.message}`);
       res.writeHead(503);
       res.end(JSON.stringify(e));
       return;
@@ -228,7 +226,7 @@ useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res) => {
       res.end('Bity Credentials Setup Complete');
       return;
     } catch (e) {
-      paymentLogger.warn(`Bity Webhook: Failed with ${e.message}`);
+      logger.warn(`Bity Webhook: Failed with ${e.message}`);
       res.writeHead(503);
       res.end(JSON.stringify(e));
       return;
@@ -293,7 +291,7 @@ const Bity: IPaymentAdapter = {
 
       sign: async (transactionContext = {}) => {
         // Signing the order will estimate a new order in bity and sign it with private data
-        paymentLogger.info(`Bity Plugin: Sign ${JSON.stringify(transactionContext)}`);
+        logger.info(`Bity Plugin: Sign ${JSON.stringify(transactionContext)}`);
 
         const { orderPayment } = params.paymentContext;
 
@@ -364,9 +362,7 @@ const Bity: IPaymentAdapter = {
           BITY_CLIENT_SECRET,
         );
         if (bitySignature !== signature) {
-          paymentLogger.warn(
-            `Bity Plugin: Signature Mismatch ${JSON.stringify(bityPayload)} ${bitySignature}`,
-          );
+          logger.warn(`Bity Plugin: Signature Mismatch ${JSON.stringify(bityPayload)} ${bitySignature}`);
           throw new Error('Signature Mismatch');
         }
 
@@ -393,14 +389,12 @@ const Bity: IPaymentAdapter = {
           params.context,
         );
 
-        paymentLogger.info(`Bity Plugin: Prepared Bity Order`, path);
+        logger.info(`Bity Plugin: Prepared Bity Order`, path);
         const response = await bityExchangeFetch({ path }, params.context);
 
         const bityOrder = await response?.json();
         if (!bityOrder) {
-          paymentLogger.warn(
-            `Bity Plugin: Bity Order not found ${JSON.stringify(path)} ${bitySignature}`,
-          );
+          logger.warn(`Bity Plugin: Bity Order not found ${JSON.stringify(path)} ${bitySignature}`);
           throw new Error('Bity Order not Found');
         }
 

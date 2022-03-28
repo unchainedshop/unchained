@@ -4,13 +4,11 @@ import bodyParser from 'body-parser';
 import fetch from 'isomorphic-unfetch';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { EnrollmentStatus } from 'meteor/unchained:core-enrollments';
-import {
-  PaymentAdapter,
-  PaymentDirector,
-  PaymentError,
-  paymentLogger,
-} from 'meteor/unchained:core-payment';
+import { PaymentAdapter, PaymentDirector, PaymentError } from 'meteor/unchained:core-payment';
 import { AppleTransactionsModule } from './module/configureAppleTransactionsModule';
+import { createLogger } from 'meteor/unchained:logger';
+
+const logger = createLogger('unchained:core-payment:iap');
 
 const {
   APPLE_IAP_SHARED_SECRET,
@@ -149,10 +147,9 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
             resolvedContext,
           );
 
-          paymentLogger.info(
-            `Apple IAP Webhook: Confirmed checkout for order ${checkedOut.orderNumber}`,
-            { orderId: checkedOut._id },
-          );
+          logger.info(`Apple IAP Webhook: Confirmed checkout for order ${checkedOut.orderNumber}`, {
+            orderId: checkedOut._id,
+          });
         }
       } else {
         // Just store payment credentials, use the enrollments paymentProvider reference and
@@ -190,7 +187,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           resolvedContext,
         );
 
-        paymentLogger.info(
+        logger.info(
           `Apple IAP Webhook: Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`,
         );
 
@@ -211,14 +208,14 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
             await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
           }
         }
-        paymentLogger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
+        logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
       }
 
       res.writeHead(200);
       res.end();
       return;
     } catch (e) {
-      paymentLogger.warn(`Apple IAP Webhook: ${e.message}`, e);
+      logger.warn(`Apple IAP Webhook: ${e.message}`, e);
       res.writeHead(503);
       res.end(JSON.stringify(e));
       return;
@@ -286,7 +283,7 @@ const AppleIAP: IPaymentAdapter = {
         const { status, latest_receipt_info: latestReceiptInfo } = response; // eslint-disable-line
 
         if (status === 0) {
-          paymentLogger.info('Apple IAP Plugin: Receipt validated and updated for the user', {
+          logger.info('Apple IAP Plugin: Receipt validated and updated for the user', {
             level: 'verbose',
           });
           const latestTransaction = latestReceiptInfo[latestReceiptInfo.length - 1]; // eslint-disable-line
@@ -296,7 +293,7 @@ const AppleIAP: IPaymentAdapter = {
           };
         }
 
-        paymentLogger.warn('Apple IAP Plugin: Receipt invalid', {
+        logger.warn('Apple IAP Plugin: Receipt invalid', {
           level: 'warn',
           status: response.status,
         });

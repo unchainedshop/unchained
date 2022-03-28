@@ -1,10 +1,8 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import {
-  PaymentDirector,
-  PaymentAdapter,
-  PaymentError,
-  paymentLogger,
-} from 'meteor/unchained:core-payment';
+import { PaymentDirector, PaymentAdapter, PaymentError } from 'meteor/unchained:core-payment';
+import { createLogger } from 'meteor/unchained:logger';
+
+const logger = createLogger('unchained:core-payment:braintree');
 
 const { BRAINTREE_SANDBOX_TOKEN, BRAINTREE_PRIVATE_KEY } = process.env;
 
@@ -133,10 +131,10 @@ const BraintreeDirect: IPaymentAdapter = {
         };
         const result = await gateway.transaction.sale(saleRequest);
         if (result.success) {
-          paymentLogger.info(`Braintree Plugin: ${result.message}`, saleRequest);
+          logger.info(`Braintree Plugin: ${result.message}`, saleRequest);
           return result;
         }
-        paymentLogger.warn(`Braintree Plugin: ${result.message}`, saleRequest);
+        logger.warn(`Braintree Plugin: ${result.message}`, saleRequest);
         throw new Error(result.message);
       },
     };

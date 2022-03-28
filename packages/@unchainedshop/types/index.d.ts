@@ -32,6 +32,7 @@ import {
   DeliveryModule,
   DeliveryProviderType as DeliveryProviderTypeType,
   DeliverySettingsOptions,
+  DeliverySettings,
   IDeliveryAdapter,
   IDeliveryDirector,
 } from './delivery';
@@ -88,7 +89,8 @@ import {
   IPaymentDirector,
   PaymentError as PaymentErrorType,
   PaymentModule,
-  PaymentProvidersSettingsOptions,
+  PaymentSettingsOptions,
+  PaymentSettings,
   PaymentProviderType as PaymentProviderTypeType,
 } from './payments';
 import {
@@ -314,7 +316,7 @@ declare module 'meteor/unchained:core-delivery' {
     params: ModuleInput<DeliverySettingsOptions>,
   ): Promise<DeliveryModule>;
 
-  const deliverySettings;
+  const deliverySettings: DeliverySettings;
 
   const DeliveryAdapter: IDeliveryAdapter;
   const DeliveryDirector: IDeliveryDirector;
@@ -399,9 +401,9 @@ declare module 'meteor/unchained:core-orders' {
 }
 
 declare module 'meteor/unchained:core-payment' {
-  function configurePaymentModule(
-    params: ModuleInput<PaymentProvidersSettingsOptions>,
-  ): Promise<PaymentModule>;
+  function configurePaymentModule(params: ModuleInput<PaymentSettingsOptions>): Promise<PaymentModule>;
+
+  const paymentSettings: PaymentSettings;
   const paymentServices;
 
   const PaymentDirector: IPaymentDirector;
@@ -415,8 +417,6 @@ declare module 'meteor/unchained:core-payment' {
 
   const PaymentError: typeof PaymentErrorType;
   const PaymentProviderType: typeof PaymentProviderTypeType;
-
-  const paymentLogger: Logger;
 }
 
 declare module 'meteor/unchained:core-products' {

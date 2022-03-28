@@ -106,10 +106,13 @@ export const configurePaymentProvidersModule = (
         },
       );
 
-      return paymentProviderSettings.filterSupportedProviders({
-        providers,
-        order,
-      });
+      return paymentProviderSettings.filterSupportedProviders(
+        {
+          providers,
+          order,
+        },
+        requestContext,
+      );
     },
 
     // Payment Adapter

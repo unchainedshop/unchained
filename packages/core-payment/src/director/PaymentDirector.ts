@@ -1,8 +1,9 @@
 import { IPaymentAdapter, IPaymentDirector } from '@unchainedshop/types/payments';
 import { BaseDirector } from 'meteor/unchained:utils';
-import { paymentLogger } from '../payment-logger';
 import { PaymentError } from './PaymentError';
+import { createLogger } from 'meteor/unchained:logger';
 
+const logger = createLogger('unchained:core-payment');
 const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');
 
 export const PaymentDirector: IPaymentDirector = {
@@ -35,7 +36,7 @@ export const PaymentDirector: IPaymentDirector = {
         try {
           return adapter.isActive(paymentContext.transactionContext);
         } catch (error) {
-          paymentLogger.error(error.message);
+          logger.error(error.message);
           return false;
         }
       },
@@ -44,7 +45,7 @@ export const PaymentDirector: IPaymentDirector = {
         try {
           return adapter.isPayLaterAllowed(paymentContext.transactionContext);
         } catch (error) {
-          paymentLogger.error(error.message);
+          logger.error(error.message);
           return false;
         }
       },
