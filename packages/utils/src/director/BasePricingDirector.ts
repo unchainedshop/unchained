@@ -10,7 +10,7 @@ import {
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from './BaseDirector';
 
-export const IPricingDirector = <
+export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,
   AdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
@@ -24,7 +24,6 @@ export const IPricingDirector = <
 
   const director = {
     ...baseDirector,
-
     actions: async (pricingContext, requestContext, buildPricingContext) => {
       const context = await buildPricingContext(pricingContext, requestContext);
 
