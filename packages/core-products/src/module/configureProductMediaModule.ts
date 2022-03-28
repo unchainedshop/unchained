@@ -38,6 +38,7 @@ export const configureProductMediaModule = async ({
 
   const mutations = generateDbMutations<ProductMedia>(ProductMedias, ProductMediaSchema, {
     permanentlyDeleteByDefault: true,
+    hasCreateOnly: false,
   }) as ModuleMutations<ProductMedia>;
 
   const upsertLocalizedText = async (

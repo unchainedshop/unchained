@@ -20,12 +20,14 @@ export const PaymentPricingAdapter: IPricingAdapter<
     return false;
   },
 
-  actions: ({ context, calculation }) => {
+  actions: (params) => {
+    const { context, calculation } = params;
     const { currency } = context.order;
     const calculationSheet = PaymentPricingSheet({ calculation, currency });
     const resultSheet = PaymentPricingSheet({ currency });
 
     return {
+      ...basePricingAdapter.actions(params),
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>

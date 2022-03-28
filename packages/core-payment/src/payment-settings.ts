@@ -1,13 +1,13 @@
-import { PaymentProvider, PaymentSettings, FilterProviders } from '@unchainedshop/types/delivery';
+import { PaymentProvider, PaymentSettings, FilterProviders } from '@unchainedshop/types/payments';
 import { createLogger } from 'meteor/unchained:logger';
 
 const logger = createLogger('unchained:core-payment');
 
-const sortByCreationDate = () => (left: PaymentProvider, right: PaymentProvider) => {
+const sortByCreationDate = (left: PaymentProvider, right: PaymentProvider) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();
 };
 
-const allProviders: FilterProviders = ({ providers }) => {
+const allProviders: FilterProviders = async ({ providers }) => {
   return providers.sort(sortByCreationDate);
 };
 

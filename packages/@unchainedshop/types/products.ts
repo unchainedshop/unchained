@@ -353,14 +353,14 @@ export type ProductsModule = {
     // Mutations
     updateTexts: (
       productId: string,
-      texts: Array<ProductText>,
+      texts: Array<Omit<ProductText, 'productId' | 'authorId'>>,
       userId?: string,
     ) => Promise<Array<ProductText>>;
 
     upsertLocalizedText: (
       productId: string,
       locale: string,
-      text: ProductText,
+      text: Omit<ProductText, 'productId' | 'locale' | 'authorId'>,
       userId?: string,
     ) => Promise<ProductText>;
 

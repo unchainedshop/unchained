@@ -32,10 +32,16 @@ export const configureProductVariationsModule = async ({
 
   const mutations = generateDbMutations<ProductVariation>(ProductVariations, ProductVariationsSchema, {
     permanentlyDeleteByDefault: true,
+    hasCreateOnly: false,
   }) as ModuleMutations<ProductVariation>;
 
   const upsertLocalizedText = async (
-    { productVariationId, productVariationOptionValue = null, locale, ...text }: ProductVariationText,
+    {
+      productVariationId,
+      productVariationOptionValue = null,
+      locale,
+      ...text
+    }: Omit<ProductVariationText, 'authorId'>,
     userId: string,
   ) => {
     const selector = {

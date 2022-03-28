@@ -102,7 +102,7 @@ import {
 import {
   BasePricingAdapterContext,
   BasePricingContext,
-  IBasePricingDirector,
+  IPricingDirector,
   IPricingAdapter,
   IPricingSheet,
   PricingCalculation,
@@ -235,7 +235,7 @@ declare module 'meteor/unchained:utils' {
     Adapter extends IPricingAdapter<AdapterPricingContext, Calculation, IPricingSheet<Calculation>>,
   >(
     directorName: string,
-  ) => IBasePricingDirector<PricingContext, AdapterPricingContext, Calculation, Adapter>;
+  ) => IPricingDirector<PricingContext, AdapterPricingContext, Calculation, Adapter>;
 
   const BasePricingSheet: <Calculation extends PricingCalculation>(
     params: PricingSheetParams<Calculation>,

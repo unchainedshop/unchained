@@ -40,23 +40,17 @@ export const configureProductTextsModule = ({
     });
   };
 
-  const upsertLocalizedText = async (
-    productId: string,
-    locale: string,
-    text: ProductText,
-    userId?: string,
+  const upsertLocalizedText: ProductsModule['texts']['upsertLocalizedText'] = async (
+    productId,
+    locale,
+    text,
+    userId,
   ) => {
-    const {
-      slug: textSlug,
-      title = null,
-      locale: textLocale,
-      productId: textProductId,
-      ...textFields
-    } = text;
+    const { slug: textSlug, title = null, ...textFields } = text;
     const slug = await makeSlug({
       slug: textSlug,
       title,
-      productId: productId || textProductId,
+      productId,
     });
 
     const modifier: any = {
@@ -70,8 +64,8 @@ export const configureProductTextsModule = ({
         _id: generateDbObjectId(),
         created: new Date(),
         createdBy: userId,
-        productId: productId || textProductId,
-        locale: locale || textLocale,
+        productId,
+        locale,
       },
     };
 
@@ -151,17 +145,7 @@ export const configureProductTextsModule = ({
     updateTexts: async (productId, texts, userId) => {
       const productTexts = texts
         ? await Promise.all(
-            texts.map((text) =>
-              upsertLocalizedText(
-                productId,
-                text.locale,
-                {
-                  ...text,
-                  authorId: userId,
-                },
-                userId,
-              ),
-            ),
+            texts.map((text) => upsertLocalizedText(productId, text.locale, text, userId)),
           )
         : [];
 

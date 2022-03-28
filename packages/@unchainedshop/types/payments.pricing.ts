@@ -1,4 +1,5 @@
 import { Order } from './orders';
+import { OrderDiscount } from './orders.discounts';
 import { OrderPayment } from './orders.payments';
 import { PaymentProvider } from './payments';
 import {
@@ -29,18 +30,24 @@ export interface PaymentPricingCalculation extends PricingCalculation {
 }
 
 export interface PaymentPricingAdapterContext extends BasePricingAdapterContext {
+  country?: string;
+  currency?: string;
   user: User;
   orderPayment: OrderPayment;
   order: Order;
   provider: PaymentProvider;
+  discounts: Array<OrderDiscount>;
 }
 
 export type PaymentPricingContext =
   | {
+      country?: string;
+      currency?: string;
       user: User;
       orderPayment: OrderPayment;
       order: Order;
       provider: PaymentProvider;
+      providerContext?: any;
     }
   | {
       item: OrderPayment;
@@ -54,12 +61,9 @@ export type IPaymentPricingAdapter = IPricingAdapter<
   IPaymentPricingSheet
 >;
 
-export interface IPaymentPricingDirector
-  extends IPricingDirector<
-    PaymentPricingContext,
-    PaymentPricingAdapterContext,
-    PaymentPricingCalculation,
-    IPaymentPricingAdapter
-  > {
-  resultSheet: () => IPaymentPricingSheet;
-}
+export type IPaymentPricingDirector = IPricingDirector<
+  PaymentPricingContext,
+  PaymentPricingAdapterContext,
+  PaymentPricingCalculation,
+  IPaymentPricingAdapter
+>;

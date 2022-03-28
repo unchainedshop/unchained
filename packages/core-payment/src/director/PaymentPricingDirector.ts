@@ -1,4 +1,3 @@
-import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import {
   IPaymentPricingAdapter,
   IPaymentPricingDirector,
@@ -19,7 +18,7 @@ const baseDirector = BasePricingDirector<
 export const PaymentPricingDirector: IPaymentPricingDirector = {
   ...baseDirector,
 
-  async buildPricingContext({ item, ...context }: { item: OrderPayment }, requestContext) {
+  async buildPricingContext({ item, ...context }, requestContext) {
     if (!item)
       return {
         discounts: [],

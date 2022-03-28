@@ -1,9 +1,8 @@
 import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
-  IDeliveryPricingSheet,
+  IDeliveryPricingAdapter,
 } from '@unchainedshop/types/delivery.pricing';
-import { IPricingAdapter } from '@unchainedshop/types/pricing';
 import { BasePricingAdapter } from 'meteor/unchained:utils';
 import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 
@@ -12,23 +11,21 @@ const basePricingAdapter = BasePricingAdapter<
   DeliveryPricingCalculation
 >();
 
-export const DeliveryPricingAdapter: IPricingAdapter<
-  DeliveryPricingAdapterContext,
-  DeliveryPricingCalculation,
-  IDeliveryPricingSheet
-> = {
+export const DeliveryPricingAdapter: IDeliveryPricingAdapter = {
   ...basePricingAdapter,
 
   isActivatedFor: () => {
     return false;
   },
 
-  actions: ({ context, calculation }) => {
+  actions: (params) => {
+    const { context, calculation } = params;
     const { currency } = context;
     const calculationSheet = DeliveryPricingSheet({ calculation, currency });
     const resultSheet = DeliveryPricingSheet({ currency });
 
     return {
+      ...basePricingAdapter.actions(params),
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>

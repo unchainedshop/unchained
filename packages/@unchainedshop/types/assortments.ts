@@ -316,14 +316,14 @@ export type AssortmentsModule = {
     // Mutations
     updateTexts: (
       assortmentId: string,
-      texts: Array<AssortmentText>,
+      texts: Array<Omit<AssortmentText, 'assortmentId' | 'authorId'>>,
       userId?: string,
     ) => Promise<Array<AssortmentText>>;
 
     upsertLocalizedText: (
       assortmentId: string,
       locale: string,
-      text: AssortmentText,
+      text: Omit<AssortmentText, 'assortmentId' | 'authorId' | 'locale'>,
       userId?: string,
     ) => Promise<AssortmentText>;
 

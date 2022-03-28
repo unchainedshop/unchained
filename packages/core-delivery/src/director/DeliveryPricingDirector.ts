@@ -5,7 +5,6 @@ import {
   IDeliveryPricingAdapter,
   IDeliveryPricingDirector,
 } from '@unchainedshop/types/delivery.pricing';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { BasePricingDirector } from 'meteor/unchained:utils';
 import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 
@@ -19,15 +18,7 @@ const baseDirector = BasePricingDirector<
 export const DeliveryPricingDirector: IDeliveryPricingDirector = {
   ...baseDirector,
 
-  async buildPricingContext(
-    {
-      item,
-      ...context
-    }: {
-      item: OrderDelivery;
-    } & DeliveryPricingContext,
-    requestContext,
-  ) {
+  async buildPricingContext({ item, ...context }, requestContext) {
     const { modules } = requestContext;
 
     if (!item)

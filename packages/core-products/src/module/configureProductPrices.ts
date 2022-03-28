@@ -1,5 +1,6 @@
 import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/types/products';
 import crypto from 'crypto';
+import { IProductPricingSheet } from '@unchainedshop/types/products.pricing';
 import { ProductPricingDirector } from '../director/ProductPricingDirector';
 import { getPriceLevels } from './utils/getPriceLevels';
 import { getPriceRange } from './utils/getPriceRange';
@@ -88,7 +89,7 @@ export const configureProductPricesModule = ({
     const calculated = await pricingDirector.calculate();
     if (!calculated || !calculated.length) return null;
 
-    const pricing = pricingDirector.resultSheet();
+    const pricing = pricingDirector.resultSheet() as IProductPricingSheet;
     const userPrice = pricing.unitPrice({ useNetPrice });
 
     return {

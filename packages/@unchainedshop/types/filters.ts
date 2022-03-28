@@ -148,7 +148,7 @@ export type FiltersModule = {
     // Mutations
     updateTexts: (
       query: { filterId: string; filterOptionValue?: string },
-      texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale' | 'authorId'>>,
+      texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue' | 'authorId'>>,
       userId?: string,
     ) => Promise<Array<FilterText>>;
 

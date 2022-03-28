@@ -2,7 +2,7 @@ import { Discount } from '@unchainedshop/types/discount';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
-  IBasePricingDirector,
+  IPricingDirector,
   IPricingAdapter,
   IPricingSheet,
   PricingCalculation,
@@ -10,14 +10,14 @@ import {
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from './BaseDirector';
 
-export const BasePricingDirector = <
+export const IPricingDirector = <
   DirectorContext extends BasePricingContext,
   AdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
   PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>,
 >(
   directorName: string,
-): IBasePricingDirector<DirectorContext, AdapterContext, Calculation, PricingAdapter> => {
+): IPricingDirector<DirectorContext, AdapterContext, Calculation, PricingAdapter> => {
   const baseDirector = BaseDirector<PricingAdapter>(directorName, {
     adapterSortKey: 'orderIndex',
   });
