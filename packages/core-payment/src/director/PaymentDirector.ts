@@ -1,7 +1,7 @@
 import { IPaymentAdapter, IPaymentDirector } from '@unchainedshop/types/payments';
 import { BaseDirector } from 'meteor/unchained:utils';
-import { PaymentError } from './PaymentError';
 import { createLogger } from 'meteor/unchained:logger';
+import { PaymentError } from './PaymentError';
 
 const logger = createLogger('unchained:core-payment');
 const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');

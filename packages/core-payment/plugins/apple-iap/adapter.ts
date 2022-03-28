@@ -5,8 +5,8 @@ import fetch from 'isomorphic-unfetch';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { EnrollmentStatus } from 'meteor/unchained:core-enrollments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from 'meteor/unchained:core-payment';
-import { AppleTransactionsModule } from './module/configureAppleTransactionsModule';
 import { createLogger } from 'meteor/unchained:logger';
+import { AppleTransactionsModule } from './module/configureAppleTransactionsModule';
 
 const logger = createLogger('unchained:core-payment:iap');
 

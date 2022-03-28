@@ -108,8 +108,12 @@ const PostfinanceCheckout: IPaymentAdapter = {
         transaction.metaData = {
           orderPaymentId: orderPayment._id,
         };
-        transaction.successUrl = `${transactionContext?.successUrl || PFCHECKOUT_SUCCESS_URL}?order_id=${orderPayment.orderId}`;
-        transaction.failedUrl = `${transactionContext?.failedUrl || PFCHECKOUT_FAILED_URL}?order_id=${orderPayment.orderId}`;
+        transaction.successUrl = `${transactionContext?.successUrl || PFCHECKOUT_SUCCESS_URL}?order_id=${
+          orderPayment.orderId
+        }`;
+        transaction.failedUrl = `${transactionContext?.failedUrl || PFCHECKOUT_FAILED_URL}?order_id=${
+          orderPayment.orderId
+        }`;
         transaction.customerId = params.context.user._id;
         transaction.tokenizationMode =
           PostFinanceCheckout.model.TokenizationMode.ALLOW_ONE_CLICK_PAYMENT;

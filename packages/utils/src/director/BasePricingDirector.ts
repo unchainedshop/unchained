@@ -6,7 +6,6 @@ import {
   IPricingAdapter,
   IPricingSheet,
   PricingCalculation,
-  IBasePricingSheet,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { BaseDirector } from './BaseDirector';

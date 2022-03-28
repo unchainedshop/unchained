@@ -54,11 +54,16 @@ export const getTransaction = async (
   return transaction.body;
 };
 
-export const getTransactionCompletion = async (entityId: string): Promise<PostFinanceCheckout.model.TransactionCompletion> {
+export const getTransactionCompletion = async (
+  entityId: string,
+): Promise<PostFinanceCheckout.model.TransactionCompletion> => {
   const transactionCompletionService = getTransactionCompletionService();
-  const transactionCompletion = await transactionCompletionService.read(SPACE_ID, parseInt(entityId, 10));
+  const transactionCompletion = await transactionCompletionService.read(
+    SPACE_ID,
+    parseInt(entityId, 10),
+  );
   return transactionCompletion.body;
-}
+};
 
 export const getToken = async (
   spaceId: number,

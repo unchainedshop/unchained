@@ -17,7 +17,9 @@ useMiddlewareWithCurrentContext(PFCHECKOUT_WEBHOOK_PATH, async (req, res) => {
   if (data.listenerEntityTechnicalName === 'TransactionCompletion') {
     try {
       const transactionCompletion = await getTransactionCompletion(data.entityId as unknown as string);
-      const transaction = await getTransaction(transactionCompletion.linkedTransaction as unknown as string);
+      const transaction = await getTransaction(
+        transactionCompletion.linkedTransaction as unknown as string,
+      );
       const { orderPaymentId } = transaction.metaData as { orderPaymentId: string };
       const orderPayment = await context.modules.orders.payments.findOrderPayment({
         orderPaymentId,

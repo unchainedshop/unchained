@@ -323,7 +323,7 @@ export type AssortmentsModule = {
     upsertLocalizedText: (
       assortmentId: string,
       locale: string,
-      text: Omit<AssortmentText, 'assortmentId' | 'authorId' | 'locale'>,
+      text: Omit<AssortmentText, 'assortmentId' | 'authorId' | 'locale'>,
       userId?: string,
     ) => Promise<AssortmentText>;
 
