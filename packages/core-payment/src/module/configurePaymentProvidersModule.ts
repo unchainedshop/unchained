@@ -4,7 +4,6 @@ import {
   PaymentContext,
   PaymentModule,
   PaymentProvider,
-  PaymentProvidersSettingsOptions,
   PaymentProviderType,
 } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
@@ -12,7 +11,7 @@ import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:util
 import { PaymentPricingDirector } from '../director/PaymentPricingDirector';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema';
 import { PaymentDirector } from '../director/PaymentDirector';
-import { paymentProviderSettings } from './configurePaymentProvidersSettings';
+import { paymentSettings } from '../payment-settings';
 
 const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_CREATE',
@@ -31,11 +30,8 @@ const buildFindSelector = ({ type }: FindQuery = {}) => {
 
 export const configurePaymentProvidersModule = (
   PaymentProviders: Collection<PaymentProvider>,
-  paymentProviderOptions: PaymentProvidersSettingsOptions,
 ): PaymentModule['paymentProviders'] => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
-
-  paymentProviderSettings.configureSettings(paymentProviderOptions);
 
   const mutations = generateDbMutations<PaymentProvider>(
     PaymentProviders,
@@ -106,7 +102,7 @@ export const configurePaymentProvidersModule = (
         },
       );
 
-      return paymentProviderSettings.filterSupportedProviders(
+      return paymentSettings.filterSupportedProviders(
         {
           providers,
           order,
@@ -177,27 +173,32 @@ export const configurePaymentProvidersModule = (
         userId,
       );
 
-      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(paymentProviderId));
+      const paymentProvider = await PaymentProviders.findOne(
+        generateDbFilterById(paymentProviderId),
+        {},
+      );
       emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
-
       return paymentProvider;
     },
 
     update: async (_id: string, doc: PaymentProvider, userId: string) => {
       await mutations.update(_id, doc, userId);
-      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id));
+      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
       emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
-
       return paymentProvider;
     },
 
     delete: async (_id, userId) => {
       await mutations.delete(_id, userId);
-      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id));
-
+      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
       emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
-
       return paymentProvider;
+    },
+
+    deletePermanently: async (_id, userId) => {
+      const deliveryProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
+      await mutations.deletePermanently(_id, userId);
+      return deliveryProvider;
     },
   };
 };

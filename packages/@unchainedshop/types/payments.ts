@@ -267,10 +267,13 @@ export interface PaymentServices {
  * Settings
  */
 
-export type FilterProviders = (params: {
-  providers: Array<PaymentProvider>;
-  order: Order;
-}) => Promise<Array<PaymentProvider>>;
+export type FilterProviders = (
+  params: {
+    providers: Array<PaymentProvider>;
+    order: Order;
+  },
+  context: Context,
+) => Promise<Array<PaymentProvider>>;
 
 export interface PaymentSettingsOptions {
   sortProviders?: (a: PaymentProvider, b: PaymentProvider) => number;

@@ -4,6 +4,7 @@ import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection';
 import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule';
 import { configurePaymentProvidersModule } from './configurePaymentProvidersModule';
+import { paymentSettings } from '../payment-settings';
 
 export const configurePaymentModule = async ({
   db,
@@ -12,8 +13,10 @@ export const configurePaymentModule = async ({
   const PaymentProviders = await PaymentProvidersCollection(db);
   const PaymentCredentials = await PaymentCredentialsCollection(db);
 
+  paymentSettings.configureSettings(paymentOptions);
+
   return {
-    paymentProviders: configurePaymentProvidersModule(PaymentProviders, paymentOptions),
+    paymentProviders: configurePaymentProvidersModule(PaymentProviders),
     paymentCredentials: configurePaymentCredentialsModule(PaymentCredentials),
   };
 };

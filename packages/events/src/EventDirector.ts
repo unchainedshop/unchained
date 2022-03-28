@@ -55,7 +55,6 @@ export const EventDirector: IEventDirector = {
   getEmitHistoryAdapter: (): EmitAdapter => HistoryAdapter,
 
   emit: async (eventName: string, data: any): Promise<void> => {
-    // const context = getContext();
     const extractedContext = ContextNormalizer(null);
 
     if (!RegisteredEventsSet.has(eventName))

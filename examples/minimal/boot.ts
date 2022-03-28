@@ -88,7 +88,7 @@ Meteor.startup(async () => {
         },
       },
       payment: {
-        filterSupportedProviders: ({ providers }) => {
+        filterSupportedProviders: async ({ providers }) => {
           return providers.sort((left, right) => {
             if (left.adapterKey < right.adapterKey) {
               return -1;
