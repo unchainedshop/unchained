@@ -1,5 +1,5 @@
 ./clean-packages.sh &&
-cd packages/utils &&
+cd packages/@unchainedshop/types && npm publish && cd .. &&
 
 cd ../logger && meteor publish &&
 cd ../roles && meteor publish &&
@@ -30,5 +30,4 @@ cd ../core-events && meteor publish &&
 cd ../core && meteor publish &&
 
 cd ../api && meteor publish &&
-cd ../platform && meteor publish &&
-cd ../@unchainedshop/types && npm publish
+cd ../platform && meteor publish

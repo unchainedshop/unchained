@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-enrollments',
-  version: '1.0.0-rc.13',
+  version: '1.0.0-rc.14',
   summary: 'Unchained Engine Core: Enrollments',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -18,9 +18,9 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.13');
-  api.use('unchained:events@1.0.0-rc.13');
-  api.use('unchained:logger@1.0.0-rc.13');
+  api.use('unchained:utils@1.0.0-rc.14');
+  api.use('unchained:events@1.0.0-rc.14');
+  api.use('unchained:logger@1.0.0-rc.14');
 
   api.mainModule('src/enrollments-index.ts', 'server');
 });

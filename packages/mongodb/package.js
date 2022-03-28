@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:mongodb',
-  version: '1.0.0-rc.13',
+  version: '1.0.0-rc.14',
   summary: 'Unchained Engine: MongoDB provider for unchained platform',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -12,7 +12,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.13');
+  api.use('unchained:utils@1.0.0-rc.14');
 
   api.mainModule('src/mongodb-index.js');
 });
@@ -22,7 +22,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb@1.0.0-rc.13');
+  api.use('unchained:mongodb@1.0.0-rc.14');
 
   api.mainModule('test/mongodb-index.tests.js');
 });
