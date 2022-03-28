@@ -337,12 +337,7 @@ export const configureAssortmentsModule = async ({
       );
 
       if (locale) {
-        await assortmentTexts.upsertLocalizedText(
-          assortmentId,
-          locale,
-          { assortmentId, title, authorId, locale },
-          userId,
-        );
+        await assortmentTexts.upsertLocalizedText(assortmentId, locale, { title }, userId);
       }
 
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId));

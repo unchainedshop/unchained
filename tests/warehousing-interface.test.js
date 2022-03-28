@@ -33,8 +33,8 @@ describe('WarehousingInterfaces', () => {
       });
       expect(warehousingInterfaces).toMatchObject([
         {
-          _id: 'shop.unchained.warehousing.google-sheets',
-          label: 'Google Sheets',
+          _id: 'shop.unchained.warehousing.store',
+          label: 'Store',
         }
       ]);
     });

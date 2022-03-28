@@ -71,17 +71,16 @@ export default async function upsertMedia({ media, authorId, productId }, unchai
 
       if (content) {
         await Promise.all(
-          Object.entries(content).map(async ([locale, localizedData]: [string, ProductMediaText]) => {
-            return modules.products.media.texts.upsertLocalizedText(
-              productMedia._id,
-              locale,
-              {
-                ...localizedData,
-                authorId,
-              },
-              userId,
-            );
-          }),
+          Object.entries(content).map(
+            async ([locale, { authorId: tAuthorId, ...localizedData }]: [string, ProductMediaText]) => {
+              return modules.products.media.texts.upsertLocalizedText(
+                productMedia._id,
+                locale,
+                localizedData,
+                tAuthorId || userId,
+              );
+            },
+          ),
         );
       }
       return productMedia;

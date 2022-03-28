@@ -97,7 +97,9 @@ export type ProductVariationsModule = {
     // Mutations
     updateVariationTexts: (
       productVariationId: string,
-      texts: Array<ProductVariationText>,
+      texts: Array<
+        Omit<ProductVariationText, 'authorId' | 'productVariationId' | 'productVariationOptionValue'>
+      >,
       productVariationOptionValue?: string,
       userId?: string,
     ) => Promise<Array<ProductVariationText>>;
@@ -108,7 +110,10 @@ export type ProductVariationsModule = {
         productVariationOptionValue?: string;
       },
       locale: string,
-      text: ProductVariationText,
+      text: Omit<
+        ProductVariationText,
+        'authorId' | 'locale' | 'productVariationId' | 'productVariationOptionValue'
+      >,
       userId?: string,
     ) => Promise<ProductVariationText>;
   };

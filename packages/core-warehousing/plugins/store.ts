@@ -8,7 +8,7 @@ import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 const Store: IWarehousingAdapter = {
   ...WarehousingAdapter,
 
-  key: 'shop.unchained.store',
+  key: 'shop.unchained.warehousing.store',
   version: '1.0',
   label: 'Store',
   orderIndex: 0,

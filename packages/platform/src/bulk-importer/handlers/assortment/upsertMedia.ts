@@ -64,17 +64,19 @@ export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) 
 
       if (content) {
         await Promise.all(
-          Object.entries(content).map(async ([locale, localizedData]: [string, AssortmentMediaText]) => {
-            return modules.assortments.media.texts.upsertLocalizedText(
-              mediaObject._id,
-              locale,
-              {
-                ...localizedData,
-                authorId,
-              },
-              userId,
-            );
-          }),
+          Object.entries(content).map(
+            async ([locale, { authorId: tAuthorId, ...localizedData }]: [
+              string,
+              AssortmentMediaText,
+            ]) => {
+              return modules.assortments.media.texts.upsertLocalizedText(
+                mediaObject._id,
+                locale,
+                localizedData,
+                tAuthorId || userId,
+              );
+            },
+          ),
         );
       }
       return mediaObject;

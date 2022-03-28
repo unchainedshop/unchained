@@ -40,13 +40,13 @@ export const configureAssortmentTextsModule = ({
     });
   };
 
-  const upsertLocalizedText = async (
-    assortmentId: string,
-    locale: string,
-    text: AssortmentText,
-    userId?: string,
+  const upsertLocalizedText: AssortmentsModule['texts']['upsertLocalizedText'] = async (
+    assortmentId,
+    locale,
+    text,
+    userId,
   ) => {
-    const { slug: textSlug, locale: textLocale, ...textFields } = text;
+    const { slug: textSlug, ...textFields } = text;
     const slug = await makeSlug({
       slug: textSlug,
       title: text.title,
@@ -63,7 +63,7 @@ export const configureAssortmentTextsModule = ({
         _id: generateDbObjectId(),
         created: new Date(),
         createdBy: userId,
-        locale: locale || textLocale,
+        locale,
       },
     };
 
@@ -110,6 +110,7 @@ export const configureAssortmentTextsModule = ({
 
     return AssortmentTexts.findOne(
       updateResult.upsertedId ? generateDbFilterById(updateResult.upsertedId) : selector,
+      {},
     );
   };
 
@@ -150,16 +151,8 @@ export const configureAssortmentTextsModule = ({
     updateTexts: async (assortmentId, texts, userId) => {
       const assortmentTexts = Array.isArray(texts)
         ? await Promise.all(
-            texts.map((text) =>
-              upsertLocalizedText(
-                assortmentId,
-                text.locale,
-                {
-                  ...text,
-                  authorId: userId,
-                },
-                userId,
-              ),
+            texts.map(async ({ locale, ...text }) =>
+              upsertLocalizedText(assortmentId, locale, text, userId),
             ),
           )
         : [];

@@ -391,8 +391,7 @@ export const logs = [
     _id: 'tnnzREWjpxKoArRmx',
     created: 1590673477737,
     level: 'info',
-    message:
-      'WarehousingDirector -> Registered shop.unchained.warehousing.google-sheets 1.0 (Google Sheets)',
+    message: 'WarehousingDirector -> Registered shop.unchained.warehousing.store 1.0 (Stores)',
     user: null,
     order: null,
   },

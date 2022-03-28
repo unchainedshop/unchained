@@ -32,18 +32,18 @@ export default async function upsertVariations(
         options.map(async ({ content: optionContent, value: optionValue }) => {
           await Promise.all(
             Object.entries(optionContent).map(
-              async ([locale, localizedData]: [string, ProductVariationText]) => {
+              async ([locale, { authorId: tAuthorId, ...localizedData }]: [
+                string,
+                ProductVariationText,
+              ]) => {
                 return modules.products.variations.texts.upsertLocalizedText(
                   {
                     productVariationId: variation._id,
                     productVariationOptionValue: optionValue,
                   },
                   locale,
-                  {
-                    ...localizedData,
-                    authorId,
-                  },
-                  userId,
+                  localizedData,
+                  tAuthorId || userId,
                 );
               },
             ),
@@ -51,19 +51,21 @@ export default async function upsertVariations(
         }),
       );
       await Promise.all(
-        Object.entries(content).map(async ([locale, localizedData]: [string, ProductVariationText]) => {
-          return modules.products.variations.texts.upsertLocalizedText(
-            {
-              productVariationId: variation._id,
-            },
-            locale,
-            {
-              ...localizedData,
-              authorId,
-            },
-            userId,
-          );
-        }),
+        Object.entries(content).map(
+          async ([locale, { authorId: tAuthorId, ...localizedData }]: [
+            string,
+            ProductVariationText,
+          ]) => {
+            return modules.products.variations.texts.upsertLocalizedText(
+              {
+                productVariationId: variation._id,
+              },
+              locale,
+              localizedData,
+              tAuthorId || userId,
+            );
+          },
+        ),
       );
       return variation;
     }),

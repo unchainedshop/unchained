@@ -45,11 +45,11 @@ export const configureAssortmentMediaModule = async ({
     AssortmentMediasSchema,
   ) as ModuleMutations<AssortmentMedia>;
 
-  const upsertLocalizedText = async (
-    assortmentMediaId: string,
-    locale: string,
-    text: AssortmentMediaText,
-    userId: string,
+  const upsertLocalizedText: AssortmentMediaModule['texts']['upsertLocalizedText'] = async (
+    assortmentMediaId,
+    locale,
+    text,
+    userId,
   ) => {
     const selector = {
       assortmentMediaId,
@@ -239,16 +239,8 @@ export const configureAssortmentMediaModule = async ({
       // Mutations
       updateMediaTexts: async (assortmentMediaId, texts, userId) => {
         const mediaTexts = await Promise.all(
-          texts.map(({ locale, ...localizations }) =>
-            upsertLocalizedText(
-              assortmentMediaId,
-              locale,
-              {
-                ...localizations,
-                authorId: userId,
-              },
-              userId,
-            ),
+          texts.map(({ locale, ...text }) =>
+            upsertLocalizedText(assortmentMediaId, locale, text, userId),
           ),
         );
 

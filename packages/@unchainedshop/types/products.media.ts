@@ -68,14 +68,14 @@ export type ProductMediaModule = {
     // Mutations
     updateMediaTexts: (
       productMediaId: string,
-      texts: Array<ProductMediaText>,
+      texts: Array<Omit<ProductMediaText, 'productMediaId' | 'authorId'>>,
       userId: string,
     ) => Promise<Array<ProductMediaText>>;
 
     upsertLocalizedText: (
       productMediaId: string,
       locale: string,
-      text: ProductMediaText,
+      text: Omit<ProductMediaText, 'productMediaId' | 'locale' | 'authorId'>,
       userId?: string,
     ) => Promise<ProductMediaText>;
   };

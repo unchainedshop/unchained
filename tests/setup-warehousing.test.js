@@ -39,7 +39,7 @@ describe('setup warehousing providers', () => {
         variables: {
           warehousingProvider: {
             type: 'PHYSICAL',
-            adapterKey: 'shop.unchained.warehousing.google-sheets',
+            adapterKey: 'shop.unchained.warehousing.store',
           },
         },
       });
@@ -48,7 +48,7 @@ describe('setup warehousing providers', () => {
         configurationError: null,
         deleted: null,
         interface: {
-          _id: 'shop.unchained.warehousing.google-sheets',
+          _id: 'shop.unchained.warehousing.store',
         },
         type: 'PHYSICAL',
       });
@@ -103,7 +103,7 @@ describe('setup warehousing providers', () => {
         configurationError: null,
         deleted: null,
         interface: {
-          _id: 'shop.unchained.warehousing.google-sheets',
+          _id: 'shop.unchained.warehousing.store',
         },
         type: 'PHYSICAL',
       });

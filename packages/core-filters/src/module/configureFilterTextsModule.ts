@@ -13,11 +13,11 @@ export const configureFilterTextsModule = ({
 }): FiltersModule['texts'] => {
   registerEvents(FILTER_TEXT_EVENTS);
 
-  const upsertLocalizedText = async (
-    params: { filterId: string; filterOptionValue?: string },
-    locale: string,
-    text: FilterText,
-    userId?: string,
+  const upsertLocalizedText: FiltersModule['texts']['upsertLocalizedText'] = async (
+    params,
+    locale,
+    text,
+    userId,
   ) => {
     const { filterId, filterOptionValue } = params;
 
@@ -50,6 +50,7 @@ export const configureFilterTextsModule = ({
 
     return FilterTexts.findOne(
       updateResult.upsertedId ? generateDbFilterById(updateResult.upsertedId) : selector,
+      {},
     );
   };
 
@@ -82,18 +83,7 @@ export const configureFilterTextsModule = ({
     // Mutations
     updateTexts: async (params, texts, userId) => {
       const filterTexts = await Promise.all(
-        texts.map((text) =>
-          upsertLocalizedText(
-            params,
-            text.locale,
-            {
-              ...text,
-              ...params,
-              authorId: userId,
-            },
-            userId,
-          ),
-        ),
+        texts.map(({ locale, ...text }) => upsertLocalizedText(params, locale, text, userId)),
       );
 
       emit('FILTER_UPDATE_TEXTS', {

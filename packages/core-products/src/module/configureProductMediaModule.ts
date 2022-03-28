@@ -231,15 +231,7 @@ export const configureProductMediaModule = async ({
       updateMediaTexts: async (productMediaId, texts, userId) => {
         const mediaTexts = await Promise.all(
           texts.map(({ locale, ...localizations }) =>
-            upsertLocalizedText(
-              productMediaId,
-              locale,
-              {
-                ...localizations,
-                authorId: userId,
-              },
-              userId,
-            ),
+            upsertLocalizedText(productMediaId, locale, localizations, userId),
           ),
         );
 

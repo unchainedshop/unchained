@@ -67,14 +67,14 @@ export type AssortmentMediaModule = {
     // Mutations
     updateMediaTexts: (
       assortmentMediaId: string,
-      texts: Array<AssortmentMediaText>,
+      texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId' | 'authorId'>>,
       userId: string,
     ) => Promise<Array<AssortmentMediaText>>;
 
     upsertLocalizedText: (
       assortmentId: string,
       locale: string,
-      text: AssortmentMediaText,
+      text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale' | 'authorId'>,
       userId?: string,
     ) => Promise<AssortmentMediaText>;
   };
