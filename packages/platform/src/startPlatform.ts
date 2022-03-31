@@ -8,6 +8,7 @@ import { interceptEmails } from './interceptEmails';
 import { runMigrations } from './migrations/runMigrations';
 import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
 import { generateWorkerTypeDefs } from './setup/generateWorkTypeDefs';
+import { generateRoleActionTypeDefs } from './setup/generateRoleActionTypeDefs';
 import { setupAccounts } from './setup/setupAccounts';
 import { setupAutoScheduling } from './setup/setupAutoScheduling';
 import { setupCarts } from './setup/setupCarts';
@@ -90,7 +91,11 @@ export const startPlatform = async (
   // Setup email templates
   setupTemplates();
 
-  const generatedTypeDefs = [...generateEventTypeDefs(), ...generateWorkerTypeDefs()];
+  const generatedTypeDefs = [
+    ...generateEventTypeDefs(),
+    ...generateWorkerTypeDefs(),
+    ...generateRoleActionTypeDefs(),
+  ];
 
   // Start the graphQL server
   startAPIServer({

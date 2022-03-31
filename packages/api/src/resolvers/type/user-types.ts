@@ -33,6 +33,7 @@ export interface UserHelperTypes {
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
   lastContact: HelperType<any, Contact>;
   lastLogin: HelperType<any, UserType['lastLogin']>;
+  allowedActions: HelperType<any, Array<string>>;
   // locale: HelperType<{ localeContext: Locale }, Locale>;
   name: HelperType<any, string>;
   orders: HelperType<{ includeCarts: boolean }, Array<Order>>;
@@ -143,6 +144,11 @@ export const User: UserHelperTypes = {
   language: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return context.services.users.getUserLanguage(user, params, context);
+  },
+
+  allowedActions: async (user, params, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    return context.services.users.getUserRoleActions(user, context);
   },
 
   // locale: async (user, params, context) => {

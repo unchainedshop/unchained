@@ -20,6 +20,7 @@ Package.onUse((api) => {
   api.use('unchained:utils@1.0.0-rc.14');
   api.use('unchained:logger@1.0.0-rc.14');
   api.use('unchained:file-upload@1.0.0-rc.14');
+  api.use('unchained:roles@1.0.0-rc.14');
 
   api.mainModule('src/users-index.ts', 'server');
 });

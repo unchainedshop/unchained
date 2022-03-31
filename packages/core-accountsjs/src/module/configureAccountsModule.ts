@@ -91,6 +91,27 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
       };
     },
 
+    createImpersonationToken: async (userId, rawContext) => {
+      const context = evaluateContext(filterContext(rawContext));
+
+      const { user: tokenUser, token: loginToken } = await accountsServer.loginWithUser(userId);
+
+      await accountsServer.getHooks().emit('ImpersonationSuccess', {
+        user: context.user,
+        impersonationResult: {
+          authorized: true,
+          tokens: loginToken,
+          user: tokenUser,
+        },
+      });
+
+      return {
+        id: userId,
+        token: loginToken.token,
+        tokenExpires: loginToken.when,
+      };
+    },
+
     createHashLoginToken: (loginToken) => accountsServer.hashLoginToken(loginToken),
 
     loginWithService: async (params, rawContext) => {

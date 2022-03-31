@@ -96,20 +96,26 @@ const actions = [
   'bulkImport',
   'authTwoFactor',
   'manageTwoFactor',
+  'impersonate',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;
   return newValue;
 }, {});
 
-const configureRoles = ({ additionalRoles = {} }) => {
+const configureRoles = ({ additionalRoles = {}, additionalActions = [] }) => {
+  additionalActions.forEach((action) => {
+    actions[action] = action;
+  });
   Object.entries(additionalRoles).forEach(([key, val]: [string, any]) => {
     allRoles[key] = new Role(key);
     val(allRoles[key], actions);
   });
-  all(roles.ALL, actions);
-  loggedIn(roles.LOGGEDIN, actions);
-  admin(roles.ADMIN, actions);
+  all(allRoles.ALL, actions);
+  loggedIn(allRoles.LOGGEDIN, actions);
+  admin(allRoles.ADMIN, actions);
+
+  return allRoles;
 };
 
 const checkUserHasPermission = Roles.userHasPermission;

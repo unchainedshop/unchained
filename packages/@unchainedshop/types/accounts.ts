@@ -62,6 +62,14 @@ export interface AccountsModule {
     token: string;
     tokenExpires: Date;
   }>;
+  createImpersonationToken: (
+    userId: string,
+    context: Context,
+  ) => Promise<{
+    id: string;
+    token: string;
+    tokenExpires: Date;
+  }>;
   loginWithService: (
     params:
       | { service: 'guest' }

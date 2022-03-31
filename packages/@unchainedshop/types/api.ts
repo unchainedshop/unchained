@@ -26,6 +26,7 @@ export interface UnchainedAPI {
   modules: Modules;
   services: Services;
   version?: string;
+  roles: any;
 }
 
 export interface UnchainedHTTPServerContext {

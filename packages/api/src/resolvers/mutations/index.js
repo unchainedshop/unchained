@@ -1,6 +1,7 @@
 import { actions } from '../../roles';
 import { checkResolver as acl } from '../../acl';
 import loginWithPassword from './accounts/loginWithPassword';
+import impersonate from './accounts/impersonate';
 import loginAsGuest from './accounts/loginAsGuest';
 import logout from './accounts/logout';
 import logoutAllSessions from './accounts/logoutAllSessions';
@@ -151,6 +152,7 @@ export default {
   loginAsGuest,
   verifyEmail,
   loginWithPassword,
+  impersonate: acl(actions.impersonate)(impersonate),
   buildSecretTOTPAuthURL: acl(actions.authTwoFactor)(buildSecretTOTPAuthURL),
   enableTOTP: acl(actions.authTwoFactor)(enableTOTP),
   disableTOTP: acl(actions.manageTwoFactor)(disableTOTP),

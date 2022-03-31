@@ -1,5 +1,7 @@
 export default [
   /* GraphQL */ `
+    enum RoleAction
+
     """
     Type returned when the user logs in
     """
@@ -73,6 +75,7 @@ export default [
       bookmarks: [Bookmark!]!
       paymentCredentials: [PaymentCredentials!]!
       enrollments: [Enrollment!]!
+      allowedActions: [RoleAction!]!
     }
   `,
 ];

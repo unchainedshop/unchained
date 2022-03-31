@@ -66,4 +66,5 @@ export const admin = (role, actions) => {
   role.allow(actions.bulkImport, () => true);
   role.allow(actions.authTwoFactor, () => true);
   role.allow(actions.manageTwoFactor, () => true);
+  role.allow(actions.impersonate, () => true);
 };

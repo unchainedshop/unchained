@@ -30,19 +30,20 @@ export const Roles: RolesInterface = {
    * Get user roles
    */
   getUserRoles(context, roles, includeSpecial) {
+    const newRoles = [...(roles || [])];
     if (includeSpecial) {
-      roles.push('__all__');
+      newRoles.push('__all__');
       if (!context.userId) {
-        roles.push('__notLoggedIn__');
+        newRoles.push('__notLoggedIn__');
       } else {
-        roles.push('__loggedIn__');
-        if (!roles.includes('admin')) {
-          roles.push('__notAdmin__');
+        newRoles.push('__loggedIn__');
+        if (!newRoles.includes('admin')) {
+          newRoles.push('__notAdmin__');
         }
       }
     }
 
-    return roles;
+    return newRoles;
   },
 
   /**

@@ -112,6 +112,8 @@ export type GetUserLanguageService = (
   context: Context,
 ) => Promise<Language>;
 
+export type GetUserRoleActionsService = (user: User, context: Context) => Promise<Array<string>>;
+
 export type GetUserCountryService = (
   user: User,
   params: { localeContext?: Locale },
@@ -121,5 +123,6 @@ export type GetUserCountryService = (
 export interface UserServices {
   getUserCountry: GetUserCountryService;
   getUserLanguage: GetUserLanguageService;
+  getUserRoleActions: GetUserRoleActionsService;
   updateUserAvatarAfterUpload: UpdateUserAvatarAfterUploadService;
 }

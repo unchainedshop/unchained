@@ -34,7 +34,7 @@ export type UnchainedContextResolver = (params: {
 const UNCHAINED_API_VERSION = '1.0.0-rc.14'; // eslint-disable-line
 
 const createContextResolver =
-  (unchainedAPI: UnchainedAPI): UnchainedContextResolver =>
+  (unchainedAPI: UnchainedAPI, roles: any): UnchainedContextResolver =>
   async ({ req, res, ...apolloContext }) => {
     const loaders = await instantiateLoaders(req, unchainedAPI);
     const userContext = await getUserContext(req, unchainedAPI);
@@ -48,6 +48,7 @@ const createContextResolver =
       ...loaders,
       ...userContext,
       ...localeContext,
+      roles,
       version: UNCHAINED_API_VERSION,
     };
   };
@@ -62,9 +63,9 @@ export const startAPIServer = (options: UnchainedServerOptions) => {
     ...apolloServerOptions
   } = options || {};
 
-  configureRoles(rolesOptions);
+  const roles = configureRoles(rolesOptions);
 
-  const contextResolver = createContextResolver(unchainedAPI);
+  const contextResolver = createContextResolver(unchainedAPI, roles);
 
   context = customContext
     ? ({ req, res }) => {

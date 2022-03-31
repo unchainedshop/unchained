@@ -74,6 +74,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewEnrollment, () => false);
   role.allow(actions.authTwoFactor, () => false);
   role.allow(actions.manageTwoFactor, () => false);
+  role.allow(actions.impersonate, () => false);
 
   // only allow if query is not demanding for drafts
   role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);
