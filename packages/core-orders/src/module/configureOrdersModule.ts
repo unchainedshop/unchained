@@ -83,6 +83,10 @@ export const configureOrdersModule = async ({
         if (!order.fullfilled) {
           $set.fullfilled = date;
         }
+      case OrderStatus.REJECTED: // eslint-disable-line no-fallthrough
+        if (!order.rejected) {
+          $set.rejected = date;
+        }
       case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
         if (!order.confirmed) {
           $set.confirmed = date;

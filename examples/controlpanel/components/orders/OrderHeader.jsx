@@ -21,6 +21,7 @@ const OrderHeader = ({
   ordered,
   orderNumber,
   confirmed,
+  rejected,
   country,
   contact,
   fullfilled,
@@ -114,6 +115,12 @@ const OrderHeader = ({
               </List.Content>
             </List.Item>
             <List.Item>
+              <List.Icon name="thumbs outline down" />
+              <List.Content>
+                Rejected: {rejected ? format(new Date(rejected), 'Pp') : 'n/a'}
+              </List.Content>
+            </List.Item>
+            <List.Item>
               <List.Icon name="checkmark box" />
               <List.Content>
                 Fullfilled: {fullfilled ? format(new Date(fullfilled), 'Pp') : 'n/a'}
@@ -161,6 +168,7 @@ export default compose(
         updated
         ordered
         confirmed
+        rejected
         fullfilled
         user {
           _id

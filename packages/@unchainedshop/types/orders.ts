@@ -29,6 +29,7 @@ export type Order = {
   billingAddress?: Address;
   calculation: Array<any>;
   confirmed?: Date;
+  rejected?: Date;
   contact?: Contact;
   context?: any;
   countryCode: string;

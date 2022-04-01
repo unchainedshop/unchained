@@ -93,6 +93,7 @@ export default [
       _id: ID!
       billingAddress: Address
       confirmed: DateTime
+      rejected: DateTime
       contact: Contact
       country: Country
       created: DateTime

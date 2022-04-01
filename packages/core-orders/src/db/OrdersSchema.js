@@ -13,6 +13,7 @@ export const OrdersSchema = new SimpleSchema(
   {
     billingAddress: Schemas.Address,
     confirmed: Date,
+    rejected: Date,
     contact: Schemas.Contact,
     countryCode: String,
     currency: String,
