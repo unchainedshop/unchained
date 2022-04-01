@@ -6,7 +6,7 @@ export const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
   expires: fileData.expiryDate,
   name: fileData.fileName,
   size: fileData.size,
-  type: fileData.type || undefined,
+  type: fileData.type || 'application/octet-stream',
   url: fileData.url,
   meta,
 });

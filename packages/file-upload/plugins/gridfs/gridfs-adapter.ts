@@ -86,14 +86,13 @@ export const GridFSAdapter: IFileAdapter = {
 
     const file = await promisePipe(stream, writeStream);
     const url = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}`;
-
     return {
       _id,
       directoryName,
       expiryDate: null,
       fileName,
       size: file.length,
-      type: mimeType.lookup(fileName),
+      type: mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype,
       url,
     };
   },

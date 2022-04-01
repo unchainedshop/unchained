@@ -46,8 +46,6 @@ export const createMigrationRunner = ({
   async run() {
     try {
       const migrations = this.migrateToLatest();
-      export default (fns) => (initialValue) =>
-        fns.reduce((sum, fn) => Promise.resolve(sum).then(fn), initialValue);
 
       const mostRecentId = await migrations.reduce(
         (idPromise, migration) => Promise.resolve(idPromise).then(migration),
