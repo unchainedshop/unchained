@@ -46,7 +46,6 @@ export default async function createProduct(
     {
       content: specification.content,
       productId: _id,
-      authorId,
     },
     unchainedAPI,
   );

@@ -12,7 +12,6 @@ import createBulkImportServer from './createBulkImportServer';
 import createGraphQLServer from './createGraphQLServer';
 import instantiateLoaders from './loaders';
 import { getLocaleContext } from './locale-context';
-import { configureRoles } from './roles';
 import { getUserContext } from './user-context';
 
 export * as acl from './acl';
@@ -56,14 +55,7 @@ const createContextResolver =
 let context;
 
 export const startAPIServer = (options: UnchainedServerOptions) => {
-  const {
-    unchainedAPI,
-    rolesOptions = {},
-    context: customContext,
-    ...apolloServerOptions
-  } = options || {};
-
-  const roles = configureRoles(rolesOptions);
+  const { unchainedAPI, roles, context: customContext, ...apolloServerOptions } = options || {};
 
   const contextResolver = createContextResolver(unchainedAPI, roles);
 

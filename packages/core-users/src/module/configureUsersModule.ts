@@ -264,7 +264,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
 
-      return Users.findOne(userFilter, {});
+      return Users.findOne(userFilter, {}) as Promise<User>;
     },
 
     updateUser: async (query, modifier, options) => {

@@ -61,10 +61,12 @@ export type Context = UnchainedAPI &
 export type UnchainedServerOptions = {
   unchainedAPI: UnchainedAPI;
   bulkImporter?: any;
-  rolesOptions?: any;
+  roles?: any;
   typeDefs: Array<string>;
   resolvers: Record<string, any>;
   context?: any;
+  tracing?: boolean;
+  cacheControl?: any;
   corsOrigins: any;
   introspection: boolean;
   playground: boolean;

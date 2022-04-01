@@ -1,6 +1,6 @@
 import { SetupWorkqueueOptions, PlatformOptions, MessageTypes } from '@unchainedshop/types/platform';
 import { Meteor } from 'meteor/meteor';
-import { startAPIServer } from 'meteor/unchained:api';
+import { startAPIServer, roles } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
 import { initDb } from 'meteor/unchained:mongodb';
 import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
@@ -46,7 +46,7 @@ export const startPlatform = async (
     typeDefs = [],
     resolvers = [],
     options = {},
-    rolesOptions,
+    rolesOptions = {},
     workQueueOptions,
     disableEmailInterception,
     context,
@@ -85,6 +85,8 @@ export const startPlatform = async (
     await runMigrations({ migrationRepository, unchainedAPI });
   }
 
+  const configuredRoles = roles.configureRoles(rolesOptions);
+
   // Setup accountsjs specific extensions and event handlers
   setupAccounts(unchainedAPI);
 
@@ -100,7 +102,7 @@ export const startPlatform = async (
   // Start the graphQL server
   startAPIServer({
     unchainedAPI,
-    rolesOptions,
+    roles: configuredRoles,
     typeDefs: [...generatedTypeDefs, ...typeDefs],
     resolvers,
     context,

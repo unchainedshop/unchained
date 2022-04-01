@@ -22,7 +22,7 @@ export interface RolesInterface {
   helpers: string[];
   registerAction(name: string): void;
   registerHelper(name: string): void;
-  getUserRoles(context: Context, roles: Array<string>, includeSpecial: boolean): string[];
+  getUserRoles(userId: string, roles: Array<string>, includeSpecial: boolean): string[];
   allow(
     context: Context,
     roles: Array<string>,

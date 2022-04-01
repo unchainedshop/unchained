@@ -26,7 +26,6 @@ export default async function createProduct(payload: any, { logger, authorId }, 
         {
           content: specification.content,
           productId: _id,
-          authorId,
         },
         unchainedAPI,
       );

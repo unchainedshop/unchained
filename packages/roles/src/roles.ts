@@ -29,11 +29,11 @@ export const Roles: RolesInterface = {
   /**
    * Get user roles
    */
-  getUserRoles(context, roles, includeSpecial) {
+  getUserRoles(userId, roles, includeSpecial) {
     const newRoles = [...(roles || [])];
     if (includeSpecial) {
       newRoles.push('__all__');
-      if (!context.userId) {
+      if (!userId) {
         newRoles.push('__notLoggedIn__');
       } else {
         newRoles.push('__loggedIn__');
@@ -50,7 +50,7 @@ export const Roles: RolesInterface = {
    * Returns true if the user passes the allow check
    */
   async allow(context, roles, action, [obj, params]) {
-    const userRoles = Roles.getUserRoles(context, roles, true);
+    const userRoles = Roles.getUserRoles(context.userId, roles, true);
 
     return userRoles.reduce(async (roleIsAllowedPromise: Promise<boolean>, role) => {
       const roleIsAllowed = await roleIsAllowedPromise;

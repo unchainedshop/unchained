@@ -218,6 +218,7 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
 /* Settings */
 
 export interface FiltersSettingsOptions {
+  skipInvalidationOnStartup: boolean;
   setCachedProductIds?: (
     filterId: string,
     productIds: Array<string>,
@@ -227,6 +228,7 @@ export interface FiltersSettingsOptions {
 }
 
 export interface FiltersSettings {
+  skipInvalidationOnStartup?: boolean;
   setCachedProductIds?: (
     filterId: string,
     productIds: Array<string>,

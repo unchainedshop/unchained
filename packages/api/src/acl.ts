@@ -1,5 +1,5 @@
 import { CheckPermissionArgs } from '@unchainedshop/types/roles';
-import { checkUserHasPermission } from './roles';
+import { Roles } from 'meteor/unchained:roles';
 import { NoPermissionError, PermissionSystemError } from './errors';
 
 const defaultOptions = {
@@ -28,7 +28,7 @@ const ensureIsFunction = (fn, action, options, key) => {
 const checkAction = async (context, action, args = emptyArray, options: any = emptyObject) => {
   const { key } = options || emptyObject;
 
-  const hasPermission = await checkUserHasPermission(context, action, args);
+  const hasPermission = await Roles.userHasPermission(context, action, args);
   if (hasPermission) return;
 
   const keyText = key && key !== '' ? ` in "${key}"` : '';

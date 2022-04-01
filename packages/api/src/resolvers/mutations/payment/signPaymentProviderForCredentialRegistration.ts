@@ -14,16 +14,16 @@ export default async function signPaymentProviderForCredentialRegistration(
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
 
-  const paymentProvider = await modules.payment.paymentProviders.findProvider({
-    paymentProviderId,
-  });
-  if (!paymentProvider) throw new PaymentProviderNotFoundError({ paymentProviderId });
+  if (
+    !(await modules.payment.paymentProviders.providerExists({
+      paymentProviderId,
+    }))
+  )
+    throw new PaymentProviderNotFoundError({ paymentProviderId });
 
   return modules.payment.paymentProviders.sign(
     paymentProviderId,
     {
-      paymentProviderId,
-      paymentProvider,
       transactionContext,
     },
     context,

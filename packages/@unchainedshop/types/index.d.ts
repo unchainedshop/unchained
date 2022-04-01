@@ -4,7 +4,7 @@ import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
 import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
-import { MessageTypes as MessageTypesType, PlatformOptions } from './platform';
+import { MessageTypes, PlatformOptions } from './platform';
 
 import { BookmarkServices, BookmarksModule } from './bookmarks';
 import {
@@ -485,6 +485,13 @@ declare module 'meteor/unchained:core' {
   function initCore(options: UnchainedCoreOptions): Promise<Context>;
 }
 
+type APIRoles = {
+  allRoles: any;
+  actions: any;
+  configureRoles(params: any): any;
+  updateUserRole(context: Context, roleName: string): any;
+};
+
 declare module 'meteor/unchained:api' {
   function startAPIServer(options: UnchainedServerOptions): {
     apolloGraphQLServer: ApolloServer;
@@ -492,6 +499,8 @@ declare module 'meteor/unchained:api' {
   };
 
   function hashPassword(password: string): string;
+
+  const roles: APIRoles;
 }
 
 declare module 'meteor/unchained:mongodb' {
@@ -506,7 +515,7 @@ declare module 'meteor/unchained:roles' {
   function has(obj: { [key: string]: any }, key: string): boolean;
 }
 declare module 'meteor/unchained:platform' {
-  const MessageTypes: MessageTypesType;
+  const MessageTypes: MessageTypes;
   const queueWorkers: Array<any>;
 
   function startPlatform(options: PlatformOptions): Promise<Context>;
