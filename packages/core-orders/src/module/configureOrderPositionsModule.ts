@@ -242,7 +242,6 @@ export const configureOrderPositionsModule = ({
             referenceDate: order.ordered,
             quantity: orderPosition.quantity,
           };
-
           const dispatch = await requestContext.modules.warehousing.estimatedDispatch(
             warehousingProvider,
             context,
@@ -260,7 +259,7 @@ export const configureOrderPositionsModule = ({
         $set: { scheduling },
       });
 
-      return true;
+      return OrderPositions.findOne(generateDbFilterById(orderPosition._id), {});
     },
 
     updateCalculation: async (orderPosition, requestContext) => {

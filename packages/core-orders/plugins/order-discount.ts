@@ -70,7 +70,6 @@ const OrderDiscount: IOrderPricingAdapter = {
         // discounts need to provide a *fixedRate*
         // if you want to add percentual discounts,
         // add it to the order item calculation
-
         const totalAmountOfItems = pricingAdapter.calculationSheet().sum({
           category: OrderPricingRowCategory.Items,
         });
@@ -88,12 +87,13 @@ const OrderDiscount: IOrderPricingAdapter = {
             totalAmountOfItems,
           ),
         );
+
         const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
-          modules.orders.deliveries.pricingSheet(orderDelivery, order.currency),
+          orderDelivery && modules.orders.deliveries.pricingSheet(orderDelivery, order.currency),
           totalAmountOfPaymentAndDelivery,
         );
         const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
-          modules.orders.payments.pricingSheet(orderPayment, order.currency),
+          orderPayment && modules.orders.payments.pricingSheet(orderPayment, order.currency),
           totalAmountOfPaymentAndDelivery,
         );
 

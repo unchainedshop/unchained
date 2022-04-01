@@ -84,17 +84,20 @@ export const Order: OrderHelperTypes = {
   status: (obj, _, { modules }) => modules.orders.normalizedStatus(obj),
 
   total: async (obj, params: { category: string }, { modules }) => {
-    const price = modules.orders
-      .pricingSheet(obj)
-      .total({ category: params.category, useNetPrice: false });
+    const pricingSheet = modules.orders.pricingSheet(obj);
 
-    return {
-      _id: crypto
-        .createHash('sha256')
-        .update([obj._id, price.amount, price.currency].join(''))
-        .digest('hex'),
-      ...price,
-    };
+    if (pricingSheet.isValid()) {
+      const price = pricingSheet.total({ category: params.category, useNetPrice: false });
+
+      return {
+        _id: crypto
+          .createHash('sha256')
+          .update([obj._id, price.amount, price.currency].join(''))
+          .digest('hex'),
+        ...price,
+      };
+    }
+    return null;
   },
 
   user: async (obj, _, { modules }) => modules.users.findUserById(obj.userId),

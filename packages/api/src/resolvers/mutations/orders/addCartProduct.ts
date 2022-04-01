@@ -24,7 +24,6 @@ export default async function addCartProduct(
   if (!product) throw new ProductNotFoundError({ productId });
 
   const order = await getOrderCart({ orderId, user }, context);
-
   const orderPosition = await modules.orders.positions.addProductItem(
     {
       quantity,

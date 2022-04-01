@@ -1,6 +1,9 @@
 import { Context } from '@unchainedshop/types/api';
 import { ModuleInput, Update } from '@unchainedshop/types/common';
 import { Order, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
+import { OrderPayment } from '@unchainedshop/types/orders.payments';
+import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById } from 'meteor/unchained:utils';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection';
@@ -35,10 +38,13 @@ export const configureOrdersModule = async ({
   const OrderPositions = await OrderPositionsCollection(db);
 
   const findOrderPositions = async (order: Order) =>
-    OrderPositions.find({
-      orderId: order._id,
-      quantity: { $gt: 0 },
-    }).toArray();
+    OrderPositions.find(
+      {
+        orderId: order._id,
+        quantity: { $gt: 0 },
+      },
+      {},
+    ).toArray();
 
   const findOrderDelivery = async (order: Order) =>
     OrderDeliveries.findOne(generateDbFilterById(order.deliveryId), {});
@@ -163,7 +169,7 @@ export const configureOrdersModule = async ({
     const { modules } = requestContext;
 
     const selector = generateDbFilterById(orderId);
-    let updatedOrder = await Orders.findOne(selector, {});
+    let updatedOrder = (await Orders.findOne(selector, {})) as Order;
 
     // Init delivery provider
     const supportedDeliveryProviders = await modules.delivery.findSupported(
@@ -250,23 +256,23 @@ export const configureOrdersModule = async ({
 
     const order = await initProviders(orderId, requestContext);
 
-    let orderPositions = await findOrderPositions(order);
+    let orderPositions = (await findOrderPositions(order)) as OrderPosition[];
     orderPositions = await Promise.all(
       orderPositions.map((orderPosition) =>
         modules.orders.positions.updateCalculation(orderPosition, requestContext),
       ),
     );
 
-    let orderDelivery = await findOrderDelivery(order);
+    let orderDelivery = (await findOrderDelivery(order)) as OrderDelivery;
     if (orderDelivery) {
       orderDelivery = await modules.orders.deliveries.updateCalculation(orderDelivery, requestContext);
     }
-    let orderPayment = await findOrderPayment(order);
+    let orderPayment = (await findOrderPayment(order)) as OrderPayment;
     if (orderPayment) {
       orderPayment = await modules.orders.payments.updateCalculation(orderPayment, requestContext);
     }
 
-    await Promise.all(
+    orderPositions = await Promise.all(
       orderPositions.map((orderPosition) =>
         modules.orders.positions.updateScheduling(
           { order, orderDelivery, orderPosition },
@@ -275,7 +281,11 @@ export const configureOrdersModule = async ({
       ),
     );
 
-    const pricing = await OrderPricingDirector.actions({ order }, requestContext);
+    const pricing = await OrderPricingDirector.actions(
+      { order, orderPositions, orderDelivery, orderPayment },
+      requestContext,
+    );
+
     const calculation = await pricing.calculate();
 
     const selector = generateDbFilterById(orderId);

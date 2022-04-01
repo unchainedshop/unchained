@@ -22,15 +22,15 @@ const OrderPayment: IOrderPricingAdapter = {
 
       calculate: async () => {
         // just add tax + net price to order pricing
-        if (orderPayment) {
-          const pricing = modules.orders.payments.pricingSheet(orderPayment, order.currency);
-          const tax = pricing.taxSum();
-          const paymentFees = pricing.gross();
+        if (!orderPayment) return null;
 
-          pricingAdapter.resultSheet().addPayment({ amount: paymentFees });
-          if (tax !== 0) {
-            pricingAdapter.resultSheet().addTaxes({ amount: tax });
-          }
+        const pricing = modules.orders.payments.pricingSheet(orderPayment, order.currency);
+        const tax = pricing.taxSum();
+        const paymentFees = pricing.gross();
+
+        pricingAdapter.resultSheet().addPayment({ amount: paymentFees });
+        if (tax !== 0) {
+          pricingAdapter.resultSheet().addTaxes({ amount: tax });
         }
 
         return pricingAdapter.calculate();

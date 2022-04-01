@@ -50,6 +50,9 @@ export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
 
 export interface OrderPricingContext {
   order: Order;
+  orderDelivery: OrderDelivery;
+  orderPositions: Array<OrderPosition>;
+  orderPayment: OrderPayment;
 }
 
 export interface IOrderPricingSheet extends IPricingSheet<OrderPricingCalculation> {

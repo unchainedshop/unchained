@@ -62,7 +62,7 @@ export type OrderPositionsModule = {
       orderPosition: OrderPosition;
     },
     requestContext: Context,
-  ) => Promise<boolean>;
+  ) => Promise<OrderPosition>;
 
   updateCalculation: (orderPosition: OrderPosition, requestContext: Context) => Promise<OrderPosition>;
 

@@ -22,16 +22,16 @@ const OrderDelivery: IOrderPricingAdapter = {
 
       calculate: async () => {
         // just add tax + net price to order pricing
-        if (orderDelivery) {
-          const pricing = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
-          const tax = pricing.taxSum();
-          const shipping = pricing.gross();
+        if (!orderDelivery) return null;
+        const pricing = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
+        const tax = pricing.taxSum();
+        const shipping = pricing.gross();
 
-          pricingAdapter.resultSheet().addDelivery({ amount: shipping });
-          if (tax !== 0) {
-            pricingAdapter.resultSheet().addTaxes({ amount: tax });
-          }
+        pricingAdapter.resultSheet().addDelivery({ amount: shipping });
+        if (tax !== 0) {
+          pricingAdapter.resultSheet().addTaxes({ amount: tax });
         }
+
         return pricingAdapter.calculate();
       },
     };
