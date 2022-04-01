@@ -1,6 +1,7 @@
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { ModuleInput, ModuleMutations, Filter } from '@unchainedshop/types/common';
 import { Event, EventsModule } from '@unchainedshop/types/events';
+import { getRegisteredEvents } from 'meteor/unchained:events';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
@@ -43,6 +44,13 @@ export const configureEventsModule = async ({
         limit,
         sort,
       }).toArray();
+    },
+
+    type: (event) => {
+      if (getRegisteredEvents().includes(event.type)) {
+        return event.type;
+      }
+      return 'UNKNOWN';
     },
 
     count: async (query) => {

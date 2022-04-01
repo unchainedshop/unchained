@@ -41,5 +41,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
     options?: FindOptions,
   ) => Promise<Array<Event>>;
 
+  type: (event: Event) => string;
+
   count: (query: Query) => Promise<number>;
 }

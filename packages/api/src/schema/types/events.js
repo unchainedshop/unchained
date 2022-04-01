@@ -1,6 +1,8 @@
 export default [
   /* GraphQL */ `
-    enum EventType
+    enum EventType {
+      UNKNOWN
+    }
 
     type Event {
       _id: ID!

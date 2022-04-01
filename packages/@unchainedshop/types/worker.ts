@@ -64,6 +64,8 @@ export type WorkerModule = {
   // Transformations
   status: (work: Work) => WorkStatus;
 
+  type: (work: Work) => string;
+
   // Mutations
   addWork: (data: WorkData, userId: string) => Promise<Work>;
 

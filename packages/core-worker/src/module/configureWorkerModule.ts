@@ -164,6 +164,14 @@ export const configureWorkerModule = async ({
     },
 
     // Transformations
+
+    type: (work) => {
+      if (WorkerDirector.getActivePluginTypes().includes(work.type)) {
+        return work.type;
+      }
+      return 'UNKNOWN';
+    },
+
     status: (work) => {
       if (work.deleted) {
         return WorkStatus.DELETED;

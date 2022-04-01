@@ -1,14 +1,18 @@
-import { WorkStatus } from 'meteor/unchained:core-worker';
-
 export default [
   /* GraphQL */ `
     enum WorkStatus {
-      ${Object.keys(WorkStatus).join(',')}
+      NEW
+      ALLOCATED
+      SUCCESS
+      FAILED
+      DELETED
     }
 
     # This is just a placeholder. Extend WorkType with the active plugins on
     # startup. See /examples/minimal/boot.js:92
-    enum WorkType
+    enum WorkType {
+      UNKNOWN
+    }
 
     type WorkOutput {
       result: JSON
@@ -55,6 +59,5 @@ export default [
       # \`FAILED\` and could be cleaned.
       timeout: Int
     }
-
   `,
 ];
