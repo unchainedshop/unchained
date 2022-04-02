@@ -67,6 +67,7 @@ export const configureWarehousingModule = async ({
 
     findInterface: (warehousingProvider) => {
       const Adapter = WarehousingDirector.getAdapter(warehousingProvider.adapterKey);
+      if (!Adapter) return null;
       return {
         _id: Adapter.key,
         label: Adapter.label,

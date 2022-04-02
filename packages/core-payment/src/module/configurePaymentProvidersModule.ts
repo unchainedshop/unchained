@@ -77,6 +77,7 @@ export const configurePaymentProvidersModule = (
 
     findInterface: (paymentProvider) => {
       const Adapter = PaymentDirector.getAdapter(paymentProvider.adapterKey);
+      if (!Adapter) return null;
       return {
         _id: Adapter.key,
         label: Adapter.label,
@@ -97,8 +98,12 @@ export const configurePaymentProvidersModule = (
     findSupported: async ({ order }, requestContext) => {
       const providers = (await PaymentProviders.find({ deleted: null }).toArray()).filter(
         (provider: PaymentProvider) => {
-          const director = PaymentDirector.actions(provider, { order }, requestContext);
-          return director.isActive();
+          try {
+            const director = PaymentDirector.actions(provider, { order }, requestContext);
+            return director.isActive();
+          } catch {
+            return false;
+          }
         },
       );
 
