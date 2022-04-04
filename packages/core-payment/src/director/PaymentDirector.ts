@@ -1,4 +1,4 @@
-import { IPaymentAdapter, IPaymentDirector } from '@unchainedshop/types/payments';
+import { IPaymentAdapter, IPaymentDirector, PaymentContext } from '@unchainedshop/types/payments';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { createLogger } from 'meteor/unchained:logger';
 import { PaymentError } from './PaymentError';
@@ -9,16 +9,36 @@ const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');
 export const PaymentDirector: IPaymentDirector = {
   ...baseDirector,
 
-  actions: (paymentProvider, paymentContext, requestContext) => {
+  actions: async (paymentProvider, paymentContext, requestContext) => {
     const Adapter = baseDirector.getAdapter(paymentProvider.adapterKey) as IPaymentAdapter;
 
     if (!Adapter) {
       throw new Error(`Payment Plugin ${paymentProvider.adapterKey} not available`);
     }
 
+    const newPaymentContext: PaymentContext = {
+      ...paymentContext,
+    };
+
+    if (paymentContext?.orderPayment) {
+      const { modules } = requestContext;
+      const { orderId } = paymentContext.orderPayment;
+      const order =
+        paymentContext?.order ||
+        (await modules.orders.findOrder({
+          orderId,
+        }));
+
+      newPaymentContext.order = order;
+    }
+
     const adapter = Adapter.actions({
       config: paymentProvider.configuration,
-      paymentContext: { paymentProvider, paymentProviderId: paymentProvider._id, ...paymentContext },
+      paymentContext: {
+        paymentProvider,
+        paymentProviderId: paymentProvider._id,
+        ...newPaymentContext,
+      },
       context: requestContext,
     });
 

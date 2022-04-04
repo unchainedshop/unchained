@@ -296,6 +296,7 @@ const Datatrans: IPaymentAdapter = {
         })) as StatusResponseSuccess;
         throwIfResponseError(transaction);
         const status = transaction?.status;
+
         if (status === 'authorized') {
           // either settle or cancel
           // if further deferred settlement is active, don't settle in unchained and hand off
@@ -305,6 +306,31 @@ const Datatrans: IPaymentAdapter = {
             refno: transaction.refno,
             refno2: transaction.refno2,
             extensions: transactionContext,
+          });
+        }
+        return true;
+      },
+
+      async cancel() {
+        if (!shouldSettleInUnchained()) return false;
+        const { orderPayment } = params.paymentContext;
+        const { transactionId } = orderPayment;
+        if (!transactionId) {
+          return false;
+        }
+        const transaction: StatusResponseSuccess = (await api().status({
+          transactionId,
+        })) as StatusResponseSuccess;
+        throwIfResponseError(transaction);
+        const status = transaction?.status;
+
+        if (status === 'authorized') {
+          // either settle or cancel
+          // if further deferred settlement is active, don't settle in unchained and hand off
+          // settlement to other systems
+          await cancel({
+            transactionId,
+            refno: transaction.refno,
           });
         }
         return true;

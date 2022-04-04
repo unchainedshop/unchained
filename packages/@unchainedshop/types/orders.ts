@@ -62,6 +62,7 @@ type OrderTransactionContext = {
   paymentContext?: any;
   deliveryContext?: any;
   orderContext?: any;
+  nextStatus?: OrderStatus;
 };
 type OrderContextParams<P> = (order: Order, params: P, requestContext: Context) => Promise<Order>;
 

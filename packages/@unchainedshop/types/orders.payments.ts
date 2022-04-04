@@ -61,19 +61,19 @@ export type OrderPaymentsModule = {
 
   cancel: (
     orderPayment: OrderPayment,
-    paymentContext: { order: Order; transactionContext: any },
+    paymentContext: any,
     requestContext: Context,
   ) => Promise<OrderPayment>;
 
   confirm: (
     orderPayment: OrderPayment,
-    paymentContext: { order: Order; transactionContext: any },
+    paymentContext: any,
     requestContext: Context,
   ) => Promise<OrderPayment>;
 
   charge: (
     orderPayment: OrderPayment,
-    paymentContext: { order: Order; transactionContext: any },
+    paymentContext: any,
     requestContext: Context,
   ) => Promise<OrderPayment>;
 

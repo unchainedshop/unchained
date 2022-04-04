@@ -105,13 +105,13 @@ export const configureDeliveryModule = async ({
       }));
     },
 
-    findSupported: async ({ order }, requestContext) => {
+    findSupported: async (deliveryContext, requestContext) => {
       const foundProviders = await DeliveryProviders.find(buildFindSelector({})).toArray();
       const providers: PaymentProvider[] = await asyncFilter(
         foundProviders,
         async (provider: DeliveryProvider) => {
           try {
-            const director = await DeliveryDirector.actions(provider, { order }, requestContext);
+            const director = await DeliveryDirector.actions(provider, deliveryContext, requestContext);
             return director.isActive();
           } catch {
             return false;
@@ -122,7 +122,7 @@ export const configureDeliveryModule = async ({
       return deliverySettings.filterSupportedProviders(
         {
           providers,
-          order,
+          order: deliveryContext.order,
         },
         requestContext,
       );

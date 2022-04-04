@@ -57,7 +57,7 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
 
     if (transaction.status === 'authorized') {
       const userId = transaction.refno2;
-      const referenceId = Buffer.from(transaction.refno, "base64").toString("hex");
+      const referenceId = Buffer.from(transaction.refno, 'base64').toString('hex');
 
       try {
         if (transaction.type === 'card_check') {
@@ -115,6 +115,7 @@ useMiddlewareWithCurrentContext(successUrl, async (req, res) => {
 });
 
 useMiddlewareWithCurrentContext(errorUrl, async (req, res) => {
+  console.log(req);
   if (req.method === 'GET') {
     const { datatransTrxId } = req.query;
     res.end(`Payment error\nTransaction ID: ${datatransTrxId}`);

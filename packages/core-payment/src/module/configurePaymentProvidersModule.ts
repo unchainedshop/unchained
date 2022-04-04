@@ -101,13 +101,13 @@ export const configurePaymentProvidersModule = (
         }));
     },
 
-    findSupported: async ({ order }, requestContext) => {
+    findSupported: async (paymentContext, requestContext) => {
       const allProviders = await PaymentProviders.find({ deleted: null }).toArray();
       const providers: PaymentProvider[] = await asyncFilter(
         allProviders,
         async (provider: PaymentProvider) => {
           try {
-            const director = await PaymentDirector.actions(provider, { order }, requestContext);
+            const director = await PaymentDirector.actions(provider, paymentContext, requestContext);
             return director.isActive();
           } catch {
             return false;
@@ -118,7 +118,7 @@ export const configurePaymentProvidersModule = (
       return paymentSettings.filterSupportedProviders(
         {
           providers,
-          order,
+          order: paymentContext.order,
         },
         requestContext,
       );
