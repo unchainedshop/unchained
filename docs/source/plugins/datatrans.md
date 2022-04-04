@@ -40,15 +40,19 @@ In order to activate live payments, you will have to set the `DATATRANS_API_ENDP
 
 When adding a datatrans payment provider either through the Admin UI or with the `createPaymentProvider`, you will need to tell it with which merchantId it authenticates requests against the Datatrans API, the configuration parameters you can set are:
 
-| KEY                 | Default Value | Allowed Values                                        |
-| ------------------- | ------------- | ----------------------------------------------------- |
-| `merchantId`        |               |                                                       |
-| `settleInUnchained` | 1             | "1", ""                                               |
-| `marketplaceSplit`  |               | "SUBMERCHANTID;SHARE_PERCENTAGE;DISCOUNT_ADAPTER_KEY" |
+| KEY                 | Default Value | Allowed Values                                                 |
+| ------------------- | ------------- | -------------------------------------------------------------- |
+| `merchantId`        |               |                                                                |
+| `settleInUnchained` | 1             | "1", ""                                                        |
+| `marketplaceSplit`  |               | "SUBMERCHANTID;DISCOUNT_ADAPTER_KEY;OPTIONAL_SHARE_PERCENTAGE" |
 
 Unchained Engine supports Datatrans Marketplace Integration:
 
-You can add multiple `marketplaceSplit` entries to configure marketplace payments. See https://docs.datatrans.ch/docs/marketplace-payments#section-settlement-splits for more information. `settleInUnchained` has to be 1 if you want to use marketplace features.
+You can add multiple `marketplaceSplit` entries to configure marketplace payments. See https://docs.datatrans.ch/docs/marketplace-payments#section-settlement-splits for more information. `settleInUnchained` has to be 1 if you want to use marketplace features because split happens at settlement.
+
+The marketplace feature depends on a custom discount that pre-calculates the comissions before checkout. That adapter key then needs to be referenced in the payment configuration.
+
+You can also configure more than one sub merchant and then split the "pie" based on OPTIONAL_SHARE_PERCENTAGE, keep in mind that if you have more than one, the sum of all OPTIONAL_SHARE_PERCENTAGE needs to be 100.
 
 Of course, you can add any additional properties to the configuration if you need that to filter payment providers.
 
