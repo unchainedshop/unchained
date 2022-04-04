@@ -60,7 +60,7 @@ export default async (remoteToken, unchainedAPI) => {
     }
     throw new Error('Invalid token/domain pair');
   } catch (e) {
-    console.error(e);
+    console.error(e); // eslint-disable-line
     return null;
   }
 };

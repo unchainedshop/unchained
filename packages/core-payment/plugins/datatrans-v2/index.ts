@@ -73,36 +73,44 @@ const Datatrans: IPaymentAdapter = {
       }, true);
     };
 
-    const getMarketplaceSplits = (
-      total: number,
-    ): {
-      subMerchantId: string;
-      amount: number;
-      comission: number;
-    }[] => {
-      return params.config.flatMap((item) => {
-        if (item.key === 'marketplaceSplit') {
-          const [subMerchantId, sharePercentage, discountAdapter] = item.value
-            .split(';')
-            .map((f) => f.trim());
+    const getMarketplaceSplits = async (): Promise<
+      {
+        subMerchantId: string;
+        amount: number;
+        commission: number;
+      }[]
+    > => {
+      const { order } = params.paymentContext;
 
-          const shareFactor = parseInt(sharePercentage, 10) / 100;
-          // const comissionFactor = parseInt(comissionPercentage, 10) / 100;
-          const comissionFactor = 0.05;
+      const pricing = modules.orders.pricingSheet(order);
+      const { amount: total } = pricing.total({ useNetPrice: false });
+      const orderDiscounts = await modules.orders.discounts.findOrderDiscounts({ orderId: order._id });
 
-          const amount = total * shareFactor;
-          const comission = amount * comissionFactor;
+      return Promise.all(
+        params.config
+          .filter((item) => item.key === 'marketplaceSplit')
+          .map((item) => {
+            const [subMerchantId, discountKey, sharePercentage] = item.value
+              .split(';')
+              .map((f) => f.trim());
 
-          return [
-            {
+            const orderDiscount = orderDiscounts.find(
+              (discount) => discount.discountKey === discountKey,
+            );
+
+            const discountSum = pricing.discountSum(orderDiscount._id) * -1;
+            const sumToSplit = total - discountSum;
+            const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;
+            const amount = Math.round(sumToSplit * shareFactor);
+            const commission = Math.round(discountSum * shareFactor);
+
+            return {
               subMerchantId,
               amount,
-              comission,
-            },
-          ];
-        }
-        return [];
-      }, null);
+              commission,
+            };
+          }),
+      );
     };
 
     const authorize = async ({ paymentCredentials, extensions }): Promise<string> => {
@@ -111,7 +119,7 @@ const Datatrans: IPaymentAdapter = {
       const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
       const refno2 = userId;
       const { currency, amount } = roundedAmountFromOrder(order, params.context);
-      const splits = getMarketplaceSplits(amount);
+      const splits = await getMarketplaceSplits();
       const result = await api().authorize({
         ...extensions,
         amount,
@@ -186,7 +194,7 @@ const Datatrans: IPaymentAdapter = {
     const settle = async ({ transactionId, refno, refno2, extensions }): Promise<boolean> => {
       const { order } = params.paymentContext;
       const { currency, amount } = roundedAmountFromOrder(order, params.context);
-      const splits = getMarketplaceSplits(amount);
+      const splits = await getMarketplaceSplits();
       const result = await api().settle({
         transactionId,
         amount,
@@ -245,8 +253,6 @@ const Datatrans: IPaymentAdapter = {
         const price: { amount?: number; currency?: string } = order
           ? roundedAmountFromOrder(order, params.context)
           : {};
-
-        console.log(getMarketplaceSplits(price.amount));
 
         if (useSecureFields) {
           const result = await api().secureFields({

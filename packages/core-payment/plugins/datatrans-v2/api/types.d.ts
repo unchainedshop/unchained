@@ -162,7 +162,7 @@ export type ResponseError = {
 type Split = {
   subMerchantId: string;
   amount: number;
-  comission: number;
+  commission: number;
 };
 
 export type Marketplace = {
