@@ -26,6 +26,12 @@ const buildFindSelector = ({ type }: FindQuery = {}) => {
   return query;
 };
 
+const asyncFilter = async (arr, predicate) => {
+  const results = await Promise.all(arr.map(predicate));
+
+  return arr.filter((_v, index) => results[index]);
+};
+
 export const configureWarehousingModule = async ({
   db,
 }: ModuleInput<Record<string, never>>): Promise<WarehousingModule> => {
@@ -67,6 +73,7 @@ export const configureWarehousingModule = async ({
 
     findInterface: (warehousingProvider) => {
       const Adapter = WarehousingDirector.getAdapter(warehousingProvider.adapterKey);
+      if (!Adapter) return null;
       return {
         _id: Adapter.key,
         label: Adapter.label,
@@ -85,22 +92,23 @@ export const configureWarehousingModule = async ({
     },
 
     findSupported: async (warehousingContext, requestContext) => {
-      const providers = (await WarehousingProviders.find(buildFindSelector({})).toArray()).filter(
-        (provider) => {
-          const director = WarehousingDirector.actions(provider, warehousingContext, requestContext);
-          return director.isActive();
-        },
-      );
+      const allProviders = await WarehousingProviders.find(buildFindSelector({})).toArray();
+
+      const providers = asyncFilter(allProviders, async (provider) => {
+        const director = await WarehousingDirector.actions(provider, warehousingContext, requestContext);
+        return director.isActive();
+      });
 
       return providers;
     },
 
-    configurationError: (provider, requestContext) => {
-      return WarehousingDirector.actions(provider, {}, requestContext).configurationError();
+    configurationError: async (warehousingProvider, requestContext) => {
+      const actions = await WarehousingDirector.actions(warehousingProvider, {}, requestContext);
+      return actions.configurationError();
     },
 
     estimatedDispatch: async (warehousingProvider, warehousingContext, requestContext) => {
-      const director = WarehousingDirector.actions(
+      const director = await WarehousingDirector.actions(
         warehousingProvider,
         warehousingContext,
         requestContext,
@@ -108,8 +116,9 @@ export const configureWarehousingModule = async ({
       return director.estimatedDispatch();
     },
 
-    isActive: (warehousingProvider, requestContext) => {
-      return WarehousingDirector.actions(warehousingProvider, {}, requestContext).isActive();
+    isActive: async (warehousingProvider, requestContext) => {
+      const actions = await WarehousingDirector.actions(warehousingProvider, {}, requestContext);
+      return actions.isActive();
     },
 
     // Mutations

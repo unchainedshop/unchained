@@ -20,12 +20,15 @@ export const OrderPricingAdapter: IPricingAdapter<
     return false;
   },
 
-  actions: ({ context, calculation }) => {
+  actions: (params) => {
+    const { context, calculation } = params;
     const { currency } = context;
+    const baseActions = basePricingAdapter.actions(params);
     const calculationSheet = OrderPricingSheet({ calculation, currency });
     const resultSheet = OrderPricingSheet({ currency });
 
     return {
+      ...baseActions,
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>

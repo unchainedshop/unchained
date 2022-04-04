@@ -19,7 +19,7 @@ describe('Plugins: Datatrans Payments', () => {
     // Add a datatrans provider
     await db.collection('payment-providers').findOrInsertOne({
       ...SimplePaymentProvider,
-      _id: 'datatrans-payment-provider',
+      _id: 'd4d4d4d4d4',
       adapterKey: 'shop.unchained.datatrans',
       type: 'GENERIC',
       configuration: [{ key: 'merchantId', value: merchantId }],
@@ -28,8 +28,8 @@ describe('Plugins: Datatrans Payments', () => {
     // Add a demo order ready to checkout
     await db.collection('order_payments').findOrInsertOne({
       ...SimplePayment,
-      _id: 'datatrans-payment',
-      paymentProviderId: 'datatrans-payment-provider',
+      _id: '1111112222',
+      paymentProviderId: 'd4d4d4d4d4',
       orderId: 'datatrans-order',
     });
 
@@ -43,14 +43,14 @@ describe('Plugins: Datatrans Payments', () => {
       ...SimpleOrder,
       _id: 'datatrans-order',
       orderNumber: 'datatrans',
-      paymentId: 'datatrans-payment',
+      paymentId: '1111112222',
     });
 
     // Add a second demo order ready to checkout
     await db.collection('order_payments').findOrInsertOne({
       ...SimplePayment,
       _id: 'datatrans-payment2',
-      paymentProviderId: 'datatrans-payment-provider',
+      paymentProviderId: 'd4d4d4d4d4',
       orderId: 'datatrans-order2',
     });
 
@@ -82,7 +82,7 @@ describe('Plugins: Datatrans Payments', () => {
             }
           `,
           variables: {
-            paymentProviderId: 'datatrans-payment-provider',
+            paymentProviderId: 'd4d4d4d4d4',
           },
         });
 
@@ -117,7 +117,7 @@ describe('Plugins: Datatrans Payments', () => {
           }
         `,
         variables: {
-          orderPaymentId: 'datatrans-payment',
+          orderPaymentId: '1111112222',
           transactionContext: {},
         },
       });
@@ -138,11 +138,12 @@ describe('Plugins: Datatrans Payments', () => {
 
   describe('Datatrans Hooks', () => {
     it('mocks ingress accepted card_check webhook call', async () => {
-      const paymentProviderId = 'datatrans-payment-provider';
+      const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
       const sign =
-        '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
+        '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
+      const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
       const result = await fetch(
         'http://localhost:3000/payment/datatrans/webhook',
         {
@@ -151,7 +152,7 @@ describe('Plugins: Datatrans Payments', () => {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}`,
           },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${paymentProviderId}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
         },
       );
       expect(result.status).toBe(200);
@@ -163,11 +164,12 @@ describe('Plugins: Datatrans Payments', () => {
       expect(paymentCredential).not.toBe(null);
     });
     it('mocks ingress accepted card_check webhook call with wrong signature', async () => {
-      const paymentProviderId = 'datatrans-payment-provider';
+      const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
       const sign =
         '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
+      const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
       const result = await fetch(
         'http://localhost:3000/payment/datatrans/webhook',
         {
@@ -176,18 +178,21 @@ describe('Plugins: Datatrans Payments', () => {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}WRONG`,
           },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${paymentProviderId}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
         },
       );
 
       expect(result.status).toBe(403);
     });
+    
     it('mocks ingress accepted payment webhook call with diff amount', async () => {
-      const orderPaymentId = 'datatrans-payment';
+      const orderPaymentId = '1111112222';
       const transactionId = 'payment_authorized_low_amount';
       const userId = User._id;
       const sign =
-        '6b266c38f1b9b626112facbd033a834b33a0cd69163215ff9a5d2bf606abc905';
+        '28f99091d4fc5859dabfff335eb07e06e00b0ca53775816d329ba88c17b1a36e';
+      const refno = Buffer.from(orderPaymentId, "hex").toString("base64");
+
       const result = await fetch(
         'http://localhost:3000/payment/datatrans/webhook',
         {
@@ -196,18 +201,19 @@ describe('Plugins: Datatrans Payments', () => {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}`,
           },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${orderPaymentId}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
+          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
         },
       );
 
       expect(result.status).toBe(500);
     });
     it('mocks ingress accepted payment webhook call with correct currency/amount', async () => {
-      const orderPaymentId = 'datatrans-payment';
+      const orderPaymentId = '1111112222';
       const transactionId = 'payment_authorized';
       const userId = User._id;
       const sign =
-        '3c81fc77a52c6f2956ef484875c86756c8e49b4d708b7dc3c331090276ace31c';
+        'a146037afae54a78b61865b9c2bb38a60c687692833a1388a03176574cb2a004';
+      const refno = Buffer.from(orderPaymentId, "hex").toString("base64");
       const result = await fetch(
         'http://localhost:3000/payment/datatrans/webhook',
         {
@@ -216,7 +222,7 @@ describe('Plugins: Datatrans Payments', () => {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}`,
           },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${orderPaymentId}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
+          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
         },
       );
 
@@ -236,11 +242,13 @@ describe('Plugins: Datatrans Payments', () => {
 
   describe('Checkout', () => {
     it('checkout with stored alias', async () => {
-      const paymentProviderId = 'datatrans-payment-provider';
+      const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
       const sign =
-        '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
+        '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
+      const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
+
       const result = await fetch(
         'http://localhost:3000/payment/datatrans/webhook',
         {
@@ -249,7 +257,7 @@ describe('Plugins: Datatrans Payments', () => {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}`,
           },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${paymentProviderId}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
         },
       );
       expect(result.status).toBe(200);
@@ -277,7 +285,7 @@ describe('Plugins: Datatrans Payments', () => {
 
       expect(me?.paymentCredentials?.[0]).toMatchObject({
         user: { _id: 'user' },
-        paymentProvider: { _id: 'datatrans-payment-provider' },
+        paymentProvider: { _id: 'd4d4d4d4d4' },
         meta: {
           info: { masked: '424242xxxxxx4242' },
           objectKey: 'card',
@@ -303,7 +311,7 @@ describe('Plugins: Datatrans Payments', () => {
               addCartProduct(productId: $productId) {
                 _id
               }
-              updateCart(paymentProviderId: "datatrans-payment-provider") {
+              updateCart(paymentProviderId: "d4d4d4d4d4") {
                 _id
                 status
               }
@@ -336,7 +344,7 @@ describe('Plugins: Datatrans Payments', () => {
               addCartProduct(productId: $productId) {
                 _id
               }
-              updateCart(paymentProviderId: "datatrans-payment-provider") {
+              updateCart(paymentProviderId: "d4d4d4d4d4") {
                 _id
                 status
               }

@@ -57,11 +57,13 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
 
     if (transaction.status === 'authorized') {
       const userId = transaction.refno2;
+      const referenceId = Buffer.from(transaction.refno, 'base64').toString('hex');
 
       try {
         if (transaction.type === 'card_check') {
+          const paymentProviderId = referenceId;
           const paymentCredentials = await services.payment.registerPaymentCredentials(
-            transaction.refno,
+            paymentProviderId,
             { transactionContext: { transactionId: transaction.transactionId } },
             { ...resolvedContext, userId },
           );
@@ -73,10 +75,14 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
           return;
         }
         if (transaction.type === 'payment') {
+          const orderPaymentId = referenceId;
           const orderPayment = await modules.orders.payments.findOrderPayment({
-            orderPaymentId: transaction.refno,
+            orderPaymentId,
           });
+          if (!orderPayment) throw new Error(`Order Payment with id ${orderPaymentId} not found`);
           const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
+          if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
           await modules.orders.checkout(
             order,
             { paymentContext: { transactionId: transaction.transactionId } },

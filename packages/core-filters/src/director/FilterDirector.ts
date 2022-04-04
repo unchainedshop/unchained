@@ -9,7 +9,7 @@ const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
 export const FilterDirector: IFilterDirector = {
   ...baseDirector,
 
-  actions: (filterContext, requestContext) => {
+  actions: async (filterContext, requestContext) => {
     const context = { ...filterContext, ...requestContext };
     const adapters = baseDirector.getAdapters().map((Adapter) => Adapter.actions(context));
 

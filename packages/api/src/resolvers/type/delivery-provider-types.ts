@@ -14,8 +14,8 @@ export interface DeliveryProviderHelperTypes {
       version: string;
     }
   >;
-  isActive: HelperType<void, boolean>;
-  configurationError: HelperType<never, DeliveryError>;
+  isActive: HelperType<void, Promise<boolean>>;
+  configurationError: HelperType<never, Promise<DeliveryError>>;
   simulatedPrice: HelperType<
     {
       currency?: string;
@@ -47,12 +47,12 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
     };
   },
 
-  isActive(deliveryProvider, _, requestContext) {
+  async isActive(deliveryProvider, _, requestContext) {
     const { modules } = requestContext;
     return modules.delivery.isActive(deliveryProvider, requestContext);
   },
 
-  configurationError(deliveryProvider, _, requestContext) {
+  async configurationError(deliveryProvider, _, requestContext) {
     const { modules } = requestContext;
     return modules.delivery.configurationError(deliveryProvider, requestContext);
   },

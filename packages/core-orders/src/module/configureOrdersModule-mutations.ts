@@ -34,6 +34,7 @@ export const configureOrderModuleMutations = ({
 
   const mutations = generateDbMutations<Order>(Orders, OrdersSchema, {
     permanentlyDeleteByDefault: true,
+    hasCreateOnly: false,
   }) as ModuleMutations<Order>;
 
   return {

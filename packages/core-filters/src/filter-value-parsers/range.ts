@@ -1,4 +1,4 @@
-export default (values, allKeys) => {
+export default (values, allKeys): any[] => {
   const [range] = values;
   if (range === undefined) return [undefined];
   const [start, end] = range?.split(':') || [];

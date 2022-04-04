@@ -34,11 +34,13 @@ export const SimpleProduct: SimpleProductHelperTypes = {
             warehousingProvider,
           };
 
-          const dispatch = await WarehousingDirector.actions(
+          const actions = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
             requestContext,
-          ).estimatedDispatch();
+          );
+
+          const dispatch = await actions.estimatedDispatch();
 
           return {
             ...warehousingContext,
@@ -79,11 +81,13 @@ export const SimpleProduct: SimpleProductHelperTypes = {
             warehousingProvider,
           };
 
-          const stock = await WarehousingDirector.actions(
+          const actions = await WarehousingDirector.actions(
             warehousingProvider,
             warehousingContext,
             requestContext,
-          ).estimatedStock();
+          );
+
+          const stock = await actions.estimatedStock();
 
           return {
             ...warehousingContext,

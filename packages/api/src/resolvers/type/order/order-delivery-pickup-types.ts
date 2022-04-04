@@ -19,7 +19,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
     const provider = await context.modules.delivery.findProvider({
       deliveryProviderId: obj.deliveryProviderId,
     });
-    const director = DeliveryDirector.actions(provider, { orderDelivery: obj }, context);
+    const director = await DeliveryDirector.actions(provider, { orderDelivery: obj }, context);
 
     return director.pickUpLocationById(orderPickUpLocationId);
   },
@@ -28,7 +28,7 @@ export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
     const provider = await context.modules.delivery.findProvider({
       deliveryProviderId: obj.deliveryProviderId,
     });
-    const director = DeliveryDirector.actions(provider, { orderDelivery: obj }, context);
+    const director = await DeliveryDirector.actions(provider, { orderDelivery: obj }, context);
 
     return director.pickUpLocations();
   },

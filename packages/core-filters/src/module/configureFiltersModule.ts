@@ -34,6 +34,7 @@ export const configureFiltersModule = async ({
 
   const mutations = generateDbMutations<Filter>(Filters, FiltersSchema, {
     permanentlyDeleteByDefault: true,
+    hasCreateOnly: false,
   }) as ModuleMutations<Filter>;
 
   const findProductIds = async (
@@ -42,7 +43,7 @@ export const configureFiltersModule = async ({
     requestContext: Context,
   ) => {
     const { modules } = requestContext;
-    const director = FilterDirector.actions({ filter, searchQuery: {} }, requestContext);
+    const director = await FilterDirector.actions({ filter, searchQuery: {} }, requestContext);
     const selector = await director.transformProductSelector(
       modules.products.search.buildActiveStatusFilter(),
       {
@@ -59,7 +60,10 @@ export const configureFiltersModule = async ({
     return products.map(({ _id }) => _id);
   };
 
-  const buildProductIdMap = async (filter: Filter, requestContext: Context) => {
+  const buildProductIdMap = async (
+    filter: Filter,
+    requestContext: Context,
+  ): Promise<[Array<string>, Record<string, Array<string>>]> => {
     const allProductIds = await findProductIds(filter, {}, requestContext);
     const productIdsMap =
       filter.type === FilterType.SWITCH

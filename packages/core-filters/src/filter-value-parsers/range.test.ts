@@ -49,9 +49,9 @@ import {
   
   describe('Filter Value Parser: Range', () => {
     it('should return all product ids if filter not set', () => {
-      expect(parser(productIds, allProductIds)([])).arrayContaining(['Z']);
-      expect(parser(productIds, allProductIds)([undefined])).arrayContaining([
+      expect(parser(productIds, []).includes(['Z']));
+      expect(parser(productIds, [undefined]).includes([
         'Z',
-      ]);
+      ]));
     });
   });

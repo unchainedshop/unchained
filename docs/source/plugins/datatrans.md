@@ -14,11 +14,12 @@ Activate either of those in your project by selecting to import one (and only on
 The rest of this page will center around the new v2 plugin. If you need support for the legacy plugin, check the source of the plugin and if questions arise, send us an e-mail.
 
 # Setup Plugin v2
+
 ## Environment variables
 
 You have to set `DATATRANS_SECRET` and `DATATRANS_SIGN_KEY` on build-time based on the configuration on your Datatrans Merchant Account:
 
-| NAME                     | Default Value                          | Allowed Values                         |
+| NAME                     | Default Value                          | Allowed Values                          |
 | ------------------------ | -------------------------------------- | --------------------------------------- |
 | `DATATRANS_SECRET`       |                                        |                                         |
 | `DATATRANS_SIGN_KEY`     |                                        |                                         |
@@ -39,15 +40,19 @@ In order to activate live payments, you will have to set the `DATATRANS_API_ENDP
 
 When adding a datatrans payment provider either through the Admin UI or with the `createPaymentProvider`, you will need to tell it with which merchantId it authenticates requests against the Datatrans API, the configuration parameters you can set are:
 
-| KEY                      | Default Value                          | Allowed Values                         |
-| ------------------------ | -------------------------------------- | --------------------------------------- |
-| `merchantId`             |                                        |                                         |
-| `settleInUnchained`      | 1                                      | "1", ""                                 |
-| `marketplaceSplit`       |                                        | "SUBMERCHANTID;AMOUNT;COMISSION"        |
+| KEY                 | Default Value | Allowed Values                                                 |
+| ------------------- | ------------- | -------------------------------------------------------------- |
+| `merchantId`        |               |                                                                |
+| `settleInUnchained` | 1             | "1", ""                                                        |
+| `marketplaceSplit`  |               | "SUBMERCHANTID;DISCOUNT_ADAPTER_KEY;OPTIONAL_SHARE_PERCENTAGE" |
 
 Unchained Engine supports Datatrans Marketplace Integration:
 
-You can add multiple `marketplaceSplit` entries to configure marketplace payments. See https://docs.datatrans.ch/docs/marketplace-payments#section-settlement-splits for more information. `settleInUnchained` has to be 1 if you want to use marketplace features.
+You can add multiple `marketplaceSplit` entries to configure marketplace payments. See https://docs.datatrans.ch/docs/marketplace-payments#section-settlement-splits for more information. `settleInUnchained` has to be 1 if you want to use marketplace features because split happens at settlement.
+
+The marketplace feature depends on a custom discount that pre-calculates the comissions before checkout. That adapter key then needs to be referenced in the payment configuration.
+
+You can also configure more than one sub merchant and then split the "pie" based on OPTIONAL_SHARE_PERCENTAGE, keep in mind that if you have more than one, the sum of all OPTIONAL_SHARE_PERCENTAGE needs to be 100.
 
 Of course, you can add any additional properties to the configuration if you need that to filter payment providers.
 
@@ -62,13 +67,15 @@ You can easily follow the documentation on [redirect lightbox](https://docs.data
 Follow [secure fields](https://docs.datatrans.ch/docs/secure-fields) and where it says you have to initialize a transaction you have to call one of these mutations:
 
 **Cart Checkout**:
+
 ```/*graphql*/
 signPaymentProviderForCheckout(
     orderPaymentId: "order payment id of the cart you want to checkout"
 )
 ```
 
-*To get the order payment id of the current active cart of the logged in user you can*
+_To get the order payment id of the current active cart of the logged in user you can_
+
 ```/*graphql*/
 me {
     cart {
@@ -76,21 +83,22 @@ me {
             _id
         }
     }
-} 
+}
 ```
 
 **Payment credentials registration (without payment/checkout)**:
+
 ```/*graphql*/
 signPaymentProviderForCredentialRegistration(
     paymentProviderId: "payment provider id that you instantiated before"
 )
 ```
 
-
 For both `signPaymentProviderForCheckout` and `signPaymentProviderForCredentialRegistration` you will receive a JSON stringified object that looks like:
+
 ```
-{ 
-    location: "https://pay.sandbox.datatrans.com/v1/start/xyz1234..", 
+{
+    location: "https://pay.sandbox.datatrans.com/v1/start/xyz1234..",
     transactionId: "xyz1234.."
 }
 ```
@@ -104,14 +112,13 @@ If for some reason the webhook has not been called at all or failed a checkout s
 ```/*graphql*/
 checkoutCart(
     orderId: "order id from query parameter",
-    paymentContext: { transactionId: "transaction id from query parameter" }) { 
-    _id, 
+    paymentContext: { transactionId: "transaction id from query parameter" }) {
+    _id,
     status
 }
 ```
 
 This gives Unchained Engine a (second) chance to process and settle the payment. That's how you build rock-solid payment flows in shaky networks.
-
 
 # Mode: Secure Fields
 
@@ -120,8 +127,8 @@ To let Unchained call the `secureFieldsInit` method during transaction creation,
 ```/*graphql*/
 checkoutCart(
     orderId: "order id from query parameter",
-    paymentContext: { transactionId: "transaction id from query parameter", "authorizeAuthenticated": { "CDM": "...", "3D": "..." } }) { 
-    _id, 
+    paymentContext: { transactionId: "transaction id from query parameter", "authorizeAuthenticated": { "CDM": "...", "3D": "..." } }) {
+    _id,
     status
 }
 ```
@@ -131,7 +138,6 @@ This will instruct Unchained to authorize an unauthorized transaction before try
 # Mode: Mobile SDK
 
 To enable mobile tokens during checkout as stated [here](https://docs.datatrans.ch/docs/mobile-sdk#section-initializing-transactions), send a special `transactionContext` to `signPaymentProviderForCheckout`: `{ "option": { "returnMobileToken": true } }`
-
 
 # Advanced integration features
 

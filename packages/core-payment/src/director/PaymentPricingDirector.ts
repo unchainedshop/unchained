@@ -51,9 +51,6 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
   },
 
   async actions(pricingContext, requestContext) {
-    if (!requestContext.modules) {
-      throw new Error('HERE');
-    }
     const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
     return {
       ...actions,

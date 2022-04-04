@@ -220,33 +220,20 @@ export const configureOrderModuleProcessing = ({
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      // Process order confirmation
-      let updatedOrder = await modules.orders.updateContext(
+      const updatedOrder = await modules.orders.updateContext(
         orderId,
         params.orderContext,
         requestContext,
       );
-      updatedOrder = await modules.orders.updateStatus(
-        orderId,
-        { status: OrderStatus.CONFIRMED, info: 'confirmed manually' },
-        requestContext,
-      );
-      updatedOrder = await modules.orders.processOrder(
+      return modules.orders.processOrder(
         updatedOrder,
         {
           paymentContext: params.paymentContext,
           deliveryContext: params.deliveryContext,
+          nextStatus: OrderStatus.CONFIRMED,
         },
         requestContext,
       );
-
-      // Force sending the message when updated order has not changed,
-      // otherwise it gets triggered through processOrder
-      if (updatedOrder.status === OrderStatus.CONFIRMED) {
-        await modules.orders.sendOrderConfirmationToCustomer(updatedOrder, params, requestContext);
-      }
-
-      return updatedOrder;
     },
 
     reject: async (order, params, requestContext) => {
@@ -255,32 +242,20 @@ export const configureOrderModuleProcessing = ({
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      let updatedOrder = await modules.orders.updateContext(
+      const updatedOrder = await modules.orders.updateContext(
         orderId,
         params.orderContext,
         requestContext,
       );
-      updatedOrder = await modules.orders.updateStatus(
-        orderId,
-        { status: OrderStatus.REJECTED, info: 'rejected manually' },
-        requestContext,
-      );
-      updatedOrder = await modules.orders.processOrder(
+      return modules.orders.processOrder(
         updatedOrder,
         {
           paymentContext: params.paymentContext,
           deliveryContext: params.deliveryContext,
+          nextStatus: OrderStatus.REJECTED,
         },
         requestContext,
       );
-
-      // Force sending the message when updated order has not changed,
-      // otherwise it gets triggered through processOrder
-      if (updatedOrder.status === OrderStatus.REJECTED) {
-        await modules.orders.sendOrderRejectionToCustomer(updatedOrder, params, requestContext);
-      }
-
-      return updatedOrder;
     },
 
     ensureCartForUser: async ({ user, countryCode }, requestContext) => {
@@ -336,7 +311,7 @@ export const configureOrderModuleProcessing = ({
 
       const orderId = initialOrder._id;
       let order = initialOrder;
-      let nextStatus = await findNextStatus(order, requestContext);
+      let nextStatus = params.nextStatus || (await findNextStatus(order, requestContext));
 
       if (nextStatus === OrderStatus.PENDING) {
         // auto charge during transition to pending
@@ -346,15 +321,15 @@ export const configureOrderModuleProcessing = ({
 
         await modules.orders.payments.charge(
           orderPayment,
-          { order, transactionContext: params.paymentContext },
+          { transactionContext: params.paymentContext },
           requestContext,
         );
         await modules.users.updateLastBillingAddress(order.userId, order.billingAddress, userId);
         await modules.users.updateLastContact(order.userId, order.contact, userId);
-      }
 
-      order = await modules.orders.findOrder({ orderId });
-      nextStatus = await findNextStatus(order, requestContext);
+        order = await modules.orders.findOrder({ orderId });
+        nextStatus = await findNextStatus(order, requestContext);
+      }
 
       if (nextStatus === OrderStatus.REJECTED) {
         // auto cancel during transition to rejected
@@ -363,7 +338,7 @@ export const configureOrderModuleProcessing = ({
         });
         await modules.orders.payments.cancel(
           orderPayment,
-          { order, transactionContext: params.paymentContext },
+          { transactionContext: params.paymentContext },
           requestContext,
         );
       }
@@ -375,7 +350,7 @@ export const configureOrderModuleProcessing = ({
         });
         await modules.orders.payments.confirm(
           orderPayment,
-          { order, transactionContext: params.paymentContext },
+          { transactionContext: params.paymentContext },
           requestContext,
         );
 
@@ -486,7 +461,11 @@ export const configureOrderModuleProcessing = ({
       );
 
       if (initialOrder.status !== order.status) {
-        await modules.orders.sendOrderConfirmationToCustomer(order, params, requestContext);
+        if (order.status === OrderStatus.REJECTED) {
+          await modules.orders.sendOrderRejectionToCustomer(order, params, requestContext);
+        } else {
+          await modules.orders.sendOrderConfirmationToCustomer(order, params, requestContext);
+        }
       }
 
       return order;

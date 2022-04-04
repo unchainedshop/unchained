@@ -34,6 +34,12 @@ export type FilterText = {
   title?: string;
 } & TimestampFields;
 
+export type FilterProductIdCacheRecord = {
+  filterId: _ID;
+  filterOptionValue?: string;
+  productIds: _ID[];
+};
+
 export type SearchFilterQuery = Array<{ key: string; value?: string }>;
 
 type FilterQuery = {
@@ -198,7 +204,7 @@ export interface FilterAdapterActions {
   ) => Promise<Array<string>>;
 
   transformFilterSelector: (query: Query, options?: any) => Promise<Query>;
-  transformProductSelector: (query: Query, options?: { key: string; value?: any }) => Promise<Query>;
+  transformProductSelector: (query: Query, options?: { key?: string; value?: any }) => Promise<Query>;
   transformSortStage: (
     sort: FindOptions['sort'],
     options?: { key: string; value?: any },
@@ -212,13 +218,13 @@ export type IFilterAdapter = IBaseAdapter & {
 };
 
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
-  actions: (filterContext: FilterContext, requestContext: Context) => FilterAdapterActions;
+  actions: (filterContext: FilterContext, requestContext: Context) => Promise<FilterAdapterActions>;
 };
 
 /* Settings */
 
 export interface FiltersSettingsOptions {
-  skipInvalidationOnStartup: boolean;
+  skipInvalidationOnStartup?: boolean;
   setCachedProductIds?: (
     filterId: string,
     productIds: Array<string>,

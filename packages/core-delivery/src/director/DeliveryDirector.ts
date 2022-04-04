@@ -8,7 +8,7 @@ const baseDirector = BaseDirector<IDeliveryAdapter>('DeliveryDirector');
 export const DeliveryDirector: IDeliveryDirector = {
   ...baseDirector,
 
-  actions: (deliveryProvider, deliveryContext, requestContext) => {
+  actions: async (deliveryProvider, deliveryContext, requestContext) => {
     const Adapter = baseDirector.getAdapter(deliveryProvider.adapterKey);
 
     const context = { ...deliveryContext, ...requestContext };

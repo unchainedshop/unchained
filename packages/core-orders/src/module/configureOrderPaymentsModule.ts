@@ -42,6 +42,7 @@ export const configureOrderPaymentsModule = ({
 
   const mutations = generateDbMutations<OrderPayment>(OrderPayments, OrderPaymentsSchema, {
     permanentlyDeleteByDefault: true,
+    hasCreateOnly: false,
   }) as ModuleMutations<OrderPayment>;
 
   const normalizedStatus: OrderPaymentsModule['normalizedStatus'] = (orderPayment) => {
@@ -49,6 +50,17 @@ export const configureOrderPaymentsModule = ({
       ? OrderPaymentStatus.OPEN
       : (orderPayment.status as OrderPaymentStatus);
   };
+
+  const buildPaymentProviderActionsContext = (orderPayment: OrderPayment, transactionContext) => ({
+    paymentProviderId: orderPayment.paymentProviderId,
+    paymentContext: {
+      orderPayment,
+      transactionContext: {
+        ...(transactionContext || {}),
+        ...(orderPayment.context || {}),
+      },
+    },
+  });
 
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,
@@ -114,7 +126,7 @@ export const configureOrderPaymentsModule = ({
         paymentProviderId: orderPayment.paymentProviderId,
       });
 
-      const isPayLaterAllowed = requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
+      const isPayLaterAllowed = await requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
         provider,
         requestContext,
       );
@@ -147,31 +159,15 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    confirm: async (orderPayment, { transactionContext, order }, requestContext) => {
-      const { modules, services } = requestContext;
+    confirm: async (orderPayment, { transactionContext }, requestContext) => {
+      const { services } = requestContext;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
         return orderPayment;
       }
 
-      const paymentProvider = await modules.payment.paymentProviders.findProvider({
-        paymentProviderId: orderPayment.paymentProviderId,
-      });
-
-      const paymentProviderId = paymentProvider._id;
-
       const arbitraryResponseData = await services.payment.confirm(
-        {
-          paymentProviderId,
-          paymentContext: {
-            order,
-            orderPayment,
-            transactionContext: {
-              ...(transactionContext || {}),
-              ...(orderPayment.context || {}),
-            },
-          },
-        },
+        buildPaymentProviderActionsContext(orderPayment, transactionContext),
         requestContext,
       );
 
@@ -189,27 +185,15 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    cancel: async (orderPayment, { transactionContext, order }, requestContext) => {
-      const { modules, services } = requestContext;
+    cancel: async (orderPayment, { transactionContext }, requestContext) => {
+      const { services } = requestContext;
 
-      const paymentProvider = await modules.payment.paymentProviders.findProvider({
-        paymentProviderId: orderPayment.paymentProviderId,
-      });
-
-      const paymentProviderId = paymentProvider._id;
+      if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
+        return orderPayment;
+      }
 
       const arbitraryResponseData = await services.payment.cancel(
-        {
-          paymentProviderId,
-          paymentContext: {
-            order,
-            orderPayment,
-            transactionContext: {
-              ...(transactionContext || {}),
-              ...(orderPayment.context || {}),
-            },
-          },
-        },
+        buildPaymentProviderActionsContext(orderPayment, transactionContext),
         requestContext,
       );
 
@@ -227,31 +211,15 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    charge: async (orderPayment, { transactionContext, order }, requestContext) => {
-      const { modules, services } = requestContext;
+    charge: async (orderPayment, { transactionContext }, requestContext) => {
+      const { services } = requestContext;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
         return orderPayment;
       }
 
-      const paymentProvider = await modules.payment.paymentProviders.findProvider({
-        paymentProviderId: orderPayment.paymentProviderId,
-      });
-
-      const paymentProviderId = paymentProvider._id;
-
       const arbitraryResponseData = await services.payment.charge(
-        {
-          paymentProviderId,
-          paymentContext: {
-            order,
-            orderPayment,
-            transactionContext: {
-              ...(transactionContext || {}),
-              ...(orderPayment.context || {}),
-            },
-          },
-        },
+        buildPaymentProviderActionsContext(orderPayment, transactionContext),
         requestContext,
       );
 

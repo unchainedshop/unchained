@@ -26,7 +26,7 @@ export const FiltersCollection = async (db: Db) => {
   ]);
 
   // FilterProductIdCache Indexes
-  await buildDbIndexes(FilterProductIdCache, [{ index: { productId: 1 } }]);
+  await buildDbIndexes(FilterProductIdCache, [{ index: { productIds: 1 } }]);
 
   return {
     Filters,
