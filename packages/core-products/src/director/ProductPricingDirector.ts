@@ -1,4 +1,3 @@
-import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import {
   IProductPricingAdapter,
   IProductPricingDirector,
@@ -19,15 +18,7 @@ const baseDirector = BasePricingDirector<
 export const ProductPricingDirector: IProductPricingDirector = {
   ...baseDirector,
 
-  async buildPricingContext(
-    {
-      item: orderPosition,
-      ...context
-    }: {
-      item: OrderPosition;
-    } & ProductPricingContext,
-    requestContext,
-  ) {
+  async buildPricingContext({ item: orderPosition, ...context }, requestContext) {
     const { modules } = requestContext;
 
     if (!orderPosition) {
