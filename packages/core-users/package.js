@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-users',
-  version: '1.0.0-rc.16',
+  version: '1.0.0-rc.17',
   summary: 'Unchained Engine Core: Users',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -17,10 +17,10 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.16');
-  api.use('unchained:logger@1.0.0-rc.16');
-  api.use('unchained:file-upload@1.0.0-rc.16');
-  api.use('unchained:roles@1.0.0-rc.16');
+  api.use('unchained:utils@1.0.0-rc.17');
+  api.use('unchained:logger@1.0.0-rc.17');
+  api.use('unchained:file-upload@1.0.0-rc.17');
+  api.use('unchained:roles@1.0.0-rc.17');
 
   api.mainModule('src/users-index.ts', 'server');
 });
@@ -30,8 +30,8 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb@1.0.0-rc.16');
-  api.use('unchained:core-users@1.0.0-rc.16');
+  api.use('unchained:mongodb@1.0.0-rc.17');
+  api.use('unchained:core-users@1.0.0-rc.17');
 
   api.mainModule('tests/users-index.test.ts');
 });
