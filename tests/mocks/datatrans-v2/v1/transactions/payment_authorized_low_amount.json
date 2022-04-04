@@ -3,7 +3,7 @@
   "type": "payment",
   "status": "authorized",
   "currency": "CHF",
-  "refno": "datatrans-payment",
+  "refno": "MTExMTExMjIyMjI=",
   "refno2": "user",
   "paymentMethod": "VIS",
   "detail": {

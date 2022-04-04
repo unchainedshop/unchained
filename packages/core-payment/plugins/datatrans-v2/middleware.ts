@@ -79,7 +79,10 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
           const orderPayment = await modules.orders.payments.findOrderPayment({
             orderPaymentId,
           });
+          if (!orderPayment) throw new Error(`Order Payment with id ${orderPaymentId} not found`);
           const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
+          if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+
           await modules.orders.checkout(
             order,
             { paymentContext: { transactionId: transaction.transactionId } },
@@ -115,7 +118,6 @@ useMiddlewareWithCurrentContext(successUrl, async (req, res) => {
 });
 
 useMiddlewareWithCurrentContext(errorUrl, async (req, res) => {
-  console.log(req);
   if (req.method === 'GET') {
     const { datatransTrxId } = req.query;
     res.end(`Payment error\nTransaction ID: ${datatransTrxId}`);

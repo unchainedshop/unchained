@@ -97,7 +97,7 @@ const Datatrans: IPaymentAdapter = {
       const splits = getMarketplaceSplits();
       const { userId } = params.context;
       const { order, orderPayment } = params.paymentContext;
-      const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
+      const refno = Buffer.from(orderPayment._id, 'ascii').toString('base64');
       const refno2 = userId;
       const { currency, amount } = roundedAmountFromOrder(order, params.context);
       const result = await api().authorize({
@@ -225,7 +225,7 @@ const Datatrans: IPaymentAdapter = {
 
         const { userId } = params.context;
         const { orderPayment, paymentProviderId, order } = params.paymentContext;
-        const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'hex').toString(
+        const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'ascii').toString(
           'base64',
         );
 
@@ -266,7 +266,7 @@ const Datatrans: IPaymentAdapter = {
         if (!credentials.meta) return false;
         const { objectKey, currency } = credentials.meta;
         const result = await api().validate({
-          refno: Buffer.from(`valid-${new Date().getTime()}`, 'hex').toString('base64'),
+          refno: Buffer.from(`valid-${new Date().getTime()}`, 'ascii').toString('base64'),
           currency,
           [objectKey]: JSON.parse(credentials.token),
         });
@@ -400,6 +400,7 @@ const Datatrans: IPaymentAdapter = {
           // network hicup or registration data parsing error
           // at the dumbest possible moment
           try {
+            checkIfTransactionAmountValid(transactionId, settledTransaction);
             credentials = parseRegistrationData(settledTransaction);
             const result = await api().status({
               transactionId,
@@ -410,10 +411,14 @@ const Datatrans: IPaymentAdapter = {
               settledTransaction = result as StatusResponseSuccess;
             }
           } catch (e) {
-            // Don't throw further, we don't want to lose cart/settlement links
-            logger.warn(
-              `Datatrans Plugin: Existing Transaction could not be retrieved with ID ${transactionId}`,
+            await cancel({ transactionId, refno: settledTransaction.refno });
+            logger.error(
+              `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} authorization cancelled`,
             );
+            throw newDatatransError({
+              code: `STATUS_${status.toUpperCase()}`,
+              message: 'Payment canceled',
+            });
           }
           return {
             transactionId,
