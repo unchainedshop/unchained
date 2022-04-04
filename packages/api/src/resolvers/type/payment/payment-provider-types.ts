@@ -11,8 +11,12 @@ export interface PaymentProviderHelperTypes {
     label: string;
     version: string;
   };
-  isActive: (provider: PaymentProviderType, _: never, context: Context) => boolean;
-  configurationError: (provider: PaymentProviderType, _: never, context: Context) => PaymentError;
+  isActive: (provider: PaymentProviderType, _: never, context: Context) => Promise<boolean>;
+  configurationError: (
+    provider: PaymentProviderType,
+    _: never,
+    context: Context,
+  ) => Promise<PaymentError>;
 }
 export const PaymentProvider: PaymentProviderHelperTypes = {
   interface(obj, _, { modules }) {

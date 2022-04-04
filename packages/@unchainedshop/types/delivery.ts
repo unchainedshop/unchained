@@ -102,7 +102,7 @@ export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
     deliveryProvider: DeliveryProvider,
     deliveryContext: DeliveryContext,
     requestContext: Context,
-  ) => DeliveryAdapterActions;
+  ) => Promise<DeliveryAdapterActions>;
 };
 
 /*
@@ -138,10 +138,16 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   findInterfaces: (params: { type: DeliveryProviderType }) => Array<DeliveryInterface>;
   findSupported: (params: { order: Order }, requestContext: Context) => Promise<Array<DeliveryProvider>>;
 
-  isActive: (deliveryProvider: DeliveryProvider, requestContext: Context) => boolean;
-  configurationError: (deliveryProvider: DeliveryProvider, requestContext: Context) => DeliveryError;
+  isActive: (deliveryProvider: DeliveryProvider, requestContext: Context) => Promise<boolean>;
+  configurationError: (
+    deliveryProvider: DeliveryProvider,
+    requestContext: Context,
+  ) => Promise<DeliveryError>;
 
-  isAutoReleaseAllowed: (deliveryProvider: DeliveryProvider, requestContext: Context) => boolean;
+  isAutoReleaseAllowed: (
+    deliveryProvider: DeliveryProvider,
+    requestContext: Context,
+  ) => Promise<boolean>;
   calculate: (
     pricingContext: DeliveryPricingContext,
     requestContext: Context,

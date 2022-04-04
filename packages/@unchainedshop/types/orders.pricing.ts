@@ -75,12 +75,9 @@ export type IOrderPricingAdapter = IPricingAdapter<
   IOrderPricingSheet
 >;
 
-export interface IOrderPricingDirector
-  extends IPricingDirector<
-    OrderPricingContext,
-    OrderPricingAdapterContext,
-    OrderPricingCalculation,
-    IOrderPricingAdapter
-  > {
-  resultSheet: () => IOrderPricingSheet;
-}
+export type IOrderPricingDirector = IPricingDirector<
+  OrderPricingContext,
+  OrderPricingAdapterContext,
+  OrderPricingCalculation,
+  IOrderPricingAdapter
+>;

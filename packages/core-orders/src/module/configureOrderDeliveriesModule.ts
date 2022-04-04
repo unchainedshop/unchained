@@ -24,6 +24,7 @@ export const configureOrderDeliveriesModule = ({
 
   const mutations = generateDbMutations<OrderDelivery>(OrderDeliveries, OrderDeliveriesSchema, {
     permanentlyDeleteByDefault: true,
+    hasCreateOnly: false,
   }) as ModuleMutations<OrderDelivery>;
 
   const normalizedStatus: OrderDeliveriesModule['normalizedStatus'] = (orderDelivery) => {
@@ -82,7 +83,7 @@ export const configureOrderDeliveriesModule = ({
         deliveryProviderId: orderDelivery.deliveryProviderId,
       });
 
-      const isAutoReleaseAllowed = requestContext.modules.delivery.isAutoReleaseAllowed(
+      const isAutoReleaseAllowed = await requestContext.modules.delivery.isAutoReleaseAllowed(
         provider,
         requestContext,
       );

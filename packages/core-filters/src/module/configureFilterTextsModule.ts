@@ -1,4 +1,4 @@
-import { Collection } from '@unchainedshop/types/common';
+import { Collection, Filter } from '@unchainedshop/types/common';
 import { FiltersModule, FilterText } from '@unchainedshop/types/filters';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
@@ -38,7 +38,7 @@ export const configureFilterTextsModule = ({
       },
     };
 
-    const selector = {
+    const selector: Filter<FilterText> = {
       filterId,
       filterOptionValue: filterOptionValue || { $eq: null },
       locale,
@@ -49,7 +49,7 @@ export const configureFilterTextsModule = ({
     });
 
     return FilterTexts.findOne(
-      updateResult.upsertedId ? generateDbFilterById(updateResult.upsertedId) : selector,
+      updateResult.upsertedId ? (generateDbFilterById(updateResult.upsertedId) as any) : selector,
       {},
     );
   };

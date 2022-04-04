@@ -28,6 +28,12 @@ const buildFindSelector = ({ type }: FindQuery = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 
+const asyncFilter = async (arr, predicate) => {
+  const results = await Promise.all(arr.map(predicate));
+
+  return arr.filter((_v, index) => results[index]);
+};
+
 export const configurePaymentProvidersModule = (
   PaymentProviders: Collection<PaymentProvider>,
 ): PaymentModule['paymentProviders'] => {
@@ -96,10 +102,12 @@ export const configurePaymentProvidersModule = (
     },
 
     findSupported: async ({ order }, requestContext) => {
-      const providers = (await PaymentProviders.find({ deleted: null }).toArray()).filter(
-        (provider: PaymentProvider) => {
+      const allProviders = await PaymentProviders.find({ deleted: null }).toArray();
+      const providers: PaymentProvider[] = await asyncFilter(
+        allProviders,
+        async (provider: PaymentProvider) => {
           try {
-            const director = PaymentDirector.actions(provider, { order }, requestContext);
+            const director = await PaymentDirector.actions(provider, { order }, requestContext);
             return director.isActive();
           } catch {
             return false;
@@ -118,8 +126,9 @@ export const configurePaymentProvidersModule = (
 
     // Payment Adapter
 
-    configurationError: (paymentProvider, requestContext) => {
-      return PaymentDirector.actions(paymentProvider, {}, requestContext).configurationError();
+    configurationError: async (paymentProvider, requestContext) => {
+      const actions = await PaymentDirector.actions(paymentProvider, {}, requestContext);
+      return actions.configurationError();
     },
 
     calculate: async (pricingContext, requestContext) => {
@@ -127,12 +136,14 @@ export const configurePaymentProvidersModule = (
       return pricing.calculate();
     },
 
-    isActive: (paymentProvider, requestContext) => {
-      return PaymentDirector.actions(paymentProvider, {}, requestContext).isActive();
+    isActive: async (paymentProvider, requestContext) => {
+      const actions = await PaymentDirector.actions(paymentProvider, {}, requestContext);
+      return actions.isActive();
     },
 
-    isPayLaterAllowed: (paymentProvider, requestContext) => {
-      return PaymentDirector.actions(paymentProvider, {}, requestContext).isPayLaterAllowed();
+    isPayLaterAllowed: async (paymentProvider, requestContext) => {
+      const actions = await PaymentDirector.actions(paymentProvider, {}, requestContext);
+      return actions.isPayLaterAllowed();
     },
 
     charge: async (paymentProviderId, paymentContext, requestContext) => {

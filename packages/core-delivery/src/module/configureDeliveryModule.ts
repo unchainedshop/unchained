@@ -7,6 +7,7 @@ import {
   DeliveryProviderType,
   DeliverySettingsOptions,
 } from '@unchainedshop/types/delivery';
+import { PaymentProvider } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection';
@@ -20,6 +21,12 @@ const DELIVERY_PROVIDER_EVENTS: string[] = [
   'DELIVERY_PROVIDER_UPDATE',
   'DELIVERY_PROVIDER_REMOVE',
 ];
+
+const asyncFilter = async (arr, predicate) => {
+  const results = await Promise.all(arr.map(predicate));
+
+  return arr.filter((_v, index) => results[index]);
+};
 
 type FindQuery = {
   type?: DeliveryProviderType;
@@ -99,10 +106,12 @@ export const configureDeliveryModule = async ({
     },
 
     findSupported: async ({ order }, requestContext) => {
-      const providers = (await DeliveryProviders.find(buildFindSelector({})).toArray()).filter(
-        (provider: DeliveryProvider) => {
+      const foundProviders = await DeliveryProviders.find(buildFindSelector({})).toArray();
+      const providers: PaymentProvider[] = await asyncFilter(
+        foundProviders,
+        async (provider: DeliveryProvider) => {
           try {
-            const director = DeliveryDirector.actions(provider, { order }, requestContext);
+            const director = await DeliveryDirector.actions(provider, { order }, requestContext);
             return director.isActive();
           } catch {
             return false;
@@ -119,18 +128,18 @@ export const configureDeliveryModule = async ({
       );
     },
 
-    configurationError: (deliveryProvider, requestContext) => {
-      const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    configurationError: async (deliveryProvider, requestContext) => {
+      const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
       return director.configurationError();
     },
 
-    isActive: (deliveryProvider, requestContext) => {
-      const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    isActive: async (deliveryProvider, requestContext) => {
+      const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
       return Boolean(director.isActive());
     },
 
-    isAutoReleaseAllowed: (deliveryProvider, requestContext) => {
-      const director = DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    isAutoReleaseAllowed: async (deliveryProvider, requestContext) => {
+      const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
       return Boolean(director.isAutoReleaseAllowed());
     },
 

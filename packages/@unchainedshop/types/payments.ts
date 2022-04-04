@@ -105,7 +105,7 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
     paymentProvider: PaymentProvider,
     paymentContext: PaymentContext,
     requestContext: Context,
-  ) => IPaymentActions;
+  ) => Promise<IPaymentActions>;
 };
 
 /*
@@ -145,11 +145,14 @@ export type PaymentModule = {
     findInterface: (query: PaymentProvider) => PaymentInterface;
     findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
 
-    configurationError: (paymentProvider: PaymentProvider, requestContext: Context) => PaymentError;
+    configurationError: (
+      paymentProvider: PaymentProvider,
+      requestContext: Context,
+    ) => Promise<PaymentError>;
 
-    isActive: (paymentProvider: PaymentProvider, requestContext: Context) => boolean;
+    isActive: (paymentProvider: PaymentProvider, requestContext: Context) => Promise<boolean>;
 
-    isPayLaterAllowed: (paymentProvider: PaymentProvider, requestContext: Context) => boolean;
+    isPayLaterAllowed: (paymentProvider: PaymentProvider, requestContext: Context) => Promise<boolean>;
 
     calculate: (
       pricingContext: PaymentPricingContext,

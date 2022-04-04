@@ -57,7 +57,7 @@ export const configureQuotationsModule = async ({
     requestContext: Context,
   ): Promise<QuotationStatus> => {
     let status = quotation.status as QuotationStatus;
-    const director = QuotationDirector.actions({ quotation }, requestContext);
+    const director = await QuotationDirector.actions({ quotation }, requestContext);
 
     if (status === QuotationStatus.REQUESTED) {
       if (!(await director.isManualRequestVerificationRequired())) {
@@ -141,7 +141,7 @@ export const configureQuotationsModule = async ({
     const quotationId = initialQuotation._id;
     let quotation = initialQuotation;
     let nextStatus = await findNextStatus(quotation, requestContext);
-    const director = QuotationDirector.actions({ quotation }, requestContext);
+    const director = await QuotationDirector.actions({ quotation }, requestContext);
 
     if (quotation.status === QuotationStatus.REQUESTED && nextStatus !== QuotationStatus.REQUESTED) {
       await director.submitRequest(params.quotationContext);
@@ -325,7 +325,7 @@ export const configureQuotationsModule = async ({
     },
 
     transformItemConfiguration: async (quotation, configuration, requestContext) => {
-      const director = QuotationDirector.actions({ quotation }, requestContext);
+      const director = await QuotationDirector.actions({ quotation }, requestContext);
       return director.transformItemConfiguration(configuration);
     },
 

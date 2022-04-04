@@ -43,6 +43,19 @@ export interface WarehousingContext {
   warehousingProviderId?: string;
 }
 
+export type EstimatedDispatch = {
+  shipping?: Date;
+  earliestDelivery?: Date;
+};
+
+export type WarehousingAdapterActions = {
+  configurationError: () => WarehousingError;
+  isActive: () => boolean;
+  stock: (referenceDate: Date) => Promise<number>;
+  productionTime: (quantityToProduce: number) => Promise<number>;
+  commissioningTime: (quantity: number) => Promise<number>;
+};
+
 export type IWarehousingAdapter = IBaseAdapter & {
   orderIndex: number;
   initialConfiguration: WarehousingConfiguration;
@@ -51,31 +64,21 @@ export type IWarehousingAdapter = IBaseAdapter & {
   actions: (
     config: WarehousingConfiguration,
     context: WarehousingContext & Context,
-  ) => {
-    configurationError: () => WarehousingError;
-    isActive: () => boolean;
-    stock: (referenceDate: Date) => Promise<number>;
-    productionTime: (quantityToProduce: number) => Promise<number>;
-    commissioningTime: (quantity: number) => Promise<number>;
-  };
+  ) => WarehousingAdapterActions;
 };
 
-type EstimatedDispatch = {
-  shipping?: Date;
-  earliestDelivery?: Date;
-};
 export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
   actions: (
     warehousingProvider: WarehousingProvider,
     warehousingContext: WarehousingContext,
     requestContext: Context,
-  ) => {
+  ) => Promise<{
     configurationError: () => WarehousingError;
     isActive: () => boolean;
     throughputTime: () => Promise<number>;
     estimatedStock: () => Promise<{ quantity: number } | null>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
-  };
+  }>;
 };
 
 export interface WarehousingInterface {
@@ -105,8 +108,11 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
   ) => Promise<Array<WarehousingProvider>>;
   findInterface: (query: WarehousingProvider) => WarehousingInterface;
   findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
-  configurationError: (provider: WarehousingProvider, requestContext: Context) => WarehousingError;
-  isActive: (provider: WarehousingProvider, requestContext: Context) => boolean;
+  configurationError: (
+    provider: WarehousingProvider,
+    requestContext: Context,
+  ) => Promise<WarehousingError>;
+  isActive: (provider: WarehousingProvider, requestContext: Context) => Promise<boolean>;
 
   estimatedDispatch: (
     provider: WarehousingProvider,
@@ -121,7 +127,7 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
 type HelperType<P, T> = (provider: WarehousingProvider, params: P, context: Context) => T;
 
 export interface WarehousingProviderHelperTypes {
-  configurationError: HelperType<never, WarehousingError>;
+  configurationError: HelperType<never, Promise<WarehousingError>>;
   interface: HelperType<never, WarehousingInterface>;
-  isActive: HelperType<never, boolean>;
+  isActive: HelperType<never, Promise<boolean>>;
 }

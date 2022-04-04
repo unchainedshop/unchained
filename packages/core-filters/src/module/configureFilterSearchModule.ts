@@ -27,7 +27,7 @@ export const configureFilterSearchModule = ({
   return {
     searchAssortments: async (searchQuery, { forceLiveCollection }, requestContext) => {
       const { modules } = requestContext;
-      const filterActions = FilterDirector.actions({ searchQuery }, requestContext);
+      const filterActions = await FilterDirector.actions({ searchQuery }, requestContext);
 
       const query = cleanQuery(searchQuery);
       const filterSelector = await resolveFilterSelector(searchQuery, filterActions);
@@ -69,7 +69,7 @@ export const configureFilterSearchModule = ({
 
     searchProducts: async (searchQuery, { forceLiveCollection }, requestContext) => {
       const { modules } = requestContext;
-      const filterActions = FilterDirector.actions({ searchQuery }, requestContext);
+      const filterActions = await FilterDirector.actions({ searchQuery }, requestContext);
 
       const query = cleanQuery(searchQuery);
       const filterSelector = await resolveFilterSelector(searchQuery, filterActions);

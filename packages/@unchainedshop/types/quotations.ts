@@ -153,7 +153,10 @@ export type IQuotationAdapter = IBaseAdapter & {
 };
 
 export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
-  actions: (quotationContext: QuotationContext, requestContext: Context) => QuotationAdapterActions;
+  actions: (
+    quotationContext: QuotationContext,
+    requestContext: Context,
+  ) => Promise<QuotationAdapterActions>;
 };
 
 /*

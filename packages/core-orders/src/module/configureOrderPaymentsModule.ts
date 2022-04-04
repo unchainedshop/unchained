@@ -42,6 +42,7 @@ export const configureOrderPaymentsModule = ({
 
   const mutations = generateDbMutations<OrderPayment>(OrderPayments, OrderPaymentsSchema, {
     permanentlyDeleteByDefault: true,
+    hasCreateOnly: false,
   }) as ModuleMutations<OrderPayment>;
 
   const normalizedStatus: OrderPaymentsModule['normalizedStatus'] = (orderPayment) => {
@@ -114,7 +115,7 @@ export const configureOrderPaymentsModule = ({
         paymentProviderId: orderPayment.paymentProviderId,
       });
 
-      const isPayLaterAllowed = requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
+      const isPayLaterAllowed = await requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
         provider,
         requestContext,
       );

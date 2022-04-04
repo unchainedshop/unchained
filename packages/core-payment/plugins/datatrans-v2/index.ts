@@ -13,6 +13,7 @@ import type {
 import './middleware';
 import parseRegistrationData from './parseRegistrationData';
 import roundedAmountFromOrder from './roundedAmountFromOrder';
+
 const logger = createLogger('unchained:core-payment:datatrans');
 
 // v2
@@ -50,6 +51,8 @@ const Datatrans: IPaymentAdapter = {
   },
 
   actions: (params) => {
+    const { modules } = params.context;
+
     const getMerchantId = (): string | undefined => {
       return params.config.find((item) => item.key === 'merchantId')?.value;
     };
@@ -94,7 +97,7 @@ const Datatrans: IPaymentAdapter = {
       const splits = getMarketplaceSplits();
       const { userId } = params.context;
       const { order, orderPayment } = params.paymentContext;
-      const refno = Buffer.from(orderPayment._id, "hex").toString('base64');
+      const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
       const refno2 = userId;
       const { currency, amount } = roundedAmountFromOrder(order, params.context);
       const result = await api().authorize({
@@ -222,7 +225,10 @@ const Datatrans: IPaymentAdapter = {
 
         const { userId } = params.context;
         const { orderPayment, paymentProviderId, order } = params.paymentContext;
-        const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, "hex").toString('base64');
+        const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'hex').toString(
+          'base64',
+        );
+
         const refno2 = userId;
         const price: { amount?: number; currency?: string } = order
           ? roundedAmountFromOrder(order, params.context)
@@ -260,7 +266,7 @@ const Datatrans: IPaymentAdapter = {
         if (!credentials.meta) return false;
         const { objectKey, currency } = credentials.meta;
         const result = await api().validate({
-          refno: Buffer.from(`valid-${new Date().getTime()}`, "hex").toString('base64'),
+          refno: Buffer.from(`valid-${new Date().getTime()}`, 'hex').toString('base64'),
           currency,
           [objectKey]: JSON.parse(credentials.token),
         });
@@ -280,7 +286,7 @@ const Datatrans: IPaymentAdapter = {
 
       async confirm() {
         if (!shouldSettleInUnchained()) return false;
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment, transactionContext } = params.paymentContext;
         const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;
@@ -289,32 +295,20 @@ const Datatrans: IPaymentAdapter = {
           transactionId,
         })) as StatusResponseSuccess;
         throwIfResponseError(transaction);
-        let status = transaction?.status;
+        const status = transaction?.status;
         if (status === 'authorized') {
           // either settle or cancel
-          try {
-            checkIfTransactionAmountValid(transactionId, transaction);
-            // if further deferred settlement is active, don't settle in unchained and hand off
-            // settlement to other systems
-            await settle({
-              transactionId,
-              refno: transaction.refno,
-              refno2: transaction.refno2,
-              extensions,
-            });
-          } catch (e) {
-            // try {
-            //   await cancel({
-            //     transactionId,
-            //     refno: transaction.refno,
-            //   });
-            // } catch (ee) {
-            //   //
-            // }
-            throw e;
-          }
+          // if further deferred settlement is active, don't settle in unchained and hand off
+          // settlement to other systems
+          await settle({
+            transactionId,
+            refno: transaction.refno,
+            refno2: transaction.refno2,
+            extensions: transactionContext,
+          });
         }
-      }
+        return true;
+      },
 
       async charge({
         transactionId: rawTransactionId,
