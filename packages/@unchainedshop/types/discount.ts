@@ -1,7 +1,10 @@
 import { Context } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
 import { Order } from './orders';
+import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
+import { OrderPayment } from './orders.payments';
+import { OrderPosition } from './orders.positions';
 
 export interface DiscountConfiguration {
   fixedRate?: number;
@@ -9,14 +12,17 @@ export interface DiscountConfiguration {
   isNetPrice?: boolean;
 }
 
+export interface DiscountContext {
+  orderDiscount?: OrderDiscount;
+  order?: Order;
+  orderDelivery?: OrderDelivery;
+  orderPositions?: Array<OrderPosition>;
+  orderPayment?: OrderPayment;
+}
+
 export interface Discount {
   discountId: string;
   configuration: DiscountConfiguration;
-}
-
-export interface DiscountContext {
-  order: Order;
-  orderDiscount?: OrderDiscount;
 }
 
 export interface DiscountAdapterActions {

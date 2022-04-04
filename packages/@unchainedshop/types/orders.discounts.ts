@@ -1,6 +1,6 @@
 import { Context } from './api';
 import { FindOptions, TimestampFields, _ID } from './common';
-import { DiscountAdapterActions, DiscountConfiguration } from './discount';
+import { DiscountAdapterActions, DiscountConfiguration, DiscountContext } from './discount';
 import { OrderPrice } from './orders.pricing';
 
 export enum OrderDiscountTrigger {
@@ -33,7 +33,7 @@ export type OrderDiscountsModule = {
   configurationForPricingAdapterKey: (
     orderDiscount: OrderDiscount,
     adapterKey: string,
-    requestContext: Context,
+    pricingContext: DiscountContext & Context,
   ) => Promise<DiscountConfiguration>;
 
   // Mutations
