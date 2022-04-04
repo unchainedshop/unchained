@@ -1,4 +1,3 @@
-import { Order } from '@unchainedshop/types/orders';
 import {
   IOrderPricingAdapter,
   IOrderPricingDirector,
@@ -19,7 +18,7 @@ const baseDirector = BasePricingDirector<
 export const OrderPricingDirector: IOrderPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: async ({ order, ...context }: { order: Order }, requestContext) => {
+  buildPricingContext: async ({ order, ...context }, requestContext) => {
     const { modules } = requestContext;
     const user = await modules.users.findUserById(order.userId);
 
