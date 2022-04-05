@@ -101,7 +101,11 @@ export const configureOrderDiscountsModule = ({
       code: orderDiscount.code,
     });
 
-    return updateDiscount(orderDiscount._id, reservation, requestContext.userId);
+    return updateDiscount(
+      orderDiscount._id,
+      { orderId: orderDiscount.orderId, reservation },
+      requestContext.userId,
+    );
   };
 
   const grabDiscount = async ({ code, orderId }: OrderDiscount, requestContext: Context) => {

@@ -24,12 +24,13 @@ export const admin = (role, actions) => {
   role.allow(actions.manageDeliveryProviders, () => true);
   role.allow(actions.manageWarehousingProviders, () => true);
   role.allow(actions.manageUsers, () => true);
+  role.allow(actions.updateUser, () => true);
+  role.allow(actions.updateUsername, () => true);
   role.allow(actions.manageAssortments, () => true);
   role.allow(actions.manageFilters, () => true);
   role.allow(actions.updateCart, () => true);
   role.allow(actions.createCart, () => true);
   role.allow(actions.sendEmail, () => true);
-  role.allow(actions.updateUser, () => true);
   role.allow(actions.updateOrder, () => true);
   role.allow(actions.updateOrderDiscount, () => true);
   role.allow(actions.updateOrderItem, () => true);

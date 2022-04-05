@@ -172,7 +172,7 @@ export default {
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
   setUserTags: acl(actions.manageUsers)(setUserTags),
   setPassword: acl(actions.manageUsers)(setPassword),
-  setUsername: acl(actions.manageUsers)(setUsername),
+  setUsername: acl(actions.updateUsername)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
   enrollUser: acl(actions.manageUsers)(enrollUser),
   registerPaymentCredentials: acl(actions.registerPaymentCredentials)(registerPaymentCredentials),

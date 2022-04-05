@@ -46,6 +46,7 @@ const actions = [
   'viewOrder',
   'viewShopInfo',
   'updateUser',
+  'updateUsername',
   'sendEmail',
   'manageUsers',
   'manageUsers',

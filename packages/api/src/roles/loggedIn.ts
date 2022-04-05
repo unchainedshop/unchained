@@ -201,7 +201,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.authTwoFactor, isMyself);
   role.allow(actions.manageTwoFactor, isMyself);
-
   role.allow(actions.sendEmail, isOwnedEmailAddress);
   role.allow(actions.viewOrder, isOwnedOrder);
   role.allow(actions.updateOrder, isOwnedOrder);

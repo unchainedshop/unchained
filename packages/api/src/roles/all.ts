@@ -23,6 +23,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewOrders, () => false);
   role.allow(actions.sendEmail, () => false);
   role.allow(actions.updateUser, () => false);
+  role.allow(actions.updateUsername, () => false);
   role.allow(actions.manageLanguages, () => false);
   role.allow(actions.manageCountries, () => false);
   role.allow(actions.manageProducts, () => false);
