@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { startAPIServer, roles } from 'meteor/unchained:api';
 import { initCore } from 'meteor/unchained:core';
 import { initDb } from 'meteor/unchained:mongodb';
+import { createLogger } from 'meteor/unchained:logger';
 import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
 import { interceptEmails } from './interceptEmails';
 import { runMigrations } from './migrations/runMigrations';
@@ -25,7 +26,19 @@ import 'meteor/unchained:core-messaging/workers/MessageWorker';
 
 export { MessageTypes };
 
+const logger = createLogger('unchained');
+
+const REQUIRED_ENV_VARIABLES = ['EMAIL_WEBSITE_NAME', 'EMAIL_WEBSITE_URL', 'EMAIL_FROM'];
+
 const { NODE_ENV, UNCHAINED_DISABLE_EMAIL_INTERCEPTION, UNCHAINED_DISABLE_WORKER } = process.env;
+
+const exitOnMissingEnvironmentVariables = () => {
+  const failedEnv = REQUIRED_ENV_VARIABLES.filter((key) => !process.env[key]);
+  if (failedEnv.length > 0) {
+    logger.error(`Missing required environment variables at boot time: ${failedEnv.join(', ')}`);
+    process.exit(1);
+  }
+};
 
 const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
   if (options?.disableWorker) return false;
@@ -63,6 +76,8 @@ export const startPlatform = async (
     options: {},
   },
 ) => {
+  exitOnMissingEnvironmentVariables();
+
   // Configure database
   const db = await initDb();
 

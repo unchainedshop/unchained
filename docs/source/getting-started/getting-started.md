@@ -15,9 +15,10 @@ This tutorial helps you:
 
 This tutorial assumes that you are familiar with the command line and
 JavaScript, and that you have a recent version of Meteor.js installed.
+
 # Building custom unchained engine
 
-Extending an Unchained engine is simple as adding a plugin that is easier to understand and implement. to make it even easier we have created a bare bone Unchained template you can use as a starting point. 
+Extending an Unchained engine is simple as adding a plugin that is easier to understand and implement. to make it even easier we have created a bare bone Unchained template you can use as a starting point.
 
 in this section, we will walk through the steps required to start up a custom Unchained engine locally and connecting it to a storefront to perform the task.
 
@@ -48,7 +49,7 @@ create a `.env` file under the root directory of both `engine` and `storefront` 
 For the engine environment even though there are many environment variables you can set which we will describe later, the following is the required one.
 
 ```
-SUPPRESS_ENV_ERRORS=false
+SUPPRESS_ENV_ERRORS=
 ```
 
 Next under the root directory of storefront create a `.env` file and add the following environment variable.
@@ -57,7 +58,7 @@ Next under the root directory of storefront create a `.env` file and add the fol
 UNCHAINED_ENDPOINT=https://localhost:4010/graphql
 ```
 
-Not you can customize the above value once you get accustomed to the inner working of unchained. 
+Not you can customize the above value once you get accustomed to the inner working of unchained.
 
 Finally, the only thing remaining is firing up unchained sees its work in action. to do so go to the projects root directory and run
 
@@ -71,78 +72,68 @@ Now you have a fully running Unchained E-Commerce environment running locally. C
 - http://localhost:4010 to see the admin UI. Login with username: admin@unchained.local / password: password
 - http://localhost:4010/graphql to see the Unchained GraphQL Playground
 
-
-
-
 ## Step 2: Write a custom pricing plugin
 
 Next, we will add a new file to the project and name it `engine/sausage.js`:
 
 ```js
-import {
-    ProductPricingDirector,
-    ProductPricingAdapter
-  } from "meteor/unchained:core-pricing";
-  import fetch from "isomorphic-unfetch";
-  
-  const PRODUCT_TAG_SAUSAGE = "sausage";
-  const SAUSAGE_THRESHOLD_CELSIUS = 20;
-  
-  class WeatherDependentBarbequeSausagePricing extends ProductPricingAdapter {
-    static key = "shop.unchained.wd-bbq-sausage-pricing";
-    static version = "1.0";
-    static label = "Calculate the price of a sausage 🌭🌦";
-    static orderIndex = 3;
-  
-    static isActivatedFor({product}) {
-      if (
-        product.tags &&
-        product.tags.length > 0 &&
-        product.tags.indexOf(PRODUCT_TAG_SAUSAGE) !== -1
-      ) {
-        return true;
-      }
-      return false;
+import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-pricing'
+import fetch from 'isomorphic-unfetch'
+
+const PRODUCT_TAG_SAUSAGE = 'sausage'
+const SAUSAGE_THRESHOLD_CELSIUS = 20
+
+class WeatherDependentBarbequeSausagePricing extends ProductPricingAdapter {
+  static key = 'shop.unchained.wd-bbq-sausage-pricing'
+  static version = '1.0'
+  static label = 'Calculate the price of a sausage 🌭🌦'
+  static orderIndex = 3
+
+  static isActivatedFor({ product }) {
+    if (product.tags && product.tags.length > 0 && product.tags.indexOf(PRODUCT_TAG_SAUSAGE) !== -1) {
+      return true
     }
-  
-    async calculate() {
-      const { currency, quantity } = this.context;
-      try {
-        const response = await fetch(
-          "https://community-open-weather-map.p.rapidapi.com/weather?q=zurich,ch&units=metric", 
-          {
-            headers: {
-              "x-rapidapi-key": "2a849e288dmsh59370f28a9102f6p1c881cjsn28010ce8ff58",
-              "x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
-              "useQueryString": true
-            }
-          }
-        );
-        if (response.status === 200) {
-          const { main } = await response.json();
-          const { temp} = main;
-          if (temp) {
-            if (temp > SAUSAGE_THRESHOLD_CELSIUS) {
-              console.log("🌭 -> High season, sausage pricy!!"); // eslint-disable-line
-              this.result.addItem({
-                currency,
-                amount: 100 * quantity,
-                isTaxable: true,
-                isNetPrice: true,
-                meta: { adapter: this.constructor.key }
-              });
-            }
+    return false
+  }
+
+  async calculate() {
+    const { currency, quantity } = this.context
+    try {
+      const response = await fetch(
+        'https://community-open-weather-map.p.rapidapi.com/weather?q=zurich,ch&units=metric',
+        {
+          headers: {
+            'x-rapidapi-key': '2a849e288dmsh59370f28a9102f6p1c881cjsn28010ce8ff58',
+            'x-rapidapi-host': 'community-open-weather-map.p.rapidapi.com',
+            useQueryString: true,
+          },
+        },
+      )
+      if (response.status === 200) {
+        const { main } = await response.json()
+        const { temp } = main
+        if (temp) {
+          if (temp > SAUSAGE_THRESHOLD_CELSIUS) {
+            console.log('🌭 -> High season, sausage pricy!!') // eslint-disable-line
+            this.result.addItem({
+              currency,
+              amount: 100 * quantity,
+              isTaxable: true,
+              isNetPrice: true,
+              meta: { adapter: this.constructor.key },
+            })
           }
         }
-      } catch (e) {
-        console.error(`🌭 -> Failed while trying to price weather dependent ${e.message}`); // eslint-disable-line
       }
-  
-      return super.calculate();
+    } catch (e) {
+      console.error(`🌭 -> Failed while trying to price weather dependent ${e.message}`) // eslint-disable-line
     }
+
+    return super.calculate()
   }
-  
-  ProductPricingDirector.registerAdapter(WeatherDependentBarbequeSausagePricing);
+}
+
+ProductPricingDirector.registerAdapter(WeatherDependentBarbequeSausagePricing)
 ```
 
 When you read through the code you can anticipate the domain logic: All products that have the tag "sausage" will get 1 CHF more expensive when a certain temperature threshold has been reached at a specific location.
@@ -152,16 +143,16 @@ Now let's load that plugin in `engine/boot.js`
 ```
 import "./sausage";
 ```
+
 # Build the Storefront
+
 ## Step 3: Create a new product
 
 Now open the admin UI and add a new product, tag it with "sausage", set a price, and publish it. As always you can use GraphQL mutations to do that:
 
 ```graphql
 mutation {
-  createProduct(
-    product: { type: "SimpleProduct", title: "Cervelat", tags: "sausage" }
-  ) {
+  createProduct(product: { type: "SimpleProduct", title: "Cervelat", tags: "sausage" }) {
     _id
   }
 }
@@ -171,9 +162,7 @@ mutation {
 mutation {
   updateProductCommerce(
     productId: "dKn2dvfqjiiJ6DbJA"
-    commerce: {
-      pricing: [{ currencyCode: "CHF", countryCode: "CH", amount: 200 }]
-    }
+    commerce: { pricing: [{ currencyCode: "CHF", countryCode: "CH", amount: 200 }] }
   ) {
     ... on SimpleProduct {
       simulatedPrice {
@@ -300,8 +289,6 @@ mutation checkoutCart {
 
 If everything went well, the e-mail debugs window will pop up presenting you with a simple order confirmation.
 
-
 The exact configuration will differ from this template, as we encourage you to use a reverse proxy like traefik or Nginx for SSL termination and a replicated MongoDB with one daemon running in the same datacenter like an Unchained engine (low latency).
 
 for more mutation and query options available refer to the [GraphQL API Reference](https://docs.unchained.shop/api)
-

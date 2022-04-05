@@ -1,6 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 
-const { EMAIL_FROM, UI_ENDPOINT, EMAIL_WEBSITE_NAME = 'Unchained Webshop' } = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_URL, EMAIL_WEBSITE_NAME } = process.env;
 
 const mjmlTemplate = `
 <mjml>
@@ -53,7 +53,7 @@ const textTemplate = `
 
 const emailConfig = {
   'enroll-account': {
-    url: (token) => `${UI_ENDPOINT}/enroll-account?token=${token}`,
+    url: (token) => `${EMAIL_WEBSITE_URL}/enroll-account?token=${token}`,
     en: {
       buttonText: 'Set password',
       message: `${EMAIL_WEBSITE_NAME} has set up an user account for you. Please click below to set up a password and to finish the registration.`,
@@ -71,7 +71,7 @@ const emailConfig = {
     },
   },
   'reset-password': {
-    url: (token) => `${UI_ENDPOINT}/reset-password?token=${token}`,
+    url: (token) => `${EMAIL_WEBSITE_URL}/reset-password?token=${token}`,
     en: {
       buttonText: 'Set new password',
       message: `
@@ -96,7 +96,7 @@ const emailConfig = {
     },
   },
   'verify-email': {
-    url: (token) => `${UI_ENDPOINT}/verify-email?token=${token}`,
+    url: (token) => `${EMAIL_WEBSITE_URL}/verify-email?token=${token}`,
     en: verifyEmailEnglishConfig,
     de: verifyEmailEnglishConfig,
     fr: verifyEmailEnglishConfig,
@@ -133,7 +133,7 @@ export const resolveAccountActionTemplate: TemplateResolver = async (
     {
       type: 'EMAIL',
       input: {
-        from: EMAIL_FROM,
+        from: EMAIL_FROM || 'noreply@unchained.local',
         to: recipientEmail || modules.users.primaryEmail(user)?.address,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),

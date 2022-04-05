@@ -1,6 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 
-const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Webshop', UI_ENDPOINT } = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
 const textTemplate = `
   {{subject}}\n
@@ -36,7 +36,7 @@ export const resolveQuotationStatusTemplate: TemplateResolver = async (
     locale,
     quotation,
     subject,
-    url: `${UI_ENDPOINT}/quotation?_id=${quotation._id}`,
+    url: `${EMAIL_WEBSITE_URL}/quotation?_id=${quotation._id}`,
   };
 
   return [

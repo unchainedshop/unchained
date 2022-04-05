@@ -3,12 +3,7 @@ import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing';
 import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
 import { getOrderPositionsData } from './utils/getOrderPositionsData';
 
-const {
-  EMAIL_FROM,
-  EMAIL_WEBSITE_NAME = 'Unchained Webshop',
-  EMAIL_WEBSITE_URL,
-  UI_ENDPOINT,
-} = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
 const mjmlTemplate = `
 <mjml>
@@ -92,7 +87,7 @@ export const resolveOrderConfirmationTemplate: TemplateResolver = async (
     shopName: EMAIL_WEBSITE_NAME,
     shopUrl: EMAIL_WEBSITE_URL,
     subject,
-    url: `${UI_ENDPOINT}/order?_id=${order._id}`,
+    url: `${EMAIL_WEBSITE_URL}/order?_id=${order._id}`,
     summary: {
       items: formatPrice(
         orderPricing.total({
@@ -126,7 +121,7 @@ export const resolveOrderConfirmationTemplate: TemplateResolver = async (
     {
       type: 'EMAIL',
       input: {
-        from: EMAIL_FROM,
+        from: EMAIL_FROM || 'orders@unchained.local',
         to: order.contact.emailAddress,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),

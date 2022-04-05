@@ -1,6 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 
-const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Webshop', UI_ENDPOINT } = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
 const mjmlTemplate = `
 <mjml>
@@ -68,13 +68,13 @@ export const resolveOrderRejectionTemplate: TemplateResolver = async ({ orderId,
   const data = {
     ...texts[locale.language],
     subject,
-    url: `${UI_ENDPOINT}/order?_id=${order._id}`,
+    url: `${EMAIL_WEBSITE_URL}/order?_id=${order._id}`,
   };
   return [
     {
       type: 'EMAIL',
       input: {
-        from: EMAIL_FROM,
+        from: EMAIL_FROM || 'orders@unchained.local',
         to: order.contact.emailAddress,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),

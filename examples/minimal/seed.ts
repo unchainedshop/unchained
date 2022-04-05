@@ -105,10 +105,6 @@ export default async (unchainedApi) => {
             key: 'to',
             value: UNCHAINED_MAIL_RECIPIENT || 'orders@unchained.local',
           },
-          // {
-          //   from: EMAIL_FROM || "hello@unchained.local",
-          //   to: UNCHAINED_MAIL_RECIPIENT || "orders@unchained.local",
-          // },
         ],
         created: new Date(),
         authorId: adminId,

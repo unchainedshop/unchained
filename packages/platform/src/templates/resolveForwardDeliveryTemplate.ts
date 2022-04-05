@@ -4,7 +4,7 @@ import { systemLocale } from 'meteor/unchained:utils';
 import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
 import { getOrderPositionsData } from './utils/getOrderPositionsData';
 
-const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Webshop', ROOT_URL } = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME, ROOT_URL } = process.env;
 
 const mjmlTemplate = `
 <mjml>
@@ -115,8 +115,8 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async (
     {
       type: 'EMAIL',
       input: {
-        from: configObject.from || EMAIL_FROM,
-        to: configObject.to,
+        from: configObject.from || EMAIL_FROM || 'noreply@unchained.local',
+        to: configObject.to || 'orders@unchained.local',
         cc: configObject.cc,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),

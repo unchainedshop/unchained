@@ -1,6 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 
-const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Webshop', UI_ENDPOINT } = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
 const textTemplate = `
   {{subject}}\n
@@ -26,14 +26,14 @@ export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
     enrollment,
     locale,
     subject,
-    url: `${UI_ENDPOINT}/enrollment?_id=${enrollment._id}`,
+    url: `${EMAIL_WEBSITE_URL}/enrollment?_id=${enrollment._id}`,
   };
 
   return [
     {
       type: 'EMAIL',
       input: {
-        from: EMAIL_FROM,
+        from: EMAIL_FROM || 'noreply@unchained.local',
         to: modules.users.primaryEmail(user)?.address,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),
