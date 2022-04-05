@@ -25,6 +25,9 @@ export enum MessageTypes {
 export type PlatformOptions = {
   typeDefs?: Array<string>;
   resolvers?: any;
+  schema?: any;
+  plugins?: any[];
+  cache: any;
   bulkImporter?: any;
   context?: any;
   modules?: UnchainedCoreOptions['modules'];

@@ -66,6 +66,9 @@ export type UnchainedServerOptions = {
   resolvers: Record<string, any>;
   context?: any;
   tracing?: boolean;
+  schema?: any;
+  plugins?: any[];
+  cache: any;
   cacheControl?: any;
   corsOrigins: any;
   introspection: boolean;
