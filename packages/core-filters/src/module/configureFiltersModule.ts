@@ -133,7 +133,10 @@ export const configureFiltersModule = async ({
 
   return {
     // Queries
-    findFilter: async ({ filterId }) => {
+    findFilter: async ({ filterId, key }) => {
+      if (key) {
+        return Filters.findOne({ key }, {});
+      }
       return Filters.findOne(generateDbFilterById(filterId), {});
     },
 

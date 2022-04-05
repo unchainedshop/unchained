@@ -44,7 +44,7 @@ export const Product: ProductHelperTypes = {
       assortmentIds,
     });
 
-    return modules.products.findProductSiblings({
+    return modules.products.findProducts({
       productIds,
       includeInactive,
       limit,

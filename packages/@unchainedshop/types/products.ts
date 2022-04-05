@@ -149,7 +149,7 @@ export type ProductQuery = {
 
 export type ProductsModule = {
   // Queries
-  findProduct: (params: { productId?: string; slug?: string }) => Promise<Product>;
+  findProduct: (params: { productId?: string; slug?: string, sku?: string }) => Promise<Product>;
 
   findProducts: (
     params: ProductQuery & {
@@ -158,13 +158,6 @@ export type ProductsModule = {
     },
     options?: FindOptions,
   ) => Promise<Array<Product>>;
-
-  findProductSiblings: (params: {
-    productIds: Array<string>;
-    includeInactive: boolean;
-    limit?: number;
-    offset?: number;
-  }) => Promise<Array<Product>>;
 
   count: (query: ProductQuery) => Promise<number>;
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;

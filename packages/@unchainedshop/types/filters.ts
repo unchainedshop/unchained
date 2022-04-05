@@ -75,7 +75,7 @@ export type FiltersModule = {
   // Queries
   count: (query: FilterQuery) => Promise<number>;
 
-  findFilter: (params: { filterId: string }) => Promise<Filter>;
+  findFilter: (params: { filterId?: string, key?: string }) => Promise<Filter>;
 
   findFilters: (
     params: FilterQuery & {

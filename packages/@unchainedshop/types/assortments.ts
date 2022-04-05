@@ -71,9 +71,8 @@ export type AssortmentQuery = {
 
 export interface AssortmentPathLink {
   assortmentId: string;
-  assortmentSlug: string;
-  assortmentTexts: AssortmentText;
-  link: AssortmentLink;
+  childAssortmentId: string;
+  parentIds: string[];
 }
 
 export type AssortmentsModule = {

@@ -175,7 +175,10 @@ export const configureProductsModule = async ({
 
   return {
     // Queries
-    findProduct: async ({ productId, slug }) => {
+    findProduct: async ({ productId, slug, sku }) => {
+      if (sku) {
+        return Products.findOne({ 'warehousing.sku': sku }, { sort: { sequence: 1 } });
+      }
       const selector = productId ? generateDbFilterById(productId) : { slugs: slug };
       return Products.findOne(selector, {});
     },
@@ -190,19 +193,6 @@ export const configureProductsModule = async ({
       }
       const products = Products.find(buildFindSelector(query), options);
       return products.toArray();
-    },
-
-    findProductSiblings: async ({ productIds, limit, offset, includeInactive = false }) => {
-      const productSelector: Query = {
-        _id: { $in: productIds },
-        status: includeInactive
-          ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }
-          : ProductStatus.ACTIVE,
-      };
-
-      const productOptions = { skip: offset, limit };
-
-      return Products.find(productSelector, productOptions).toArray();
     },
 
     count: async (query) => {
