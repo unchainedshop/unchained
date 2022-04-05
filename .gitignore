@@ -9,3 +9,4 @@ tsconfig.tsbuildinfo
 /globalConfig.json
 /docs/static/api
 lib/
+/env
