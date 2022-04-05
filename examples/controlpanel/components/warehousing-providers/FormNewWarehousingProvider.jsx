@@ -13,11 +13,7 @@ import { WAREHOUSING_PROVIDERS_QUERY } from './WarehousingProviderList';
 
 const defaultProviderType = 'PHYSICAL';
 
-const FormNewWarehousingProvider = ({
-  providerType,
-  updateProviderType,
-  ...formProps
-}) => (
+const FormNewWarehousingProvider = ({ providerType, updateProviderType, ...formProps }) => (
   <AutoForm {...formProps}>
     <AutoField name="type" onChange={updateProviderType} />
     {providerType && <AutoField name="adapterKey" />}
@@ -57,15 +53,12 @@ export default compose(
       options: {
         refetchQueries: [{ query: WAREHOUSING_PROVIDERS_QUERY }],
       },
-    }
+    },
   ),
   withFormSchema(
     ({
       providerType,
-      data: {
-        warehousingProviderType = { options: [] },
-        warehousingInterfaces = [],
-      } = {},
+      data: { warehousingProviderType = { options: [] }, warehousingInterfaces = [] } = {},
     }) => ({
       type: {
         type: String,
@@ -73,10 +66,7 @@ export default compose(
         label: 'Type',
         defaultValue: providerType,
         uniforms: {
-          options: [
-            { label: 'Choose Type', value: null },
-            ...warehousingProviderType.options,
-          ],
+          options: [{ label: 'Choose Type', value: null }, ...warehousingProviderType.options],
         },
       },
       adapterKey: {
@@ -84,13 +74,10 @@ export default compose(
         optional: false,
         label: 'Adapter',
         uniforms: {
-          options: [
-            { label: 'Choose Adapter', value: null },
-            ...warehousingInterfaces,
-          ],
+          options: [{ label: 'Choose Adapter', value: null }, ...warehousingInterfaces],
         },
       },
-    })
+    }),
   ),
   withHandlers({
     onSubmitSuccess:
@@ -113,5 +100,5 @@ export default compose(
   withFormErrorHandlers,
   mapProps(({ createWarehousingProvider, ...rest }) => ({
     ...rest,
-  }))
+  })),
 )(FormNewWarehousingProvider);

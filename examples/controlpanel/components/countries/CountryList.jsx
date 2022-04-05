@@ -18,9 +18,7 @@ const CountryList = ({ ...rest }) => (
           </Link>
         </Table.Cell>
         <Table.Cell>
-          {country.isActive && (
-            <Icon color="green" name="checkmark" size="large" />
-          )}
+          {country.isActive && <Icon color="green" name="checkmark" size="large" />}
         </Table.Cell>
         <Table.Cell>{country.isBase ? <b>Base Country</b> : null}</Table.Cell>
       </Table.Row>
@@ -50,5 +48,5 @@ export default compose(
       }
     `,
   }),
-  pure
+  pure,
 )(CountryList);

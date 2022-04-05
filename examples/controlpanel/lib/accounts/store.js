@@ -24,11 +24,7 @@ const tokenDidChange = async function tokenDidChange() {
   onChangeCallbacks.forEach((callback) => callback(newData));
 };
 
-export const storeLoginToken = async function storeLoginToken(
-  userId,
-  token,
-  tokenExpires
-) {
+export const storeLoginToken = async function storeLoginToken(userId, token, tokenExpires) {
   await tokenStore.set({ userId, token, tokenExpires });
   await tokenDidChange();
 };

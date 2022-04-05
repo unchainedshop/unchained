@@ -14,15 +14,11 @@ const LanguageList = ({ ...rest }) => (
       <Table.Row key={language._id}>
         <Table.Cell>
           <Link href={`/languages/edit?_id=${language._id}`}>
-            <a href={`/languages/edit?_id=${language._id}`}>
-              {language.isoCode}
-            </a>
+            <a href={`/languages/edit?_id=${language._id}`}>{language.isoCode}</a>
           </Link>
         </Table.Cell>
         <Table.Cell>
-          {language.isActive && (
-            <Icon color="green" name="checkmark" size="large" />
-          )}
+          {language.isActive && <Icon color="green" name="checkmark" size="large" />}
         </Table.Cell>
         <Table.Cell>{language.isBase ? <b>Base language</b> : null}</Table.Cell>
       </Table.Row>
@@ -52,5 +48,5 @@ export default compose(
       }
     `,
   }),
-  pure
+  pure,
 )(LanguageList);

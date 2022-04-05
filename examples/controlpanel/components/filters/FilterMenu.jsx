@@ -22,9 +22,7 @@ export default compose(
         name: 'FilterTranslation',
         description: 'Texts',
         isActive:
-          router.query.tab === '' ||
-          !router.query.tab ||
-          router.query.tab === 'FilterTranslation',
+          router.query.tab === '' || !router.query.tab || router.query.tab === 'FilterTranslation',
       },
       {
         name: 'FilterOptions',
@@ -49,5 +47,5 @@ export default compose(
         });
       },
   }),
-  pure
+  pure,
 )(FilterMenu);

@@ -18,22 +18,13 @@ const FormEditProduct = ({ isEditingDisabled, ...formProps }) => (
     <Grid>
       <Grid.Row columns={1}>
         <Grid.Column width={12}>
-          <AutoField
-            name="tags"
-            component={FormTagInput}
-            disabled={isEditingDisabled}
-            options={[]}
-          />
+          <AutoField name="tags" component={FormTagInput} disabled={isEditingDisabled} options={[]} />
         </Grid.Column>
       </Grid.Row>
     </Grid>
     <ErrorsField />
     <br />
-    <SubmitField
-      value="Save"
-      className="primary"
-      disabled={isEditingDisabled}
-    />
+    <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
   </AutoForm>
 );
 
@@ -60,7 +51,7 @@ export default compose(
       options: {
         refetchQueries: ['productInfos', 'getAllProducts'],
       },
-    }
+    },
   ),
   withFormSchema(() => ({
     tags: {
@@ -90,5 +81,5 @@ export default compose(
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
     ...rest,
   })),
-  pure
+  pure,
 )(FormEditProduct);

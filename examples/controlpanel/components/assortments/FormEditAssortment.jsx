@@ -53,10 +53,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation updateAssortment(
-        $assortment: UpdateAssortmentInput!
-        $assortmentId: ID!
-      ) {
+      mutation updateAssortment($assortment: UpdateAssortmentInput!, $assortmentId: ID!) {
         updateAssortment(assortment: $assortment, assortmentId: $assortmentId) {
           _id
           isActive
@@ -70,7 +67,7 @@ export default compose(
       options: {
         refetchQueries: ['assortment', 'assortments'],
       },
-    }
+    },
   ),
   withFormSchema({
     isActive: {
@@ -108,5 +105,5 @@ export default compose(
   withFormErrorHandlers,
   mapProps(({ assortmentId, updateAssortment, ...rest }) => ({
     ...rest,
-  }))
+  })),
 )(FormEditAssortment);

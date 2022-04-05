@@ -2,13 +2,7 @@ import React from 'react';
 import { compose, withState, withHandlers } from 'recompose';
 import { List, Button } from 'semantic-ui-react';
 
-const ProductBundleItemListItem = ({
-  index,
-  product,
-  quantity,
-  isEditing,
-  removeItem,
-}) => (
+const ProductBundleItemListItem = ({ index, product, quantity, isEditing, removeItem }) => (
   <List.Item>
     <List.Content floated="right">
       <Button onClick={() => removeItem(index)}>X</Button>
@@ -33,5 +27,5 @@ export default compose(
         if (event && event.preventDefault) event.preventDefault();
         setIsEditing(!isEditing);
       },
-  })
+  }),
 )(ProductBundleItemListItem);

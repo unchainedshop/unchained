@@ -40,11 +40,7 @@ const FormEditProductMediaTexts = ({
       <Segment attached="bottom">
         {languages.map((language, key) => (
           <div key={`form-${language.isoCode}`}>
-            <AutoField
-              name={`texts.${key}.locale`}
-              disabled={isEditingDisabled}
-              hidden
-            />
+            <AutoField name={`texts.${key}.locale`} disabled={isEditingDisabled} hidden />
             <AutoField
               name={`texts.${key}.title`}
               disabled={isEditingDisabled}
@@ -59,11 +55,7 @@ const FormEditProductMediaTexts = ({
         ))}
         <ErrorsField />
         <br />
-        <SubmitField
-          value="Save"
-          className="primary"
-          disabled={isEditingDisabled}
-        />
+        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
         <Button type="normal" onClick={onCancel}>
           Cancel
         </Button>
@@ -92,9 +84,7 @@ export default compose(
   `),
   mapProps(({ data, ...rest }) => {
     const { languages = [] } = data;
-    const filteredActiveLanguages = languages.filter(
-      (language) => !!language.isBase
-    );
+    const filteredActiveLanguages = languages.filter((language) => !!language.isBase);
     const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
@@ -106,21 +96,11 @@ export default compose(
       ...rest,
     };
   }),
-  withState(
-    'selectedLocale',
-    'setSelectedLocale',
-    ({ baseLanguage }) => baseLanguage
-  ),
+  withState('selectedLocale', 'setSelectedLocale', ({ baseLanguage }) => baseLanguage),
   graphql(
     gql`
-      mutation updateProductMediaTexts(
-        $texts: [UpdateProductMediaTextInput!]!
-        $productMediaId: ID!
-      ) {
-        updateProductMediaTexts(
-          texts: $texts
-          productMediaId: $productMediaId
-        ) {
+      mutation updateProductMediaTexts($texts: [UpdateProductMediaTextInput!]!, $productMediaId: ID!) {
+        updateProductMediaTexts(texts: $texts, productMediaId: $productMediaId) {
           _id
           locale
           title
@@ -132,7 +112,7 @@ export default compose(
       options: {
         refetchQueries: ['productMediaTexts', 'productMedia'],
       },
-    }
+    },
   ),
   withFormSchema({
     texts: {
@@ -159,22 +139,18 @@ export default compose(
       label: 'Subtitle',
     },
   }),
-  withFormModel(
-    ({ data: { translatedProductMediaTexts = [] }, languages = [] }) => {
-      const texts = languages.map((language) => {
-        const foundTranslations = translatedProductMediaTexts.filter(
-          (translatedText) => translatedText.locale === language.isoCode
-        );
-        const localizedTextForLocale =
-          foundTranslations.length > 0
-            ? { ...foundTranslations[0] }
-            : { locale: language.isoCode };
-        localizedTextForLocale.labels = localizedTextForLocale.labels || [];
-        return localizedTextForLocale;
-      });
-      return { texts };
-    }
-  ),
+  withFormModel(({ data: { translatedProductMediaTexts = [] }, languages = [] }) => {
+    const texts = languages.map((language) => {
+      const foundTranslations = translatedProductMediaTexts.filter(
+        (translatedText) => translatedText.locale === language.isoCode,
+      );
+      const localizedTextForLocale =
+        foundTranslations.length > 0 ? { ...foundTranslations[0] } : { locale: language.isoCode };
+      localizedTextForLocale.labels = localizedTextForLocale.labels || [];
+      return localizedTextForLocale;
+    });
+    return { texts };
+  }),
   withHandlers({
     changeSelectedLocale:
       ({ setSelectedLocale }) =>
@@ -196,18 +172,10 @@ export default compose(
   }),
   withFormErrorHandlers,
   mapProps(
-    ({
-      setSelectedLocale,
-      selectedLocale,
-      baseLanguage,
-      productMediaId,
-      mutate,
-      data,
-      ...rest
-    }) => ({
+    ({ setSelectedLocale, selectedLocale, baseLanguage, productMediaId, mutate, data, ...rest }) => ({
       activeLanguage: selectedLocale || baseLanguage,
       ...rest,
-    })
+    }),
   ),
-  pure
+  pure,
 )(FormEditProductMediaTexts);

@@ -22,9 +22,7 @@ export default compose(
         name: 'AssortmentTranslation',
         description: 'Texts',
         isActive:
-          router.query.tab === '' ||
-          !router.query.tab ||
-          router.query.tab === 'AssortmentTranslation',
+          router.query.tab === '' || !router.query.tab || router.query.tab === 'AssortmentTranslation',
       },
       {
         name: 'AssortmentLinks',
@@ -64,5 +62,5 @@ export default compose(
         });
       },
   }),
-  pure
+  pure,
 )(AssortmentMenu);

@@ -18,10 +18,7 @@ const FormEditProductPlan = ({ isEditingDisabled, ...formProps }) => (
       <Grid>
         <Grid.Row>
           <Grid.Column width={16}>
-            <AutoField
-              name="usageCalculationType"
-              disabled={isEditingDisabled}
-            />
+            <AutoField name="usageCalculationType" disabled={isEditingDisabled} />
           </Grid.Column>
 
           <Grid.Column width={8}>
@@ -29,11 +26,7 @@ const FormEditProductPlan = ({ isEditingDisabled, ...formProps }) => (
           </Grid.Column>
 
           <Grid.Column width={8}>
-            <AutoField
-              placeholder={1}
-              name="billingIntervalCount"
-              disabled={isEditingDisabled}
-            />
+            <AutoField placeholder={1} name="billingIntervalCount" disabled={isEditingDisabled} />
           </Grid.Column>
 
           <Grid.Column width={8}>
@@ -41,21 +34,13 @@ const FormEditProductPlan = ({ isEditingDisabled, ...formProps }) => (
           </Grid.Column>
 
           <Grid.Column width={8}>
-            <AutoField
-              placeholder={1}
-              name="trialIntervalCount"
-              disabled={isEditingDisabled}
-            />
+            <AutoField placeholder={1} name="trialIntervalCount" disabled={isEditingDisabled} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
       <ErrorsField />
       <br />
-      <SubmitField
-        value="Save"
-        className="primary"
-        disabled={isEditingDisabled}
-      />
+      <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
     </AutoForm>
   </Segment>
 );
@@ -80,10 +65,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation updateProductPlan(
-        $plan: UpdateProductPlanInput!
-        $productId: ID!
-      ) {
+      mutation updateProductPlan($plan: UpdateProductPlanInput!, $productId: ID!) {
         updateProductPlan(plan: $plan, productId: $productId) {
           _id
           ... on PlanProduct {
@@ -102,7 +84,7 @@ export default compose(
       options: {
         refetchQueries: ['productPlanInfo'],
       },
-    }
+    },
   ),
 
   withFormSchema({
@@ -164,5 +146,5 @@ export default compose(
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
     ...rest,
   })),
-  pure
+  pure,
 )(FormEditProductPlan);

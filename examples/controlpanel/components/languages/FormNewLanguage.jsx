@@ -33,7 +33,7 @@ export default compose(
       options: {
         refetchQueries: ['languages'],
       },
-    }
+    },
   ),
   withFormSchema({
     isoCode: {
@@ -64,5 +64,5 @@ export default compose(
   mapProps(({ createLanguage, ...rest }) => ({
     ...rest,
   })),
-  pure
+  pure,
 )(FormNewLanguage);

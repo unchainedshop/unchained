@@ -40,7 +40,7 @@ export default compose(
             password,
             disableHashing: true,
           },
-          client
+          client,
         ),
     onSubmitSuccess: () => (userId) => {
       if (!userId) {
@@ -50,5 +50,5 @@ export default compose(
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure
+  pure,
 )(FormSignUp);

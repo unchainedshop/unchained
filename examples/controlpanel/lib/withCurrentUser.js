@@ -22,16 +22,14 @@ export default compose(
       options: {
         fetchPolicy: 'network-only',
       },
-    }
+    },
   ),
   mapProps(({ data: { me, loading }, ...rest }) => {
-    const currentUser = me
-      ? (me.roles || []).indexOf('admin') !== -1 && me
-      : null;
+    const currentUser = me ? (me.roles || []).indexOf('admin') !== -1 && me : null;
     return {
       currentUser,
       loading,
       ...rest,
     };
-  })
+  }),
 );

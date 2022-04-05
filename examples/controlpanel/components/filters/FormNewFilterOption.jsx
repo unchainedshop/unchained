@@ -24,10 +24,7 @@ const FormNewFilterOption = (formProps) => (
 export default compose(
   graphql(
     gql`
-      mutation createFilterOption(
-        $option: CreateFilterOptionInput!
-        $filterId: ID!
-      ) {
+      mutation createFilterOption($option: CreateFilterOptionInput!, $filterId: ID!) {
         createFilterOption(option: $option, filterId: $filterId) {
           _id
         }
@@ -37,7 +34,7 @@ export default compose(
       options: {
         refetchQueries: ['filterOptions'],
       },
-    }
+    },
   ),
   withFormSchema(() => ({
     title: {
@@ -68,5 +65,5 @@ export default compose(
   mapProps(({ onSuccess, filterId, mutate, ...rest }) => ({
     ...rest,
   })),
-  pure
+  pure,
 )(FormNewFilterOption);

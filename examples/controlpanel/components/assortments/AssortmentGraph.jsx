@@ -11,7 +11,7 @@ import { SEARCH_ASSORTMENTS } from '../searchQueries';
 
 const CytoscapeComponentWithNoSSR = dynamic(
   () => import('./CytoscapeComponent'),
-  { ssr: false } // because of a window object
+  { ssr: false }, // because of a window object
 );
 
 const AssortmentGraph = ({ data, router }) => (
@@ -116,7 +116,7 @@ export default compose(
       options: {
         refetchQueries: ['assortments'],
       },
-    }
+    },
   ),
   withHandlers({
     changeBaseAssortment:
@@ -127,5 +127,5 @@ export default compose(
       ({ isShowLeafNodes, setShowLeafNodes }) =>
       () =>
         setShowLeafNodes(!isShowLeafNodes),
-  })
+  }),
 )(AssortmentGraph);

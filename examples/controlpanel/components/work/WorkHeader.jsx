@@ -2,15 +2,7 @@ import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import Link from 'next/link';
 import React from 'react';
-import {
-  List,
-  Segment,
-  Menu,
-  Dropdown,
-  Label,
-  Grid,
-  Header,
-} from 'semantic-ui-react';
+import { List, Segment, Menu, Dropdown, Label, Grid, Header } from 'semantic-ui-react';
 import dynamic from 'next/dynamic';
 
 import BtnRemoveWork from './BtnRemoveWork';
@@ -92,9 +84,7 @@ const WorkHeader = ({ data }) => {
                     <List.Content>
                       Original:&nbsp;
                       <Link href={`/work/view?_id=${original._id}`}>
-                        <a href={`/work/view?_id=${original._id}`}>
-                          {original._id}
-                        </a>
+                        <a href={`/work/view?_id=${original._id}`}>{original._id}</a>
                       </Link>
                     </List.Content>
                   </List.Item>
@@ -106,43 +96,37 @@ const WorkHeader = ({ data }) => {
                 <List.Item>
                   <List.Icon name="add to calendar" />
                   <List.Content>
-                    Created:{' '}
-                    {created ? new Date(created).toLocaleString() : 'n/a'}
+                    Created: {created ? new Date(created).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="calendar" />
                   <List.Content>
-                    Scheduled:{' '}
-                    {scheduled ? new Date(scheduled).toLocaleString() : 'n/a'}
+                    Scheduled: {scheduled ? new Date(scheduled).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="hourglass start" />
                   <List.Content>
-                    Started:{' '}
-                    {started ? new Date(started).toLocaleString() : 'n/a'}
+                    Started: {started ? new Date(started).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="hourglass end" />
                   <List.Content>
-                    Finished:{' '}
-                    {finished ? new Date(finished).toLocaleString() : 'n/a'}
+                    Finished: {finished ? new Date(finished).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="ban" />
                   <List.Content>
-                    Timeout:{' '}
-                    {timeout ? new Date(timeout).toLocaleString() : 'n/a'}
+                    Timeout: {timeout ? new Date(timeout).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="ban" />
                   <List.Content>
-                    Deleted:{' '}
-                    {deleted ? new Date(deleted).toLocaleString() : 'n/a'}
+                    Deleted: {deleted ? new Date(deleted).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
               </List>

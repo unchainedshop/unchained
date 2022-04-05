@@ -13,11 +13,7 @@ import { DELIVERY_PROVIDERS_QUERY } from './DeliveryProviderList';
 
 const defaultProviderType = 'SHIPPING';
 
-const FormNewDeliveryProvider = ({
-  providerType,
-  updateProviderType,
-  ...formProps
-}) => (
+const FormNewDeliveryProvider = ({ providerType, updateProviderType, ...formProps }) => (
   <AutoForm {...formProps}>
     <AutoField name="type" onChange={updateProviderType} />
     {providerType && <AutoField name="adapterKey" />}
@@ -57,15 +53,12 @@ export default compose(
       options: {
         refetchQueries: [{ query: DELIVERY_PROVIDERS_QUERY }],
       },
-    }
+    },
   ),
   withFormSchema(
     ({
       providerType,
-      data: {
-        deliveryProviderType = { options: [] },
-        deliveryInterfaces = [],
-      } = {},
+      data: { deliveryProviderType = { options: [] }, deliveryInterfaces = [] } = {},
     }) => ({
       type: {
         type: String,
@@ -73,10 +66,7 @@ export default compose(
         label: 'Type',
         defaultValue: providerType,
         uniforms: {
-          options: [
-            { label: 'Choose Type', value: null },
-            ...deliveryProviderType.options,
-          ],
+          options: [{ label: 'Choose Type', value: null }, ...deliveryProviderType.options],
         },
       },
       adapterKey: {
@@ -84,13 +74,10 @@ export default compose(
         optional: false,
         label: 'Adapter',
         uniforms: {
-          options: [
-            { label: 'Choose Adapter', value: null },
-            ...deliveryInterfaces,
-          ],
+          options: [{ label: 'Choose Adapter', value: null }, ...deliveryInterfaces],
         },
       },
-    })
+    }),
   ),
   withHandlers({
     onSubmitSuccess:
@@ -113,5 +100,5 @@ export default compose(
   withFormErrorHandlers,
   mapProps(({ createDeliveryProvider, ...rest }) => ({
     ...rest,
-  }))
+  })),
 )(FormNewDeliveryProvider);

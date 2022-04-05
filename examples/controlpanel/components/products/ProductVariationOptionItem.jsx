@@ -16,9 +16,7 @@ const ProductVariationOptionItem = ({
 }) => (
   <List.Item>
     <List.Content floated="right">
-      {!isEditing && !isEditingDisabled && (
-        <Button onClick={toggleEditing}>Edit</Button>
-      )}
+      {!isEditing && !isEditingDisabled && <Button onClick={toggleEditing}>Edit</Button>}
       {!isEditing && !isEditingDisabled && (
         <Button secondary onClick={removeVariation}>
           Delete
@@ -63,7 +61,7 @@ export default compose(
       options: {
         refetchQueries: ['productVariations'],
       },
-    }
+    },
   ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
@@ -83,5 +81,5 @@ export default compose(
         if (event && event.preventDefault) event.preventDefault();
         setIsEditing(!isEditing);
       },
-  })
+  }),
 )(ProductVariationOptionItem);

@@ -5,14 +5,7 @@ import React from 'react';
 import { Table, Segment, Label } from 'semantic-ui-react';
 import FormattedMoney from '../FormattedMoney';
 
-const OrderPositionList = ({
-  items,
-  delivery,
-  payment,
-  taxes,
-  net,
-  discounts,
-}) => (
+const OrderPositionList = ({ items, delivery, payment, taxes, net, discounts }) => (
   <Segment secondary>
     <Label horizontal attached="top">
       <Label.Detail>Price Calculation</Label.Detail>
@@ -95,5 +88,5 @@ export default compose(
     }
   `),
   mapProps(({ data: { order = {} } }) => order),
-  pure
+  pure,
 )(OrderPositionList);

@@ -35,9 +35,8 @@ const FormNewUser = (formProps) => (
           <Grid.Column width={6}>
             <AutoField name="enroll" />
             <p>
-              If you activate enrollment, I will not set a password and the user
-              gets a special email instead, where he/she can set his initial
-              password.
+              If you activate enrollment, I will not set a password and the user gets a special email
+              instead, where he/she can set his initial password.
             </p>
           </Grid.Column>
           <Grid.Column width={6}>
@@ -61,11 +60,7 @@ export default compose(
   withRouter,
   graphql(
     gql`
-      mutation enrollUser(
-        $profile: UserProfileInput!
-        $email: String!
-        $password: String
-      ) {
+      mutation enrollUser($profile: UserProfileInput!, $email: String!, $password: String) {
         enrollUser(profile: $profile, email: $email, plainPassword: $password) {
           _id
           name
@@ -75,7 +70,7 @@ export default compose(
         }
       }
     `,
-    { name: 'enrollUser' }
+    { name: 'enrollUser' },
   ),
   withFormSchema({
     displayName: {
@@ -118,8 +113,7 @@ export default compose(
     onSubmit:
       ({ enrollUser, schema }) =>
       async ({ ...dirtyInput }) => {
-        const { displayName, email, password, enroll } =
-          schema.clean(dirtyInput);
+        const { displayName, email, password, enroll } = schema.clean(dirtyInput);
         const enrollmentResult = await enrollUser({
           variables: {
             profile: { displayName },
@@ -136,5 +130,5 @@ export default compose(
       ...rest,
     };
   }),
-  pure
+  pure,
 )(FormNewUser);

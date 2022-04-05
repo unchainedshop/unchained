@@ -27,9 +27,7 @@ const OrderList = ({
     createPath={null}
     rowRenderer={(order) => (
       <Table.Row key={order._id}>
-        <Table.Cell>
-          {order.ordered ? format(new Date(order.ordered), 'Pp') : 'n/a'}
-        </Table.Cell>
+        <Table.Cell>{order.ordered ? format(new Date(order.ordered), 'Pp') : 'n/a'}</Table.Cell>
         <Table.Cell>
           <Link href={`/orders/view?_id=${order._id}`}>
             <a href={`/orders/view?_id=${order._id}`}>
@@ -53,9 +51,7 @@ const OrderList = ({
             </a>
           </Link>
         </Table.Cell>
-        <Table.Cell>
-          {order.user && (order.user.name || order.user._id)}
-        </Table.Cell>
+        <Table.Cell>{order.user && (order.user.name || order.user._id)}</Table.Cell>
         <Table.Cell>
           <FormattedMoney money={order.total} />
         </Table.Cell>
@@ -82,11 +78,7 @@ const OrderList = ({
           queryType="orders"
         />{' '}
         Show carts? &nbsp;
-        <input
-          type="checkbox"
-          checked={isShowCarts}
-          onChange={toggleShowCarts}
-        />
+        <input type="checkbox" checked={isShowCarts} onChange={toggleShowCarts} />
       </Table.HeaderCell>
     </Table.Row>
     <Table.Row>
@@ -132,5 +124,5 @@ export default compose(
         updateHasMore && updateHasMore(true);
       },
   }),
-  withRouter
+  withRouter,
 )(OrderList);

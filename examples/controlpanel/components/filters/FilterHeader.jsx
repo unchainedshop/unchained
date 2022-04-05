@@ -40,19 +40,13 @@ const FilterHeader = ({ loading, filter = {} }) => [
             <List.Item>
               <List.Icon name="add to calendar" />
               <List.Content>
-                Created:{' '}
-                {filter.created
-                  ? format(new Date(filter.created), 'Pp')
-                  : 'Unbekannt'}
+                Created: {filter.created ? format(new Date(filter.created), 'Pp') : 'Unbekannt'}
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Icon name="refresh" />
               <List.Content>
-                Updated:{' '}
-                {filter.updated
-                  ? format(new Date(filter.updated), 'Pp')
-                  : 'Unbekannt'}
+                Updated: {filter.updated ? format(new Date(filter.updated), 'Pp') : 'Unbekannt'}
               </List.Content>
             </List.Item>
           </List>
@@ -90,5 +84,5 @@ export default compose(
     loading,
     ...rest,
   })),
-  pure
+  pure,
 )(FilterHeader);

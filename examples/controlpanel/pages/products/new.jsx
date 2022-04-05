@@ -27,6 +27,6 @@ export default connectApollo(
             query: { _id: productId },
           });
         },
-    })
-  )(New)
+    }),
+  )(New),
 );

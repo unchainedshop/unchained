@@ -30,5 +30,5 @@ export default compose(
     loading,
     ...rest,
   })),
-  pure
+  pure,
 )(EventTypeSelector);

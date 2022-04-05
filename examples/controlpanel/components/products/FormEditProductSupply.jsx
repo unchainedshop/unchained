@@ -21,29 +21,19 @@ const FormEditProductSupply = ({ isEditingDisabled, ...formProps }) => (
             <AutoField name="weightInGram" disabled={isEditingDisabled} />
           </Grid.Column>
           <Grid.Column width={8}>
-            <AutoField
-              name="lengthInMillimeters"
-              disabled={isEditingDisabled}
-            />
+            <AutoField name="lengthInMillimeters" disabled={isEditingDisabled} />
           </Grid.Column>
           <Grid.Column width={8}>
             <AutoField name="widthInMillimeters" disabled={isEditingDisabled} />
           </Grid.Column>
           <Grid.Column width={8}>
-            <AutoField
-              name="heightInMillimeters"
-              disabled={isEditingDisabled}
-            />
+            <AutoField name="heightInMillimeters" disabled={isEditingDisabled} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
       <ErrorsField />
       <br />
-      <SubmitField
-        value="Save"
-        className="primary"
-        disabled={isEditingDisabled}
-      />
+      <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
     </AutoForm>
   </Segment>
 );
@@ -67,10 +57,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation updateProductSupply(
-        $supply: UpdateProductSupplyInput!
-        $productId: ID!
-      ) {
+      mutation updateProductSupply($supply: UpdateProductSupplyInput!, $productId: ID!) {
         updateProductSupply(supply: $supply, productId: $productId) {
           _id
           ... on SimpleProduct {
@@ -88,7 +75,7 @@ export default compose(
       options: {
         refetchQueries: ['productSupplyInfo'],
       },
-    }
+    },
   ),
   withFormSchema({
     weightInGram: {
@@ -140,5 +127,5 @@ export default compose(
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
     ...rest,
   })),
-  pure
+  pure,
 )(FormEditProductSupply);

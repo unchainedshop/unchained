@@ -4,8 +4,7 @@ import connectField from 'uniforms/connectField';
 import filterDOMProps from 'uniforms/filterDOMProps';
 import InputMask from 'react-input-mask';
 
-const parseAndForwardValue = (onChange) => (event) =>
-  onChange(event.target.value);
+const parseAndForwardValue = (onChange) => (event) => onChange(event.target.value);
 
 const MaskedText = ({
   mask,
@@ -38,13 +37,7 @@ const MaskedText = ({
     {...filterDOMProps(props)}
   >
     {label && <label htmlFor={id}>{label}</label>}
-    <div
-      className={classnames(
-        'ui',
-        { left: iconLeft, icon: icon || iconLeft },
-        'input'
-      )}
-    >
+    <div className={classnames('ui', { left: iconLeft, icon: icon || iconLeft }, 'input')}>
       <InputMask
         mask={mask}
         maskChar={maskChar}
@@ -57,14 +50,10 @@ const MaskedText = ({
         ref={inputRef}
         value={value}
       />
-      {(icon || iconLeft) && (
-        <i className={`${icon || iconLeft} icon`} {...iconProps} />
-      )}
+      {(icon || iconLeft) && <i className={`${icon || iconLeft} icon`} {...iconProps} />}
     </div>
 
-    {!!(error && showInlineError) && (
-      <div className="ui red basic pointing label">{errorMessage}</div>
-    )}
+    {!!(error && showInlineError) && <div className="ui red basic pointing label">{errorMessage}</div>}
   </div>
 );
 

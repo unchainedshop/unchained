@@ -13,15 +13,11 @@ const CurrencyList = ({ ...rest }) => (
       <Table.Row key={currency._id}>
         <Table.Cell>
           <Link href={`/currencies/edit?_id=${currency._id}`}>
-            <a href={`/currencies/edit?_id=${currency._id}`}>
-              {currency.isoCode}
-            </a>
+            <a href={`/currencies/edit?_id=${currency._id}`}>{currency.isoCode}</a>
           </Link>
         </Table.Cell>
         <Table.Cell>
-          {currency.isActive && (
-            <Icon color="green" name="checkmark" size="large" />
-          )}
+          {currency.isActive && <Icon color="green" name="checkmark" size="large" />}
         </Table.Cell>
       </Table.Row>
     )}

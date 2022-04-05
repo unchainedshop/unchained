@@ -13,11 +13,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormEditDeliveryProvider = ({
-  configurationError,
-  removeDeliveryProvider,
-  ...formProps
-}) => (
+const FormEditDeliveryProvider = ({ configurationError, removeDeliveryProvider, ...formProps }) => (
   <Container>
     <AutoForm {...formProps}>
       <Segment attached="bottom">
@@ -33,12 +29,7 @@ const FormEditDeliveryProvider = ({
             <p>Please check the docs</p>
           </Message>
         )}
-        <Button
-          type="normal"
-          secondary
-          floated="right"
-          onClick={removeDeliveryProvider}
-        >
+        <Button type="normal" secondary floated="right" onClick={removeDeliveryProvider}>
           Delete
         </Button>
       </Segment>
@@ -85,7 +76,7 @@ export default compose(
       options: {
         refetchQueries: ['deliveryProvider', 'deliveryProviders'],
       },
-    }
+    },
   ),
   graphql(
     gql`
@@ -100,7 +91,7 @@ export default compose(
       options: {
         refetchQueries: ['deliveryProviders'],
       },
-    }
+    },
   ),
   withFormSchema({
     configuration: {
@@ -118,11 +109,9 @@ export default compose(
       type: String,
     },
   }),
-  withFormModel(
-    ({ data: { deliveryProvider: { ...deliveryProvider } = {} } }) => ({
-      ...deliveryProvider,
-    })
-  ),
+  withFormModel(({ data: { deliveryProvider: { ...deliveryProvider } = {} } }) => ({
+    ...deliveryProvider,
+  })),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('DeliveryProvider saved', { type: toast.TYPE.SUCCESS });
@@ -158,6 +147,6 @@ export default compose(
     }) => ({
       configurationError,
       ...rest,
-    })
-  )
+    }),
+  ),
 )(FormEditDeliveryProvider);

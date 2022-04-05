@@ -4,15 +4,7 @@ import Link from 'next/link';
 import { graphql } from '@apollo/client/react/hoc';
 import { format } from 'date-fns';
 import React from 'react';
-import {
-  List,
-  Segment,
-  Menu,
-  Dropdown,
-  Label,
-  Icon,
-  Grid,
-} from 'semantic-ui-react';
+import { List, Segment, Menu, Dropdown, Label, Icon, Grid } from 'semantic-ui-react';
 import Address from '../Address';
 
 const colorForStatus = (status) => {
@@ -57,12 +49,7 @@ const EnrollmentHeader = ({ data, loading, terminateEnrollment }) => {
           <Dropdown item icon="wrench" simple>
             <Dropdown.Menu>
               <Dropdown.Header>Options</Dropdown.Header>
-              <Dropdown.Item
-                primary
-                fluid
-                disabled={status !== 'ACTIVE'}
-                onClick={terminateEnrollment}
-              >
+              <Dropdown.Item primary fluid disabled={status !== 'ACTIVE'} onClick={terminateEnrollment}>
                 Terminate
               </Dropdown.Item>
             </Dropdown.Menu>
@@ -77,15 +64,12 @@ const EnrollmentHeader = ({ data, loading, terminateEnrollment }) => {
               <List relaxed>
                 <List.Item>
                   <List.Icon name="money" />
-                  <List.Content>
-                    Currency: {currency && currency.isoCode}
-                  </List.Content>
+                  <List.Content>Currency: {currency && currency.isoCode}</List.Content>
                 </List.Item>
                 <List.Item>
                   <List.Icon name="world" />
                   <List.Content>
-                    Shop:{' '}
-                    {country && `${country.flagEmoji} (${country.isoCode})`}
+                    Shop: {country && `${country.flagEmoji} (${country.isoCode})`}
                   </List.Content>
                 </List.Item>
                 {user && (
@@ -94,9 +78,7 @@ const EnrollmentHeader = ({ data, loading, terminateEnrollment }) => {
                     <List.Content>
                       User:&nbsp;
                       <Link href={`/users/edit?_id=${user._id}`}>
-                        <a href={`/users/edit?_id=${user._id}`}>
-                          {`${user.name || user._id}`}
-                        </a>
+                        <a href={`/users/edit?_id=${user._id}`}>{`${user.name || user._id}`}</a>
                       </Link>
                     </List.Content>
                   </List.Item>
@@ -164,7 +146,7 @@ export default compose(
       options: {
         refetchQueries: ['enrollment', 'enrollments'],
       },
-    }
+    },
   ),
   graphql(gql`
     query enrollment($enrollmentId: ID!) {
@@ -204,5 +186,5 @@ export default compose(
         }
       }
     }
-  `)
+  `),
 )(EnrollmentHeader);

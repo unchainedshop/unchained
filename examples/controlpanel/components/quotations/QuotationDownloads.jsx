@@ -47,5 +47,5 @@ export default compose(
   mapProps(({ data: { quotation = {} } }) => ({
     ...quotation,
   })),
-  pure
+  pure,
 )(QuotationDownloads);

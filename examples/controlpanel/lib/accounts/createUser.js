@@ -4,7 +4,7 @@ import { storeLoginToken } from './store';
 
 export default async function createUser(
   { username, email, password, profile, disableHashing = false },
-  apollo
+  apollo,
 ) {
   const variables = { username, email, profile };
   if (disableHashing) {

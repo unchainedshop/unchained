@@ -18,11 +18,7 @@ import FormTagInput from '../FormTagInput';
 
 const AssortmentSearchDropdownField = connectField(SearchDropdown);
 
-const FormNewAssortmentLink = ({
-  assortments,
-  removeCountry,
-  ...formProps
-}) => {
+const FormNewAssortmentLink = ({ assortments, removeCountry, ...formProps }) => {
   return (
     <AutoForm {...formProps}>
       <Segment basic>
@@ -46,11 +42,7 @@ export default compose(
   withRouter,
   graphql(
     gql`
-      mutation addAssortmentLink(
-        $parentAssortmentId: ID!
-        $childAssortmentId: ID!
-        $tags: [String!]
-      ) {
+      mutation addAssortmentLink($parentAssortmentId: ID!, $childAssortmentId: ID!, $tags: [String!]) {
         addAssortmentLink(
           parentAssortmentId: $parentAssortmentId
           childAssortmentId: $childAssortmentId
@@ -65,7 +57,7 @@ export default compose(
       options: {
         refetchQueries: ['assortment', 'assortmentLinks'],
       },
-    }
+    },
   ),
   withFormSchema({
     parentAssortmentId: {
@@ -110,5 +102,5 @@ export default compose(
       parentAssortmentId,
     },
     ...rest,
-  }))
+  })),
 )(FormNewAssortmentLink);

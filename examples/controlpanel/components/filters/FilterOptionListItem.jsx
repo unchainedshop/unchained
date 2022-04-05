@@ -5,14 +5,7 @@ import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import FormEditFilterTexts from './FormEditFilterTexts';
 
-const FilterOptionItem = ({
-  filterId,
-  texts,
-  value,
-  isEditing,
-  toggleEditing,
-  removeFilterOption,
-}) => (
+const FilterOptionItem = ({ filterId, texts, value, isEditing, toggleEditing, removeFilterOption }) => (
   <List.Item>
     <List.Content floated="right">
       {!isEditing && <Button onClick={toggleEditing}>Edit</Button>}
@@ -43,10 +36,7 @@ export default compose(
   graphql(
     gql`
       mutation removeFilterOption($filterId: ID!, $filterOptionValue: String!) {
-        removeFilterOption(
-          filterId: $filterId
-          filterOptionValue: $filterOptionValue
-        ) {
+        removeFilterOption(filterId: $filterId, filterOptionValue: $filterOptionValue) {
           _id
         }
       }
@@ -56,7 +46,7 @@ export default compose(
       options: {
         refetchQueries: ['filterOptions'],
       },
-    }
+    },
   ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
@@ -76,5 +66,5 @@ export default compose(
         if (event && event.preventDefault) event.preventDefault();
         setIsEditing(!isEditing);
       },
-  })
+  }),
 )(FilterOptionItem);

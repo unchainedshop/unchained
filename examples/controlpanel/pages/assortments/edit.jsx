@@ -26,8 +26,7 @@ export default connectApollo(
               <AssortmentMenu router={router} assortmentId={router.query._id} />
             </Grid.Column>
             <Grid.Column stretched width={12}>
-              {(!router.query.tab ||
-                router.query.tab === 'AssortmentTranslation') && (
+              {(!router.query.tab || router.query.tab === 'AssortmentTranslation') && (
                 <div>
                   <Header as="h3">Localization</Header>
                   <FormEditAssortmentTexts assortmentId={router.query._id} />
@@ -62,5 +61,5 @@ export default connectApollo(
         </Grid>
       </Container>
     </App>
-  ))
+  )),
 );

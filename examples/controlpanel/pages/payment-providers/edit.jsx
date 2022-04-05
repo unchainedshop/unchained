@@ -12,5 +12,5 @@ export default connectApollo(
         <FormEditPaymentProvider paymentProviderId={router.query._id} />
       </Container>
     </App>
-  ))
+  )),
 );

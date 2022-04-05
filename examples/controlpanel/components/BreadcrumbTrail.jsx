@@ -22,7 +22,7 @@ const BreadcrumbTrail = ({ assortmentPaths, router }) => {
             </Breadcrumb.Section>
             {path.links.length !== linkIndex + 1 && <Breadcrumb.Divider />}
           </>
-        ))
+        )),
       )}
     </Breadcrumb>
   );

@@ -56,9 +56,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation reorderAssortmentLinks(
-        $sortKeys: [ReorderAssortmentLinkInput!]!
-      ) {
+      mutation reorderAssortmentLinks($sortKeys: [ReorderAssortmentLinkInput!]!) {
         reorderAssortmentLinks(sortKeys: $sortKeys) {
           _id
           sortKey
@@ -70,7 +68,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentLinks'],
       },
-    }
+    },
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.linkedAssortments) || [],
@@ -81,12 +79,10 @@ export default compose(
     onSortEnd:
       ({ items, reorderAssortmentLinks }) =>
       async ({ oldIndex, newIndex }) => {
-        const sortKeys = arrayMove(items, oldIndex, newIndex).map(
-          (item, sortKey) => ({
-            assortmentLinkId: item._id,
-            sortKey,
-          })
-        );
+        const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
+          assortmentLinkId: item._id,
+          sortKey,
+        }));
         await reorderAssortmentLinks({
           variables: {
             sortKeys,
@@ -95,5 +91,5 @@ export default compose(
       },
   }),
   pure,
-  SortableContainer
+  SortableContainer,
 )(AssortmentLinkList);

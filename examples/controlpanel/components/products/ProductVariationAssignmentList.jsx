@@ -46,11 +46,7 @@ const ProductVariationAssignmentList = ({
             </Table.Cell>
             <Table.Cell>
               {product && product._id && (
-                <Button
-                  small
-                  onClick={removeProductAssignment}
-                  optionValues={columns}
-                >
+                <Button small onClick={removeProductAssignment} optionValues={columns}>
                   X
                 </Button>
               )}
@@ -137,11 +133,7 @@ export default compose(
         $productId: ID!
         $vectors: [ProductAssignmentVectorInput!]!
       ) {
-        addProductAssignment(
-          proxyId: $proxyId
-          productId: $productId
-          vectors: $vectors
-        ) {
+        addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
           _id
         }
       }
@@ -151,14 +143,11 @@ export default compose(
       options: {
         refetchQueries: ['productVariationAssignments'],
       },
-    }
+    },
   ),
   graphql(
     gql`
-      mutation removeProductAssignment(
-        $proxyId: ID!
-        $vectors: [ProductAssignmentVectorInput!]!
-      ) {
+      mutation removeProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
         removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
           _id
         }
@@ -169,13 +158,11 @@ export default compose(
       options: {
         refetchQueries: ['productVariationAssignments'],
       },
-    }
+    },
   ),
   mapProps(({ data: { product }, ...rest }) => {
     const variations = (product && product.variations) || [];
-    const columnTitles = variations.map(
-      ({ texts, key }) => texts?.title || key
-    );
+    const columnTitles = variations.map(({ texts, key }) => texts?.title || key);
     const columnKeys = variations.map(({ key }) => key);
 
     const keyValueCombinations = variations.map(({ key, options }) => ({
@@ -183,9 +170,7 @@ export default compose(
       key,
     }));
     const allRowsPossible =
-      keyValueCombinations.length > 0
-        ? matrixGenerator(keyValueCombinations, [], 0)
-        : [];
+      keyValueCombinations.length > 0 ? matrixGenerator(keyValueCombinations, [], 0) : [];
 
     const assignments = (product && product.assignments) || [];
     const allAssignedRows = {};
@@ -246,5 +231,5 @@ export default compose(
         });
       },
   }),
-  pure
+  pure,
 )(ProductVariationAssignmentList);

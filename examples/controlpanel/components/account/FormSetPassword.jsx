@@ -9,14 +9,7 @@ import gql from 'graphql-tag';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormSetPassword = ({
-  sendVerification,
-  verified,
-  mutate,
-  client,
-  userId,
-  ...formProps
-}) => (
+const FormSetPassword = ({ sendVerification, verified, mutate, client, userId, ...formProps }) => (
   <AutoForm {...formProps}>
     <AutoField name="newPassword" />
     <ErrorsField />
@@ -51,5 +44,5 @@ export default compose(
         }),
   }),
   withFormErrorHandlers,
-  pure
+  pure,
 )(FormSetPassword);

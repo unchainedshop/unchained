@@ -37,7 +37,7 @@ module.exports = withCss(
       const newConfig = config;
       newConfig.resolve.alias['../../theme.config$'] = path.resolve(
         __dirname,
-        'semantic-ui/theme.config'
+        'semantic-ui/theme.config',
       );
       newConfig.module.rules.push({
         test: /\.(png|svg|jpg|eot|otf|ttf|woff|woff2)$/,
@@ -54,5 +54,5 @@ module.exports = withCss(
       });
       return newConfig;
     },
-  })
+  }),
 );

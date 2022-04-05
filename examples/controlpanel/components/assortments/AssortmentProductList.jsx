@@ -11,12 +11,7 @@ const AssortmentProductList = ({ assortmentId, items }) => (
   <Segment>
     <Item.Group divided>
       {items.map(({ _id, ...rest }, index) => (
-        <AssortmentProductListItem
-          key={_id}
-          index={index}
-          _id={_id}
-          {...rest}
-        />
+        <AssortmentProductListItem key={_id} index={index} _id={_id} {...rest} />
       ))}
       <Item>
         <Item.Content>
@@ -48,9 +43,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation reorderAssortmentProducts(
-        $sortKeys: [ReorderAssortmentProductInput!]!
-      ) {
+      mutation reorderAssortmentProducts($sortKeys: [ReorderAssortmentProductInput!]!) {
         reorderAssortmentProducts(sortKeys: $sortKeys) {
           _id
           sortKey
@@ -62,7 +55,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentProducts'],
       },
-    }
+    },
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.productAssignments) || [],
@@ -73,12 +66,10 @@ export default compose(
     onSortEnd:
       ({ items, reorderAssortmentProducts }) =>
       async ({ oldIndex, newIndex }) => {
-        const sortKeys = arrayMove(items, oldIndex, newIndex).map(
-          (item, sortKey) => ({
-            assortmentProductId: item._id,
-            sortKey,
-          })
-        );
+        const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
+          assortmentProductId: item._id,
+          sortKey,
+        }));
         await reorderAssortmentProducts({
           variables: {
             sortKeys,
@@ -87,5 +78,5 @@ export default compose(
       },
   }),
   pure,
-  SortableContainer
+  SortableContainer,
 )(AssortmentProductList);

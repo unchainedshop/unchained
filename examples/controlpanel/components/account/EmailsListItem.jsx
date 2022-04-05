@@ -27,13 +27,7 @@ const EmailsListItem = ({
         <Message.Header>
           E-Mail address unverified
           {!disableSendVerificationEmail && (
-            <Button
-              type="button"
-              floated="right"
-              basic
-              secondary
-              onClick={sendVerification}
-            >
+            <Button type="button" floated="right" basic secondary onClick={sendVerification}>
               Send verification mail
             </Button>
           )}
@@ -74,8 +68,8 @@ export default compose(
           {
             email: address,
           },
-          client
+          client,
         ),
   }),
-  pure
+  pure,
 )(EmailsListItem);

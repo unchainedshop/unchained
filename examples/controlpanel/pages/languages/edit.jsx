@@ -12,5 +12,5 @@ export default connectApollo(
         <FormEditLanguage languageId={router.query._id} />
       </Container>
     </App>
-  ))
+  )),
 );

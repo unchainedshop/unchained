@@ -10,12 +10,9 @@ const { publicRuntimeConfig } = getConfig() || {};
 let apolloClient = null;
 
 function create(initialState, headersOverride, getToken) {
-  const browserFallback =
-    process.browser && `${window.location.origin}/graphql`;
+  const browserFallback = process.browser && `${window.location.origin}/graphql`;
   const fallback =
-    headersOverride && headersOverride.host
-      ? `http://${headersOverride.host}/graphql`
-      : browserFallback;
+    headersOverride && headersOverride.host ? `http://${headersOverride.host}/graphql` : browserFallback;
   const httpLink = createUploadLink({
     uri: publicRuntimeConfig.GRAPHQL_ENDPOINT || fallback,
     credentials: 'same-origin',
@@ -25,9 +22,7 @@ function create(initialState, headersOverride, getToken) {
       graphQLErrors.forEach(({ message, locations, path }) => {
         toast(message, { type: toast.TYPE.ERROR });
         console.log( // eslint-disable-line
-          `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(
-            locations
-          )}, Path: ${path}`
+          `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`,
         );
       });
     }
@@ -81,11 +76,7 @@ function create(initialState, headersOverride, getToken) {
   });
 }
 
-export default function initApollo(
-  initialState,
-  headersOverride = {},
-  getToken
-) {
+export default function initApollo(initialState, headersOverride = {}, getToken) {
   // Make sure to create a new client for every server-side request so that data
   // isn't shared between connections (which would be bad)
   if (!process.browser) {

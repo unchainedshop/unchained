@@ -66,7 +66,7 @@ export default compose(
       options: {
         refetchQueries: ['country', 'countries'],
       },
-    }
+    },
   ),
   graphql(
     gql`
@@ -81,7 +81,7 @@ export default compose(
       options: {
         refetchQueries: ['countries'],
       },
-    }
+    },
   ),
   withFormSchema({
     isoCode: {
@@ -100,12 +100,10 @@ export default compose(
       label: 'Active',
     },
   }),
-  withFormModel(
-    ({ data: { country: { defaultCurrency, ...country } = {} } }) => ({
-      defaultCurrencyId: defaultCurrency && defaultCurrency._id,
-      ...country,
-    })
-  ),
+  withFormModel(({ data: { country: { defaultCurrency, ...country } = {} } }) => ({
+    defaultCurrencyId: defaultCurrency && defaultCurrency._id,
+    ...country,
+  })),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Country saved', { type: toast.TYPE.SUCCESS });
@@ -132,13 +130,11 @@ export default compose(
         }),
   }),
   withFormErrorHandlers,
-  mapProps(
-    ({ countryId, updateCountry, data: { currencies = [] }, ...rest }) => ({
-      currencies: currencies.map((currency) => ({
-        label: currency.isoCode,
-        value: currency._id,
-      })),
-      ...rest,
-    })
-  )
+  mapProps(({ countryId, updateCountry, data: { currencies = [] }, ...rest }) => ({
+    currencies: currencies.map((currency) => ({
+      label: currency.isoCode,
+      value: currency._id,
+    })),
+    ...rest,
+  })),
 )(FormEditCountry);

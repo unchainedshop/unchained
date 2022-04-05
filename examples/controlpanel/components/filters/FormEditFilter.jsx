@@ -49,7 +49,7 @@ export default compose(
       options: {
         refetchQueries: ['filterInfos', 'filters'],
       },
-    }
+    },
   ),
   withFormSchema(() => ({
     isActive: {
@@ -76,5 +76,5 @@ export default compose(
   mapProps(({ filterId, mutate, data, ...rest }) => ({
     ...rest,
   })),
-  pure
+  pure,
 )(FormEditFilter);

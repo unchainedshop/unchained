@@ -67,5 +67,5 @@ export default compose(
   }),
   withFormErrorHandlers,
   mapProps(({ userId, mutate, client, ...rest }) => ({ ...rest })),
-  pure
+  pure,
 )(FormSetRoles);

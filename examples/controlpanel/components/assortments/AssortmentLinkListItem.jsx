@@ -6,16 +6,9 @@ import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 
-const DragHandle = SortableHandle(() => (
-  <Icon name="arrows alternate vertical" link size="small" />
-));
+const DragHandle = SortableHandle(() => <Icon name="arrows alternate vertical" link size="small" />);
 
-const AssortmentLinkListItem = ({
-  parent,
-  child,
-  tags,
-  removeAssortmentLink,
-}) => {
+const AssortmentLinkListItem = ({ parent, child, tags, removeAssortmentLink }) => {
   return (
     <Item>
       <Item.Content>
@@ -23,13 +16,9 @@ const AssortmentLinkListItem = ({
           <List as="ol">
             <List.Item as="li" value="">
               <DragHandle />
-              <Link
-                href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}
-              >
+              <Link href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}>
                 <>
-                  <a
-                    href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}
-                  >
+                  <a href={`/assortments/edit?_id=${parent._id}&tab=AssortmentLinks`}>
                     {parent.texts?.title}
                   </a>
                   {tags &&
@@ -40,12 +29,8 @@ const AssortmentLinkListItem = ({
               </Link>
               <List.Item as="ol">
                 <List.Item as="li" value="">
-                  <Link
-                    href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}
-                  >
-                    <a
-                      href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}
-                    >
+                  <Link href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}>
+                    <a href={`/assortments/edit?_id=${child._id}&tab=AssortmentLinks`}>
                       {child.texts?.title}
                     </a>
                   </Link>
@@ -78,7 +63,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentLinks'],
       },
-    }
+    },
   ),
   withHandlers({
     removeAssortmentLink:
@@ -91,5 +76,5 @@ export default compose(
         });
       },
   }),
-  SortableElement
+  SortableElement,
 )(AssortmentLinkListItem);

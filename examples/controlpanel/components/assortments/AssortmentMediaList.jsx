@@ -78,13 +78,11 @@ export default compose(
       options: {
         refetchQueries: ['assortmentMedia'],
       },
-    }
+    },
   ),
   graphql(
     gql`
-      mutation reorderAssortmentMedia(
-        $sortKeys: [ReorderAssortmentMediaInput!]!
-      ) {
+      mutation reorderAssortmentMedia($sortKeys: [ReorderAssortmentMediaInput!]!) {
         reorderAssortmentMedia(sortKeys: $sortKeys) {
           _id
           sortKey
@@ -96,7 +94,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentMedia'],
       },
-    }
+    },
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.media) || [],
@@ -108,12 +106,10 @@ export default compose(
     onSortEnd:
       ({ items, reorderAssortmentMedia }) =>
       async ({ oldIndex, newIndex }) => {
-        const sortKeys = arrayMove(items, oldIndex, newIndex).map(
-          (item, sortKey) => ({
-            assortmentMediaId: item._id,
-            sortKey,
-          })
-        );
+        const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
+          assortmentMediaId: item._id,
+          sortKey,
+        }));
         await reorderAssortmentMedia({
           variables: {
             sortKeys,
@@ -133,5 +129,5 @@ export default compose(
       },
   }),
   pure,
-  SortableContainer
+  SortableContainer,
 )(AssortmentMediaList);

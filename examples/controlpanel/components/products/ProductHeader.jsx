@@ -14,10 +14,7 @@ import BreadcrumbTrail from '../BreadcrumbTrail';
 const ProductHeader = ({ loading, router, productId, product = {} }) => (
   <>
     {product && product.assortmentPaths && (
-      <BreadcrumbTrail
-        assortmentPaths={product.assortmentPaths}
-        router={router}
-      />
+      <BreadcrumbTrail assortmentPaths={product.assortmentPaths} router={router} />
     )}
     <Menu fluid attached="top" borderless key="header-title">
       <Menu.Item header>
@@ -71,28 +68,19 @@ const ProductHeader = ({ loading, router, productId, product = {} }) => (
               <List.Item key="add to calendar">
                 <List.Icon name="add to calendar" />
                 <List.Content>
-                  Created:{' '}
-                  {product.created
-                    ? format(new Date(product.created), 'Pp')
-                    : 'n/a'}
+                  Created: {product.created ? format(new Date(product.created), 'Pp') : 'n/a'}
                 </List.Content>
               </List.Item>
               <List.Item key="refresh">
                 <List.Icon name="refresh" />
                 <List.Content>
-                  Updated:{' '}
-                  {product.updated
-                    ? format(new Date(product.updated), 'Pp')
-                    : 'n/a'}
+                  Updated: {product.updated ? format(new Date(product.updated), 'Pp') : 'n/a'}
                 </List.Content>
               </List.Item>
               <List.Item key="eye">
                 <List.Icon name="eye" />
                 <List.Content>
-                  Published:{' '}
-                  {product.published
-                    ? format(new Date(product.published), 'Pp')
-                    : 'n/a'}
+                  Published: {product.published ? format(new Date(product.published), 'Pp') : 'n/a'}
                 </List.Content>
               </List.Item>
             </List>
@@ -141,5 +129,5 @@ export default compose(
     ...rest,
   })),
   withRouter,
-  pure
+  pure,
 )(ProductHeader);

@@ -5,12 +5,7 @@ import gql from 'graphql-tag';
 import EmailsListItem from './EmailsListItem';
 import FormAddEmail from './FormAddEmail';
 
-const EmailsList = ({
-  userId,
-  emails,
-  onSubmitSuccess,
-  disableSendVerificationEmail,
-}) => (
+const EmailsList = ({ userId, emails, onSubmitSuccess, disableSendVerificationEmail }) => (
   <>
     {emails.map(({ address, verified }) => (
       <EmailsListItem
@@ -42,5 +37,5 @@ export default compose(
   withProps(({ data: { user: { emails = [] } = {} } }) => ({
     emails,
   })),
-  pure
+  pure,
 )(EmailsList);

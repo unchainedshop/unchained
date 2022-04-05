@@ -79,7 +79,7 @@ export default compose(
       options: {
         refetchQueries: ['productMedia'],
       },
-    }
+    },
   ),
   graphql(
     gql`
@@ -95,7 +95,7 @@ export default compose(
       options: {
         refetchQueries: ['productMedia'],
       },
-    }
+    },
   ),
   mapProps(({ data: { product }, ...rest }) => ({
     items: (product && product.media) || [],
@@ -107,12 +107,10 @@ export default compose(
     onSortEnd:
       ({ items, reorderProductMedia }) =>
       async ({ oldIndex, newIndex }) => {
-        const sortKeys = arrayMove(items, oldIndex, newIndex).map(
-          (item, sortKey) => ({
-            productMediaId: item._id,
-            sortKey,
-          })
-        );
+        const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
+          productMediaId: item._id,
+          sortKey,
+        }));
         await reorderProductMedia({
           variables: {
             sortKeys,
@@ -132,5 +130,5 @@ export default compose(
       },
   }),
   pure,
-  SortableContainer
+  SortableContainer,
 )(ProductMediaList);

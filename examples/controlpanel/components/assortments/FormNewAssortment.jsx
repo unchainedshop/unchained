@@ -34,7 +34,7 @@ export default compose(
       options: {
         refetchQueries: ['assortments'],
       },
-    }
+    },
   ),
   withFormSchema({
     title: {
@@ -70,5 +70,5 @@ export default compose(
   withFormErrorHandlers,
   mapProps(({ createAssortment, ...rest }) => ({
     ...rest,
-  }))
+  })),
 )(FormNewAssortment);

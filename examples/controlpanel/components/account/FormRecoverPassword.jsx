@@ -33,5 +33,5 @@ export default compose(
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure
+  pure,
 )(FormRecoverPassword);

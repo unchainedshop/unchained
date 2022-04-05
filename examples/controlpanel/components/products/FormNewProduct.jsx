@@ -70,5 +70,5 @@ export default compose(
   mapProps(({ onSuccess, mutate, ...rest }) => ({
     ...rest,
   })),
-  pure
+  pure,
 )(FormNewProduct);

@@ -8,12 +8,11 @@ const SystemInfo = ({ data: { shopInfo } = {} } = {}) => (
     <h2>System Information</h2>
     <p>Engine Version: {shopInfo?.version}</p>
     <p>
-      Resolved Language: {shopInfo?.language?.isoCode}{' '}
-      {shopInfo?.language?.name}
+      Resolved Language: {shopInfo?.language?.isoCode} {shopInfo?.language?.name}
     </p>
     <p>
-      Resolved Country: {shopInfo?.country?.isoCode} (
-      {shopInfo?.country?.flagEmoji} {shopInfo?.country?.name})
+      Resolved Country: {shopInfo?.country?.isoCode} ({shopInfo?.country?.flagEmoji}{' '}
+      {shopInfo?.country?.name})
     </p>
     <p>Resolved Currency: {shopInfo?.country?.defaultCurrency?.isoCode}</p>
   </Container>

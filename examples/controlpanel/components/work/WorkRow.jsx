@@ -3,8 +3,7 @@ import { Table } from 'semantic-ui-react';
 import Link from 'next/link';
 
 const relativeScheduleFromWork = ({ scheduledTime, relativeTime, status }) => {
-  if (status === 'FAILED' || status === 'SUCCESS' || status === 'DELETED')
-    return null;
+  if (status === 'FAILED' || status === 'SUCCESS' || status === 'DELETED') return null;
   const diff = scheduledTime - relativeTime;
   const seconds = diff / 1000;
   const minutes = seconds / 60;
@@ -25,14 +24,9 @@ const WorkRow = ({ work, relativeDate }) => {
   const scheduledTime = scheduledDate && scheduledDate.getTime();
   const relativeTime = relativeDate && relativeDate.getTime();
   const isReady =
-    (scheduledTime <= relativeTime && work.status === 'NEW') ||
-    work.status === 'ALLOCATED';
+    (scheduledTime <= relativeTime && work.status === 'NEW') || work.status === 'ALLOCATED';
   return (
-    <Table.Row
-      warning={isReady}
-      error={work.status === 'FAILED'}
-      positive={work.status === 'SUCCESS'}
-    >
+    <Table.Row warning={isReady} error={work.status === 'FAILED'} positive={work.status === 'SUCCESS'}>
       <Table.Cell>
         <Link href={`/work/view?_id=${work._id}`}>
           <a href={`/work/view?_id=${work._id}`}>{work.type}</a>
@@ -49,12 +43,8 @@ const WorkRow = ({ work, relativeDate }) => {
           }) ||
             scheduledDate.toLocaleString())}
       </Table.Cell>
-      <Table.Cell>
-        {work.started && new Date(work.started).toLocaleString()}
-      </Table.Cell>
-      <Table.Cell>
-        {work.finished && new Date(work.finished).toLocaleString()}
-      </Table.Cell>
+      <Table.Cell>{work.started && new Date(work.started).toLocaleString()}</Table.Cell>
+      <Table.Cell>{work.finished && new Date(work.finished).toLocaleString()}</Table.Cell>
     </Table.Row>
   );
 };

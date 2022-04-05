@@ -19,14 +19,7 @@ const EventRow = ({ type, created, _id }) => {
   );
 };
 
-const EventList = ({
-  onFilterChange,
-  selectTypes,
-  loading,
-  updateHasMore,
-  queryOptions,
-  ...rest
-}) => {
+const EventList = ({ onFilterChange, selectTypes, loading, updateHasMore, queryOptions, ...rest }) => {
   return (
     <InfiniteDataTable
       {...rest}
@@ -57,5 +50,5 @@ export default compose(
         }
       }
     `,
-  })
+  }),
 )(EventList);

@@ -6,15 +6,9 @@ import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 import Link from 'next/link';
 
-const DragHandle = SortableHandle(() => (
-  <Icon name="arrows alternate vertical" link size="small" />
-));
+const DragHandle = SortableHandle(() => <Icon name="arrows alternate vertical" link size="small" />);
 
-const AssortmentProductListItem = ({
-  product,
-  tags,
-  removeAssortmentProduct,
-}) => (
+const AssortmentProductListItem = ({ product, tags, removeAssortmentProduct }) => (
   <Item>
     <Item.Content>
       <Item.Header>
@@ -23,9 +17,7 @@ const AssortmentProductListItem = ({
             <DragHandle />
             <Link href={`/products/edit?_id=${product._id}`}>
               <>
-                <a href={`/products/edit?_id=${product._id}`}>
-                  {product.texts?.title}
-                </a>
+                <a href={`/products/edit?_id=${product._id}`}>{product.texts?.title}</a>
                 {tags &&
                   tags.map((tag) => {
                     return <Label>{tag}</Label>;
@@ -58,7 +50,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentProducts'],
       },
-    }
+    },
   ),
   withHandlers({
     removeAssortmentProduct:
@@ -71,5 +63,5 @@ export default compose(
         });
       },
   }),
-  SortableElement
+  SortableElement,
 )(AssortmentProductListItem);

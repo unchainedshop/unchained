@@ -13,9 +13,7 @@ export default compose(
           return;
         }
         if (message === 'Email already exists. [403]') {
-          updateMappedError(
-            new Error('E-Mail existiert already exists, reset?')
-          );
+          updateMappedError(new Error('E-Mail existiert already exists, reset?'));
           return;
         }
         if (message === 'Incorrect password [403]') {
@@ -28,5 +26,5 @@ export default compose(
           updateMappedError(error);
         }
       },
-  })
+  }),
 );

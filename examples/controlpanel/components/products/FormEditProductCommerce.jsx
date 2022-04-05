@@ -16,11 +16,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormEditProductCommerce = ({
-  isEditingDisabled,
-  model,
-  ...formProps
-}) => (
+const FormEditProductCommerce = ({ isEditingDisabled, model, ...formProps }) => (
   <Segment>
     <AutoForm model={model} {...formProps}>
       <Form.Group inline>
@@ -36,11 +32,7 @@ const FormEditProductCommerce = ({
           <Form.Field width={1}>
             <ListDelField />
           </Form.Field>
-          <AutoField
-            className="three wide"
-            name="countryCurrency"
-            label={false}
-          />
+          <AutoField className="three wide" name="countryCurrency" label={false} />
           <AutoField className="two wide" name="isTaxable" label={false} />
           <AutoField className="two wide" name="isNetPrice" label={false} />
           <AutoField className="four wide" name="maxQuantity" label={false} />
@@ -56,11 +48,7 @@ const FormEditProductCommerce = ({
         </Form.Field>
       </Form.Group>
       <ErrorsField />
-      <SubmitField
-        value="Save"
-        className="primary"
-        disabled={isEditingDisabled}
-      />
+      <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
     </AutoForm>
   </Segment>
 );
@@ -103,10 +91,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation updateProductCommerce(
-        $commerce: UpdateProductCommerceInput!
-        $productId: ID!
-      ) {
+      mutation updateProductCommerce($commerce: UpdateProductCommerceInput!, $productId: ID!) {
         updateProductCommerce(commerce: $commerce, productId: $productId) {
           _id
         }
@@ -116,7 +101,7 @@ export default compose(
       options: {
         refetchQueries: ['productCommerceInfo'],
       },
-    }
+    },
   ),
   withFormSchema(({ data: { countries, currencies } }) => ({
     pricing: {
@@ -135,7 +120,7 @@ export default compose(
             return `${country.isoCode} / ${currency.isoCode}`;
           }),
         ],
-        [null]
+        [null],
       ),
     },
     'pricing.$.countryCode': {
@@ -166,34 +151,23 @@ export default compose(
     const productPricing = productCatalogPrices || [];
     const productPricingMap = {};
     const burnedIds = [];
-    productPricing.forEach(
-      ({
-        _id,
-        country,
-        currency,
+    productPricing.forEach(({ _id, country, currency, amount, isTaxable, isNetPrice, maxQuantity }) => {
+      burnedIds.push(`${country.isoCode}:${currency.isoCode}`);
+      productPricingMap[_id] = {
+        countryCode: country.isoCode,
         amount,
+        currencyCode: currency.isoCode,
+        maxQuantity: maxQuantity || 0,
         isTaxable,
         isNetPrice,
-        maxQuantity,
-      }) => {
-        burnedIds.push(`${country.isoCode}:${currency.isoCode}`);
-        productPricingMap[_id] = {
-          countryCode: country.isoCode,
-          amount,
-          currencyCode: currency.isoCode,
-          maxQuantity: maxQuantity || 0,
-          isTaxable,
-          isNetPrice,
-        };
-      }
-    );
+      };
+    });
 
     const defaultPairs = countries || [];
     defaultPairs.forEach((country) => {
       const price = {
         countryCode: country.isoCode,
-        currencyCode:
-          country.defaultCurrency && country.defaultCurrency.isoCode,
+        currencyCode: country.defaultCurrency && country.defaultCurrency.isoCode,
         maxQuantity: 0,
         isTaxable: true,
         isNetPrice: false,
@@ -210,7 +184,7 @@ export default compose(
           productPricingMap[key] && {
             countryCurrency: `${productPricingMap[key].countryCode} / ${productPricingMap[key].currencyCode}`,
             ...productPricingMap[key],
-          }
+          },
       )
       .filter(Boolean)
       .sort((left, right) => {
@@ -247,5 +221,5 @@ export default compose(
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
     ...rest,
   })),
-  pure
+  pure,
 )(FormEditProductCommerce);

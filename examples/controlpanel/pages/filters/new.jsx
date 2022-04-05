@@ -24,6 +24,6 @@ export default connectApollo(
         (filterId) => {
           router.push({ pathname: '/filters/edit', query: { _id: filterId } });
         },
-    })
-  )(New)
+    }),
+  )(New),
 );

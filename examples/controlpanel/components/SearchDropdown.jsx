@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Dropdown,
-  Header,
-  Image as SemanticImage,
-  Icon,
-  Label,
-} from 'semantic-ui-react';
+import { Dropdown, Header, Image as SemanticImage, Icon, Label } from 'semantic-ui-react';
 import { debounce, has, isEmpty } from 'lodash';
 import { useQuery } from '@apollo/client';
 import classnames from 'classnames';
@@ -83,30 +77,22 @@ const SearchDropdown = ({
   };
   let items = queries[queryType] || [];
 
-  items = filterIds
-    ? items?.filter((item) => !filterIds.includes(item._id))
-    : items;
+  items = filterIds ? items?.filter((item) => !filterIds.includes(item._id)) : items;
 
   const options =
     items?.map((item) => {
       return {
         key: item._id,
         value: item._id,
-        text:
-          item?.texts?.title || item?.name || item?.type || item?.orderNumber,
+        text: item?.texts?.title || item?.name || item?.type || item?.orderNumber,
         content: (
           <Header>
             {!(queryType === 'users') && selectImage(item)}
             <Header.Content>
-              {item?.texts?.title ||
-                item?.name ||
-                item?._id?.toLowerCase() ||
-                item?.orderNumber}
+              {item?.texts?.title || item?.name || item?._id?.toLowerCase() || item?.orderNumber}
               {!(queryType === 'users') && (
                 <>
-                  <Header.Subheader>
-                    {item?.texts?.description}
-                  </Header.Subheader>
+                  <Header.Subheader>{item?.texts?.description}</Header.Subheader>
                   <Label color={resolveStatus(item)?.color} horizontal>
                     {resolveStatus(item)?.status}
                   </Label>
@@ -119,9 +105,7 @@ const SearchDropdown = ({
     }) || [];
 
   return (
-    <div
-      className={classnames({ disabled, error, required }, className, 'field')}
-    >
+    <div className={classnames({ disabled, error, required }, className, 'field')}>
       {label && <label htmlFor={id}>{label}</label>}
       <Dropdown
         multiple={multiple}

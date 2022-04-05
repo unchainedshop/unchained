@@ -21,12 +21,7 @@ const FormEditLanguage = ({ removeLanguage, ...formProps }) => (
         <AutoField name={'isActive'} />
         <ErrorsField />
         <SubmitField value="Save" className="primary" />
-        <Button
-          type="normal"
-          secondary
-          floated="right"
-          onClick={removeLanguage}
-        >
+        <Button type="normal" secondary floated="right" onClick={removeLanguage}>
           Delete
         </Button>
       </Segment>
@@ -48,10 +43,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation updateLanguage(
-        $language: UpdateLanguageInput!
-        $languageId: ID!
-      ) {
+      mutation updateLanguage($language: UpdateLanguageInput!, $languageId: ID!) {
         updateLanguage(language: $language, languageId: $languageId) {
           _id
           isoCode
@@ -63,7 +55,7 @@ export default compose(
       options: {
         refetchQueries: ['languages', 'language'],
       },
-    }
+    },
   ),
   graphql(
     gql`
@@ -78,7 +70,7 @@ export default compose(
       options: {
         refetchQueries: ['languages'],
       },
-    }
+    },
   ),
   withFormSchema({
     isoCode: {
@@ -121,5 +113,5 @@ export default compose(
   withFormErrorHandlers,
   mapProps(({ languageId, mutate, data, ...rest }) => ({
     ...rest,
-  }))
+  })),
 )(FormEditLanguage);

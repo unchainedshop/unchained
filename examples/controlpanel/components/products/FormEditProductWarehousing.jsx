@@ -25,11 +25,7 @@ const FormEditProductWarehousing = ({ isEditingDisabled, ...formProps }) => (
       </Grid>
       <ErrorsField />
       <br />
-      <SubmitField
-        value="Save"
-        className="primary"
-        disabled={isEditingDisabled}
-      />
+      <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
     </AutoForm>
   </Segment>
 );
@@ -49,14 +45,8 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation updateProductWarehousing(
-        $warehousing: UpdateProductWarehousingInput!
-        $productId: ID!
-      ) {
-        updateProductWarehousing(
-          warehousing: $warehousing
-          productId: $productId
-        ) {
+      mutation updateProductWarehousing($warehousing: UpdateProductWarehousingInput!, $productId: ID!) {
+        updateProductWarehousing(warehousing: $warehousing, productId: $productId) {
           _id
           ... on SimpleProduct {
             sku
@@ -69,7 +59,7 @@ export default compose(
       options: {
         refetchQueries: ['productWarehousingInfo'],
       },
-    }
+    },
   ),
   withFormSchema({
     sku: {
@@ -103,5 +93,5 @@ export default compose(
     isEditingDisabled: !data.product || data.product.status === 'DELETED',
     ...rest,
   })),
-  pure
+  pure,
 )(FormEditProductWarehousing);

@@ -44,11 +44,7 @@ const FormEditProductTexts = ({
       <Segment attached="bottom">
         {languages.map((language, key) => (
           <div key={`form-${language.isoCode}`}>
-            <AutoField
-              name={`texts.${key}.locale`}
-              disabled={isEditingDisabled}
-              hidden
-            />
+            <AutoField name={`texts.${key}.locale`} disabled={isEditingDisabled} hidden />
             <AutoField
               name={`texts.${key}.slug`}
               disabled={isEditingDisabled}
@@ -90,11 +86,7 @@ const FormEditProductTexts = ({
           </div>
         ))}
         <ErrorsField />
-        <SubmitField
-          value="Save"
-          className="primary"
-          disabled={isEditingDisabled}
-        />
+        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
       </Segment>
     </AutoForm>
   </Container>
@@ -128,11 +120,8 @@ export default compose(
     }
   `),
   mapProps(({ data, ...rest }) => {
-    const { languages = [], product = {} /* translatedProductTexts = [] */ } =
-      data;
-    const filteredActiveLanguages = languages.filter(
-      (language) => !!language.isBase
-    );
+    const { languages = [], product = {} /* translatedProductTexts = [] */ } = data;
+    const filteredActiveLanguages = languages.filter((language) => !!language.isBase);
     const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
@@ -148,10 +137,7 @@ export default compose(
   withState('selectedLocale', 'setSelectedLocale', null),
   graphql(
     gql`
-      mutation updateProductTexts(
-        $texts: [UpdateProductTextInput!]!
-        $productId: ID!
-      ) {
+      mutation updateProductTexts($texts: [UpdateProductTextInput!]!, $productId: ID!) {
         updateProductTexts(texts: $texts, productId: $productId) {
           _id
           locale
@@ -169,7 +155,7 @@ export default compose(
       options: {
         refetchQueries: ['productTexts', 'productInfos'],
       },
-    }
+    },
   ),
   withFormSchema({
     texts: {
@@ -228,12 +214,10 @@ export default compose(
   withFormModel(({ data: { translatedProductTexts = [] }, languages = [] }) => {
     const texts = languages.map((language) => {
       const foundTranslations = translatedProductTexts.filter(
-        (translatedText) => translatedText.locale === language.isoCode
+        (translatedText) => translatedText.locale === language.isoCode,
       );
       const localizedTextForLocale =
-        foundTranslations.length > 0
-          ? { ...foundTranslations[0] }
-          : { locale: language.isoCode };
+        foundTranslations.length > 0 ? { ...foundTranslations[0] } : { locale: language.isoCode };
       localizedTextForLocale.labels = localizedTextForLocale.labels || [];
       return localizedTextForLocale;
     });
@@ -259,19 +243,9 @@ export default compose(
         }),
   }),
   withFormErrorHandlers,
-  mapProps(
-    ({
-      setSelectedLocale,
-      selectedLocale,
-      baseLanguage,
-      productId,
-      mutate,
-      data,
-      ...rest
-    }) => ({
-      activeLanguage: selectedLocale || baseLanguage,
-      ...rest,
-    })
-  ),
-  pure
+  mapProps(({ setSelectedLocale, selectedLocale, baseLanguage, productId, mutate, data, ...rest }) => ({
+    activeLanguage: selectedLocale || baseLanguage,
+    ...rest,
+  })),
+  pure,
 )(FormEditProductTexts);

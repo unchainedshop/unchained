@@ -39,13 +39,7 @@ const DatePickerField = ({
     {...filterDOMProps(props)}
   >
     {label && <label htmlFor={id}>{label}</label>}
-    <div
-      className={classnames(
-        'ui',
-        { left: iconLeft, icon: icon || iconLeft },
-        'input'
-      )}
-    >
+    <div className={classnames('ui', { left: iconLeft, icon: icon || iconLeft }, 'input')}>
       <DatePicker
         disabled={disabled}
         id={id}
@@ -60,14 +54,10 @@ const DatePickerField = ({
         ref={inputRef}
         selected={value ? new Date(value) : null}
       />
-      {(icon || iconLeft) && (
-        <i className={`${icon || iconLeft} icon`} {...iconProps} />
-      )}
+      {(icon || iconLeft) && <i className={`${icon || iconLeft} icon`} {...iconProps} />}
     </div>
 
-    {!!(error && showInlineError) && (
-      <div className="ui red basic pointing label">{errorMessage}</div>
-    )}
+    {!!(error && showInlineError) && <div className="ui red basic pointing label">{errorMessage}</div>}
   </div>
 );
 

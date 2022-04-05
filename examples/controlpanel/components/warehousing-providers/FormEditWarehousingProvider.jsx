@@ -33,12 +33,7 @@ const FormEditWarehousingProvider = ({
             <p>Please check the docs</p>
           </Message>
         )}
-        <Button
-          type="normal"
-          secondary
-          floated="right"
-          onClick={removeWarehousingProvider}
-        >
+        <Button type="normal" secondary floated="right" onClick={removeWarehousingProvider}>
           Delete
         </Button>
       </Segment>
@@ -82,14 +77,12 @@ export default compose(
     `,
     {
       name: 'updateWarehousingProvider',
-    }
+    },
   ),
   graphql(
     gql`
       mutation removeWarehousingProvider($warehousingProviderId: ID!) {
-        removeWarehousingProvider(
-          warehousingProviderId: $warehousingProviderId
-        ) {
+        removeWarehousingProvider(warehousingProviderId: $warehousingProviderId) {
           _id
         }
       }
@@ -99,7 +92,7 @@ export default compose(
       options: {
         refetchQueries: ['warehousingProviders'],
       },
-    }
+    },
   ),
   withFormSchema({
     configuration: {
@@ -117,11 +110,9 @@ export default compose(
       type: String,
     },
   }),
-  withFormModel(
-    ({ data: { warehousingProvider: { ...warehousingProvider } = {} } }) => ({
-      ...warehousingProvider,
-    })
-  ),
+  withFormModel(({ data: { warehousingProvider: { ...warehousingProvider } = {} } }) => ({
+    ...warehousingProvider,
+  })),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('WarehousingProvider saved', { type: toast.TYPE.SUCCESS });
@@ -157,6 +148,6 @@ export default compose(
     }) => ({
       configurationError,
       ...rest,
-    })
-  )
+    }),
+  ),
 )(FormEditWarehousingProvider);

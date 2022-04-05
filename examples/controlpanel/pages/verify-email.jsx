@@ -23,7 +23,7 @@ const Verifier = withApollo(
         router.push('/verify-email?expired=1');
       }
     }
-  })
+  }),
 );
 
 export default connectApollo(
@@ -35,8 +35,8 @@ export default connectApollo(
           <Message negative>
             <Message.Header>Token expired</Message.Header>
             <p>
-              Dieser Verifizierungstoken ist nicht mehr gültig, melde dich an
-              und lass dir einen neuen zusenden
+              Dieser Verifizierungstoken ist nicht mehr gültig, melde dich an und lass dir einen neuen
+              zusenden
             </p>
           </Message>
         ) : (
@@ -47,5 +47,5 @@ export default connectApollo(
         )}
       </Container>
     </App>
-  ))
+  )),
 );

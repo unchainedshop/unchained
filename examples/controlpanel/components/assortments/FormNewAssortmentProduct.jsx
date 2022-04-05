@@ -18,20 +18,11 @@ import FormTagInput from '../FormTagInput';
 
 const ProductSearchDropdownField = connectField(SearchDropdown);
 
-const FormNewAssortmentProduct = ({
-  removeCountry,
-  assortmentId,
-  ...formProps
-}) => (
+const FormNewAssortmentProduct = ({ removeCountry, assortmentId, ...formProps }) => (
   <AutoForm {...formProps}>
     <Segment basic>
       <AutoField name={'assortmentId'} type="hidden" />
-      <AutoField
-        name={'productId'}
-        searchQuery={SEARCH_PRODUCTS}
-        queryType={'products'}
-        uniforms
-      />
+      <AutoField name={'productId'} searchQuery={SEARCH_PRODUCTS} queryType={'products'} uniforms />
       <AutoField name="tags" component={FormTagInput} options={[]} />
       <ErrorsField />
       <SubmitField value="Add Product" className="primary" />
@@ -43,16 +34,8 @@ export default compose(
   withRouter,
   graphql(
     gql`
-      mutation addAssortmentProduct(
-        $assortmentId: ID!
-        $productId: ID!
-        $tags: [String!]
-      ) {
-        addAssortmentProduct(
-          assortmentId: $assortmentId
-          productId: $productId
-          tags: $tags
-        ) {
+      mutation addAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [String!]) {
+        addAssortmentProduct(assortmentId: $assortmentId, productId: $productId, tags: $tags) {
           _id
         }
       }
@@ -62,7 +45,7 @@ export default compose(
       options: {
         refetchQueries: ['assortment', 'assortmentProducts'],
       },
-    }
+    },
   ),
   withFormSchema({
     assortmentId: {
@@ -106,5 +89,5 @@ export default compose(
       assortmentId,
     },
     ...rest,
-  }))
+  })),
 )(FormNewAssortmentProduct);

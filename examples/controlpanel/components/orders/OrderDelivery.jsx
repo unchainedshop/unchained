@@ -35,16 +35,14 @@ const OrderDelivery = ({
           {provider && provider.interface && (
             <Link href={`/delivery-providers/edit?_id=${provider._id}`}>
               <a href={`/delivery-providers/edit?_id=${provider._id}`}>
-                {provider.interface.label} {provider.interface.version} (
-                {provider.type})
+                {provider.interface.label} {provider.interface.version} ({provider.type})
               </a>
             </Link>
           )}
         </Label>
         <List>
           <List.Item>
-            Date of Delivery to Provider:{' '}
-            {delivered ? format(new Date(delivered), 'Pp') : 'n/a'}
+            Date of Delivery to Provider: {delivered ? format(new Date(delivered), 'Pp') : 'n/a'}
           </List.Item>
         </List>
       </List.Item>
@@ -66,12 +64,8 @@ const OrderDelivery = ({
           <List>
             <List.Item>{activePickUpLocation.name}</List.Item>
           </List>
-          {activePickUpLocation.address && (
-            <Address {...activePickUpLocation.address} />
-          )}
-          {activePickUpLocation.geoPoint && (
-            <GeoPoint {...activePickUpLocation.geoPoint} />
-          )}
+          {activePickUpLocation.address && <Address {...activePickUpLocation.address} />}
+          {activePickUpLocation.geoPoint && <GeoPoint {...activePickUpLocation.geoPoint} />}
         </List.Item>
       )}
     </List>
@@ -106,7 +100,7 @@ export default compose(
       options: {
         refetchQueries: ['orders', 'order'],
       },
-    }
+    },
   ),
   graphql(gql`
     query order($orderId: ID!) {
@@ -198,5 +192,5 @@ export default compose(
     activePickUpLocation: order.delivery && order.delivery.activePickUpLocation,
     statusColor: colorForStatus(order.delivery && order.delivery.status),
     orderStatus: order.status,
-  }))
+  })),
 )(OrderDelivery);

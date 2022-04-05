@@ -258,5 +258,5 @@ export default compose(
         }),
   }),
   withFormErrorHandlers,
-  pure
+  pure,
 )(FormProfile);

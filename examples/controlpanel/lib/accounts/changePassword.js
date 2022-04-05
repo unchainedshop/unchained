@@ -1,19 +1,12 @@
 import gql from 'graphql-tag';
 
-export default async function changePassword(
-  { oldPassword, newPassword },
-  apollo
-) {
-  if (!oldPassword || !newPassword)
-    throw new Error('Old and new password are required');
+export default async function changePassword({ oldPassword, newPassword }, apollo) {
+  if (!oldPassword || !newPassword) throw new Error('Old and new password are required');
 
   const result = await apollo.mutate({
     mutation: gql`
       mutation changePassword($oldPassword: String!, $newPassword: String!) {
-        changePassword(
-          oldPlainPassword: $oldPassword
-          newPlainPassword: $newPassword
-        ) {
+        changePassword(oldPlainPassword: $oldPassword, newPlainPassword: $newPassword) {
           success
         }
       }

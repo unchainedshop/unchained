@@ -4,12 +4,7 @@ import { compose, pure, withHandlers, mapProps } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 
-const BtnRemoveAssortment = ({
-  onClick,
-  Component = 'button',
-  children,
-  ...rest
-}) => (
+const BtnRemoveAssortment = ({ onClick, Component = 'button', children, ...rest }) => (
   <Component onClick={onClick} {...rest}>
     {children}
   </Component>
@@ -30,7 +25,7 @@ export default compose(
       options: {
         refetchQueries: ['assortments'],
       },
-    }
+    },
   ),
   withHandlers({
     onClick:
@@ -50,5 +45,5 @@ export default compose(
   mapProps(({ assortmentId, mutate, ...rest }) => ({
     ...rest,
   })),
-  pure
+  pure,
 )(BtnRemoveAssortment);

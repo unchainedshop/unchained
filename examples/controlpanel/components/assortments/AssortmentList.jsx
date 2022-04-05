@@ -40,15 +40,11 @@ const AssortmentList = ({
       <Table.Row key={assortment._id}>
         <Table.Cell>
           <Link href={`/assortments/edit?_id=${assortment._id}`}>
-            <a href={`/assortments/edit?_id=${assortment._id}`}>
-              {assortment.texts?.title}
-            </a>
+            <a href={`/assortments/edit?_id=${assortment._id}`}>{assortment.texts?.title}</a>
           </Link>
         </Table.Cell>
         <Table.Cell>
-          {assortment.isActive && (
-            <Icon color="green" name="checkmark" size="large" />
-          )}
+          {assortment.isActive && <Icon color="green" name="checkmark" size="large" />}
         </Table.Cell>
         <Table.Cell>
           {assortment.isBase ? (
@@ -63,11 +59,7 @@ const AssortmentList = ({
     <Table.Row>
       <Table.HeaderCell colSpan={3}>
         Show non-root nodes? &nbsp;
-        <input
-          type="checkbox"
-          checked={isShowLeafNodes}
-          onChange={toggleShowLeafNodes}
-        />
+        <input type="checkbox" checked={isShowLeafNodes} onChange={toggleShowLeafNodes} />
       </Table.HeaderCell>
     </Table.Row>
     <Table.Row>
@@ -108,5 +100,5 @@ export default compose(
       ({ isShowLeafNodes, setShowLeafNodes }) =>
       () =>
         setShowLeafNodes(!isShowLeafNodes),
-  })
+  }),
 )(AssortmentList);

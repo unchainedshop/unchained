@@ -4,7 +4,7 @@ import { storeLoginToken } from './store';
 
 export default async function loginWithPassword(
   { username, email, password, totpCode, disableHashing = false },
-  apollo
+  apollo,
 ) {
   const variables = { username, email, totpCode };
   if (disableHashing) {

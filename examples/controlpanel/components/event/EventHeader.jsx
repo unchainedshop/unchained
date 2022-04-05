@@ -18,8 +18,7 @@ const EventHeader = ({ data }) => {
               <List>
                 <List.Item>
                   <List.Content>
-                    Created:{' '}
-                    {created ? new Date(created).toLocaleString() : 'n/a'}
+                    Created: {created ? new Date(created).toLocaleString() : 'n/a'}
                   </List.Content>
                 </List.Item>
                 <List.Item>

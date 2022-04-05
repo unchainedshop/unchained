@@ -26,5 +26,5 @@ export default connectApollo(
         </Segment>
       </Container>
     </App>
-  ))
+  )),
 );

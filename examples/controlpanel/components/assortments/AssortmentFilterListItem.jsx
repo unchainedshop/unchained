@@ -6,9 +6,7 @@ import { SortableElement, SortableHandle } from 'react-sortable-hoc';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 
-const DragHandle = SortableHandle(() => (
-  <Icon name="arrows alternate vertical" link size="small" />
-));
+const DragHandle = SortableHandle(() => <Icon name="arrows alternate vertical" link size="small" />);
 
 const AssortmentFilterListItem = ({ filter, removeAssortmentFilter, tags }) => (
   <Item>
@@ -53,7 +51,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentFilters'],
       },
-    }
+    },
   ),
   withHandlers({
     removeAssortmentFilter:
@@ -66,5 +64,5 @@ export default compose(
         });
       },
   }),
-  SortableElement
+  SortableElement,
 )(AssortmentFilterListItem);

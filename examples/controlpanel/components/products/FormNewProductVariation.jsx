@@ -35,10 +35,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation create(
-        $variation: CreateProductVariationInput!
-        $productId: ID!
-      ) {
+      mutation create($variation: CreateProductVariationInput!, $productId: ID!) {
         createProductVariation(variation: $variation, productId: $productId) {
           _id
         }
@@ -48,7 +45,7 @@ export default compose(
       options: {
         refetchQueries: ['productVariations'],
       },
-    }
+    },
   ),
   withFormSchema(({ data: { uniforms = { options: [] } } = {} }) => ({
     title: {
@@ -86,5 +83,5 @@ export default compose(
   mapProps(({ onSuccess, productId, mutate, ...rest }) => ({
     ...rest,
   })),
-  pure
+  pure,
 )(FormNewProductVariation);

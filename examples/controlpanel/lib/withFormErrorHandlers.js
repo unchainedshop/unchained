@@ -21,6 +21,6 @@ export default compose(
     }) => ({
       error: mappedError,
       ...rest,
-    })
-  )
+    }),
+  ),
 );

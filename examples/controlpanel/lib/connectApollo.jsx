@@ -15,7 +15,7 @@ function parseCookies(ctx = {}, options = {}) {
       : process.browser
       ? document.cookie
       : '',
-    options
+    options,
   );
 }
 
@@ -31,11 +31,7 @@ const connectApollo = (ComposedComponent) => {
 
       const { serverState, headers } = this.props;
 
-      this.apollo = initApollo(
-        serverState.apollo.data,
-        headers,
-        () => parseCookies({}).token
-      );
+      this.apollo = initApollo(serverState.apollo.data, headers, () => parseCookies({}).token);
       onTokenChange(async ({ token, tokenExpires }) => {
         if (!token || !tokenExpires) {
           document.cookie = cookie.serialize('token', '', {
@@ -48,8 +44,7 @@ const connectApollo = (ComposedComponent) => {
           this.apollo.resetStore();
           return;
         }
-        const maxAge =
-          differenceInMilliseconds(new Date(tokenExpires), new Date()) / 1000;
+        const maxAge = differenceInMilliseconds(new Date(tokenExpires), new Date()) / 1000;
         console.debug("new token, expiring: ", maxAge); // eslint-disable-line
         document.cookie = cookie.serialize('token', token, {
           maxAge,
@@ -79,7 +74,7 @@ const connectApollo = (ComposedComponent) => {
           await getDataFromTree(
             <ApolloProvider client={apollo}>
               <ComposedComponent {...composedInitialProps} />
-            </ApolloProvider>
+            </ApolloProvider>,
           ); //eslint-disable-line
         } catch (error) {
           // Prevent Apollo Client GraphQL errors from crashing SSR.
@@ -114,9 +109,7 @@ const connectApollo = (ComposedComponent) => {
     }
   }
 
-  WithData.displayName = `WithData(${getComponentDisplayName(
-    ComposedComponent
-  )})`;
+  WithData.displayName = `WithData(${getComponentDisplayName(ComposedComponent)})`;
 
   WithData.propTypes = {
     serverState: PropTypes.object.isRequired, //eslint-disable-line

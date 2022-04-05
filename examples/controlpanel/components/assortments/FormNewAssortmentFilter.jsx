@@ -41,16 +41,8 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation addAssortmentFilter(
-        $assortmentId: ID!
-        $filterId: ID!
-        $tags: [String!]
-      ) {
-        addAssortmentFilter(
-          assortmentId: $assortmentId
-          filterId: $filterId
-          tags: $tags
-        ) {
+      mutation addAssortmentFilter($assortmentId: ID!, $filterId: ID!, $tags: [String!]) {
+        addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId, tags: $tags) {
           _id
         }
       }
@@ -60,7 +52,7 @@ export default compose(
       options: {
         refetchQueries: ['assortment', 'assortmentFilters'],
       },
-    }
+    },
   ),
   withFormSchema({
     assortmentId: {
@@ -96,23 +88,16 @@ export default compose(
         }),
   }),
   withFormErrorHandlers,
-  mapProps(
-    ({
+  mapProps(({ assortmentId, addAssortmentFilter, data: { filters = [] }, ...rest }) => ({
+    filters: [{ label: 'Select', value: false }].concat(
+      filters.map((filter) => ({
+        label: filter.texts?.title || filter.key,
+        value: filter._id,
+      })),
+    ),
+    model: {
       assortmentId,
-      addAssortmentFilter,
-      data: { filters = [] },
-      ...rest
-    }) => ({
-      filters: [{ label: 'Select', value: false }].concat(
-        filters.map((filter) => ({
-          label: filter.texts?.title || filter.key,
-          value: filter._id,
-        }))
-      ),
-      model: {
-        assortmentId,
-      },
-      ...rest,
-    })
-  )
+    },
+    ...rest,
+  })),
 )(FormNewAssortmentFilter);

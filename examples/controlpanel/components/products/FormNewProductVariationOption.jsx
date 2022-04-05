@@ -24,14 +24,8 @@ const FormNewProductVariationOption = (formProps) => (
 export default compose(
   graphql(
     gql`
-      mutation create(
-        $option: CreateProductVariationOptionInput!
-        $productVariationId: ID!
-      ) {
-        createProductVariationOption(
-          option: $option
-          productVariationId: $productVariationId
-        ) {
+      mutation create($option: CreateProductVariationOptionInput!, $productVariationId: ID!) {
+        createProductVariationOption(option: $option, productVariationId: $productVariationId) {
           _id
         }
       }
@@ -40,7 +34,7 @@ export default compose(
       options: {
         refetchQueries: ['productVariations'],
       },
-    }
+    },
   ),
   withFormSchema(() => ({
     title: {
@@ -71,5 +65,5 @@ export default compose(
   mapProps(({ onSuccess, productVariationId, mutate, ...rest }) => ({
     ...rest,
   })),
-  pure
+  pure,
 )(FormNewProductVariationOption);

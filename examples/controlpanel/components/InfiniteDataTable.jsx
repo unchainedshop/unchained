@@ -37,14 +37,7 @@ const InfiniteDataTable = ({
             {searchComponent && searchComponent}
             {createPath && (
               <Link href={createPath}>
-                <Button
-                  floated="right"
-                  icon
-                  labelPosition="left"
-                  primary
-                  size="small"
-                  href={createPath}
-                >
+                <Button floated="right" icon labelPosition="left" primary size="small" href={createPath}>
                   <Icon name="plus" />
                   Add
                 </Button>
@@ -89,14 +82,7 @@ const InfiniteDataTable = ({
           <Table.HeaderCell colSpan={cols}>
             {createPath && (
               <Link href={createPath}>
-                <Button
-                  floated="right"
-                  icon
-                  labelPosition="left"
-                  primary
-                  size="small"
-                  href={createPath}
-                >
+                <Button floated="right" icon labelPosition="left" primary size="small" href={createPath}>
                   <Icon name="plus" /> Add
                 </Button>
               </Link>
@@ -133,17 +119,14 @@ export const withDataTableLoader = ({ query, queryName }) =>
                 if (!fetchMoreResult) return prev;
                 return {
                   ...prev,
-                  [queryName]: [
-                    ...prev[queryName],
-                    ...fetchMoreResult[queryName],
-                  ],
+                  [queryName]: [...prev[queryName], ...fetchMoreResult[queryName]],
                 };
               },
             });
           },
         };
       },
-    })
+    }),
   );
 
 export default InfiniteDataTable;

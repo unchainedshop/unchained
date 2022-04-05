@@ -47,9 +47,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation reorderAssortmentFilters(
-        $sortKeys: [ReorderAssortmentFilterInput!]!
-      ) {
+      mutation reorderAssortmentFilters($sortKeys: [ReorderAssortmentFilterInput!]!) {
         reorderAssortmentFilters(sortKeys: $sortKeys) {
           _id
           sortKey
@@ -61,7 +59,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentFilters'],
       },
-    }
+    },
   ),
   mapProps(({ data: { assortment }, ...rest }) => ({
     items: (assortment && assortment.filterAssignments) || [],
@@ -72,12 +70,10 @@ export default compose(
     onSortEnd:
       ({ items, reorderAssortmentFilters }) =>
       async ({ oldIndex, newIndex }) => {
-        const sortKeys = arrayMove(items, oldIndex, newIndex).map(
-          (item, sortKey) => ({
-            assortmentFilterId: item._id,
-            sortKey,
-          })
-        );
+        const sortKeys = arrayMove(items, oldIndex, newIndex).map((item, sortKey) => ({
+          assortmentFilterId: item._id,
+          sortKey,
+        }));
         await reorderAssortmentFilters({
           variables: {
             sortKeys,
@@ -86,5 +82,5 @@ export default compose(
       },
   }),
   pure,
-  SortableContainer
+  SortableContainer,
 )(AssortmentFilterList);

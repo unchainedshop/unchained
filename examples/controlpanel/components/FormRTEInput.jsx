@@ -59,13 +59,7 @@ const FormRTEInput = ({
     {...filterDOMProps(props)}
   >
     {label && <label htmlFor={id}>{label}</label>}
-    <div
-      className={classnames(
-        'ui',
-        { left: iconLeft, icon: icon || iconLeft },
-        'input'
-      )}
-    >
+    <div className={classnames('ui', { left: iconLeft, icon: icon || iconLeft }, 'input')}>
       <RichTextEditor
         disabled={disabled}
         id={id}
@@ -76,14 +70,10 @@ const FormRTEInput = ({
         ref={inputRef}
         value={rteValue}
       />
-      {(icon || iconLeft) && (
-        <i className={`${icon || iconLeft} icon`} {...iconProps} />
-      )}
+      {(icon || iconLeft) && <i className={`${icon || iconLeft} icon`} {...iconProps} />}
     </div>
 
-    {!!(error && showInlineError) && (
-      <div className="ui red basic pointing label">{errorMessage}</div>
-    )}
+    {!!(error && showInlineError) && <div className="ui red basic pointing label">{errorMessage}</div>}
   </div>
 );
 
@@ -92,9 +82,7 @@ FormRTEInput.displayName = 'FormRTEInput';
 export default compose(
   connectField,
   withState('rteValue', 'updateRichtext', ({ value }) =>
-    value
-      ? RichTextEditor.createValueFromString(value, 'markdown')
-      : RichTextEditor.createEmptyValue()
+    value ? RichTextEditor.createValueFromString(value, 'markdown') : RichTextEditor.createEmptyValue(),
   ),
   withHandlers({
     onChange:
@@ -103,5 +91,5 @@ export default compose(
         updateRichtext(value);
         onChange(value.toString('markdown'));
       },
-  })
+  }),
 )(FormRTEInput);

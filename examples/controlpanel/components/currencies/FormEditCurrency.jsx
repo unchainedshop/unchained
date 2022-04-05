@@ -21,12 +21,7 @@ const FormEditCurrency = ({ removeCurrency, ...formProps }) => (
         <AutoField name={'isActive'} />
         <ErrorsField />
         <SubmitField value="Save" className="primary" />
-        <Button
-          type="normal"
-          secondary
-          floated="right"
-          onClick={removeCurrency}
-        >
+        <Button type="normal" secondary floated="right" onClick={removeCurrency}>
           Delete
         </Button>
       </Segment>
@@ -47,10 +42,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation updateCurrency(
-        $currency: UpdateCurrencyInput!
-        $currencyId: ID!
-      ) {
+      mutation updateCurrency($currency: UpdateCurrencyInput!, $currencyId: ID!) {
         updateCurrency(currency: $currency, currencyId: $currencyId) {
           _id
           isoCode
@@ -63,7 +55,7 @@ export default compose(
       options: {
         refetchQueries: ['currency', 'currencies'],
       },
-    }
+    },
   ),
   graphql(
     gql`
@@ -78,7 +70,7 @@ export default compose(
       options: {
         refetchQueries: ['currencies'],
       },
-    }
+    },
   ),
   withFormSchema({
     isoCode: {
@@ -121,5 +113,5 @@ export default compose(
   withFormErrorHandlers,
   mapProps(({ currencyId, updateCurrency, data, ...rest }) => ({
     ...rest,
-  }))
+  })),
 )(FormEditCurrency);

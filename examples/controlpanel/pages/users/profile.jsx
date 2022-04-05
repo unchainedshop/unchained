@@ -18,5 +18,5 @@ export default connectApollo(
         <FormProfile onSubmitSuccess={redirect(router)} />
       </Container>
     </App>
-  ))
+  )),
 );

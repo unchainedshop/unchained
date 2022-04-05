@@ -16,5 +16,5 @@ export default connectApollo(
         </Grid>
       </Container>
     </App>
-  ))
+  )),
 );

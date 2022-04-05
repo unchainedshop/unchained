@@ -13,11 +13,7 @@ import { PAYMENT_PROVIDERS_QUERY } from './PaymentProviderList';
 
 const defaultProviderType = 'CARD';
 
-const FormNewPaymentProvider = ({
-  providerType,
-  updateProviderType,
-  ...formProps
-}) => (
+const FormNewPaymentProvider = ({ providerType, updateProviderType, ...formProps }) => (
   <AutoForm {...formProps}>
     <AutoField name="type" onChange={updateProviderType} />
     {providerType && <AutoField name="adapterKey" />}
@@ -57,15 +53,12 @@ export default compose(
       options: {
         refetchQueries: [{ query: PAYMENT_PROVIDERS_QUERY }],
       },
-    }
+    },
   ),
   withFormSchema(
     ({
       providerType,
-      data: {
-        paymentProviderType = { options: [] },
-        paymentInterfaces = [],
-      } = {},
+      data: { paymentProviderType = { options: [] }, paymentInterfaces = [] } = {},
     }) => ({
       type: {
         type: String,
@@ -73,10 +66,7 @@ export default compose(
         label: 'Type',
         defaultValue: providerType,
         uniforms: {
-          options: [
-            { label: 'Choose Type', value: null },
-            ...paymentProviderType.options,
-          ],
+          options: [{ label: 'Choose Type', value: null }, ...paymentProviderType.options],
         },
       },
       adapterKey: {
@@ -84,13 +74,10 @@ export default compose(
         optional: false,
         label: 'Adapter',
         uniforms: {
-          options: [
-            { label: 'Choose Adapter', value: null },
-            ...paymentInterfaces,
-          ],
+          options: [{ label: 'Choose Adapter', value: null }, ...paymentInterfaces],
         },
       },
-    })
+    }),
   ),
   withHandlers({
     onSubmitSuccess:
@@ -113,5 +100,5 @@ export default compose(
   withFormErrorHandlers,
   mapProps(({ createPaymentProvider, ...rest }) => ({
     ...rest,
-  }))
+  })),
 )(FormNewPaymentProvider);

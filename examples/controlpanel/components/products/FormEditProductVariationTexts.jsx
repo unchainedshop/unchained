@@ -40,11 +40,7 @@ const FormEditProductVariationTexts = ({
       <Segment attached="bottom">
         {languages.map((language, key) => (
           <div key={`form-${language.isoCode}`}>
-            <AutoField
-              name={`texts.${key}.locale`}
-              disabled={isEditingDisabled}
-              hidden
-            />
+            <AutoField name={`texts.${key}.locale`} disabled={isEditingDisabled} hidden />
             <AutoField
               name={`texts.${key}.title`}
               disabled={isEditingDisabled}
@@ -59,11 +55,7 @@ const FormEditProductVariationTexts = ({
         ))}
         <ErrorsField />
         <br />
-        <SubmitField
-          value="Save"
-          className="primary"
-          disabled={isEditingDisabled}
-        />
+        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
         <Button type="normal" onClick={onCancel}>
           Cancel
         </Button>
@@ -74,10 +66,7 @@ const FormEditProductVariationTexts = ({
 
 export default compose(
   graphql(gql`
-    query productVariationTexts(
-      $productVariationId: ID!
-      $productVariationOptionValue: String
-    ) {
+    query productVariationTexts($productVariationId: ID!, $productVariationOptionValue: String) {
       languages {
         _id
         isoCode
@@ -98,9 +87,7 @@ export default compose(
   `),
   mapProps(({ data, ...rest }) => {
     const { languages = [] } = data;
-    const filteredActiveLanguages = languages.filter(
-      (language) => !!language.isBase
-    );
+    const filteredActiveLanguages = languages.filter((language) => !!language.isBase);
     const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
@@ -112,11 +99,7 @@ export default compose(
       ...rest,
     };
   }),
-  withState(
-    'selectedLocale',
-    'setSelectedLocale',
-    ({ baseLanguage }) => baseLanguage
-  ),
+  withState('selectedLocale', 'setSelectedLocale', ({ baseLanguage }) => baseLanguage),
   graphql(
     gql`
       mutation updateProductVariationTexts(
@@ -140,7 +123,7 @@ export default compose(
       options: {
         refetchQueries: ['productVariationTexts', 'productVariations'],
       },
-    }
+    },
   ),
   withFormSchema({
     texts: {
@@ -167,22 +150,18 @@ export default compose(
       label: 'Subtitle',
     },
   }),
-  withFormModel(
-    ({ data: { translatedProductVariationTexts = [] }, languages = [] }) => {
-      const texts = languages.map((language) => {
-        const foundTranslations = translatedProductVariationTexts.filter(
-          (translatedText) => translatedText.locale === language.isoCode
-        );
-        const localizedTextForLocale =
-          foundTranslations.length > 0
-            ? { ...foundTranslations[0] }
-            : { locale: language.isoCode };
-        localizedTextForLocale.labels = localizedTextForLocale.labels || [];
-        return localizedTextForLocale;
-      });
-      return { texts };
-    }
-  ),
+  withFormModel(({ data: { translatedProductVariationTexts = [] }, languages = [] }) => {
+    const texts = languages.map((language) => {
+      const foundTranslations = translatedProductVariationTexts.filter(
+        (translatedText) => translatedText.locale === language.isoCode,
+      );
+      const localizedTextForLocale =
+        foundTranslations.length > 0 ? { ...foundTranslations[0] } : { locale: language.isoCode };
+      localizedTextForLocale.labels = localizedTextForLocale.labels || [];
+      return localizedTextForLocale;
+    });
+    return { texts };
+  }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Texts saved', { type: toast.TYPE.SUCCESS });
@@ -217,7 +196,7 @@ export default compose(
     }) => ({
       activeLanguage: selectedLocale || baseLanguage,
       ...rest,
-    })
+    }),
   ),
-  pure
+  pure,
 )(FormEditProductVariationTexts);

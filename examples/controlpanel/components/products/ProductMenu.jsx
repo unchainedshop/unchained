@@ -34,9 +34,7 @@ export default compose(
         name: 'ProductTranslation',
         description: 'General Texts',
         isActive:
-          router.query.tab === 'ProductTranslation' ||
-          !router.query.tab ||
-          router.query.tab === '',
+          router.query.tab === 'ProductTranslation' || !router.query.tab || router.query.tab === '',
       },
     ];
 
@@ -129,5 +127,5 @@ export default compose(
         });
       },
   }),
-  pure
+  pure,
 )(ProductMenu);

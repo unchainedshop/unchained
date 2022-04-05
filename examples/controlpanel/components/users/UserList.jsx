@@ -9,14 +9,7 @@ import Link from 'next/link';
 import SearchDropdown from '../SearchDropdown';
 import { SEARCH_USERS } from '../searchQueries';
 
-const UserList = ({
-  users,
-  router,
-  loadMoreEntries,
-  hasMore,
-  isShowGuests,
-  toggleShowGuests,
-}) => (
+const UserList = ({ users, router, loadMoreEntries, hasMore, isShowGuests, toggleShowGuests }) => (
   <Table celled>
     <Table.Header>
       <Table.Row>
@@ -34,20 +27,9 @@ const UserList = ({
             queryType={'users'}
           />{' '}
           Show guests? &nbsp;
-          <input
-            type="checkbox"
-            checked={isShowGuests}
-            onChange={toggleShowGuests}
-          />
+          <input type="checkbox" checked={isShowGuests} onChange={toggleShowGuests} />
           <Link href="/users/new">
-            <Button
-              floated="right"
-              icon
-              labelPosition="left"
-              primary
-              size="small"
-              href="/users/new"
-            >
+            <Button floated="right" icon labelPosition="left" primary size="small" href="/users/new">
               <Icon name="plus" />
               New User
             </Button>
@@ -79,9 +61,7 @@ const UserList = ({
           <Table.Row key={_id}>
             <Table.Cell>
               <Link href={`/users/edit?_id=${_id}`}>
-                <a href={`/users/edit?_id=${_id}`}>
-                  {primaryEmail && primaryEmail.address}
-                </a>
+                <a href={`/users/edit?_id=${_id}`}>{primaryEmail && primaryEmail.address}</a>
               </Link>
             </Table.Cell>
             <Table.Cell>
@@ -101,15 +81,8 @@ const UserList = ({
                   Guest
                 </Label>
               ) : (
-                <Label
-                  color={
-                    primaryEmail && primaryEmail.verified ? 'green' : 'red'
-                  }
-                  horizontal
-                >
-                  {primaryEmail && primaryEmail.verified
-                    ? 'Verified'
-                    : 'Unverified'}
+                <Label color={primaryEmail && primaryEmail.verified ? 'green' : 'red'} horizontal>
+                  {primaryEmail && primaryEmail.verified ? 'Verified' : 'Unverified'}
                 </Label>
               )}
             </Table.Cell>
@@ -121,14 +94,7 @@ const UserList = ({
       <Table.Row>
         <Table.HeaderCell colSpan="4">
           <Link href="/users/new">
-            <Button
-              floated="right"
-              icon
-              labelPosition="left"
-              primary
-              size="small"
-              href="/users/new"
-            >
+            <Button floated="right" icon labelPosition="left" primary size="small" href="/users/new">
               <Icon name="plus" />
               New User
             </Button>
@@ -176,10 +142,7 @@ export default compose(
         limit: ITEMS_PER_PAGE,
       },
     }),
-    props: ({
-      data: { loading, users, fetchMore },
-      ownProps: { updateHasMore, isShowGuests },
-    }) => ({
+    props: ({ data: { loading, users, fetchMore }, ownProps: { updateHasMore, isShowGuests } }) => ({
       loading,
       users,
       loadMoreEntries: () =>
@@ -197,7 +160,7 @@ export default compose(
             const idComparator = fetchMoreResult.users[0]._id;
             const alreadyAdded = previousResult.users.reduce(
               (oldValue, item) => (item._id === idComparator ? true : oldValue),
-              false
+              false,
             );
             if (alreadyAdded) {
               updateHasMore(false);
@@ -210,5 +173,5 @@ export default compose(
           },
         }),
     }),
-  })
+  }),
 )(UserList);

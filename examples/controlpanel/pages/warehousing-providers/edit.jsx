@@ -12,5 +12,5 @@ export default connectApollo(
         <FormEditWarehousingProvider warehousingProviderId={router.query._id} />
       </Container>
     </App>
-  ))
+  )),
 );

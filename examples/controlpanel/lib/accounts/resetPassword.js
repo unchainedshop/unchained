@@ -2,10 +2,7 @@ import gql from 'graphql-tag';
 import { storeLoginToken } from './store';
 import hashPassword from './hashPassword';
 
-export default async function resetPassword(
-  { newPassword, token, disableHashing = false },
-  apollo
-) {
+export default async function resetPassword({ newPassword, token, disableHashing = false }, apollo) {
   const variables = {
     token,
   };
@@ -21,11 +18,7 @@ export default async function resetPassword(
         $newPlainPassword: String
         $token: String!
       ) {
-        resetPassword(
-          newPassword: $newPassword
-          newPlainPassword: $newPlainPassword
-          token: $token
-        ) {
+        resetPassword(newPassword: $newPassword, newPlainPassword: $newPlainPassword, token: $token) {
           id
           token
           tokenExpires

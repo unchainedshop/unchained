@@ -32,13 +32,7 @@ const Phone = ({
     {...filterDOMProps(props)}
   >
     {label && <label htmlFor={id}>{label}</label>}
-    <div
-      className={classnames(
-        'ui',
-        { left: iconLeft, icon: icon || iconLeft },
-        'input'
-      )}
-    >
+    <div className={classnames('ui', { left: iconLeft, icon: icon || iconLeft }, 'input')}>
       <PhoneNumberInput
         country={country}
         disabled={disabled}
@@ -49,9 +43,7 @@ const Phone = ({
         ref={inputRef}
         value={value}
       />
-      {(icon || iconLeft) && (
-        <i className={`${icon || iconLeft} icon`} {...iconProps} />
-      )}
+      {(icon || iconLeft) && <i className={`${icon || iconLeft} icon`} {...iconProps} />}
       <style jsx global>
         {`
           .rrui__input {
@@ -64,9 +56,7 @@ const Phone = ({
       </style>
     </div>
 
-    {!!(error && showInlineError) && (
-      <div className="ui red basic pointing label">{errorMessage}</div>
-    )}
+    {!!(error && showInlineError) && <div className="ui red basic pointing label">{errorMessage}</div>}
   </div>
 );
 

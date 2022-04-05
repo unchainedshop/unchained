@@ -65,15 +65,11 @@ const ProductList = ({ products, loadMoreEntries, hasMore, router }) => {
             <Table.Row key={product._id}>
               <Table.Cell>
                 <Link href={`/products/edit?_id=${product._id}`}>
-                  <a href={`/products/edit?_id=${product._id}`}>
-                    {product.texts?.title}
-                  </a>
+                  <a href={`/products/edit?_id=${product._id}`}>{product.texts?.title}</a>
                 </Link>
               </Table.Cell>
               <Table.Cell>
-                {product.status === 'ACTIVE' && (
-                  <Icon color="green" name="checkmark" size="large" />
-                )}
+                {product.status === 'ACTIVE' && <Icon color="green" name="checkmark" size="large" />}
               </Table.Cell>
               <Table.Cell>
                 {product.tags &&
@@ -138,10 +134,7 @@ export default compose(
         limit: ITEMS_PER_PAGE,
       },
     }),
-    props: ({
-      data: { loading, products, fetchMore },
-      ownProps: { updateHasMore },
-    }) => ({
+    props: ({ data: { loading, products, fetchMore }, ownProps: { updateHasMore } }) => ({
       loading,
       products,
       loadMoreEntries: () =>
@@ -158,7 +151,7 @@ export default compose(
             const idComparator = fetchMoreResult.products[0]._id;
             const alreadyAdded = previousResult.products.reduce(
               (oldValue, item) => (item._id === idComparator ? true : oldValue),
-              false
+              false,
             );
             if (alreadyAdded) {
               updateHasMore(false);
@@ -166,14 +159,11 @@ export default compose(
             }
             return {
               ...previousResult,
-              products: [
-                ...previousResult.products,
-                ...fetchMoreResult.products,
-              ],
+              products: [...previousResult.products, ...fetchMoreResult.products],
             };
           },
         }),
     }),
   }),
-  pure
+  pure,
 )(ProductList);

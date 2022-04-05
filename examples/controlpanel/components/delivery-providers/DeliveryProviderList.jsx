@@ -52,12 +52,8 @@ export default function DeliveryProviderList() {
         {data?.deliveryProviders?.map((deliveryProvider) => (
           <Table.Row key={deliveryProvider._id}>
             <Table.Cell>
-              <Link
-                href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}
-              >
-                <a
-                  href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}
-                >
+              <Link href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}>
+                <a href={`/delivery-providers/edit?_id=${deliveryProvider._id}`}>
                   {deliveryProvider._id}
                 </a>
               </Link>
@@ -65,8 +61,7 @@ export default function DeliveryProviderList() {
             <Table.Cell>{deliveryProvider.type}</Table.Cell>
             {deliveryProvider.interface ? (
               <Table.Cell>
-                {deliveryProvider.interface.label}{' '}
-                {deliveryProvider.interface.version}
+                {deliveryProvider.interface.label} {deliveryProvider.interface.version}
               </Table.Cell>
             ) : (
               <Table.Cell>Invalid Interface</Table.Cell>

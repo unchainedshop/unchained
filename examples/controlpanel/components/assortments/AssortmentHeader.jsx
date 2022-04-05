@@ -22,10 +22,7 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => {
         <Dropdown item icon="wrench" simple>
           <Dropdown.Menu>
             <Dropdown.Header>Options</Dropdown.Header>
-            <BtnRemoveAssortment
-              assortmentId={assortment._id}
-              Component={Dropdown.Item}
-            >
+            <BtnRemoveAssortment assortmentId={assortment._id} Component={Dropdown.Item}>
               Delete
             </BtnRemoveAssortment>
           </Dropdown.Menu>
@@ -41,18 +38,14 @@ const AssortmentHeader = ({ loading, assortmentId, assortment = {} }) => {
                 <List.Icon name="add to calendar" />
                 <List.Content>
                   Created:{' '}
-                  {assortment.created
-                    ? format(new Date(assortment.created), 'Pp')
-                    : 'Unbekannt'}
+                  {assortment.created ? format(new Date(assortment.created), 'Pp') : 'Unbekannt'}
                 </List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name="refresh" />
                 <List.Content>
                   Updated:
-                  {assortment.updated
-                    ? format(new Date(assortment.updated), 'Pp')
-                    : 'Unbekannt'}
+                  {assortment.updated ? format(new Date(assortment.updated), 'Pp') : 'Unbekannt'}
                 </List.Content>
               </List.Item>
             </List>
@@ -95,5 +88,5 @@ export default compose(
     assortment,
     loading,
     ...rest,
-  }))
+  })),
 )(AssortmentHeader);

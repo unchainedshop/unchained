@@ -74,7 +74,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentMedia'],
       },
-    }
+    },
   ),
   withState('isEditing', 'setIsEditing', false),
   withHandlers({
@@ -94,5 +94,5 @@ export default compose(
         setIsEditing(!isEditing);
       },
   }),
-  SortableElement
+  SortableElement,
 )(AssortmentMediaListItem);

@@ -70,5 +70,5 @@ export default compose(
   mapProps(({ data: { order = {} } }) => ({
     items: order.items,
   })),
-  pure
+  pure,
 )(OrderPositionList);

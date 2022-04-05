@@ -4,7 +4,7 @@ import withCurrentUser from '../lib/withCurrentUser';
 
 export default compose(
   withCurrentUser,
-  withRouter
+  withRouter,
 )(
   createSink(({ to, router, ifLoggedIn, currentUser, loading }) => {
     if (!router || !process.browser || loading) return;
@@ -17,5 +17,5 @@ export default compose(
     console.debug(`user logged in, redirect to ${to}: checkpoint`); // eslint-disable-line
       router.replace(to);
     }
-  })
+  }),
 );

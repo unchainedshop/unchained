@@ -73,26 +73,15 @@ export default compose(
         }),
   }),
   withFormErrorHandlers,
-  mapProps(
-    ({
-      userId,
-      error,
-      schema,
-      model,
-      onSubmit,
-      onChange,
-      onSubmitSuccess,
-      onSubmitFailure,
-    }) => ({
-      userId,
-      error,
-      schema,
-      model,
-      onSubmit,
-      onChange,
-      onSubmitSuccess,
-      onSubmitFailure,
-    })
-  ),
-  pure
+  mapProps(({ userId, error, schema, model, onSubmit, onChange, onSubmitSuccess, onSubmitFailure }) => ({
+    userId,
+    error,
+    schema,
+    model,
+    onSubmit,
+    onChange,
+    onSubmitSuccess,
+    onSubmitFailure,
+  })),
+  pure,
 )(FormTags);

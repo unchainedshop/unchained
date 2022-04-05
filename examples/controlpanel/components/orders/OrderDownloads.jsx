@@ -47,5 +47,5 @@ export default compose(
   mapProps(({ data: { order = {} } }) => ({
     ...order,
   })),
-  pure
+  pure,
 )(OrderDownloads);

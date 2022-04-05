@@ -14,12 +14,7 @@ const FilterVariationList = ({ items, filterId }) => (
   <Segment>
     <List celled>
       {items.map(({ options, key, ...item }) => (
-        <FilterOptionListItem
-          filterId={filterId}
-          key={item._id}
-          name={key}
-          {...item}
-        />
+        <FilterOptionListItem filterId={filterId} key={item._id} name={key} {...item} />
       ))}
       <List.Item>
         <FormNewFilterOption filterId={filterId} onSuccess={() => true} />
@@ -50,5 +45,5 @@ export default compose(
     pressDelay: 200,
     ...rest,
   })),
-  pure
+  pure,
 )(FilterVariationList);

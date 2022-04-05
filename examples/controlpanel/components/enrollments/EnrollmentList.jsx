@@ -42,12 +42,9 @@ const EnrollmentList = ({
             </a>
           </Link>
         </Table.Cell>
+        <Table.Cell>{enrollment.user && (enrollment.user.name || enrollment.user._id)}</Table.Cell>
         <Table.Cell>
-          {enrollment.user && (enrollment.user.name || enrollment.user._id)}
-        </Table.Cell>
-        <Table.Cell>
-          {enrollment.expires &&
-            new Date(enrollment.expires).toLocaleDateString()}
+          {enrollment.expires && new Date(enrollment.expires).toLocaleDateString()}
         </Table.Cell>
         <Table.Cell>{enrollment.status}</Table.Cell>
       </Table.Row>
@@ -81,5 +78,5 @@ export default compose(
         }
       }
     `,
-  })
+  }),
 )(EnrollmentList);

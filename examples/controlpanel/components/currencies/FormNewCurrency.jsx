@@ -33,7 +33,7 @@ export default compose(
       options: {
         refetchQueries: ['currencies'],
       },
-    }
+    },
   ),
   withFormSchema({
     isoCode: {
@@ -63,5 +63,5 @@ export default compose(
   withFormErrorHandlers,
   mapProps(({ createCurrency, ...rest }) => ({
     ...rest,
-  }))
+  })),
 )(FormNewCurrency);

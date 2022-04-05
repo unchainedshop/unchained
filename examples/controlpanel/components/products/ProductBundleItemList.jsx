@@ -103,10 +103,7 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation createProductBundleItem(
-        $productId: ID!
-        $item: CreateProductBundleItemInput!
-      ) {
+      mutation createProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
         createProductBundleItem(productId: $productId, item: $item) {
           _id
         }
@@ -117,7 +114,7 @@ export default compose(
       options: {
         refetchQueries: ['productBundleItems'],
       },
-    }
+    },
   ),
   graphql(
     gql`
@@ -132,7 +129,7 @@ export default compose(
       options: {
         refetchQueries: ['productBundleItems'],
       },
-    }
+    },
   ),
   withHandlers({
     addNewBundleItem:
@@ -158,5 +155,5 @@ export default compose(
     };
   }),
   pure,
-  SortableContainer
+  SortableContainer,
 )(ProductBundleItemList);

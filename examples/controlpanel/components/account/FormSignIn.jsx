@@ -49,10 +49,10 @@ export default compose(
             totpCode,
             disableHashing: true,
           },
-          client
+          client,
         ),
   }),
   withFormErrorHandlers,
   mapProps(({ client, ...rest }) => ({ ...rest })),
-  pure
+  pure,
 )(FormSignIn);

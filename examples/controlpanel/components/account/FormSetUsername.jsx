@@ -10,14 +10,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 import withFormModel from '../../lib/withFormModel';
 
-const FormSetUsername = ({
-  sendVerification,
-  verified,
-  mutate,
-  client,
-  userId,
-  ...formProps
-}) => (
+const FormSetUsername = ({ sendVerification, verified, mutate, client, userId, ...formProps }) => (
   <AutoForm {...formProps}>
     <AutoField name="username" />
     <ErrorsField />
@@ -63,5 +56,5 @@ export default compose(
     username: user?.username,
   })),
   withFormErrorHandlers,
-  pure
+  pure,
 )(FormSetUsername);

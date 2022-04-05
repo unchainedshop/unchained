@@ -16,24 +16,10 @@ import 'uniforms-bridge-simple-schema-2';
 import Header from './Header';
 import Redirect from './Redirect';
 
-const App = ({
-  currentUser,
-  loading,
-  children,
-  router,
-  allowAnonymousAccess,
-}) => (
+const App = ({ currentUser, loading, children, router, allowAnonymousAccess }) => (
   <main>
-    <Header
-      loading={loading}
-      pathname={router.pathname}
-      loggedInUser={currentUser}
-    />
-    {allowAnonymousAccess ? (
-      <Redirect to="/" ifLoggedIn />
-    ) : (
-      <Redirect to="/sign-in" />
-    )}
+    <Header loading={loading} pathname={router.pathname} loggedInUser={currentUser} />
+    {allowAnonymousAccess ? <Redirect to="/" ifLoggedIn /> : <Redirect to="/sign-in" />}
     <Segment vertical padded>
       {loading && (
         <Dimmer active inverted>

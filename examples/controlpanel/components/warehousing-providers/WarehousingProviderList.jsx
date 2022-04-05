@@ -52,23 +52,17 @@ export default function WarehousingProviderList() {
         {data?.warehousingProviders?.map((warehousingProvider) => (
           <Table.Row key={warehousingProvider._id}>
             <Table.Cell>
-              <Link
-                href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}
-              >
-                <a
-                  href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}
-                >
+              <Link href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}>
+                <a href={`/warehousing-providers/edit?_id=${warehousingProvider._id}`}>
                   {warehousingProvider._id}
                 </a>
               </Link>
             </Table.Cell>
             <Table.Cell>{warehousingProvider.type}</Table.Cell>
             <Table.Cell>
-              {warehousingProvider.interface &&
-                warehousingProvider.interface.label}
+              {warehousingProvider.interface && warehousingProvider.interface.label}
               &nbsp;
-              {warehousingProvider.interface &&
-                warehousingProvider.interface.version}
+              {warehousingProvider.interface && warehousingProvider.interface.version}
             </Table.Cell>
             <Table.Cell>
               {warehousingProvider.configurationError && (

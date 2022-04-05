@@ -9,13 +9,7 @@ import AutoForm from 'uniforms-semantic/AutoForm';
 import withFormSchema from '../../lib/withFormSchema';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormChangeEmail = ({
-  mutate,
-  client,
-  userId,
-  verified,
-  ...formProps
-}) => (
+const FormChangeEmail = ({ mutate, client, userId, verified, ...formProps }) => (
   <AutoForm {...formProps}>
     <AutoField name="email" />
     <ErrorsField />
@@ -54,5 +48,5 @@ export default compose(
         }),
   }),
   withFormErrorHandlers,
-  pure
+  pure,
 )(FormChangeEmail);

@@ -12,14 +12,7 @@ const FilterList = ({ filters, loadMoreEntries, hasMore }) => (
       <Table.Row>
         <Table.HeaderCell colSpan="4">
           <Link href="/filters/new">
-            <Button
-              floated="right"
-              icon
-              labelPosition="left"
-              primary
-              size="small"
-              href="/filters/new"
-            >
+            <Button floated="right" icon labelPosition="left" primary size="small" href="/filters/new">
               <Icon name="plus" />
               Add
             </Button>
@@ -59,9 +52,7 @@ const FilterList = ({ filters, loadMoreEntries, hasMore }) => (
             </Table.Cell>
             <Table.Cell>{filter.type}</Table.Cell>
             <Table.Cell>
-              {filter.isActive && (
-                <Icon color="green" name="checkmark" size="large" />
-              )}
+              {filter.isActive && <Icon color="green" name="checkmark" size="large" />}
             </Table.Cell>
             <Table.Cell>{filter.options && filter.options.length}</Table.Cell>
           </Table.Row>
@@ -72,14 +63,7 @@ const FilterList = ({ filters, loadMoreEntries, hasMore }) => (
       <Table.Row>
         <Table.HeaderCell colSpan="4">
           <Link href="/filters/new">
-            <Button
-              floated="right"
-              icon
-              labelPosition="left"
-              primary
-              size="small"
-              href="/filters/new"
-            >
+            <Button floated="right" icon labelPosition="left" primary size="small" href="/filters/new">
               <Icon name="plus" />
               Add
             </Button>
@@ -120,10 +104,7 @@ export default compose(
         limit: ITEMS_PER_PAGE,
       },
     }),
-    props: ({
-      data: { loading, filters, fetchMore },
-      ownProps: { updateHasMore },
-    }) => ({
+    props: ({ data: { loading, filters, fetchMore }, ownProps: { updateHasMore } }) => ({
       loading,
       filters,
       loadMoreEntries: () =>
@@ -140,7 +121,7 @@ export default compose(
             const idComparator = fetchMoreResult.filters[0]._id;
             const alreadyAdded = previousResult.filters.reduce(
               (oldValue, item) => (item._id === idComparator ? true : oldValue),
-              false
+              false,
             );
             if (alreadyAdded) {
               updateHasMore(false);
@@ -154,5 +135,5 @@ export default compose(
         }),
     }),
   }),
-  pure
+  pure,
 )(FilterList);

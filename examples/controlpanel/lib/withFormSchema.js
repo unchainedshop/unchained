@@ -8,7 +8,7 @@ function isFunction(obj) {
 const withFormSchema = (schemaDefinition) =>
   withProps((props) => {
     const schema = new SimpleSchema(
-      isFunction(schemaDefinition) ? schemaDefinition(props) : schemaDefinition
+      isFunction(schemaDefinition) ? schemaDefinition(props) : schemaDefinition,
     );
     return {
       schema,

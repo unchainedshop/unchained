@@ -12,5 +12,5 @@ export default connectApollo(
         <FormEditCountry countryId={router.query._id} />
       </Container>
     </App>
-  ))
+  )),
 );

@@ -12,11 +12,7 @@ const UploadAvatar = ({ avatarUrl, handleChange }) => (
       {({ getRootProps, getInputProps }) => {
         const inputProps = getInputProps();
         return (
-          <div
-            {...getRootProps()}
-            style={{ border: 0 }}
-            className="ui container"
-          >
+          <div {...getRootProps()} style={{ border: 0 }} className="ui container">
             <input {...inputProps} />
             <Image
               label={{ color: 'blue', corner: 'right', icon: 'edit' }}
@@ -83,9 +79,8 @@ export default compose(
       },
   }),
   mapProps(({ mutate, imageUrl, data: { user }, ...rest }) => ({
-    avatarUrl:
-      imageUrl || (user && user.avatar && user.avatar.url) || squareImage,
+    avatarUrl: imageUrl || (user && user.avatar && user.avatar.url) || squareImage,
     ...rest,
   })),
-  pure
+  pure,
 )(UploadAvatar);

@@ -53,9 +53,7 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
         // Also, we check for already existing links before adding new ones since
         // the parent and child cross-references each other
         if (
-          assortments.find(
-            (assortment) => assortment._id === linkedAssortment.child._id
-          ) &&
+          assortments.find((assortment) => assortment._id === linkedAssortment.child._id) &&
           !elements.find((link) => {
             return (
               link.data.source === linkedAssortment.parent._id &&
@@ -132,22 +130,18 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
               variables: { assortmentId: linkedAssortment.child._id },
             });
 
-            const nodeEdges = result.data.assortment.linkedAssortments.map(
-              (lnkAssortment) => {
-                return {
-                  group: 'edges',
-                  data: {
-                    source: lnkAssortment.parent._id,
-                    target: lnkAssortment.child._id,
-                  },
-                };
-              }
-            );
+            const nodeEdges = result.data.assortment.linkedAssortments.map((lnkAssortment) => {
+              return {
+                group: 'edges',
+                data: {
+                  source: lnkAssortment.parent._id,
+                  target: lnkAssortment.child._id,
+                },
+              };
+            });
 
             if (
-              !nodeIds.find(
-                (nodeId) => nodeId === linkedAssortment.child._id
-              ) &&
+              !nodeIds.find((nodeId) => nodeId === linkedAssortment.child._id) &&
               !edges.find((edge) => {
                 return (
                   edge.source === linkedAssortment.parent._id &&
@@ -165,10 +159,8 @@ const CytoscapeComponentWrapper = ({ assortments }) => {
                 },
                 ...new Set(
                   nodeEdges.filter((edge) => {
-                    return [nodeIds, linkedAssortment.child._id].includes(
-                      edge.data.target
-                    );
-                  })
+                    return [nodeIds, linkedAssortment.child._id].includes(edge.data.target);
+                  }),
                 ),
               ]);
             }

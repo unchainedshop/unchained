@@ -40,11 +40,7 @@ const FormEditFilterTexts = ({
       <Segment attached="bottom">
         {languages.map((language, key) => (
           <div key={`form-${language.isoCode}`}>
-            <AutoField
-              name={`texts.${key}.locale`}
-              disabled={isEditingDisabled}
-              hidden
-            />
+            <AutoField name={`texts.${key}.locale`} disabled={isEditingDisabled} hidden />
             <AutoField
               name={`texts.${key}.title`}
               disabled={isEditingDisabled}
@@ -59,11 +55,7 @@ const FormEditFilterTexts = ({
         ))}
         <ErrorsField />
         <br />
-        <SubmitField
-          value="Save"
-          className="primary"
-          disabled={isEditingDisabled}
-        />
+        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
         <Button type="normal" onClick={onCancel}>
           Cancel
         </Button>
@@ -82,10 +74,7 @@ export default compose(
         isBase
         name
       }
-      translatedFilterTexts(
-        filterId: $filterId
-        filterOptionValue: $filterOptionValue
-      ) {
+      translatedFilterTexts(filterId: $filterId, filterOptionValue: $filterOptionValue) {
         _id
         locale
         title
@@ -95,9 +84,7 @@ export default compose(
   `),
   mapProps(({ data, ...rest }) => {
     const { languages = [] } = data;
-    const filteredActiveLanguages = languages.filter(
-      (language) => !!language.isBase
-    );
+    const filteredActiveLanguages = languages.filter((language) => !!language.isBase);
     const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
@@ -109,11 +96,7 @@ export default compose(
       ...rest,
     };
   }),
-  withState(
-    'selectedLocale',
-    'setSelectedLocale',
-    ({ baseLanguage }) => baseLanguage
-  ),
+  withState('selectedLocale', 'setSelectedLocale', ({ baseLanguage }) => baseLanguage),
   graphql(
     gql`
       mutation updateFilterTexts(
@@ -121,11 +104,7 @@ export default compose(
         $filterId: ID!
         $filterOptionValue: String
       ) {
-        updateFilterTexts(
-          texts: $texts
-          filterId: $filterId
-          filterOptionValue: $filterOptionValue
-        ) {
+        updateFilterTexts(texts: $texts, filterId: $filterId, filterOptionValue: $filterOptionValue) {
           _id
           locale
           title
@@ -137,7 +116,7 @@ export default compose(
       options: {
         refetchQueries: ['filterTexts', 'filters'],
       },
-    }
+    },
   ),
   withFormSchema({
     texts: {
@@ -167,12 +146,10 @@ export default compose(
   withFormModel(({ data: { translatedFilterTexts = [] }, languages = [] }) => {
     const texts = languages.map((language) => {
       const foundTranslations = translatedFilterTexts.filter(
-        (translatedText) => translatedText.locale === language.isoCode
+        (translatedText) => translatedText.locale === language.isoCode,
       );
       const localizedTextForLocale =
-        foundTranslations.length > 0
-          ? { ...foundTranslations[0] }
-          : { locale: language.isoCode };
+        foundTranslations.length > 0 ? { ...foundTranslations[0] } : { locale: language.isoCode };
       return localizedTextForLocale;
     });
     return { texts };
@@ -211,7 +188,7 @@ export default compose(
     }) => ({
       activeLanguage: selectedLocale || baseLanguage,
       ...rest,
-    })
+    }),
   ),
-  pure
+  pure,
 )(FormEditFilterTexts);

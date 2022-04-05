@@ -12,12 +12,7 @@ const ProductVariationList = ({ items, isEditingDisabled, productId }) => (
   <Segment>
     <List celled>
       {items.map(({ options, key, ...item }) => (
-        <ProductVariationItem
-          key={item._id}
-          name={key}
-          isEditingDisabled={isEditingDisabled}
-          {...item}
-        >
+        <ProductVariationItem key={item._id} name={key} isEditingDisabled={isEditingDisabled} {...item}>
           {options && (
             <Segment>
               <h3>Options</h3>
@@ -46,10 +41,7 @@ const ProductVariationList = ({ items, isEditingDisabled, productId }) => (
       ))}
       {!isEditingDisabled && (
         <List.Item>
-          <FormNewProductVariation
-            productId={productId}
-            onSuccess={() => true}
-          />
+          <FormNewProductVariation productId={productId} onSuccess={() => true} />
         </List.Item>
       )}
     </List>
@@ -100,5 +92,5 @@ export default compose(
     pressDelay: 200,
     ...rest,
   })),
-  pure
+  pure,
 )(ProductVariationList);

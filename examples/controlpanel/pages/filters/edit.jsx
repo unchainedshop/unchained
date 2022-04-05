@@ -23,14 +23,10 @@ export default connectApollo(
               <FilterMenu router={router} filterId={router.query._id} />
             </Grid.Column>
             <Grid.Column stretched width={13}>
-              {(!router.query.tab ||
-                router.query.tab === 'FilterTranslation') && (
+              {(!router.query.tab || router.query.tab === 'FilterTranslation') && (
                 <div>
                   <Header as="h3">Texts</Header>
-                  <FormEditFilterTexts
-                    filterId={router.query._id}
-                    filterOptionValue={null}
-                  />
+                  <FormEditFilterTexts filterId={router.query._id} filterOptionValue={null} />
                 </div>
               )}
               {router.query.tab === 'FilterOptions' && (
@@ -44,5 +40,5 @@ export default connectApollo(
         </Grid>
       </Container>
     </App>
-  ))
+  )),
 );

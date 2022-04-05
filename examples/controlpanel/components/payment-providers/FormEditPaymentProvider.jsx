@@ -13,11 +13,7 @@ import withFormSchema from '../../lib/withFormSchema';
 import withFormModel from '../../lib/withFormModel';
 import withFormErrorHandlers from '../../lib/withFormErrorHandlers';
 
-const FormEditPaymentProvider = ({
-  configurationError,
-  removePaymentProvider,
-  ...formProps
-}) => (
+const FormEditPaymentProvider = ({ configurationError, removePaymentProvider, ...formProps }) => (
   <Container>
     <AutoForm {...formProps}>
       <Segment attached="bottom">
@@ -33,12 +29,7 @@ const FormEditPaymentProvider = ({
             <p>Please check the docs</p>
           </Message>
         )}
-        <Button
-          type="normal"
-          secondary
-          floated="right"
-          onClick={removePaymentProvider}
-        >
+        <Button type="normal" secondary floated="right" onClick={removePaymentProvider}>
           Delete
         </Button>
       </Segment>
@@ -60,14 +51,8 @@ export default compose(
   `),
   graphql(
     gql`
-      mutation updatePaymentProvider(
-        $paymentProvider: UpdateProviderInput!
-        $paymentProviderId: ID!
-      ) {
-        updatePaymentProvider(
-          paymentProvider: $paymentProvider
-          paymentProviderId: $paymentProviderId
-        ) {
+      mutation updatePaymentProvider($paymentProvider: UpdateProviderInput!, $paymentProviderId: ID!) {
+        updatePaymentProvider(paymentProvider: $paymentProvider, paymentProviderId: $paymentProviderId) {
           _id
           type
           interface {
@@ -85,7 +70,7 @@ export default compose(
       options: {
         refetchQueries: ['paymentProvider', 'paymentProviders'],
       },
-    }
+    },
   ),
   graphql(
     gql`
@@ -100,7 +85,7 @@ export default compose(
       options: {
         refetchQueries: ['paymentProviders'],
       },
-    }
+    },
   ),
   withFormSchema({
     configuration: {
@@ -118,11 +103,9 @@ export default compose(
       type: String,
     },
   }),
-  withFormModel(
-    ({ data: { paymentProvider: { ...paymentProvider } = {} } }) => ({
-      ...paymentProvider,
-    })
-  ),
+  withFormModel(({ data: { paymentProvider: { ...paymentProvider } = {} } }) => ({
+    ...paymentProvider,
+  })),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('PaymentProvider saved', { type: toast.TYPE.SUCCESS });
@@ -158,6 +141,6 @@ export default compose(
     }) => ({
       configurationError,
       ...rest,
-    })
-  )
+    }),
+  ),
 )(FormEditPaymentProvider);

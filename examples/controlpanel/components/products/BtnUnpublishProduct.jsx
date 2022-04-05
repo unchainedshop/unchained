@@ -3,12 +3,7 @@ import { compose, pure, withHandlers, mapProps } from 'recompose';
 import gql from 'graphql-tag';
 import { graphql } from '@apollo/client/react/hoc';
 
-const BtnPublishProduct = ({
-  onClick,
-  Component = 'button',
-  children,
-  ...rest
-}) => (
+const BtnPublishProduct = ({ onClick, Component = 'button', children, ...rest }) => (
   <Component onClick={onClick} {...rest}>
     {children}
   </Component>
@@ -30,7 +25,7 @@ export default compose(
       options: {
         refetchQueries: ['productInfos', 'productTexts'],
       },
-    }
+    },
   ),
   withHandlers({
     onClick:
@@ -45,5 +40,5 @@ export default compose(
   mapProps(({ productId, mutate, ...rest }) => ({
     ...rest,
   })),
-  pure
+  pure,
 )(BtnPublishProduct);

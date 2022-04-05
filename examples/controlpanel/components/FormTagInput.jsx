@@ -34,13 +34,7 @@ const FormTagInputField = ({
     {...filterDOMProps(props)}
   >
     {label && <label htmlFor={id}>{label}</label>}
-    <div
-      className={classnames(
-        'ui',
-        { left: iconLeft, icon: icon || iconLeft },
-        'input'
-      )}
-    >
+    <div className={classnames('ui', { left: iconLeft, icon: icon || iconLeft }, 'input')}>
       <Dropdown
         options={normalizedOptions}
         placeholder={placeholder}
@@ -57,14 +51,10 @@ const FormTagInputField = ({
         onAddItem={onAddItem}
         ref={inputRef}
       />
-      {(icon || iconLeft) && (
-        <i className={`${icon || iconLeft} icon`} {...iconProps} />
-      )}
+      {(icon || iconLeft) && <i className={`${icon || iconLeft} icon`} {...iconProps} />}
     </div>
 
-    {!!(error && showInlineError) && (
-      <div className="ui red basic pointing label">{errorMessage}</div>
-    )}
+    {!!(error && showInlineError) && <div className="ui red basic pointing label">{errorMessage}</div>}
   </div>
 );
 
@@ -83,33 +73,24 @@ export default compose(
       (event, { value }) =>
         updateOwnOptions([{ key: value, text: value, value }, ...ownOptions]),
   }),
-  mapProps(
-    ({ options, ownOptions, updateOwnOptions, value: values, ...rest }) => {
-      const mappedValues = values.map((value) => ({
-        key: value,
-        text: value,
-        value,
-      }));
-      const undeduplicatedOptions = [
-        ...ownOptions,
-        ...options,
-        ...mappedValues,
-      ];
-      const deduplicatedOptionMap = undeduplicatedOptions.reduce(
-        (oldOptions, curOption) => {
-          if (oldOptions[curOption.key]) return oldOptions;
-          const newOptions = oldOptions;
-          newOptions[curOption.key] = curOption;
-          return newOptions;
-        },
-        {}
-      );
-      return {
-        normalizedOptions: Object.values(deduplicatedOptionMap),
-        options,
-        value: values,
-        ...rest,
-      };
-    }
-  )
+  mapProps(({ options, ownOptions, updateOwnOptions, value: values, ...rest }) => {
+    const mappedValues = values.map((value) => ({
+      key: value,
+      text: value,
+      value,
+    }));
+    const undeduplicatedOptions = [...ownOptions, ...options, ...mappedValues];
+    const deduplicatedOptionMap = undeduplicatedOptions.reduce((oldOptions, curOption) => {
+      if (oldOptions[curOption.key]) return oldOptions;
+      const newOptions = oldOptions;
+      newOptions[curOption.key] = curOption;
+      return newOptions;
+    }, {});
+    return {
+      normalizedOptions: Object.values(deduplicatedOptionMap),
+      options,
+      value: values,
+      ...rest,
+    };
+  }),
 )(FormTagInputField);

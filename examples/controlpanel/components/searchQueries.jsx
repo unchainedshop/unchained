@@ -1,18 +1,8 @@
 import gql from 'graphql-tag';
 
 export const SEARCH_USERS = gql`
-  query users(
-    $queryString: String
-    $offset: Int
-    $limit: Int
-    $includeGuests: Boolean
-  ) {
-    users(
-      queryString: $queryString
-      limit: $limit
-      offset: $offset
-      includeGuests: $includeGuests
-    ) {
+  query users($queryString: String, $offset: Int, $limit: Int, $includeGuests: Boolean) {
+    users(queryString: $queryString, limit: $limit, offset: $offset, includeGuests: $includeGuests) {
       _id
       isGuest
       name
@@ -21,18 +11,8 @@ export const SEARCH_USERS = gql`
 `;
 
 export const SEARCH_ORDERS = gql`
-  query orders(
-    $offset: Int
-    $limit: Int
-    $includeCarts: Boolean
-    $queryString: String
-  ) {
-    orders(
-      offset: $offset
-      limit: $limit
-      includeCarts: $includeCarts
-      queryString: $queryString
-    ) {
+  query orders($offset: Int, $limit: Int, $includeCarts: Boolean, $queryString: String) {
+    orders(offset: $offset, limit: $limit, includeCarts: $includeCarts, queryString: $queryString) {
       _id
       ordered
       orderNumber

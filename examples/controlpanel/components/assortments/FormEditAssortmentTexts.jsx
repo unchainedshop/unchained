@@ -43,11 +43,7 @@ const FormEditAssortmentTexts = ({
       <Segment attached="bottom">
         {languages.map((language, key) => (
           <div key={`form-${language.isoCode}`}>
-            <AutoField
-              name={`texts.${key}.locale`}
-              disabled={isEditingDisabled}
-              hidden
-            />
+            <AutoField name={`texts.${key}.locale`} disabled={isEditingDisabled} hidden />
             <AutoField
               name={`texts.${key}.slug`}
               disabled={isEditingDisabled}
@@ -72,11 +68,7 @@ const FormEditAssortmentTexts = ({
           </div>
         ))}
         <ErrorsField />
-        <SubmitField
-          value="Save"
-          className="primary"
-          disabled={isEditingDisabled}
-        />
+        <SubmitField value="Save" className="primary" disabled={isEditingDisabled} />
       </Segment>
     </AutoForm>
   </Container>
@@ -107,9 +99,7 @@ export default compose(
   `),
   mapProps(({ data, ...rest }) => {
     const { languages = [], assortment = {} } = data;
-    const filteredActiveLanguages = languages.filter(
-      (language) => !!language.isBase
-    );
+    const filteredActiveLanguages = languages.filter((language) => !!language.isBase);
     const baseLanguage =
       filteredActiveLanguages.length > 0
         ? filteredActiveLanguages[0].isoCode
@@ -125,10 +115,7 @@ export default compose(
   withState('selectedLocale', 'setSelectedLocale', null),
   graphql(
     gql`
-      mutation updateAssortmentTexts(
-        $texts: [UpdateAssortmentTextInput!]!
-        $assortmentId: ID!
-      ) {
+      mutation updateAssortmentTexts($texts: [UpdateAssortmentTextInput!]!, $assortmentId: ID!) {
         updateAssortmentTexts(texts: $texts, assortmentId: $assortmentId) {
           _id
           locale
@@ -143,7 +130,7 @@ export default compose(
       options: {
         refetchQueries: ['assortmentTexts', 'assortmentInfos'],
       },
-    }
+    },
   ),
   withFormSchema({
     texts: {
@@ -180,22 +167,18 @@ export default compose(
       label: 'Slug',
     },
   }),
-  withFormModel(
-    ({ data: { translatedAssortmentTexts = [] }, languages = [] }) => {
-      const texts = languages.map((language) => {
-        const foundTranslations = translatedAssortmentTexts.filter(
-          (translatedText) => translatedText.locale === language.isoCode
-        );
-        const localizedTextForLocale =
-          foundTranslations.length > 0
-            ? { ...foundTranslations[0] }
-            : { locale: language.isoCode };
-        localizedTextForLocale.labels = localizedTextForLocale.labels || [];
-        return localizedTextForLocale;
-      });
-      return { texts };
-    }
-  ),
+  withFormModel(({ data: { translatedAssortmentTexts = [] }, languages = [] }) => {
+    const texts = languages.map((language) => {
+      const foundTranslations = translatedAssortmentTexts.filter(
+        (translatedText) => translatedText.locale === language.isoCode,
+      );
+      const localizedTextForLocale =
+        foundTranslations.length > 0 ? { ...foundTranslations[0] } : { locale: language.isoCode };
+      localizedTextForLocale.labels = localizedTextForLocale.labels || [];
+      return localizedTextForLocale;
+    });
+    return { texts };
+  }),
   withHandlers({
     onSubmitSuccess: () => () => {
       toast('Texts saved', { type: toast.TYPE.SUCCESS });
@@ -217,18 +200,10 @@ export default compose(
   }),
   withFormErrorHandlers,
   mapProps(
-    ({
-      setSelectedLocale,
-      selectedLocale,
-      baseLanguage,
-      assortmentId,
-      mutate,
-      data,
-      ...rest
-    }) => ({
+    ({ setSelectedLocale, selectedLocale, baseLanguage, assortmentId, mutate, data, ...rest }) => ({
       activeLanguage: selectedLocale || baseLanguage,
       ...rest,
-    })
+    }),
   ),
-  pure
+  pure,
 )(FormEditAssortmentTexts);

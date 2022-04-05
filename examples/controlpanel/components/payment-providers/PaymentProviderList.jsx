@@ -53,9 +53,7 @@ export default function PaymentProviderList() {
           <Table.Row key={paymentProvider._id}>
             <Table.Cell>
               <Link href={`/payment-providers/edit?_id=${paymentProvider._id}`}>
-                <a href={`/payment-providers/edit?_id=${paymentProvider._id}`}>
-                  {paymentProvider._id}
-                </a>
+                <a href={`/payment-providers/edit?_id=${paymentProvider._id}`}>{paymentProvider._id}</a>
               </Link>
             </Table.Cell>
             <Table.Cell>{paymentProvider.type}</Table.Cell>

@@ -12,5 +12,5 @@ export default connectApollo(
         <FormEditCurrency currencyId={router.query._id} />
       </Container>
     </App>
-  ))
+  )),
 );
