@@ -8,7 +8,7 @@ import {
   generateDbFilterById,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
-import { assortmentsSettings } from 'src/assortments-settings';
+import { assortmentsSettings } from '../assortments-settings';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
 

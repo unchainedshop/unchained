@@ -8,7 +8,7 @@ import {
   generateDbFilterById,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
-import { productsSettings } from 'src/products-settings';
+import { productsSettings } from '../products-settings';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXTS'];
 
