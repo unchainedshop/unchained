@@ -3,10 +3,6 @@ import { Order, OrderTransformations } from '@unchainedshop/types/orders';
 import { OrderStatus } from '../db/OrderStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
-const InternalOrderStatus = {
-  OPEN: null,
-};
-
 export const configureOrderModuleTransformations = ({
   Orders,
 }: {
@@ -114,17 +110,13 @@ export const configureOrderModuleTransformations = ({
       };
     },
 
-    normalizedStatus: (order) => {
-      return order.status === null ? OrderStatus.OPEN : (order.status as OrderStatus);
-    },
-
     isCart: (order) => {
-      return (order.status || null) === InternalOrderStatus.OPEN;
+      return order.status === OrderStatus.OPEN;
     },
     cart: async (order, user) => {
       const selector: Query = {
         countryCode: order.countryContext || user.lastLogin.countryContext,
-        status: { $eq: InternalOrderStatus.OPEN },
+        status: { $eq: OrderStatus.OPEN },
         userId: user._id,
       };
 

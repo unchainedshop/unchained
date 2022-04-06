@@ -96,7 +96,6 @@ export interface OrderTransformations {
     requestContext: Context,
   ) => Promise<OrderPrice>;
 
-  normalizedStatus: (order: Order) => string;
   isCart: (order: Order) => boolean;
   cart: (order: { countryContext?: string; orderNumber?: string }, user: User) => Promise<Order>;
   pricingSheet: (order: Order) => IOrderPricingSheet;

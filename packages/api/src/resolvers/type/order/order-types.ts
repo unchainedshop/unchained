@@ -4,7 +4,7 @@ import { Currency } from '@unchainedshop/types/currencies';
 import { DeliveryProvider } from '@unchainedshop/types/delivery';
 import { Enrollment } from '@unchainedshop/types/enrollments';
 import { File } from '@unchainedshop/types/files';
-import { Order as OrderType, OrderDocumentType } from '@unchainedshop/types/orders';
+import { Order as OrderType, OrderDocumentType, OrderStatus } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
@@ -81,7 +81,12 @@ export const Order: OrderHelperTypes = {
       orderPaymentId: obj.paymentId,
     }),
 
-  status: (obj, _, { modules }) => modules.orders.normalizedStatus(obj),
+  status: (obj) => {
+    if (obj.status === OrderStatus.OPEN) {
+      return 'OPEN';
+    }
+    return obj.status;
+  },
 
   total: async (obj, params: { category: string }, { modules }) => {
     const pricingSheet = modules.orders.pricingSheet(obj);

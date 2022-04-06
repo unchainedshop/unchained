@@ -143,7 +143,7 @@ export const configureOrderModuleProcessing = ({
   const findNextStatus = async (order: Order, requestContext: Context): Promise<OrderStatus | null> => {
     let { status } = order;
 
-    if (status === null /* OrderStatus.OPEN */ || !status) {
+    if (status === OrderStatus.OPEN) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
         emit('ORDER_CHECKOUT', { order });
         status = OrderStatus.PENDING;

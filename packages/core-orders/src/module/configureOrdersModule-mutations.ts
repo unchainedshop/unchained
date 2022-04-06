@@ -5,6 +5,7 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { OrderStatus } from 'src/orders-index';
 import { OrdersSchema } from '../db/OrdersSchema';
 
 const ORDER_EVENTS: string[] = [
@@ -76,7 +77,7 @@ export const configureOrderModuleMutations = ({
       });
 
       const orders = await Orders.find({
-        status: { $eq: null }, // Null equals OrderStatus.OPEN
+        status: { $eq: OrderStatus.OPEN },
       }).toArray();
 
       await Promise.all(orders.map((order) => initProviders(order._id, requestContext)));
