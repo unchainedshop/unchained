@@ -545,3 +545,16 @@ export interface ProductCatalogPriceHelperTypes {
   country: ProductCatalogHelperType<never, Promise<Country>>;
   currency: ProductCatalogHelperType<never, Promise<Currency>>;
 }
+
+/*
+ * Settings
+ */
+
+export interface ProductsSettingsOptions {
+  slugify?: (title: string) => string;
+}
+
+export interface ProductsSettings {
+  slugify?: (title: string) => string;
+  configureSettings: (options?: ProductsSettingsOptions) => void;
+}

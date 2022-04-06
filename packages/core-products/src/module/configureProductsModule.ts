@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { FindOptions, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { Product, ProductQuery, ProductsModule } from '@unchainedshop/types/products';
+import { Product, ProductQuery, ProductsModule, ProductsSettingsOptions } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { findPreservingIds, generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
@@ -14,6 +14,7 @@ import { configureProductPricesModule } from './configureProductPrices';
 import { configureProductReviewsModule } from './configureProductReviewsModule';
 import { configureProductTextsModule } from './configureProductTextsModule';
 import { configureProductVariationsModule } from './configureProductVariationsModule';
+import { productsSettings } from '../products-settings';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -71,8 +72,10 @@ const buildFindSelector = ({
 
 export const configureProductsModule = async ({
   db,
-}: ModuleInput<Record<string, never>>): Promise<ProductsModule> => {
+  options: productsOptions = {}
+}: ModuleInput<ProductsSettingsOptions>): Promise<ProductsModule> => {
   registerEvents(PRODUCT_EVENTS);
+  await productsSettings.configureSettings(productsOptions, db);
 
   const { Products, ProductTexts } = await ProductsCollection(db);
 

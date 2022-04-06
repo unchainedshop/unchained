@@ -113,6 +113,7 @@ import {
   ProductsModule,
   ProductStatus as ProductStatusType,
   ProductType,
+  ProductsSettings,
 } from './products';
 import {
   IProductPricingAdapter,
@@ -423,6 +424,7 @@ declare module 'meteor/unchained:core-products' {
   function configureProductsModule(params: ModuleInput<Record<string, never>>): Promise<ProductsModule>;
 
   const productServices: ProductServices;
+  const productsSettings: ProductsSettings;
 
   const ProductPricingAdapter: IProductPricingAdapter;
   const ProductPricingDirector: IProductPricingDirector;
@@ -500,8 +502,10 @@ declare module 'meteor/unchained:api' {
 
   function hashPassword(password: string): string;
 
-  function useMiddlewareWithCurrentContext(path: string, (req: IncomingMessage & { unchainedContext: UnchainedAPI }, res: OutgoingMessage) => Promise<any>): void;
+  function useMiddlewareWithCurrentContext(path: string, fn: (req: IncomingMessage & { unchainedContext: UnchainedAPI }, res: OutgoingMessage) => Promise<any>): void;
 
+  const acl: any;
+  const errors: any;
   const roles: APIRoles;
 }
 

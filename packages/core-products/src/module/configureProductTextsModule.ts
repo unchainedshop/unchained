@@ -8,6 +8,7 @@ import {
   generateDbFilterById,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
+import { productsSettings } from 'src/products-settings';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXTS'];
 
@@ -33,7 +34,7 @@ export const configureProductTextsModule = ({
       );
     };
 
-    const findSlug = findUnusedSlug(checkSlugIsUnique, {});
+    const findSlug = findUnusedSlug(checkSlugIsUnique, { slugify: productsSettings.slugify });
     return findSlug({
       existingSlug: slug,
       title: title || productId,

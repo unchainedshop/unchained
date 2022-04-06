@@ -338,12 +338,14 @@ export type AssortmentsModule = {
 
 export interface AssortmentsSettingsOptions {
   zipTree?: (data: any) => any;
+  slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
 }
 
 export interface AssortmentsSettings {
   zipTree?: (data: any) => any;
+  slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
   configureSettings: (options?: AssortmentsSettingsOptions, db?: Db) => void;

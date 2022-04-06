@@ -1,7 +1,6 @@
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
-import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders';
+import { Order, OrderQueries, OrderQuery, OrderStatus } from '@unchainedshop/types/orders';
 import { generateDbFilterById } from 'meteor/unchained:utils';
-import { OrderStatus } from 'src/orders-index';
 
 const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: Query = {};

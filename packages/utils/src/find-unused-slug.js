@@ -1,5 +1,3 @@
-import defaultSlugify from './slugify';
-
 const DELIMITER = '-';
 
 const addSuffixToSlug = (slug, index = 1, delimiter = DELIMITER) => {
@@ -13,7 +11,7 @@ const incrementSuffixedSlug = (slugIncludingSuffix, delimiter = DELIMITER) => {
   return addSuffixToSlug(slugWithoutSuffix, suffixedIndex + 1);
 };
 
-export default (checkSlugIsUniqueFn, { slugify = defaultSlugify } = {}) => {
+export default (checkSlugIsUniqueFn, { slugify }) => {
   const findUnusedSlug = async ({ title, existingSlug, newSlug }) => {
     const slug = newSlug || existingSlug || `${slugify(title)}`;
     if (!(await checkSlugIsUniqueFn(slug))) {

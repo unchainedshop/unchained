@@ -1,11 +1,10 @@
 import { Collection, ModuleMutations } from '@unchainedshop/types/common';
-import { Order, OrderMutations, OrdersModule } from '@unchainedshop/types/orders';
+import { Order, OrderMutations, OrdersModule, OrderStatus } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
-import { OrderStatus } from 'src/orders-index';
 import { OrdersSchema } from '../db/OrdersSchema';
 
 const ORDER_EVENTS: string[] = [

@@ -8,6 +8,7 @@ import {
   generateDbFilterById,
   generateDbObjectId,
 } from 'meteor/unchained:utils';
+import { assortmentsSettings } from 'src/assortments-settings';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
 
@@ -33,7 +34,7 @@ export const configureAssortmentTextsModule = ({
       );
     };
 
-    const findSlug = findUnusedSlug(checkSlugIsUnique, {});
+    const findSlug = findUnusedSlug(checkSlugIsUnique, { slugify: assortmentsSettings.slugify });
     return findSlug({
       existingSlug: slug,
       title: title || assortmentId,

@@ -14,6 +14,7 @@ import { Services } from './services';
 import { User } from './user';
 import { Logger } from './logs';
 import { FiltersSettingsOptions } from './filters';
+import { ProductsSettingsOptions } from './products';
 
 export declare type Root = Record<string, unknown>;
 export interface UnchainedUserContext {
@@ -92,6 +93,7 @@ export interface UnchainedCoreOptions {
   options: {
     accounts?: AccountsSettingsOptions;
     assortments?: AssortmentsSettingsOptions;
+    products?: ProductsSettingsOptions;
     delivery?: DeliverySettingsOptions;
     filters?: FiltersSettingsOptions;
     enrollments?: EnrollmentsSettingsOptions;
