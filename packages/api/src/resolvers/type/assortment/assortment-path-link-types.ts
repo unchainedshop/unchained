@@ -8,7 +8,7 @@ import {
 type HelperType<P, T> = (assortmentPathLink: AssortmentPathLinkType, params: P, context: Context) => T;
 
 export interface AssortmentPathLinkHelperTypes {
-  link: HelperType<never,Promise<AssortmentLinkType>>;
+  link: HelperType<never, Promise<AssortmentLinkType>>;
 
   assortmentSlug: HelperType<{ forceLocale?: string }, Promise<string>>;
 

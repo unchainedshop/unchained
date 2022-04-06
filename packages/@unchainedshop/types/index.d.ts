@@ -502,7 +502,13 @@ declare module 'meteor/unchained:api' {
 
   function hashPassword(password: string): string;
 
-  function useMiddlewareWithCurrentContext(path: string, fn: (req: IncomingMessage & { unchainedContext: UnchainedAPI }, res: OutgoingMessage) => Promise<any>): void;
+  function useMiddlewareWithCurrentContext(
+    path: string,
+    fn: (
+      req: IncomingMessage & { unchainedContext: UnchainedAPI },
+      res: OutgoingMessage,
+    ) => Promise<any>,
+  ): void;
 
   const acl: any;
   const errors: any;
