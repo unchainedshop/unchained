@@ -4,7 +4,7 @@ import { Currency } from '@unchainedshop/types/currencies';
 import { DeliveryProvider } from '@unchainedshop/types/delivery';
 import { Enrollment } from '@unchainedshop/types/enrollments';
 import { File } from '@unchainedshop/types/files';
-import { Order as OrderType, OrderDocumentType, OrderStatus } from '@unchainedshop/types/orders';
+import { Order as OrderType, OrderDocumentType } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
@@ -82,7 +82,7 @@ export const Order: OrderHelperTypes = {
     }),
 
   status: (obj) => {
-    if (obj.status === OrderStatus.OPEN) {
+    if (obj.status === null) {
       return 'OPEN';
     }
     return obj.status;

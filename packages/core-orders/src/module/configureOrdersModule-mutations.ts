@@ -1,5 +1,5 @@
 import { Collection, ModuleMutations } from '@unchainedshop/types/common';
-import { Order, OrderMutations, OrdersModule, OrderStatus } from '@unchainedshop/types/orders';
+import { Order, OrderMutations, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
@@ -76,7 +76,7 @@ export const configureOrderModuleMutations = ({
       });
 
       const orders = await Orders.find({
-        status: { $eq: OrderStatus.OPEN },
+        status: { $eq: null },
       }).toArray();
 
       await Promise.all(orders.map((order) => initProviders(order._id, requestContext)));

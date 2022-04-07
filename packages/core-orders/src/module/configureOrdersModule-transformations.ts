@@ -1,6 +1,5 @@
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
 import { Order, OrderTransformations } from '@unchainedshop/types/orders';
-import { OrderStatus } from '../db/OrderStatus';
 import { OrderPricingSheet } from '../director/OrderPricingSheet';
 
 export const configureOrderModuleTransformations = ({
@@ -111,12 +110,12 @@ export const configureOrderModuleTransformations = ({
     },
 
     isCart: (order) => {
-      return order.status === OrderStatus.OPEN;
+      return order.status === null;
     },
     cart: async (order, user) => {
       const selector: Query = {
         countryCode: order.countryContext || user.lastLogin.countryContext,
-        status: { $eq: OrderStatus.OPEN },
+        status: { $eq: null },
         userId: user._id,
       };
 

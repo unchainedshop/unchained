@@ -1,5 +1,5 @@
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
-import { Order, OrderQueries, OrderQuery, OrderStatus } from '@unchainedshop/types/orders';
+import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders';
 import { generateDbFilterById } from 'meteor/unchained:utils';
 
 const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
@@ -12,7 +12,7 @@ const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQ
   if (status) {
     selector.status = status;
   } else if (!includeCarts) {
-    selector.status = { $ne: OrderStatus.OPEN };
+    selector.status = { $ne: null };
   }
 
   if (queryString) {

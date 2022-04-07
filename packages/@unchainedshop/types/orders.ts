@@ -8,7 +8,6 @@ import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.p
 import { User } from './user';
 
 export enum OrderStatus {
-  OPEN = 'OPEN', // Null value is mapped to OPEN status
   PENDING = 'PENDING',
   CONFIRMED = 'CONFIRMED',
   FULLFILLED = 'FULLFILLED',
