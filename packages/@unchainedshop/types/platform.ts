@@ -27,7 +27,7 @@ export type PlatformOptions = {
   resolvers?: any;
   schema?: any;
   plugins?: any[];
-  cache: any;
+  cache?: any;
   bulkImporter?: any;
   context?: any;
   modules?: UnchainedCoreOptions['modules'];
