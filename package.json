@@ -32,7 +32,13 @@
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",
     "install": "run-p --print-label install:*",
     "install:minimal": "cd examples/minimal && npm install",
-    "install:controlpanel": "cd examples/controlpanel && npm install"
+    "install:controlpanel": "cd examples/controlpanel && npm install",
+    "install:types": "cd packages/@unchainedshop/types && npm install && npm link",
+    "postinstall": "npm run link-types",
+    "link-types": "run-p --print-label link-types:*",
+    "link-types:root": "npm link @unchainedshop/types",
+    "link-types:minimal": "cd examples/minimal && npm link @unchainedshop/types",
+    "link-types:controlpanel": "cd examples/controlpanel && npm link @unchainedshop/types"
   },
   "devDependencies": {
     "@apollo/client": "^3.5.10",
