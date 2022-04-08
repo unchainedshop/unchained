@@ -1,7 +1,7 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { GraphQLOptions } from 'apollo-server-express';
 import { FilesSettingsOptions } from '@unchainedshop/types/files';
-import { Db, Locale, MigrationRepository } from './common';
+import { Db, Locale, MigrationRepository, ModuleInput } from './common';
 import { AccountsSettingsOptions } from './accounts';
 import { AssortmentsSettingsOptions } from './assortments';
 import { DeliverySettingsOptions } from './delivery';
@@ -88,7 +88,12 @@ export interface Migration {
 export interface UnchainedCoreOptions {
   db: Db;
   migrationRepository: MigrationRepository<Migration>;
-  modules: Record<string, { configure: ({ db }: { db: Db }) => any }>;
+  modules: Record<
+    string,
+    {
+      configure: (params: ModuleInput<any>) => any;
+    }
+  >;
   services: Record<string, any>;
   options: {
     accounts?: AccountsSettingsOptions;

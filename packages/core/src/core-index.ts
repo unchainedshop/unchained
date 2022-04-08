@@ -30,54 +30,99 @@ export const initCore = async ({
   const accounts = await configureAccountsModule({
     db,
     options: options.accounts,
+    migrationRepository,
   });
   const assortments = await configureAssortmentsModule({
     db,
     options: options.assortments,
     migrationRepository,
   });
-  const bookmarks = await configureBookmarksModule({ db });
-  const countries = await configureCountriesModule({ db });
-  const currencies = await configureCurrenciesModule({ db });
+  const bookmarks = await configureBookmarksModule({
+    db,
+    migrationRepository,
+  });
+  const countries = await configureCountriesModule({
+    db,
+    migrationRepository,
+  });
+  const currencies = await configureCurrenciesModule({
+    db,
+    migrationRepository,
+  });
   const delivery = await configureDeliveryModule({
     db,
     options: options.delivery,
+    migrationRepository,
   });
   const enrollments = await configureEnrollmentsModule({
     db,
     options: options.enrollments,
+    migrationRepository,
   });
-  const events = await configureEventsModule({ db });
-  const files = await configureFilesModule({ db, options: options.files });
+  const events = await configureEventsModule({
+    db,
+    migrationRepository,
+  });
+  const files = await configureFilesModule({
+    db,
+    options: options.files,
+    migrationRepository,
+  });
   const filters = await configureFiltersModule({
     db,
     options: options.filters,
+    migrationRepository,
   });
-  const languages = await configureLanguagesModule({ db });
-  const messaging = await configureMessagingModule({ db });
+  const languages = await configureLanguagesModule({
+    db,
+    migrationRepository,
+  });
+  const messaging = await configureMessagingModule({
+    db,
+    migrationRepository,
+  });
   const orders = await configureOrdersModule({
     db,
     options: options.orders,
+    migrationRepository,
   });
   const payment = await configurePaymentModule({
     db,
     options: options.payment,
+    migrationRepository,
   });
-  const products = await configureProductsModule({ db });
+  const products = await configureProductsModule({
+    db,
+    migrationRepository,
+  });
   const quotations = await configureQuotationsModule({
     db,
     options: options.quotations,
+    migrationRepository,
   });
-  const users = await configureUsersModule({ db });
-  const warehousing = await configureWarehousingModule({ db });
-  const worker = await configureWorkerModule({ db });
+  const users = await configureUsersModule({
+    db,
+    migrationRepository,
+  });
+  const warehousing = await configureWarehousingModule({
+    db,
+    migrationRepository,
+  });
+  const worker = await configureWorkerModule({
+    db,
+    migrationRepository,
+  });
 
   // Configure custom modules
   const customModules = await Object.entries(modules).reduce(
     async (modulesPromise, [key, customModule]) => {
       return {
         ...(await modulesPromise),
-        [key]: await customModule.configure({ db }),
+        [key]: await customModule.configure({
+          db,
+          options: options?.[key],
+          migrationRepository,
+        }),
       };
     },
     Promise.resolve({}),
