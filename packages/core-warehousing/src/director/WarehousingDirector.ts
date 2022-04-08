@@ -22,6 +22,9 @@ export const WarehousingDirector: IWarehousingDirector = {
   actions: async (warehousingProvider, warehousingContext, requestContext) => {
     const Adapter = baseDirector.getAdapter(warehousingProvider.adapterKey);
 
+    if (!Adapter) {
+      throw new Error(`Payment Plugin ${warehousingProvider.adapterKey} not available`);
+    }
     const context = { ...warehousingContext, ...requestContext };
     const adapter = Adapter.actions(warehousingProvider.configuration, context);
 
