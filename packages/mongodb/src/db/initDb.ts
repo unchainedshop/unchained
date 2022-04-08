@@ -14,6 +14,7 @@ import { NpmModuleMongodb } from 'meteor/npm-mongo';
 const originalFn = NpmModuleMongodb.Collection.prototype.updateOne;
 NpmModuleMongodb.Collection.prototype.updateOne = async function updateOne(...rest) {
   const result = await originalFn.bind(this)(...rest);
+  if (!result) return result;
   return {
     result: { nModified: result.modifiedCount },
     ...result,
