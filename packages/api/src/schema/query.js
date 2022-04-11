@@ -37,6 +37,7 @@ export default [
       If a slug is provided, limit and offset don't have any effect on the result
       """
       products(
+        queryString: String
         tags: [String!]
         slugs: [String!]
         limit: Int = 10

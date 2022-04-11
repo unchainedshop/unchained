@@ -191,15 +191,20 @@ export const configureProductsModule = async ({
       return Products.findOne(selector, {});
     },
 
-    findProducts: async ({ limit, offset, ...query }) => {
+    findProducts: async ({ limit, offset, queryString, ...query }) => {
       const options: FindOptions = { sort: { sequence: 1, published: -1 } };
+      const filter = { ...query };
       if (limit) {
         options.limit = limit;
       }
       if (offset) {
         options.skip = offset;
       }
-      const products = Products.find(buildFindSelector(query), options);
+      if (queryString) {
+        const productIds = await productTexts.searchTexts({ searchText: queryString });
+        filter.productIds = [...(query.productIds || []), ...productIds];
+      }
+      const products = Products.find(buildFindSelector(filter), options);
       return products.toArray();
     },
 
