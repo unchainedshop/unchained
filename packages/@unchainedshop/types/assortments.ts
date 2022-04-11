@@ -61,6 +61,7 @@ export type AssortmentText = {
 } & TimestampFields;
 
 export type AssortmentQuery = {
+  queryString?: string;
   assortmentIds?: Array<string>;
   assortmentSelector?: Query;
   includeInactive?: boolean;

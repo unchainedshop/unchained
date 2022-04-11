@@ -255,8 +255,14 @@ export const configureAssortmentsModule = async ({
       return Assortments.findOne(selector, {});
     },
 
-    findAssortments: async ({ limit, offset, ...query }) => {
-      const assortments = Assortments.find(buildFindSelector(query), {
+    findAssortments: async ({ limit, offset, queryString, ...query }) => {
+      const filters = { ...query };
+      if (queryString) {
+        const assortmentIds = await assortmentTexts.searchTexts({ searchText: queryString });
+        filters.assortmentIds = [...(query.assortmentIds || []), ...assortmentIds];
+      }
+
+      const assortments = Assortments.find(buildFindSelector(filters), {
         skip: offset,
         limit,
         sort: { sequence: 1 },

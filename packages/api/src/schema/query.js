@@ -207,6 +207,7 @@ export default [
       Get all root assortments
       """
       assortments(
+        queryString: String
         tags: [String!]
         slugs: [String!]
         limit: Int = 10
