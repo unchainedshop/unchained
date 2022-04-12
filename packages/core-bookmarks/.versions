@@ -14,7 +14,7 @@ modules-runtime@0.13.0
 promise@0.12.0
 react-fast-refresh@0.2.3
 typescript@4.5.4
-unchained:core-bookmarks@1.0.0-rc.18
-unchained:events@1.0.0-rc.18
-unchained:logger@1.0.0-rc.18
-unchained:utils@1.0.0-rc.18
+unchained:core-bookmarks@1.0.0-rc.19
+unchained:events@1.0.0-rc.19
+unchained:logger@1.0.0-rc.19
+unchained:utils@1.0.0-rc.19
