@@ -99,9 +99,8 @@ const Datatrans: IPaymentAdapter = {
               .map((f) => f.trim());
 
             const discountSum = pricingForOrderPayment.discountSum(staticDiscountId) * -1;
-            const sumToSplit = total - discountSum;
             const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;
-            const amount = Math.round(sumToSplit * shareFactor);
+            const amount = Math.round(total * shareFactor);
             const commission = Math.round(discountSum * shareFactor);
 
             return {
@@ -182,7 +181,7 @@ const Datatrans: IPaymentAdapter = {
     ): void => {
       if (!isTransactionAmountValid(transaction)) {
         logger.error(
-          `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`,
+          `Transaction declined / Transaction ID ${transactionId} because of amount/currency mismatch`,
         );
         throw newDatatransError({
           code: `YOU_HAVE_TO_PAY_THE_FULL_AMOUNT_DUDE`,
@@ -240,9 +239,8 @@ const Datatrans: IPaymentAdapter = {
         return false;
       },
 
-      async sign(context: any = {}) {
-        const { useSecureFields = false, ...additionalInitPayload } = context.transactionContext || {};
-
+      async sign(transactionContext: any = {}) {
+        const { useSecureFields = false, ...additionalInitPayload } = transactionContext || {};
         const { userId } = params.context;
         const { orderPayment, paymentProviderId, order } = params.paymentContext;
         const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'hex').toString(
@@ -314,7 +312,7 @@ const Datatrans: IPaymentAdapter = {
           transactionId,
         })) as StatusResponseSuccess;
         throwIfResponseError(transaction);
-        const status = transaction?.status;
+        const { status } = transaction;
 
         if (status === 'authorized') {
           // either settle or cancel
@@ -341,7 +339,7 @@ const Datatrans: IPaymentAdapter = {
           transactionId,
         })) as StatusResponseSuccess;
         throwIfResponseError(transaction);
-        const status = transaction?.status;
+        const { status } = transaction;
 
         if (status === 'authorized') {
           // either settle or cancel
@@ -363,7 +361,7 @@ const Datatrans: IPaymentAdapter = {
       }) {
         if (!rawTransactionId && !paymentCredentials) {
           logger.warn(
-            'Datatrans Plugin: Not trying to charge because of missing payment authorization response, return false to provide later',
+            'Not trying to charge because of missing payment authorization response, return false to provide later',
           );
           return false;
         }
@@ -379,15 +377,22 @@ const Datatrans: IPaymentAdapter = {
           transactionId,
         })) as StatusResponseSuccess;
         throwIfResponseError(transaction);
-        let status = transaction?.status;
+
+        if (!transaction) {
+          throw newDatatransError({
+            code: `TRANSACTION_NOT_FOUND`,
+            message: 'Amount / Currency Mismatch with Cart',
+          });
+        }
+        let { status } = transaction;
 
         if (status === 'canceled' || status === 'failed') {
           logger.error(
-            `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} has invalid status`,
+            `Payment declined or canceled with Transaction ID ${transactionId} and status ${status}`,
           );
           throw newDatatransError({
             code: `STATUS_${status.toUpperCase()}`,
-            message: 'Payment declined',
+            message: 'Payment declined or canceled',
           });
         }
 
@@ -402,12 +407,10 @@ const Datatrans: IPaymentAdapter = {
             });
             status = 'authorized';
           } else {
-            logger.error(
-              `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} not authorized yet`,
-            );
+            logger.error(`Transaction declined / Transaction ID ${transactionId} not authorized yet`);
             throw newDatatransError({
               code: `STATUS_${status.toUpperCase()}`,
-              message: 'Payment not yet authorized',
+              message: 'Payment authenticated but not authorized',
             });
           }
         }
@@ -432,11 +435,11 @@ const Datatrans: IPaymentAdapter = {
           } catch (e) {
             await cancel({ transactionId, refno: settledTransaction.refno });
             logger.error(
-              `Datatrans Plugin: Transaction declined / Transaction ID ${transactionId} authorization cancelled`,
+              `Transaction declined / Transaction ID ${transactionId} authorization cancelled`,
             );
             throw newDatatransError({
               code: `STATUS_${status.toUpperCase()}`,
-              message: 'Payment canceled',
+              message: 'Payment cancelled server-side because of amount missmatch',
             });
           }
           return {
@@ -453,10 +456,11 @@ const Datatrans: IPaymentAdapter = {
           status === 'challenge_ongoing' ||
           status === 'transmitted'
         ) {
-          logger.warn(
-            `Datatrans Plugin: Transaction ID ${transactionId} in transit with status ${status}`,
-          );
-          return false;
+          logger.error(`Transaction ID ${transactionId} in transit with status ${status}`);
+          throw newDatatransError({
+            code: `STATUS_${status.toUpperCase()}`,
+            message: 'Transaction status invalid for checkout',
+          });
         }
         return false;
       },
