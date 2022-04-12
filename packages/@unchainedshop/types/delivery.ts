@@ -8,7 +8,11 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { DeliveryPricingCalculation, DeliveryPricingContext } from './delivery.pricing';
+import {
+  DeliveryPricingCalculation,
+  DeliveryPricingContext,
+  IDeliveryPricingSheet,
+} from './delivery.pricing';
 import { Order } from './orders';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderPosition } from './orders.positions';
@@ -132,6 +136,11 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   ) => Promise<Array<DeliveryProvider>>;
 
   providerExists: (query: { deliveryProviderId: string }) => Promise<boolean>;
+
+  pricingSheet: (params: {
+    calculation: Array<DeliveryPricingCalculation>;
+    currency: string;
+  }) => IDeliveryPricingSheet;
 
   // Delivery adapter
   findInterface: (params: DeliveryProvider) => IDeliveryAdapter;

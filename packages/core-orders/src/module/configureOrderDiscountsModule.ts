@@ -43,6 +43,7 @@ export const configureOrderDiscountsModule = ({
       orderId: orderDiscount.orderId,
     });
     const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
+    if (!Adapter) return null;
     const adapter = Adapter.actions({
       context: { order, orderDiscount, ...requestContext },
     });

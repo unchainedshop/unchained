@@ -6,7 +6,7 @@ import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 import { OrderDeliveryStatus } from '../db/OrderDeliveryStatus';
-import { OrderPricingSheet } from '../director/OrderPricingSheet';
+import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
@@ -67,10 +67,15 @@ export const configureOrderDeliveriesModule = ({
     },
 
     // Transformations
-    discounts: (orderDelivery, { order, orderDiscount }, { modules }) => {
+    discounts: (orderDelivery, { order, orderDiscount }, context) => {
+      const { modules } = context;
       if (!orderDelivery) return [];
 
-      const pricingSheet = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
+      const pricingSheet = modules.orders.deliveries.pricingSheet(
+        orderDelivery,
+        order.currency,
+        context,
+      );
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         delivery: orderDelivery,
@@ -97,8 +102,8 @@ export const configureOrderDeliveriesModule = ({
 
     normalizedStatus,
 
-    pricingSheet: (orderDelivery, currency) => {
-      return OrderPricingSheet({
+    pricingSheet: (orderDelivery, currency, { modules }) => {
+      return modules.delivery.pricingSheet({
         calculation: orderDelivery.calculation,
         currency,
       });

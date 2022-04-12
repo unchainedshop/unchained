@@ -122,15 +122,13 @@ export const configureOrdersModule = async ({
     return Orders.findOne(selector, {});
   };
 
-  const updateDiscounts = async (orderId: string, requestContext: Context) => {
+  const updateDiscounts = async (order: Order, requestContext: Context) => {
     const { modules } = requestContext;
-    const selector = generateDbFilterById(orderId);
-    const order = await Orders.findOne(selector, {});
 
     // 1. go through existing order-discounts and check if discount still valid,
     // those who are not valid anymore should get removed
     const discounts = await modules.orders.discounts.findOrderDiscounts({
-      orderId,
+      orderId: order._id,
     });
 
     await Promise.all(
@@ -145,7 +143,7 @@ export const configureOrdersModule = async ({
 
     // 2. run auto-system discount
     const cleanedDiscounts = await modules.orders.discounts.findOrderDiscounts({
-      orderId,
+      orderId: order._id,
     });
 
     const currentDiscountKeys = cleanedDiscounts.map(({ discountKey }) => discountKey);
@@ -159,7 +157,7 @@ export const configureOrdersModule = async ({
         .map((discountKey) =>
           modules.orders.discounts.create(
             {
-              orderId,
+              orderId: order._id,
               discountKey,
               trigger: OrderDiscountTrigger.SYSTEM,
             },
@@ -169,11 +167,10 @@ export const configureOrdersModule = async ({
     );
   };
 
-  const initProviders = async (orderId: string, requestContext: Context) => {
+  const initProviders = async (order: Order, requestContext: Context) => {
     const { modules } = requestContext;
 
-    const selector = generateDbFilterById(orderId);
-    let updatedOrder = (await Orders.findOne(selector, {})) as Order;
+    let updatedOrder = order;
 
     // Init delivery provider
     const supportedDeliveryProviders = await modules.delivery.findSupported(
@@ -194,7 +191,7 @@ export const configureOrdersModule = async ({
 
     if (supportedDeliveryProviders.length > 0 && !isAlreadyInitializedWithSupportedDeliveryProvider) {
       updatedOrder = await modules.orders.setDeliveryProvider(
-        orderId,
+        updatedOrder._id,
         supportedDeliveryProviders[0]._id,
         requestContext,
       );
@@ -238,14 +235,14 @@ export const configureOrdersModule = async ({
 
         if (foundSupportedPreferredProvider) {
           await modules.orders.setPaymentProvider(
-            orderId,
+            updatedOrder._id,
             foundSupportedPreferredProvider._id,
             requestContext,
           );
         }
       }
       updatedOrder = await modules.orders.setPaymentProvider(
-        orderId,
+        updatedOrder._id,
         supportedPaymentProviders[0]._id,
         requestContext,
       );
@@ -256,9 +253,15 @@ export const configureOrdersModule = async ({
   const updateCalculation: OrdersModule['updateCalculation'] = async (orderId, requestContext) => {
     const { modules } = requestContext;
 
-    await updateDiscounts(orderId, requestContext);
+    const selector = generateDbFilterById(orderId);
+    let order = (await Orders.findOne(selector, {})) as Order;
 
-    const order = await initProviders(orderId, requestContext);
+    // Don't recalculate orders, only carts
+    if (order.status !== null) return order;
+
+    await updateDiscounts(order, requestContext);
+
+    order = await initProviders(order, requestContext);
 
     let orderPositions = (await findOrderPositions(order)) as OrderPosition[];
     orderPositions = await Promise.all(
@@ -291,8 +294,6 @@ export const configureOrdersModule = async ({
     );
 
     const calculation = await pricing.calculate();
-
-    const selector = generateDbFilterById(orderId);
 
     await Orders.updateOne(selector, {
       $set: {

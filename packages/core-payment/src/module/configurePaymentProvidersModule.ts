@@ -9,6 +9,7 @@ import {
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { PaymentPricingDirector } from '../director/PaymentPricingDirector';
+import { PaymentPricingSheet } from '../director/PaymentPricingSheet';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema';
 import { PaymentDirector } from '../director/PaymentDirector';
 import { paymentSettings } from '../payment-settings';
@@ -89,6 +90,10 @@ export const configurePaymentProvidersModule = (
         label: Adapter.label,
         version: Adapter.version,
       };
+    },
+
+    pricingSheet: (params) => {
+      return PaymentPricingSheet(params);
     },
 
     findInterfaces: ({ type }) => {

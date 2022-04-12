@@ -10,6 +10,7 @@ import {
 import { PaymentProvider } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection';
 import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema';
 import { deliverySettings } from '../delivery-settings';
@@ -151,6 +152,10 @@ export const configureDeliveryModule = async ({
     send: async (deliveryProviderId, deliveryContext, requestContext) => {
       const adapter = await getDeliveryAdapter(deliveryProviderId, deliveryContext, requestContext);
       return adapter.send();
+    },
+
+    pricingSheet: (params) => {
+      return DeliveryPricingSheet(params);
     },
 
     // Mutations

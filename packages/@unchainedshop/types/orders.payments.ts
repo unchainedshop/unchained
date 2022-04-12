@@ -3,6 +3,7 @@ import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
 import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
+import { IPaymentPricingSheet } from './payments.pricing';
 
 export enum OrderPaymentStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -54,7 +55,11 @@ export type OrderPaymentsModule = {
   isBlockingOrderConfirmation: (orderPayment: OrderPayment, requestContext: Context) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderPayment: OrderPayment) => boolean;
   normalizedStatus: (orderPayment: OrderPayment) => string;
-  pricingSheet: (orderPayment: OrderPayment, currency: string) => IOrderPricingSheet;
+  pricingSheet: (
+    orderPayment: OrderPayment,
+    currency: string,
+    requestContext: Context,
+  ) => IPaymentPricingSheet;
 
   // Mutations
   create: (doc: OrderPayment, userId?: string) => Promise<OrderPayment>;

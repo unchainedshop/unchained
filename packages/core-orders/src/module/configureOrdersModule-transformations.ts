@@ -69,7 +69,7 @@ export const configureOrderModuleTransformations = ({
         orderDeliveryId: order.deliveryId,
       });
       const orderDeliveryDiscountSum = modules.orders.deliveries
-        .pricingSheet(orderDelivery, order.currency)
+        .pricingSheet(orderDelivery, order.currency, requestContext)
         .discountSum(orderDiscountId);
 
       // Payment discounts
@@ -77,7 +77,7 @@ export const configureOrderModuleTransformations = ({
         orderPaymentId: order.paymentId,
       });
       const orderPaymentDiscountSum = modules.orders.payments
-        .pricingSheet(orderPayment, order.currency)
+        .pricingSheet(orderPayment, order.currency, requestContext)
         .discountSum(orderDiscountId);
 
       // Position discounts

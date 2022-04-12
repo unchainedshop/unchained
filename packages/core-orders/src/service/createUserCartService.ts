@@ -33,6 +33,6 @@ export const createUserCartService: CreateUserCartService = async (
     user._id,
   );
 
-  await modules.orders.initProviders(order._id, requestContext);
+  await modules.orders.initProviders(order, requestContext);
   return order;
 };

@@ -1,5 +1,6 @@
 import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
+import { IDeliveryPricingSheet } from './delivery.pricing';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
 import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
@@ -37,7 +38,11 @@ export type OrderDeliveriesModule = {
   ) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
   normalizedStatus: (orderDelivery: OrderDelivery) => string;
-  pricingSheet: (orderDelivery: OrderDelivery, currency: string) => IOrderPricingSheet;
+  pricingSheet: (
+    orderDelivery: OrderDelivery,
+    currency: string,
+    requestContext: Context,
+  ) => IDeliveryPricingSheet;
 
   // Mutations
   create: (doc: OrderDelivery, userId?: string) => Promise<OrderDelivery>;

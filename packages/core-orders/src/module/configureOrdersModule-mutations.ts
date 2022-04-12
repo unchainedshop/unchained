@@ -79,7 +79,7 @@ export const configureOrderModuleMutations = ({
         status: { $eq: null },
       }).toArray();
 
-      await Promise.all(orders.map((order) => initProviders(order._id, requestContext)));
+      await Promise.all(orders.map((order) => initProviders(order, requestContext)));
     },
 
     setDeliveryProvider: async (orderId, deliveryProviderId, requestContext) => {

@@ -10,7 +10,11 @@ import {
 } from './common';
 import { Order } from './orders';
 import { OrderPayment } from './orders.payments';
-import { PaymentPricingCalculation, PaymentPricingContext } from './payments.pricing';
+import {
+  IPaymentPricingSheet,
+  PaymentPricingCalculation,
+  PaymentPricingContext,
+} from './payments.pricing';
 import { User } from './user';
 
 export enum PaymentProviderType {
@@ -144,6 +148,11 @@ export type PaymentModule = {
 
     findInterface: (query: PaymentProvider) => PaymentInterface;
     findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
+
+    pricingSheet: (params: {
+      calculation: Array<PaymentPricingCalculation>;
+      currency: string;
+    }) => IPaymentPricingSheet;
 
     configurationError: (
       paymentProvider: PaymentProvider,

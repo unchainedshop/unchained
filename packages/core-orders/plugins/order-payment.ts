@@ -24,7 +24,11 @@ const OrderPayment: IOrderPricingAdapter = {
         // just add tax + net price to order pricing
         if (!orderPayment) return null;
 
-        const pricing = modules.orders.payments.pricingSheet(orderPayment, order.currency);
+        const pricing = modules.orders.payments.pricingSheet(
+          orderPayment,
+          order.currency,
+          params.context,
+        );
         const tax = pricing.taxSum();
         const paymentFees = pricing.gross();
 

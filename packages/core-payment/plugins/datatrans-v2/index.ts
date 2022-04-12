@@ -80,25 +80,25 @@ const Datatrans: IPaymentAdapter = {
         commission: number;
       }[]
     > => {
-      const { order } = params.paymentContext;
+      const { order, orderPayment } = params.paymentContext;
 
+      const pricingForOrderPayment = modules.orders.payments.pricingSheet(
+        orderPayment,
+        order.currency,
+        params.context,
+      );
       const pricing = modules.orders.pricingSheet(order);
       const { amount: total } = pricing.total({ useNetPrice: false });
-      const orderDiscounts = await modules.orders.discounts.findOrderDiscounts({ orderId: order._id });
 
       return Promise.all(
         params.config
           .filter((item) => item.key === 'marketplaceSplit')
           .map((item) => {
-            const [subMerchantId, discountKey, sharePercentage] = item.value
+            const [subMerchantId, staticDiscountId, sharePercentage] = item.value
               .split(';')
               .map((f) => f.trim());
 
-            const orderDiscount = orderDiscounts.find(
-              (discount) => discount.discountKey === discountKey,
-            );
-
-            const discountSum = pricing.discountSum(orderDiscount._id) * -1;
+            const discountSum = pricingForOrderPayment.discountSum(staticDiscountId) * -1;
             const sumToSplit = total - discountSum;
             const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;
             const amount = Math.round(sumToSplit * shareFactor);
@@ -248,7 +248,6 @@ const Datatrans: IPaymentAdapter = {
         const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'hex').toString(
           'base64',
         );
-
         const refno2 = userId;
         const price: { amount?: number; currency?: string } = order
           ? roundedAmountFromOrder(order, params.context)

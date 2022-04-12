@@ -89,11 +89,13 @@ const OrderDiscount: IOrderPricingAdapter = {
         );
 
         const deliveryShare = resolveRatioAndTaxDivisorForPricingSheet(
-          orderDelivery && modules.orders.deliveries.pricingSheet(orderDelivery, order.currency),
+          orderDelivery &&
+            modules.orders.deliveries.pricingSheet(orderDelivery, order.currency, params.context),
           totalAmountOfPaymentAndDelivery,
         );
         const paymentShare = resolveRatioAndTaxDivisorForPricingSheet(
-          orderPayment && modules.orders.payments.pricingSheet(orderPayment, order.currency),
+          orderPayment &&
+            modules.orders.payments.pricingSheet(orderPayment, order.currency, params.context),
           totalAmountOfPaymentAndDelivery,
         );
 

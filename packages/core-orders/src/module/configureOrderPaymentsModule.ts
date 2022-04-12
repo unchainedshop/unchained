@@ -108,11 +108,10 @@ export const configureOrderPaymentsModule = ({
       return OrderPayments.countDocuments(selector, options);
     },
     // Transformations
-    discounts: (orderPayment, { order, orderDiscount }, { modules }) => {
+    discounts: (orderPayment, { order, orderDiscount }, context) => {
+      const { modules } = context;
       if (!orderPayment) return [];
-
-      const pricingSheet = modules.orders.payments.pricingSheet(orderPayment, order.currency);
-
+      const pricingSheet = modules.orders.payments.pricingSheet(orderPayment, order.currency, context);
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
         payment: orderPayment,
         ...discount,
@@ -139,8 +138,9 @@ export const configureOrderPaymentsModule = ({
     },
 
     normalizedStatus,
-    pricingSheet: (orderPayment, currency) => {
-      return OrderPricingSheet({
+
+    pricingSheet: (orderPayment, currency, { modules }) => {
+      return modules.payment.paymentProviders.pricingSheet({
         calculation: orderPayment.calculation,
         currency,
       });

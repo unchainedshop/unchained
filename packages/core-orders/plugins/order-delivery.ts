@@ -23,7 +23,11 @@ const OrderDelivery: IOrderPricingAdapter = {
       calculate: async () => {
         // just add tax + net price to order pricing
         if (!orderDelivery) return null;
-        const pricing = modules.orders.deliveries.pricingSheet(orderDelivery, order.currency);
+        const pricing = modules.orders.deliveries.pricingSheet(
+          orderDelivery,
+          order.currency,
+          params.context,
+        );
         const tax = pricing.taxSum();
         const shipping = pricing.gross();
 
