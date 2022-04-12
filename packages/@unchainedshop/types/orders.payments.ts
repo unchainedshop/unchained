@@ -2,7 +2,7 @@ import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
-import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
+import { OrderPrice, OrderPricingDiscount } from './orders.pricing';
 import { IPaymentPricingSheet } from './payments.pricing';
 
 export enum OrderPaymentStatus {

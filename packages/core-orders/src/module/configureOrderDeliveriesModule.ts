@@ -6,7 +6,6 @@ import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 import { OrderDeliveryStatus } from '../db/OrderDeliveryStatus';
-import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 

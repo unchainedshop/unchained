@@ -3,7 +3,7 @@ import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { IDeliveryPricingSheet } from './delivery.pricing';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
-import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
+import { OrderPrice, OrderPricingDiscount } from './orders.pricing';
 
 export enum OrderDeliveryStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
