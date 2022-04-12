@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-payment',
-  version: '1.0.0-rc.19',
+  version: '1.0.0-rc.19.1',
   summary: 'Unchained Engine Core: Payment',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
