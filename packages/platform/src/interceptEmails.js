@@ -36,10 +36,11 @@ export const interceptEmails = () => {
   mailman.send = function mailmanSend(options) {
     const filename = `${Date.now()}.html`;
     const content = `
-      <b>from:&nbsp</b>${options.from}<br/>
-      <b>to:&nbsp;</b>${options.to}<br/>
-      <b>cc:&nbsp;</b>${options.cc}<br/>
-      <b>bcc:&nbsp;</b>${options.bcc}<br/>
+      <b>From:&nbsp</b>${options.from}<br/>
+      <b>To:&nbsp;</b>${options.to}<br/>
+      <b>Cc:&nbsp;</b>${options.cc}<br/>
+      <b>Bcc:&nbsp;</b>${options.bcc}<br/>
+      <b>Reply-To:&nbsp;</b>${options.replyTo}<br/>
       <br/>
       <b>subject:&nbsp;</b>${options.subject}<br/>
       <b>attachments:&nbsp;</b>${(options.attachments || [])
