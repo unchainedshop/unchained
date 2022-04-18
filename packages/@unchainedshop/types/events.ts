@@ -37,6 +37,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
       limit?: number;
       offset?: number;
       sort?: Sort;
+      queryString?: string;
     },
     options?: FindOptions,
   ) => Promise<Array<Event>>;
