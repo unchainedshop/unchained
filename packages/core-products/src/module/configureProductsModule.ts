@@ -49,7 +49,7 @@ const buildFindSelector = ({
 }: ProductQuery) => {
   const selector: Query = productSelector ? { ...productSelector, ...query } : query;
 
-  if (productIds.length) {
+  if (productIds?.length) {
     selector._id = { $in: productIds };
   }
 
