@@ -10,9 +10,11 @@ export default async function workers(
     status,
     selectTypes,
     created,
+    queryString,
   }: {
     limit?: number;
     offset?: number;
+    queryString?: string;
     status?: Array<WorkStatus>;
     selectTypes?: Array<string>;
     created?: {
@@ -32,5 +34,6 @@ export default async function workers(
     created,
     skip: offset,
     limit,
+    queryString,
   });
 }

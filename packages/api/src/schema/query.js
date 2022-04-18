@@ -361,6 +361,7 @@ export default [
         status: [WorkStatus!]
         selectTypes: [WorkType!]
         created: DateFilterInput
+        queryString: String
       ): [Work!]!
 
       """

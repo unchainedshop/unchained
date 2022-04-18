@@ -23,12 +23,14 @@ const buildQuerySelector = ({
   selectTypes,
   status,
   workId,
+  queryString,
   ...rest
 }: Query & {
   created?: { end?: Date; start?: Date };
   selectTypes?: Array<string>;
   status?: Array<WorkStatus>;
   workId?: string;
+  queryString?: string;
 }) => {
   const filterMap = {
     [WorkStatus.DELETED]: { deleted: { $exists: true } },
@@ -71,6 +73,7 @@ const buildQuerySelector = ({
   if (workId) {
     query = generateDbFilterById(workId, query);
   }
+  if (queryString) query.$text = { $search: queryString };
 
   return { ...query, ...rest };
 };
