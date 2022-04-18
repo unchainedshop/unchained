@@ -17,6 +17,7 @@ export interface LanguagesModule extends ModuleMutations<Language> {
     params: LanguageQuery & {
       limit?: number;
       offset?: number;
+      queryString?: string;
     },
     options?: FindOptions,
   ) => Promise<Array<Language>>;

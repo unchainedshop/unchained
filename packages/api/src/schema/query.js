@@ -81,7 +81,12 @@ export default [
       """
       Get all languages
       """
-      languages(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Language]!
+      languages(
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean = false
+        queryString: String
+      ): [Language]!
 
       """
       Get a specific language
