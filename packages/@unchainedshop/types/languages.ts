@@ -9,6 +9,7 @@ export type Language = {
 
 type LanguageQuery = {
   includeInactive?: boolean;
+  queryString?: string;
 };
 
 export interface LanguagesModule extends ModuleMutations<Language> {
@@ -17,7 +18,6 @@ export interface LanguagesModule extends ModuleMutations<Language> {
     params: LanguageQuery & {
       limit?: number;
       offset?: number;
-      queryString?: string;
     },
     options?: FindOptions,
   ) => Promise<Array<Language>>;

@@ -96,7 +96,12 @@ export default [
       """
       Get all countries
       """
-      countries(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Country!]!
+      countries(
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean = false
+        queryString: String
+      ): [Country!]!
 
       """
       Returns total number of countries

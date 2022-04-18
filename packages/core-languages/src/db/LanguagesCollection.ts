@@ -7,7 +7,16 @@ export const LanguagesCollection = async (db: Db) => {
 
   await buildDbIndexes<Language>(Languages, [
     { index: { isoCode: 1 }, options: { unique: true } },
-    { index: { isoCode: 'text' } },
+    {
+      index: { isoCode: 'text', _id: 'text' },
+      options: {
+        weights: {
+          _id: 8,
+          isoCode: 6,
+        },
+        name: 'order_fulltext_search',
+      },
+    },
   ]);
 
   return Languages;

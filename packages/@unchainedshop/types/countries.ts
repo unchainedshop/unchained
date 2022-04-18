@@ -11,6 +11,7 @@ export type Country = {
 
 type CountryQuery = {
   includeInactive?: boolean;
+  queryString?: string;
 };
 export type CountriesModule = ModuleMutations<Country> & {
   findCountry: (params: { countryId?: string; isoCode?: string }) => Promise<Country>;
