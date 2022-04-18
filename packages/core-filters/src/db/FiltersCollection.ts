@@ -12,6 +12,14 @@ export const FiltersCollection = async (db: Db) => {
     { index: { key: 1 }, options: { unique: true } },
     {
       index: { _id: 'text', key: 'text', options: 'text' },
+      options: {
+        weights: {
+          _id: 8,
+          key: 6,
+          options: 5,
+        },
+        name: 'filters_fulltext_search',
+      },
     },
   ]);
 

@@ -34,7 +34,16 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, assortmentId: 1 } },
-    { index: { title: 'text', subtitle: 'text' } },
+    {
+      index: { title: 'text', subtitle: 'text' },
+      options: {
+        weights: {
+          title: 8,
+          subtitle: 6,
+        },
+        name: 'assortments_fulltext_search',
+      },
+    },
   ]);
 
   // AssortmentProducts indexes

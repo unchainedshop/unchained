@@ -24,6 +24,8 @@ export const OrdersCollection = async (db: Db) => {
           _id: 8,
           userId: 3,
           orderNumber: 6,
+          'contact.telNumber': 5,
+          'contact.emailAddress': 4,
           status: 1,
         },
         name: 'order_fulltext_search',
