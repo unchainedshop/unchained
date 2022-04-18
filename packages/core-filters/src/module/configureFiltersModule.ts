@@ -15,9 +15,10 @@ import { filtersSettings } from '../filters-settings';
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
-const buildFindSelector = ({ includeInactive = false }) => {
+const buildFindSelector = ({ includeInactive = false, queryString = '' }) => {
   const selector: Query = {};
   if (!includeInactive) selector.isActive = true;
+  if (queryString) selector.$text = { $search: queryString };
   return selector;
 };
 

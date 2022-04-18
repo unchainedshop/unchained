@@ -254,7 +254,12 @@ export default [
       """
       Get all filters
       """
-      filters(limit: Int = 10, offset: Int = 0, includeInactive: Boolean = false): [Filter!]!
+      filters(
+        limit: Int = 10
+        offset: Int = 0
+        includeInactive: Boolean = false
+        queryString: String
+      ): [Filter!]!
 
       """
       Get a specific filter by ID

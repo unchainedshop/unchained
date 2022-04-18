@@ -10,6 +10,9 @@ export const FiltersCollection = async (db: Db) => {
   await buildDbIndexes(Filters, [
     { index: { isActive: 1 } },
     { index: { key: 1 }, options: { unique: true } },
+    {
+      index: { _id: 'text', key: 'text', options: 'text' },
+    },
   ]);
 
   // FilterTexts indexes
