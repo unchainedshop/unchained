@@ -309,7 +309,7 @@ export default [
       """
       Get all quotations
       """
-      quotations(limit: Int = 10, offset: Int = 0): [Quotation!]!
+      quotations(limit: Int = 10, offset: Int = 0, queryString: String): [Quotation!]!
 
       """
       Get a specific quotation by ID

@@ -26,6 +26,12 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { sequence: 1 } },
     { index: { slugs: 1 } },
     { index: { tags: 1 } },
+    {
+      index: { slugs: 'text' },
+      options: {
+        name: 'assortments_fulltext_search',
+      },
+    },
   ]);
 
   // AssortmentTexts indexes
@@ -41,7 +47,7 @@ export const AssortmentsCollection = async (db: Db) => {
           title: 8,
           subtitle: 6,
         },
-        name: 'assortments_fulltext_search',
+        name: 'assortments_texts_fulltext_search',
       },
     },
   ]);
