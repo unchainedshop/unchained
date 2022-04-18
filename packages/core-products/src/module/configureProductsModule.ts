@@ -44,11 +44,12 @@ const buildFindSelector = ({
   includeDrafts = false,
   productIds,
   productSelector,
+  queryString,
   ...query
 }: ProductQuery) => {
   const selector: Query = productSelector ? { ...productSelector, ...query } : query;
 
-  if (productIds) {
+  if (productIds.length) {
     selector._id = { $in: productIds };
   }
 
@@ -62,6 +63,10 @@ const buildFindSelector = ({
     } else {
       selector.tags = tags;
     }
+  }
+
+  if (queryString) {
+    selector.$texts = { $search: queryString };
   }
 
   if (!includeDrafts) {
@@ -204,6 +209,7 @@ export const configureProductsModule = async ({
         const productIds = await productTexts.searchTexts({ searchText: queryString });
         filter.productIds = [...(query.productIds || []), ...productIds];
       }
+
       const products = Products.find(buildFindSelector(filter), options);
       return products.toArray();
     },
