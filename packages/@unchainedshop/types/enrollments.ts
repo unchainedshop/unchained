@@ -74,6 +74,7 @@ export interface EnrollmentQueries {
     userId?: string;
     limit?: number;
     offset?: number;
+    queryString?: string;
   }) => Promise<Array<Enrollment>>;
   count: () => Promise<number>;
 }

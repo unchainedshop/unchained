@@ -309,7 +309,7 @@ export default [
       """
       Get all enrollments
       """
-      enrollments(limit: Int = 10, offset: Int = 0): [Enrollment!]!
+      enrollments(limit: Int = 10, offset: Int = 0, queryString: String): [Enrollment!]!
 
       """
       Get a specific quotation by ID
