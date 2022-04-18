@@ -11,6 +11,7 @@ export type Currency = {
 type CurrencyQuery = {
   includeInactive?: boolean;
   contractAddress?: string;
+  queryString?: string;
 };
 export type CurrenciesModule = ModuleMutations<Currency> & {
   findCurrency: (params: { currencyId?: string; isoCode?: string }) => Promise<Currency>;

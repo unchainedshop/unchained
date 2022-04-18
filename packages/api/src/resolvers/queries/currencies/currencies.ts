@@ -3,7 +3,12 @@ import { Root, Context } from '@unchainedshop/types/api';
 
 export default async function currencies(
   root: Root,
-  { limit, offset, includeInactive }: { limit: number; offset: number; includeInactive: boolean },
+  {
+    limit,
+    offset,
+    includeInactive,
+    queryString,
+  }: { limit: number; offset: number; includeInactive: boolean; queryString: string },
   { modules, userId }: Context,
 ) {
   log(`query currencies: ${limit} ${offset} ${includeInactive ? 'includeInactive' : ''}`, { userId });
@@ -11,5 +16,6 @@ export default async function currencies(
     limit,
     offset,
     includeInactive,
+    queryString,
   });
 }

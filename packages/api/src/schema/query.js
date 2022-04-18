@@ -121,7 +121,12 @@ export default [
       """
       Get all currencies
       """
-      currencies(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Currency!]!
+      currencies(
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean = false
+        queryString: String
+      ): [Currency!]!
 
       """
       Get a specific currency by ID

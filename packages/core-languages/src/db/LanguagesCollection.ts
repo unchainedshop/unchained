@@ -14,7 +14,7 @@ export const LanguagesCollection = async (db: Db) => {
           _id: 8,
           isoCode: 6,
         },
-        name: 'order_fulltext_search',
+        name: 'languages_fulltext_search',
       },
     },
   ]);
