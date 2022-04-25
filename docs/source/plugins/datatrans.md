@@ -46,6 +46,8 @@ When adding a datatrans payment provider either through the Admin UI or with the
 | `settleInUnchained` | 1             | "1", ""                                                        |
 | `marketplaceSplit`  |               | "SUBMERCHANTID;DISCOUNT_ADAPTER_KEY;OPTIONAL_SHARE_PERCENTAGE" |
 
+If you don't set the merchantId on the provider, Unchained tries to read it from the environment variable DATATRANS_MERCHANT_ID
+
 Unchained Engine supports Datatrans Marketplace Integration:
 
 You can add multiple `marketplaceSplit` entries to configure marketplace payments. See https://docs.datatrans.ch/docs/marketplace-payments#section-settlement-splits for more information. `settleInUnchained` has to be 1 if you want to use marketplace features because split happens at settlement.

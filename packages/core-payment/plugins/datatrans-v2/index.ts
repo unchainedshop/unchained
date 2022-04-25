@@ -17,7 +17,7 @@ import roundedAmountFromOrder from './roundedAmountFromOrder';
 const logger = createLogger('unchained:core-payment:datatrans');
 
 // v2
-const { DATATRANS_SECRET, DATATRANS_SIGN_KEY, DATATRANS_API_ENDPOINT } = process.env;
+const { DATATRANS_SECRET, DATATRANS_SIGN_KEY, DATATRANS_API_ENDPOINT, DATATRANS_MERCHANT_ID } = process.env;
 
 const newDatatransError = ({ code, message }: { code: string; message: string }) => {
   const error = new Error(message);
@@ -54,7 +54,7 @@ const Datatrans: IPaymentAdapter = {
     const { modules } = params.context;
 
     const getMerchantId = (): string | undefined => {
-      return params.config.find((item) => item.key === 'merchantId')?.value;
+      return params.config.find((item) => item.key === 'merchantId')?.value || DATATRANS_MERCHANT_ID;
     };
 
     const api = () => {
