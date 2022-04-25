@@ -128,7 +128,7 @@ export const configureUsersModule = async ({
         $addToSet: { roles: { $each: roles } },
       });
 
-      const user = await Users.findOne(selector);
+      const user = await Users.findOne(selector, {});
       emit('USER_ADD_ROLES', {
         user: {
           ...user,
