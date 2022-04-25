@@ -129,6 +129,16 @@ export const configureDeliveryModule = async ({
       );
     },
 
+    determineDefault: async (deliveryProviders, deliveryContext, requestContext) => {
+      return deliverySettings.determineDefaultProvider(
+        {
+          providers: deliveryProviders,
+          ...deliveryContext,
+        },
+        requestContext,
+      );
+    },
+
     configurationError: async (deliveryProvider, requestContext) => {
       const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
       return director.configurationError();

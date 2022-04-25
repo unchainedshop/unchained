@@ -21,3 +21,21 @@ const options = {
   }
 };
 ```
+
+
+Select default provider:
+
+```
+const options = {
+  modules: {
+    payment: {
+      determineDefaultProvider: ({ order, providers, paymentCredentials }) => {
+        return providers?.find(({ _id }) => _id === "this-id-always-default");
+        return null; // Force it to be unselected by returning null
+      },
+    }
+  }
+};
+```
+
+By default the default provider is defined as first in list of providers matching credentials, if no credentials: first in list of providers (transformed by filterSupportedProviders).

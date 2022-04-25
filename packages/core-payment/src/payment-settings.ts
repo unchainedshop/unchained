@@ -1,4 +1,9 @@
-import { PaymentProvider, PaymentSettings, FilterProviders } from '@unchainedshop/types/payments';
+import {
+  PaymentProvider,
+  PaymentSettings,
+  FilterProviders,
+  DetermineDefaultProvider,
+} from '@unchainedshop/types/payments';
 import { createLogger } from 'meteor/unchained:logger';
 
 const logger = createLogger('unchained:core-payment');
@@ -11,6 +16,16 @@ const allProviders: FilterProviders = async ({ providers }) => {
   return providers.sort(sortByCreationDate);
 };
 
+const firstProviderIsDefault: DetermineDefaultProvider = async ({ providers, paymentCredentials }) => {
+  const foundSupportedPreferredProvider = providers.find((supportedPaymentProvider) => {
+    return paymentCredentials.some((paymentCredential) => {
+      return supportedPaymentProvider._id === paymentCredential.paymentProviderId;
+    });
+  });
+  if (foundSupportedPreferredProvider) return foundSupportedPreferredProvider;
+  return providers?.length > 0 && providers[0];
+};
+
 const defaultFilterSupportedProviders =
   (sortProviders) =>
   async ({ providers }) => {
@@ -19,13 +34,19 @@ const defaultFilterSupportedProviders =
 
 export const paymentSettings: PaymentSettings = {
   filterSupportedProviders: null,
+  determineDefaultProvider: null,
 
-  configureSettings({ sortProviders = undefined, filterSupportedProviders = allProviders } = {}) {
+  configureSettings({
+    sortProviders = undefined,
+    filterSupportedProviders = allProviders,
+    determineDefaultProvider = firstProviderIsDefault,
+  } = {}) {
     if (sortProviders) {
       logger.warn('sortProviders is deprecated, please specifc filterSupportedProviders instead');
-      this.filterSupportedProviders = defaultFilterSupportedProviders(sortProviders);
+      paymentSettings.filterSupportedProviders = defaultFilterSupportedProviders(sortProviders);
     } else {
-      this.filterSupportedProviders = filterSupportedProviders;
+      paymentSettings.filterSupportedProviders = filterSupportedProviders;
     }
+    paymentSettings.determineDefaultProvider = determineDefaultProvider;
   },
 };

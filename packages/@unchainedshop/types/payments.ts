@@ -145,6 +145,11 @@ export type PaymentModule = {
 
     // Payment adapter
     findSupported: (query: { order: Order }, requestContext: Context) => Promise<Array<PaymentProvider>>;
+    determineDefault: (
+      paymentProviders: Array<PaymentProvider>,
+      params: { order: Order; paymentCredentials?: Array<PaymentCredentials> },
+      requestContext: Context,
+    ) => Promise<PaymentProvider>;
 
     findInterface: (query: PaymentProvider) => PaymentInterface;
     findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
@@ -287,13 +292,23 @@ export type FilterProviders = (
   context: Context,
 ) => Promise<Array<PaymentProvider>>;
 
+export type DetermineDefaultProvider = (
+  params: {
+    providers: Array<PaymentProvider>;
+    order: Order;
+    paymentCredentials?: Array<PaymentCredentials>;
+  },
+  context: Context,
+) => Promise<PaymentProvider>;
 export interface PaymentSettingsOptions {
   sortProviders?: (a: PaymentProvider, b: PaymentProvider) => number;
   filterSupportedProviders?: FilterProviders;
+  determineDefaultProvider?: DetermineDefaultProvider;
 }
 
 export interface PaymentSettings {
   filterSupportedProviders: FilterProviders;
+  determineDefaultProvider: DetermineDefaultProvider;
   configureSettings: (options?: PaymentSettingsOptions) => void;
 }
 

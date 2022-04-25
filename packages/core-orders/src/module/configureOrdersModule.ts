@@ -190,11 +190,18 @@ export const configureOrdersModule = async ({
     );
 
     if (supportedDeliveryProviders.length > 0 && !isAlreadyInitializedWithSupportedDeliveryProvider) {
-      updatedOrder = await modules.orders.setDeliveryProvider(
-        updatedOrder._id,
-        supportedDeliveryProviders[0]._id,
+      const defaultOrderDeliveryProvider = await modules.delivery.determineDefault(
+        supportedDeliveryProviders,
+        { order: updatedOrder },
         requestContext,
       );
+      if (defaultOrderDeliveryProvider) {
+        updatedOrder = await modules.orders.setDeliveryProvider(
+          updatedOrder._id,
+          defaultOrderDeliveryProvider._id,
+          requestContext,
+        );
+      }
     }
 
     // Init payment provider
@@ -224,28 +231,19 @@ export const configureOrdersModule = async ({
         },
       );
 
-      if (paymentCredentials?.length) {
-        const foundSupportedPreferredProvider = supportedPaymentProviders.find(
-          (supportedPaymentProvider) => {
-            return paymentCredentials.some((paymentCredential) => {
-              return supportedPaymentProvider._id === paymentCredential.paymentProviderId;
-            });
-          },
-        );
-
-        if (foundSupportedPreferredProvider) {
-          await modules.orders.setPaymentProvider(
-            updatedOrder._id,
-            foundSupportedPreferredProvider._id,
-            requestContext,
-          );
-        }
-      }
-      updatedOrder = await modules.orders.setPaymentProvider(
-        updatedOrder._id,
-        supportedPaymentProviders[0]._id,
+      const defaultOrderPaymentProvider = await modules.payment.paymentProviders.determineDefault(
+        supportedPaymentProviders,
+        { order: updatedOrder, paymentCredentials },
         requestContext,
       );
+
+      if (defaultOrderPaymentProvider) {
+        updatedOrder = await modules.orders.setPaymentProvider(
+          updatedOrder._id,
+          defaultOrderPaymentProvider._id,
+          requestContext,
+        );
+      }
     }
     return updatedOrder;
   };

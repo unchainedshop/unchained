@@ -129,6 +129,16 @@ export const configurePaymentProvidersModule = (
       );
     },
 
+    determineDefault: async (paymentProviders, deliveryContext, requestContext) => {
+      return paymentSettings.determineDefaultProvider(
+        {
+          providers: paymentProviders,
+          ...deliveryContext,
+        },
+        requestContext,
+      );
+    },
+
     // Payment Adapter
 
     configurationError: async (paymentProvider, requestContext) => {

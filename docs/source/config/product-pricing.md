@@ -1,5 +1,5 @@
 ---
-title: "Module: Product Pricing"
+title: 'Module: Product Pricing'
 description: Configure the product price
 ---
 
@@ -36,8 +36,8 @@ class ProductPriceRound extends ProductPricingAdapter {
 
     if (calculation?.length) {
       const [productPrice] = calculation;
-      this.resetCalculation();
-      this.result.addItem({
+      pricingAdapter.resetCalculation();
+      pricingAdapter.resultSheet().addItem({
         amount: roundToNext(productPrice.amount) * quantity,
         isTaxable: productPrice.isTaxable,
         isNetPrice: productPrice.isNetPrice,
@@ -59,9 +59,9 @@ Explanation:
 In the above code sample we created a product price plugin that will round every product price to the next 50th digit.
 few things to note about extending the `ProductPricingAdapter` :
 
-- `key :`  is a unique identifier associated with the specific plugin and two product price adapter can not have an identical value for key
-- `orderIndex :`  determines the order in which a particular product price adapter should be executed. `ProductPricingAdapter`'s are executed in ascending order of there `orderIndex` value so adapters with the smallest value will be executed first. this is very useful when you have pricing business logics that need to be applied in a certain order. eg. discount should be applied to a product before tax is calculated.
-- `isActivatedFor :`  returns boolean value that determine if the plugin is active or not. it is passed an object containing `product` & `currency` of the current execution context. This allows you to activate or deactivate by returning `true` or `false` respectively based on your business rule.
+- `key :` is a unique identifier associated with the specific plugin and two product price adapter can not have an identical value for key
+- `orderIndex :` determines the order in which a particular product price adapter should be executed. `ProductPricingAdapter`'s are executed in ascending order of there `orderIndex` value so adapters with the smallest value will be executed first. this is very useful when you have pricing business logics that need to be applied in a certain order. eg. discount should be applied to a product before tax is calculated.
+- `isActivatedFor :` returns boolean value that determine if the plugin is active or not. it is passed an object containing `product` & `currency` of the current execution context. This allows you to activate or deactivate by returning `true` or `false` respectively based on your business rule.
 - `calculate :` this is the actual function where the manipulation happens. You need to make sure if a `calculation` object exists for this particular product price context before you make any adjustment. Finally call `pricingAdapter.calculate();` after applying your changes so that they can take effect.
 
 Returning `null` from here will stop the execution of any other `ProductPriceAdapter` that may exist in the system so you should always return result of `pricingAdapter.calculate();` call unless you want this behavior.

@@ -1,4 +1,9 @@
-import { DeliveryProvider, DeliverySettings, FilterProviders } from '@unchainedshop/types/delivery';
+import {
+  DeliveryProvider,
+  DeliverySettings,
+  DetermineDefaultProvider,
+  FilterProviders,
+} from '@unchainedshop/types/delivery';
 import { createLogger } from 'meteor/unchained:logger';
 
 const logger = createLogger('unchained:core-delivery');
@@ -11,6 +16,10 @@ const allProviders: FilterProviders = async ({ providers }) => {
   return providers.sort(sortByCreationDate);
 };
 
+const firstProviderIsDefault: DetermineDefaultProvider = async ({ providers }) => {
+  return providers?.length > 0 && providers[0];
+};
+
 const defaultFilterSupportedProviders =
   (sortProviders) =>
   async ({ providers }) => {
@@ -19,13 +28,19 @@ const defaultFilterSupportedProviders =
 
 export const deliverySettings: DeliverySettings = {
   filterSupportedProviders: null,
+  determineDefaultProvider: null,
 
-  configureSettings({ sortProviders = undefined, filterSupportedProviders = allProviders } = {}) {
+  configureSettings({
+    sortProviders = undefined,
+    filterSupportedProviders = allProviders,
+    determineDefaultProvider = firstProviderIsDefault,
+  } = {}) {
     if (sortProviders) {
       logger.warn('sortProviders is deprecated, please specifc filterSupportedProviders instead');
-      this.filterSupportedProviders = defaultFilterSupportedProviders(sortProviders);
+      deliverySettings.filterSupportedProviders = defaultFilterSupportedProviders(sortProviders);
     } else {
-      this.filterSupportedProviders = filterSupportedProviders;
+      deliverySettings.filterSupportedProviders = filterSupportedProviders;
     }
+    deliverySettings.determineDefaultProvider = determineDefaultProvider;
   },
 };

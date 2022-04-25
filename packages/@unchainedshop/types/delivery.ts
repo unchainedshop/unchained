@@ -146,6 +146,11 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   findInterface: (params: DeliveryProvider) => IDeliveryAdapter;
   findInterfaces: (params: { type: DeliveryProviderType }) => Array<DeliveryInterface>;
   findSupported: (params: { order: Order }, requestContext: Context) => Promise<Array<DeliveryProvider>>;
+  determineDefault: (
+    deliveryProviders: Array<DeliveryProvider>,
+    params: { order: Order },
+    requestContext: Context,
+  ) => Promise<DeliveryProvider>;
 
   isActive: (deliveryProvider: DeliveryProvider, requestContext: Context) => Promise<boolean>;
   configurationError: (
@@ -180,12 +185,21 @@ export type FilterProviders = (
   context: Context,
 ) => Promise<Array<DeliveryProvider>>;
 
+export type DetermineDefaultProvider = (
+  params: {
+    providers: Array<DeliveryProvider>;
+    order: Order;
+  },
+  context: Context,
+) => Promise<DeliveryProvider>;
 export interface DeliverySettingsOptions {
   sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;
   filterSupportedProviders?: FilterProviders;
+  determineDefaultProvider?: DetermineDefaultProvider;
 }
 
 export interface DeliverySettings {
   filterSupportedProviders: FilterProviders;
+  determineDefaultProvider: DetermineDefaultProvider;
   configureSettings: (options?: DeliverySettingsOptions) => void;
 }
