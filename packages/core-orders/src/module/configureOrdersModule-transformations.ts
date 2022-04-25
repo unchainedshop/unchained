@@ -68,17 +68,21 @@ export const configureOrderModuleTransformations = ({
       const orderDelivery = await modules.orders.deliveries.findDelivery({
         orderDeliveryId: order.deliveryId,
       });
-      const orderDeliveryDiscountSum = orderDelivery && modules.orders.deliveries
-        .pricingSheet(orderDelivery, order.currency, requestContext)
-        .discountSum(orderDiscountId);
+      const orderDeliveryDiscountSum =
+        orderDelivery &&
+        modules.orders.deliveries
+          .pricingSheet(orderDelivery, order.currency, requestContext)
+          .discountSum(orderDiscountId);
 
       // Payment discounts
       const orderPayment = await modules.orders.payments.findOrderPayment({
         orderPaymentId: order.paymentId,
       });
-      const orderPaymentDiscountSum = orderPayment && modules.orders.payments
-        .pricingSheet(orderPayment, order.currency, requestContext)
-        .discountSum(orderDiscountId);
+      const orderPaymentDiscountSum =
+        orderPayment &&
+        modules.orders.payments
+          .pricingSheet(orderPayment, order.currency, requestContext)
+          .discountSum(orderDiscountId);
 
       // Position discounts
       const orderPositions = await modules.orders.positions.findOrderPositions({
