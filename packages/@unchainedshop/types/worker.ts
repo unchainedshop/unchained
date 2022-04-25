@@ -51,7 +51,7 @@ export type WorkerModule = {
   findWork: (query: { workId?: string; originalWorkId?: string }) => Promise<Work>;
   findWorkQueue: (
     query: {
-      created: { end?: Date; start?: Date };
+      created?: { end?: Date; start?: Date };
       selectTypes: Array<string>;
       status: Array<WorkStatus>;
     } & {
@@ -72,6 +72,8 @@ export type WorkerModule = {
   allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
 
   doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
+
+  rescheduleWork: (work: Work, scheduled: Date, requestContext) => Promise<Work>;
 
   ensureOneWork: (work: Work) => Promise<Work>;
 
@@ -106,7 +108,7 @@ export interface WorkerSchedule {
   exceptions: Array<Record<string, any>>;
 }
 
-export type WorkScheduleConfigureation = Omit<Work, 'input'> & {
+export type WorkScheduleConfiguration = Omit<Partial<Work>, 'input'> & {
   input: () => any;
   schedule: WorkerSchedule;
 };
@@ -121,9 +123,9 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
 
   configureAutoscheduling: (
     adapter: IWorkerAdapter<any, any>,
-    workScheduleConfiguration: WorkScheduleConfigureation,
+    workScheduleConfiguration: WorkScheduleConfiguration,
   ) => void;
-  getAutoSchedules: () => Array<[string, WorkScheduleConfigureation]>;
+  getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
 
   events: EventEmitter;
   // emit: (eventName: string, payload: any) => void;

@@ -71,7 +71,9 @@ export const BaseWorker: IWorker<WorkerParams> = {
       },
 
       process: async ({ maxWorkItemCount, referenceDate }) => {
-        await workerActions.autorescheduleTypes(referenceDate);
+        await workerActions.autorescheduleTypes({
+          referenceDate,
+        });
 
         const processRecursively = async (recursionCounter = 0) => {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;

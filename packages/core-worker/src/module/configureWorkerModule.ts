@@ -138,7 +138,11 @@ export const configureWorkerModule = async ({
     // Queries
     activeWorkTypes: async () => {
       const typeList = await WorkQueue.aggregate([{ $group: { _id: '$type' } }]).toArray();
-      return typeList.map((t) => t._id as string);
+      return typeList
+        .map((t) => t._id as string)
+        .filter((type) => {
+          return WorkerDirector.getActivePluginTypes().includes(type);
+        });
     },
 
     findWork: async ({ workId, originalWorkId }) =>
@@ -221,6 +225,28 @@ export const configureWorkerModule = async ({
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
       WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work, userId });
+
+      return work;
+    },
+
+    rescheduleWork: async (currentWork, scheduled, { userId }) => {
+      await mutations.update(
+        currentWork._id,
+        {
+          $set: {
+            scheduled,
+          },
+        },
+        userId,
+      );
+
+      const work = await WorkQueue.findOne(generateDbFilterById(currentWork._id), {});
+
+      WorkerDirector.events.emit(WorkerEventTypes.RESCHEDULED, {
+        work,
+        oldScheduled: currentWork.scheduled,
+        userId,
+      });
 
       return work;
     },
