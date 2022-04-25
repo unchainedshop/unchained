@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:events',
-  version: '1.0.0-rc.19',
+  version: '1.0.0-rc.20',
   summary: 'Unchained Engine: Event Director',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -15,7 +15,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:logger@1.0.0-rc.19');
+  api.use('unchained:logger@1.0.0-rc.20');
 
   api.mainModule('src/events-index.ts', 'server');
 });

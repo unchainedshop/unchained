@@ -30,7 +30,7 @@ export type UnchainedContextResolver = (params: {
   res: OutgoingMessage;
 }) => Promise<UnchainedServerContext>;
 
-const UNCHAINED_API_VERSION = '1.0.0-rc.19'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '1.0.0-rc.20'; // eslint-disable-line
 
 const createContextResolver =
   (unchainedAPI: UnchainedAPI, roles: any): UnchainedContextResolver =>
