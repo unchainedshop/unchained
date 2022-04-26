@@ -5,7 +5,7 @@ export const SimpleProduct = {
   status: 'ACTIVE',
   sequence: 0,
   authorId: 'admin',
-  slugs: ['old-slug-de', 'slug-de', 'slug-fr'],
+  slugs: ['old-slug-de', 'slug-de', 'slug-fr', 'search-purpose'],
   updated: new Date('2019-09-10T14:29:37.015+0000'),
   published: new Date('2019-07-30T09:23:57.329+0000'),
   warehousing: {
@@ -40,7 +40,7 @@ export const SimpleProductDraft = {
   status: null,
   sequence: 0,
   authorId: 'admin',
-  slugs: ['old-slug-de', 'slug-de', 'slug-fr'],
+  slugs: ['old-slug-de', 'slug-de', 'slug-fr', 'search-purpose'],
   updated: new Date('2019-09-10T14:29:37.015+0000'),
   published: new Date('2019-07-30T09:23:57.329+0000'),
   warehousing: {

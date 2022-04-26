@@ -35,6 +35,7 @@ const buildFindSelector = ({
   tags,
   includeLeaves = false,
   includeInactive = false,
+  queryString,
 }: AssortmentQuery) => {
   const selector: Query = assortmentSelector || {};
 
@@ -56,6 +57,10 @@ const buildFindSelector = ({
 
   if (!assortmentSelector && !includeLeaves) {
     selector.isRoot = true;
+  }
+
+  if (queryString) {
+    selector.$text = { $search: queryString };
   }
 
   if (!assortmentSelector && !includeInactive) {
@@ -255,14 +260,9 @@ export const configureAssortmentsModule = async ({
       return Assortments.findOne(selector, {});
     },
 
-    findAssortments: async ({ limit, offset, queryString, ...query }) => {
-      const filters = { ...query };
-      if (queryString) {
-        const assortmentIds = await assortmentTexts.searchTexts({ searchText: queryString });
-        filters.assortmentIds = [...(query.assortmentIds || []), ...assortmentIds];
-      }
-
-      const assortments = Assortments.find(buildFindSelector(filters), {
+    findAssortments: async ({ limit, offset, ...query }) => {
+      console.log(buildFindSelector(query));
+      const assortments = Assortments.find(buildFindSelector(query), {
         skip: offset,
         limit,
         sort: { sequence: 1 },

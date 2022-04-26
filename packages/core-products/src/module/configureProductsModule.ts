@@ -49,7 +49,7 @@ const buildFindSelector = ({
 }: ProductQuery) => {
   const selector: Query = productSelector ? { ...productSelector, ...query } : query;
 
-  if (productIds?.length) {
+  if (productIds) {
     selector._id = { $in: productIds };
   }
 
@@ -66,7 +66,7 @@ const buildFindSelector = ({
   }
 
   if (queryString) {
-    selector.$texts = { $search: queryString };
+    selector.$text = { $search: queryString };
   }
 
   if (!includeDrafts) {
@@ -196,21 +196,15 @@ export const configureProductsModule = async ({
       return Products.findOne(selector, {});
     },
 
-    findProducts: async ({ limit, offset, queryString, ...query }) => {
+    findProducts: async ({ limit, offset, ...query }) => {
       const options: FindOptions = { sort: { sequence: 1, published: -1 } };
-      const filter = { ...query };
       if (limit) {
         options.limit = limit;
       }
       if (offset) {
         options.skip = offset;
       }
-      if (queryString) {
-        const productIds = await productTexts.searchTexts({ searchText: queryString });
-        filter.productIds = [...(query.productIds || []), ...productIds];
-      }
-
-      const products = Products.find(buildFindSelector(filter), options);
+      const products = Products.find(buildFindSelector(query), options);
       return products.toArray();
     },
 
