@@ -784,6 +784,25 @@ describe('Enrollments', () => {
       expect(enrollments.length > 0).toBe(true);
     });
 
+    it('return list of searched enrollments by enrollment number', async () => {
+      const {
+        data: { enrollments },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query enrollments($queryString: String) {
+            enrollments(queryString: $queryString) {
+              _id
+              enrollmentNumber
+            }
+          }
+        `,
+        variables: {
+          queryString: 'initial'
+        },
+      });
+      expect(enrollments.length).toEqual(2);
+    });
+
     it('return number of enrollments specified by limit starting from a given offset', async () => {
       const {
         data: { enrollments },

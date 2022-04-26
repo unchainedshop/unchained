@@ -76,7 +76,7 @@ describe('TranslatedFilterTexts', () => {
       ]);
     });
 
-    it('return list of quotations', async () => {
+    it('return list of searched quotations by quotation number', async () => {
       jest.setTimeout(10000);
       const {
         data: { quotations },
