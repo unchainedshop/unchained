@@ -232,9 +232,7 @@ export const configureUsersModule = async ({
         modifier.$set['profile.phoneMobile'] = lastContact.telNumber;
       }
 
-      console.log(modifier.$set);
       await mutations.update(_id, modifier, userId);
-
       return Users.findOne(userFilter, {});
     },
 
