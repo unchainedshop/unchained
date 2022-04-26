@@ -5,6 +5,7 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { OrderStatus } from '../db/OrderStatus';
 import { OrdersSchema } from '../db/OrdersSchema';
 
 const ORDER_EVENTS: string[] = [
@@ -200,7 +201,10 @@ export const configureOrderModuleMutations = ({
       log('Update Arbitrary Context', { orderId, context });
 
       const selector = generateDbFilterById(orderId);
-      await Orders.updateOne(selector, {
+
+      selector.status = { $in: [null, OrderStatus.PENDING] };
+
+      const result = await Orders.updateOne(selector, {
         $set: {
           context,
           updated: new Date(),
@@ -208,9 +212,12 @@ export const configureOrderModuleMutations = ({
         },
       });
 
-      const order = await updateCalculation(orderId, requestContext);
-      emit('ORDER_UPDATE', { order, field: 'context' });
-      return order;
+      if (result.modifiedCount) {
+        const order = await updateCalculation(orderId, requestContext);
+        emit('ORDER_UPDATE', { order, field: 'context' });
+        return true;
+      }
+      return false;
     },
 
     updateStatus,

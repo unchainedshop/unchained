@@ -80,11 +80,9 @@ useMiddlewareWithCurrentContext(postUrl, async (req, res) => {
             orderPaymentId,
           });
           if (!orderPayment) throw new Error(`Order Payment with id ${orderPaymentId} not found`);
-          const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
-          if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
 
-          await modules.orders.checkout(
-            order,
+          const order = await modules.orders.checkout(
+            orderPayment.orderId,
             { paymentContext: { transactionId: transaction.transactionId } },
             resolvedContext,
           );

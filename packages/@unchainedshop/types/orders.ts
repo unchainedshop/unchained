@@ -63,7 +63,11 @@ type OrderTransactionContext = {
   orderContext?: any;
   nextStatus?: OrderStatus;
 };
-type OrderContextParams<P> = (order: Order, params: P, requestContext: Context) => Promise<Order>;
+type OrderContextParams<P> = (
+  order: Order | string,
+  params: P,
+  requestContext: Context,
+) => Promise<Order>;
 
 export interface OrderQueries {
   findOrder: (
@@ -101,9 +105,9 @@ export interface OrderTransformations {
 }
 
 export interface OrderProcessing {
-  checkout: OrderContextParams<OrderTransactionContext>;
-  confirm: OrderContextParams<OrderTransactionContext>;
-  reject: OrderContextParams<OrderTransactionContext>;
+  checkout: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
+  confirm: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
+  reject: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
   ensureCartForUser: (
     params: { user: User; countryCode?: string },
     requestContext: Context,
@@ -156,7 +160,7 @@ export interface OrderMutations {
     requestContext: Context,
   ) => Promise<Order>;
   updateContact: (orderId: string, contact: Contact, requestContext: Context) => Promise<Order>;
-  updateContext: (orderId: string, context: any, requestContext: Context) => Promise<Order>;
+  updateContext: (orderId: string, context: any, requestContext: Context) => Promise<boolean>;
   updateStatus: (
     orderId: string,
     params: { status: OrderStatus; info?: string },

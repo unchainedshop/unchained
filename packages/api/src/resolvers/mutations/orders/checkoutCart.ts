@@ -14,21 +14,21 @@ export default async function checkoutCart(
   context: Context,
 ) {
   const { modules, userId } = context;
-  const { orderId, ...transactionContext } = params;
+  const { orderId: forceOrderId, ...transactionContext } = params;
 
-  log('mutation checkoutCart', { orderId, userId });
+  log('mutation checkoutCart', { orderId: forceOrderId, userId });
 
-  const cart = await getOrderCart({ orderId }, context);
+  const orderId = forceOrderId || (await getOrderCart({}, context))._id;
 
   try {
-    const order = await modules.orders.checkout(cart, transactionContext, context);
+    const order = await modules.orders.checkout(orderId, transactionContext, context);
     return order;
   } catch (error) {
-    log(error.message, { userId, orderId: cart._id, level: LogLevel.Error });
+    log(error.message, { userId, orderId, level: LogLevel.Error });
 
     throw new OrderCheckoutError({
       userId,
-      orderId: cart._id,
+      orderId,
       ...transactionContext,
       detailMessage: error.message,
     });

@@ -43,7 +43,6 @@ export const configureOrderModuleProcessing = ({
 
   const missingInputDataForCheckout = async (order: Order) => {
     const errors = [];
-    if (order.status !== null) errors.push(new Error('Order has already been checked out'));
     if (!order.contact) errors.push(new Error('Contact data not provided'));
     if (!order.billingAddress) errors.push(new Error('Billing address not provided'));
     if (!(await findOrderDelivery(order))) errors.push('No delivery provider selected');
@@ -167,9 +166,13 @@ export const configureOrderModuleProcessing = ({
   };
 
   return {
-    checkout: async (order, { orderContext, paymentContext, deliveryContext }, requestContext) => {
+    checkout: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
       const { modules, localeContext, userId } = requestContext;
-      const orderId = order._id;
+
+      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      let order = await modules.orders.findOrder({ orderId });
+
+      if (order.status !== null) return order;
 
       const errors = [
         ...(await missingInputDataForCheckout(order)),
@@ -180,11 +183,9 @@ export const configureOrderModuleProcessing = ({
         throw new Error(errors[0]);
       }
 
-      let updatedOrder = await modules.orders.updateContext(orderId, orderContext, requestContext);
-
-      // Process order checkout
-      updatedOrder = await modules.orders.processOrder(
-        updatedOrder,
+      // Process order
+      order = await modules.orders.processOrder(
+        order,
         {
           paymentContext,
           deliveryContext,
@@ -209,18 +210,19 @@ export const configureOrderModuleProcessing = ({
         requestContext,
       );
 
-      return updatedOrder;
+      return order;
     },
 
-    confirm: async (order, { orderContext, paymentContext, deliveryContext }, requestContext) => {
+    confirm: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
       const { modules } = requestContext;
-      const orderId = order._id;
+
+      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      const order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      const updatedOrder = await modules.orders.updateContext(orderId, orderContext, requestContext);
       return modules.orders.processOrder(
-        updatedOrder,
+        order,
         {
           paymentContext,
           deliveryContext,
@@ -230,15 +232,16 @@ export const configureOrderModuleProcessing = ({
       );
     },
 
-    reject: async (order, { orderContext, paymentContext, deliveryContext }, requestContext) => {
+    reject: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
       const { modules } = requestContext;
-      const orderId = order._id;
+
+      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      const order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      const updatedOrder = await modules.orders.updateContext(orderId, orderContext, requestContext);
       return modules.orders.processOrder(
-        updatedOrder,
+        order,
         {
           paymentContext,
           deliveryContext,

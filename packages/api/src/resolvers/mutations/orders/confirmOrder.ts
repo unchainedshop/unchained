@@ -27,5 +27,5 @@ export default async function confirmOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  return modules.orders.confirm(order, transactionContext, context);
+  return modules.orders.confirm(order._id, transactionContext, context);
 }
