@@ -25,5 +25,5 @@ export default async function rejectOrder(
   if (order.status !== OrderStatus.PENDING) {
     throw new OrderWrongStatusError({ status: order.status });
   }
-  return modules.orders.reject(order, transactionContext, context);
+  return modules.orders.reject(order._id, transactionContext, context);
 }

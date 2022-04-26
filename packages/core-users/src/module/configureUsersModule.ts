@@ -233,7 +233,6 @@ export const configureUsersModule = async ({
       }
 
       await mutations.update(_id, modifier, userId);
-
       return Users.findOne(userFilter, {});
     },
 

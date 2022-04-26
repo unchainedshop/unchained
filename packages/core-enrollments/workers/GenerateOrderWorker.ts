@@ -66,7 +66,7 @@ const generateOrder = async (
   }
 
   order = await modules.orders.checkout(
-    order,
+    order._id,
     {
       paymentContext,
       deliveryContext,

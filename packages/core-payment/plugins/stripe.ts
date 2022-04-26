@@ -52,11 +52,9 @@ useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, async (request, response) =
       const orderPayment = await modules.orders.payments.findOrderPayment({
         orderPaymentId,
       });
-      const order = await modules.orders.findOrder({
-        orderId: orderPayment.orderId,
-      });
-      await modules.orders.checkout(
-        order,
+
+      const order = await modules.orders.checkout(
+        orderPayment.orderId,
         {
           transactionContext: {
             paymentIntentId: paymentIntent.id,

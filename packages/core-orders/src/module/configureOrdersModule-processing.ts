@@ -43,13 +43,8 @@ export const configureOrderModuleProcessing = ({
 
   const missingInputDataForCheckout = async (order: Order) => {
     const errors = [];
-    if (order.status !== null) errors.push(new Error('Order has already been checked out'));
     if (!order.contact) errors.push(new Error('Contact data not provided'));
     if (!order.billingAddress) errors.push(new Error('Billing address not provided'));
-
-    const items = await findOrderPositions(order);
-    const totalQuantity = items.reduce((oldValue, item) => oldValue + item.quantity, 0);
-    if (totalQuantity === 0) errors.push(new Error('No items in cart'));
     if (!(await findOrderDelivery(order))) errors.push('No delivery provider selected');
     if (!(await findOrderPayment(order))) errors.push('No payment provider selected');
     return errors;
@@ -140,20 +135,22 @@ export const configureOrderModuleProcessing = ({
     return true;
   };
 
-  const findNextStatus = async (order: Order, requestContext: Context): Promise<OrderStatus | null> => {
-    let { status } = order;
-
+  const findNextStatus = async (
+    status: OrderStatus | null,
+    order: Order,
+    requestContext: Context,
+  ): Promise<OrderStatus> => {
     if (status === null) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
         emit('ORDER_CHECKOUT', { order });
-        status = OrderStatus.PENDING;
+        return OrderStatus.PENDING;
       }
     }
 
     if (status === OrderStatus.PENDING) {
       if (await isAutoConfirmationEnabled(order, requestContext)) {
         emit('ORDER_CONFIRMED', { order });
-        status = OrderStatus.CONFIRMED;
+        return OrderStatus.CONFIRMED;
       }
     }
 
@@ -161,7 +158,7 @@ export const configureOrderModuleProcessing = ({
       const isFullfilled = await isAutoFullfillmentEnabled(order, requestContext);
       if (isFullfilled) {
         emit('ORDER_FULLFILLED', { order });
-        status = OrderStatus.FULLFILLED;
+        return OrderStatus.FULLFILLED;
       }
     }
 
@@ -169,9 +166,13 @@ export const configureOrderModuleProcessing = ({
   };
 
   return {
-    checkout: async (order, params, requestContext) => {
-      const { modules, localeContext } = requestContext;
-      const orderId = order._id;
+    checkout: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
+      const { modules, localeContext, userId } = requestContext;
+
+      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      let order = await modules.orders.findOrder({ orderId });
+
+      if (order.status !== null) return order;
 
       const errors = [
         ...(await missingInputDataForCheckout(order)),
@@ -182,27 +183,25 @@ export const configureOrderModuleProcessing = ({
         throw new Error(errors[0]);
       }
 
-      const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
-
-      // Process order checkout
-      let updatedOrder = await modules.orders.updateContext(
-        orderId,
-        params.orderContext,
-        requestContext,
-      );
-
-      updatedOrder = await modules.orders.processOrder(
-        updatedOrder,
+      // Process order
+      order = await modules.orders.processOrder(
+        order,
         {
-          paymentContext: params.paymentContext,
-          deliveryContext: params.deliveryContext,
+          paymentContext,
+          deliveryContext,
         },
         requestContext,
       );
 
+      // After checkout, store last checkout information on user
+      await modules.users.updateLastBillingAddress(order.userId, order.billingAddress, userId);
+      await modules.users.updateLastContact(order.userId, order.contact, requestContext.userId);
+
+      // Then ensure new cart is created before we return from checkout
+      const user = await modules.users.findUserById(order.userId);
+      const locale = modules.users.userLocale(user, {
+        localeContext,
+      });
       await modules.orders.ensureCartForUser(
         {
           user,
@@ -211,47 +210,41 @@ export const configureOrderModuleProcessing = ({
         requestContext,
       );
 
-      return updatedOrder;
+      return order;
     },
 
-    confirm: async (order, params, requestContext) => {
+    confirm: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
       const { modules } = requestContext;
-      const orderId = order._id;
+
+      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      const order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      const updatedOrder = await modules.orders.updateContext(
-        orderId,
-        params.orderContext,
-        requestContext,
-      );
       return modules.orders.processOrder(
-        updatedOrder,
+        order,
         {
-          paymentContext: params.paymentContext,
-          deliveryContext: params.deliveryContext,
+          paymentContext,
+          deliveryContext,
           nextStatus: OrderStatus.CONFIRMED,
         },
         requestContext,
       );
     },
 
-    reject: async (order, params, requestContext) => {
+    reject: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
       const { modules } = requestContext;
-      const orderId = order._id;
+
+      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      const order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      const updatedOrder = await modules.orders.updateContext(
-        orderId,
-        params.orderContext,
-        requestContext,
-      );
       return modules.orders.processOrder(
-        updatedOrder,
+        order,
         {
-          paymentContext: params.paymentContext,
-          deliveryContext: params.deliveryContext,
+          paymentContext,
+          deliveryContext,
           nextStatus: OrderStatus.REJECTED,
         },
         requestContext,
@@ -263,16 +256,13 @@ export const configureOrderModuleProcessing = ({
 
       if (!ordersSettings.ensureUserHasCart) return null;
 
-      const cart = await modules.orders.cart(
-        { countryContext: countryCode || requestContext.countryContext },
-        user,
-      );
+      const cart = await modules.orders.cart({ countryContext: countryCode }, user);
       if (cart) return cart;
 
       return services.orders.createUserCart(
         {
           user,
-          countryCode: countryCode || requestContext.countryContext,
+          countryCode,
         },
         requestContext,
       );
@@ -307,11 +297,13 @@ export const configureOrderModuleProcessing = ({
     },
 
     processOrder: async (initialOrder, params, requestContext) => {
-      const { modules, userId } = requestContext;
+      const { modules } = requestContext;
+      const { paymentContext, deliveryContext, nextStatus: forceNextStatus } = params;
 
       const orderId = initialOrder._id;
       let order = initialOrder;
-      let nextStatus = params.nextStatus || (await findNextStatus(order, requestContext));
+      let nextStatus =
+        forceNextStatus || (await findNextStatus(initialOrder.status, order, requestContext));
 
       if (nextStatus === OrderStatus.PENDING) {
         // auto charge during transition to pending
@@ -321,14 +313,10 @@ export const configureOrderModuleProcessing = ({
 
         await modules.orders.payments.charge(
           orderPayment,
-          { transactionContext: params.paymentContext },
+          { transactionContext: paymentContext },
           requestContext,
         );
-        await modules.users.updateLastBillingAddress(order.userId, order.billingAddress, userId);
-        await modules.users.updateLastContact(order.userId, order.contact, userId);
-
-        order = await modules.orders.findOrder({ orderId });
-        nextStatus = await findNextStatus(order, requestContext);
+        nextStatus = await findNextStatus(nextStatus, order, requestContext);
       }
 
       if (nextStatus === OrderStatus.REJECTED) {
@@ -338,9 +326,10 @@ export const configureOrderModuleProcessing = ({
         });
         await modules.orders.payments.cancel(
           orderPayment,
-          { transactionContext: params.paymentContext },
+          { transactionContext: paymentContext },
           requestContext,
         );
+        nextStatus = await findNextStatus(nextStatus, order, requestContext);
       }
 
       if (nextStatus === OrderStatus.CONFIRMED) {
@@ -350,7 +339,7 @@ export const configureOrderModuleProcessing = ({
         });
         await modules.orders.payments.confirm(
           orderPayment,
-          { transactionContext: params.paymentContext },
+          { transactionContext: paymentContext },
           requestContext,
         );
 
@@ -374,7 +363,7 @@ export const configureOrderModuleProcessing = ({
             orderDelivery,
             {
               order,
-              deliveryContext: params.deliveryContext,
+              deliveryContext,
             },
             requestContext,
           );
@@ -405,8 +394,8 @@ export const configureOrderModuleProcessing = ({
                 {
                   items: filteredProductOrderPositions,
                   context: {
-                    paymentContext: params.paymentContext,
-                    deliveryContext: params.deliveryContext,
+                    paymentContext,
+                    deliveryContext,
                   },
                 },
                 requestContext,
@@ -418,7 +407,7 @@ export const configureOrderModuleProcessing = ({
             orderDelivery,
             {
               order,
-              deliveryContext: params.deliveryContext,
+              deliveryContext,
             },
             requestContext,
           );
@@ -446,7 +435,7 @@ export const configureOrderModuleProcessing = ({
           }),
         );
 
-        nextStatus = await findNextStatus(order, requestContext);
+        nextStatus = await findNextStatus(nextStatus, order, requestContext);
 
         // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
         // do live stock stuff

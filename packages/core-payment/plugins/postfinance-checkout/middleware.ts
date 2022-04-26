@@ -25,9 +25,8 @@ useMiddlewareWithCurrentContext(PFCHECKOUT_WEBHOOK_PATH, async (req, res) => {
         orderPaymentId,
       });
       if (!orderPayment) throw new Error('Order Payment not found');
-      const order = await context.modules.orders.findOrder({ orderId: orderPayment.orderId });
-      await context.modules.orders.checkout(
-        order,
+      const order = await context.modules.orders.checkout(
+        orderPayment.orderId,
         {
           paymentContext: {
             transactionId: transactionCompletion.linkedTransaction,
@@ -39,7 +38,7 @@ useMiddlewareWithCurrentContext(PFCHECKOUT_WEBHOOK_PATH, async (req, res) => {
         `PostFinance Checkout Webhook: Transaction ${transactionCompletion.linkedTransaction} marked order payment ID ${transaction.metaData.orderPaymentId} as paid`,
       );
       res.writeHead(200);
-      res.end(`Order marked as paid`);
+      res.end(`Order marked as paid: ${order.orderNumber}`);
     } catch (e) {
       logger.error(`PostFinance Checkout Webhook: Unchained rejected to checkout with message`, e);
       res.writeHead(500);

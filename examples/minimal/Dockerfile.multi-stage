@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.6.1 as bundler
+FROM geoffreybooth/meteor-base:2.7.1 as bundler
 
 # Install app dependencies
 RUN mkdir -p /source

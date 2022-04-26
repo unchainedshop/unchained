@@ -82,7 +82,7 @@ useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response
     }
     if (convertedAmount && convertedAmount >= totalAmount * (1 - MAX_ALLOWED_DIFF)) {
       await resolvedContext.modules.orders.checkout(
-        order,
+        order._id,
         {
           transactionContext: { address },
           paymentContext: { address },

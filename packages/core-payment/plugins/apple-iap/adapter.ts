@@ -125,7 +125,7 @@ useMiddlewareWithCurrentContext(APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
           // checkout if is cart, else just ignore because the cart is already checked out
           // through submission of the receipt with GraphQL
           const checkedOut = await modules.orders.checkout(
-            order,
+            order._id,
             {
               transactionContext: {
                 receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line

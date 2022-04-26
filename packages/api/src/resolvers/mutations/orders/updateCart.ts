@@ -22,7 +22,8 @@ export default async function updateCart(root: Root, params: UpdateCartParams, c
   let order = await getOrderCart({ orderId, user }, context);
 
   if (meta) {
-    order = await modules.orders.updateContext(order._id, meta, context);
+    await modules.orders.updateContext(order._id, meta, context);
+    order = await modules.orders.findOrder({ orderId: order._id });
   }
 
   if (billingAddress) {

@@ -106,6 +106,7 @@ export const setupAccounts = (unchainedAPI: Context) => {
     await unchainedAPI.modules.orders.ensureCartForUser(
       {
         user,
+        countryCode: countryContext,
       },
       context,
     );
