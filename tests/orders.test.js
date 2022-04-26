@@ -36,9 +36,9 @@ describe("Order: Management", () => {
      data: {orders}
       } = await adminGraphqlFetch({
         query: /* GraphQL */ `
-          query orders {
+          query orders($queryString: String) {
             
-              orders(queryString: "O0011") {
+              orders(queryString: $queryString) {
                 _id
                 
                 orderNumber
@@ -47,7 +47,9 @@ describe("Order: Management", () => {
           
           }
         `,
-        variables: {},
+        variables: {
+          queryString: "O0011"
+        },
       });
 
       expect(orders).toMatchObject([
