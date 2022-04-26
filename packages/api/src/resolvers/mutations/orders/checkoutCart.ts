@@ -18,7 +18,7 @@ export default async function checkoutCart(
 
   log('mutation checkoutCart', { orderId: forceOrderId, userId });
 
-  const orderId = forceOrderId || (await getOrderCart({}, context))._id;
+  const orderId = (await getOrderCart({ orderId: forceOrderId }, context))._id;
 
   try {
     const order = await modules.orders.checkout(orderId, transactionContext, context);
