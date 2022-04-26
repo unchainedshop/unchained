@@ -105,7 +105,11 @@ export interface OrderTransformations {
 }
 
 export interface OrderProcessing {
-  checkout: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
+  checkout: (
+    orderId: string,
+    params: OrderTransactionContext,
+    requestContext: Context,
+  ) => Promise<Order>;
   confirm: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
   reject: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
   ensureCartForUser: (
