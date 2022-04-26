@@ -168,7 +168,7 @@ export const configureOrderModuleProcessing = ({
 
   return {
     checkout: async (order, { orderContext, paymentContext, deliveryContext }, requestContext) => {
-      const { modules, localeContext } = requestContext;
+      const { modules, localeContext, userId } = requestContext;
       const orderId = order._id;
 
       const errors = [
@@ -180,19 +180,7 @@ export const configureOrderModuleProcessing = ({
         throw new Error(errors[0]);
       }
 
-      const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
-
       let updatedOrder = await modules.orders.updateContext(orderId, orderContext, requestContext);
-
-      await modules.users.updateLastBillingAddress(
-        order.userId,
-        order.billingAddress,
-        requestContext.userId,
-      );
-      await modules.users.updateLastContact(order.userId, order.contact, requestContext.userId);
 
       // Process order checkout
       updatedOrder = await modules.orders.processOrder(
@@ -204,9 +192,18 @@ export const configureOrderModuleProcessing = ({
         requestContext,
       );
 
+      // After checkout, store last checkout information on user
+      await modules.users.updateLastBillingAddress(order.userId, order.billingAddress, userId);
+      await modules.users.updateLastContact(order.userId, order.contact, requestContext.userId);
+
+      // Then ensure new cart is created before we return from checkout
+      const user = await modules.users.findUserById(order.userId);
+      const locale = modules.users.userLocale(user, {
+        localeContext,
+      });
       await modules.orders.ensureCartForUser(
         {
-          user: await modules.users.findUserById(order.userId), // refetch user to have the correct "last contact" information
+          user,
           countryCode: locale.country,
         },
         requestContext,
@@ -256,16 +253,13 @@ export const configureOrderModuleProcessing = ({
 
       if (!ordersSettings.ensureUserHasCart) return null;
 
-      const cart = await modules.orders.cart(
-        { countryContext: countryCode || requestContext.countryContext },
-        user,
-      );
+      const cart = await modules.orders.cart({ countryContext: countryCode }, user);
       if (cart) return cart;
 
       return services.orders.createUserCart(
         {
           user,
-          countryCode: countryCode || requestContext.countryContext,
+          countryCode,
         },
         requestContext,
       );
