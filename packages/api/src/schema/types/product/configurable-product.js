@@ -79,7 +79,12 @@ export default [
         offset: Int = 0
         includeInactive: Boolean = false
       ): [Product!]!
-      reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
+      reviews(
+        limit: Int = 10
+        offset: Int = 0
+        sort: [ProductReviewSortOptionInput!]
+        queryString: String
+      ): [ProductReview!]!
       catalogPriceRange(
         quantity: Int = 0
         vectors: [ProductAssignmentVectorInput!]

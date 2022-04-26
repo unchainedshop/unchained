@@ -398,8 +398,10 @@ export interface ProductHelperTypes {
 
   reviews: HelperType<
     {
+      queryString?: string;
       limit?: number;
       offset?: number;
+      sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
     },
     Promise<Array<ProductReview>>
   >;

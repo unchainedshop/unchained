@@ -63,7 +63,12 @@ export default [
       published: DateTime
       texts: ProductTexts
       media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
-      reviews: [ProductReview!]!
+      reviews(
+        limit: Int = 10
+        offset: Int = 0
+        sort: [ProductReviewSortOptionInput!]
+        queryString: String
+      ): [ProductReview!]!
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID

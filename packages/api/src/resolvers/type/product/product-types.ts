@@ -21,11 +21,13 @@ export const Product: ProductHelperTypes = {
     });
   },
 
-  reviews: async (obj, { limit = 10, offset = 0 }, { modules }) => {
+  reviews: async (obj, { limit = 10, offset = 0, sort, queryString }, { modules }) => {
     return modules.products.reviews.findProductReviews({
       productId: obj._id,
       limit,
       offset,
+      sort,
+      queryString,
     });
   },
 

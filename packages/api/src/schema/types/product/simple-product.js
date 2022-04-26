@@ -39,7 +39,12 @@ export default [
       salesUnit: String
       salesQuantityPerUnit: String
       defaultOrderQuantity: Int
-      reviews(limit: Int = 10, offset: Int = 0): [ProductReview!]!
+      reviews(
+        limit: Int = 10
+        offset: Int = 0
+        sort: [ProductReviewSortOptionInput!]
+        queryString: String
+      ): [ProductReview!]!
     }
   `,
 ];
