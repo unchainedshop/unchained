@@ -206,7 +206,7 @@ export const configureOrderModuleProcessing = ({
 
       await modules.orders.ensureCartForUser(
         {
-          user,
+          user: await modules.users.findUserById(order.userId), // refetch user to have the correct "last contact" information
           countryCode: locale.country,
         },
         requestContext,
