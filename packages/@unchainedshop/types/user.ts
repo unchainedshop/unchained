@@ -21,7 +21,6 @@ export interface UserProfile {
   phoneMobile?: string;
   gender?: string;
   address?: Address;
-  customFields?: unknown;
 }
 
 export interface UserLastLogin {
