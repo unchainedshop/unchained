@@ -24,11 +24,12 @@ const USER_EVENTS = [
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
 ];
-const cleanConfidentialData = (rawUser: User): User => {
+const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = rawUser;
   delete user?.services;
   return user;
 };
+
 const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
   const selector: Query = { ...rest };
   if (!includeGuests) selector.guest = { $ne: true };
@@ -134,7 +135,7 @@ export const configureUsersModule = async ({
 
       const user = await Users.findOne(selector, {});
       emit('USER_ADD_ROLES', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
 
       return updateResult.modifiedCount;
@@ -155,7 +156,7 @@ export const configureUsersModule = async ({
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
       emit('USER_UPDATE_AVATAR', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
@@ -183,7 +184,7 @@ export const configureUsersModule = async ({
       const user = await Users.findOne(userFilter, {});
 
       emit('USER_UPDATE_HEARTBEAT', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
@@ -209,7 +210,7 @@ export const configureUsersModule = async ({
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
       emit('USER_UPDATE_PROFILE', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
@@ -242,7 +243,7 @@ export const configureUsersModule = async ({
       await mutations.update(_id, modifier, userId);
       const updatedUser = await Users.findOne(userFilter, {});
       emit('USER_UPDATE_BILLING_ADDRESS', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
       return updatedUser;
     },
@@ -272,7 +273,7 @@ export const configureUsersModule = async ({
       await mutations.update(_id, modifier, userId);
       const updatedUser = await Users.findOne(userFilter, {});
       emit('USER_UPDATE_LAST_CONTACT', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
       return updatedUser;
     },
@@ -290,7 +291,7 @@ export const configureUsersModule = async ({
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
       emit('USER_UPDATE_ROLE', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
@@ -308,7 +309,7 @@ export const configureUsersModule = async ({
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
       emit('USER_UPDATE_TAGS', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
@@ -317,7 +318,7 @@ export const configureUsersModule = async ({
       await Users.updateOne(query, modifier, options);
       const user = await Users.findOne(query);
       emit('USER_UPDATE', {
-        user: cleanConfidentialData(user),
+        user: removeConfidentialServiceHashes(user),
       });
     },
   };
