@@ -20,7 +20,7 @@ The standard user data type stores most of the information a user could have. Bu
 
 ```
 extend input UserProfileInput {
-  phoneNumbers: [DynopticPhoneNumberInput!]
+  phoneNumbers: [CustomPhoneNumberInput!]
 }
 
 ```
