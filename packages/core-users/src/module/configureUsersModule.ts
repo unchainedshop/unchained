@@ -2,6 +2,7 @@ import { Locale } from 'locale';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from 'meteor/unchained:logger';
+import { emit, registerEvents } from 'meteor/unchained:events';
 import {
   generateDbFilterById,
   generateDbMutations,
@@ -11,6 +12,18 @@ import {
 import { FileDirector } from 'meteor/unchained:file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
+
+const USER_EVENTS = [
+  'USER_UPDATE',
+  'USER_UPDATE_PROFILE',
+  'USER_ADD_ROLES',
+  'USER_UPDATE_ROLE',
+  'USER_UPDATE_TAGS',
+  'USER_UPDATE_AVATAR',
+  'USER_UPDATE_HEARTBEAT',
+  'USER_UPDATE_BILLING_ADDRESS',
+  'USER_UPDATE_LAST_CONTACT',
+];
 
 const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
   const selector: Query = { ...rest };
@@ -37,6 +50,7 @@ FileDirector.registerFileUploadCallback('user-avatars', async (file, context: Co
 export const configureUsersModule = async ({
   db,
 }: ModuleInput<Record<string, never>>): Promise<UsersModule> => {
+  registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
 
   const mutations = generateDbMutations<User>(Users, Schemas.User) as ModuleMutations<User>;
@@ -109,8 +123,17 @@ export const configureUsersModule = async ({
 
     // Mutations
     addRoles: async (userId, roles) => {
-      const updateResult = await Users.updateOne(generateDbFilterById(userId), {
+      const selector = generateDbFilterById(userId);
+      const updateResult = await Users.updateOne(selector, {
         $addToSet: { roles: { $each: roles } },
+      });
+
+      const user = await Users.findOne(selector);
+      emit('USER_ADD_ROLES', {
+        user: {
+          ...user,
+          services: null,
+        },
       });
 
       return updateResult.modifiedCount;
@@ -129,8 +152,14 @@ export const configureUsersModule = async ({
       };
 
       await mutations.update(_id, modifier, userId);
-
-      return Users.findOne(userFilter, {});
+      const user = await Users.findOne(userFilter, {});
+      emit('USER_UPDATE_AVATAR', {
+        user: {
+          ...user,
+          services: null,
+        },
+      });
+      return user;
     },
 
     updateGuest: async (user, guest) => {
@@ -153,8 +182,15 @@ export const configureUsersModule = async ({
       };
 
       await mutations.update(userId, modifier, userId);
+      const user = await Users.findOne(userFilter, {});
 
-      return Users.findOne(userFilter, {});
+      emit('USER_UPDATE_HEARTBEAT', {
+        user: {
+          ...user,
+          services: null,
+        },
+      });
+      return user;
     },
 
     updateInitialPassword: async (user, initialPassword) => {
@@ -176,8 +212,14 @@ export const configureUsersModule = async ({
       };
 
       await mutations.update(_id, modifier, userId);
-
-      return Users.findOne(userFilter, {});
+      const user = await Users.findOne(userFilter, {});
+      emit('USER_UPDATE_PROFILE', {
+        user: {
+          ...user,
+          services: null,
+        },
+      });
+      return user;
     },
 
     updateLastBillingAddress: async (_id, lastBillingAddress, userId) => {
@@ -206,8 +248,14 @@ export const configureUsersModule = async ({
       }
 
       await mutations.update(_id, modifier, userId);
-
-      return Users.findOne(userFilter, {});
+      const updatedUser = await Users.findOne(userFilter, {});
+      emit('USER_UPDATE_BILLING_ADDRESS', {
+        user: {
+          ...user,
+          services: null,
+        },
+      });
+      return updatedUser;
     },
 
     updateLastContact: async (_id, lastContact, userId) => {
@@ -233,7 +281,14 @@ export const configureUsersModule = async ({
       }
 
       await mutations.update(_id, modifier, userId);
-      return Users.findOne(userFilter, {});
+      const updatedUser = await Users.findOne(userFilter, {});
+      emit('USER_UPDATE_LAST_CONTACT', {
+        user: {
+          ...user,
+          services: null,
+        },
+      });
+      return updatedUser;
     },
 
     updateRoles: async (_id, roles, userId) => {
@@ -247,8 +302,14 @@ export const configureUsersModule = async ({
         },
       };
       await mutations.update(_id, modifier, userId);
-
-      return Users.findOne(userFilter, {});
+      const user = await Users.findOne(userFilter, {});
+      emit('USER_UPDATE_ROLE', {
+        user: {
+          ...user,
+          services: null,
+        },
+      });
+      return user;
     },
     updateTags: async (_id, tags, userId) => {
       const userFilter = generateDbFilterById(_id);
@@ -262,12 +323,25 @@ export const configureUsersModule = async ({
       };
 
       await mutations.update(_id, modifier, userId);
-
-      return Users.findOne(userFilter, {}) as Promise<User>;
+      const user = await Users.findOne(userFilter, {});
+      emit('USER_UPDATE_TAGS', {
+        user: {
+          ...user,
+          services: null,
+        },
+      });
+      return user;
     },
 
     updateUser: async (query, modifier, options) => {
       await Users.updateOne(query, modifier, options);
+      const user = await Users.findOne(query);
+      emit('USER_UPDATE', {
+        user: {
+          ...user,
+          services: null,
+        },
+      });
     },
   };
 };
