@@ -12,9 +12,18 @@ import { URL } from 'url';
 import { slugify } from 'meteor/unchained:utils';
 import baseX from 'base-x';
 
-const b62 = baseX('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+const b62 = baseX('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
-const { MINIO_ACCESS_KEY, MINIO_REGION, MINIO_STS_ENDPOINT, MINIO_SECRET_KEY, MINIO_ENDPOINT, MINIO_BUCKET_NAME, NODE_ENV, AMAZON_S3_SESSION_TOKEN } = process.env;
+const {
+  MINIO_ACCESS_KEY,
+  MINIO_REGION,
+  MINIO_STS_ENDPOINT,
+  MINIO_SECRET_KEY,
+  MINIO_ENDPOINT,
+  MINIO_BUCKET_NAME,
+  NODE_ENV,
+  AMAZON_S3_SESSION_TOKEN,
+} = process.env;
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 
 const buildHashedFilename = (directoryName: string, fileName: string, expiryDate: Date): string => {
@@ -26,15 +35,17 @@ const buildHashedFilename = (directoryName: string, fileName: string, expiryDate
   const splittedFilename = fileName.split('.');
   const ext = splittedFilename?.pop();
   const fileNameWithoutExtension = splittedFilename.join('.') || '';
-  const slugifiedFilenameWithExtension = [slugify(fileNameWithoutExtension),ext].filter(Boolean).join('.');
+  const slugifiedFilenameWithExtension = [slugify(fileNameWithoutExtension), ext]
+    .filter(Boolean)
+    .join('.');
   const arr = Uint8Array.from(Buffer.from(hashed, 'hex'));
   const b62converted = b62.encode(arr);
 
   return `${b62converted}-${slugifiedFilenameWithExtension}`;
-}
+};
 
 const connectToMinio = async () => {
-  if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
+  if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
     log(
       'Please configure Minio/S3 by providing MINIO_ENDPOINT & MINIO_BUCKET_NAME to use upload features',
       { level: LogLevel.Error },
@@ -56,14 +67,14 @@ const connectToMinio = async () => {
 
     if (NODE_ENV === 'development') minioClient?.traceOn(process.stdout);
     if (MINIO_STS_ENDPOINT) {
-      let ap = new AssumeRoleProvider({
-          stsEndpoint: MINIO_STS_ENDPOINT,
-      })
+      const ap = new AssumeRoleProvider({
+        stsEndpoint: MINIO_STS_ENDPOINT,
+      });
       await minioClient.setCredentialsProvider(ap);
     }
     return minioClient;
   } catch (error) {
-    log(`Exception while creating Minio client: ${error.message}`, , { level: LogLevel.Error });
+    log(`Exception while creating Minio client: ${error.message}`, { level: LogLevel.Error });
     return null;
   }
 };
@@ -78,9 +89,14 @@ const getMimeType = (extension) => {
 
 let client: Minio.Client;
 
-connectToMinio().then(c => client = c);
+connectToMinio().then(function (c) {
+  client = c;
+});
 
-const createDownloadStream = (fileUrl: string, headers: OutgoingHttpHeaders): Promise<http.IncomingMessage> => {
+const createDownloadStream = (
+  fileUrl: string,
+  headers: OutgoingHttpHeaders,
+): Promise<http.IncomingMessage> => {
   const { href, protocol } = new URL(fileUrl);
   return new Promise((resolve, reject) => {
     try {
@@ -123,7 +139,6 @@ export const MinioAdapter: IFileAdapter = {
 
     const expiryDate = getExpiryDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
-    
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
@@ -170,9 +185,9 @@ export const MinioAdapter: IFileAdapter = {
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
     const type = rawFile?.mimetype || getMimeType(fileName);
 
-    var metaData = {
+    const metaData = {
       'Content-Type': type,
-    }
+    };
 
     await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream, undefined, metaData);
 
@@ -200,9 +215,9 @@ export const MinioAdapter: IFileAdapter = {
     const stream = await createDownloadStream(fileLink, headers);
     const type = stream?.headers?.['content-type'] || getMimeType(fileName);
 
-    var metaData = {
+    const metaData = {
       'Content-Type': type,
-    }
+    };
 
     await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream, undefined, metaData);
     const { size } = await getObjectStats(`${directoryName}/${_id}`);
