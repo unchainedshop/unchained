@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:logger',
-  version: '1.0.0-rc.20',
+  version: '1.0.0-rc.21',
   summary: 'Unchained Engine: Logger',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

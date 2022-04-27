@@ -71,7 +71,7 @@ export type RemoveFilesService = (params: { fileIds: Array<_ID> }, context: Cont
 export type UploadFileFromURLService = (
   params: {
     directoryName: string;
-    fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown>; };
+    fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown> };
     meta?: any;
     userId?: string;
   },

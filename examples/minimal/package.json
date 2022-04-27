@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "1.0.0-rc.20",
+  "version": "1.0.0-rc.21",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -33,7 +33,7 @@
   "dependencies": {
     "@babel/runtime": "^7.17.9",
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@unchainedshop/controlpanel": "^1.0.0-rc.20",
+    "@unchainedshop/controlpanel": "^1.0.0-rc.21",
     "apollo-server-express": "^2.25.3",
     "bcrypt": "^5.0.1",
     "bip32": "^3.0.1",
@@ -63,7 +63,7 @@
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "@babel/register": "^7.17.7",
-    "@unchainedshop/types": "^1.0.0-rc.20",
+    "@unchainedshop/types": "^1.0.0-rc.21",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
