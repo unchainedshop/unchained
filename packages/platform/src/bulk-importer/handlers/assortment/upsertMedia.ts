@@ -2,10 +2,14 @@ import { Context } from '@unchainedshop/types/api';
 import { AssortmentMediaText } from '@unchainedshop/types/assortments.media';
 import { File } from '@unchainedshop/types/files';
 
-const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Context) => {
+const upsertAsset = async (
+  asset: File & { fileName: string; headers?: Record<string, unknown> },
+  unchainedAPI: Context,
+) => {
   const { modules, services, userId } = unchainedAPI;
-  const { _id, fileName, url, meta, ...assetData } = asset;
+  const { _id, fileName, url, meta, headers, ...assetData } = asset;
   const fileId = _id;
+
   try {
     if (_id && (await modules.files.findFile({ fileId }))) throw new Error('Media already exists');
 
@@ -15,6 +19,7 @@ const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Con
         fileInput: {
           fileLink: url,
           fileName,
+          headers,
         },
         meta: { ...meta, fileId },
         userId,
@@ -25,8 +30,12 @@ const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Con
     if (!assetObject) throw new Error('Media not created');
     return assetObject;
   } catch (e) {
-    await modules.files.update(fileId, { fileName, url, ...assetData }, userId);
-    return modules.files.findFile({ fileId });
+    if (fileId) {
+      await modules.files.update(fileId, { meta: { ...meta, fileId }, ...assetData }, userId);
+      const file = await modules.files.findFile({ fileId });
+      return file;
+    }
+    return null;
   }
 };
 

@@ -10,6 +10,7 @@ export const uploadFileFromURLService: UploadFileFromURLService = async (
     modules: { files },
   } = unchainedContext;
   const fileUploadAdapter = getFileAdapter();
+
   const uploadFileData = await fileUploadAdapter.uploadFileFromURL(
     directoryName,
     fileInput,

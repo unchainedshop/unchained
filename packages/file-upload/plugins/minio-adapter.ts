@@ -2,6 +2,7 @@ import { IFileAdapter } from '@unchainedshop/types/files';
 import { FileAdapter, FileDirector } from 'meteor/unchained:file-upload';
 import crypto from 'crypto';
 import https from 'https';
+import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import mimeType from 'mime-types';
 import Minio from 'minio';
@@ -50,32 +51,18 @@ const getMimeType = (extension) => {
 const client: Minio.Client = connectToMinio();
 if (NODE_ENV === 'development') client?.traceOn(process.stdout);
 
-const downloadFromUrlToBuffer = async (fileUrl: string) => {
+const createDownloadStream = (fileUrl: string, headers: OutgoingHttpHeaders): Promise<Readable> => {
+  const { href, protocol } = new URL(fileUrl);
   return new Promise((resolve, reject) => {
-    // eslint-disable-next-line consistent-return
-    const req = https.get(fileUrl, (res) => {
-      if (res.statusCode < 200 || res.statusCode >= 300) {
-        return reject(new Error(`statusCode=${res.statusCode}`));
+    try {
+      if (protocol === 'http:') {
+        http.get(href, { headers }, resolve);
+      } else {
+        https.get(href, { headers }, resolve);
       }
-
-      const body: any = [];
-      let buffer;
-      res.on('data', (chunk) => {
-        body.push(chunk);
-      });
-      res.on('end', () => {
-        try {
-          buffer = Buffer.concat(body);
-        } catch (e) {
-          reject(e);
-        }
-        resolve(Buffer.from(buffer, 'base64'));
-      });
-    });
-    req.on('error', (err) => {
-      reject(err);
-    });
-    req.end();
+    } catch (e) {
+      reject(e);
+    }
   });
 };
 
@@ -169,7 +156,7 @@ export const MinioAdapter: IFileAdapter = {
     };
   },
 
-  async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname }: any) {
+  async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname, headers }: any) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const { href } = new URL(fileLink);
@@ -177,8 +164,7 @@ export const MinioAdapter: IFileAdapter = {
     const expiryDate = getExpiryDate();
     const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
 
-    const buff = await downloadFromUrlToBuffer(fileLink);
-    const stream = bufferToStream(buff);
+    const stream = await createDownloadStream(fileLink, headers);
     await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream);
     const { size } = await getObjectStats(`${directoryName}/${_id}`);
     const type = getMimeType(fileName);

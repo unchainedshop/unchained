@@ -2,9 +2,12 @@ import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
 import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media';
 
-const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Context) => {
+const upsertAsset = async (
+  asset: File & { fileName: string; headers?: Record<string, unknown> },
+  unchainedAPI: Context,
+) => {
   const { modules, services, userId } = unchainedAPI;
-  const { _id, fileName, url, meta, ...assetData } = asset;
+  const { _id, fileName, url, meta, headers, ...assetData } = asset;
   const fileId = _id;
 
   try {
@@ -16,6 +19,7 @@ const upsertAsset = async (asset: File & { fileName: string }, unchainedAPI: Con
         fileInput: {
           fileLink: url,
           fileName,
+          headers,
         },
         meta: { ...meta, fileId },
         userId,
@@ -42,8 +46,7 @@ const upsertProductMedia = async (productMedia: ProductMedia, { modules, userId 
   } catch (e) {
     const { _id, ...productMediaData } = productMedia;
     const productMediaId = _id;
-    await modules.products.media.update(productMediaId, productMediaData);
-    return modules.products.media.findProductMedia({ productMediaId });
+    return modules.products.media.update(productMediaId, productMediaData);
   }
 };
 

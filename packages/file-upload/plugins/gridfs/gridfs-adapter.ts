@@ -1,7 +1,7 @@
 import { IFileAdapter } from '@unchainedshop/types/files';
 import { FileAdapter, FileDirector } from 'meteor/unchained:file-upload';
 import https from 'https';
-import http from 'http';
+import http, { OutgoingHttpHeaders } from 'http';
 import mimeType from 'mime-types';
 import { URL } from 'url';
 import crypto from 'crypto';
@@ -26,14 +26,14 @@ const bufferToStream = (buffer: any) => {
   return stream;
 };
 
-const createDownloadStream = (url) => {
-  const { href, protocol } = new URL(url);
+const createDownloadStream = (fileUrl: string, headers: OutgoingHttpHeaders): Promise<Readable> => {
+  const { href, protocol } = new URL(fileUrl);
   return new Promise((resolve, reject) => {
     try {
       if (protocol === 'http:') {
-        http.get(href, resolve);
+        http.get(href, { headers }, resolve);
       } else {
-        https.get(href, resolve);
+        https.get(href, { headers }, resolve);
       }
     } catch (e) {
       reject(e);
@@ -97,19 +97,20 @@ export const GridFSAdapter: IFileAdapter = {
     };
   },
 
-  async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname }: any, { modules }: any) {
+  async uploadFileFromURL(
+    directoryName: string,
+    { fileLink, fileName: fname, headers }: any,
+    { modules }: any,
+  ) {
     const { href } = new URL(fileLink);
     const fileName = fname || href.split('/').pop();
 
     const expiryDate = getExpiryDate();
     const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
 
-    const downloadStream = await createDownloadStream(href);
-
+    const downloadStream = await createDownloadStream(href, headers);
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
-
     const file = await promisePipe(downloadStream, writeStream);
-
     const url = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}`;
 
     return {

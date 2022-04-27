@@ -183,13 +183,13 @@ export const configureOrdersModule = async ({
     });
     const deliveryProviderId = orderDelivery?.deliveryProviderId;
 
-    const isAlreadyInitializedWithSupportedDeliveryProvider = supportedDeliveryProviders.some(
+    const isAlreadyInitializedWithSupportedDeliveryProvider = supportedDeliveryProviders?.some(
       (provider) => {
         return provider._id === deliveryProviderId;
       },
     );
 
-    if (supportedDeliveryProviders.length > 0 && !isAlreadyInitializedWithSupportedDeliveryProvider) {
+    if (supportedDeliveryProviders?.length > 0 && !isAlreadyInitializedWithSupportedDeliveryProvider) {
       const defaultOrderDeliveryProvider = await modules.delivery.determineDefault(
         supportedDeliveryProviders,
         { order: updatedOrder },
@@ -215,13 +215,13 @@ export const configureOrdersModule = async ({
     });
     const paymentProviderId = orderPayment?.paymentProviderId;
 
-    const isAlreadyInitializedWithSupportedPaymentProvider = supportedPaymentProviders.some(
+    const isAlreadyInitializedWithSupportedPaymentProvider = supportedPaymentProviders?.some(
       (provider) => {
         return provider._id === paymentProviderId;
       },
     );
 
-    if (supportedPaymentProviders.length > 0 && !isAlreadyInitializedWithSupportedPaymentProvider) {
+    if (supportedPaymentProviders?.length > 0 && !isAlreadyInitializedWithSupportedPaymentProvider) {
       const paymentCredentials = await modules.payment.paymentCredentials.findPaymentCredentials(
         { userId: updatedOrder.userId, isPreferred: true },
         {
