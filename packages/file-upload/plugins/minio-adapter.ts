@@ -6,20 +6,21 @@ import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import mimeType from 'mime-types';
 import Minio from 'minio';
+import AssumeRoleProvider from 'minio/dist/main/AssumeRoleProvider';
 import { Readable } from 'stream';
 import { URL } from 'url';
 
-const { MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_ENDPOINT, MINIO_BUCKET_NAME, NODE_ENV } = process.env;
+const { MINIO_ACCESS_KEY, MINIO_REGION, MINIO_STS_ENDPOINT, MINIO_SECRET_KEY, MINIO_ENDPOINT, MINIO_BUCKET_NAME, NODE_ENV, AMAZON_S3_SESSION_TOKEN } = process.env;
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 
 const hash = (fileName: string) => {
   return crypto.createHash('sha256').update(fileName).digest('hex');
 };
 
-const connectToMinio = () => {
-  if (!MINIO_ACCESS_KEY || !MINIO_SECRET_KEY || !MINIO_ENDPOINT) {
+const connectToMinio = async () => {
+  if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
     log(
-      'Please configure Minio/S3 by providing MINIO_ACCESS_KEY,MINIO_SECRET_KEY & MINIO_ENDPOINT to use upload features',
+      'Please configure Minio/S3 by providing MINIO_ENDPOINT & MINIO_BUCKET_NAME to use upload features',
       { level: LogLevel.Error },
     );
     return null;
@@ -27,15 +28,26 @@ const connectToMinio = () => {
 
   try {
     const resolvedUrl = new URL(MINIO_ENDPOINT);
-    return new Minio.Client({
+    const minioClient = new Minio.Client({
       endPoint: resolvedUrl.hostname,
       useSSL: resolvedUrl.protocol === 'https:',
       port: parseInt(resolvedUrl.port, 10) || undefined,
+      region: MINIO_REGION,
+      sessionToken: AMAZON_S3_SESSION_TOKEN,
       accessKey: MINIO_ACCESS_KEY,
       secretKey: MINIO_SECRET_KEY,
     });
+
+    if (NODE_ENV === 'development') minioClient?.traceOn(process.stdout);
+    if (MINIO_STS_ENDPOINT) {
+      let ap = new AssumeRoleProvider({
+        stsEndpoint: MINIO_STS_ENDPOINT,
+      })
+      await minioClient.setCredentialsProvider(ap);
+    }
+    return minioClient;
   } catch (error) {
-    log('Exception while creating Minio client', { level: LogLevel.Error, ...error });
+    log(`Exception while creating Minio client: ${error.message}`, , { level: LogLevel.Error });
     return null;
   }
 };
@@ -48,8 +60,9 @@ const getMimeType = (extension) => {
   return mimeType.lookup(extension);
 };
 
-const client: Minio.Client = connectToMinio();
-if (NODE_ENV === 'development') client?.traceOn(process.stdout);
+let client: Minio.Client;
+
+connectToMinio().then(c => client = c);
 
 const createDownloadStream = (fileUrl: string, headers: OutgoingHttpHeaders): Promise<Readable> => {
   const { href, protocol } = new URL(fileUrl);
