@@ -221,13 +221,17 @@ export const configureEnrollmentsModule = async ({
       return Enrollments.findOne(selector, options);
     },
 
-    findEnrollments: async ({ status, userId, limit, offset }) => {
+    findEnrollments: async ({ status, userId, limit, offset, queryString }) => {
       const selector: Query = { deleted: null };
       if (status) {
         selector.status = { $in: status };
       }
       if (userId) {
         selector.userId = userId;
+      }
+
+      if (queryString) {
+        selector.$text = { $search: queryString };
       }
 
       const enrollments = Enrollments.find(selector, {

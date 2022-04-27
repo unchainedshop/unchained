@@ -4,6 +4,7 @@ import { Context, Root } from '@unchainedshop/types/api';
 export default async function products(
   root: Root,
   params: {
+    queryString: string;
     includeDrafts: boolean;
     limit: number;
     offset: number;

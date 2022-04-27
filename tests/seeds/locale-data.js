@@ -1,19 +1,19 @@
 import chainedUpsert from './utils/chainedUpsert';
 
-const BaseCountry = {
+export const BaseCountry = {
   _id: 'ch',
   isoCode: 'CH',
   isActive: true,
   defaultCurrencyId: 'chf',
 };
 
-const BaseLanguage = {
+export const BaseLanguage = {
   _id: 'de',
   isoCode: 'de',
   isActive: true,
 };
 
-const BaseCurrency = {
+export const BaseCurrency = {
   _id: 'chf',
   isoCode: 'CHF',
   isActive: true,

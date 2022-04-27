@@ -9,6 +9,7 @@ export type Language = {
 
 type LanguageQuery = {
   includeInactive?: boolean;
+  queryString?: string;
 };
 
 export interface LanguagesModule extends ModuleMutations<Language> {

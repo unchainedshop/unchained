@@ -65,6 +65,100 @@ describe('Filters', () => {
       expect(filters.length).toEqual(0);
     });
 
+    it('Return list of matching search results', async () => {
+      const {
+        data: { filters },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Filters(
+            $queryString: String
+      
+          ) {
+            filters(
+                queryString: $queryString
+                includeInactive: true
+            ) {
+              _id
+              updated
+              created
+              isActive
+              texts {
+                _id
+                locale
+                title
+                subtitle
+              }
+              type
+              key
+              key
+              options {
+                _id
+                texts {
+                  _id
+                  locale
+                  title
+                  subtitle
+                }
+                value
+              }
+            }
+          }
+        `,
+        variables: {
+          queryString: 'highlight'
+        },
+      });
+
+      expect(filters.length).toEqual(1);
+      expect(filters).toMatchObject([
+        {
+          _id: 'multichoice-filter',
+          updated: '2020-03-16T09:32:31.996Z',
+          created: '2020-03-16T09:31:42.690Z',
+          isActive: false,
+          texts: { _id: 'german', locale: 'de', title: 'Special', subtitle: null },
+          type: 'MULTI_CHOICE',
+          key: 'tags',
+          options: [
+            {
+              _id: 'multichoice-filter:highlight',
+              texts: null,
+              value: 'highlight'
+            },
+            { _id: 'multichoice-filter:tag-1', texts: null, value: 'tag-1' },
+            { _id: 'multichoice-filter:tag-2', texts: null, value: 'tag-2' }
+          ]
+        }
+      ])
+
+    });
+
+    it('Return empty array when search is not found', async () => {
+      const {
+        data: { filters },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Filters(
+            $queryString: String
+      
+          ) {
+            filters(
+      queryString: $queryString
+      includeInactive: true
+            ) {
+              _id
+        
+            }
+          }
+        `,
+        variables: {
+          queryString: 'non_existing'
+        },
+      });
+      console.log(filters[0]?.options)
+      expect(filters.length).toEqual(0);
+    });
+
     it('return list of active and in-active filters', async () => {
       const {
         data: { filters },

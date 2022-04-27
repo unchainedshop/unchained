@@ -4,7 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users';
-import { ProposedQuotation } from './seeds/quotations';
+import { ProcessingQuotation, ProposedQuotation } from './seeds/quotations';
 import { SimpleProduct } from './seeds/products';
 
 let graphqlFetch;
@@ -75,6 +75,34 @@ describe('TranslatedFilterTexts', () => {
         },
       ]);
     });
+
+    it('return list of searched quotations by quotation number', async () => {
+      jest.setTimeout(10000);
+      const {
+        data: { quotations },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Quotations($queryString: String) {
+            quotations(queryString: $queryString) {
+              _id
+              quotationNumber            
+            }
+          }
+        `,
+        variables: {
+          queryString: 'K271P03'
+        },
+      });
+      expect(quotations.length).toEqual(1);
+      expect(quotations).toMatchObject([
+        {
+          _id: ProcessingQuotation._id,
+          quotationNumber: ProcessingQuotation.quotationNumber,
+        },
+      ]);
+    });
+
+
   });
 
   describe('Query.quotations for anonymous user should', () => {

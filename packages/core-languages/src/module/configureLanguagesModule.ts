@@ -9,10 +9,14 @@ const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUA
 
 type FindQuery = {
   includeInactive?: boolean;
+  queryString?: string;
 };
-const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true; deleted?: Date } = { deleted: null };
+const buildFindSelector = ({ includeInactive = false, queryString }: FindQuery) => {
+  const selector: { isActive?: true; deleted?: Date; $text?: any } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
+  if (queryString) {
+    selector.$text = { $search: queryString };
+  }
   return selector;
 };
 
@@ -30,8 +34,8 @@ export const configureLanguagesModule = async ({
       return Languages.findOne(languageId ? generateDbFilterById(languageId) : { isoCode }, {});
     },
 
-    findLanguages: async ({ limit, offset, includeInactive }, options) => {
-      return Languages.find(buildFindSelector({ includeInactive }), {
+    findLanguages: async ({ limit, offset, includeInactive, queryString }, options) => {
+      return Languages.find(buildFindSelector({ includeInactive, queryString }), {
         skip: offset,
         limit,
         ...options,

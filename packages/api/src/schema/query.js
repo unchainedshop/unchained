@@ -37,6 +37,7 @@ export default [
       If a slug is provided, limit and offset don't have any effect on the result
       """
       products(
+        queryString: String
         tags: [String!]
         slugs: [String!]
         limit: Int = 10
@@ -80,7 +81,12 @@ export default [
       """
       Get all languages
       """
-      languages(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Language]!
+      languages(
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean = false
+        queryString: String
+      ): [Language]!
 
       """
       Get a specific language
@@ -90,7 +96,12 @@ export default [
       """
       Get all countries
       """
-      countries(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Country!]!
+      countries(
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean = false
+        queryString: String
+      ): [Country!]!
 
       """
       Returns total number of countries
@@ -110,7 +121,12 @@ export default [
       """
       Get all currencies
       """
-      currencies(limit: Int = 50, offset: Int = 0, includeInactive: Boolean = false): [Currency!]!
+      currencies(
+        limit: Int = 50
+        offset: Int = 0
+        includeInactive: Boolean = false
+        queryString: String
+      ): [Currency!]!
 
       """
       Get a specific currency by ID
@@ -206,6 +222,7 @@ export default [
       Get all root assortments
       """
       assortments(
+        queryString: String
         tags: [String!]
         slugs: [String!]
         limit: Int = 10
@@ -252,7 +269,12 @@ export default [
       """
       Get all filters
       """
-      filters(limit: Int = 10, offset: Int = 0, includeInactive: Boolean = false): [Filter!]!
+      filters(
+        limit: Int = 10
+        offset: Int = 0
+        includeInactive: Boolean = false
+        queryString: String
+      ): [Filter!]!
 
       """
       Get a specific filter by ID
@@ -287,7 +309,7 @@ export default [
       """
       Get all quotations
       """
-      quotations(limit: Int = 10, offset: Int = 0): [Quotation!]!
+      quotations(limit: Int = 10, offset: Int = 0, queryString: String): [Quotation!]!
 
       """
       Get a specific quotation by ID
@@ -302,7 +324,7 @@ export default [
       """
       Get all enrollments
       """
-      enrollments(limit: Int = 10, offset: Int = 0): [Enrollment!]!
+      enrollments(limit: Int = 10, offset: Int = 0, queryString: String): [Enrollment!]!
 
       """
       Get a specific quotation by ID
@@ -339,6 +361,7 @@ export default [
         status: [WorkStatus!]
         selectTypes: [WorkType!]
         created: DateFilterInput
+        queryString: String
       ): [Work!]!
 
       """
@@ -358,7 +381,7 @@ export default [
       """
       Get all emitted events
       """
-      events(type: String, limit: Int = 10, offset: Int = 0): [Event!]!
+      events(type: String, limit: Int = 10, offset: Int = 0, queryString: String): [Event!]!
 
       """
       Get total count of all emitted events

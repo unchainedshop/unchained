@@ -8,9 +8,15 @@ import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
 
 type FindQuery = {
   type?: string;
+  queryString?: string;
 };
-const buildFindSelector = ({ type }: FindQuery) => {
-  return type ? { type } : {};
+const buildFindSelector = ({ type, queryString }: FindQuery) => {
+  const selector: { type?: string; $text?: any } = {};
+
+  if (type) selector.type = type;
+  if (queryString) selector.$text = { $search: queryString };
+
+  return selector;
 };
 
 export const configureEventsModule = async ({
@@ -37,6 +43,7 @@ export const configureEventsModule = async ({
       sort = {
         created: -1,
       },
+
       ...query
     }) => {
       return Events.find(buildFindSelector(query as FindQuery), {

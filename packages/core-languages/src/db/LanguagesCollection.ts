@@ -5,7 +5,19 @@ import { buildDbIndexes } from 'meteor/unchained:utils';
 export const LanguagesCollection = async (db: Db) => {
   const Languages = db.collection<Language>('languages');
 
-  await buildDbIndexes<Language>(Languages, [{ index: { isoCode: 1 }, options: { unique: true } }]);
+  await buildDbIndexes<Language>(Languages, [
+    { index: { isoCode: 1 }, options: { unique: true } },
+    {
+      index: { isoCode: 'text', _id: 'text' },
+      options: {
+        weights: {
+          _id: 8,
+          isoCode: 6,
+        },
+        name: 'languages_fulltext_search',
+      },
+    },
+  ]);
 
   return Languages;
 };

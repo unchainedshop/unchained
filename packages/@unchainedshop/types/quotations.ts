@@ -61,6 +61,7 @@ export interface QuotationQueries {
     query: QuotationQuery & {
       limit?: number;
       offset?: number;
+      queryString?: string;
     },
     options?: FindOptions,
   ) => Promise<Array<Quotation>>;

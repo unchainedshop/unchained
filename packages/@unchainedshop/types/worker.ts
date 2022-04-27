@@ -54,6 +54,7 @@ export type WorkerModule = {
       created?: { end?: Date; start?: Date };
       selectTypes: Array<string>;
       status: Array<WorkStatus>;
+      queryString?: string;
     } & {
       limit?: number;
       skip?: number;

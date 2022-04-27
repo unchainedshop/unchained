@@ -140,6 +140,7 @@ export type ProductDiscount = {
  */
 
 export type ProductQuery = {
+  queryString?: string;
   includeDrafts?: boolean;
   productIds?: Array<string>;
   productSelector?: Query;

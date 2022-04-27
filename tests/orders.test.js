@@ -30,6 +30,36 @@ describe("Order: Management", () => {
       });
       expect(errors[0]?.extensions.code).toEqual("NoPermissionError");
     });
+
+    it("return result of Search by order number", async () => {
+      const {
+     data: {orders}
+      } = await adminGraphqlFetch({
+        query: /* GraphQL */ `
+          query orders($queryString: String) {
+            
+              orders(queryString: $queryString) {
+                _id
+                
+                orderNumber
+             
+              }
+          
+          }
+        `,
+        variables: {
+          queryString: "O0011"
+        },
+      });
+
+      expect(orders).toMatchObject([
+        {
+        _id: ConfirmedOrder._id,
+        orderNumber: ConfirmedOrder.orderNumber
+        },
+      ]);
+      
+    });
   });
 
   describe("Query.ordersCount for admin user should", () => {
@@ -120,6 +150,8 @@ describe("Order: Management", () => {
         `,
         variables: {},
       });
+
+
       expect(orders.length).toEqual(2);
       expect(orders).toMatchObject([
         {

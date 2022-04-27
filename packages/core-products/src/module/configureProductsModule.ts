@@ -44,6 +44,7 @@ const buildFindSelector = ({
   includeDrafts = false,
   productIds,
   productSelector,
+  queryString,
   ...query
 }: ProductQuery) => {
   const selector: Query = productSelector ? { ...productSelector, ...query } : query;
@@ -62,6 +63,10 @@ const buildFindSelector = ({
     } else {
       selector.tags = tags;
     }
+  }
+
+  if (queryString) {
+    selector.$text = { $search: queryString };
   }
 
   if (!includeDrafts) {

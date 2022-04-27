@@ -1100,6 +1100,76 @@ describe('Products', () => {
       expect(products.length).toEqual(3);
     });
 
+    it('Search an product using product slug', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $queryString: String
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              queryString: $queryString
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          queryString: 'search-purpose',
+          includeDrafts: true
+        },
+      });
+
+      expect(products.length).toEqual(2);
+    });
+
+
+    it('Search an product using product sku', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products(
+            $tags: [String!]
+            $slugs: [String!]
+            $queryString: String
+            $limit: Int
+            $offset: Int
+            $includeDrafts: Boolean
+          ) {
+            products(
+              tags: $tags
+              slugs: $slugs
+              queryString: $queryString
+              limit: $limit
+              offset: $offset
+              includeDrafts: $includeDrafts
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          queryString: 'SKU-test',
+          
+        },
+      });
+    
+
+      expect(products.length).toEqual(4);
+    });
+
     it('return only list of products that include the tags specified', async () => {
       const {
         data: { products },

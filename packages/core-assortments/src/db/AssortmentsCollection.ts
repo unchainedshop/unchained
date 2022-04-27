@@ -26,6 +26,12 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { sequence: 1 } },
     { index: { slugs: 1 } },
     { index: { tags: 1 } },
+    {
+      index: { slugs: 'text' },
+      options: {
+        name: 'assortments_fulltext_search',
+      },
+    },
   ]);
 
   // AssortmentTexts indexes
@@ -34,7 +40,16 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, assortmentId: 1 } },
-    { index: { title: 'text', subtitle: 'text' } },
+    {
+      index: { title: 'text', subtitle: 'text' },
+      options: {
+        weights: {
+          title: 8,
+          subtitle: 6,
+        },
+        name: 'assortments_texts_fulltext_search',
+      },
+    },
   ]);
 
   // AssortmentProducts indexes

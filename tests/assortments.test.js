@@ -177,6 +177,27 @@ describe('Assortments', () => {
 
       expect(assortments.length).toEqual(10);
     });
+
+    it("Search assortments by slug", async () => {
+      const {
+        data: { assortments },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Assortments($queryString: String, $includeLeaves: Boolean, $includeInactive: Boolean) {
+            assortments(queryString: $queryString, includeLeaves: $includeLeaves, includeInactive: $includeInactive) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          queryString: 'search-purpose',
+          includeLeaves: true,
+          includeInactive: true
+        },
+      });
+      
+      expect(assortments.length).toEqual(2);
+    });
   });
 
   describe('Query.assortmentsCount for admin user should', () => {

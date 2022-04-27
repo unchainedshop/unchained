@@ -11,10 +11,12 @@ const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_R
 
 type FindQuery = {
   includeInactive?: boolean;
+  queryString?: string;
 };
-const buildFindSelector = ({ includeInactive = false }: FindQuery) => {
-  const selector: { isActive?: true } = { deleted: null };
+const buildFindSelector = ({ includeInactive = false, queryString = '' }: FindQuery) => {
+  const selector: { isActive?: true; $text?: any; deleted?: any } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
+  if (queryString) selector.$text = { $search: queryString };
   return selector;
 };
 
@@ -37,8 +39,8 @@ export const configureCountriesModule = async ({
       return Countries.findOne(countryId ? generateDbFilterById(countryId) : { isoCode });
     },
 
-    findCountries: async ({ limit, offset, includeInactive }, options) => {
-      const countries = Countries.find(buildFindSelector({ includeInactive }), {
+    findCountries: async ({ limit, offset, includeInactive, queryString }, options) => {
+      const countries = Countries.find(buildFindSelector({ includeInactive, queryString }), {
         skip: offset,
         limit,
         ...options,

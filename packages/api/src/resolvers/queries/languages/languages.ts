@@ -3,7 +3,12 @@ import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function languages(
   root: Root,
-  { limit, offset, includeInactive }: { limit: number; offset: number; includeInactive: boolean },
+  {
+    queryString,
+    limit,
+    offset,
+    includeInactive,
+  }: { limit: number; offset: number; includeInactive: boolean; queryString: string },
   { modules, userId }: Context,
 ) {
   log(`query languages: ${limit} ${offset} ${includeInactive ? 'includeInactive' : ''}`, { userId });
@@ -12,5 +17,6 @@ export default async function languages(
     limit,
     offset,
     includeInactive,
+    queryString,
   });
 }

@@ -12,7 +12,12 @@ export const ProductsCollection = async (db: Db) => {
     { index: { slugs: 1 } },
     { index: { status: 1 } },
     { index: { tags: 1 } },
-    { index: { 'warehousing.sku': 1 } },
+    {
+      index: { 'warehousing.sku': 'text', slugs: 'text' },
+      options: {
+        name: 'products_fulltext_search',
+      },
+    },
   ]);
 
   // ProductTexts indexes
@@ -23,6 +28,15 @@ export const ProductsCollection = async (db: Db) => {
     { index: { locale: 1, productId: 1 } },
     {
       index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
+      options: {
+        weights: {
+          title: 8,
+          subtitle: 6,
+          vendor: 5,
+          brand: 4,
+        },
+        name: 'product_texts_fulltext_search',
+      },
     },
   ]);
 

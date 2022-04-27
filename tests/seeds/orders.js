@@ -130,6 +130,7 @@ export const ConfirmedOrder = {
   paymentId: 'confirmed-order-payment',
   deliveryId: 'confirmed-order-delivery',
   status: 'CONFIRMED',
+  orderNumber: 'O0011',
   contact: {
     emailAddress: 'info@unchained.shop',
     telNumber: '+41999999999',
@@ -176,6 +177,7 @@ export const ConfirmedOrderPosition = {
 
 export const PendingOrder = {
   ...ConfirmedOrder,
+  orderNumber: null,
   _id: 'pending-order',
   paymentId: 'pending-order-payment',
   deliveryId: 'pending-order-delivery',
