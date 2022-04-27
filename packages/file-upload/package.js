@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
   minio: '7.0.18',
   'mime-types': '2.1.32',
+  'base-x': '4.0.0',
 });
 
 Package.onUse((api) => {
