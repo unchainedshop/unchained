@@ -102,6 +102,25 @@ describe('Worker Module', () => {
       );
     });
 
+    it('Return search result in work queue', async () => {
+      const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query workQueue($queryString: String) {
+            workQueue(queryString: $queryString, status: []) {
+              _id
+              type
+            }
+          }
+        `,
+        variables: {
+          queryString: 'external',
+        },
+      });
+      expect(workQueue).toHaveLength(
+        3,
+      );
+    });
+
     it('Get work synchroniously. Only one gets it.', async () => {
       const makeAllocatePromise = () =>
         graphqlFetchAsAdminUser({
