@@ -9,16 +9,32 @@ import Minio from 'minio';
 import AssumeRoleProvider from 'minio/dist/main/AssumeRoleProvider';
 import { Readable } from 'stream';
 import { URL } from 'url';
+import { slugify } from 'meteor/unchained:utils';
+import baseX from 'base-x';
+
+const b62 = baseX('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
 
 const { MINIO_ACCESS_KEY, MINIO_REGION, MINIO_STS_ENDPOINT, MINIO_SECRET_KEY, MINIO_ENDPOINT, MINIO_BUCKET_NAME, NODE_ENV, AMAZON_S3_SESSION_TOKEN } = process.env;
 const PUT_URL_EXPIRY = 24 * 60 * 60;
 
-const hash = (fileName: string) => {
-  return crypto.createHash('sha256').update(fileName).digest('hex');
-};
+const buildHashedFilename = (directoryName: string, fileName: string, expiryDate: Date): string => {
+  const hashed = crypto
+    .createHash('md5')
+    .update(`${directoryName}${fileName}${expiryDate.getTime()}`) // ignore the year, we need
+    .digest('hex');
+
+  const splittedFilename = fileName.split('.');
+  const ext = splittedFilename?.pop();
+  const fileNameWithoutExtension = splittedFilename.join('.') || '';
+  const slugifiedFilenameWithExtension = [slugify(fileNameWithoutExtension),ext].filter(Boolean).join('.');
+  const arr = Uint8Array.from(Buffer.from(hashed, 'hex'));
+  const b62converted = b62.encode(arr);
+
+  return `${b62converted}-${slugifiedFilenameWithExtension}`;
+}
 
 const connectToMinio = async () => {
-  if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
+  if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
     log(
       'Please configure Minio/S3 by providing MINIO_ENDPOINT & MINIO_BUCKET_NAME to use upload features',
       { level: LogLevel.Error },
@@ -41,7 +57,7 @@ const connectToMinio = async () => {
     if (NODE_ENV === 'development') minioClient?.traceOn(process.stdout);
     if (MINIO_STS_ENDPOINT) {
       let ap = new AssumeRoleProvider({
-        stsEndpoint: MINIO_STS_ENDPOINT,
+          stsEndpoint: MINIO_STS_ENDPOINT,
       })
       await minioClient.setCredentialsProvider(ap);
     }
@@ -64,7 +80,7 @@ let client: Minio.Client;
 
 connectToMinio().then(c => client = c);
 
-const createDownloadStream = (fileUrl: string, headers: OutgoingHttpHeaders): Promise<Readable> => {
+const createDownloadStream = (fileUrl: string, headers: OutgoingHttpHeaders): Promise<http.IncomingMessage> => {
   const { href, protocol } = new URL(fileUrl);
   return new Promise((resolve, reject) => {
     try {
@@ -106,8 +122,8 @@ export const MinioAdapter: IFileAdapter = {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const expiryDate = getExpiryDate();
-    const [, ...ext] = fileName.split('.');
-    const _id = `${hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`)}.${ext.join('.')}`;
+    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
+    
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
@@ -151,12 +167,16 @@ export const MinioAdapter: IFileAdapter = {
     }
 
     const expiryDate = getExpiryDate();
-    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
+    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
+    const type = rawFile?.mimetype || getMimeType(fileName);
 
-    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream);
+    var metaData = {
+      'Content-Type': type,
+    }
+
+    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream, undefined, metaData);
 
     const { size } = await getObjectStats(`${directoryName}/${_id}`);
-    const type = getMimeType(fileName);
 
     return {
       _id,
@@ -175,12 +195,17 @@ export const MinioAdapter: IFileAdapter = {
     const { href } = new URL(fileLink);
     const fileName = fname || href.split('/').pop();
     const expiryDate = getExpiryDate();
-    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
+    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const stream = await createDownloadStream(fileLink, headers);
-    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream);
+    const type = stream?.headers?.['content-type'] || getMimeType(fileName);
+
+    var metaData = {
+      'Content-Type': type,
+    }
+
+    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream, undefined, metaData);
     const { size } = await getObjectStats(`${directoryName}/${_id}`);
-    const type = getMimeType(fileName);
 
     return {
       _id,
