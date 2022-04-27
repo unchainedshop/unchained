@@ -52,6 +52,7 @@ export type User = {
   services: any;
   tags?: Array<string>;
   username?: string;
+  meta: any;
 } & TimestampFields;
 
 export type UserQuery = Filter<User> & {

@@ -26,7 +26,6 @@ export default [
       phoneMobile: String
       gender: String
       address: AddressInput
-      customFields: JSON
     }
 
     input AddressInput {
