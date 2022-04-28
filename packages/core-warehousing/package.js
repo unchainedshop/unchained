@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-warehousing',
-  version: '1.0.0-rc.21',
+  version: '1.0.0-rc.22',
   summary: 'Unchained Engine Core: Warehousing',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -11,9 +11,9 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.21');
-  api.use('unchained:events@1.0.0-rc.21');
-  api.use('unchained:logger@1.0.0-rc.21');
+  api.use('unchained:utils@1.0.0-rc.22');
+  api.use('unchained:events@1.0.0-rc.22');
+  api.use('unchained:logger@1.0.0-rc.22');
 
   api.mainModule('src/warehousing-index.ts', 'server');
 });
