@@ -24,16 +24,6 @@ export const getLocaleContext = async (
   req: IncomingMessage,
   unchainedAPI: UnchainedAPI,
 ): Promise<UnchainedLocaleContext> => {
-  const languages = await unchainedAPI.modules.languages.findLanguages(
-    { includeInactive: false },
-    { projection: { isoCode: 1, isActive: 1 } },
-  );
-
-  const countries = await unchainedAPI.modules.countries.findCountries(
-    { includeInactive: false },
-    { projection: { isoCode: 1, isActive: 1 } },
-  );
-
   const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
   const cachedContext = localeContextCache.get(cacheKey);
 
@@ -45,6 +35,16 @@ export const getLocaleContext = async (
   // return the parsed locale by bcp47 and
   // return the best resolved normalized locale by locale according to system-wide configuration
   // else fallback to base language & base country
+
+  const languages = await unchainedAPI.modules.languages.findLanguages(
+    { includeInactive: false },
+    { projection: { isoCode: 1, isActive: 1 } },
+  );
+
+  const countries = await unchainedAPI.modules.countries.findCountries(
+    { includeInactive: false },
+    { projection: { isoCode: 1, isActive: 1 } },
+  );
 
   const supportedLocaleStrings = languages.reduce((accumulator, language) => {
     const added = countries.map((country) => {
