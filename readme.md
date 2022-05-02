@@ -36,3 +36,8 @@ npm run dev
    admin@unchained.local / password: password
 
 2. Navigate to http://localhost:4010/graphql to view the GraphQL Playground
+
+## Migration to Unchained 1.0
+
+- Install new peer dependencies: graphql-upload, graphql-scalars, mongodb
+- Migrate all custom plugins (see docs for templates)
