@@ -6,7 +6,6 @@ import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import mimeType from 'mime-types';
 import Minio from 'minio';
-import AssumeRoleProvider from 'minio/dist/main/AssumeRoleProvider';
 import { Readable } from 'stream';
 import { URL } from 'url';
 import { slugify } from 'meteor/unchained:utils';
@@ -17,7 +16,6 @@ const b62 = baseX('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY
 const {
   MINIO_ACCESS_KEY,
   MINIO_REGION,
-  MINIO_STS_ENDPOINT,
   MINIO_SECRET_KEY,
   MINIO_ENDPOINT,
   MINIO_BUCKET_NAME,
@@ -44,7 +42,9 @@ const buildHashedFilename = (directoryName: string, fileName: string, expiryDate
   return `${b62converted}-${slugifiedFilenameWithExtension}`;
 };
 
-const connectToMinio = async () => {
+let client: Minio.Client;
+
+export async function connectToMinio(credentialsProvider) {
   if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
     log(
       'Please configure Minio/S3 by providing MINIO_ENDPOINT & MINIO_BUCKET_NAME to use upload features',
@@ -66,18 +66,19 @@ const connectToMinio = async () => {
     });
 
     if (NODE_ENV === 'development') minioClient?.traceOn(process.stdout);
-    if (MINIO_STS_ENDPOINT) {
-      const ap = new AssumeRoleProvider({
-        stsEndpoint: MINIO_STS_ENDPOINT,
-      });
-      await minioClient.setCredentialsProvider(ap);
+
+    if (credentialsProvider) {
+      await minioClient.setCredentialsProvider(credentialsProvider);
     }
-    return minioClient;
+
+    client = minioClient;
   } catch (error) {
-    log(`Exception while creating Minio client: ${error.message}`, { level: LogLevel.Error });
-    return null;
+    log(`Exception while creating Minio client: ${error.message}`, {
+      level: LogLevel.Error,
+    });
   }
-};
+  return null;
+}
 
 const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
   return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${hashedFilename}`;
@@ -87,9 +88,7 @@ const getMimeType = (extension) => {
   return mimeType.lookup(extension);
 };
 
-let client: Minio.Client;
-
-connectToMinio().then(function (c) {
+connectToMinio().then((c) => {
   client = c;
 });
 
@@ -181,8 +180,7 @@ export const MinioAdapter: IFileAdapter = {
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
     }
 
-    const expiryDate = getExpiryDate();
-    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
+    const _id = buildHashedFilename(directoryName, fileName, new Date());
     const type = rawFile?.mimetype || getMimeType(fileName);
 
     const metaData = {
@@ -196,7 +194,7 @@ export const MinioAdapter: IFileAdapter = {
     return {
       _id,
       directoryName,
-      expiryDate,
+      expiryDate: null,
       fileName,
       size,
       type,
@@ -209,8 +207,7 @@ export const MinioAdapter: IFileAdapter = {
 
     const { href } = new URL(fileLink);
     const fileName = fname || href.split('/').pop();
-    const expiryDate = getExpiryDate();
-    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
+    const _id = buildHashedFilename(directoryName, fileName, new Date());
 
     const stream = await createDownloadStream(fileLink, headers);
     const type = stream?.headers?.['content-type'] || getMimeType(fileName);
@@ -225,7 +222,7 @@ export const MinioAdapter: IFileAdapter = {
     return {
       _id,
       directoryName,
-      expiryDate,
+      expiryDate: null,
       fileName,
       size,
       type,
@@ -235,3 +232,5 @@ export const MinioAdapter: IFileAdapter = {
 };
 
 FileDirector.registerAdapter(MinioAdapter);
+
+export default MinioAdapter;
