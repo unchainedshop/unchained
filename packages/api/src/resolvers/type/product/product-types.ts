@@ -48,7 +48,7 @@ export const Product: ProductHelperTypes = {
 
     return modules.products.findProducts({
       productIds,
-      includeInactive,
+      includeDrafts: includeInactive,
       limit,
       offset,
     });

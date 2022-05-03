@@ -85,7 +85,7 @@ export const configureProductsModule = async ({
   options: productsOptions = {},
 }: ModuleInput<ProductsSettingsOptions>): Promise<ProductsModule> => {
   registerEvents(PRODUCT_EVENTS);
-  await productsSettings.configureSettings(productsOptions, db);
+  await productsSettings.configureSettings(productsOptions);
 
   const { Products, ProductTexts } = await ProductsCollection(db);
 
