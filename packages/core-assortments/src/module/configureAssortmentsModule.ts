@@ -261,7 +261,6 @@ export const configureAssortmentsModule = async ({
     },
 
     findAssortments: async ({ limit, offset, ...query }) => {
-      console.log(buildFindSelector(query));
       const assortments = Assortments.find(buildFindSelector(query), {
         skip: offset,
         limit,

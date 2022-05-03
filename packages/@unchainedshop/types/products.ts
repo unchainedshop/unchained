@@ -325,11 +325,11 @@ export type ProductsModule = {
       productSelector: Query;
     }) => Promise<number>;
     findFilteredProducts: (params: {
-      limit: number;
-      offset: number;
+      limit?: number;
+      offset?: number;
       productIds: Array<string>;
       productSelector: Query;
-      sort: FindOptions['sort'];
+      sort?: FindOptions['sort'];
     }) => Promise<Array<Product>>;
   };
 
