@@ -32,29 +32,23 @@ export default async function updateCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
+  const fieldsToUpdate: any = {};
+
   if (quantity !== null) {
     if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
-    // FIXME: positionId is actually
-    await modules.orders.positions.update(
-      {
-        orderId: item.orderId,
-        orderPositionId: itemId,
-      },
-      { quantity },
-      context,
-    );
+    fieldsToUpdate.quantity = quantity;
   }
 
   if (configuration !== null) {
-    await modules.orders.positions.update(
-      {
-        orderId: item.orderId,
-        orderPositionId: itemId,
-      },
-      { configuration },
-      context,
-    );
+    fieldsToUpdate.configuration = configuration;
   }
 
-  return modules.orders.positions.findOrderPosition({ itemId });
+  return modules.orders.positions.update(
+    {
+      orderId: item.orderId,
+      orderPositionId: itemId,
+    },
+    fieldsToUpdate,
+    context,
+  );
 }

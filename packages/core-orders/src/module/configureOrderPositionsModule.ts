@@ -136,30 +136,18 @@ export const configureOrderPositionsModule = ({
     update: async ({ orderId, orderPositionId }, { quantity, configuration }, requestContext) => {
       const selector = buildFindByIdSelector(orderPositionId, orderId);
       const orderPosition = await OrderPositions.findOne(selector, {});
+      const modifier: any = {
+        $set: {
+          updated: new Date(),
+          updatedBy: requestContext.userId,
+        },
+      };
 
       if (quantity !== null) {
-        log(
-          `OrderPosition ${orderPositionId} -> Update Quantity of ${orderPositionId} to ${quantity}x`,
-          { orderId },
-        );
-
-        await OrderPositions.updateOne(selector, {
-          $set: {
-            quantity,
-            updated: new Date(),
-            updatedBy: requestContext.userId,
-          },
-        });
+        modifier.$set.quantity = quantity;
       }
 
       if (configuration !== null) {
-        log(
-          `OrderPosition ${orderPositionId} -> Update confiugration of ${orderPositionId} to ${JSON.stringify(
-            configuration,
-          )}x`,
-          { orderId },
-        );
-        // check if the variant has changed
         let originalProduct: Product;
         if (orderPosition.originalProductId) {
           originalProduct = await requestContext.modules.products.findProduct({
@@ -178,24 +166,12 @@ export const configureOrderPositionsModule = ({
             { configuration },
             requestContext,
           );
-
-          await OrderPositions.updateOne(selector, {
-            $set: {
-              productId: resolvedProduct._id,
-              updated: new Date(),
-              updatedBy: requestContext.userId,
-            },
-          });
+          modifier.$set.productId = resolvedProduct._id;
         }
-
-        await OrderPositions.updateOne(selector, {
-          $set: {
-            configuration,
-            updated: new Date(),
-            updatedBy: requestContext.userId,
-          },
-        });
+        modifier.$set.configuration = configuration;
       }
+
+      await OrderPositions.updateOne(selector, modifier);
 
       await updateCalculation(orderId, requestContext);
 
@@ -281,7 +257,7 @@ export const configureOrderPositionsModule = ({
       return OrderPositions.findOne(selector, {});
     },
 
-    addProductItem: async (orderPosition, { order, product }, requestContext) => {
+    addProductItem: async (orderPosition: OrderPosition, { order, product }, requestContext) => {
       const { modules } = requestContext;
       const { configuration, orderId: positionOrderId, quantity, ...scope } = orderPosition;
       const orderId = order._id || positionOrderId;
@@ -301,30 +277,39 @@ export const configureOrderPositionsModule = ({
         configuration: configuration || { $exists: false },
         ...scope,
       };
-      const existingPosition = await OrderPositions.findOne(selector, {});
 
-      // Update position if exists
-      let upsertedOrderPosition: OrderPosition;
-
-      if (existingPosition) {
-        upsertedOrderPosition = await modules.orders.positions.update(
-          {
+      const { upsertedId } = await OrderPositions.updateOne(
+        selector,
+        {
+          $set: {
+            updated: new Date(),
+            updatedBy: requestContext.userId,
+          },
+          $inc: { quantity },
+          $setOnInsert: {
+            created: new Date(),
+            createdBy: requestContext.userId,
+            calculation: [],
+            scheduling: [],
             orderId,
-            orderPositionId: existingPosition._id,
+            productId: resolvedProduct._id,
+            originalProductId: product._id,
+            configuration,
+            ...scope,
           },
-          {
-            quantity: existingPosition.quantity + quantity,
-          },
-          requestContext,
-        );
-      } else {
-        // Otherwise add new position
-        upsertedOrderPosition = await modules.orders.positions.create(
-          orderPosition,
-          { order, product: resolvedProduct, originalProduct: product },
-          requestContext,
-        );
-      }
+        },
+        { upsert: true },
+      );
+
+      await updateCalculation(orderId, requestContext);
+
+      const upsertedOrderPosition = await OrderPositions.findOne(
+        upsertedId
+          ? {
+              _id: upsertedId,
+            }
+          : selector,
+      );
 
       emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
 
