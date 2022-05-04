@@ -32,23 +32,14 @@ export default async function updateCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const fieldsToUpdate: any = {};
-
-  if (quantity !== null) {
-    if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
-    fieldsToUpdate.quantity = quantity;
-  }
-
-  if (configuration !== null) {
-    fieldsToUpdate.configuration = configuration;
-  }
+  if (quantity !== null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
   return modules.orders.positions.update(
     {
       orderId: item.orderId,
       orderPositionId: itemId,
     },
-    fieldsToUpdate,
+    { quantity, configuration },
     context,
   );
 }
