@@ -62,8 +62,6 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
-      throughputTime,
-
       estimatedStock: async () => {
         try {
           const referenceDate = getReferenceDate(context);

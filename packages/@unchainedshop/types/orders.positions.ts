@@ -49,9 +49,13 @@ export type OrderPositionsModule = {
 
   removePositions: ({ orderId: string }, requestContext: Context) => Promise<number>;
 
-  update: (
-    query: { orderId: string; orderPositionId: string },
-    params: { quantity?: number; configuration?: Configuration },
+  updateProductItem: (
+    doc: {
+      context?: any;
+      configuration?: Configuration;
+      quantity?: number;
+    },
+    params: { order: Order; product: Product, orderPosition: OrderPosition },
     requestContext: Context,
   ) => Promise<OrderPosition>;
 

@@ -1,5 +1,4 @@
 import { SimpleProductHelperTypes } from '@unchainedshop/types/products';
-import { WarehousingDirector } from 'meteor/unchained:core-warehousing';
 import { PlanProduct } from './product-plan-types';
 
 export const SimpleProduct: SimpleProductHelperTypes = {
@@ -34,13 +33,11 @@ export const SimpleProduct: SimpleProductHelperTypes = {
             warehousingProvider,
           };
 
-          const actions = await WarehousingDirector.actions(
+          const dispatch = await modules.warehousing.estimatedDispatch(
             warehousingProvider,
             warehousingContext,
             requestContext,
           );
-
-          const dispatch = await actions.estimatedDispatch();
 
           return {
             ...warehousingContext,
@@ -81,13 +78,11 @@ export const SimpleProduct: SimpleProductHelperTypes = {
             warehousingProvider,
           };
 
-          const actions = await WarehousingDirector.actions(
+          const stock = await modules.warehousing.estimatedStock(
             warehousingProvider,
             warehousingContext,
             requestContext,
           );
-
-          const stock = await actions.estimatedStock();
 
           return {
             ...warehousingContext,

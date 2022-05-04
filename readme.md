@@ -41,3 +41,5 @@ npm run dev
 
 - Install new peer dependencies: graphql-upload, graphql-scalars, mongodb
 - Migrate all custom plugins (see docs for templates)
+- Setting renamed: generateOrderNumber -> orderNumberHashFn
+- Setting removed: autoSchedulingCronText

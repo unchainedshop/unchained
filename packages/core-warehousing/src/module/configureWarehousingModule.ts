@@ -116,6 +116,15 @@ export const configureWarehousingModule = async ({
       return director.estimatedDispatch();
     },
 
+    estimatedStock: async (warehousingProvider, warehousingContext, requestContext) => {
+      const director = await WarehousingDirector.actions(
+        warehousingProvider,
+        warehousingContext,
+        requestContext,
+      );
+      return director.estimatedStock();
+    },
+
     isActive: async (warehousingProvider, requestContext) => {
       const actions = await WarehousingDirector.actions(warehousingProvider, {}, requestContext);
       return actions.isActive();

@@ -5,6 +5,7 @@ import {
   OrderQuantityTooLowError,
   OrderItemNotFoundError,
   OrderWrongStatusError,
+  ProductNotFoundError,
   InvalidIdError,
 } from '../../../errors';
 
@@ -18,7 +19,7 @@ export default async function updateCartItem(
   context: Context,
 ) {
   const { modules, userId } = context;
-  const { itemId, configuration, quantity = null } = params;
+  const { itemId, configuration = null, quantity = null } = params;
 
   log(`mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(configuration)}`, { userId });
 
@@ -32,14 +33,21 @@ export default async function updateCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
+  const productId = item.originalProductId || item.productId;
+  const product = await modules.products.findProduct({
+    productId,
+  });
+  if (!product) throw new ProductNotFoundError({ productId });
+
   if (quantity !== null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
-  return modules.orders.positions.update(
-    {
-      orderId: item.orderId,
-      orderPositionId: itemId,
-    },
+  return modules.orders.positions.updateProductItem(
     { quantity, configuration },
+    {
+      order,
+      product,
+      orderPosition: item,
+    },
     context,
   );
 }

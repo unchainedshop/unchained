@@ -6,6 +6,7 @@ import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
+import { ordersSettings } from '../orders-settings';
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',
@@ -133,9 +134,8 @@ export const configureOrderPositionsModule = ({
       return result.deletedCount;
     },
 
-    update: async ({ orderId, orderPositionId }, { quantity, configuration }, requestContext) => {
-      const selector = buildFindByIdSelector(orderPositionId, orderId);
-      const orderPosition = await OrderPositions.findOne(selector, {});
+    updateProductItem: async ({ context, quantity, configuration }, { order, product, orderPosition }, requestContext) => {
+      const selector = buildFindByIdSelector(orderPosition._id, order._id);
       const modifier: any = {
         $set: {
           updated: new Date(),
@@ -143,37 +143,30 @@ export const configureOrderPositionsModule = ({
         },
       };
 
-      if (quantity !== null) {
+      if (quantity !== null && quantity !== orderPosition.quantity) {
         modifier.$set.quantity = quantity;
       }
 
       if (configuration !== null) {
-        let originalProduct: Product;
-        if (orderPosition.originalProductId) {
-          originalProduct = await requestContext.modules.products.findProduct({
-            productId: orderPosition.originalProductId,
-          });
-        }
-        if (!originalProduct) {
-          originalProduct = await requestContext.modules.products.findProduct({
-            productId: orderPosition.productId,
-          });
-        }
-
-        if (originalProduct) {
-          const resolvedProduct = await requestContext.modules.products.resolveOrderableProduct(
-            originalProduct,
-            { configuration },
-            requestContext,
-          );
-          modifier.$set.productId = resolvedProduct._id;
-        }
+        const resolvedProduct = await requestContext.modules.products.resolveOrderableProduct(
+          originalProduct,
+          { configuration },
+          requestContext,
+        );
+        modifier.$set.productId = resolvedProduct._id;
         modifier.$set.configuration = configuration;
       }
 
+      await ordersSettings.validateOrderPosition({
+        order,
+        product,
+        configuration,
+        quantityDiff: quantity - orderPosition.quantity
+      }, requestContext);
+
       await OrderPositions.updateOne(selector, modifier);
 
-      await updateCalculation(orderId, requestContext);
+      await updateCalculation(order._id, requestContext);
 
       const updatedOrderPosition = await OrderPositions.findOne(selector, {});
 
@@ -268,6 +261,14 @@ export const configureOrderPositionsModule = ({
         { configuration },
         requestContext,
       );
+
+      // Validate add to cart mutation
+      await ordersSettings.validateOrderPosition({
+        order,
+        product,
+        configuration,
+        quantityDiff: quantity
+      }, requestContext);
 
       // Search for existing position
       const selector: Query = {

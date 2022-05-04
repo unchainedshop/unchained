@@ -216,7 +216,15 @@ export interface OrderServices {
  * Settings
  */
 
+export interface OrderSettingsOrderPositionValidation {
+  order: Order;
+  product: Product;
+  quantityDiff?: number;
+  configuration?: Configuration;
+}
+
 export interface OrdersSettingsOptions {
   ensureUserHasCart?: boolean;
   orderNumberHashFn?: (order: Order, index: number) => string;
+  validateOrderPosition?: (validationParams: OrderSettingsOrderPositionValidation, context: Context) => Promise<void>
 }
