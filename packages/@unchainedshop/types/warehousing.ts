@@ -58,7 +58,6 @@ export type WarehousingAdapterActions = {
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
-  validateCartItem: (quantityToOrder: number) => Promise<boolean>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
@@ -82,7 +81,6 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     isActive: () => boolean;
     estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
-    validateCartItem: () => Promise<boolean>;
   }>;
 };
 

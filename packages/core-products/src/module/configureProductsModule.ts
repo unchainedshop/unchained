@@ -91,12 +91,6 @@ export const configureProductsModule = async ({
 
   const mutations = generateDbMutations<Product>(Products, ProductsSchema) as ModuleMutations<Product>;
 
-  const checkIsActive = (product: Product, { modules }: Context) => {
-    if (!modules.products.isActive(product)) {
-      throw new Error('This product is not available for ordering at the moment');
-    }
-  };
-
   const deleteProductsPermanently: ProductsModule['deleteProductsPermanently'] = async ({
     productId,
     excludedProductIds,
@@ -273,8 +267,6 @@ export const configureProductsModule = async ({
       const { modules } = requestContext;
       const productId = product._id as string;
 
-      checkIsActive(product, requestContext);
-
       if (product.type === ProductTypes.ConfigurableProduct) {
         const variations = await modules.products.variations.findProductVariations({
           productId,
@@ -296,7 +288,6 @@ export const configureProductsModule = async ({
         }
 
         const resolvedProduct = variants[0];
-        checkIsActive(resolvedProduct, requestContext);
         return resolvedProduct;
       }
       return product;

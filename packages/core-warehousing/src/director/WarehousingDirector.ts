@@ -62,11 +62,6 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
-      validateCartItem: async () => {
-        console.log(context);
-        return false;
-      },
-
       estimatedStock: async () => {
         try {
           const referenceDate = getReferenceDate(context);
