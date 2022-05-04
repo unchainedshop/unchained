@@ -62,7 +62,10 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
-      throughputTime,
+      validateCartItem: async () => {
+        console.log(context);
+        return false;
+      },
 
       estimatedStock: async () => {
         try {

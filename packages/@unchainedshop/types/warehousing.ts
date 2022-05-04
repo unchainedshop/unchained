@@ -8,6 +8,7 @@ import {
   _ID,
 } from './common';
 import { DeliveryProvider } from './delivery';
+import { Order } from './orders';
 import { Product } from './products';
 
 export enum WarehousingProviderType {
@@ -40,6 +41,7 @@ export interface WarehousingContext {
   product?: Product;
   quantity?: number;
   referenceDate?: Date;
+  order?: Order;
   warehousingProviderId?: string;
 }
 
@@ -48,12 +50,15 @@ export type EstimatedDispatch = {
   earliestDelivery?: Date;
 };
 
+export type EstimatedStock = { quantity: number } | null
+
 export type WarehousingAdapterActions = {
   configurationError: () => WarehousingError;
   isActive: () => boolean;
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
+  validateCartItem: (quantityToOrder: number) => Promise<boolean>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
@@ -75,9 +80,9 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
   ) => Promise<{
     configurationError: () => WarehousingError;
     isActive: () => boolean;
-    throughputTime: () => Promise<number>;
-    estimatedStock: () => Promise<{ quantity: number } | null>;
+    estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
+    validateCartItem: () => Promise<boolean>;
   }>;
 };
 
@@ -119,6 +124,12 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     context: WarehousingContext,
     requestContext: Context,
   ) => Promise<EstimatedDispatch>;
+
+  estimatedStock: (
+    provider: WarehousingProvider,
+    context: WarehousingContext,
+    requestContext: Context,
+  ) => Promise<EstimatedStock>;
 
   // Mutations
   delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;
