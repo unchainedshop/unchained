@@ -18,7 +18,7 @@ export default async function updateCartItem(
   context: Context,
 ) {
   const { modules, userId } = context;
-  const { itemId, quantity = null, configuration = null } = params;
+  const { itemId, configuration, quantity = null } = params;
 
   log(`mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(configuration)}`, { userId });
 
