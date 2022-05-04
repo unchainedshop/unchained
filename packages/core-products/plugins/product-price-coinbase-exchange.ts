@@ -44,15 +44,11 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
           params.context,
         );
 
-        const productPrice = await modules.products.prices.price(
-          product,
-          {
-            country,
-            currency: defaultCurrency,
-            quantity,
-          },
-          params.context,
-        );
+        const productPrice = await modules.products.prices.price(product, {
+          country,
+          currency: defaultCurrency,
+          quantity,
+        });
 
         const { calculation = [] } = pricingAdapter.calculationSheet;
 

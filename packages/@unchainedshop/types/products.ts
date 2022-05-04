@@ -198,7 +198,6 @@ export type ProductsModule = {
     price: (
       product: Product,
       params: { country: string; currency: string; quantity?: number },
-      requestContext: Context,
     ) => Promise<ProductPrice>;
 
     userPrice: (
@@ -216,7 +215,6 @@ export type ProductsModule = {
     catalogPricesLeveled: (
       product: Product,
       params: { currency: string; country: string },
-      requestContext: Context,
     ) => Promise<
       Array<{
         minQuantity: number;
@@ -233,7 +231,6 @@ export type ProductsModule = {
         quantity?: number;
         vectors: Array<ProductConfiguration>;
       },
-      requestContext: Context,
     ) => Promise<ProductPriceRange>;
 
     simulatedPriceRange: (
@@ -458,10 +455,10 @@ export interface ConfigurableProductHelperTypes extends ProductHelperTypes {
 }
 
 export interface PlanProductHelperTypes extends ProductHelperTypes {
-  catalogPrice: HelperType<{ quantity: number; currency: string }, Promise<ProductPrice>>;
+  catalogPrice: HelperType<{ quantity?: number; currency?: string }, Promise<ProductPrice>>;
 
   leveledCatalogPrices: HelperType<
-    { currency: string },
+    { currency?: string },
     Promise<
       Array<{
         minQuantity: number;
@@ -472,12 +469,12 @@ export interface PlanProductHelperTypes extends ProductHelperTypes {
   >;
 
   simulatedPrice: HelperType<
-    { quantity: number; currency: string; useNetPrice: boolean },
+    { quantity?: number; currency?: string; useNetPrice?: boolean },
     Promise<ProductPrice>
   >;
 
   simulatedDiscounts: HelperType<
-    { quantity: number },
+    { quantity?: number },
     Promise<
       Array<{
         _id: string;

@@ -4,21 +4,37 @@ import { Product } from './product-types';
 export const PlanProduct: PlanProductHelperTypes = {
   ...Product,
 
-  catalogPrice: async (obj, { quantity, currency }, requestContext) => {
+  catalogPrice: async (product, { quantity, currency: forcedCurrencyCode }, requestContext) => {
     const { modules, countryContext } = requestContext;
-    return modules.products.prices.price(
-      obj,
-      {
-        country: countryContext,
-        currency,
-        quantity,
-      },
-      requestContext,
-    );
+    const currencyCode =
+      forcedCurrencyCode ||
+      (await requestContext.services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: countryContext,
+        },
+        requestContext,
+      ));
+    return modules.products.prices.price(product, {
+      country: countryContext,
+      currency: currencyCode,
+      quantity,
+    });
   },
 
-  simulatedPrice: async (obj, { currency, quantity, useNetPrice }, requestContext) => {
+  simulatedPrice: async (
+    obj,
+    { currency: forcedCurrencyCode, quantity, useNetPrice },
+    requestContext,
+  ) => {
     const { countryContext, modules } = requestContext;
+    const currency =
+      forcedCurrencyCode ||
+      (await requestContext.services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: countryContext,
+        },
+        requestContext,
+      ));
     return modules.products.prices.userPrice(
       obj,
       { quantity, currency, country: countryContext, useNetPrice },
@@ -26,13 +42,17 @@ export const PlanProduct: PlanProductHelperTypes = {
     );
   },
 
-  leveledCatalogPrices: async (obj, { currency }, requestContext) => {
+  leveledCatalogPrices: async (obj, { currency: forcedCurrencyCode }, requestContext) => {
     const { countryContext, modules } = requestContext;
-    return modules.products.prices.catalogPricesLeveled(
-      obj,
-      { currency, country: countryContext },
-      requestContext,
-    );
+    const currency =
+      forcedCurrencyCode ||
+      (await requestContext.services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: countryContext,
+        },
+        requestContext,
+      ));
+    return modules.products.prices.catalogPricesLeveled(obj, { currency, country: countryContext });
   },
 
   simulatedDiscounts: async () => {

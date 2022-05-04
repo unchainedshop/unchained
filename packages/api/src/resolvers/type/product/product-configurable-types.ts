@@ -14,20 +14,27 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
     });
   },
 
-  catalogPriceRange: async (obj, { quantity, vectors, currency, includeInactive }, requestContext) => {
+  catalogPriceRange: async (
+    obj,
+    { quantity, vectors, currency: forcedCurrencyCode, includeInactive },
+    requestContext,
+  ) => {
     const { countryContext, modules } = requestContext;
-
-    return modules.products.prices.catalogPriceRange(
-      obj,
-      {
-        quantity,
-        vectors,
-        includeInactive,
-        country: countryContext,
-        currency,
-      },
-      requestContext,
-    );
+    const currencyCode =
+      forcedCurrencyCode ||
+      (await requestContext.services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: countryContext,
+        },
+        requestContext,
+      ));
+    return modules.products.prices.catalogPriceRange(obj, {
+      quantity,
+      vectors,
+      includeInactive,
+      country: countryContext,
+      currency: currencyCode,
+    });
   },
 
   variations: async (obj, { limit = 10, offset = 0 }, { modules }) => {
@@ -40,10 +47,18 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
 
   async simulatedPriceRange(
     obj,
-    { currency, quantity, useNetPrice, vectors, includeInactive },
+    { currency: forcedCurrencyCode, quantity, useNetPrice, vectors, includeInactive },
     requestContext,
   ) {
     const { countryContext, modules } = requestContext;
+    const currency =
+      forcedCurrencyCode ||
+      (await requestContext.services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: countryContext,
+        },
+        requestContext,
+      ));
     return modules.products.prices.simulatedPriceRange(
       obj,
       {

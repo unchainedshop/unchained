@@ -20,13 +20,23 @@ const ProductPrice: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, country, currency, quantity, modules } = params.context;
-
-        const price = await modules.products.prices.price(
+        const {
           product,
-          { country, currency, quantity },
-          params.context,
-        );
+          country,
+          currency: forcedCurrency,
+          quantity,
+          modules,
+          services,
+        } = params.context;
+        const currency =
+          forcedCurrency ||
+          (await services.countries.resolveDefaultCurrencyCode(
+            {
+              isoCode: country,
+            },
+            params.context,
+          ));
+        const price = await modules.products.prices.price(product, { country, currency, quantity });
         if (price) {
           const itemTotal = price.amount * quantity;
           pricingAdapter.resultSheet().addItem({
