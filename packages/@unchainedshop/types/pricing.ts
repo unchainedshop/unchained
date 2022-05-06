@@ -55,7 +55,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
 
   sum: (filter?: Partial<Calculation>) => number;
   taxSum: () => number;
-  total: (params: { category?: string; useNetPrice: boolean }) => {
+  total: (params?: { category?: string; useNetPrice?: boolean }) => {
     amount: number;
     currency: string;
   };

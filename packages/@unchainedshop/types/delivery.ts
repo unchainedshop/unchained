@@ -33,7 +33,7 @@ export type DeliveryConfiguration = Array<{
 
 export type DeliveryProvider = {
   _id?: _ID;
-  type: string;
+  type: DeliveryProviderType;
   adapterKey: string;
   authorId: string;
   configuration: DeliveryConfiguration;

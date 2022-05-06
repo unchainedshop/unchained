@@ -15,13 +15,16 @@ const bulkImportMiddleware = async (req, res) => {
     await checkAction(resolvedContext, (actions as any).bulkImport);
 
     const date = new Date().toISOString();
+    const stream = resolvedContext.bulkImporter.BulkImportPayloads.openUploadStreamWithId(
+      date,
+      `${date}.json`,
+      {
+        contentType: 'application/json',
+      },
+    );
     if (req.method === 'POST') {
       req
-        .pipe(
-          resolvedContext.bulkImporter.BulkImportPayloads.openUploadStreamWithId(date, `${date}.json`, {
-            contentType: 'application/json',
-          }),
-        )
+        .pipe(stream)
         .on('error', (e) => {
           logger.error(e.message);
           res.writeHead(503);

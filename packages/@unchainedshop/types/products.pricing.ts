@@ -45,7 +45,7 @@ export type ProductPricingContext = {
 
 export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalculation> {
   addItem: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta: any }) => void;
-  unitPrice: (params: { useNetPrice: boolean }) => {
+  unitPrice: (params?: { useNetPrice: boolean }) => {
     amount: number;
     currency: string;
   };

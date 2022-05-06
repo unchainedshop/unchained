@@ -5,6 +5,10 @@ export interface RoleInterface {
   allowRules: {
     [name: string]: any;
   };
+  allow(
+    action: string,
+    fn: (root: any, props: any, context: Context) => Promise<boolean> | boolean,
+  ): Promise<boolean>;
   helpers: Record<string, unknown>;
 }
 
