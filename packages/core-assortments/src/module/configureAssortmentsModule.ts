@@ -55,7 +55,7 @@ const buildFindSelector = ({
     }
   }
 
-  if (!assortmentSelector && !includeLeaves) {
+  if (!Object.keys(assortmentSelector).length && !includeLeaves) {
     selector.isRoot = true;
   }
 
@@ -63,7 +63,7 @@ const buildFindSelector = ({
     selector.$text = { $search: queryString };
   }
 
-  if (!assortmentSelector && !includeInactive) {
+  if (!Object.keys(assortmentSelector).length && !includeInactive) {
     selector.isActive = true;
   }
   return selector;
