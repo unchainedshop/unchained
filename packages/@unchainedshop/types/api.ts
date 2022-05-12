@@ -1,6 +1,6 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { GraphQLOptions } from 'apollo-server-express';
-import { FilesSettingsOptions } from '@unchainedshop/types/files';
+import { FilesSettingsOptions } from './files';
 import { Db, Locale, MigrationRepository, ModuleInput } from './common';
 import { AccountsSettingsOptions } from './accounts';
 import { AssortmentsSettingsOptions } from './assortments';

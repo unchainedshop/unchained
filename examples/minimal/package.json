@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "1.0.0-rc.22",
+  "version": "1.0.0-rc.23",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -33,7 +33,7 @@
   "dependencies": {
     "@babel/runtime": "^7.17.9",
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@unchainedshop/controlpanel": "^1.0.0-rc.22",
+    "@unchainedshop/controlpanel": "^1.0.0-rc.23",
     "apollo-server-express": "^2.25.3",
     "bcrypt": "^5.0.1",
     "bip32": "^3.0.1",
@@ -42,28 +42,28 @@
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
     "cookie": "^0.4.2",
     "dotenv-extended": "^2.9.0",
-    "ethers": "^5.6.4",
+    "ethers": "^5.6.5",
     "graphql": "^15.8.0",
     "graphql-scalars": "^1.17.0",
     "graphql-upload": "^13.0.0",
     "isomorphic-unfetch": "^3.1.0",
     "locale": "^0.1.0",
-    "meteor-node-stubs": "^1.2.1",
+    "meteor-node-stubs": "^1.2.3",
     "moment": "^2.29.3",
-    "mongodb": "^4.5.0",
+    "mongodb": "^4.6.0",
     "postfinancecheckout": "^3.0.5",
     "simpl-schema": "^1.12.0",
-    "stripe": "^8.219.0",
+    "stripe": "^8.222.0",
     "tiny-secp256k1": "^1.1.6",
-    "twilio": "^3.76.1",
+    "twilio": "^3.77.0",
     "uuid": "^8.3.2",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.9",
-    "@babel/preset-env": "^7.16.11",
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
     "@babel/register": "^7.17.7",
-    "@unchainedshop/types": "^1.0.0-rc.22",
+    "@unchainedshop/types": "^1.0.0-rc.23",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
@@ -72,6 +72,6 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.6.2",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.4"
   }
 }

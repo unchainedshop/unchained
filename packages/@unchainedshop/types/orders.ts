@@ -1,10 +1,11 @@
 import { Context } from './api';
-import { Address, Contact, FindOptions, LogFields, TimestampFields, _ID } from './common';
+import { Address, Configuration, Contact, FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { OrderDeliveriesModule } from './orders.deliveries';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
 import { OrderPaymentsModule } from './orders.payments';
 import { OrderPositionsModule } from './orders.positions';
 import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
+import { Product } from './products';
 import { User } from './user';
 
 export enum OrderStatus {
@@ -226,5 +227,8 @@ export interface OrderSettingsOrderPositionValidation {
 export interface OrdersSettingsOptions {
   ensureUserHasCart?: boolean;
   orderNumberHashFn?: (order: Order, index: number) => string;
-  validateOrderPosition?: (validationParams: OrderSettingsOrderPositionValidation, context: Context) => Promise<void>
+  validateOrderPosition?: (
+    validationParams: OrderSettingsOrderPositionValidation,
+    context: Context,
+  ) => Promise<void>;
 }

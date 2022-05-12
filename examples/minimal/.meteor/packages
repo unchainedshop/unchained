@@ -9,5 +9,5 @@ mongo@1.14.6
 ecmascript@0.16.2
 email@2.2.1
 disable-oplog@1.0.7
-unchained:platform
+unchained:platform@1.0.0-rc.23
 typescript@4.5.4
