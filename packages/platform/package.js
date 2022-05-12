@@ -7,9 +7,10 @@ Package.describe({
 });
 
 Npm.depends({
+  JSONStream: '1.3.5',
+  'event-iterator': '2.0.0',
   moniker: '0.1.2',
-  open: '7.3.1',
-  'yieldable-json': '2.0.1',
+  open: '8.4.0',
 });
 
 Package.onUse((api) => {

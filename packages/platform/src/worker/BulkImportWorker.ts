@@ -2,30 +2,42 @@ import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from 'meteor/unchained:logger';
 import { BaseAdapter } from 'meteor/unchained:utils';
-import yj from 'yieldable-json';
+import fs from 'fs';
+import JSONStream from 'JSONStream';
+import { EventIterator } from 'event-iterator';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
-const unpackPayload = async ({ payloadId, ...options }, gridFSBucket) => {
-  return new Promise((resolve, reject) => {
-    const buffers = [];
-    const readStream = gridFSBucket.openDownloadStream(payloadId);
-    readStream.on('data', (buffer) => {
-      buffers.push(buffer);
-    });
-    readStream.on('end', () => {
-      const buffer = Buffer.concat(buffers);
-      logger.profile(`parseAsync`);
-      yj.parseAsync(buffer.toString(), undefined, 8, (err, data) => {
-        logger.profile(`parseAsync`);
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve({ ...data, ...options });
-      });
-    });
-  });
+const streamPayloadToBulkImporter = async (bulkImporter, createReadStream) => {
+  logger.profile(`parseAsync`, { level: 'verbose' });
+
+  const eventIterator = new EventIterator(
+    (queue) => {
+      const readStream = createReadStream();
+      const jsonStream = JSONStream.parse('events.*'); // rows, ANYTHING, doc
+      jsonStream.on('data', queue.push);
+      jsonStream.on('close', queue.stop);
+      jsonStream.on('error', queue.fail);
+
+      queue.on('highWater', () => readStream.pause());
+      queue.on('lowWater', () => readStream.resume());
+
+      readStream.pipe(jsonStream);
+      return () => {
+        jsonStream.removeListener('data', queue.push);
+        jsonStream.removeListener('close', queue.stop);
+        jsonStream.removeListener('error', queue.fail);
+        jsonStream.destroy();
+      };
+    },
+    { highWaterMark: 100, lowWaterMark: 5 },
+  );
+
+  for await (const event of eventIterator) { // eslint-disable-line
+    await bulkImporter.prepare(event);
+  }
+
+  logger.profile(`parseAsync`, { level: 'verbose' });
 };
 
 export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
@@ -39,15 +51,10 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
   doWork: async (rawPayload, unchainedAPI) => {
     try {
       const {
-        events,
         createShouldUpsertIfIDExists = false,
         skipCacheInvalidation = false,
         authorId = 'root',
-      } = rawPayload.payloadId
-        ? await unpackPayload(rawPayload, unchainedAPI.bulkImporter.BulkImportPayloads)
-        : rawPayload;
-
-      if (!events?.length) throw new Error('No events submitted');
+      } = rawPayload;
 
       const bulkImporter = unchainedAPI.bulkImporter.createBulkImporter(
         {
@@ -58,10 +65,26 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
         },
         unchainedAPI,
       );
-      await events.reduce(async (currentEventPromise, nextEvent) => {
-        await currentEventPromise;
-        return bulkImporter.prepare(nextEvent);
-      }, Promise.resolve());
+
+      if (rawPayload.payloadFilePath) {
+        // stream payload from file system
+        await streamPayloadToBulkImporter(bulkImporter, () =>
+          fs.createReadStream(rawPayload.payloadFilePath),
+        );
+      } else if (rawPayload.payloadId) {
+        // stream payload from gridfs
+        await streamPayloadToBulkImporter(bulkImporter, () =>
+          unchainedAPI.bulkImporter.BulkImportPayloads.openDownloadStream(rawPayload.payloadId),
+        );
+      } else {
+        const { events } = rawPayload;
+        if (!events?.length) throw new Error('No events submitted');
+
+        await events.reduce(async (currentEventPromise, nextEvent) => {
+          await currentEventPromise;
+          return bulkImporter.prepare(nextEvent);
+        }, Promise.resolve());
+      }
 
       const [result, error] = await bulkImporter.execute();
       await bulkImporter.invalidateCaches();
