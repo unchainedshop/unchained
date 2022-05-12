@@ -90,7 +90,7 @@ export type UsersModule = {
   updateInitialPassword: (user: User, initialPassword: boolean) => Promise<void>;
   updateLastBillingAddress: (_id: string, lastAddress: Address, userId: string) => Promise<User>;
   updateLastContact: (_id: string, lastContact: Contact, userId: string) => Promise<User>;
-  updateProfile: (_id: string, profile: UserProfile & { meta: JSON }, userId: string) => Promise<User>;
+  updateProfile: (_id: string, profile: UserProfile & { meta?: any }, userId: string) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>, userId: string) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>, userId: string) => Promise<User>;
 
