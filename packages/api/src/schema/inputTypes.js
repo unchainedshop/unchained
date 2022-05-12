@@ -26,6 +26,7 @@ export default [
       phoneMobile: String
       gender: String
       address: AddressInput
+      meta: JSON
     }
 
     input AddressInput {

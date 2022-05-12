@@ -198,34 +198,21 @@ export const configureUsersModule = async ({
 
     updateProfile: async (_id, profile, userId) => {
       const userFilter = generateDbFilterById(_id);
-      const { meta: previousMeta } = await Users.findOne(userFilter, {
-        projection: { meta: 1 },
-      });
-
-      const { displayName, birthday, phoneMobile, gender, address, ...customFields } = profile;
-      const standardFields = { displayName, birthday, phoneMobile, gender, address };
-      const meta = Object.keys(customFields).reduce(
-        (acc, profileKey) => {
+      const { meta, ...userProfile } = profile;
+      const modifier = {
+        $set: Object.keys(userProfile).reduce((acc, profileKey) => {
           return {
             ...acc,
-            [profileKey]: customFields[profileKey],
+            [`profile.${profileKey}`]: profile[profileKey],
           };
-        },
-        { ...previousMeta },
-      );
-
-      const modifier = {
-        $set: Object.keys({ ...standardFields }).reduce(
-          (acc, profileKey) => {
-            return {
-              ...acc,
-              [`profile.${profileKey}`]: profile[profileKey],
-            };
-          },
-          { meta },
-        ),
+        }, {}),
       };
 
+      if (meta)
+        modifier.$set = {
+          ...modifier.$set,
+          meta,
+        };
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
       emit('USER_UPDATE_PROFILE', {

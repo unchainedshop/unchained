@@ -16,14 +16,8 @@ const options = {
 ```
 ### Storing additional values
 
-The standard user data type stores most of the information a user could have. But if you want to store additional information in user, you can do so by extending `UserProfileInput` that is passed to the `Mutation.updateUserProfile` to store the additional fields you want :
+The standard user data type stores most of the information a user could have. But if you want to store additional information in user, you can do so by using the `meta` field on  `UserProfileInput` that is passed to the `Mutation.updateUserProfile`:
 
-```
-extend input UserProfileInput {
-  phoneNumbers: [CustomPhoneNumberInput!]
-}
-
-```
 The data is stored in `User` object under  `meta` and  You can access the stored values by extending the user schema and adding a custom resolvers to map the stored data to the schema field. 
 
 for detailed information about extending the schema refer to [Extending schema section](./extending-schema)
