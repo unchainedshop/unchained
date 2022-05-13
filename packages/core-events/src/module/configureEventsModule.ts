@@ -34,7 +34,7 @@ export const configureEventsModule = async ({
     },
 
     findEvents: async ({ limit, offset, sort, ...query }) => {
-      return Events.find(buildFindSelector(query as Event), {
+      return Events.find(buildFindSelector(query), {
         skip: offset,
         limit,
         sort: buildSortOptions(sort || [{ key: 'created', value: 'DESC' }]),
