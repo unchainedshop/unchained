@@ -31,7 +31,6 @@ export default async function workers(
   log(`query workQueue ${limit} ${offset} [${status?.join(', ')}] ${JSON.stringify(created)}`, {
     userId,
   });
-
   return modules.worker.findWorkQueue({
     status,
     selectTypes,
