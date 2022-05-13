@@ -38,6 +38,8 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
       offset?: number;
       sort?: Sort;
       queryString?: string;
+      types?: Array<string>;
+      created?: Date;
     },
     options?: FindOptions,
   ) => Promise<Array<Event>>;

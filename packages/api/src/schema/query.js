@@ -382,7 +382,13 @@ export default [
       """
       Get all emitted events
       """
-      events(type: String, limit: Int = 10, offset: Int = 0, queryString: String): [Event!]!
+      events(
+        types: [String!]
+        limit: Int = 10
+        offset: Int = 0
+        queryString: String
+        created: DateTime
+      ): [Event!]!
 
       """
       Get total count of all emitted events

@@ -5,13 +5,22 @@ export default async function events(
   root: Root,
   {
     limit,
-    type,
     offset,
+    types,
+    created,
     queryString,
-  }: { type: string; limit: number; offset: number; queryString: string },
+  }: {
+    limit?: number;
+    offset?: number;
+    types?: Array<string>;
+    queryString?: string;
+    created?: Date;
+  },
   { modules, userId }: Context,
 ) {
-  log(`query events ${type}`, { userId });
+  log(`query events ${types}  limit: ${limit} offset: ${offset} queryString: ${queryString}`, {
+    userId,
+  });
 
-  return modules.events.findEvents({ type, limit, offset, queryString });
+  return modules.events.findEvents({ types, limit, offset, created, queryString });
 }

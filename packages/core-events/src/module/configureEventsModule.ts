@@ -7,15 +7,23 @@ import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
 
 type FindQuery = {
-  type?: string;
+  types?: Array<string>;
   queryString?: string;
+  created?: Date;
 };
-const buildFindSelector = ({ type, queryString }: FindQuery) => {
-  const selector: { type?: string; $text?: any } = {};
 
-  if (type) selector.type = type;
+const SORT_DIRECTIONS = {
+  ASC: 1,
+  DESC: -1,
+};
+
+const buildFindSelector = ({ types, queryString, created }: FindQuery) => {
+  const selector: { type?: any; $text?: any; created?: any } = {};
+
+  if (types && Array.isArray(types))
+    selector.type = { $in: types.map((type) => new RegExp(`^${type}$`), 'i') };
   if (queryString) selector.$text = { $search: queryString };
-
+  if (created) selector.created = { $gte: created };
   return selector;
 };
 
