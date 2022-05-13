@@ -12,7 +12,6 @@ const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
   if (types && Array.isArray(types)) selector.type = { $in: types };
   if (queryString) selector.$text = { $search: queryString };
   if (created) selector.created = { $gte: created };
-
   return selector;
 };
 
