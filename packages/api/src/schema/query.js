@@ -382,6 +382,16 @@ export default [
       ): [Work!]!
 
       """
+      Return total number of workers filtered the provided arguments
+      """
+      workQueueCount(
+        status: [WorkStatus!]
+        selectTypes: [WorkType!]
+        created: DateFilterInput
+        queryString: String
+      ): Int!
+
+      """
       Get a specific work unit by ID
       """
       work(workId: ID!): Work

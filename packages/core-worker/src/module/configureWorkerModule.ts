@@ -172,6 +172,10 @@ export const configureWorkerModule = async ({
       return workQueues.toArray();
     },
 
+    count: async (query) => {
+      return WorkQueue.countDocuments(buildQuerySelector(query));
+    },
+
     workExists: async ({ workId, originalWorkId }) => {
       const queueCount = await WorkQueue.countDocuments(
         workId ? generateDbFilterById(workId) : { originalWorkId },

@@ -74,6 +74,7 @@ export type WorkerModule = {
       skip?: number;
     },
   ) => Promise<Array<Work>>;
+  count: (query: WorkQueueQuery) => Promise<number>;
   workExists: (query: { workId?: string; originalWorkId?: string }) => Promise<boolean>;
 
   // Transformations

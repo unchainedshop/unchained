@@ -63,6 +63,7 @@ import warehousingProviders from './warehousing/warehousingProviders';
 import warehousingProvidersCount from './warehousing/warehousingProvidersCount';
 import work from './worker/work';
 import workQueue from './worker/workQueue';
+import workQueueCount from './worker/workQueueCount';
 
 export default {
   me,
@@ -119,6 +120,7 @@ export default {
   searchProducts: acl(actions.search)(searchProducts),
   searchAssortments: acl(actions.search)(searchAssortments),
   workQueue: acl(actions.manageWorker)(workQueue),
+  workQueueCount: acl(actions.manageWorker)(workQueueCount),
   activeWorkTypes: acl(actions.manageWorker)(activeWorkTypes),
   enrollment: acl(actions.viewEnrollment)(enrollment),
   enrollments: acl(actions.viewEnrollments)(enrollments),
