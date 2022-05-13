@@ -4,7 +4,6 @@ import {
   ModuleMutations,
   Projection,
   Query,
-  Sort,
 } from '@unchainedshop/types/common';
 import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -17,6 +16,19 @@ import { WorkerEventTypes } from '../director/WorkerEventTypes';
 import { WorkStatus } from '../director/WorkStatus';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
+
+const SORT_DIRECTIONS = {
+  ASC: 1,
+  DESC: -1,
+};
+
+const buildSortOptions = (sort: Array<{ key: string; value: 'DESC' | 'ASC' }>) => {
+  const sortBy = {};
+  sort?.forEach(({ key, value }) => {
+    sortBy[key] = SORT_DIRECTIONS[value];
+  });
+  return sortBy;
+};
 
 const buildQuerySelector = ({
   created,
@@ -87,12 +99,12 @@ const buildQuerySelector = ({
   return { ...query, ...rest };
 };
 
-const defaultSort = {
-  started: -1,
-  priority: -1,
-  originalWorkId: 1,
-  created: 1,
-} as Sort;
+const defaultSort: Array<{ key: string; value: 'DESC' | 'ASC' }> = [
+  { key: 'started', value: 'DESC' },
+  { key: 'priority', value: 'DESC' },
+  { key: 'originalWorkId', value: 'ASC' },
+  { key: 'created', value: 'ASC' },
+];
 
 export const configureWorkerModule = async ({
   db,
@@ -160,12 +172,12 @@ export const configureWorkerModule = async ({
     findWork: async ({ workId, originalWorkId }) =>
       WorkQueue.findOne(workId ? generateDbFilterById(workId) : { originalWorkId }, {}),
 
-    findWorkQueue: async ({ limit, skip, ...selectorOptions }) => {
+    findWorkQueue: async ({ limit, skip, sort, ...selectorOptions }) => {
       const selector = buildQuerySelector(selectorOptions);
       const workQueues = WorkQueue.find(selector, {
         skip,
         limit,
-        sort: defaultSort,
+        sort: buildSortOptions(sort),
       });
 
       return workQueues.toArray();
@@ -279,7 +291,7 @@ export const configureWorkerModule = async ({
         {
           $set: { started: new Date(), worker },
         },
-        { sort: defaultSort, returnDocument: 'after' },
+        { sort: buildSortOptions(defaultSort), returnDocument: 'after' },
       );
 
       WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
@@ -316,7 +328,7 @@ export const configureWorkerModule = async ({
             },
           },
           {
-            sort: defaultSort,
+            sort: buildSortOptions(defaultSort),
             returnDocument: 'after',
             upsert: true,
           },

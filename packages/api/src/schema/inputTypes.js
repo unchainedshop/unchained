@@ -19,9 +19,13 @@ export default [
       key: String!
       value: SortDirection!
     }
+    input WorkQueueSortOptionInput {
+      key: String!
+      value: SortDirection!
+    }
 
     input EventSortOptionInput {
-      created: String
+      created: SortDirection
       type: SortDirection
     }
 

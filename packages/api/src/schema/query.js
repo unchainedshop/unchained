@@ -363,6 +363,7 @@ export default [
         selectTypes: [WorkType!]
         created: DateFilterInput
         queryString: String
+        sort: [WorkQueueSortOptionInput!]
       ): [Work!]!
 
       """
@@ -388,6 +389,7 @@ export default [
         offset: Int = 0
         queryString: String
         created: DateTime
+        sort: EventSortOptionInput
       ): [Event!]!
 
       """

@@ -11,6 +11,7 @@ export default async function workers(
     selectTypes,
     created,
     queryString,
+    sort,
   }: {
     limit?: number;
     offset?: number;
@@ -21,6 +22,7 @@ export default async function workers(
       start: Date;
       end: Date;
     };
+    sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
   },
   { modules, userId }: Context,
 ) {
@@ -35,5 +37,6 @@ export default async function workers(
     skip: offset,
     limit,
     queryString,
+    sort,
   });
 }

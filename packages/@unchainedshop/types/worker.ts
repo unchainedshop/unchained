@@ -65,6 +65,7 @@ export type WorkerModule = {
       selectTypes?: Array<string>;
       status?: Array<WorkStatus>;
       queryString?: string;
+      sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
     } & {
       limit?: number;
       skip?: number;
