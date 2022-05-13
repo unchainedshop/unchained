@@ -10,11 +10,20 @@ export default async function events(
     types,
     created,
     queryString,
+<<<<<<< HEAD
     sort,
   }: EventQuery & {
     limit?: number;
     offset?: number;
     sort: Array<SortOption>;
+=======
+  }: {
+    limit?: number;
+    offset?: number;
+    types?: Array<string>;
+    queryString?: string;
+    created?: Date;
+>>>>>>> Exten query.events filter #400
   },
   { modules, userId }: Context,
 ) {
@@ -22,5 +31,9 @@ export default async function events(
     userId,
   });
 
+<<<<<<< HEAD
   return modules.events.findEvents({ types, limit, offset, created, queryString, sort });
+=======
+  return modules.events.findEvents({ types, limit, offset, created, queryString });
+>>>>>>> Exten query.events filter #400
 }

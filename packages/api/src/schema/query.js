@@ -414,7 +414,10 @@ export default [
         offset: Int = 0
         queryString: String
         created: DateTime
+<<<<<<< HEAD
         sort: [SortOptionInput!]
+=======
+>>>>>>> Exten query.events filter #400
       ): [Event!]!
 
       """

@@ -43,7 +43,14 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
     params: EventQuery & {
       limit?: number;
       offset?: number;
+<<<<<<< HEAD
       sort?: Array<SortOption>;
+=======
+      sort?: Sort;
+      queryString?: string;
+      types?: Array<string>;
+      created?: Date;
+>>>>>>> Exten query.events filter #400
     },
     options?: FindOptions,
   ) => Promise<Array<Event>>;
