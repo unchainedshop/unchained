@@ -26,8 +26,8 @@ export default [
     }
 
     input EventSortOptionInput {
-      key: String!
-      value: SortDirection!
+      created: String
+      type: SortDirection
     }
 
     input UserProfileInput {

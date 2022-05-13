@@ -4,36 +4,19 @@ import { EventQuery } from '@unchainedshop/types/events';
 
 export default async function events(
   root: Root,
-  {
-    limit,
-    offset,
-    types,
-    created,
-    queryString,
-<<<<<<< HEAD
-    sort,
-  }: EventQuery & {
+  params: EventQuery & {
     limit?: number;
     offset?: number;
     sort: Array<SortOption>;
-=======
-  }: {
-    limit?: number;
-    offset?: number;
-    types?: Array<string>;
-    queryString?: string;
-    created?: Date;
->>>>>>> Exten query.events filter #400
   },
   { modules, userId }: Context,
 ) {
-  log(`query events ${types}  limit: ${limit} offset: ${offset} queryString: ${queryString}`, {
-    userId,
-  });
+  log(
+    `query events ${params.types}  limit: ${params.limit} offset: ${params.offset} queryString: ${params.queryString}`,
+    {
+      userId,
+    },
+  );
 
-<<<<<<< HEAD
-  return modules.events.findEvents({ types, limit, offset, created, queryString, sort });
-=======
-  return modules.events.findEvents({ types, limit, offset, created, queryString });
->>>>>>> Exten query.events filter #400
+  return modules.events.findEvents(params);
 }
