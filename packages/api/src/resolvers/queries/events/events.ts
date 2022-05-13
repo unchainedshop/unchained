@@ -9,12 +9,14 @@ export default async function events(
     types,
     created,
     queryString,
+    sort,
   }: {
     limit?: number;
     offset?: number;
     types?: Array<string>;
     queryString?: string;
     created?: Date;
+    sort: { created?: 'DESC' | 'ASC'; type?: 'DESC' | 'ASC' };
   },
   { modules, userId }: Context,
 ) {
@@ -22,5 +24,5 @@ export default async function events(
     userId,
   });
 
-  return modules.events.findEvents({ types, limit, offset, created, queryString });
+  return modules.events.findEvents({ types, limit, offset, created, queryString, sort });
 }

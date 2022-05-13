@@ -1,4 +1,4 @@
-import { FindOptions, ModuleCreateMutation, Query, Sort, TimestampFields, _ID } from './common';
+import { FindOptions, ModuleCreateMutation, Query, TimestampFields, _ID } from './common';
 
 export type EventPayload = {
   context?: Record<string, unknown>;
@@ -36,10 +36,8 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
     params: Query & {
       limit?: number;
       offset?: number;
-      sort?: Sort;
+      sort?: { created?: 'DESC' | 'ASC'; type?: 'DESC' | 'ASC' };
       queryString?: string;
-      types?: Array<string>;
-      created?: Date;
     },
     options?: FindOptions,
   ) => Promise<Array<Event>>;

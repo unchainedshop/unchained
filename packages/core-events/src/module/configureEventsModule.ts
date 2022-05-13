@@ -17,6 +17,14 @@ const SORT_DIRECTIONS = {
   DESC: -1,
 };
 
+const buildSortOptions = (sortOptions) => {
+  const sortBy = {};
+  Object.entries(sortOptions || [])?.forEach(([key, value]: [key: string, value: string]) => {
+    sortBy[key] = SORT_DIRECTIONS[value];
+  });
+  return sortBy;
+};
+
 const buildFindSelector = ({ types, queryString, created }: FindQuery) => {
   const selector: { type?: any; $text?: any; created?: any } = {};
 
@@ -45,19 +53,11 @@ export const configureEventsModule = async ({
       return Events.findOne(selector as unknown as Filter<Event>, options);
     },
 
-    findEvents: async ({
-      limit,
-      offset,
-      sort = {
-        created: -1,
-      },
-
-      ...query
-    }) => {
+    findEvents: async ({ limit, offset, sort, ...query }) => {
       return Events.find(buildFindSelector(query as FindQuery), {
         skip: offset,
         limit,
-        sort,
+        sort: buildSortOptions(sort || { created: 'DESC' }),
       }).toArray();
     },
 
