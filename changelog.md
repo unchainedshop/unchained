@@ -24,7 +24,6 @@ Our Roadmap ahead:
   runs on edge frameworks.
 
 ## Breaking changes
-
 - [core] We have removed the Matomo tracker because it was not a plugin but rather an example of an event
   tracking implementation, it will be re-added later to a "recipes" docs page
 - [platform, api, core] Refactor Unchained Engine's core with the goal to add typescript support, get rid
