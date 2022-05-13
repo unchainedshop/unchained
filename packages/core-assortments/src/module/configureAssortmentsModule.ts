@@ -50,7 +50,7 @@ const buildFindSelector = ({
 
   if (tags) {
     if (Array.isArray(tags)) {
-      selector.tags = { $all: tags };
+      selector.tags = { $all: tags.map((tag) => new RegExp(`^${tag}$`, 'i')) };
     } else {
       selector.tags = tags;
     }
@@ -263,6 +263,7 @@ export const configureAssortmentsModule = async ({
         skip: offset,
         limit,
         sort: { sequence: 1 },
+        collation: { strength: 2, locale: 'en' },
       });
       return assortments.toArray();
     },

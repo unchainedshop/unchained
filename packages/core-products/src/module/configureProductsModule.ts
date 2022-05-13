@@ -58,7 +58,7 @@ const buildFindSelector = ({
 
   if (tags) {
     if (Array.isArray(tags)) {
-      selector.tags = { $all: tags };
+      selector.tags = { $all: tags.map((tag) => new RegExp(`^${tag}$`, 'i')) };
     } else {
       selector.tags = tags;
     }
