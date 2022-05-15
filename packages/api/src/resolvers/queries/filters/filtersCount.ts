@@ -1,14 +1,20 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
+import { FilterQuery } from '@unchainedshop/types/filters';
 
 export default async function filtersCount(
   root: Root,
-  { includeInactive }: { includeInactive: boolean },
+  params: FilterQuery,
   { modules, userId }: Context,
 ) {
-  log(`query filtersCount: ${includeInactive ? 'includeInactive' : ''} `, {
-    userId,
-  });
+  log(
+    `query filtersCount: ${params.includeInactive ? 'includeInactive' : ''} queryString: ${
+      params.queryString
+    } `,
+    {
+      userId,
+    },
+  );
 
-  return modules.filters.count({ includeInactive });
+  return modules.filters.count(params);
 }

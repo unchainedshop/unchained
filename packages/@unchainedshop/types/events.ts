@@ -11,6 +11,12 @@ export type Event = {
 } & EventPayload &
   TimestampFields;
 
+export type EventQuery = {
+  types?: Array<string>;
+  queryString?: string;
+  created?: Date;
+};
+
 export interface EmitAdapter {
   publish(eventName: string, data: EventPayload): void;
   subscribe(eventName: string, callback: (payload?: Record<string, unknown>) => void): void;
@@ -33,16 +39,15 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   findEvent: (params: Query & { eventId: _ID }, options?: FindOptions) => Promise<Event>;
 
   findEvents: (
-    params: Query & {
+    params: EventQuery & {
       limit?: number;
       offset?: number;
       sort?: { created?: 'DESC' | 'ASC'; type?: 'DESC' | 'ASC' };
-      queryString?: string;
     },
     options?: FindOptions,
   ) => Promise<Array<Event>>;
 
   type: (event: Event) => string;
 
-  count: (query: Query) => Promise<number>;
+  count: (query: EventQuery) => Promise<number>;
 }

@@ -270,7 +270,7 @@ export default [
       """
       Returns total number of filters
       """
-      filtersCount(includeInactive: Boolean = false): Int!
+      filtersCount(includeInactive: Boolean = false, queryString: String): Int!
 
       """
       Get all filters
@@ -290,7 +290,7 @@ export default [
       """
       Returns total number of product reviews
       """
-      productReviewsCount: Int!
+      productReviewsCount(queryString: String): Int!
 
       """
       Get all product reviews
@@ -406,7 +406,7 @@ export default [
       """
       Get total count of all emitted events
       """
-      eventsCount(type: String): Int!
+      eventsCount(types: [String!], queryString: String, created: DateTime): Int!
     }
   `,
 ];

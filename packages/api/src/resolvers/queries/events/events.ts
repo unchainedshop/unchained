@@ -1,5 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
+import { EventQuery } from '@unchainedshop/types/events';
 
 export default async function events(
   root: Root,
@@ -10,12 +11,9 @@ export default async function events(
     created,
     queryString,
     sort,
-  }: {
+  }: EventQuery & {
     limit?: number;
     offset?: number;
-    types?: Array<string>;
-    queryString?: string;
-    created?: Date;
     sort: { created?: 'DESC' | 'ASC'; type?: 'DESC' | 'ASC' };
   },
   { modules, userId }: Context,

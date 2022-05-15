@@ -1,6 +1,11 @@
 import { Context } from '@unchainedshop/types/api';
 import { Filter as DbFilter, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { Filter, FiltersModule, FiltersSettingsOptions } from '@unchainedshop/types/filters';
+import {
+  Filter,
+  FilterQuery,
+  FiltersModule,
+  FiltersSettingsOptions,
+} from '@unchainedshop/types/filters';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
@@ -15,7 +20,7 @@ import { filtersSettings } from '../filters-settings';
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
-const buildFindSelector = ({ includeInactive = false, queryString = '' }) => {
+const buildFindSelector = ({ includeInactive = false, queryString = '' }: FilterQuery) => {
   const selector: Query = {};
   if (!includeInactive) selector.isActive = true;
   if (queryString) selector.$text = { $search: queryString };
@@ -141,7 +146,11 @@ export const configureFiltersModule = async ({
       return Filters.findOne(generateDbFilterById(filterId), {});
     },
 
-    findFilters: async ({ limit, offset, ...query }) => {
+    findFilters: async ({
+      limit,
+      offset,
+      ...query
+    }: FilterQuery & { limit?: number; offset?: number }) => {
       const filters = Filters.find(buildFindSelector(query), {
         skip: offset,
         limit,
@@ -150,7 +159,7 @@ export const configureFiltersModule = async ({
       return filters.toArray();
     },
 
-    count: async (query) => {
+    count: async (query: FilterQuery) => {
       const count = await Filters.countDocuments(buildFindSelector(query));
       return count;
     },
