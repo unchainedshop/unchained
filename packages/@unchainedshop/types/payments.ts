@@ -45,7 +45,7 @@ export type PaymentCredentials = {
   meta: any;
 } & TimestampFields;
 
-type PaymentProviderQuery = {
+export type PaymentProviderQuery = {
   type?: PaymentProviderType;
   deleted?: Date;
 };

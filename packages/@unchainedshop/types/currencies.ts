@@ -8,7 +8,7 @@ export type Currency = {
   contractAddress?: string;
 } & TimestampFields;
 
-type CurrencyQuery = {
+export type CurrencyQuery = {
   includeInactive?: boolean;
   contractAddress?: string;
   queryString?: string;

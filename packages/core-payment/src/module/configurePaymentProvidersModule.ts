@@ -4,7 +4,7 @@ import {
   PaymentContext,
   PaymentModule,
   PaymentProvider,
-  PaymentProviderType,
+  PaymentProviderQuery,
 } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
@@ -20,12 +20,7 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_REMOVE',
 ];
 
-type FindQuery = {
-  type?: PaymentProviderType;
-  deleted?: Date | null;
-};
-
-const buildFindSelector = ({ type }: FindQuery = {}) => {
+const buildFindSelector = ({ type }: PaymentProviderQuery = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 

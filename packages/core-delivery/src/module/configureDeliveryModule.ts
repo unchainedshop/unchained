@@ -4,7 +4,7 @@ import {
   DeliveryContext,
   DeliveryModule,
   DeliveryProvider,
-  DeliveryProviderType,
+  DeliveryProviderQuery,
   DeliverySettingsOptions,
 } from '@unchainedshop/types/delivery';
 import { PaymentProvider } from '@unchainedshop/types/payments';
@@ -29,12 +29,7 @@ const asyncFilter = async (arr, predicate) => {
   return arr.filter((_v, index) => results[index]);
 };
 
-type FindQuery = {
-  type?: DeliveryProviderType;
-  deleted?: Date | null;
-};
-
-const buildFindSelector = ({ type }: FindQuery = {}) => {
+const buildFindSelector = ({ type }: DeliveryProviderQuery = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 

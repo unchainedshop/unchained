@@ -25,7 +25,7 @@ export type WarehousingProvider = {
   configuration: WarehousingConfiguration;
 } & TimestampFields;
 
-type WarehousingProviderQuery = {
+export type WarehousingProviderQuery = {
   type?: WarehousingProviderType;
 };
 

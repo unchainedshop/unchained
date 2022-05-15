@@ -30,7 +30,12 @@ export default [
       Return total number of published products filtered either by tags or explicit slugs
       If a slug is provided
       """
-      productsCount(tags: [String!], slugs: [String!], includeDrafts: Boolean = false): Int!
+      productsCount(
+        tags: [String!]
+        slugs: [String!]
+        includeDrafts: Boolean = false
+        queryString: String
+      ): Int!
 
       """
       Simple list of published products filtered either by tags or explicit slugs
@@ -76,7 +81,7 @@ export default [
       """
       Returns total number languages
       """
-      languagesCount(includeInactive: Boolean = false): Int!
+      languagesCount(includeInactive: Boolean = false, queryString: String): Int!
 
       """
       Get all languages
@@ -106,7 +111,7 @@ export default [
       """
       Returns total number of countries
       """
-      countriesCount(includeInactive: Boolean = false): Int!
+      countriesCount(includeInactive: Boolean = false, queryString: String): Int!
 
       """
       Get a specific country by ID
@@ -116,7 +121,7 @@ export default [
       """
       Returns total number of currencies
       """
-      currenciesCount(includeInactive: Boolean = false): Int!
+      currenciesCount(includeInactive: Boolean = false, queryString: String): Int!
 
       """
       Get all currencies
@@ -196,7 +201,7 @@ export default [
       """
       Returns total number of orders
       """
-      ordersCount(includeCarts: Boolean = false): Int!
+      ordersCount(includeCarts: Boolean = false, queryString: String): Int!
 
       """
       Get all orders
@@ -239,6 +244,7 @@ export default [
         slugs: [String!]
         includeInactive: Boolean = false
         includeLeaves: Boolean = false
+        queryString: String
       ): Int!
 
       """
@@ -304,7 +310,7 @@ export default [
       """
       Returns total number of quotations
       """
-      quotationsCount: Int!
+      quotationsCount(queryString: String): Int!
 
       """
       Get all quotations
@@ -319,12 +325,17 @@ export default [
       """
       Returns total number of enrollments
       """
-      enrollmentsCount: Int!
+      enrollmentsCount(queryString: String, status: [String!]): Int!
 
       """
       Get all enrollments
       """
-      enrollments(limit: Int = 10, offset: Int = 0, queryString: String): [Enrollment!]!
+      enrollments(
+        limit: Int = 10
+        offset: Int = 0
+        queryString: String
+        status: [String!]
+      ): [Enrollment!]!
 
       """
       Get a specific quotation by ID

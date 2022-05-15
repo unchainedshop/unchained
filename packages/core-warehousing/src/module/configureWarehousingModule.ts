@@ -2,7 +2,7 @@ import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import {
   WarehousingModule,
   WarehousingProvider,
-  WarehousingProviderType,
+  WarehousingProviderQuery,
 } from '@unchainedshop/types/warehousing';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
@@ -16,12 +16,7 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_REMOVE',
 ];
 
-type FindQuery = {
-  type?: WarehousingProviderType;
-  deleted?: Date | null;
-};
-
-const buildFindSelector = ({ type }: FindQuery = {}) => {
+const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
   const query = type ? { type, deleted: null } : { deleted: null };
   return query;
 };

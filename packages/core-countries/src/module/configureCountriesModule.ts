@@ -1,5 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
-import { CountriesModule, Country } from '@unchainedshop/types/countries';
+import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/countries';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
 import { emit, registerEvents } from 'meteor/unchained:events';
@@ -9,12 +9,8 @@ import { CountriesSchema } from '../db/CountriesSchema';
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 
-type FindQuery = {
-  includeInactive?: boolean;
-  queryString?: string;
-};
-const buildFindSelector = ({ includeInactive = false, queryString = '' }: FindQuery) => {
-  const selector: { isActive?: true; $text?: any; deleted?: any } = { deleted: null };
+const buildFindSelector = ({ includeInactive = false, queryString = '' }: CountryQuery) => {
+  const selector: { isActive?: true; $text?: any; deleted?: Date } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
   if (queryString) selector.$text = { $search: queryString };
   return selector;
