@@ -19,8 +19,8 @@ import { WorkStatus } from '../director/WorkStatus';
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const buildQuerySelector = ({
-  created = { start: null, end: null },
-  scheduled = { start: null, end: null },
+  created,
+  scheduled,
   selectTypes,
   status,
   workId,
@@ -65,15 +65,19 @@ const buildQuerySelector = ({
 
   let query: Query = statusQuery.$or.length > 0 ? statusQuery : { deleted: { $exists: false } };
 
-  query.$and = [
-    selectTypes && { type: { $in: selectTypes } },
-    created?.end
-      ? { created: { $gte: created.start, $lte: created.end } }
-      : { created: { $gte: created?.start || new Date(0) } },
-    scheduled?.end
-      ? { scheduled: { $gte: scheduled.start, $lte: scheduled.end } }
-      : { scheduled: { $gte: scheduled?.start || new Date(0) } },
-  ].filter(Boolean);
+  if (created) {
+    query.created = created?.end
+      ? { $gte: created.start || new Date(0), $lte: created.end }
+      : { $gte: created.start || new Date(0) };
+  }
+  if (scheduled) {
+    query.scheduled = scheduled?.end
+      ? { $gte: scheduled.start || new Date(0), $lte: scheduled.end }
+      : { $gte: scheduled.start || new Date(0) };
+  }
+  if (selectTypes) {
+    query.type = { $in: selectTypes }
+  }
 
   if (workId) {
     query = generateDbFilterById(workId, query);
@@ -266,7 +270,7 @@ export const configureWorkerModule = async ({
       // - Sort by default queue order
       const query = buildQuerySelector({
         status: [WorkStatus.NEW],
-        scheduled: { $lte: new Date() },
+        scheduled: { end: new Date() },
         worker: { $in: [null, worker] },
         ...(types ? { type: { $in: types } } : {}),
       });

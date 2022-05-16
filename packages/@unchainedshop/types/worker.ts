@@ -10,6 +10,15 @@ export enum WorkStatus {
   DELETED = 'DELETED',
 }
 
+export enum WorkerEventTypes {
+  ADDED = 'added',
+  ALLOCATED = 'allocated',
+  DONE = 'done',
+  FINISHED = 'finished',
+  DELETED = 'deleted',
+  RESCHEDULED = 'rescheduled',
+}
+
 export type Work = {
   _id?: _ID;
   error?: any;

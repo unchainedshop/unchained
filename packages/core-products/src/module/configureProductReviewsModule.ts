@@ -23,7 +23,13 @@ const SORT_DIRECTIONS = {
   ASC: 1,
   DESC: -1,
 };
-const buildFindSelector = ({ productId, authorId, queryString }: ProductReviewQuery = {}) => {
+const buildFindSelector = ({
+  productId,
+  authorId,
+  queryString,
+  created,
+  updated,
+}: ProductReviewQuery = {}) => {
   const selector: Query = {
     ...(productId ? { productId } : {}),
     ...(authorId ? { authorId } : {}),
@@ -33,6 +39,18 @@ const buildFindSelector = ({ productId, authorId, queryString }: ProductReviewQu
   if (queryString) {
     selector.$text = { $search: queryString };
   }
+
+  if (created) {
+    selector.created = created?.end
+      ? { $gte: created.start, $lte: created.end }
+      : { $gte: created?.start || new Date(0) };
+  }
+  if (updated) {
+    selector.updated = updated?.end
+      ? { $gte: updated.start, $lte: updated.end }
+      : { $gte: updated?.start || new Date(0) };
+  }
+
   return selector;
 };
 

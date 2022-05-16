@@ -29,6 +29,8 @@ export type ProductReviewQuery = {
   authorId?: string;
   deleted?: Date | null;
   queryString?: string;
+  created?: { end?: Date; start?: Date };
+  scheduled?: { end?: Date; start?: Date };
 };
 export type ProductReviewsModule = {
   // Queries

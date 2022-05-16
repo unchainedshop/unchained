@@ -9,7 +9,7 @@ const findId = { projection: { _id: 1 } };
 const findFileId = { projection: { mediaId: 1 } };
 const mapId = (a: any) => a._id;
 
-const ZombieKillerWorker: IWorkerAdapter<
+export const ZombieKillerWorker: IWorkerAdapter<
   never,
   {
     deletedProductMediaCount: number;
@@ -108,5 +108,7 @@ const ZombieKillerWorker: IWorkerAdapter<
     }
   },
 };
+
+export default ZombieKillerWorker;
 
 WorkerDirector.registerAdapter(ZombieKillerWorker);
