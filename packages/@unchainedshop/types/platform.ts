@@ -1,5 +1,18 @@
-import { UnchainedCoreOptions } from './api';
+import { BulkOperationBase } from 'mongodb';
+import { UnchainedAPI, UnchainedCoreOptions } from './api';
 import { WorkerSchedule } from './worker';
+
+export type BulkImportOperation = (
+  payload: any,
+  options: {
+    bulk: (collection: string) => BulkOperationBase;
+  },
+  unchainedAPI: UnchainedAPI,
+) => Promise<void>;
+
+export type BulkImportHandler = {
+  [x: string]: BulkImportOperation;
+};
 
 export interface SetupCartsOptions {
   invalidateProviders?: boolean;
@@ -28,7 +41,9 @@ export type PlatformOptions = {
   schema?: any;
   plugins?: any[];
   cache?: any;
-  bulkImporter?: any;
+  bulkImporter?: {
+    handlers?: Record<string, BulkImportHandler>;
+  };
   context?: any;
   modules?: UnchainedCoreOptions['modules'];
   services?: UnchainedCoreOptions['modules'];

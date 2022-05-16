@@ -48,20 +48,14 @@ export interface UnchainedLoaders {
   bookmarkByIdLoader: any;
 }
 
-export interface UnchainedBulkImport {
-  bulkImporter: any;
-}
-
 export type Context = UnchainedAPI &
   UnchainedUserContext &
   UnchainedLocaleContext &
   UnchainedLoaders &
-  UnchainedBulkImport &
   UnchainedHTTPServerContext;
 
 export type UnchainedServerOptions = {
   unchainedAPI: UnchainedAPI;
-  bulkImporter?: any;
   roles?: any;
   typeDefs: Array<string>;
   resolvers: Record<string, any>;

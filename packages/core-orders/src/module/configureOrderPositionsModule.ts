@@ -1,7 +1,6 @@
 import { Collection, Filter, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions';
-import { Product } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
@@ -134,7 +133,11 @@ export const configureOrderPositionsModule = ({
       return result.deletedCount;
     },
 
-    updateProductItem: async ({ context, quantity, configuration }, { order, product, orderPosition }, requestContext) => {
+    updateProductItem: async (
+      { quantity, configuration },
+      { order, product, orderPosition },
+      requestContext,
+    ) => {
       const selector = buildFindByIdSelector(orderPosition._id, order._id);
       const modifier: any = {
         $set: {
@@ -149,7 +152,7 @@ export const configureOrderPositionsModule = ({
 
       if (configuration !== null) {
         const resolvedProduct = await requestContext.modules.products.resolveOrderableProduct(
-          originalProduct,
+          product,
           { configuration },
           requestContext,
         );
@@ -157,12 +160,15 @@ export const configureOrderPositionsModule = ({
         modifier.$set.configuration = configuration;
       }
 
-      await ordersSettings.validateOrderPosition({
-        order,
-        product,
-        configuration,
-        quantityDiff: quantity - orderPosition.quantity
-      }, requestContext);
+      await ordersSettings.validateOrderPosition(
+        {
+          order,
+          product,
+          configuration,
+          quantityDiff: quantity - orderPosition.quantity,
+        },
+        requestContext,
+      );
 
       await OrderPositions.updateOne(selector, modifier);
 
@@ -263,12 +269,15 @@ export const configureOrderPositionsModule = ({
       );
 
       // Validate add to cart mutation
-      await ordersSettings.validateOrderPosition({
-        order,
-        product,
-        configuration,
-        quantityDiff: quantity
-      }, requestContext);
+      await ordersSettings.validateOrderPosition(
+        {
+          order,
+          product,
+          configuration,
+          quantityDiff: quantity,
+        },
+        requestContext,
+      );
 
       // Search for existing position
       const selector: Query = {

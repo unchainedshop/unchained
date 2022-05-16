@@ -60,6 +60,7 @@ export const startPlatform = async (
     resolvers = [],
     options = {},
     rolesOptions = {},
+    bulkImporter: bulkImporterOptions,
     schema,
     plugins,
     cache,
@@ -86,7 +87,7 @@ export const startPlatform = async (
 
   // Prepare Migrations
   const migrationRepository = createMigrationRepository(db);
-  const bulkImporter = createBulkImporterFactory(db);
+  const bulkImporter = createBulkImporterFactory(db, bulkImporterOptions?.handlers);
 
   // Initialise core api using the database
   const unchainedAPI = await initCore({

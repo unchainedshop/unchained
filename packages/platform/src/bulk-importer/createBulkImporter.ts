@@ -1,31 +1,24 @@
 import mongodb from 'mongodb';
+import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/types/platform';
 import * as AssortmentHandlers from './handlers/assortment';
 import * as FilterHandlers from './handlers/filter';
 import * as ProductHandlers from './handlers/product';
 
-const allowedOperations = ['create', 'remove', 'update'];
+let bulkOperationHandlers: Record<string, BulkImportHandler> = {};
 
-const runPrepareAsync = async (entity, operation, event, context, requestContext) => {
-  let entityOperation;
-  switch (entity) {
-    case 'ASSORTMENT':
-      entityOperation = AssortmentHandlers[operation];
-      break;
-    case 'PRODUCT':
-      entityOperation = ProductHandlers[operation];
-      break;
-    case 'FILTER':
-      entityOperation = FilterHandlers[operation];
-      break;
-    default:
-      throw new Error(`Entity ${event.entity} unknown`);
+export const getOperation = (entity: string, operation: string): BulkImportOperation => {
+  const handlers = bulkOperationHandlers[entity];
+  if (!handlers) {
+    throw new Error(`Entity ${entity} unknown`);
   }
 
-  if (typeof entityOperation !== 'function') {
-    throw new Error(`Operation ${operation} for entity ${event.entity} unknown`);
+  const entityOperation = handlers[operation] as BulkImportOperation;
+
+  if (!entityOperation || typeof entityOperation !== 'function') {
+    throw new Error(`Operation ${operation} for entity ${entity} invalid`);
   }
 
-  return entityOperation(event.payload, context, requestContext);
+  return entityOperation;
 };
 
 export const createBulkImporter = (options, requestContext) => {
@@ -40,11 +33,6 @@ export const createBulkImporter = (options, requestContext) => {
     return bulkOperations[raw.namespace.collection];
   };
 
-  const context = {
-    ...options,
-    bulk,
-  };
-
   logger.info(
     `Configure event import with options: createShouldUpsertIfIDExists=${options.createShouldUpsertIfIDExists} skipCacheInvalidation=${options.skipCacheInvalidation}`,
   );
@@ -54,9 +42,8 @@ export const createBulkImporter = (options, requestContext) => {
       const entity = event.entity.toUpperCase();
       const operation = event.operation.toLowerCase();
 
-      if (!allowedOperations.includes(operation)) {
-        throw new Error(`Operation ${event.operation} unknown`);
-      }
+      const handler = getOperation(entity, operation);
+
       if (!event.payload) {
         throw new Error(`Payload missing in ${JSON.stringify(event)}`);
       }
@@ -67,7 +54,7 @@ export const createBulkImporter = (options, requestContext) => {
       });
 
       try {
-        await runPrepareAsync(entity, operation, event, context, requestContext);
+        await handler(event.payload, { bulk, ...options }, requestContext);
         if (!processedOperations[entity]) processedOperations[entity] = {};
         if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
         processedOperations[entity][operation].push(event.payload._id);
@@ -114,10 +101,17 @@ export const createBulkImporter = (options, requestContext) => {
   };
 };
 
-export const createBulkImporterFactory = (db) => {
+export const createBulkImporterFactory = (db, additionalHandlers) => {
   // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
   const options = { bucketName: 'bulk_import_payloads', chunkSizeBytes: 5 * 1024 * 1024 };
   const BulkImportPayloads = new mongodb.GridFSBucket(db, options);
+
+  bulkOperationHandlers = {
+    ASSORTMENT: AssortmentHandlers,
+    PRODUCT: ProductHandlers,
+    FILTER: FilterHandlers,
+    ...additionalHandlers,
+  };
 
   return {
     BulkImportPayloads,
