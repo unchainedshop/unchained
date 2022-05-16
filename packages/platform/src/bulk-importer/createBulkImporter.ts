@@ -44,12 +44,10 @@ export const createBulkImporter = (options, requestContext) => {
 
       const handler = getOperation(entity, operation);
 
-      if (!event.payload) {
-        throw new Error(`Payload missing in ${JSON.stringify(event)}`);
-      }
+      const payloadId = event.payload?._id || 'global';
 
-      logger.verbose(`${operation} ${entity} ${event.payload._id} [PREPARE]`);
-      logger.profile(`${operation} ${entity} ${event.payload._id} [DONE]`, {
+      logger.verbose(`${operation} ${entity} ${payloadId} [PREPARE]`);
+      logger.profile(`${operation} ${entity} ${payloadId} [DONE]`, {
         level: 'verbose',
       });
 
@@ -57,19 +55,19 @@ export const createBulkImporter = (options, requestContext) => {
         await handler(event.payload, { bulk, ...options }, requestContext);
         if (!processedOperations[entity]) processedOperations[entity] = {};
         if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
-        processedOperations[entity][operation].push(event.payload._id);
-        logger.verbose(`${operation} ${entity} ${event.payload._id} [SUCCESS]`);
+        processedOperations[entity][operation].push(payloadId);
+        logger.verbose(`${operation} ${entity} ${payloadId} [SUCCESS]`);
       } catch (e) {
-        logger.verbose(`${operation} ${entity} ${event.payload._id} [FAILED]: ${e.message}`);
+        logger.verbose(`${operation} ${entity} ${payloadId} [FAILED]: ${e.message}`);
         preparationIssues.push({
           operation,
           entity,
-          payloadId: event.payload._id,
+          payloadId,
           errorCode: e.name,
           errorMessage: e.message,
         });
       } finally {
-        logger.profile(`${operation} ${entity} ${event.payload._id} [DONE]`, {
+        logger.profile(`${operation} ${entity} ${payloadId} [DONE]`, {
           level: 'verbose',
         });
       }
