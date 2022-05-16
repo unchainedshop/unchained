@@ -11,7 +11,11 @@ export const ordersSettings = {
   orderNumberHashFn: null,
   validateOrderPosition: null,
 
-  configureSettings({ ensureUserHasCart = false, orderNumberHashFn = generateRandomHash, validateOrderPosition = defaultValidateOrderPosition } = {}) {
+  configureSettings({
+    ensureUserHasCart = false,
+    orderNumberHashFn = generateRandomHash,
+    validateOrderPosition = defaultValidateOrderPosition,
+  } = {}) {
     this.ensureUserHasCart = ensureUserHasCart;
     this.orderNumberHashFn = orderNumberHashFn;
     this.validateOrderPosition = validateOrderPosition;

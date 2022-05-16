@@ -3,7 +3,6 @@ import { Context, UnchainedAPI } from '@unchainedshop/types/api';
 import { WebApp } from 'meteor/webapp';
 import { IncomingMessage } from 'http';
 import fs from 'fs';
-import os from 'os';
 import { checkAction } from './acl';
 import { actions } from './roles';
 

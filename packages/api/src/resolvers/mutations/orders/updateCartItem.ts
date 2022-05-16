@@ -33,7 +33,7 @@ export default async function updateCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const productId = item.originalProductId || item.productId;
+  const productId = item.originalProductId || item.productId;
   const product = await modules.products.findProduct({
     productId,
   });

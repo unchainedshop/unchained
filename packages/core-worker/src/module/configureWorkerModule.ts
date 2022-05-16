@@ -76,7 +76,7 @@ const buildQuerySelector = ({
       : { $gte: scheduled.start || new Date(0) };
   }
   if (selectTypes) {
-    query.type = { $in: selectTypes }
+    query.type = { $in: selectTypes };
   }
 
   if (workId) {

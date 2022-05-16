@@ -50,7 +50,7 @@ export type EstimatedDispatch = {
   earliestDelivery?: Date;
 };
 
-export type EstimatedStock = { quantity: number } | null
+export type EstimatedStock = { quantity: number } | null;
 
 export type WarehousingAdapterActions = {
   configurationError: () => WarehousingError;

@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { FindOptions, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import {
   Product,

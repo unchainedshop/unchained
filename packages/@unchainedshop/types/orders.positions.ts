@@ -55,7 +55,7 @@ export type OrderPositionsModule = {
       configuration?: Configuration;
       quantity?: number;
     },
-    params: { order: Order; product: Product, orderPosition: OrderPosition },
+    params: { order: Order; product: Product; orderPosition: OrderPosition },
     requestContext: Context,
   ) => Promise<OrderPosition>;
 
