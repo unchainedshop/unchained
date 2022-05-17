@@ -348,6 +348,7 @@ export default [
       """
       searchAssortments(
         queryString: String
+        assortmentIds: [ID!]
         orderBy: SearchOrderBy
         includeInactive: Boolean = false
       ): AssortmentSearchResult!

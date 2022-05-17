@@ -52,16 +52,26 @@ const LocalSearch: IFilterAdapter = {
 
       // eslint-disable-next-line
       searchAssortments: async ({ assortmentIds }) => {
-        const { queryString = '' } = params.searchQuery;
+        const { queryString } = params.searchQuery;
 
-        const assortments = await params.modules.assortments.texts.findTexts(
-          { $text: { $search: queryString } },
-          {
-            projection: {
-              assortmentId: 1,
-            },
+        if (!queryString) {
+          return assortmentIds;
+        }
+
+        const selector: Query = {
+          $text: { $search: queryString },
+        };
+
+        if (assortmentIds) {
+          selector.assortmentId = { $in: assortmentIds };
+        }
+
+        const assortments = await params.modules.assortments.texts.findTexts(selector, {
+          projection: {
+            assortmentId: 1,
           },
-        );
+        });
+
         return assortments.map(({ assortmentId }) => assortmentId);
       },
 

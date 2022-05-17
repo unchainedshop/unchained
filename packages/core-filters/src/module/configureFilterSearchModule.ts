@@ -42,10 +42,11 @@ export const configureFilterSearchModule = ({
         forceLiveCollection,
       };
 
+      const assortmentIds = await query.assortmentIds;
       const totalAssortmentIds = await assortmentFulltextSearch(
         searchConfiguration,
         filterActions,
-      )(query?.productIds);
+      )(assortmentIds);
 
       const totalAssormentCount = async () =>
         modules.assortments.count({

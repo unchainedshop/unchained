@@ -136,7 +136,7 @@ export const BookmarkAlreadyExistsError = createError(
 export const BookmarkNotFoundError = createError('BookmarkNotFoundError', 'Bookmark not found');
 export const QueryStringRequiredError = createError(
   'QueryStringRequiredError',
-  'Query string is required if no assortmentId is provided',
+  'Query string is required when no assortments are in scope',
 );
 export const PaymentProviderNotFoundError = createError(
   'PaymentProviderNotFoundError',
