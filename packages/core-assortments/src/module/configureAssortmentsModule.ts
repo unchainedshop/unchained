@@ -1,7 +1,8 @@
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations, Query, Tree } from '@unchainedshop/types/common';
 import {
   AssortmentsModule,
   Assortment,
+  AssortmentLink,
   AssortmentQuery,
   AssortmentsSettingsOptions,
 } from '@unchainedshop/types/assortments';
@@ -93,7 +94,7 @@ export const configureAssortmentsModule = async ({
   ) as ModuleMutations<Assortment>;
 
   // Functions
-  const findLinkedAssortments = async (assortment: Assortment) => {
+  const findLinkedAssortments = async (assortment: Assortment): Promise<Array<AssortmentLink>> => {
     return AssortmentLinks.find(
       {
         $or: [{ parentAssortmentId: assortment._id }, { childAssortmentId: assortment._id }],
@@ -114,7 +115,7 @@ export const configureAssortmentsModule = async ({
   };
 
   // returns AssortmentProducts and child assortment links with products.
-  const collectProductIdCacheTree = async (assortment: Assortment) => {
+  const collectProductIdCacheTree = async (assortment: Assortment): Promise<Tree<string>> => {
     // get assortment products related with this assortment I.E AssortmentProducts
     const productAssignments = await findProductAssignments(assortment);
     const ownProductIds = productAssignments.map(({ productId }) => productId);
@@ -128,21 +129,18 @@ export const configureAssortmentsModule = async ({
     );
 
     // perform the whole function recursively for each child
-    const productIds = await childAssortments.reduce(
-      async (currentProductIdsPromise, { childAssortmentId }) => {
-        const currentProductIds = await currentProductIdsPromise;
+    const productIds = await Promise.all(
+      childAssortments.map(async ({ childAssortmentId }) => {
         const childAssortment = await Assortments.findOne(
           generateDbFilterById(childAssortmentId, { isActive: true }),
           {},
         );
 
         if (childAssortment) {
-          const newProductIds = await collectProductIdCacheTree(childAssortment);
-          return [...currentProductIds, ...newProductIds];
+          return collectProductIdCacheTree(childAssortment);
         }
-        return currentProductIds;
-      },
-      Promise.resolve([] as Array<string>),
+        return [];
+      }),
     );
 
     return [...ownProductIds, ...productIds];

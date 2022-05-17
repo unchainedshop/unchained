@@ -1,31 +1,36 @@
+import { Tree } from '@unchainedshop/types/common';
 import * as R from 'ramda';
 
-const fillUp = (arr, size) => [...arr, ...new Array(size).fill(null)].slice(0, size);
+const fillUp = <T>(arr: Array<T>, size: number): Array<T> =>
+  [...arr, ...new Array(size).fill(null)].slice(0, size);
 
-const fillToSameLengthArray = (a, b) => {
+const fillToSameLengthArray = <T>(a: Array<T>, b: Array<T>) => {
   const length = Math.max(a.length, b.length);
   return [fillUp(a, length), fillUp(b, length)];
 };
 
-const divideTreeByLevels = (array, level = 0) => {
-  const currentLevel = array.reduce((acc, item) => {
-    if (typeof item === 'string') {
-      return [...acc, item];
+const divideTreeByLevels = (
+  array: Tree<string>,
+  level = 0,
+): Array<{ level: number; items: Array<string> }> => {
+  const currentLevel: Array<string> = array.reduce((acc, item) => {
+    if (typeof item === 'object') {
+      return acc;
     }
-    return acc;
-  }, []);
+    return [...acc, item];
+  }, []) as Array<string>;
 
   const nextLevels = array.reduce((acc, item) => {
-    if (typeof item !== 'string') {
+    if (typeof item === 'object') {
       return [...acc, ...divideTreeByLevels(item, level + 1)];
     }
     return acc;
-  }, []);
+  }, []) as Array<{ level: number; items: Array<string> }>;
 
   return [currentLevel.length && { level, items: currentLevel }, ...nextLevels].filter(Boolean);
 };
 
-const concatItemsByLevels = (levelArray) => {
+const concatItemsByLevels = (levelArray): Tree<string> => {
   return Object.values(
     levelArray.reduce((acc, { level, items }) => {
       return {
@@ -46,11 +51,10 @@ const shuffleEachLevel = (unshuffledLevels) => {
   });
 };
 
-export default (tree) => {
+export default (tree: Tree<string>): Array<string> => {
   const levels = divideTreeByLevels(tree);
   const concattedLevels = concatItemsByLevels(levels);
   const items = shuffleEachLevel(concattedLevels);
-
-  const zipped = R.pipe(R.flatten, R.filter(Boolean))(items);
+  const zipped: Array<string> = R.pipe(R.flatten, R.filter(Boolean))(items);
   return zipped;
 };

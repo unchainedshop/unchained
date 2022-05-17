@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 import { AssortmentMediaModule } from './assortments.media';
-import { Filter, FindOptions, Query, TimestampFields, _ID } from './common';
+import { Filter, FindOptions, Query, TimestampFields, Tree, _ID } from './common';
 
 export type Assortment = {
   _id?: _ID;
@@ -338,14 +338,14 @@ export type AssortmentsModule = {
  */
 
 export interface AssortmentsSettingsOptions {
-  zipTree?: (data: any) => any;
+  zipTree?: (data: Tree<string>) => Array<string>;
   slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
 }
 
 export interface AssortmentsSettings {
-  zipTree?: (data: any) => any;
+  zipTree?: (data: Tree<string>) => Array<string>;
   slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;

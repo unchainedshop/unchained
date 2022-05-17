@@ -132,3 +132,6 @@ export interface IBaseDirector<Adapter extends IBaseAdapter> {
   getAdapter: (key: string) => Adapter;
   registerAdapter: (A: Adapter) => void;
 }
+
+export type NodeOrTree<T> = string | Tree<T>; // eslint-disable-line
+export type Tree<T> = Array<NodeOrTree<T>>;
