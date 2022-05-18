@@ -22,6 +22,15 @@ import { configureAssortmentTextsModule } from './configureAssortmentTextsModule
 import { configureAssortmentMediaModule } from './configureAssortmentMediaModule';
 import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder';
 
+const convertTagsToLowerCaseIfExists = ({ tags = [], ...assortment }: Assortment): Assortment => {
+  const normalized = {
+    ...assortment,
+  };
+  if (tags && Array.isArray(tags)) normalized.tags = tags.map((tag) => tag.toLowerCase());
+
+  return normalized;
+};
+
 const ASSORTMENT_EVENTS = [
   'ASSORTMENT_CREATE',
   'ASSORTMENT_REMOVE',
@@ -50,7 +59,7 @@ const buildFindSelector = ({
 
   if (tags) {
     if (Array.isArray(tags)) {
-      selector.tags = { $all: tags.map((tag) => new RegExp(`^${tag}$`, 'i')) };
+      selector.tags = { $all: tags.map((tag) => tag.toLowerCase()) };
     } else {
       selector.tags = tags;
     }
@@ -350,7 +359,7 @@ export const configureAssortmentsModule = async ({
     },
 
     update: async (_id, doc, userId, options) => {
-      const assortmentId = await mutations.update(_id, doc, userId);
+      const assortmentId = await mutations.update(_id, convertTagsToLowerCaseIfExists(doc), userId);
       emit('ASSORTMENT_UPDATE', { assortmentId });
 
       if (!options?.skipInvalidation) {

@@ -20,6 +20,15 @@ import { configureProductTextsModule } from './configureProductTextsModule';
 import { configureProductVariationsModule } from './configureProductVariationsModule';
 import { productsSettings } from '../products-settings';
 
+const convertTagsToLowerCaseIfExists = ({ tags = [], ...assortment }: Assortment): Product => {
+  const normalized = {
+    ...assortment,
+  };
+  if (tags && Array.isArray(tags)) normalized.tags = tags.map((tag) => tag.toLowerCase());
+
+  return normalized;
+};
+
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
   'PRODUCT_REMOVE',
@@ -58,7 +67,7 @@ const buildFindSelector = ({
 
   if (tags) {
     if (Array.isArray(tags)) {
-      selector.tags = { $all: tags.map((tag) => new RegExp(`^${tag}$`, 'i')) };
+      selector.tags = { $all: tags.map((tag) => tag.toLowerCase()) };
     } else {
       selector.tags = tags;
     }
@@ -350,7 +359,7 @@ export const configureProductsModule = async ({
         updateDoc.type = ProductTypes[doc.type];
       }
 
-      const productId = await mutations.update(_id, updateDoc, userId);
+      const productId = await mutations.update(_id, convertTagsToLowerCaseIfExists(updateDoc), userId);
 
       emit('PRODUCT_UPDATE', { productId, ...doc });
 
