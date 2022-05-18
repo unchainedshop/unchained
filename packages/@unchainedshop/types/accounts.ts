@@ -47,9 +47,11 @@ export interface AccountsModule {
   // Email
   addEmail: (userId: string, email: string) => Promise<void>;
   removeEmail: (userId: string, email: string) => Promise<void>;
-  updateEmail: (userId: string, email: string, user: User) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   findUnverifiedUserByToken: (token: string) => Promise<AccountsUser>;
+  findUserByEmail: (email: string) => Promise<User>;
+  findUserByUsername: (username: string) => Promise<User>;
+
   sendVerificationEmail: (email: string) => Promise<void>;
   sendEnrollmentEmail: (email: string) => Promise<void>;
 

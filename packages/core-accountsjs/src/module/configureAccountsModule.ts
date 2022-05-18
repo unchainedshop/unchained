@@ -53,20 +53,10 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
     // Email
     addEmail: (userId, email) => accountsPassword.addEmail(userId, email, false),
     removeEmail: async (userId, email) => accountsPassword.removeEmail(userId, email),
-    updateEmail: async (userId, email, user) => {
-      log('user.updateEmail is deprecated, please use user.addEmail and user.removeEmail', {
-        level: LogLevel.Warning,
-      });
-
-      await accountsPassword.addEmail(userId, email, false);
-      await Promise.all(
-        (user.emails || [])
-          .filter(({ address }) => address.toLowerCase() !== email.toLowerCase())
-          .map(({ address }) => accountsPassword.removeEmail(userId, address)),
-      );
-    },
 
     findUnverifiedUserByToken: async (token) => dbManager.findUserByEmailVerificationToken(token),
+    findUserByEmail: async (email) => accountsPassword.findUserByEmail(email),
+    findUserByUsername: async (username) => accountsPassword.findUserByUsername(username),
 
     sendVerificationEmail: async (email) => accountsPassword.sendVerificationEmail(email),
     sendEnrollmentEmail: async (email) => accountsPassword.sendEnrollmentEmail(email),

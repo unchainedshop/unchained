@@ -287,12 +287,6 @@ export default [
       """
       Update E-Mail address of any user or logged in user if userId is not provided
       """
-      updateEmail(email: String!, userId: ID): User
-        @deprecated(reason: "Please use addEmail and removeEmail")
-
-      """
-      Update E-Mail address of any user or logged in user if userId is not provided
-      """
       addEmail(email: String!, userId: ID): User
 
       """

@@ -251,36 +251,6 @@ describe('Auth for admin users', () => {
     }, 99999);
   });
 
-  describe('Mutation.updateEmail', () => {
-    it('update the e-mail of a foreign user', async () => {
-      const email = 'newuser@unchained.local';
-      const { data: { updateEmail } = {} } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation updateEmail($email: String!, $userId: ID) {
-            updateEmail(email: $email, userId: $userId) {
-              _id
-              primaryEmail {
-                address
-                verified
-              }
-            }
-          }
-        `,
-        variables: {
-          userId: User._id,
-          email,
-        },
-      });
-      expect(updateEmail).toMatchObject({
-        _id: User._id,
-        primaryEmail: {
-          address: email,
-          verified: false,
-        },
-      });
-    });
-  });
-
   describe('Mutation.addEmail', () => {
     it('add an e-mail to a foreign user', async () => {
       const email = 'newuser2@unchained.local';

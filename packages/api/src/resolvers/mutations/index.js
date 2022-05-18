@@ -16,7 +16,6 @@ import sendEnrollmentEmail from './accounts/sendEnrollmentEmail';
 import addAssortmentMedia from './assortments/addAssortmentMedia';
 import forgotPassword from './accounts/forgotPassword';
 import resetPassword from './accounts/resetPassword';
-import updateEmail from './accounts/updateEmail';
 import addEmail from './accounts/addEmail';
 import removeEmail from './accounts/removeEmail';
 import updateUserAvatar from './users/updateUserAvatar';
@@ -164,7 +163,6 @@ export default {
   sendEnrollmentEmail: acl(actions.sendEmail)(sendEnrollmentEmail),
   changePassword,
   heartbeat,
-  updateEmail: acl(actions.updateUser)(updateEmail),
   addEmail: acl(actions.updateUser)(addEmail),
   removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
