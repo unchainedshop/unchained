@@ -268,7 +268,6 @@ describe("Cart: Product Items", () => {
         },
       });
 
-      console.log(errors)
       expect(updateCartItem).toMatchObject({
         _id: SimplePosition._id,
         quantity: 10,
