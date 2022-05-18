@@ -148,7 +148,7 @@ Unchained.
   using the environment variable `UNCHAINED_ASSIGN_CART_FOR_USERS`
 - [platform] You can now disable the invalidation of orders at boot time by passing `invalidateProviders`
   boolean value to `startPlafom` or using the environment variable
-  `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`
+  `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`. You can also control the max age so that very old carts are not invalidated forever with `providerInvalidationMaxAgeDays`.
 - [core] It's is now possible to assign media files for assortments.
 - [controlpanel] Assortment media upload, remove & reorder functionalities are available.
 - [api] Added the following query and mutations that can be used to manage assortment medias

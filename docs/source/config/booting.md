@@ -38,6 +38,7 @@ These options are available:
 - mergeUserCartsOnLogin: Boolean (Enable/Disable merge mode of carts when user gets logged in)
 - assignCartForUsers: boolean (Enable/Disable assigning carts for existing users on startup, default: `false`)
 - invalidateProviders: boolean (Enable/Disable invalidating carts on startup, default: `true`)
+- providerInvalidationMaxAgeDays: number (Set the max age for cart invalidation on startup, default: `30`)
 - typeDefs: Object (GraphQL Schema that gets merged with the default schema)
 - resolvers: Object (GraphQL Resolvers that get merged with the default API)
 - modules: Core Module specific configuration (see next pages)

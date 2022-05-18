@@ -5,7 +5,10 @@ const { UNCHAINED_DISABLE_PROVIDER_INVALIDATION, UNCHAINED_ASSIGN_CART_FOR_USERS
 
 export const setupCarts = async (unchainedAPI: Context, options: SetupCartsOptions = {}) => {
   if (options.invalidateProviders ?? !UNCHAINED_DISABLE_PROVIDER_INVALIDATION) {
-    await unchainedAPI.modules.orders.invalidateProviders(unchainedAPI);
+    await unchainedAPI.modules.orders.invalidateProviders(
+      unchainedAPI,
+      options.providerInvalidationMaxAgeDays,
+    );
   }
 
   if (options.assignCartForUsers ?? Boolean(UNCHAINED_ASSIGN_CART_FOR_USERS)) {

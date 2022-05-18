@@ -71,13 +71,18 @@ export const configureOrderModuleMutations = ({
 
     initProviders,
 
-    invalidateProviders: async (requestContext) => {
+    invalidateProviders: async (requestContext, maxAgeDays = 30) => {
       log('Orders: Start invalidating cart providers', {
         level: LogLevel.Verbose,
       });
 
+      const ONE_DAY_IN_MILLISECONDS = 86400000;
+
+      const minValidDate = new Date(new Date().getTime() - maxAgeDays * ONE_DAY_IN_MILLISECONDS);
+
       const orders = await Orders.find({
         status: { $eq: null },
+        updated: { $gte: minValidDate },
       }).toArray();
 
       await Promise.all(orders.map((order) => initProviders(order, requestContext)));

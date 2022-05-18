@@ -16,6 +16,7 @@ export type BulkImportHandler = {
 
 export interface SetupCartsOptions {
   invalidateProviders?: boolean;
+  providerInvalidationMaxAgeDays?: number;
   assignCartForUsers?: boolean;
 }
 
