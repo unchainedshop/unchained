@@ -272,7 +272,6 @@ export const configureAssortmentsModule = async ({
         skip: offset,
         limit,
         sort: { sequence: 1 },
-        collation: { strength: 2, locale: 'en' },
       });
       return assortments.toArray();
     },
