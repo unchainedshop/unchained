@@ -37,6 +37,7 @@ const buildQuerySelector = ({
   status,
   workId,
   queryString,
+  types,
   ...rest
 }: Query & {
   created?: { end?: Date; start?: Date };
@@ -45,6 +46,7 @@ const buildQuerySelector = ({
   status?: Array<WorkStatus>;
   workId?: string;
   queryString?: string;
+  types?: Array<string>;
 }) => {
   const filterMap = {
     [WorkStatus.DELETED]: { deleted: { $exists: true } },
@@ -87,8 +89,8 @@ const buildQuerySelector = ({
       ? { $gte: scheduled.start || new Date(0), $lte: scheduled.end }
       : { $gte: scheduled.start || new Date(0) };
   }
-  if (selectTypes) {
-    query.type = { $in: selectTypes };
+  if (selectTypes || types) {
+    query.type = { $in: [...(selectTypes || []), ...(types || [])] };
   }
 
   if (workId) {

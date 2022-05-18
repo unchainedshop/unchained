@@ -57,7 +57,8 @@ export interface WorkResult<Result> {
 
 export type WorkQueueQuery = {
   created?: { end?: Date; start?: Date };
-  selectTypes: Array<string>;
+  selectTypes: Array<string>; // @deprecated: Reason: "Renamed, use the types field"
+  types: Array<string>;
   status: Array<WorkStatus>;
   queryString?: string;
   scheduled?: { end?: Date; start?: Date };

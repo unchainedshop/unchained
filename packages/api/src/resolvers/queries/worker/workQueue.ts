@@ -11,6 +11,7 @@ export default async function workers(
     selectTypes,
     created,
     queryString,
+    types,
     sort,
   }: {
     limit?: number;
@@ -18,6 +19,7 @@ export default async function workers(
     queryString?: string;
     status?: Array<WorkStatus>;
     selectTypes?: Array<string>;
+    types?: Array<string>;
     created?: {
       start: Date;
       end: Date;
@@ -38,5 +40,6 @@ export default async function workers(
     limit,
     queryString,
     sort,
+    types,
   });
 }
