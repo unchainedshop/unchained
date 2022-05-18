@@ -6,6 +6,8 @@ import fs from 'fs';
 import { checkAction } from './acl';
 import { actions } from './roles';
 
+import { useMiddlewareWithCurrentContext } from './context';
+
 const logger = createLogger('unchained:api');
 
 const { BULK_IMPORT_API_PATH = '/bulk-import' } = process.env;
@@ -89,14 +91,6 @@ const bulkImportMiddleware = async (req, res) => {
   }
 };
 
-export default (options) => {
-  const { context } = options || {};
-  WebApp.connectHandlers.use(
-    BULK_IMPORT_API_PATH,
-    async (req: IncomingMessage & { unchainedContext?: UnchainedAPI }, res) => {
-      const resolvedContext = await context({ req, res });
-      req.unchainedContext = resolvedContext as Context;
-      bulkImportMiddleware(req, res);
-    },
-  );
+export default () => {
+  useMiddlewareWithCurrentContext(BULK_IMPORT_API_PATH, bulkImportMiddleware);
 };

@@ -89,7 +89,10 @@ Meteor.startup(async () => {
         },
       },
       orders: {
-        validateOrderPosition: async ({ order, product, quantityDiff, configuration }, context) => {
+        validateOrderPosition: async (
+          { order, product, quantityDiff, configuration },
+          context,
+        ) => {
           console.log({ order, product, quantityDiff, configuration });
           // throw new Error('limit reached');
         },
@@ -118,12 +121,14 @@ Meteor.startup(async () => {
   // remove the following lines
   WebApp.connectHandlers.use('/', (req: any, res, next) => {
     if (req.query?.token) {
-      loginWithSingleSignOn(req.query.token, unchainedApi).then((authCookie) => {
-        if (res?.setHeader) {
-          res.setHeader('Set-Cookie', authCookie);
-          next();
-        }
-      });
+      loginWithSingleSignOn(req.query.token, unchainedApi).then(
+        (authCookie) => {
+          if (res?.setHeader) {
+            res.setHeader('Set-Cookie', authCookie);
+            next();
+          }
+        },
+      );
     } else {
       next();
     }

@@ -4,6 +4,7 @@ import { WebApp } from 'meteor/webapp';
 import { log, LogLevel } from 'meteor/unchained:logger';
 import typeDefs from './schema';
 import resolvers from './resolvers';
+import { getCurrentContextResolver } from './context';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
@@ -40,10 +41,11 @@ export default (options) => {
     corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
-    context,
     engine = {},
     ...apolloServerOptions
   } = options || {};
+
+  const context = getCurrentContextResolver();
 
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
