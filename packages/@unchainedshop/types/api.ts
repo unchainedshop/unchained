@@ -47,6 +47,8 @@ export interface UnchainedLoaders {
   bookmarksByQueryLoader: any;
   bookmarkByIdLoader: any;
   productTextLoader: any;
+  filterTextLoader: any;
+  assortmentTextLoader: any;
 }
 
 export type Context = UnchainedAPI &

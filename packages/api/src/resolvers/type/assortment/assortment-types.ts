@@ -111,8 +111,9 @@ export const Assortment: AssortmentHelperTypes = {
     );
   },
 
-  async texts(obj, { forceLocale }, { modules, localeContext }) {
-    return modules.assortments.texts.findLocalizedText({
+  async texts(obj, { forceLocale }, requestContext) {
+    const { localeContext, assortmentTextLoader } = requestContext;
+    return assortmentTextLoader.load({
       assortmentId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });

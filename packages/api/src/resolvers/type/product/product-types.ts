@@ -58,7 +58,7 @@ export const Product: ProductHelperTypes = {
     return modules.products.normalizedStatus(obj);
   },
 
-  texts: async (obj, { forceLocale }, requestContext) => {
+  async texts(obj, { forceLocale }, requestContext) {
     const { localeContext, productTextLoader } = requestContext;
     return productTextLoader.load({
       productId: obj._id,
