@@ -88,15 +88,6 @@ Meteor.startup(async () => {
           },
         },
       },
-      orders: {
-        validateOrderPosition: async (
-          { order, product, quantityDiff, configuration },
-          context,
-        ) => {
-          console.log({ order, product, quantityDiff, configuration });
-          // throw new Error('limit reached');
-        },
-      },
       payment: {
         filterSupportedProviders: async ({ providers }) => {
           return providers.sort((left, right) => {

@@ -22,5 +22,13 @@ export default async (req: IncomingMessage, unchainedAPI: UnchainedAPI): Promise
       });
       return ids.map((key) => results.find((result) => result._id === key) || null);
     }),
+    productTextLoader: new DataLoader(async (queries) => {
+      console.log(queries);
+      // return modules.products.texts.findLocalizedText({
+      //   productId: obj._id,
+      //   locale: forceLocale || localeContext.normalized,
+      // });
+      return [];
+    });
   };
 };

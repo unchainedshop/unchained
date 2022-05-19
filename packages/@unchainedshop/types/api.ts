@@ -46,6 +46,7 @@ export interface UnchainedLocaleContext {
 export interface UnchainedLoaders {
   bookmarksByQueryLoader: any;
   bookmarkByIdLoader: any;
+  productTextLoader: any;
 }
 
 export type Context = UnchainedAPI &
