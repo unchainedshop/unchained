@@ -49,7 +49,12 @@ export const GridFSAdapter: IFileAdapter = {
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
     const signature = sign(directoryName, _id, expiryDate.getTime());
 
-    const putURL = new URL(`/gridfs/${directoryName}/${encodeURIComponent(fileName)}?e=${expiryDate.getTime()}&s=${signature}`, ROOT_URL).href;
+    const putURL = new URL(
+      `/gridfs/${directoryName}/${encodeURIComponent(
+        fileName,
+      )}?e=${expiryDate.getTime()}&s=${signature}`,
+      ROOT_URL,
+    ).href;
     const url = `/gridfs/${directoryName}/${_id}`;
 
     return {

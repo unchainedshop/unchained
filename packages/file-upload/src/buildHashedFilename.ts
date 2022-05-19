@@ -4,7 +4,11 @@ import baseX from 'base-x';
 
 const b62 = baseX('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
-export default function buildHashedFilename(directoryName: string, fileName: string, expiryDate: Date): string {
+export default function buildHashedFilename(
+  directoryName: string,
+  fileName: string,
+  expiryDate: Date,
+): string {
   const hashed = crypto
     .createHash('md5')
     .update(`${directoryName}${fileName}${expiryDate.getTime()}`) // ignore the year, we need
@@ -20,4 +24,4 @@ export default function buildHashedFilename(directoryName: string, fileName: str
   const b62converted = b62.encode(arr);
 
   return `${b62converted}-${slugifiedFilenameWithExtension}`;
-};
+}
