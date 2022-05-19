@@ -97,8 +97,8 @@ export type UsersModule = {
   ) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>, userId: string) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>, userId: string) => Promise<User>;
-
   updateUser: (selector: Query, modifier: Update<User>, options: UpdateOptions) => Promise<void>;
+  updateMeta: (_id: string, meta: any, userId: string) => Promise<User>;
 };
 
 /*

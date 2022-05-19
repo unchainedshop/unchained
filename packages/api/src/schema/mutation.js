@@ -305,6 +305,11 @@ export default [
       setUserTags(tags: [String]!, userId: ID!): User
 
       """
+      Updates additional information that should be stored about the user, each update will overwrite the previous
+      """
+      updateUserMeta(meta: JSON!, userId: ID!): User
+
+      """
       Update Profile of any user or logged in user if userId is not provided
       """
       updateUserProfile(profile: UserProfileInput!, meta: JSON, userId: ID): User
