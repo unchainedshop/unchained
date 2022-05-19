@@ -1,13 +1,15 @@
 import { UnchainedServerOptions } from '@unchainedshop/types/api';
 import createBulkImportServer from './createBulkImportServer';
 import createGraphQLServer from './createGraphQLServer';
-import { createContextResolver, setCurrentContextResolver } from './context';
+import { createContextResolver, getCurrentContextResolver, setCurrentContextResolver } from './context';
 
 export * from './context';
 export * as acl from './acl';
 export * as errors from './errors';
 export { hashPassword } from './hashPassword';
 export * as roles from './roles';
+
+export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
 const UNCHAINED_API_VERSION = '1.0.0-rc.23'; // eslint-disable-line
 

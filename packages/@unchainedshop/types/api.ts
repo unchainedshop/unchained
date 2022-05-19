@@ -16,11 +16,6 @@ export interface UnchainedAPI extends UnchainedCore {
   roles?: any;
 }
 
-export interface UnchainedHTTPServerContext {
-  req: IncomingMessage;
-  res: OutgoingMessage;
-}
-
 export interface UnchainedLocaleContext {
   countryContext: string;
   localeContext: Locale;
@@ -37,11 +32,18 @@ export interface UnchainedLoaders {
   };
 }
 
+export interface UnchainedHTTPServerContext {
+  req: IncomingMessage;
+  res: OutgoingMessage;
+}
+
 export type Context = UnchainedAPI &
   UnchainedUserContext &
   UnchainedLocaleContext &
   UnchainedLoaders &
   UnchainedHTTPServerContext;
+
+export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => Promise<Context>;
 
 export type UnchainedServerOptions = {
   unchainedAPI: UnchainedAPI;

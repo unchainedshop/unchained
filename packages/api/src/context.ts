@@ -1,26 +1,9 @@
-import {
-  UnchainedAPI,
-  UnchainedHTTPServerContext,
-  UnchainedLoaders,
-  UnchainedLocaleContext,
-  UnchainedUserContext,
-} from '@unchainedshop/types/api';
+import { UnchainedAPI, UnchainedContextResolver } from '@unchainedshop/types/api';
 import { WebApp } from 'meteor/webapp';
-import { IncomingMessage, OutgoingMessage } from 'http';
+import { IncomingMessage } from 'http';
 import instantiateLoaders from './loaders';
 import { getLocaleContext } from './locale-context';
 import { getUserContext } from './user-context';
-
-export type UnchainedServerContext = UnchainedLocaleContext &
-  UnchainedUserContext &
-  UnchainedLoaders &
-  UnchainedAPI &
-  UnchainedHTTPServerContext;
-
-export type UnchainedContextResolver = (params: {
-  req: IncomingMessage;
-  res: OutgoingMessage;
-}) => Promise<UnchainedServerContext>;
 
 let context;
 
@@ -42,9 +25,9 @@ export const createContextResolver =
       res,
       ...apolloContext,
       ...unchainedAPI,
-      ...loaders,
       ...userContext,
       ...localeContext,
+      loaders,
       roles,
       version,
     };
