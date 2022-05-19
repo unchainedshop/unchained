@@ -49,6 +49,7 @@ const getUserLocale = (user: User, params: { localeContext?: Locale } = {}) => {
 
 FileDirector.registerFileUploadCallback('user-avatars', async (file, context: Context) => {
   const { services } = context;
+
   return services.users.updateUserAvatarAfterUpload({ file }, context);
 });
 
@@ -196,11 +197,12 @@ export const configureUsersModule = async ({
       await Users.updateOne(generateDbFilterById(user._id), modifier);
     },
 
-    updateProfile: async (_id, profile, userId) => {
+    updateProfile: async (_id, updatedData, userId) => {
       const userFilter = generateDbFilterById(_id);
-      const { meta, ...userProfile } = profile;
+      const { meta, profile } = updatedData;
+
       const modifier = {
-        $set: Object.keys(userProfile).reduce((acc, profileKey) => {
+        $set: Object.keys(profile).reduce((acc, profileKey) => {
           return {
             ...acc,
             [`profile.${profileKey}`]: profile[profileKey],

@@ -307,7 +307,7 @@ export default [
       """
       Update Profile of any user or logged in user if userId is not provided
       """
-      updateUserProfile(profile: UserProfileInput!, userId: ID): User
+      updateUserProfile(profile: UserProfileInput!, meta: JSON, userId: ID): User
 
       """
       Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)
