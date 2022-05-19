@@ -1,7 +1,5 @@
 import { createLogger } from 'meteor/unchained:logger';
-import { Context, UnchainedAPI } from '@unchainedshop/types/api';
-import { WebApp } from 'meteor/webapp';
-import { IncomingMessage } from 'http';
+import { Context } from '@unchainedshop/types/api';
 import fs from 'fs';
 import { checkAction } from './acl';
 import { actions } from './roles';
