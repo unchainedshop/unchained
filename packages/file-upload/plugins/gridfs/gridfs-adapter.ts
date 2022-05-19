@@ -4,16 +4,12 @@ import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
 import mimeType from 'mime-types';
 import { URL } from 'url';
-import crypto from 'crypto';
 import { Readable } from 'stream';
 import sign from './sign';
 import promisePipe from './promisePipe';
+import buildHashedFilename from '../../src/buildHashedFilename';
 
 const { UNCHAINED_PUT_URL_EXPIRY, ROOT_URL } = process.env;
-
-const hash = (fileName: string) => {
-  return crypto.createHash('sha256').update(fileName).digest('hex');
-};
 
 const getExpiryDate = () =>
   new Date(new Date().getTime() + (parseInt(UNCHAINED_PUT_URL_EXPIRY, 10) || 24 * 60 * 60 * 1000));
@@ -50,11 +46,11 @@ export const GridFSAdapter: IFileAdapter = {
 
   async createSignedURL(directoryName, fileName) {
     const expiryDate = getExpiryDate();
-    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
+    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
     const signature = sign(directoryName, _id, expiryDate.getTime());
 
-    const putURL = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}?e=${expiryDate.getTime()}&s=${signature}`;
-    const url = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}`;
+    const putURL = new URL(`/gridfs/${directoryName}/${encodeURIComponent(fileName)}?e=${expiryDate.getTime()}&s=${signature}`, ROOT_URL).href;
+    const url = `/gridfs/${directoryName}/${_id}`;
 
     return {
       _id,
@@ -80,12 +76,13 @@ export const GridFSAdapter: IFileAdapter = {
     }
 
     const expiryDate = getExpiryDate();
-    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
+    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
 
     const file = await promisePipe(stream, writeStream);
-    const url = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}`;
+    const url = `/gridfs/${directoryName}/${_id}`;
+
     return {
       _id,
       directoryName,
@@ -106,12 +103,12 @@ export const GridFSAdapter: IFileAdapter = {
     const fileName = fname || href.split('/').pop();
 
     const expiryDate = getExpiryDate();
-    const _id = hash(`${directoryName}-${fileName}-${expiryDate.getTime()}`);
+    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const downloadStream = await createDownloadStream(href, headers);
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
     const file = await promisePipe(downloadStream, writeStream);
-    const url = `${ROOT_URL}/gridfs/${_id}/${directoryName}/${fileName}`;
+    const url = `/gridfs/${directoryName}/${_id}`;
 
     return {
       _id,

@@ -1,6 +1,5 @@
 import { IFileAdapter } from '@unchainedshop/types/files';
 import { FileAdapter, FileDirector } from 'meteor/unchained:file-upload';
-import crypto from 'crypto';
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -8,10 +7,7 @@ import mimeType from 'mime-types';
 import Minio from 'minio';
 import { Readable } from 'stream';
 import { URL } from 'url';
-import { slugify } from 'meteor/unchained:utils';
-import baseX from 'base-x';
-
-const b62 = baseX('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+import buildHashedFilename from '../src/buildHashedFilename';
 
 const {
   MINIO_ACCESS_KEY,
@@ -23,24 +19,6 @@ const {
   AMAZON_S3_SESSION_TOKEN,
 } = process.env;
 const PUT_URL_EXPIRY = 24 * 60 * 60;
-
-const buildHashedFilename = (directoryName: string, fileName: string, expiryDate: Date): string => {
-  const hashed = crypto
-    .createHash('md5')
-    .update(`${directoryName}${fileName}${expiryDate.getTime()}`) // ignore the year, we need
-    .digest('hex');
-
-  const splittedFilename = fileName.split('.');
-  const ext = splittedFilename?.pop();
-  const fileNameWithoutExtension = splittedFilename.join('.') || '';
-  const slugifiedFilenameWithExtension = [slugify(fileNameWithoutExtension), ext]
-    .filter(Boolean)
-    .join('.');
-  const arr = Uint8Array.from(Buffer.from(hashed, 'hex'));
-  const b62converted = b62.encode(arr);
-
-  return `${b62converted}-${slugifiedFilenameWithExtension}`;
-};
 
 let client: Minio.Client;
 

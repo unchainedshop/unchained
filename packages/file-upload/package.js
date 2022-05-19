@@ -17,6 +17,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
+  api.use('unchained:utils@1.0.0-rc.23');
   api.use('unchained:logger@1.0.0-rc.23');
 
   api.mainModule('src/file-upload-index.ts', 'server');

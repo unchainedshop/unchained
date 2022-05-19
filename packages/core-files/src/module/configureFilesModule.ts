@@ -26,7 +26,21 @@ export const configureFilesModule = async ({
   return {
     getUrl: (file, params) => {
       if (!file?.url) return null;
-      return filesSettings.transformUrl(file.url, params);
+      const transformedURLString = filesSettings.transformUrl(file.url, params);
+      try {
+        // If the url is absolute, return
+        const finalURL = new URL(transformedURLString);
+        return finalURL.href;
+      } catch (e) {
+        try {
+          // else try to fix by using ROOT_URL env
+          const finalURL = new URL(transformedURLString, process.env.ROOT_URL);
+          return finalURL.href;
+        } catch (e) {
+          // else return the transformed string because it's not an URL
+          return transformedURLString;
+        }
+      }
     },
 
     findFile: async ({ fileId }, options) => {
