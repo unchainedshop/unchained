@@ -16,9 +16,11 @@ export const Filter: FilterHelperTypes = {
     }));
   },
 
-  texts: async (obj, { forceLocale }, { modules, localeContext }) => {
-    return modules.filters.texts.findLocalizedText({
+  async texts(obj, { forceLocale }, requestContext) {
+    const { localeContext, loaders } = requestContext;
+    return loaders.filterTextLoader.load({
       filterId: obj._id,
+      filterOptionValue: null,
       locale: forceLocale || localeContext.normalized,
     });
   },

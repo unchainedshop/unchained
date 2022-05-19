@@ -144,7 +144,7 @@ export type FiltersModule = {
 
   texts: {
     // Queries
-    findTexts: (params: { filterId: string; filterOptionValue?: string }) => Promise<Array<FilterText>>;
+    findTexts: (query: Query, options?: FindOptions) => Promise<Array<FilterText>>;
 
     findLocalizedText: (params: {
       filterId: string;

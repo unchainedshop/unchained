@@ -56,12 +56,8 @@ export const configureFilterTextsModule = ({
 
   return {
     // Queries
-    findTexts: async ({ filterId, filterOptionValue }) => {
-      const texts = FilterTexts.find({
-        filterId,
-        filterOptionValue: filterOptionValue || { $eq: null },
-      });
-
+    findTexts: async (selector, options) => {
+      const texts = FilterTexts.find(selector, options);
       return texts.toArray();
     },
 

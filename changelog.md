@@ -7,6 +7,7 @@ Unchained.
 
 ## Breaking changes
 
+- [core] We have removed the Matomo tracker because it was not a plugin but rather an example of an event tracking implementationk, will be re-added later to a "recipes" docs page
 - [platform, api, core] Refactor Unchained Engine's core with the goal to add typescript support, get rid
   of classes and reduce the usage of meteor package depedencies to a minimum. This leads to a completely
   new SW architecture. The event director and the databse are initialised in the platform and injected

@@ -23,19 +23,19 @@ export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
     });
   },
 
-  assortmentSlug: async ({ assortmentId }, params, { modules, localeContext }) => {
-    const text = await modules.assortments.texts.findLocalizedText({
+  assortmentSlug: async ({ assortmentId }, params, { loaders, localeContext }) => {
+    const text = await loaders.assortmentTextLoader.load({
       assortmentId,
       locale: params.forceLocale || localeContext.normalized,
     });
-
     return text.slug;
   },
 
-  assortmentTexts: async ({ assortmentId }, params, { modules, localeContext }) => {
-    return modules.assortments.texts.findLocalizedText({
+  assortmentTexts: async ({ assortmentId }, params, { loaders, localeContext }) => {
+    const text = await loaders.assortmentTextLoader.load({
       assortmentId,
       locale: params.forceLocale || localeContext.normalized,
     });
+    return text;
   },
 };

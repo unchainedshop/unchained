@@ -10,5 +10,8 @@ export default async function translatedFilterTexts(
     userId,
   });
 
-  return modules.filters.texts.findTexts({ filterId, filterOptionValue });
+  return modules.filters.texts.findTexts({
+    filterId,
+    filterOptionValue: filterOptionValue || null,
+  });
 }
