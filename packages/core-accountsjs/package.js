@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-accountsjs',
-  version: '1.0.0-rc.23',
+  version: '1.0.0-rc.24',
   summary: 'Unchained Engine Core: Accounts',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -21,8 +21,8 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.23');
-  api.use('unchained:core-worker@1.0.0-rc.23');
+  api.use('unchained:utils@1.0.0-rc.24');
+  api.use('unchained:core-worker@1.0.0-rc.24');
 
   api.mainModule('src/accounts-index.ts');
 });

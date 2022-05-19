@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
-  "version": "1.0.0-rc.23",
+  "version": "1.0.0-rc.24",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -33,7 +33,7 @@
   "dependencies": {
     "@babel/runtime": "^7.17.9",
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@unchainedshop/controlpanel": "^1.0.0-rc.23",
+    "@unchainedshop/controlpanel": "^1.0.0-rc.24",
     "apollo-server-express": "^2.25.3",
     "bcrypt": "^5.0.1",
     "bip32": "^3.0.1",
@@ -42,7 +42,7 @@
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
     "cookie": "^0.4.2",
     "dotenv-extended": "^2.9.0",
-    "ethers": "^5.6.5",
+    "ethers": "^5.6.6",
     "graphql": "^15.8.0",
     "graphql-scalars": "^1.17.0",
     "graphql-upload": "^13.0.0",
@@ -55,15 +55,15 @@
     "simpl-schema": "^1.12.0",
     "stripe": "^8.222.0",
     "tiny-secp256k1": "^1.1.6",
-    "twilio": "^3.77.0",
+    "twilio": "^3.77.1",
     "uuid": "^8.3.2",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.10",
-    "@babel/preset-env": "^7.17.10",
+    "@babel/core": "^7.17.12",
+    "@babel/preset-env": "^7.17.12",
     "@babel/register": "^7.17.7",
-    "@unchainedshop/types": "^1.0.0-rc.23",
+    "@unchainedshop/types": "^1.0.0-rc.24",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
