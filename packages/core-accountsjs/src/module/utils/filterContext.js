@@ -1,12 +1,4 @@
-const EXCLUDED_CONTEXT_FIELDS = [
-  'modules',
-  'services',
-  'bulkImporter',
-  'bookmarksByQueryLoader',
-  'bookmarkByIdLoader',
-  'req',
-  'res',
-];
+const EXCLUDED_CONTEXT_FIELDS = ['modules', 'services', 'bulkImporter', 'loaders', 'req', 'res'];
 
 export const filterContext = (graphqlContext) => {
   return Object.fromEntries(

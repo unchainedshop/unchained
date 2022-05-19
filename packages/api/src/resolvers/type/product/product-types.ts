@@ -59,8 +59,8 @@ export const Product: ProductHelperTypes = {
   },
 
   async texts(obj, { forceLocale }, requestContext) {
-    const { localeContext, productTextLoader } = requestContext;
-    return productTextLoader.load({
+    const { localeContext, loaders } = requestContext;
+    return loaders.productTextLoader.load({
       productId: obj._id,
       locale: forceLocale || localeContext.normalized,
     });

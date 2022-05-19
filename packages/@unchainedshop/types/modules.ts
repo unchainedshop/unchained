@@ -1,19 +1,19 @@
-import { AccountsModule } from './accounts';
-import { AssortmentsModule } from './assortments';
+import { AccountsModule, AccountsSettingsOptions } from './accounts';
+import { AssortmentsModule, AssortmentsSettingsOptions } from './assortments';
 import { BookmarksModule } from './bookmarks';
 import { CountriesModule } from './countries';
 import { CurrenciesModule } from './currencies';
-import { DeliveryModule } from './delivery';
-import { EnrollmentsModule } from './enrollments';
+import { DeliveryModule, DeliverySettingsOptions } from './delivery';
+import { EnrollmentsModule, EnrollmentsSettingsOptions } from './enrollments';
 import { EventsModule } from './events';
-import { FilesModule } from './files';
-import { FiltersModule } from './filters';
+import { FilesModule, FilesSettingsOptions } from './files';
+import { FiltersModule, FiltersSettingsOptions } from './filters';
 import { LanguagesModule } from './languages';
 import { MessagingModule } from './messaging';
-import { OrdersModule } from './orders';
-import { PaymentModule } from './payments';
-import { ProductsModule } from './products';
-import { QuotationsModule } from './quotations';
+import { OrdersModule, OrdersSettingsOptions } from './orders';
+import { PaymentModule, PaymentSettingsOptions } from './payments';
+import { ProductsModule, ProductsSettingsOptions } from './products';
+import { QuotationsModule, QuotationsSettingsOptions } from './quotations';
 import { UsersModule } from './user';
 import { WarehousingModule } from './warehousing';
 import { WorkerModule } from './worker';
@@ -38,4 +38,17 @@ export interface Modules {
   users: UsersModule;
   warehousing: WarehousingModule;
   worker: WorkerModule;
+}
+
+export interface ModuleOptions {
+  accounts?: AccountsSettingsOptions;
+  assortments?: AssortmentsSettingsOptions;
+  products?: ProductsSettingsOptions;
+  delivery?: DeliverySettingsOptions;
+  filters?: FiltersSettingsOptions;
+  enrollments?: EnrollmentsSettingsOptions;
+  orders?: OrdersSettingsOptions;
+  quotations?: QuotationsSettingsOptions;
+  files?: FilesSettingsOptions;
+  payment?: PaymentSettingsOptions;
 }

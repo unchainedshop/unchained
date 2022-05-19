@@ -1,8 +1,8 @@
 import { ApolloServer } from 'apollo-server-express';
-import { IncomingMessage } from 'http';
+import { IncomingMessage, OutgoingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
-import { Context, UnchainedCoreOptions, UnchainedServerOptions } from './api';
+import { Context, UnchainedAPI, UnchainedCoreOptions, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
 import { MessageTypes, PlatformOptions } from './platform';
 

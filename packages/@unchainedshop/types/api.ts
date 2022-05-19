@@ -1,20 +1,8 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { GraphQLOptions } from 'apollo-server-express';
-import { FilesSettingsOptions } from './files';
-import { Db, Locale, MigrationRepository, ModuleInput } from './common';
-import { AccountsSettingsOptions } from './accounts';
-import { AssortmentsSettingsOptions } from './assortments';
-import { DeliverySettingsOptions } from './delivery';
-import { EnrollmentsSettingsOptions } from './enrollments';
-import { Modules } from './modules';
-import { OrdersSettingsOptions } from './orders';
-import { PaymentSettingsOptions } from './payments';
-import { QuotationsSettingsOptions } from './quotations';
-import { Services } from './services';
+import { Locale } from 'locale';
 import { User } from './user';
-import { Logger } from './logs';
-import { FiltersSettingsOptions } from './filters';
-import { ProductsSettingsOptions } from './products';
+import { UnchainedCore } from './core';
 
 export declare type Root = Record<string, unknown>;
 export interface UnchainedUserContext {
@@ -23,11 +11,9 @@ export interface UnchainedUserContext {
   user?: User;
 }
 
-export interface UnchainedAPI {
-  modules: Modules;
-  services: Services;
+export interface UnchainedAPI extends UnchainedCore {
   version?: string;
-  roles: any;
+  roles?: any;
 }
 
 export interface UnchainedHTTPServerContext {
@@ -44,11 +30,11 @@ export interface UnchainedLocaleContext {
 }
 
 export interface UnchainedLoaders {
-  bookmarksByQueryLoader: any;
-  bookmarkByIdLoader: any;
-  productTextLoader: any;
-  filterTextLoader: any;
-  assortmentTextLoader: any;
+  loaders: {
+    productTextLoader: any;
+    filterTextLoader: any;
+    assortmentTextLoader: any;
+  };
 }
 
 export type Context = UnchainedAPI &
@@ -75,34 +61,3 @@ export type UnchainedServerOptions = {
   GraphQLOptions<any, any>,
   'context' | 'uploads' | 'formatError' | 'typeDefs' | 'resolvers' | 'cors' | 'schema' | 'schemaHash'
 >;
-
-export interface Migration {
-  id: number;
-  name: string;
-  up: (params: { logger: Logger | Console; unchainedAPI: UnchainedAPI }) => Promise<void>;
-}
-
-export interface UnchainedCoreOptions {
-  db: Db;
-  migrationRepository: MigrationRepository<Migration>;
-  modules: Record<
-    string,
-    {
-      configure: (params: ModuleInput<any>) => any;
-    }
-  >;
-  services: Record<string, any>;
-  options: {
-    accounts?: AccountsSettingsOptions;
-    assortments?: AssortmentsSettingsOptions;
-    products?: ProductsSettingsOptions;
-    delivery?: DeliverySettingsOptions;
-    filters?: FiltersSettingsOptions;
-    enrollments?: EnrollmentsSettingsOptions;
-    orders?: OrdersSettingsOptions;
-    quotations?: QuotationsSettingsOptions;
-    files?: FilesSettingsOptions;
-    payment?: PaymentSettingsOptions;
-  };
-  [x: string]: any;
-}

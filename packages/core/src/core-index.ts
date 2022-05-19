@@ -1,4 +1,4 @@
-import { UnchainedCoreOptions } from '@unchainedshop/types/api';
+import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core';
 import { configureAccountsModule } from 'meteor/unchained:core-accountsjs';
 import { configureAssortmentsModule } from 'meteor/unchained:core-assortments';
 import { bookmarkServices, configureBookmarksModule } from 'meteor/unchained:core-bookmarks';
@@ -26,7 +26,7 @@ export const initCore = async ({
   services,
   bulkImporter,
   options = {},
-}: UnchainedCoreOptions) => {
+}: UnchainedCoreOptions): Promise<UnchainedCore> => {
   const accounts = await configureAccountsModule({
     db,
     options: options.accounts,
@@ -115,7 +115,7 @@ export const initCore = async ({
 
   // Configure custom modules
   const customModules = await Object.entries(modules).reduce(
-    async (modulesPromise, [key, customModule]) => {
+    async (modulesPromise, [key, customModule]: any) => {
       return {
         ...(await modulesPromise),
         [key]: await customModule.configure({
