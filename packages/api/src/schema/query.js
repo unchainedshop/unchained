@@ -404,7 +404,7 @@ export default [
         offset: Int = 0
         queryString: String
         created: DateTime
-        sort: [SortOptionInput]
+        sort: [SortOptionInput!]
       ): [Event!]!
 
       """
