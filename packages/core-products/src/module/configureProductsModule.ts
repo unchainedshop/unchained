@@ -1,4 +1,4 @@
-import { FindOptions, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import {
   Product,
   ProductQuery,
@@ -12,6 +12,7 @@ import {
   generateDbMutations,
   buildSortOptions,
 } from 'meteor/unchained:utils';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
@@ -195,16 +196,15 @@ export const configureProductsModule = async ({
     },
 
     findProducts: async ({ limit, offset, sort, ...query }) => {
-      const options: FindOptions = {
-        sort: sort ? buildSortOptions(sort) : { sequence: 1, published: -1 },
-      };
-      if (limit) {
-        options.limit = limit;
-      }
-      if (offset) {
-        options.skip = offset;
-      }
-      const products = Products.find(buildFindSelector(query), options);
+      const defaultSortOption: Array<SortOption> = [
+        { key: 'sequence', value: SortDirection.ASC },
+        { key: 'published', value: SortDirection.DESC },
+      ];
+      const products = Products.find(buildFindSelector(query), {
+        limit,
+        skip: offset,
+        sort: buildSortOptions(sort || defaultSortOption),
+      });
       return products.toArray();
     },
 

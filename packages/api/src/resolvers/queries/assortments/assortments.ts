@@ -1,16 +1,13 @@
 import { log } from 'meteor/unchained:logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root, SortOption } from '@unchainedshop/types/api';
+import { AssortmentQuery } from '@unchainedshop/types/assortments';
 
 export default async function assortments(
   root: Root,
-  params: {
-    queryString?: string;
-    tags?: Array<string>;
-    slugs?: Array<string>;
+  params: AssortmentQuery & {
     limit?: number;
     offset?: number;
-    includeInactive?: boolean;
-    includeLeaves?: boolean;
+    sort?: Array<SortOption>;
   },
   { modules, userId }: Context,
 ) {

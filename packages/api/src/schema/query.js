@@ -235,6 +235,7 @@ export default [
         offset: Int = 0
         includeInactive: Boolean = false
         includeLeaves: Boolean = false
+        sort: [SortOptionInput!]
       ): [Assortment!]!
 
       """

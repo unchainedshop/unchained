@@ -1,4 +1,5 @@
 import { Db } from 'mongodb';
+import { SortOption } from './api';
 import { AssortmentMediaModule } from './assortments.media';
 import { Filter, FindOptions, Query, TimestampFields, Tree, _ID } from './common';
 
@@ -90,6 +91,7 @@ export type AssortmentsModule = {
     query: AssortmentQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
     options?: FindOptions,
   ) => Promise<Array<Assortment>>;
