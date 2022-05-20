@@ -1,18 +1,18 @@
 import { log } from 'meteor/unchained:logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root, SortOption } from '@unchainedshop/types/api';
 import { CountryQuery } from '@unchainedshop/types/countries';
 
 export default async function countries(
   root: Root,
-  { limit, offset, includeInactive, queryString }: CountryQuery & { limit?: number; offset?: number },
+  params: CountryQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
   { modules, userId }: Context,
 ) {
-  log(`query countries: ${limit} ${offset} ${includeInactive ? 'includeInactive' : ''}`, { userId });
+  log(
+    `query countries: ${params.limit} ${params.offset} ${
+      params.includeInactive ? 'includeInactive' : ''
+    }`,
+    { userId },
+  );
 
-  return modules.countries.findCountries({
-    limit,
-    offset,
-    includeInactive,
-    queryString,
-  });
+  return modules.countries.findCountries(params);
 }

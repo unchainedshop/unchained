@@ -1,4 +1,4 @@
-import { Context } from './api';
+import { Context, SortOption } from './api';
 import { FindOptions, ModuleMutations, TimestampFields, _ID } from './common';
 
 export type Country = {
@@ -19,6 +19,7 @@ export type CountriesModule = ModuleMutations<Country> & {
     params: CountryQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
     options?: FindOptions,
   ) => Promise<Array<Country>>;
