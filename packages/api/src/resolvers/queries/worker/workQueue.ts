@@ -1,5 +1,5 @@
 import { log } from 'meteor/unchained:logger';
-import { Root, Context } from '@unchainedshop/types/api';
+import { Root, Context, SortOption } from '@unchainedshop/types/api';
 import { WorkStatus } from '@unchainedshop/types/worker';
 
 export default async function workers(
@@ -24,7 +24,7 @@ export default async function workers(
       start: Date;
       end: Date;
     };
-    sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
+    sort?: Array<SortOption>;
   },
   { modules, userId }: Context,
 ) {

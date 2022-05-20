@@ -32,7 +32,7 @@ const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => 
   } = {
     deleted: null,
   };
-  if (!status) selector.status = { $in: status };
+  if (status) selector.status = { $in: status };
   if (userId) selector.userId = userId;
 
   if (queryString) selector.$text = { $search: queryString };
