@@ -1,13 +1,13 @@
 import { log } from 'meteor/unchained:logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root, SortOption } from '@unchainedshop/types/api';
 import { QuotationQuery } from '@unchainedshop/types/quotations';
 
 export default async function quotations(
   root: Root,
-  { limit, offset, queryString }: QuotationQuery & { limit?: number; offset?: number },
+  params: QuotationQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
   { modules, userId }: Context,
 ) {
-  log(`query quotations: ${limit} ${offset}`, { userId });
+  log(`query quotations: ${params.limit} ${params.offset}`, { userId });
 
-  return modules.quotations.findQuotations({ limit, offset, queryString });
+  return modules.quotations.findQuotations(params);
 }

@@ -321,7 +321,12 @@ export default [
       """
       Get all quotations
       """
-      quotations(limit: Int = 10, offset: Int = 0, queryString: String): [Quotation!]!
+      quotations(
+        limit: Int = 10
+        offset: Int = 0
+        queryString: String
+        sort: [SortOptionInput!]
+      ): [Quotation!]!
 
       """
       Get a specific quotation by ID
