@@ -1,3 +1,4 @@
+import { SortOption } from './api';
 import { FindOptions, ModuleCreateMutation, Query, TimestampFields, _ID } from './common';
 
 export type EventPayload = {
@@ -42,7 +43,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
     params: EventQuery & {
       limit?: number;
       offset?: number;
-      sort?: { created?: 'DESC' | 'ASC'; type?: 'DESC' | 'ASC' };
+      sort?: Array<SortOption>;
     },
     options?: FindOptions,
   ) => Promise<Array<Event>>;

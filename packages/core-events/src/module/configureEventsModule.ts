@@ -1,23 +1,10 @@
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import { ModuleInput, ModuleMutations, Filter } from '@unchainedshop/types/common';
 import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events';
 import { getRegisteredEvents } from 'meteor/unchained:events';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
-
-const SORT_DIRECTIONS = {
-  ASC: 1,
-  DESC: -1,
-};
-
-const buildSortOptions = (sortOptions) => {
-  const sortBy = {};
-  Object.entries(sortOptions || [])?.forEach(([key, value]: [key: string, value: string]) => {
-    sortBy[key] = SORT_DIRECTIONS[value];
-  });
-  return sortBy;
-};
 
 const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
   const selector: { type?: any; $text?: any; created?: any } = {};
@@ -52,7 +39,7 @@ export const configureEventsModule = async ({
       return Events.find(buildFindSelector(query as Event), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort || { created: 'DESC' }),
+        sort: buildSortOptions(sort || [{ key: 'created', value: 'DESC' }]),
       }).toArray();
     },
 

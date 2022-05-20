@@ -66,7 +66,7 @@ export default [
       reviews(
         limit: Int = 10
         offset: Int = 0
-        sort: [ProductReviewSortOptionInput!]
+        sort: [SortOptionInput!]
         queryString: String
       ): [ProductReview!]!
       assortmentPaths: [ProductAssortmentPath!]!

@@ -15,18 +15,9 @@ export default [
       algorithm: String!
     }
 
-    input ProductReviewSortOptionInput {
+    input SortOptionInput {
       key: String!
       value: SortDirection!
-    }
-    input WorkQueueSortOptionInput {
-      key: String!
-      value: SortDirection!
-    }
-
-    input EventSortOptionInput {
-      created: SortDirection
-      type: SortDirection
     }
 
     input UserProfileInput {

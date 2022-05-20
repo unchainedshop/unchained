@@ -7,7 +7,7 @@ import {
 } from '@unchainedshop/types/common';
 import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import os from 'os';
 import { WorkQueueCollection } from '../db/WorkQueueCollection';
 import { WorkQueueSchema } from '../db/WorkQueueSchema';
@@ -16,19 +16,6 @@ import { WorkerEventTypes } from '../director/WorkerEventTypes';
 import { WorkStatus } from '../director/WorkStatus';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
-
-const SORT_DIRECTIONS = {
-  ASC: 1,
-  DESC: -1,
-};
-
-const buildSortOptions = (sort: Array<{ key: string; value: 'DESC' | 'ASC' }>) => {
-  const sortBy = {};
-  sort?.forEach(({ key, value }) => {
-    sortBy[key] = SORT_DIRECTIONS[value];
-  });
-  return sortBy;
-};
 
 const buildQuerySelector = ({
   created,

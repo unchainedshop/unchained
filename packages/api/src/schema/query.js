@@ -298,7 +298,7 @@ export default [
       productReviews(
         limit: Int = 10
         offset: Int = 0
-        sort: [ProductReviewSortOptionInput!]
+        sort: [SortOptionInput!]
         queryString: String
       ): [ProductReview!]!
 
@@ -377,7 +377,7 @@ export default [
           )
         created: DateFilterInput
         queryString: String
-        sort: [WorkQueueSortOptionInput!]
+        sort: [SortOptionInput!]
         types: [WorkType!]
       ): [Work!]!
 
@@ -404,7 +404,7 @@ export default [
         offset: Int = 0
         queryString: String
         created: DateTime
-        sort: EventSortOptionInput
+        sort: [SortOptionInput]
       ): [Event!]!
 
       """
