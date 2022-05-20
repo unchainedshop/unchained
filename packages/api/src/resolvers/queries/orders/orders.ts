@@ -1,14 +1,10 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
+import { OrderQuery } from '@unchainedshop/types/orders';
 
 export default async function orders(
   root: Root,
-  params: {
-    limit: number;
-    offset: number;
-    includeCarts: boolean;
-    queryString?: string;
-  },
+  params: OrderQuery & { limit?: number; offset?: number },
   { modules, userId }: Context,
 ) {
   const { includeCarts, limit, offset, queryString } = params;
@@ -17,10 +13,5 @@ export default async function orders(
     userId,
   });
 
-  return modules.orders.findOrders({
-    includeCarts,
-    limit,
-    offset,
-    queryString,
-  });
+  return modules.orders.findOrders(params);
 }
