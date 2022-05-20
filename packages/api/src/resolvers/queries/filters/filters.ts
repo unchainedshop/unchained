@@ -1,12 +1,22 @@
 import { log } from 'meteor/unchained:logger';
-import { Root, Context } from '@unchainedshop/types/api';
+import { Root, Context, SortOption } from '@unchainedshop/types/api';
+import { FilterQuery } from '@unchainedshop/types/filters';
 
 export default async function filters(
   root: Root,
-  { limit, offset, includeInactive, queryString },
+  params: FilterQuery & {
+    limit?: number;
+    offset?: number;
+    sort?: Array<SortOption>;
+  },
   { modules, userId }: Context,
 ) {
-  log(`query filters: ${limit} ${offset} ${includeInactive ? 'includeInactive' : ''}`, { userId });
+  log(
+    `query filters: ${params.limit} ${params.offset} ${params.includeInactive ? 'includeInactive' : ''}`,
+    {
+      userId,
+    },
+  );
 
-  return modules.filters.findFilters({ limit, offset, includeInactive, queryString });
+  return modules.filters.findFilters(params);
 }

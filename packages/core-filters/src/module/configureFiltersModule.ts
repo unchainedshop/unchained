@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
 import { Filter as DbFilter, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import {
   Filter,
@@ -8,7 +8,7 @@ import {
 } from '@unchainedshop/types/filters';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import { FilterType } from '../db/FilterType';
 import { FilterDirector } from '../director/FilterDirector';
 import { FiltersCollection } from '../db/FiltersCollection';
@@ -149,12 +149,14 @@ export const configureFiltersModule = async ({
     findFilters: async ({
       limit,
       offset,
+      sort,
       ...query
-    }: FilterQuery & { limit?: number; offset?: number }) => {
+    }: FilterQuery & { limit?: number; offset?: number; sort?: Array<SortOption> }) => {
+      const defaultSortOption = [{ key: 'sequence', value: SortDirection.ASC }];
       const filters = Filters.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: { sequence: 1 },
+        sort: buildSortOptions(sort || defaultSortOption),
       });
       return filters.toArray();
     },

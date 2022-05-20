@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { Context } from './api';
+import { Context, SortOption } from './api';
 import { Assortment } from './assortments';
 import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
 import { Product } from './products';
@@ -82,6 +82,7 @@ export type FiltersModule = {
     params: FilterQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
   ) => Promise<Array<Filter>>;
 

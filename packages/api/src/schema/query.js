@@ -282,6 +282,7 @@ export default [
         offset: Int = 0
         includeInactive: Boolean = false
         queryString: String
+        sort: [SortOptionInput!]
       ): [Filter!]!
 
       """
