@@ -1,12 +1,13 @@
 import { log } from 'meteor/unchained:logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root, SortOption } from '@unchainedshop/types/api';
 import { EnrollmentQuery } from '@unchainedshop/types/enrollments';
 
 export default async function enrollments(
   root: Root,
   params: EnrollmentQuery & {
-    limit: number;
-    offset: number;
+    limit?: number;
+    offset?: number;
+    sort?: Array<SortOption>;
   },
   { modules, userId }: Context,
 ) {

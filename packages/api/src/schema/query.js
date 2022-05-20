@@ -346,6 +346,7 @@ export default [
         offset: Int = 0
         queryString: String
         status: [String!]
+        sort: [SortOptionInput!]
       ): [Enrollment!]!
 
       """
