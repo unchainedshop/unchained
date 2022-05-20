@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "1.0.0-rc.24",
+  "version": "1.0.0",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
   "repository": {
@@ -42,8 +42,8 @@
   },
   "devDependencies": {
     "@apollo/client": "^3.6.4",
-    "@babel/core": "^7.17.12",
-    "@babel/preset-env": "^7.17.12",
+    "@babel/core": "^7.18.0",
+    "@babel/preset-env": "^7.18.0",
     "@shelf/jest-mongodb": "^2.2.2",
     "@types/jest": "^27.5.1",
     "@types/lodash.clone": "^4.5.7",

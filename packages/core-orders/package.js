@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-orders',
-  version: '1.0.0-rc.24',
+  version: '1.0.0',
   summary: 'Unchained Engine Core: Orders',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -15,9 +15,9 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0-rc.24');
-  api.use('unchained:events@1.0.0-rc.24');
-  api.use('unchained:logger@1.0.0-rc.24');
+  api.use('unchained:utils@1.0.0');
+  api.use('unchained:events@1.0.0');
+  api.use('unchained:logger@1.0.0');
 
   api.mainModule('src/orders-index.ts', 'server');
 });

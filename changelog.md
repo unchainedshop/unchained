@@ -1,13 +1,22 @@
-# v1.0
+# Unchained Engine v1.0 ("Maiglöggli")
 
 This is our first major release, it covers all features needed to build highly flexible e-commerce
-solutions. Unchained 1.0 is an almost complete rewrite from javascript to typescript and is many ways
-breaking existing code based on the older versions. It's also a major step toward a Meteor-free future of
-Unchained.
+solutions for B2B and B2C cases. Unchained 1.0 is an almost complete rewrite from javascript to
+typescript and is many ways breaking existing code based on the older versions. It's also a major step
+toward a Meteor-free future of Unchained which will follow suit after this.
+
+Our Roadmap ahead:
+
+- Unchained 1.x (LTS, released until end of autumn, supported until end of 2023): Small continous
+  non-breaking improvements to the current version, please see
+  https://github.com/unchainedshop/unchained/issues?q=is%3Aopen+is%3Aissue+milestone%3Av1.1 to follow
+- Unchained 2.0 (End of 2022): Complete Meteor-free and pure ESM-only version of Unchained Engine that
+  runs on edge frameworks.
 
 ## Breaking changes
 
-- [core] We have removed the Matomo tracker because it was not a plugin but rather an example of an event tracking implementationk, will be re-added later to a "recipes" docs page
+- [core] We have removed the Matomo tracker because it was not a plugin but rather an example of an event
+  tracking implementation, it will be re-added later to a "recipes" docs page
 - [platform, api, core] Refactor Unchained Engine's core with the goal to add typescript support, get rid
   of classes and reduce the usage of meteor package depedencies to a minimum. This leads to a completely
   new SW architecture. The event director and the databse are initialised in the platform and injected
@@ -15,13 +24,14 @@ Unchained.
   and the custom services make use of the modules to fetch and manipulate.
 - [core] `UNCHAINED_INVALIDATE_PROVIDERS` has been removed in order for an inverted
   `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`
-- [core] NEW core module `core-files` that uses [minio cloud object storage](https://min.io/)
-  compatible with [amazon s3 cloud storage api](https://aws.amazon.com/s3/). This update provides a
-  scalable files storage solution for all the projects that use it. All the previous file management APIs
-  now use this module under the hood in addition there are few new endpoint added that support signed put
-  url based upload namely `prepareUserAvatarUpload`, `prepareProductMediaUpload`,
-  `prepareAssortmentMediaUpload` and `confirmMediaUpload` that can be used to generate signed PUT url for
-  file upload. to learn more on how to use this module refer to [docs](https://docs.unchained.shop/)
+- [core] NEW core module `core-files` that uses [minio cloud object storage](https://min.io/) compatible
+  with [amazon s3 cloud storage api](https://aws.amazon.com/s3/). This update provides a scalable files
+  storage solution for all the projects that use it. All the previous file management APIs now use this
+  module under the hood in addition there are few new endpoint added that support signed put url based
+  upload namely `prepareUserAvatarUpload`, `prepareProductMediaUpload`, `prepareAssortmentMediaUpload`
+  and `confirmMediaUpload` that can be used to generate signed PUT url for file upload. to learn more on
+  how to use this module refer to [docs](https://docs.unchained.shop/). **All existing media's will not
+  work anymore and need to be migrated by the developer.**
 - [api] `Date` values that previously were returned as timestamps are now converted to UTC compliant with
   the date-time format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for
   representation of dates and times using the Gregorian calendar to mitigate issues related to timezone.
@@ -83,6 +93,8 @@ Unchained.
 
 - [core] Bulk Importer now supports skipping the built-in cache invalidation run at the end by using
   `skipCacheInvalidation`
+- [core] Bulk Importer now supports defining custom entities to sync
+- [api] Product, Assortment & Filter texts are now loaded through a Dataloader which improves Performance
 - [api] A new `RANGE` filter type has been added. A range filter parses filter query values differently
   in searchProducts than MULTI_SELECT and allows to do open-end filtering on decimal values by using `:`.
   As an example, `0:500` will match all option values between 0 and 500.
@@ -149,7 +161,8 @@ Unchained.
   using the environment variable `UNCHAINED_ASSIGN_CART_FOR_USERS`
 - [platform] You can now disable the invalidation of orders at boot time by passing `invalidateProviders`
   boolean value to `startPlafom` or using the environment variable
-  `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`. You can also control the max age so that very old carts are not invalidated forever with `providerInvalidationMaxAgeDays`.
+  `UNCHAINED_DISABLE_PROVIDER_INVALIDATION`. You can also control the max age so that very old carts are
+  not invalidated forever with `providerInvalidationMaxAgeDays`.
 - [core] It's is now possible to assign media files for assortments.
 - [controlpanel] Assortment media upload, remove & reorder functionalities are available.
 - [api] Added the following query and mutations that can be used to manage assortment medias
@@ -173,8 +186,11 @@ ReorderAssortmentMediaInput
 - [core] New
   [PostFinance Checkout](https://www.postfinance.ch/de/unternehmen/produkte/e-commerce/postfinance-checkout-flex.html)
   payment plugin with support for deferred settlements and refunds.
-- [api] New mutation `rejectOrder` and corresponding e-mail template `ORDER_REJECTION` to manually reject an order with status `PENDING`.
-- [core] New [Worldline Saferpay](https://www.six-payment-services.com/de/site/e-commerce/learn-more/merchant.html) payment plugin.
+- [api] New mutation `rejectOrder` and corresponding e-mail template `ORDER_REJECTION` to manually reject
+  an order with status `PENDING`.
+- [core] New
+  [Worldline Saferpay](https://www.six-payment-services.com/de/site/e-commerce/learn-more/merchant.html)
+  payment plugin.
 
 ## Minor
 
