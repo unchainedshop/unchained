@@ -4,10 +4,10 @@ import { DeliveryProviderQuery } from '@unchainedshop/types/delivery';
 
 export default async function deliveryProvidersCount(
   root: Root,
-  { type }: DeliveryProviderQuery,
+  params: DeliveryProviderQuery,
   { modules, userId }: Context,
 ) {
-  log(`query deliveryProvidersCount ${type}`, { userId });
+  log(`query deliveryProvidersCount ${params.type}`, { userId });
 
-  return modules.delivery.count({ type });
+  return modules.delivery.count(params);
 }

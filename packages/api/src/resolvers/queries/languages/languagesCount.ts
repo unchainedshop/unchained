@@ -4,15 +4,12 @@ import { log } from 'meteor/unchained:logger';
 
 export default async function languagesCount(
   root: Root,
-  { includeInactive, queryString }: LanguageQuery,
+  params: LanguageQuery,
   { modules, userId }: Context,
 ) {
-  log(`query languagesCount:  ${includeInactive ? 'includeInactive' : ''}`, {
+  log(`query languagesCount:  ${params.includeInactive ? 'includeInactive' : ''}`, {
     userId,
   });
 
-  return modules.languages.count({
-    includeInactive,
-    queryString,
-  });
+  return modules.languages.count(params);
 }

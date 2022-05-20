@@ -4,10 +4,10 @@ import { QuotationQuery } from '@unchainedshop/types/quotations';
 
 export default async function quotationsCount(
   root: Root,
-  { queryString }: QuotationQuery,
+  params: QuotationQuery,
   { modules, userId }: Context,
 ) {
   log(`query quotationsCount`, { userId });
 
-  return modules.quotations.count({ queryString });
+  return modules.quotations.count(params);
 }

@@ -4,10 +4,10 @@ import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function paymentProviders(
   root: Root,
-  { type }: PaymentProviderQuery,
+  params: PaymentProviderQuery,
   { modules, userId }: Context,
 ) {
-  log(`query paymentProvider ${type}`, { userId });
+  log(`query paymentProvider ${params.type}`, { userId });
 
-  return modules.payment.paymentProviders.findProviders({ type });
+  return modules.payment.paymentProviders.findProviders(params);
 }

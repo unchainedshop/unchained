@@ -1,14 +1,10 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
+import { ProductQuery } from '@unchainedshop/types/products';
 
 export default async function productsCount(
   root: Root,
-  params: {
-    includeDrafts: boolean;
-    slugs?: Array<string>;
-    tags?: Array<string>;
-    queryString?: string;
-  },
+  params: ProductQuery,
   { modules, userId }: Context,
 ) {
   log(
