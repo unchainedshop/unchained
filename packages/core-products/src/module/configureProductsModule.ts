@@ -6,7 +6,12 @@ import {
   ProductsSettingsOptions,
 } from '@unchainedshop/types/products';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { findPreservingIds, generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import {
+  findPreservingIds,
+  generateDbFilterById,
+  generateDbMutations,
+  buildSortOptions,
+} from 'meteor/unchained:utils';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
@@ -189,8 +194,10 @@ export const configureProductsModule = async ({
       return Products.findOne(selector, {});
     },
 
-    findProducts: async ({ limit, offset, ...query }) => {
-      const options: FindOptions = { sort: { sequence: 1, published: -1 } };
+    findProducts: async ({ limit, offset, sort, ...query }) => {
+      const options: FindOptions = {
+        sort: sort ? buildSortOptions(sort) : { sequence: 1, published: -1 },
+      };
       if (limit) {
         options.limit = limit;
       }

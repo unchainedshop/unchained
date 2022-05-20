@@ -48,6 +48,7 @@ export default [
         limit: Int = 10
         offset: Int = 0
         includeDrafts: Boolean = false
+        sort: [SortOptionInput!]
       ): [Product!]!
 
       """
