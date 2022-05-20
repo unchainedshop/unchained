@@ -1,3 +1,4 @@
+import { SortOption } from './api';
 import { ModuleMutations, TimestampFields, _ID } from './common';
 
 export type Currency = {
@@ -19,6 +20,7 @@ export type CurrenciesModule = ModuleMutations<Currency> & {
     params: CurrencyQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
   ) => Promise<Array<Currency>>;
   count: (query: CurrencyQuery) => Promise<number>;

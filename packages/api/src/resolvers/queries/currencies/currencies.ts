@@ -1,21 +1,17 @@
 import { log } from 'meteor/unchained:logger';
-import { Root, Context } from '@unchainedshop/types/api';
+import { Root, Context, SortOption } from '@unchainedshop/types/api';
+import { CurrencyQuery } from '@unchainedshop/types/currencies';
 
 export default async function currencies(
   root: Root,
-  {
-    limit,
-    offset,
-    includeInactive,
-    queryString,
-  }: { limit: number; offset: number; includeInactive: boolean; queryString: string },
+  params: CurrencyQuery & { limit: number; offset: number; sort?: Array<SortOption> },
   { modules, userId }: Context,
 ) {
-  log(`query currencies: ${limit} ${offset} ${includeInactive ? 'includeInactive' : ''}`, { userId });
-  return modules.currencies.findCurrencies({
-    limit,
-    offset,
-    includeInactive,
-    queryString,
-  });
+  log(
+    `query currencies: ${params.limit} ${params.offset} ${
+      params.includeInactive ? 'includeInactive' : ''
+    }`,
+    { userId },
+  );
+  return modules.currencies.findCurrencies(params);
 }
