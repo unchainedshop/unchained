@@ -105,9 +105,9 @@ export const configureAssortmentsModule = async ({
     ).toArray();
   };
 
-  const findProductAssignments = async (assortment: Assortment) => {
+  const findProductAssignments = async (assortmentId: string) => {
     return AssortmentProducts.find(
-      { assortmentId: assortment._id },
+      { assortmentId },
       {
         sort: { sortKey: 1 },
       },
@@ -117,7 +117,7 @@ export const configureAssortmentsModule = async ({
   // returns AssortmentProducts and child assortment links with products.
   const collectProductIdCacheTree = async (assortment: Assortment): Promise<Tree<string>> => {
     // get assortment products related with this assortment I.E AssortmentProducts
-    const productAssignments = await findProductAssignments(assortment);
+    const productAssignments = await findProductAssignments(assortment._id);
     const ownProductIds = productAssignments.map(({ productId }) => productId);
 
     // get assortment links parent or child linked with this assortment I.E. AssortmentLinks
@@ -157,7 +157,7 @@ export const configureAssortmentsModule = async ({
     { forceLiveCollection = false, ignoreChildAssortments = false } = {},
   ) => {
     if (ignoreChildAssortments) {
-      const productAssignments = await findProductAssignments(assortment);
+      const productAssignments = await findProductAssignments(assortment._id);
       return productAssignments.map(({ productId }) => productId);
     }
     if (!forceLiveCollection) {
