@@ -149,7 +149,7 @@ export const configureWarehousingModule = async ({
 
     update: async (_id: string, doc: WarehousingProvider, userId: string) => {
       const warehousingProviderId = await mutations.update(_id, doc, userId);
-      const warehousingProvider = await WarehousingProviders.findOne(generateDbFilterById(_id));
+      const warehousingProvider = await WarehousingProviders.findOne(generateDbFilterById(_id), {});
 
       if (!warehousingProvider) return null;
 

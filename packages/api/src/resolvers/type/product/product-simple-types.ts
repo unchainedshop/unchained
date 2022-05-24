@@ -1,4 +1,5 @@
 import { SimpleProductHelperTypes } from '@unchainedshop/types/products';
+import { WarehousingContext } from '@unchainedshop/types/warehousing';
 import { PlanProduct } from './product-plan-types';
 
 export const SimpleProduct: SimpleProductHelperTypes = {
@@ -25,12 +26,11 @@ export const SimpleProduct: SimpleProductHelperTypes = {
 
       const mappedWarehousingProviders = await Promise.all(
         warehousingProviders.map(async (warehousingProvider) => {
-          const warehousingContext = {
+          const warehousingContext: WarehousingContext = {
             deliveryProvider,
             product: obj,
             quantity,
             referenceDate,
-            warehousingProvider,
           };
 
           const dispatch = await modules.warehousing.estimatedDispatch(
@@ -71,11 +71,10 @@ export const SimpleProduct: SimpleProductHelperTypes = {
 
       const mappedWarehousingProviders = await Promise.all(
         warehousingProviders.map(async (warehousingProvider) => {
-          const warehousingContext = {
+          const warehousingContext: WarehousingContext = {
             deliveryProvider,
             product: obj,
             referenceDate,
-            warehousingProvider,
           };
 
           const stock = await modules.warehousing.estimatedStock(
