@@ -7,12 +7,12 @@ export default async ({ assortmentId, content }, { modules, userId }: Context) =
 
   await Promise.all(
     Object.entries(content).map(
-      async ([locale, { authorId: tAuthorId, ...localizedData }]: [string, AssortmentText]) => {
+      async ([locale, { authorId, ...localizedData }]: [string, AssortmentText]) => {
         return modules.assortments.texts.upsertLocalizedText(
           assortmentId,
           locale,
           localizedData,
-          tAuthorId || userId,
+          authorId || userId,
         );
       },
     ),

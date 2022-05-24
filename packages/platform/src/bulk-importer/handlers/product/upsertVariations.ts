@@ -43,7 +43,7 @@ export default async function upsertVariations(
                   },
                   locale,
                   localizedData,
-                  tAuthorId || userId,
+                  tAuthorId || authorId || userId,
                 );
               },
             ),
@@ -62,7 +62,7 @@ export default async function upsertVariations(
               },
               locale,
               localizedData,
-              tAuthorId || userId,
+              tAuthorId || authorId || userId,
             );
           },
         ),

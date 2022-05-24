@@ -23,8 +23,10 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
 
 export const createBulkImporterFactory = (db, additionalHandlers) => {
   // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
-  const options = { bucketName: 'bulk_import_payloads', chunkSizeBytes: 5 * 1024 * 1024 };
-  const BulkImportPayloads = new mongodb.GridFSBucket(db, options);
+  const BulkImportPayloads = new mongodb.GridFSBucket(db, {
+    bucketName: 'bulk_import_payloads',
+    chunkSizeBytes: 5 * 1024 * 1024,
+  });
 
   bulkOperationHandlers = {
     ASSORTMENT: AssortmentHandlers,
@@ -37,7 +39,7 @@ export const createBulkImporterFactory = (db, additionalHandlers) => {
     const bulkOperations = {};
     const preparationIssues = [];
     const processedOperations = {};
-    const { logger } = options;
+    const { logger, createShouldUpsertIfIDExists, skipCacheInvalidation } = options;
 
     const bulk = (collectionName: string) => {
       const Collection = db.collection(collectionName);
@@ -46,8 +48,9 @@ export const createBulkImporterFactory = (db, additionalHandlers) => {
     };
 
     logger.info(
-      `Configure event import with options: createShouldUpsertIfIDExists=${options.createShouldUpsertIfIDExists} skipCacheInvalidation=${options.skipCacheInvalidation}`,
+      `Configure event import with options: createShouldUpsertIfIDExists=${createShouldUpsertIfIDExists} skipCacheInvalidation=${skipCacheInvalidation}`,
     );
+    console.log(options);
 
     return {
       prepare: async (event) => {
@@ -96,15 +99,14 @@ export const createBulkImporterFactory = (db, additionalHandlers) => {
           logger.error(
             `${preparationIssues.length} issues occured while preparing events, import finished with errors`,
           );
-          const errors = {};
-          errors.preparationIssues = preparationIssues;
+          const errors = { preparationIssues };
           return [operationResults, errors];
         }
         logger.info(`Import finished without errors`);
         return [operationResults, null];
       },
       invalidateCaches: async () => {
-        if (options?.skipCacheInvalidation) return;
+        if (skipCacheInvalidation) return;
         await requestContext.modules.assortments.invalidateCache();
         await requestContext.modules.filters.invalidateCache({}, requestContext);
       },
