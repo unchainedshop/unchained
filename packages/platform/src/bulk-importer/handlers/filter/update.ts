@@ -32,7 +32,7 @@ export default async function updateFilter(
 
   if (content) {
     logger.debug('replace localized content for filter', content);
-    await upsertFilterContent({ content, filter }, unchainedAPI);
+    await upsertFilterContent({ content, filter, authorId }, unchainedAPI);
   }
 
   if (options) {

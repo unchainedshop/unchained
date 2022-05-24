@@ -39,6 +39,7 @@ export default async function createAssortment(
     {
       content: specification.content,
       assortmentId: _id,
+      authorId,
     },
     unchainedAPI,
   );

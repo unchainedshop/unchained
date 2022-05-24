@@ -50,8 +50,7 @@ export const createBulkImporterFactory = (db, additionalHandlers) => {
     logger.info(
       `Configure event import with options: createShouldUpsertIfIDExists=${createShouldUpsertIfIDExists} skipCacheInvalidation=${skipCacheInvalidation}`,
     );
-    console.log(options);
-
+    
     return {
       prepare: async (event) => {
         const entity = event.entity.toUpperCase();

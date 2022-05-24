@@ -59,6 +59,7 @@ export const configureProductTextsModule = ({
         updated: new Date(),
         updatedBy: userId,
         title: text.title,
+        authorId: userId,
         ...textFields,
       },
       $setOnInsert: {
