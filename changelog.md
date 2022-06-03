@@ -1,3 +1,14 @@
+# Unchained Engine v1.1
+
+## Major:
+
+- [api] new `mutation.updateUserMeta` is added dedicated to updating extra data about user.
+- [api] `query.events` is now extended with additional filter parameters `created` get events created
+  after the provided event and the previous `type` field is changed to `types` and accepts array of event
+  types. in addition it is now possible to `sort` the results any field on event type
+- [api] new `mutation.updateUserProfile` is extended to accept new argument `meta` to store extra
+  information of a user.
+
 # Unchained Engine v1.0 ("Maiglöggli")
 
 This is our first major release, it covers all features needed to build highly flexible e-commerce
@@ -91,7 +102,6 @@ Our Roadmap ahead:
 
 ## Major
 
-- [api] `query.events` is now extended with additional filter parameters `create` get events created after the provided event and the previous `type` field is changed to `types` and accepts array of event types. in addition it is now possible to `sort` the results any field on event type
 - [core] Bulk Importer now supports skipping the built-in cache invalidation run at the end by using
   `skipCacheInvalidation`
 - [core] Bulk Importer now supports defining custom entities to sync
@@ -194,6 +204,7 @@ ReorderAssortmentMediaInput
   payment plugin.
 
 ## Minor
+
 - [core] accountsjs's accountsPassword and accountsServer options can now be configured through the
   normal module configuration of unchained by providing `server` and `password` objects with options.
 - [core] The logging of payment providers has been streamlined and is now more verbose by default to help
