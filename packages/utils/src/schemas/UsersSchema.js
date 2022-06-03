@@ -9,11 +9,6 @@ const ProfileSchema = new SimpleSchema(
     phoneMobile: String,
     gender: String,
     address: AddressSchema,
-    customFields: {
-      type: Object,
-      optional: true,
-      blackbox: true,
-    },
   },
   { requiredByDefault: false },
 );
@@ -54,6 +49,11 @@ export const UserSchema = new SimpleSchema(
     tags: Array,
     'tags.$': String,
     avatarId: String,
+    meta: {
+      type: Object,
+      optional: true,
+      blackbox: true,
+    },
     services: {
       type: Object,
       optional: true,

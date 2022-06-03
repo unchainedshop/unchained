@@ -1,7 +1,9 @@
 ---
-title: "Module: Accounts"
+title: 'Module: Accounts'
 description: Configure the Accounts Module
 ---
+
+Disable automatically sending verification e-mails after signup or enrollment:
 
 The accounts management system in Unchained Engine is reliant on [accounts-js](https://github.com/accounts-js/accounts) which is employed in `unchained:core-users`.
 
@@ -21,15 +23,15 @@ In this example we are customizing session time and verification email sending a
 
 ```
 const options = {
-  modules: {
-    accounts: {
-        server: {
-          loginExpirationInDays: 1,
-        },
-        password: {
-            sendVerificationEmailAfterSignup: true
-        }
-      },
-  }
+  accounts: {
+    autoMessagingAfterUserCreation: false,
+    mergeUserCartsOnLogin: false,
+    server: {
+      loginExpirationInDays: 1,
+    },
+    password: {
+        sendVerificationEmailAfterSignup: true
+    }
+  },
 };
 ```

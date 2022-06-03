@@ -112,7 +112,6 @@ describe("Auth for anonymous users", () => {
             phoneMobile: "+410000000",
             gender: "m",
             address: null,
-            customFields: null,
           },
         },
       });

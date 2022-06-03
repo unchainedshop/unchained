@@ -130,6 +130,7 @@ Enrollment
 Quotation
 EnrollmentPayment
 EnrollmentDelivery
+User
 ```
 
 Note: While every entity that listed above exposes a meta property there is an exception for Order related entities. Order related entities store `meta` property and other useful information about the order under `context` property. So in order to get the `meta` value of an order you read it from the `context`. This entity types are listed below:

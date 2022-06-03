@@ -21,7 +21,6 @@ export interface UserProfile {
   phoneMobile?: string;
   gender?: string;
   address?: Address;
-  customFields?: unknown;
 }
 
 export interface UserLastLogin {
@@ -52,6 +51,7 @@ export type User = {
   services: any;
   tags?: Array<string>;
   username?: string;
+  meta?: any;
 } & TimestampFields;
 
 export type UserQuery = Filter<User> & {
@@ -90,10 +90,13 @@ export type UsersModule = {
   updateInitialPassword: (user: User, initialPassword: boolean) => Promise<void>;
   updateLastBillingAddress: (_id: string, lastAddress: Address, userId: string) => Promise<User>;
   updateLastContact: (_id: string, lastContact: Contact, userId: string) => Promise<User>;
-  updateProfile: (_id: string, profile: UserProfile, userId: string) => Promise<User>;
+  updateProfile: (
+    _id: string,
+    { profile, meta }: { profile?: UserProfile; meta?: any },
+    userId: string,
+  ) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>, userId: string) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>, userId: string) => Promise<User>;
-
   updateUser: (selector: Query, modifier: Update<User>, options: UpdateOptions) => Promise<void>;
 };
 

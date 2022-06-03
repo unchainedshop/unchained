@@ -12,6 +12,7 @@ import {
 import { FileDirector } from 'meteor/unchained:file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
+import addMigrations from './addMigrations';
 
 const USER_EVENTS = [
   'USER_UPDATE',
@@ -49,14 +50,19 @@ const getUserLocale = (user: User, params: { localeContext?: Locale } = {}) => {
 
 FileDirector.registerFileUploadCallback('user-avatars', async (file, context: Context) => {
   const { services } = context;
+
   return services.users.updateUserAvatarAfterUpload({ file }, context);
 });
 
 export const configureUsersModule = async ({
   db,
+  migrationRepository,
 }: ModuleInput<Record<string, never>>): Promise<UsersModule> => {
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
+
+  // Migration
+  addMigrations(migrationRepository);
 
   const mutations = generateDbMutations<User>(Users, Schemas.User) as ModuleMutations<User>;
 
@@ -196,16 +202,28 @@ export const configureUsersModule = async ({
       await Users.updateOne(generateDbFilterById(user._id), modifier);
     },
 
-    updateProfile: async (_id, profile, userId) => {
+    updateProfile: async (_id, updatedData, userId) => {
       const userFilter = generateDbFilterById(_id);
-      const modifier = {
-        $set: Object.keys(profile).reduce((acc, profileKey) => {
+      const { meta, profile } = updatedData;
+
+      if (!meta && !profile) {
+        return Users.findOne(userFilter, {});
+      }
+
+      const modifier = { $set: {} };
+
+      if (profile) {
+        modifier.$set = Object.keys(profile).reduce((acc, profileKey) => {
           return {
             ...acc,
             [`profile.${profileKey}`]: profile[profileKey],
           };
-        }, {}),
-      };
+        }, {});
+      }
+
+      if (meta) {
+        modifier.$set.meta = meta;
+      }
 
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
@@ -313,7 +331,6 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-
     updateUser: async (query, modifier, options) => {
       await Users.updateOne(query, modifier, options);
       const user = await Users.findOne(query);
