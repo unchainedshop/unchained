@@ -3,8 +3,8 @@ import { Migration } from '@unchainedshop/types/api';
 import { MigrationRepository } from '@unchainedshop/types/common';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 
-export const addMigrations = (repository: MigrationRepository<Migration>) => {
-  repository.register({
+export default function addMigrations(repository: MigrationRepository<Migration>) {
+  repository?.register({
     id: 20220216000000,
     name: 'Move _cachedProductIds cache to own collection in order to save a lot of bandwidth',
     up: async () => {
@@ -21,7 +21,7 @@ export const addMigrations = (repository: MigrationRepository<Migration>) => {
               _id: assortment._id as any,
             },
             {
-            $set: { productIds: assortment._cachedProductIds }, // eslint-disable-line
+              $set: { productIds: assortment._cachedProductIds }, // eslint-disable-line
             },
             {
               upsert: true,
@@ -38,4 +38,4 @@ export const addMigrations = (repository: MigrationRepository<Migration>) => {
       );
     },
   });
-};
+}

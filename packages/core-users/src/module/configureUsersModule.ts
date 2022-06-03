@@ -12,6 +12,7 @@ import {
 import { FileDirector } from 'meteor/unchained:file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
+import addMigrations from './addMigrations';
 
 const USER_EVENTS = [
   'USER_UPDATE',
@@ -55,9 +56,13 @@ FileDirector.registerFileUploadCallback('user-avatars', async (file, context: Co
 
 export const configureUsersModule = async ({
   db,
+  migrationRepository,
 }: ModuleInput<Record<string, never>>): Promise<UsersModule> => {
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
+
+  // Migration
+  addMigrations(migrationRepository);
 
   const mutations = generateDbMutations<User>(Users, Schemas.User) as ModuleMutations<User>;
 

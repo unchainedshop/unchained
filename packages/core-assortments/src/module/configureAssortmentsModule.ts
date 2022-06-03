@@ -11,7 +11,7 @@ import { log, LogLevel } from 'meteor/unchained:logger';
 import { generateDbMutations, generateDbFilterById, findPreservingIds } from 'meteor/unchained:utils';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';
-import { addMigrations } from '../migrations/addMigrations';
+import addMigrations from '../migrations/addMigrations';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 import { AssortmentsSchema } from '../db/AssortmentsSchema';
 import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule';
