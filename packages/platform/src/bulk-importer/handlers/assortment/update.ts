@@ -23,6 +23,7 @@ export default async function updateAssortment(
         {
           content: specification.content,
           assortmentId: _id,
+          authorId,
         },
         unchainedAPI,
       );

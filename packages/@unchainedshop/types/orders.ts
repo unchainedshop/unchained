@@ -64,11 +64,7 @@ type OrderTransactionContext = {
   orderContext?: any;
   nextStatus?: OrderStatus;
 };
-type OrderContextParams<P> = (
-  order: Order | string,
-  params: P,
-  requestContext: Context,
-) => Promise<Order>;
+type OrderContextParams<P> = (order: Order, params: P, requestContext: Context) => Promise<Order>;
 
 export interface OrderQueries {
   findOrder: (

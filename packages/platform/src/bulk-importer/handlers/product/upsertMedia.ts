@@ -80,7 +80,7 @@ export default async function upsertMedia({ media, authorId, productId }, unchai
                 productMedia._id,
                 locale,
                 localizedData,
-                tAuthorId || userId,
+                tAuthorId || authorId || userId,
               );
             },
           ),

@@ -82,7 +82,7 @@ export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) 
                 mediaObject._id,
                 locale,
                 localizedData,
-                tAuthorId || userId,
+                tAuthorId || authorId || userId,
               );
             },
           ),

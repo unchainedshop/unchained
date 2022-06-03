@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { ProductText } from '@unchainedshop/types/products';
 
 export default async function upsertProductContent(
-  { productId, content },
+  { productId, content, authorId },
   { modules, userId }: Context,
 ) {
   const product = await modules.products.findProduct({ productId });
@@ -15,7 +15,7 @@ export default async function upsertProductContent(
           productId,
           locale,
           localizedData,
-          tAuthorId || userId,
+          tAuthorId || authorId || userId,
         );
       },
     ),

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-orders',
-  version: '1.0.0',
+  version: '1.0.1',
   summary: 'Unchained Engine Core: Orders',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

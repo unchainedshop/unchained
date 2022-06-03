@@ -1,11 +1,15 @@
 import { BulkOperationBase } from 'mongodb';
-import { UnchainedAPI, UnchainedCoreOptions } from './api';
+import { UnchainedAPI } from './api';
+import { UnchainedCoreOptions } from './core';
 import { WorkerSchedule } from './worker';
 
 export type BulkImportOperation = (
   payload: any,
   options: {
     bulk: (collection: string) => BulkOperationBase;
+    createShouldUpsertIfIDExists?: boolean;
+    skipCacheInvalidation?: boolean;
+    logger?: any;
   },
   unchainedAPI: UnchainedAPI,
 ) => Promise<void>;

@@ -9,6 +9,7 @@ import {
   generateDbObjectId,
 } from 'meteor/unchained:utils';
 import { FileDirector } from 'meteor/unchained:file-upload';
+import { ProductsModule } from '@unchainedshop/types/products';
 import { ProductMediaCollection } from '../db/ProductMediaCollection';
 import { ProductMediaSchema } from '../db/ProductMediaSchema';
 
@@ -41,11 +42,11 @@ export const configureProductMediaModule = async ({
     hasCreateOnly: false,
   }) as ModuleMutations<ProductMedia>;
 
-  const upsertLocalizedText = async (
-    productMediaId: string,
-    locale: string,
-    text: ProductMediaText,
-    userId: string,
+  const upsertLocalizedText: ProductsModule['media']['texts']['upsertLocalizedText'] = async (
+    productMediaId,
+    locale,
+    text,
+    userId,
   ) => {
     await ProductMediaTexts.updateOne(
       {
@@ -56,6 +57,7 @@ export const configureProductMediaModule = async ({
         $set: {
           updated: new Date(),
           updatedBy: userId,
+          authorId: userId,
           ...text,
         },
         $setOnInsert: {

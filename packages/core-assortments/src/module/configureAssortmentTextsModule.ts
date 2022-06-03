@@ -58,6 +58,7 @@ export const configureAssortmentTextsModule = ({
       $set: {
         updated: new Date(),
         updatedBy: userId,
+        authorId: userId,
         ...textFields,
       },
       $setOnInsert: {

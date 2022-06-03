@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-products',
-  version: '1.0.0',
+  version: '1.0.1',
   summary: 'Unchained Engine Core: Products',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

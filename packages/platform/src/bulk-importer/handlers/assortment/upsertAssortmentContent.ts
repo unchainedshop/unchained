@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { AssortmentText } from '@unchainedshop/types/assortments';
 
-export default async ({ assortmentId, content }, { modules, userId }: Context) => {
+export default async ({ assortmentId, content, authorId }, { modules, userId }: Context) => {
   const assortment = await modules.assortments.findAssortment({ assortmentId });
   if (!assortment) throw new Error(`Can't update content of non-existing assortment ${assortmentId}`);
 
@@ -12,7 +12,7 @@ export default async ({ assortmentId, content }, { modules, userId }: Context) =
           assortmentId,
           locale,
           localizedData,
-          tAuthorId || userId,
+          tAuthorId || authorId || userId,
         );
       },
     ),

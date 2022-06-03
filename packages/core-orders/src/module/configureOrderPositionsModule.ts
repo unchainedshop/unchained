@@ -3,7 +3,7 @@ import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, generateDbObjectId } from 'meteor/unchained:utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
 import { ordersSettings } from '../orders-settings';
 
@@ -297,6 +297,7 @@ export const configureOrderPositionsModule = ({
           },
           $inc: { quantity },
           $setOnInsert: {
+            _id: generateDbObjectId(),
             created: new Date(),
             createdBy: requestContext.userId,
             calculation: [],

@@ -62,6 +62,7 @@ export const configureAssortmentMediaModule = async ({
         $set: {
           updated: new Date(),
           updatedBy: userId,
+          authorId: userId,
           ...text,
         },
         $setOnInsert: {

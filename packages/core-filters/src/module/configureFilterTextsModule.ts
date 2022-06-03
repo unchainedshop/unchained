@@ -27,6 +27,7 @@ export const configureFilterTextsModule = ({
         updatedBy: userId,
         title: text.title,
         subtitle: text.subtitle,
+        authorId: userId,
       },
       $setOnInsert: {
         _id: generateDbObjectId(),
