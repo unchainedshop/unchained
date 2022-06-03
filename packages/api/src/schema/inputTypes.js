@@ -20,11 +20,6 @@ export default [
       value: SortDirection!
     }
 
-    input EventSortOptionInput {
-      key: String!
-      value: SortDirection!
-    }
-
     input UserProfileInput {
       displayName: String
       birthday: Timestamp
