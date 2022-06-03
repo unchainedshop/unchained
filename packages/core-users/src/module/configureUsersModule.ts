@@ -23,7 +23,6 @@ const USER_EVENTS = [
   'USER_UPDATE_HEARTBEAT',
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
-  'USER_UPDATE_META',
 ];
 const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = rawUser;
@@ -202,20 +201,25 @@ export const configureUsersModule = async ({
       const userFilter = generateDbFilterById(_id);
       const { meta, profile } = updatedData;
 
-      const modifier = {
-        $set: Object.keys(profile).reduce((acc, profileKey) => {
+      if (!meta && !profile) {
+        return Users.findOne(userFilter, {});
+      }
+
+      const modifier = { $set: {} };
+
+      if (profile) {
+        modifier.$set = Object.keys(profile).reduce((acc, profileKey) => {
           return {
             ...acc,
             [`profile.${profileKey}`]: profile[profileKey],
           };
-        }, {}),
-      };
+        }, {});
+      }
 
-      if (meta)
-        modifier.$set = {
-          ...modifier.$set,
-          meta,
-        };
+      if (meta) {
+        modifier.$set.meta = meta;
+      }
+
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
       emit('USER_UPDATE_PROFILE', {
@@ -322,26 +326,6 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-
-    updateMeta: async (_id, meta, userId) => {
-      const userFilter = generateDbFilterById(_id);
-
-      const modifier = {
-        $set: {
-          updated: new Date(),
-          updateBy: userId,
-          meta,
-        },
-      };
-
-      await mutations.update(_id, modifier, userId);
-      const user = await Users.findOne(userFilter, {});
-      emit('USER_UPDATE_META', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
-    },
-
     updateUser: async (query, modifier, options) => {
       await Users.updateOne(query, modifier, options);
       const user = await Users.findOne(query);

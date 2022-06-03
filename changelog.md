@@ -2,7 +2,6 @@
 
 ## Major:
 
-- [api] new `mutation.updateUserMeta` is added dedicated to updating extra data about user.
 - [api] `query.events` is now extended with additional filter parameters `created` get events created
   after the provided event and the previous `type` field is changed to `types` and accepts array of event
   types. in addition it is now possible to `sort` the results any field on event type

@@ -21,7 +21,6 @@ import removeEmail from './accounts/removeEmail';
 import updateUserAvatar from './users/updateUserAvatar';
 import updateUserProfile from './users/updateUserProfile';
 import setUserTags from './users/setUserTags';
-import updateUserMeta from './users/updateUserMeta';
 import createLanguage from './languages/createLanguage';
 import updateLanguage from './languages/updateLanguage';
 import removeLanguage from './languages/removeLanguage';
@@ -170,7 +169,6 @@ export default {
   prepareUserAvatarUpload: acl(actions.updateUser)(prepareUserAvatarUpload),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
   setUserTags: acl(actions.manageUsers)(setUserTags),
-  updateUserMeta: acl(actions.manageUsers)(updateUserMeta),
   setPassword: acl(actions.manageUsers)(setPassword),
   setUsername: acl(actions.updateUsername)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
