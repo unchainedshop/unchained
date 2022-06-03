@@ -6,13 +6,13 @@ export default async function workQueueCount(
   root: Root,
   {
     status,
-    selectTypes,
     created,
     queryString,
+    types,
   }: {
     queryString?: string;
     status?: Array<WorkStatus>;
-    selectTypes?: Array<string>;
+    types?: Array<string>;
     created?: {
       start: Date;
       end: Date;
@@ -26,8 +26,8 @@ export default async function workQueueCount(
 
   return modules.worker.count({
     status,
-    selectTypes,
     created,
     queryString,
+    types,
   });
 }

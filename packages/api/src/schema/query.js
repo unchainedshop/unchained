@@ -386,7 +386,7 @@ export default [
       """
       workQueueCount(
         status: [WorkStatus!]
-        selectTypes: [WorkType!]
+        types: [WorkType!]
         created: DateFilterInput
         queryString: String
       ): Int!
