@@ -1,5 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
-import { CurrenciesModule, Currency } from '@unchainedshop/types/currencies';
+import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbMutations, generateDbFilterById } from 'meteor/unchained:utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
@@ -7,12 +7,7 @@ import { CurrenciesSchema } from '../db/CurrenciesSchema';
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 
-type FindQuery = {
-  includeInactive?: boolean;
-  contractAddress?: string;
-  queryString?: string;
-};
-const buildFindSelector = ({ includeInactive = false, contractAddress, queryString }: FindQuery) => {
+const buildFindSelector = ({ includeInactive = false, contractAddress, queryString }: CurrencyQuery) => {
   const selector: { isActive?: true; deleted: null; contractAddress?: string; $text?: any } = {
     deleted: null,
   };

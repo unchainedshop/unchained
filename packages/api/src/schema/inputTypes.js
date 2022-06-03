@@ -15,7 +15,7 @@ export default [
       algorithm: String!
     }
 
-    input ProductReviewSortOptionInput {
+    input SortOptionInput {
       key: String!
       value: SortDirection!
     }

@@ -35,6 +35,12 @@ export interface EnrollmentPlan {
   quantity: number;
 }
 
+export type EnrollmentQuery = {
+  status?: Array<EnrollmentStatus>;
+  userId?: string;
+  queryString?: string;
+};
+
 export type Enrollment = {
   _id?: _ID;
   billingAddress: Address;
@@ -69,14 +75,13 @@ export interface EnrollmentQueries {
     params: { enrollmentId?: string; orderId?: string },
     options?: FindOptions,
   ) => Promise<Enrollment>;
-  findEnrollments: (params: {
-    status?: Array<EnrollmentStatus>;
-    userId?: string;
-    limit?: number;
-    offset?: number;
-    queryString?: string;
-  }) => Promise<Array<Enrollment>>;
-  count: () => Promise<number>;
+  findEnrollments: (
+    params: EnrollmentQuery & {
+      limit?: number;
+      offset?: number;
+    },
+  ) => Promise<Array<Enrollment>>;
+  count: (params: EnrollmentQuery) => Promise<number>;
 }
 
 // Transformations

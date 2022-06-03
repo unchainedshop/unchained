@@ -7,7 +7,7 @@ export type Language = {
   authorId: string;
 } & TimestampFields;
 
-type LanguageQuery = {
+export type LanguageQuery = {
   includeInactive?: boolean;
   queryString?: string;
 };

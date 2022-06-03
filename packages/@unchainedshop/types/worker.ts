@@ -55,17 +55,21 @@ export interface WorkResult<Result> {
   error?: any;
 }
 
+export type WorkQueueQuery = {
+  created?: { end?: Date; start?: Date };
+  selectTypes: Array<string>; // @deprecated: Reason: "Renamed, use the types field"
+  types: Array<string>;
+  status: Array<WorkStatus>;
+  queryString?: string;
+  scheduled?: { end?: Date; start?: Date };
+};
+
 export type WorkerModule = {
   activeWorkTypes: () => Promise<Array<string>>;
   findWork: (query: { workId?: string; originalWorkId?: string }) => Promise<Work>;
   findWorkQueue: (
-    query: {
-      created?: { end?: Date; start?: Date };
-      scheduled?: { end?: Date; start?: Date };
-      selectTypes?: Array<string>;
-      status?: Array<WorkStatus>;
-      queryString?: string;
-    } & {
+    query: WorkQueueQuery & {
+      sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
       limit?: number;
       skip?: number;
     },

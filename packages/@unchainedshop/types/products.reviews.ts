@@ -30,6 +30,7 @@ export type ProductReviewQuery = {
   deleted?: Date | null;
   queryString?: string;
   created?: { end?: Date; start?: Date };
+  updated?: { end?: Date; start?: Date };
   scheduled?: { end?: Date; start?: Date };
 };
 export type ProductReviewsModule = {

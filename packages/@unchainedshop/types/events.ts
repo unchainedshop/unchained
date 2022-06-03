@@ -1,4 +1,5 @@
-import { FindOptions, ModuleCreateMutation, Query, Sort, TimestampFields, _ID } from './common';
+import { SortOption } from './api';
+import { FindOptions, ModuleCreateMutation, Query, TimestampFields, _ID } from './common';
 
 export type EventPayload = {
   context?: Record<string, unknown>;
@@ -10,6 +11,12 @@ export type Event = {
   type: string;
 } & EventPayload &
   TimestampFields;
+
+export type EventQuery = {
+  types?: Array<string>;
+  queryString?: string;
+  created?: Date;
+};
 
 export interface EmitAdapter {
   publish(eventName: string, data: EventPayload): void;
@@ -33,16 +40,15 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   findEvent: (params: Query & { eventId: _ID }, options?: FindOptions) => Promise<Event>;
 
   findEvents: (
-    params: Query & {
+    params: EventQuery & {
       limit?: number;
       offset?: number;
-      sort?: Sort;
-      queryString?: string;
+      sort?: Array<SortOption>;
     },
     options?: FindOptions,
   ) => Promise<Array<Event>>;
 
   type: (event: Event) => string;
 
-  count: (query: Query) => Promise<number>;
+  count: (query: EventQuery) => Promise<number>;
 }

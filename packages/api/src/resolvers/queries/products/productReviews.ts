@@ -1,12 +1,12 @@
 import { log } from 'meteor/unchained:logger';
-import { Root, Context } from '@unchainedshop/types/api';
+import { Root, Context, SortOption } from '@unchainedshop/types/api';
 
 export default async function productReviews(
   root: Root,
   params: {
     limit: number;
     offset: number;
-    sort: Array<{ key: string; value: 'DESC' | 'ASC' }>;
+    sort: Array<SortOption>;
     queryString?: string;
   },
   { modules, userId }: Context,

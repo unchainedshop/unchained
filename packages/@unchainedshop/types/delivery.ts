@@ -39,7 +39,7 @@ export type DeliveryProvider = {
   configuration: DeliveryConfiguration;
 } & TimestampFields;
 
-type DeliveryProviderQuery = {
+export type DeliveryProviderQuery = {
   type?: DeliveryProviderType;
   deleted?: Date;
 };

@@ -1,10 +1,10 @@
 import { Context, Root } from '@unchainedshop/types/api';
-import { WarehousingProviderType } from '@unchainedshop/types/warehousing';
+import { WarehousingProviderQuery } from '@unchainedshop/types/warehousing';
 import { log } from 'meteor/unchained:logger';
 
 export default async function warehousingProviders(
   root: Root,
-  params: { type: WarehousingProviderType },
+  params: WarehousingProviderQuery,
   { modules, userId }: Context,
 ) {
   log(`query warehousingProviders ${params.type}`, { userId });

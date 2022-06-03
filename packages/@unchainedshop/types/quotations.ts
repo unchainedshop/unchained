@@ -46,6 +46,7 @@ export type QuotationProposal = { price?: number; expires?: Date; meta?: any };
 
 export type QuotationQuery = {
   userId?: string;
+  queryString?: string;
 };
 
 export interface QuotationItemConfiguration {
@@ -61,7 +62,6 @@ export interface QuotationQueries {
     query: QuotationQuery & {
       limit?: number;
       offset?: number;
-      queryString?: string;
     },
     options?: FindOptions,
   ) => Promise<Array<Quotation>>;

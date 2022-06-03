@@ -1,6 +1,11 @@
 import { Context } from '@unchainedshop/types/api';
 import { ModuleInput, ModuleMutations, Update } from '@unchainedshop/types/common';
-import { Quotation, QuotationsModule, QuotationsSettingsOptions } from '@unchainedshop/types/quotations';
+import {
+  Quotation,
+  QuotationQuery,
+  QuotationsModule,
+  QuotationsSettingsOptions,
+} from '@unchainedshop/types/quotations';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
@@ -12,7 +17,7 @@ import { quotationsSettings } from '../quotations-settings';
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 
-const buildFindSelector = (query: { userId?: string; queryString?: string } = {}) => {
+const buildFindSelector = (query: QuotationQuery = {}) => {
   const selector: { userId?: string; $text?: any } = {};
   if (query.userId) {
     selector.userId = query.userId;

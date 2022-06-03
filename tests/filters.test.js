@@ -155,7 +155,7 @@ describe('Filters', () => {
           queryString: 'non_existing'
         },
       });
-      console.log(filters[0]?.options)
+      
       expect(filters.length).toEqual(0);
     });
 

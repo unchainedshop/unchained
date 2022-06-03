@@ -7,11 +7,14 @@ export default async function productsCount(
     includeDrafts: boolean;
     slugs?: Array<string>;
     tags?: Array<string>;
+    queryString?: string;
   },
   { modules, userId }: Context,
 ) {
   log(
-    `query productsCount:  ${params.includeDrafts ? 'includeDrafts' : ''} ${params.slugs?.join(',')}`,
+    `query productsCount:  ${params.includeDrafts ? 'includeDrafts' : ''} ${params.slugs?.join(
+      ',',
+    )} queryString: ${params.queryString}`,
     { userId },
   );
   return modules.products.count(params);

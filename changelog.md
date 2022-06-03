@@ -91,6 +91,7 @@ Our Roadmap ahead:
 
 ## Major
 
+- [api] `query.events` is now extended with additional filter parameters `create` get events created after the provided event and the previous `type` field is changed to `types` and accepts array of event types. in addition it is now possible to `sort` the results any field on event type
 - [core] Bulk Importer now supports skipping the built-in cache invalidation run at the end by using
   `skipCacheInvalidation`
 - [core] Bulk Importer now supports defining custom entities to sync
@@ -193,7 +194,6 @@ ReorderAssortmentMediaInput
   payment plugin.
 
 ## Minor
-
 - [core] accountsjs's accountsPassword and accountsServer options can now be configured through the
   normal module configuration of unchained by providing `server` and `password` objects with options.
 - [core] The logging of payment providers has been streamlined and is now more verbose by default to help

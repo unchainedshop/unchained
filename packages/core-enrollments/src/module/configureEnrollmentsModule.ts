@@ -1,7 +1,8 @@
 import { Context } from '@unchainedshop/types/api';
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import {
   Enrollment,
+  EnrollmentQuery,
   EnrollmentsModule,
   EnrollmentsSettingsOptions,
 } from '@unchainedshop/types/enrollments';
@@ -21,6 +22,23 @@ const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_REMOVE',
   'ENROLLMENT_UPDATE',
 ];
+
+const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => {
+  const selector: {
+    deleted: Date;
+    status?: any;
+    $text?: { $search?: string };
+    userId?: string;
+  } = {
+    deleted: null,
+  };
+  if (status) selector.status = { $in: status };
+  if (userId) selector.userId = userId;
+
+  if (queryString) selector.$text = { $search: queryString };
+
+  return selector;
+};
 
 export const configureEnrollmentsModule = async ({
   db,
@@ -208,8 +226,8 @@ export const configureEnrollmentsModule = async ({
 
   return {
     // Queries
-    count: async () => {
-      const enrollmentCount = await Enrollments.countDocuments({ deleted: null });
+    count: async (query: EnrollmentQuery) => {
+      const enrollmentCount = await Enrollments.countDocuments(buildFindSelector(query));
       return enrollmentCount;
     },
 
@@ -221,20 +239,12 @@ export const configureEnrollmentsModule = async ({
       return Enrollments.findOne(selector, options);
     },
 
-    findEnrollments: async ({ status, userId, limit, offset, queryString }) => {
-      const selector: Query = { deleted: null };
-      if (status) {
-        selector.status = { $in: status };
-      }
-      if (userId) {
-        selector.userId = userId;
-      }
-
-      if (queryString) {
-        selector.$text = { $search: queryString };
-      }
-
-      const enrollments = Enrollments.find(selector, {
+    findEnrollments: async ({
+      limit,
+      offset,
+      ...query
+    }: EnrollmentQuery & { limit?: number; offset?: number }) => {
+      const enrollments = Enrollments.find(buildFindSelector(query), {
         skip: offset,
         limit,
       });

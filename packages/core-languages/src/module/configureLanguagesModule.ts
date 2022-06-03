@@ -1,5 +1,5 @@
 import { ModuleInput } from '@unchainedshop/types/common';
-import { LanguagesModule, Language } from '@unchainedshop/types/languages';
+import { LanguagesModule, Language, LanguageQuery } from '@unchainedshop/types/languages';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { generateDbMutations, generateDbFilterById, systemLocale } from 'meteor/unchained:utils';
 import { LanguagesCollection } from '../db/LanguagesCollection';
@@ -7,11 +7,7 @@ import { LanguagesSchema } from '../db/LanguagesSchema';
 
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 
-type FindQuery = {
-  includeInactive?: boolean;
-  queryString?: string;
-};
-const buildFindSelector = ({ includeInactive = false, queryString }: FindQuery) => {
+const buildFindSelector = ({ includeInactive = false, queryString }: LanguageQuery) => {
   const selector: { isActive?: true; deleted?: Date; $text?: any } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
   if (queryString) {

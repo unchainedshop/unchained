@@ -1,17 +1,26 @@
 import { log } from 'meteor/unchained:logger';
-import { Root, Context } from '@unchainedshop/types/api';
+import { Root, Context, SortOption } from '@unchainedshop/types/api';
+import { EventQuery } from '@unchainedshop/types/events';
 
 export default async function events(
   root: Root,
   {
     limit,
-    type,
     offset,
+    types,
+    created,
     queryString,
-  }: { type: string; limit: number; offset: number; queryString: string },
+    sort,
+  }: EventQuery & {
+    limit?: number;
+    offset?: number;
+    sort: Array<SortOption>;
+  },
   { modules, userId }: Context,
 ) {
-  log(`query events ${type}`, { userId });
+  log(`query events ${types}  limit: ${limit} offset: ${offset} queryString: ${queryString}`, {
+    userId,
+  });
 
-  return modules.events.findEvents({ type, limit, offset, queryString });
+  return modules.events.findEvents({ types, limit, offset, created, queryString, sort });
 }

@@ -1,20 +1,17 @@
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import { ModuleInput, ModuleMutations, Filter } from '@unchainedshop/types/common';
-import { Event, EventsModule } from '@unchainedshop/types/events';
+import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events';
 import { getRegisteredEvents } from 'meteor/unchained:events';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
 
-type FindQuery = {
-  type?: string;
-  queryString?: string;
-};
-const buildFindSelector = ({ type, queryString }: FindQuery) => {
-  const selector: { type?: string; $text?: any } = {};
+const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
+  const selector: { type?: any; $text?: any; created?: any } = {};
 
-  if (type) selector.type = type;
+  if (types && Array.isArray(types)) selector.type = { $in: types };
   if (queryString) selector.$text = { $search: queryString };
+  if (created) selector.created = { $gte: created };
 
   return selector;
 };
@@ -37,19 +34,11 @@ export const configureEventsModule = async ({
       return Events.findOne(selector as unknown as Filter<Event>, options);
     },
 
-    findEvents: async ({
-      limit,
-      offset,
-      sort = {
-        created: -1,
-      },
-
-      ...query
-    }) => {
-      return Events.find(buildFindSelector(query as FindQuery), {
+    findEvents: async ({ limit, offset, sort, ...query }) => {
+      return Events.find(buildFindSelector(query as Event), {
         skip: offset,
         limit,
-        sort,
+        sort: buildSortOptions(sort || [{ key: 'created', value: 'DESC' }]),
       }).toArray();
     },
 

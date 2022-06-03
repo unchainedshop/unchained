@@ -9,7 +9,7 @@ export type Country = {
   defaultCurrencyId?: string;
 } & TimestampFields;
 
-type CountryQuery = {
+export type CountryQuery = {
   includeInactive?: boolean;
   queryString?: string;
 };

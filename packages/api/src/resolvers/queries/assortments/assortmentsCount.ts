@@ -8,13 +8,14 @@ export default async function assortmentsCount(
     slugs?: Array<string>;
     includeInactive?: boolean;
     includeLeaves?: boolean;
+    queryString?: string;
   },
   { modules, userId }: Context,
 ) {
   log(
     `query assortmentsCount: ${params.includeInactive ? 'includeInactive' : ''} ${params.slugs?.join(
       ',',
-    )}`,
+    )}  queryString: ${params.queryString}`,
     { userId },
   );
 

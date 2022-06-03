@@ -7,7 +7,7 @@ import {
   ProductVote,
 } from '@unchainedshop/types/products.reviews';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection';
 import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema';
 
@@ -19,10 +19,6 @@ const PRODUCT_REVIEW_EVENTS = [
   'PRODUCT_REMOVE_REVIEW_VOTE',
 ];
 
-const SORT_DIRECTIONS = {
-  ASC: 1,
-  DESC: -1,
-};
 const buildFindSelector = ({
   productId,
   authorId,
@@ -52,14 +48,6 @@ const buildFindSelector = ({
   }
 
   return selector;
-};
-
-const buildSortOptions = (sort: Array<{ key: string; value: 'DESC' | 'ASC' }>) => {
-  const sortBy = {};
-  sort?.forEach(({ key, value }) => {
-    sortBy[key] = SORT_DIRECTIONS[value];
-  });
-  return sortBy;
 };
 
 const userIdsThatVoted: ProductReviewsModule['votes']['userIdsThatVoted'] = (
