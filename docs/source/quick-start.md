@@ -48,7 +48,6 @@ NODE_ENV=development
 SKIP_INVALID_REMOTES=false
 UNCHAINED_CREATE_THEME=
 UNCHAINED_CREATE_THEME_FILE=theme.json
-DATATRANS_ENDPOINT=https://pay.sandbox.datatrans.com/upp/jsp/upStart.jsp
 DATATRANS_MERCHANT_ID=1100019919
 ```
 
