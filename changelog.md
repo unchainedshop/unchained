@@ -1,12 +1,25 @@
 # Unchained Engine v1.1
 
-## Major:
+## Major
 
 - [api] `query.events` is now extended with additional filter parameters `created` get events created
   after the provided event and the previous `type` field is changed to `types` and accepts array of event
   types. in addition it is now possible to `sort` the results any field on event type
+- [api] A new input field `sort` has been added to many generel queries that return lists of something, for ex. Query.products 
+- [api] A new input field `queryString` has been added to many generel queries that return lists of something, with this change it's possible to search for an order number through Query.orders for ex.
 - [api] new `mutation.updateUserProfile` is extended to accept new argument `meta` to store extra
-  information of a user.
+  information of a user. `customFields` has been removed.
+- [api] New default queries were added for all kind of "count" cases so you don't have to query a whole
+  list just to get the amount of items, this can be quite helpful for pagination: `workQueueCount`, `assortmentsCounts`,
+  `countriesCount`, `currenciesCount`, `deliveryProvidersCount`, `filtersCount`, `languagesCount`,
+  `logsCount`, `ordersCount`, `paymentProvidersCount`, `productReviewsCount`, `productsCount`,
+  `quotationsCount`, `subscriptionsCount`, `usersCount`,`warehousingProvidersCount`,`eventsCount`
+
+## Minor
+
+- [core] A bug has been fixed that accidentally made order positions immutable for further changes
+- [core] A warehousing plugin now get's to know the actual warehousingProvider's ID
+- [core] A bug that rendered the Bulk Importer unusable for product media changes has been fixed
 
 # Unchained Engine v1.0 ("Maiglöggli")
 
@@ -100,8 +113,6 @@ Our Roadmap ahead:
 
 ## Major
 
-- [api] New  `query.workQueueCount` accepts the same filter parameters as `Query.workQueue` and returns an integer of total number of results, useful for pagination
-- [api] `query.events` is now extended with additional filter parameters `create` get events created after the provided event and the previous `type` field is changed to `types` and accepts array of event types. in addition it is now possible to `sort` the results any field on event type
 - [core] Bulk Importer now supports skipping the built-in cache invalidation run at the end by using
   `skipCacheInvalidation`
 - [core] Bulk Importer now supports defining custom entities to sync
@@ -157,11 +168,6 @@ Our Roadmap ahead:
 - [api] We have added a special mutation called `pageView` that you can use to trigger server-side
   pageView tracking events. That way you can connect Unchained with Trackers like Google Analytics or
   Matomo in a private way without cookies.
-- [api] New default queries were added for all kind of "count" cases so you don't have to query a whole
-  list just to get the amount of items, this can be quite helpful for pagination: `assortmentsCounts`,
-  `countriesCount`, `currenciesCount`, `deliveryProvidersCount`, `filtersCount`, `languagesCount`,
-  `logsCount`, `ordersCount`, `paymentProvidersCount`, `productReviewsCount`, `productsCount`,
-  `quotationsCount`, `subscriptionsCount`, `usersCount`,`warehousingProvidersCount`,`eventsCount`
 - [api] New mutation.signPaymentProviderForCheckout to sign generic order payment directly
   (OrderPayment.sign still works but is marked deprecated and will be removed in future major releases)
 - [api] three new fields added `ConfigurableProduct.simulatedPriceRange` ,
