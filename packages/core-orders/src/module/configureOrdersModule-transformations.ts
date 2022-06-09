@@ -116,15 +116,15 @@ export const configureOrderModuleTransformations = ({
     isCart: (order) => {
       return order.status === null;
     },
-    cart: async (order, user) => {
+    cart: async ({ orderNumber, countryContext }, user) => {
       const selector: Query = {
-        countryCode: order.countryContext || user.lastLogin.countryContext,
+        countryCode: countryContext || user.lastLogin.countryContext,
         status: { $eq: null },
         userId: user._id,
       };
 
-      if (order.orderNumber) {
-        selector.orderNumber = order.orderNumber;
+      if (orderNumber) {
+        selector.orderNumber = orderNumber;
       }
 
       const options: FindOptions = {

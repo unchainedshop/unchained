@@ -7,11 +7,11 @@ export default async function emptyCart(
   { orderId }: { orderId?: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, userId, user } = context;
 
   log('mutation emptyCart', { userId, orderId });
 
-  const cart = await getOrderCart({ orderId }, context);
+  const cart = await getOrderCart({ orderId, user }, context);
   if (!cart) return null;
 
   await modules.orders.positions.removePositions({ orderId: cart._id }, context);

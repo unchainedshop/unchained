@@ -31,7 +31,6 @@ export type ProductReviewQuery = {
   queryString?: string;
   created?: { end?: Date; start?: Date };
   updated?: { end?: Date; start?: Date };
-  scheduled?: { end?: Date; start?: Date };
 };
 export type ProductReviewsModule = {
   // Queries

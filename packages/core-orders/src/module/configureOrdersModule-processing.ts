@@ -195,7 +195,7 @@ export const configureOrderModuleProcessing = ({
 
       // After checkout, store last checkout information on user
       await modules.users.updateLastBillingAddress(order.userId, order.billingAddress, userId);
-      await modules.users.updateLastContact(order.userId, order.contact, requestContext.userId);
+      await modules.users.updateLastContact(order.userId, order.contact, userId);
 
       // Then ensure new cart is created before we return from checkout
       const user = await modules.users.findUserById(order.userId);

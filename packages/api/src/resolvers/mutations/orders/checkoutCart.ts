@@ -13,12 +13,12 @@ export default async function checkoutCart(
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, user, userId } = context;
   const { orderId: forceOrderId, ...transactionContext } = params;
 
   log('mutation checkoutCart', { orderId: forceOrderId, userId });
 
-  const orderId = (await getOrderCart({ orderId: forceOrderId }, context))._id;
+  const orderId = (await getOrderCart({ orderId: forceOrderId, user }, context))._id;
 
   try {
     const order = await modules.orders.checkout(orderId, transactionContext, context);

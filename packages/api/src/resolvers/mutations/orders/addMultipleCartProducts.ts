@@ -16,8 +16,13 @@ export default async function addMultipleCartProducts(
   },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, userId, user } = context;
   const { orderId, items } = params;
+
+  log(`mutation addMultipleCartProducts ${JSON.stringify(items)}`, {
+    userId,
+    orderId,
+  });
 
   /* verify existence of products */
   const itemsWithProducts = await Promise.all(
@@ -32,7 +37,7 @@ export default async function addMultipleCartProducts(
     }),
   );
 
-  const order = await getOrderCart({ orderId }, context);
+  const order = await getOrderCart({ orderId, user }, context);
 
   // Reduce is used to wait for each product to be added before processing the next (sequential processing)
   return itemsWithProducts.reduce(async (positionsPromise, { product, quantity, configuration }) => {
@@ -42,13 +47,6 @@ export default async function addMultipleCartProducts(
         quantity,
         productId: product._id,
       });
-
-    log(
-      `mutation addCartProduct ${product._id} ${quantity} ${
-        configuration ? JSON.stringify(configuration) : ''
-      }`,
-      { userId, orderId },
-    );
 
     const position = await modules.orders.positions.addProductItem(
       {

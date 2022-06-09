@@ -114,8 +114,8 @@ const Datatrans: IPaymentAdapter = {
     };
 
     const authorize = async ({ paymentCredentials, extensions }): Promise<string> => {
-      const { userId } = params.context;
       const { order, orderPayment } = params.paymentContext;
+      const userId = order?.userId || params.context.userId;
       const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
       const refno2 = userId;
       const { currency, amount } = roundedAmountFromOrder(order, params.context);
@@ -242,8 +242,10 @@ const Datatrans: IPaymentAdapter = {
 
       async sign(transactionContext: any = {}) {
         const { useSecureFields = false, ...additionalInitPayload } = transactionContext || {};
-        const { userId } = params.context;
         const { orderPayment, paymentProviderId, order } = params.paymentContext;
+
+        const userId = order?.userId || params.context?.userId;
+
         const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'hex').toString(
           'base64',
         );
