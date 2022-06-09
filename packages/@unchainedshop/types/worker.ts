@@ -57,7 +57,7 @@ export interface WorkResult<Result> {
 
 export type WorkQueueQuery = {
   created?: { end?: Date; start?: Date };
-  selectTypes: Array<string>; // @deprecated: Reason: "Renamed, use the types field"
+  selectTypes?: Array<string>; // @deprecated: Reason: "Renamed, use the types field"
   types: Array<string>;
   status: Array<WorkStatus>;
   queryString?: string;
@@ -74,6 +74,7 @@ export type WorkerModule = {
       skip?: number;
     },
   ) => Promise<Array<Work>>;
+  count: (query: WorkQueueQuery) => Promise<number>;
   workExists: (query: { workId?: string; originalWorkId?: string }) => Promise<boolean>;
 
   // Transformations

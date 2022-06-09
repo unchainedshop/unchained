@@ -24,7 +24,6 @@ Our Roadmap ahead:
   runs on edge frameworks.
 
 ## Breaking changes
-
 - [core] We have removed the Matomo tracker because it was not a plugin but rather an example of an event
   tracking implementation, it will be re-added later to a "recipes" docs page
 - [platform, api, core] Refactor Unchained Engine's core with the goal to add typescript support, get rid
@@ -101,6 +100,8 @@ Our Roadmap ahead:
 
 ## Major
 
+- [api] New  `query.workQueueCount` is that accepts the same filter parameters as `Query.workQueue` and returns an integer of total number of results, useful for pagination
+- [api] `query.events` is now extended with additional filter parameters `create` get events created after the provided event and the previous `type` field is changed to `types` and accepts array of event types. in addition it is now possible to `sort` the results any field on event type
 - [core] Bulk Importer now supports skipping the built-in cache invalidation run at the end by using
   `skipCacheInvalidation`
 - [core] Bulk Importer now supports defining custom entities to sync

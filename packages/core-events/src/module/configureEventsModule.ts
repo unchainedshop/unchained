@@ -12,7 +12,6 @@ const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
   if (types && Array.isArray(types)) selector.type = { $in: types };
   if (queryString) selector.$text = { $search: queryString };
   if (created) selector.created = { $gte: created };
-
   return selector;
 };
 
@@ -35,7 +34,7 @@ export const configureEventsModule = async ({
     },
 
     findEvents: async ({ limit, offset, sort, ...query }) => {
-      return Events.find(buildFindSelector(query as Event), {
+      return Events.find(buildFindSelector(query), {
         skip: offset,
         limit,
         sort: buildSortOptions(sort || [{ key: 'created', value: 'DESC' }]),
