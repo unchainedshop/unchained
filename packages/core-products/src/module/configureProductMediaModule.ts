@@ -87,7 +87,7 @@ export const configureProductMediaModule = async ({
 
     findProductMedias: async ({ productId, tags, offset, limit }, options) => {
       const selector: Query = productId ? { productId } : {};
-      if (tags && tags.length > 0) {
+      if (tags?.length > 0) {
         selector.tags = { $all: tags };
       }
 

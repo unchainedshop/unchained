@@ -749,7 +749,7 @@ describe('Products', () => {
       expect(product?.simulatedPrice).toMatchObject({
         currency: 'CHF',
         amount: 10000,
-      });    
+      });
     });
 
     it('return null when passed unsupported currency to simulatedPrice of PLAN_PRODUCT type', async () => {
@@ -1162,10 +1162,10 @@ describe('Products', () => {
         `,
         variables: {
           queryString: 'SKU-test',
-          
+
         },
       });
-    
+
 
       expect(products.length).toEqual(4);
     });
@@ -1597,7 +1597,7 @@ describe('Products', () => {
     });
   });
 
-  describe('query.products for normal user should', () => {
+  describe('query.products for anonymous user should', () => {
     it('return list of products when no argument is passed', async () => {
       const {
         data: { products },
