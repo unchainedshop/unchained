@@ -1,3 +1,4 @@
+import { SortOption } from './api';
 import { FindOptions, ModuleMutations, TimestampFields, _ID } from './common';
 
 export type Language = {
@@ -18,6 +19,7 @@ export interface LanguagesModule extends ModuleMutations<Language> {
     params: LanguageQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
     options?: FindOptions,
   ) => Promise<Array<Language>>;

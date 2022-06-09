@@ -1,12 +1,9 @@
 import { log } from 'meteor/unchained:logger';
 import { Root, Context } from '@unchainedshop/types/api';
+import { OrderQuery } from '@unchainedshop/types/orders';
 
-export default async function ordersCount(
-  root: Root,
-  { includeCarts, queryString }: { includeCarts: boolean; queryString?: string },
-  { modules, userId }: Context,
-) {
-  log(`query ordersCount: ${includeCarts ? 'includeCart' : ''}`, { userId });
+export default async function ordersCount(root: Root, params: OrderQuery, { modules, userId }: Context) {
+  log(`query ordersCount: ${params.includeCarts ? 'includeCart' : ''}`, { userId });
 
-  return modules.orders.count({ includeCarts, queryString });
+  return modules.orders.count(params);
 }

@@ -4,10 +4,10 @@ import { Context, Root } from '@unchainedshop/types/api';
 
 export default async function paymentProvidersCount(
   root: Root,
-  { type }: PaymentProviderQuery,
+  params: PaymentProviderQuery,
   { modules, userId }: Context,
 ) {
-  log(`query paymentProvidersCount ${type}`, { userId });
+  log(`query paymentProvidersCount ${params.type}`, { userId });
 
-  return modules.payment.paymentProviders.count({ type });
+  return modules.payment.paymentProviders.count(params);
 }

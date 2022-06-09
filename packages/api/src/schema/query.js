@@ -48,6 +48,7 @@ export default [
         limit: Int = 10
         offset: Int = 0
         includeDrafts: Boolean = false
+        sort: [SortOptionInput!]
       ): [Product!]!
 
       """
@@ -91,6 +92,7 @@ export default [
         offset: Int = 0
         includeInactive: Boolean = false
         queryString: String
+        sort: [SortOptionInput!]
       ): [Language]!
 
       """
@@ -106,6 +108,7 @@ export default [
         offset: Int = 0
         includeInactive: Boolean = false
         queryString: String
+        sort: [SortOptionInput!]
       ): [Country!]!
 
       """
@@ -131,6 +134,7 @@ export default [
         offset: Int = 0
         includeInactive: Boolean = false
         queryString: String
+        sort: [SortOptionInput!]
       ): [Currency!]!
 
       """
@@ -234,6 +238,7 @@ export default [
         offset: Int = 0
         includeInactive: Boolean = false
         includeLeaves: Boolean = false
+        sort: [SortOptionInput!]
       ): [Assortment!]!
 
       """
@@ -280,6 +285,7 @@ export default [
         offset: Int = 0
         includeInactive: Boolean = false
         queryString: String
+        sort: [SortOptionInput!]
       ): [Filter!]!
 
       """
@@ -315,7 +321,12 @@ export default [
       """
       Get all quotations
       """
-      quotations(limit: Int = 10, offset: Int = 0, queryString: String): [Quotation!]!
+      quotations(
+        limit: Int = 10
+        offset: Int = 0
+        queryString: String
+        sort: [SortOptionInput!]
+      ): [Quotation!]!
 
       """
       Get a specific quotation by ID
@@ -335,6 +346,7 @@ export default [
         offset: Int = 0
         queryString: String
         status: [String!]
+        sort: [SortOptionInput!]
       ): [Enrollment!]!
 
       """

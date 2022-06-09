@@ -1,7 +1,7 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbMutations, generateDbFilterById } from 'meteor/unchained:utils';
+import { generateDbMutations, generateDbFilterById, buildSortOptions } from 'meteor/unchained:utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
 import { CurrenciesSchema } from '../db/CurrenciesSchema';
 
@@ -34,14 +34,12 @@ export const configureCurrenciesModule = async ({
       return Currencies.findOne(currencyId ? generateDbFilterById(currencyId) : { isoCode });
     },
 
-    findCurrencies: async ({ limit, offset, includeInactive, contractAddress, queryString }) => {
-      const currencies = Currencies.find(
-        buildFindSelector({ includeInactive, contractAddress, queryString }),
-        {
-          skip: offset,
-          limit,
-        },
-      );
+    findCurrencies: async ({ limit, offset, sort, ...query }) => {
+      const currencies = Currencies.find(buildFindSelector(query), {
+        skip: offset,
+        limit,
+        sort: buildSortOptions(sort),
+      });
       return currencies.toArray();
     },
 

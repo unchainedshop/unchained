@@ -1,29 +1,23 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
+import { UserQuery } from '@unchainedshop/types/user';
 
 export default async function users(
   root: Root,
-  {
-    limit,
-    offset,
-    includeGuests,
-    queryString,
-  }: {
-    limit: number;
-    offset: number;
-    includeGuests: boolean;
-    queryString?: string;
+  params: UserQuery & {
+    limit?: number;
+    offset?: number;
   },
   { modules, userId }: Context,
 ) {
-  log(`query users ${limit} ${offset} ${queryString} ${includeGuests ? 'includeGuests' : ''}`, {
-    userId,
-  });
+  log(
+    `query users ${params.limit} ${params.offset} ${params.queryString} ${
+      params.includeGuests ? 'includeGuests' : ''
+    }`,
+    {
+      userId,
+    },
+  );
 
-  return modules.users.findUsers({
-    limit,
-    offset,
-    includeGuests,
-    queryString,
-  });
+  return modules.users.findUsers(params);
 }

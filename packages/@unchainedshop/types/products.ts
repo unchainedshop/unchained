@@ -1,4 +1,4 @@
-import { Context } from './api';
+import { Context, SortOption } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
 import { Country } from './countries';
@@ -156,6 +156,7 @@ export type ProductsModule = {
     params: ProductQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
     options?: FindOptions,
   ) => Promise<Array<Product>>;

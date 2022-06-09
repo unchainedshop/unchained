@@ -8,7 +8,7 @@ import {
 } from '@unchainedshop/types/quotations';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import { QuotationsCollection } from '../db/QuotationsCollection';
 import { QuotationsSchema } from '../db/QuotationsSchema';
 import { QuotationStatus } from '../db/QuotationStatus';
@@ -241,10 +241,11 @@ export const configureQuotationsModule = async ({
       return Quotations.findOne(selector, options);
     },
 
-    findQuotations: async ({ limit, offset, ...query }, options) => {
+    findQuotations: async ({ limit, offset, sort, ...query }, options) => {
       const quotations = Quotations.find(buildFindSelector(query), {
         limit,
         skip: offset,
+        sort: buildSortOptions(sort),
         ...options,
       });
 

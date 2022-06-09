@@ -1,15 +1,13 @@
 import { log } from 'meteor/unchained:logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root, SortOption } from '@unchainedshop/types/api';
+import { ProductQuery } from '@unchainedshop/types/products';
 
 export default async function products(
   root: Root,
-  params: {
-    queryString: string;
-    includeDrafts: boolean;
+  params: ProductQuery & {
+    sort: Array<SortOption>;
     limit: number;
     offset: number;
-    slugs?: Array<string>;
-    tags?: Array<string>;
   },
   { modules, userId }: Context,
 ) {

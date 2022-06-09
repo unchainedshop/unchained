@@ -1,4 +1,4 @@
-import { Context } from './api';
+import { Context, SortOption } from './api';
 import {
   Address,
   Configuration,
@@ -79,6 +79,7 @@ export interface EnrollmentQueries {
     params: EnrollmentQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
   ) => Promise<Array<Enrollment>>;
   count: (params: EnrollmentQuery) => Promise<number>;

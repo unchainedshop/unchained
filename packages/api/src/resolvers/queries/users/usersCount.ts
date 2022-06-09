@@ -1,18 +1,11 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
+import { UserQuery } from '@unchainedshop/types/user';
 
-export default async function usersCount(
-  root: Root,
-  {
-    includeGuests,
-    queryString,
-  }: {
-    includeGuests: boolean;
-    queryString?: string;
-  },
-  { modules, userId }: Context,
-) {
-  log(`query usersCount ${queryString || ''} ${includeGuests ? 'includeGuests' : ''}`, { userId });
+export default async function usersCount(root: Root, params: UserQuery, { modules, userId }: Context) {
+  log(`query usersCount ${params.queryString || ''} ${params.includeGuests ? 'includeGuests' : ''}`, {
+    userId,
+  });
 
-  return modules.users.count({ includeGuests, queryString });
+  return modules.users.count(params);
 }

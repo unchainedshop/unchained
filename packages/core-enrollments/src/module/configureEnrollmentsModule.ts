@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { Context, SortOption } from '@unchainedshop/types/api';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import {
   Enrollment,
@@ -9,7 +9,7 @@ import {
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
 import { EnrollmentStatus } from '../db/EnrollmentStatus';
@@ -242,11 +242,13 @@ export const configureEnrollmentsModule = async ({
     findEnrollments: async ({
       limit,
       offset,
+      sort,
       ...query
-    }: EnrollmentQuery & { limit?: number; offset?: number }) => {
+    }: EnrollmentQuery & { limit?: number; offset?: number; sort?: Array<SortOption> }) => {
       const enrollments = Enrollments.find(buildFindSelector(query), {
         skip: offset,
         limit,
+        sort: buildSortOptions(sort),
       });
 
       return enrollments.toArray();

@@ -1,4 +1,4 @@
-import { Context } from './api';
+import { Context, SortOption } from './api';
 import {
   Configuration,
   FindOptions,
@@ -62,6 +62,7 @@ export interface QuotationQueries {
     query: QuotationQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
     options?: FindOptions,
   ) => Promise<Array<Quotation>>;

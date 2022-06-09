@@ -3,7 +3,12 @@ import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/cou
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById, generateDbMutations, systemLocale } from 'meteor/unchained:utils';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  systemLocale,
+  buildSortOptions,
+} from 'meteor/unchained:utils';
 import { CountriesCollection } from '../db/CountriesCollection';
 import { CountriesSchema } from '../db/CountriesSchema';
 
@@ -35,10 +40,11 @@ export const configureCountriesModule = async ({
       return Countries.findOne(countryId ? generateDbFilterById(countryId) : { isoCode });
     },
 
-    findCountries: async ({ limit, offset, includeInactive, queryString }, options) => {
+    findCountries: async ({ limit, offset, sort, includeInactive, queryString }, options) => {
       const countries = Countries.find(buildFindSelector({ includeInactive, queryString }), {
         skip: offset,
         limit,
+        sort: buildSortOptions(sort),
         ...options,
       });
       return countries.toArray();

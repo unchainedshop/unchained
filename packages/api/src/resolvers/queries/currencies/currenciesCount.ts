@@ -4,12 +4,12 @@ import { CurrencyQuery } from '@unchainedshop/types/currencies';
 
 export default async function currenciesCount(
   root: Root,
-  { includeInactive, queryString }: CurrencyQuery,
+  params: CurrencyQuery,
   { modules, userId }: Context,
 ) {
-  log(`query currenciesCount: ${includeInactive ? 'includeInactive' : ''}`, {
+  log(`query currenciesCount: ${params.includeInactive ? 'includeInactive' : ''}`, {
     userId,
   });
 
-  return modules.currencies.count({ includeInactive, queryString });
+  return modules.currencies.count(params);
 }

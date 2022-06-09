@@ -100,7 +100,7 @@ Our Roadmap ahead:
 
 ## Major
 
-- [api] New  `query.workQueueCount` is that accepts the same filter parameters as `Query.workQueue` and returns an integer of total number of results, useful for pagination
+- [api] New  `query.workQueueCount` accepts the same filter parameters as `Query.workQueue` and returns an integer of total number of results, useful for pagination
 - [api] `query.events` is now extended with additional filter parameters `create` get events created after the provided event and the previous `type` field is changed to `types` and accepts array of event types. in addition it is now possible to `sort` the results any field on event type
 - [core] Bulk Importer now supports skipping the built-in cache invalidation run at the end by using
   `skipCacheInvalidation`

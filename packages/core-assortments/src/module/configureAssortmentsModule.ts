@@ -8,7 +8,13 @@ import {
 } from '@unchainedshop/types/assortments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from 'meteor/unchained:logger';
-import { generateDbMutations, generateDbFilterById, findPreservingIds } from 'meteor/unchained:utils';
+import {
+  generateDbMutations,
+  generateDbFilterById,
+  findPreservingIds,
+  buildSortOptions,
+} from 'meteor/unchained:utils';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';
 import addMigrations from '../migrations/addMigrations';
@@ -258,11 +264,12 @@ export const configureAssortmentsModule = async ({
       return Assortments.findOne(selector, {});
     },
 
-    findAssortments: async ({ limit, offset, ...query }) => {
+    findAssortments: async ({ limit, offset, sort, ...query }) => {
+      const defaultSortOption: Array<SortOption> = [{ key: 'squence', value: SortDirection.ASC }];
       const assortments = Assortments.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: { sequence: 1 },
+        sort: buildSortOptions(sort || defaultSortOption),
       });
       return assortments.toArray();
     },
