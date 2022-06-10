@@ -1,6 +1,6 @@
 import { log } from 'meteor/unchained:logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { OrderPaymentStatus } from 'meteor/unchained:core-orders';
+import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
 import {
   OrderNotFoundError,
   OrderWrongPaymentStatusError,

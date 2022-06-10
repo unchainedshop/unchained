@@ -1,13 +1,12 @@
 import { Context } from '@unchainedshop/types/api';
 import { Collection } from '@unchainedshop/types/common';
-import { Order, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders';
+import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById } from 'meteor/unchained:utils';
-import { OrderStatus } from '../db/OrderStatus';
 import { ordersSettings } from '../orders-settings';
 
 const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];

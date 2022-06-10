@@ -1,5 +1,5 @@
 import { Context, Root } from '@unchainedshop/types/api';
-import { OrderStatus } from 'meteor/unchained:core-orders';
+import { OrderStatus } from '@unchainedshop/types/orders';
 import { log } from 'meteor/unchained:logger';
 import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors';
 

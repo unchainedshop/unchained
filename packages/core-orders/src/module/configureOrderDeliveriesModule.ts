@@ -1,11 +1,14 @@
 import { Collection, Filter, ModuleMutations, Update } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
-import { OrderDeliveriesModule, OrderDelivery } from '@unchainedshop/types/orders.deliveries';
+import {
+  OrderDeliveriesModule,
+  OrderDelivery,
+  OrderDeliveryStatus,
+} from '@unchainedshop/types/orders.deliveries';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
-import { OrderDeliveryStatus } from '../db/OrderDeliveryStatus';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 

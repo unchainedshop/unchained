@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { ModuleInput, Update } from '@unchainedshop/types/common';
-import { Order, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders';
+import { Order, OrderStatus, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
@@ -12,7 +12,6 @@ import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger';
 import { OrderPaymentsCollection } from '../db/OrderPaymentsCollection';
 import { OrderPositionsCollection } from '../db/OrderPositionsCollection';
 import { OrdersCollection } from '../db/OrdersCollection';
-import { OrderStatus } from '../db/OrderStatus';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector';
 import { OrderPricingDirector } from '../director/OrderPricingDirector';
 import { ordersSettings } from '../orders-settings';

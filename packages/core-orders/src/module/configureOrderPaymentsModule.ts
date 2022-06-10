@@ -1,11 +1,14 @@
 import { Collection, Filter, ModuleMutations, Query, Update } from '@unchainedshop/types/common';
 import { OrdersModule } from '@unchainedshop/types/orders';
-import { OrderPayment, OrderPaymentsModule } from '@unchainedshop/types/orders.payments';
+import {
+  OrderPayment,
+  OrderPaymentsModule,
+  OrderPaymentStatus,
+} from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from 'meteor/unchained:logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';
-import { OrderPaymentStatus } from '../db/OrderPaymentStatus';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
