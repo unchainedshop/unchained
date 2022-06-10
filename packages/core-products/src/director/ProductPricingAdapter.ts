@@ -1,19 +1,14 @@
 import {
   ProductPricingAdapterContext,
   ProductPricingCalculation,
-  IProductPricingSheet,
+  IProductPricingAdapter,
 } from '@unchainedshop/types/products.pricing';
-import { IPricingAdapter } from '@unchainedshop/types/pricing';
 import { BasePricingAdapter } from 'meteor/unchained:utils';
 import { ProductPricingSheet } from './ProductPricingSheet';
 
 const basePricingAdapter = BasePricingAdapter<ProductPricingAdapterContext, ProductPricingCalculation>();
 
-export const ProductPricingAdapter: IPricingAdapter<
-  ProductPricingAdapterContext,
-  ProductPricingCalculation,
-  IProductPricingSheet
-> = {
+export const ProductPricingAdapter: IProductPricingAdapter = {
   ...basePricingAdapter,
 
   isActivatedFor: () => {

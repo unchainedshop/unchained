@@ -63,7 +63,8 @@ export type IPaymentPricingAdapter = IPricingAdapter<
 
 export type IPaymentPricingDirector = IPricingDirector<
   PaymentPricingContext,
-  PaymentPricingAdapterContext,
   PaymentPricingCalculation,
+  PaymentPricingAdapterContext,
+  IPaymentPricingSheet,
   IPaymentPricingAdapter
 >;

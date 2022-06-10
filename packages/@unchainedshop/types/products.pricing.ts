@@ -49,6 +49,7 @@ export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalcul
     amount: number;
     currency: string;
   };
+  resetCalculation: () => void;
 }
 
 export type IProductPricingAdapter = IPricingAdapter<
@@ -59,8 +60,9 @@ export type IProductPricingAdapter = IPricingAdapter<
 
 export type IProductPricingDirector = IPricingDirector<
   ProductPricingContext,
-  ProductPricingAdapterContext,
   ProductPricingCalculation,
+  ProductPricingAdapterContext,
+  IProductPricingSheet,
   IProductPricingAdapter
 >;
 
