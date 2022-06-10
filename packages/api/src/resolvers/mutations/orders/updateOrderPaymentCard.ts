@@ -31,9 +31,5 @@ export default async function updateOrderPaymentCard(
       required: PaymentProviderType.CARD,
     });
 
-  return modules.orders.payments.updateContext(
-    orderPayment._id,
-    { orderId: orderPayment.orderId, context: meta },
-    context,
-  );
+  return modules.orders.payments.updateContext(orderPayment._id, { context: meta }, context);
 }

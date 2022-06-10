@@ -33,10 +33,9 @@ export default async function updateOrderDeliveryPickUp(
       required: DeliveryProviderType.PICKUP,
     });
 
-  return modules.orders.deliveries.updateDelivery(
+  return modules.orders.deliveries.updateContext(
     orderDeliveryId,
     {
-      orderId: orderDelivery.orderId,
       context: { orderPickUpLocationId, meta },
     },
     context,

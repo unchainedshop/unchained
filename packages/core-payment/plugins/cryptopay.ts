@@ -177,7 +177,7 @@ const Cryptopay: IPaymentAdapter = {
         }
         await modules.orders.payments.updateContext(
           orderPayment._id,
-          { orderId: orderPayment.orderId, context: cryptoAddresses },
+          { context: cryptoAddresses },
           params.context,
         );
         return JSON.stringify(cryptoAddresses);

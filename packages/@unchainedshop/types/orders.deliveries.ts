@@ -56,9 +56,9 @@ export type OrderDeliveriesModule = {
     requestContext: Context,
   ) => Promise<OrderDelivery>;
 
-  updateDelivery: (
+  updateContext: (
     orderDeliveryId: string,
-    params: { context: any; orderId: string },
+    params: { context: any },
     requestContext: Context,
   ) => Promise<OrderDelivery>;
 

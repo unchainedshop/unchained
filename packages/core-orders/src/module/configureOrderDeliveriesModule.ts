@@ -177,12 +177,15 @@ export const configureOrderDeliveriesModule = ({
       return orderDelivery;
     },
 
-    updateDelivery: async (orderDeliveryId, { orderId, context }, requestContext) => {
+    updateContext: async (orderDeliveryId, { context }, requestContext) => {
+      const selector = buildFindByIdSelector(orderDeliveryId);
+      const orderDelivery = await OrderDeliveries.findOne(selector, {});
+      const { orderId } = orderDelivery;
+
       log(`OrderDelivery ${orderDeliveryId} -> Update Context`, {
         orderId,
       });
 
-      const selector = buildFindByIdSelector(orderDeliveryId);
       await OrderDeliveries.updateOne(selector, {
         $set: {
           context: context || {},
@@ -191,7 +194,6 @@ export const configureOrderDeliveriesModule = ({
         },
       });
 
-      const orderDelivery = await OrderDeliveries.findOne(selector, {});
       await updateCalculation(orderId, requestContext);
       emit('ORDER_UPDATE_DELIVERY', { orderDelivery });
       return orderDelivery;
