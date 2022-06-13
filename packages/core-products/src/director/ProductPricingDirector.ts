@@ -59,12 +59,10 @@ export const ProductPricingDirector: IProductPricingDirector = {
     const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
     return {
       ...actions,
-      resultSheet() {
-        const calculation = actions.getCalculation();
+      calculationSheet() {
         const context = actions.getContext();
-
         return ProductPricingSheet({
-          calculation,
+          calculation: actions.getCalculation(),
           currency: context.currency,
           quantity: context.quantity,
         });

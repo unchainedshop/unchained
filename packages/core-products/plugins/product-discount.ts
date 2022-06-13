@@ -42,11 +42,11 @@ const ProductDiscount: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const taxableTotal = pricingAdapter.calculationSheet().sum({
+        const taxableTotal = params.calculationSheet.sum({
           category: ProductPricingRowCategory.Item,
           isTaxable: true,
         });
-        const nonTaxableTotal = pricingAdapter.calculationSheet().sum({
+        const nonTaxableTotal = params.calculationSheet.sum({
           category: ProductPricingRowCategory.Item,
           isTaxable: false,
         });

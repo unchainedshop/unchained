@@ -44,13 +44,9 @@ export const BasePricingDirector = <
       const context = await buildPricingContext(pricingContext, requestContext);
 
       let calculation: Array<Calculation> = [];
-      const calculationSheet = BasePricingSheet({
-        calculation,
-      });
-      const resultSheet = BasePricingSheet({ calculation: [] });
 
       return {
-        calculate: async () => {
+        async calculate() {
           const Adapters = baseDirector.getAdapters({
             adapterFilter: (Adapter) => {
               return Adapter.isActivatedFor(context);
@@ -75,7 +71,7 @@ export const BasePricingDirector = <
             try {
               const adapter = Adapter.actions({
                 context,
-                calculation: resolvedCalculation,
+                calculationSheet: this.calculationSheet(),
                 discounts: discounts.filter(({ configuration }) => configuration !== null),
               });
 
@@ -90,10 +86,17 @@ export const BasePricingDirector = <
 
           return calculation;
         },
-        getCalculation: () => calculation,
-        getContext: () => context,
-        resultSheet: () => resultSheet,
-        calculationSheet: () => calculationSheet,
+        getCalculation() {
+          return calculation;
+        },
+        getContext() {
+          return context;
+        },
+        calculationSheet() {
+          return BasePricingSheet({
+            calculation,
+          });
+        },
       };
     },
   };

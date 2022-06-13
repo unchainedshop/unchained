@@ -81,33 +81,30 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
       calculate: async () => {
         const taxRate = getTaxRate(context);
         DeliveryPricingAdapter.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
-        pricingAdapter
-          .calculationSheet()
-          .filterBy({ isTaxable: true })
-          .forEach(({ isNetPrice, ...row }) => {
-            if (!isNetPrice) {
-              const taxAmount = row.amount - row.amount / (1 + taxRate);
-              pricingAdapter.resultSheet().calculation.push({
-                ...row,
-                amount: -taxAmount,
-                isTaxable: false,
-                isNetPrice: false,
-                meta: { adapter: DeliverySwissTax.key },
-              });
-              pricingAdapter.resultSheet().addTax({
-                amount: taxAmount,
-                rate: taxRate,
-                meta: { adapter: DeliverySwissTax.key },
-              });
-            } else {
-              const taxAmount = row.amount * taxRate;
-              pricingAdapter.resultSheet().addTax({
-                amount: taxAmount,
-                rate: taxRate,
-                meta: { adapter: DeliverySwissTax.key },
-              });
-            }
-          });
+        params.calculationSheet.filterBy({ isTaxable: true }).forEach(({ isNetPrice, ...row }) => {
+          if (!isNetPrice) {
+            const taxAmount = row.amount - row.amount / (1 + taxRate);
+            pricingAdapter.resultSheet().calculation.push({
+              ...row,
+              amount: -taxAmount,
+              isTaxable: false,
+              isNetPrice: false,
+              meta: { adapter: DeliverySwissTax.key },
+            });
+            pricingAdapter.resultSheet().addTax({
+              amount: taxAmount,
+              rate: taxRate,
+              meta: { adapter: DeliverySwissTax.key },
+            });
+          } else {
+            const taxAmount = row.amount * taxRate;
+            pricingAdapter.resultSheet().addTax({
+              amount: taxAmount,
+              rate: taxRate,
+              meta: { adapter: DeliverySwissTax.key },
+            });
+          }
+        });
 
         return pricingAdapter.calculate();
       },

@@ -62,7 +62,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
 
   filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
 
-  resetCalculation: (calculationSheetToInvert: IBasePricingSheet<Calculation>) => Array<Calculation>;
+  resetCalculation: (sheetToInvert: IBasePricingSheet<Calculation>) => Array<Calculation>;
 }
 
 export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricingSheet<Calculation> & {
@@ -88,13 +88,10 @@ export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricing
 export interface IPricingAdapterActions<
   Calculation extends PricingCalculation,
   PricingAdapterContext extends BasePricingAdapterContext,
-  Sheet extends IBasePricingSheet<Calculation>,
 > {
   calculate: () => Promise<Array<Calculation>>;
   getCalculation: () => Array<Calculation>;
   getContext: () => PricingAdapterContext;
-  calculationSheet: () => Sheet;
-  resultSheet: () => Sheet;
 }
 
 export type IPricingAdapter<
@@ -108,9 +105,9 @@ export type IPricingAdapter<
 
   actions: (params: {
     context: PricingAdapterContext;
-    calculation: Array<Calculation>;
+    calculationSheet: Sheet;
     discounts: Array<Discount>;
-  }) => IPricingAdapterActions<Calculation, PricingAdapterContext, Sheet>;
+  }) => IPricingAdapterActions<Calculation, PricingAdapterContext> & { resultSheet: () => Sheet };
 };
 
 export type IPricingDirector<
@@ -125,5 +122,9 @@ export type IPricingDirector<
     pricingContext: PricingContext,
     requestContext: Context,
     buildPricingContext?: (pricingCtx: any, requestCtx: Context) => Promise<PricingAdapterContext>,
-  ) => Promise<IPricingAdapterActions<Calculation, PricingAdapterContext, PricingAdapterSheet>>;
+  ) => Promise<
+    IPricingAdapterActions<Calculation, PricingAdapterContext> & {
+      calculationSheet: () => PricingAdapterSheet;
+    }
+  >;
 };

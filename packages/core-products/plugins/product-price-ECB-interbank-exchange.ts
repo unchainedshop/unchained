@@ -81,7 +81,7 @@ const ProductPriceECBIntraBankExchange: IProductPricingAdapter = {
 
       calculate: async () => {
         const { product, country, quantity, currency, modules } = params.context;
-        const { calculation = [] } = pricingAdapter.calculationSheet;
+        const { calculation = [] } = params.calculationSheet;
         const EURprice = await modules.products.prices.price(product, {
           country,
           currency: 'EUR',
@@ -91,7 +91,7 @@ const ProductPriceECBIntraBankExchange: IProductPricingAdapter = {
 
         const exchange = await getEURexchangeRateForCurrency(currency);
         const convertedAmount = EURprice.amount * exchange.rate;
-        pricingAdapter.resultSheet().resetCalculation(pricingAdapter.calculationSheet());
+        pricingAdapter.resultSheet().resetCalculation(params.calculationSheet);
         pricingAdapter.resultSheet().addItem({
           amount: convertedAmount * quantity,
           isTaxable: EURprice.isTaxable,

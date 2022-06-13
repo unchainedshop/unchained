@@ -15,11 +15,14 @@ export const ProductPricingAdapter: IProductPricingAdapter = {
     return false;
   },
 
-  actions: ({ context }) => {
+  actions: (params) => {
+    const { context } = params;
     const { currency, quantity } = context;
+    const baseActions = basePricingAdapter.actions(params);
     const resultSheet = ProductPricingSheet({ currency, quantity });
 
     return {
+      ...baseActions,
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>

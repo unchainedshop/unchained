@@ -50,7 +50,7 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
           quantity,
         });
 
-        const { calculation = [] } = pricingAdapter.calculationSheet;
+        const { calculation = [] } = params.calculationSheet;
 
         if (
           !productPrice ||
@@ -64,7 +64,7 @@ const ProductPriceCoinbaseExchange: IProductPricingAdapter = {
 
         if (rate > 0) {
           const convertedAmount = productPrice.amount * rate;
-          pricingAdapter.resultSheet().resetCalculation(pricingAdapter.calculationSheet());
+          pricingAdapter.resultSheet().resetCalculation(params.calculationSheet);
           pricingAdapter.resultSheet().addItem({
             amount: convertedAmount * quantity,
             isTaxable: productPrice?.isTaxable,

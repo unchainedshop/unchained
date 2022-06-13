@@ -19,7 +19,7 @@ export const DeliveryPricingAdapter: IDeliveryPricingAdapter = {
   },
 
   actions: (params) => {
-    const { context, calculation } = params;
+    const { context } = params;
     const { currency } = context;
     const baseActions = basePricingAdapter.actions(params);
     const resultSheet = DeliveryPricingSheet({ currency });
