@@ -61,19 +61,21 @@ export const OrderItem: OrderItemHelperTypes = {
     const scheduling = obj.scheduling || [];
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
     const { countryCode, userId } = order;
+
+    const orderDelivery = await modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    });
+    const deliveryProvider = await modules.delivery.findProvider({
+      deliveryProviderId: orderDelivery.deliveryProviderId,
+    });
+    const product = await modules.products.findProduct({
+      productId: obj.productId,
+    });
+
     return Promise.all(
       scheduling.map(async (schedule) => {
         const warehousingProvider = await modules.warehousing.findProvider({
           warehousingProviderId: schedule.warehousingProviderId,
-        });
-        const orderDelivery = await modules.orders.deliveries.findDelivery({
-          orderDeliveryId: order.deliveryId,
-        });
-        const deliveryProvider = await modules.delivery.findProvider({
-          deliveryProviderId: orderDelivery.deliveryProviderId,
-        });
-        const product = await modules.products.findProduct({
-          productId: obj.productId,
         });
 
         const context = {
