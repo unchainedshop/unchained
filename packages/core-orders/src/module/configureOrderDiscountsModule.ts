@@ -186,7 +186,10 @@ export const configureOrderDiscountsModule = ({
       if (fetchedDiscount) return fetchedDiscount;
 
       const order = await requestContext.modules.orders.findOrder({ orderId });
-      const director = OrderDiscountDirector.actions({ order, orderDiscount: doc }, requestContext);
+      const director = await OrderDiscountDirector.actions(
+        { order, orderDiscount: doc },
+        requestContext,
+      );
       const discountKey = await director.resolveDiscountKeyFromStaticCode({
         code,
       });

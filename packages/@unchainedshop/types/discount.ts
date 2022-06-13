@@ -45,15 +45,15 @@ export type IDiscountAdapter = IBaseAdapter & {
   isManualAdditionAllowed: (code: string) => Promise<boolean>;
   isManualRemovalAllowed: () => Promise<boolean>;
 
-  actions: (params: { context: DiscountContext & Context }) => DiscountAdapterActions;
+  actions: (params: { context: DiscountContext & Context }) => Promise<DiscountAdapterActions>;
 };
 
 export type IDiscountDirector = IBaseDirector<IDiscountAdapter> & {
   actions: (
     discountContext: DiscountContext,
     requestContext: Context,
-  ) => {
+  ) => Promise<{
     resolveDiscountKeyFromStaticCode: (params: { code: string }) => Promise<string | null>;
     findSystemDiscounts: () => Promise<Array<string>>;
-  };
+  }>;
 };

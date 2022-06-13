@@ -147,7 +147,7 @@ export const configureOrdersModule = async ({
 
     const currentDiscountKeys = cleanedDiscounts.map(({ discountKey }) => discountKey);
 
-    const director = OrderDiscountDirector.actions({ order }, requestContext);
+    const director = await OrderDiscountDirector.actions({ order }, requestContext);
     const systemDiscounts = await director.findSystemDiscounts();
 
     await Promise.all(
