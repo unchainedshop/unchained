@@ -1,5 +1,10 @@
 # Unchained Engine v1.1
 
+## Internal API breaking changes
+
+- [core] Pricing Plugins now receive the ongoing director calculation as a sheet in the parameters instead of a function that returns a calculation array on the adapter itself, calls like 
+`pricingAdapter.calculationSheet()` have to be migrated to `params.calculationSheet`. Else the resetCalculation has been moved to the sheet itself and it can take a calculationSheet to revert.
+
 ## Major
 
 - [api] `query.events` is now extended with additional filter parameters `created` get events created

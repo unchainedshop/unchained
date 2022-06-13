@@ -161,12 +161,18 @@ export const configureOrderDiscountsModule = ({
     },
 
     // Adapter
-    configurationForPricingAdapterKey: async (orderDiscount, adapterKey, requestContext) => {
+    configurationForPricingAdapterKey: async (
+      orderDiscount,
+      adapterKey,
+      calculationSheet,
+      requestContext,
+    ) => {
       const adapter = await getAdapter(orderDiscount, requestContext);
       if (!adapter) return null;
 
       return adapter.discountForPricingAdapterKey({
         pricingAdapterKey: adapterKey,
+        calculationSheet,
       });
     },
 

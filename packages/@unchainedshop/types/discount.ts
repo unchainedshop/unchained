@@ -5,6 +5,7 @@ import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
 import { OrderPayment } from './orders.payments';
 import { OrderPosition } from './orders.positions';
+import { IBasePricingSheet, PricingCalculation } from './pricing';
 
 export interface DiscountConfiguration {
   fixedRate?: number;
@@ -29,7 +30,10 @@ export interface DiscountAdapterActions {
   isValidForSystemTriggering: () => Promise<boolean>;
   isValidForCodeTriggering: (params: { code: string }) => Promise<boolean>;
 
-  discountForPricingAdapterKey: (params: { pricingAdapterKey: string }) => DiscountConfiguration;
+  discountForPricingAdapterKey: (params: {
+    pricingAdapterKey: string;
+    calculationSheet: IBasePricingSheet<PricingCalculation>;
+  }) => DiscountConfiguration;
 
   reserve: (params: { code: string }) => Promise<any>;
   release: () => Promise<void>;

@@ -63,6 +63,7 @@ export const BasePricingDirector = <
                 configuration: await context.modules.orders.discounts.configurationForPricingAdapterKey(
                   discount,
                   Adapter.key,
+                  this.calculationSheet(),
                   context,
                 ),
               })),
