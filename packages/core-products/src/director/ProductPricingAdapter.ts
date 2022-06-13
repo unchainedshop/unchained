@@ -15,13 +15,8 @@ export const ProductPricingAdapter: IProductPricingAdapter = {
     return false;
   },
 
-  actions: ({ context, calculation }) => {
+  actions: ({ context }) => {
     const { currency, quantity } = context;
-    const calculationSheet = ProductPricingSheet({
-      calculation,
-      currency,
-      quantity,
-    });
     const resultSheet = ProductPricingSheet({ currency, quantity });
 
     return {
@@ -32,17 +27,7 @@ export const ProductPricingAdapter: IProductPricingAdapter = {
         );
         return resultRaw;
       },
-      calculationSheet: () => calculationSheet,
       resultSheet: () => resultSheet,
-      resetCalculation() {
-        // revert old prices
-        calculationSheet.filterBy().forEach(({ amount, ...row }) => {
-          resultSheet.calculation.push({
-            ...row,
-            amount: amount * -1,
-          });
-        });
-      },
     };
   },
 };
