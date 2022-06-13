@@ -108,10 +108,7 @@ export type IPricingAdapter<
     context: PricingAdapterContext;
     calculation: Array<Calculation>;
     discounts: Array<Discount>;
-  }) => IPricingAdapterActions<Calculation, PricingAdapterContext, Sheet> & {
-    calculationSheet: () => Sheet;
-    resultSheet: () => Sheet;
-  };
+  }) => IPricingAdapterActions<Calculation, PricingAdapterContext, Sheet>;
 };
 
 export type IPricingDirector<
