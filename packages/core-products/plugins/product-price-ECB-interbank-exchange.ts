@@ -91,7 +91,7 @@ const ProductPriceECBIntraBankExchange: IProductPricingAdapter = {
 
         const exchange = await getEURexchangeRateForCurrency(currency);
         const convertedAmount = EURprice.amount * exchange.rate;
-        pricingAdapter.resetCalculation();
+        pricingAdapter.resultSheet().resetCalculation(pricingAdapter.calculationSheet());
         pricingAdapter.resultSheet().addItem({
           amount: convertedAmount * quantity,
           isTaxable: EURprice.isTaxable,

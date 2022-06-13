@@ -62,7 +62,7 @@ export const ProductPriceRound: IProductPricingAdapter & {
 
         if (calculation?.length && roundPrecision) {
           const [productPrice] = calculation;
-          pricingAdapter.resetCalculation();
+          pricingAdapter.resultSheet().resetCalculation(pricingAdapter.calculationSheet());
           pricingAdapter.resultSheet().addItem({
             amount: roundToNext(productPrice.amount, roundPrecision) * quantity,
             isTaxable: productPrice.isTaxable,

@@ -21,13 +21,13 @@ export const PaymentPricingAdapter: IPricingAdapter<
   },
 
   actions: (params) => {
-    const { context, calculation } = params;
+    const { context } = params;
     const { currency } = context.order;
-    const calculationSheet = PaymentPricingSheet({ calculation, currency });
+    const baseActions = basePricingAdapter.actions(params);
     const resultSheet = PaymentPricingSheet({ currency });
 
     return {
-      ...basePricingAdapter.actions(params),
+      ...baseActions,
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>
@@ -35,7 +35,6 @@ export const PaymentPricingAdapter: IPricingAdapter<
         );
         return resultRaw;
       },
-      calculationSheet: () => calculationSheet,
       resultSheet: () => resultSheet,
     };
   },

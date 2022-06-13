@@ -55,7 +55,7 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
 
         if (rate > 0) {
           const convertedAmount = productPrice.amount * rate;
-          pricingAdapter.resetCalculation();
+          pricingAdapter.resultSheet().resetCalculation(pricingAdapter.calculationSheet());
           pricingAdapter.resultSheet().addItem({
             amount: convertedAmount * quantity,
             isTaxable: productPrice?.isTaxable,

@@ -61,6 +61,8 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   };
 
   filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
+
+  resetCalculation: (calculationSheetToInvert: IBasePricingSheet<Calculation>) => Array<Calculation>;
 }
 
 export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricingSheet<Calculation> & {
