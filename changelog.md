@@ -2,23 +2,30 @@
 
 ## Internal API breaking changes
 
-- [core] Pricing Plugins now receive the ongoing director calculation as a sheet in the parameters instead of a function that returns a calculation array on the adapter itself, calls like 
-`pricingAdapter.calculationSheet()` have to be migrated to `params.calculationSheet`. Else the resetCalculation has been moved to the sheet itself and it can take a calculationSheet to revert.
+- [core] Pricing Plugins now receive the ongoing director calculation as a sheet in the parameters
+  instead of a function that returns a calculation array on the adapter itself, calls like
+  `pricingAdapter.calculationSheet()` have to be migrated to `params.calculationSheet`. Else the
+  resetCalculation has been moved to the sheet itself and it can take a calculationSheet to revert.
+- [core] Discount `actions` in adapter and director now return a Promise to extend the possibility for
+  discount plugins to do async work
 
 ## Major
 
 - [api] `query.events` is now extended with additional filter parameters `created` get events created
   after the provided event and the previous `type` field is changed to `types` and accepts array of event
   types. in addition it is now possible to `sort` the results any field on event type
-- [api] A new input field `sort` has been added to many generel queries that return lists of something, for ex. Query.products 
-- [api] A new input field `queryString` has been added to many generel queries that return lists of something, with this change it's possible to search for an order number through Query.orders for ex.
+- [api] A new input field `sort` has been added to many generel queries that return lists of something,
+  for ex. Query.products
+- [api] A new input field `queryString` has been added to many generel queries that return lists of
+  something, with this change it's possible to search for an order number through Query.orders for ex.
 - [api] new `mutation.updateUserProfile` is extended to accept new argument `meta` to store extra
   information of a user. `customFields` has been removed.
 - [api] New default queries were added for all kind of "count" cases so you don't have to query a whole
-  list just to get the amount of items, this can be quite helpful for pagination: `workQueueCount`, `assortmentsCounts`,
-  `countriesCount`, `currenciesCount`, `deliveryProvidersCount`, `filtersCount`, `languagesCount`,
-  `logsCount`, `ordersCount`, `paymentProvidersCount`, `productReviewsCount`, `productsCount`,
-  `quotationsCount`, `subscriptionsCount`, `usersCount`,`warehousingProvidersCount`,`eventsCount`
+  list just to get the amount of items, this can be quite helpful for pagination: `workQueueCount`,
+  `assortmentsCounts`, `countriesCount`, `currenciesCount`, `deliveryProvidersCount`, `filtersCount`,
+  `languagesCount`, `logsCount`, `ordersCount`, `paymentProvidersCount`, `productReviewsCount`,
+  `productsCount`, `quotationsCount`, `subscriptionsCount`,
+  `usersCount`,`warehousingProvidersCount`,`eventsCount`
 
 ## Minor
 
@@ -42,6 +49,7 @@ Our Roadmap ahead:
   runs on edge frameworks.
 
 ## Breaking changes
+
 - [core] We have removed the Matomo tracker because it was not a plugin but rather an example of an event
   tracking implementation, it will be re-added later to a "recipes" docs page
 - [platform, api, core] Refactor Unchained Engine's core with the goal to add typescript support, get rid
