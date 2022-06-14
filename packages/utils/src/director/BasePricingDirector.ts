@@ -78,7 +78,8 @@ export const BasePricingDirector = <
 
               const nextCalculationResult = await adapter.calculate();
               if (!nextCalculationResult) return null;
-              return resolvedCalculation.concat(nextCalculationResult);
+              calculation = resolvedCalculation.concat(nextCalculationResult);
+              return calculation;
             } catch (error) {
               log(error, { level: LogLevel.Error });
             }

@@ -78,10 +78,8 @@ export const configureProductPricesModule = ({
         .createHash('sha256')
         .update([product._id, country, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''))
         .digest('hex'),
-      amount: unitPrice.amount,
-      currencyCode: unitPrice.currency,
-      isTaxable: pricing.taxSum() > 0,
-      isNetPrice: useNetPrice,
+      ...unitPrice,
+      currencyCode: pricing.currency,
     };
   };
 

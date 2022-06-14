@@ -66,10 +66,13 @@ export const ProductPricingSheet = (
     },
 
     unitPrice({ useNetPrice = false } = {}) {
-      const amount = useNetPrice ? this.net() : this.gross();
+      const netAmount = this.net();
+      const grossAmount = this.gross();
       return {
-        amount: Math.round(amount / this.quantity),
+        amount: Math.round(useNetPrice ? netAmount : grossAmount / this.quantity),
         currency: this.currency,
+        isNetPrice: useNetPrice,
+        isTaxable: grossAmount !== netAmount,
       };
     },
 
