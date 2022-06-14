@@ -273,10 +273,24 @@ export const ProductVariationTexts = [
     subtitle: null,
   },
   {
-    _id: 'product-color-variation-2-en-text',
-    productVariationId: 'product-color-variation-2',
+    _id: 'product-color-variation-1-de-text',
+    productVariationId: 'product-color-variation-1',
+    locale: 'de',
+    title: 'product color variation title de',
+    subtitle: null,
+  },
+  {
+    _id: 'product-text-variation-2-en-text',
+    productVariationId: 'product-text-variation-2',
     locale: 'en',
-    title: 'product color variation title',
+    title: 'product text variation title',
+    subtitle: null,
+  },
+  {
+    _id: 'product-text-variation-2-de-text',
+    productVariationId: 'product-text-variation-2',
+    locale: 'de',
+    title: 'product text variation title de',
     subtitle: null,
   },
 ];
@@ -296,7 +310,7 @@ export const ProductVariations = [
     authorId: 'admin',
     type: 'TEXT',
     key: 'text-variant',
-    options: ['text-variant-a', 'text-variant-b'],
+    options: ['text-variant-a', 'text-variant-b', 'variation-option-1-value'],
   },
 ];
 
