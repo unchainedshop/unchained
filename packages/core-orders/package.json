@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-orders",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "lib/orders-index.js",
   "types": "lib/orders-index.d.ts",
   "type": "module",

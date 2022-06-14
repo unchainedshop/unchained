@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-devlivery",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "main": "lib/devlivery-index.js",
   "types": "lib/devlivery-index.d.ts",
   "type": "module",

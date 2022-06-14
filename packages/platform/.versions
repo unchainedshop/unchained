@@ -1,6 +1,6 @@
 allow-deny@1.1.1
 babel-compiler@7.9.0
-babel-runtime@1.5.0
+babel-runtime@1.5.1
 base64@1.0.12
 binary-heap@1.0.11
 boilerplate-generator@1.7.1
@@ -68,7 +68,7 @@ unchained:events@1.0.0
 unchained:file-upload@1.0.0
 unchained:logger@1.0.0
 unchained:mongodb@1.0.0
-unchained:platform@1.0.1
+unchained:platform@1.1.0
 unchained:roles@1.0.0
 unchained:utils@1.0.0
 underscore@1.0.10

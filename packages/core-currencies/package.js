@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-currencies',
-  version: '1.0.0',
+  version: '1.1.0',
   summary: 'Unchained Engine Core: Currencies',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -11,7 +11,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('2.6.1');
+  api.versionsFrom('2.7.3');
   api.use('ecmascript');
   api.use('typescript');
 

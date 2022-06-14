@@ -1,6 +1,6 @@
 # Unchained Engine v1.1
 
-## Internal API breaking changes
+## Breaking Changes for Plugin Developers
 
 - [core] Instead of `updateDelivery` and `updatePayment` we now have `updateContext` methods on
   order.delivery and order.payment modules respectively, consistent with the rest of the system.
@@ -10,8 +10,10 @@
   resetCalculation has been moved to the sheet itself and it can take a calculationSheet to revert.
 - [core] Discount `actions` in adapter and director now return a Promise to extend the possibility for
   discount plugins to do async work
+- [api] `customFields` has been removed from the input field `UserProfileInput` and custom data has been
+  moved internally on the user entity from `user.profile.customFields` to `user.meta`
 
-## Major
+## Minor
 
 - [api] `query.events` is now extended with additional filter parameters `created` get events created
   after the provided event and the previous `type` field is changed to `types` and accepts array of event
@@ -21,7 +23,7 @@
 - [api] A new input field `queryString` has been added to many generel queries that return lists of
   something, with this change it's possible to search for an order number through Query.orders for ex.
 - [api] new `mutation.updateUserProfile` is extended to accept new argument `meta` to store extra
-  information of a user. `customFields` has been removed.
+  information of a user.
 - [api] New default queries were added for all kind of "count" cases so you don't have to query a whole
   list just to get the amount of items, this can be quite helpful for pagination: `workQueueCount`,
   `assortmentsCounts`, `countriesCount`, `currenciesCount`, `deliveryProvidersCount`, `filtersCount`,
@@ -29,8 +31,9 @@
   `productsCount`, `quotationsCount`, `subscriptionsCount`,
   `usersCount`,`warehousingProvidersCount`,`eventsCount`
 
-## Minor
+## Patches
 
+- [core] Improved Typescript Support
 - [core] A bug has been fixed that accidentally made order positions immutable for further changes
 - [core] A warehousing plugin now get's to know the actual warehousingProvider's ID
 - [core] A bug that rendered the Bulk Importer unusable for product media changes has been fixed

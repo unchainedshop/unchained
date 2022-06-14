@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:platform',
-  version: '1.0.1',
+  version: '1.1.0',
   summary: 'Unchained Engine',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -14,7 +14,7 @@ Npm.depends({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('2.6.1');
+  api.versionsFrom('2.7.3');
 
   api.use('ecmascript');
   api.use('typescript');

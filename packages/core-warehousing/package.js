@@ -1,13 +1,13 @@
 Package.describe({
   name: 'unchained:core-warehousing',
-  version: '1.0.1',
+  version: '1.1.0',
   summary: 'Unchained Engine Core: Warehousing',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
 
 Package.onUse((api) => {
-  api.versionsFrom('2.6.1');
+  api.versionsFrom('2.7.3');
   api.use('ecmascript');
   api.use('typescript');
 

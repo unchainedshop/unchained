@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-accountsjs",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "main": "lib/accounts-index.js",
   "types": "lib/accounts-index.d.ts",
   "type": "module",
