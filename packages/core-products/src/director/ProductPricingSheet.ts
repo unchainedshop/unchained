@@ -69,7 +69,7 @@ export const ProductPricingSheet = (
       const netAmount = this.net();
       const grossAmount = this.gross();
       return {
-        amount: Math.round(useNetPrice ? netAmount : grossAmount / this.quantity),
+        amount: Math.round((useNetPrice ? netAmount : grossAmount) / this.quantity),
         currency: this.currency,
         isNetPrice: useNetPrice,
         isTaxable: grossAmount !== netAmount,

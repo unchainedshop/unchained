@@ -86,11 +86,7 @@ export type OrderPaymentsModule = {
 
   markAsPaid: (payment: OrderPayment, meta: any, userId?: string) => Promise<void>;
 
-  updateContext: (
-    orderPaymentId: string,
-    params: { context: any },
-    requestContext: Context,
-  ) => Promise<OrderPayment>;
+  updateContext: (orderPaymentId: string, context: any, requestContext: Context) => Promise<boolean>;
 
   updateStatus: (
     orderPaymentId: string,

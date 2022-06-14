@@ -32,5 +32,9 @@ export default async function updateOrderPaymentInvoice(
       required: PaymentProviderType.INVOICE,
     });
 
-  return modules.orders.payments.updateContext(orderPayment._id, { context: { meta } }, context);
+  await modules.orders.payments.updateContext(orderPayment._id, { meta }, context);
+
+  return modules.orders.payments.findOrderPayment({
+    orderPaymentId,
+  });
 }

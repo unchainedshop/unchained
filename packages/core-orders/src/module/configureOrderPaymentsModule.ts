@@ -271,7 +271,7 @@ export const configureOrderPaymentsModule = ({
       emit('ORDER_PAY', { orderPayment });
     },
 
-    updateContext: async (orderPaymentId, { context }, requestContext) => {
+    updateContext: async (orderPaymentId, context, requestContext) => {
       const selector = buildFindByIdSelector(orderPaymentId);
       const orderPayment = await OrderPayments.findOne(selector, {});
       const { orderId } = orderPayment;
@@ -280,17 +280,26 @@ export const configureOrderPaymentsModule = ({
         orderId,
         context,
       });
-      await OrderPayments.updateOne(selector, {
+      const result = await OrderPayments.updateOne(selector, {
         $set: {
-          context: context || {},
+          context: { ...(orderPayment.context || {}), ...context },
           updated: new Date(),
           updatedBy: requestContext.userId,
         },
       });
 
-      await updateCalculation(orderId, requestContext);
-      emit('ORDER_UPDATE_PAYMENT', { orderPayment });
-      return orderPayment;
+      if (result.modifiedCount) {
+        await updateCalculation(orderId, requestContext);
+        emit('ORDER_UPDATE_PAYMENT', {
+          orderPayment: {
+            ...orderPayment,
+            context: { ...(orderPayment.context || {}), ...context },
+          },
+        });
+        return true;
+      }
+
+      return false;
     },
 
     updateStatus,

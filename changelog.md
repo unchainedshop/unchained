@@ -2,6 +2,8 @@
 
 ## Internal API breaking changes
 
+- [core] Instead of `updateDelivery` and `updatePayment` we now have `updateContext` methods on
+  order.delivery and order.payment modules respectively, consistent with the rest of the system.
 - [core] Pricing Plugins now receive the ongoing director calculation as a sheet in the parameters
   instead of a function that returns a calculation array on the adapter itself, calls like
   `pricingAdapter.calculationSheet()` have to be migrated to `params.calculationSheet`. Else the

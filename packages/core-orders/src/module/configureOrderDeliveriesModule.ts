@@ -180,7 +180,7 @@ export const configureOrderDeliveriesModule = ({
       return orderDelivery;
     },
 
-    updateContext: async (orderDeliveryId, { context }, requestContext) => {
+    updateContext: async (orderDeliveryId, context, requestContext) => {
       const selector = buildFindByIdSelector(orderDeliveryId);
       const orderDelivery = await OrderDeliveries.findOne(selector, {});
       const { orderId } = orderDelivery;
@@ -189,17 +189,26 @@ export const configureOrderDeliveriesModule = ({
         orderId,
       });
 
-      await OrderDeliveries.updateOne(selector, {
+      const result = await OrderDeliveries.updateOne(selector, {
         $set: {
-          context: context || {},
+          context: { ...(orderDelivery.context || {}), ...context },
           updated: new Date(),
           updatedBy: requestContext.userId,
         },
       });
 
-      await updateCalculation(orderId, requestContext);
-      emit('ORDER_UPDATE_DELIVERY', { orderDelivery });
-      return orderDelivery;
+      if (result.modifiedCount) {
+        await updateCalculation(orderId, requestContext);
+        emit('ORDER_UPDATE_DELIVERY', {
+          orderDelivery: {
+            ...orderDelivery,
+            context: { ...(orderDelivery.context || {}), ...context },
+          },
+        });
+        return true;
+      }
+
+      return false;
     },
 
     updateStatus,

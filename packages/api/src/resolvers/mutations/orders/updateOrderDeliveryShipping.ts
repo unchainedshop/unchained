@@ -32,9 +32,9 @@ export default async function updateOrderDeliveryShipping(
       required: DeliveryProviderType.SHIPPING,
     });
 
-  return modules.orders.deliveries.updateContext(
+  await modules.orders.deliveries.updateContext(orderDeliveryId, { address, meta }, context);
+
+  return modules.orders.deliveries.findDelivery({
     orderDeliveryId,
-    { context: { address, meta } },
-    context,
-  );
+  });
 }
