@@ -266,24 +266,31 @@ export const SimpleProductReview = {
 };
 export const ProductVariationTexts = [
   {
-    _id: 'variation-color-1',
+    _id: 'product-color-variation-1-en-text',
     productVariationId: 'product-color-variation-1',
     locale: 'en',
     title: 'product color variation title',
     subtitle: null,
   },
   {
-    _id: 'variation-color-7',
+    _id: 'product-color-variation-1-de-text',
     productVariationId: 'product-color-variation-1',
     locale: 'de',
-    title: 'product color variation title',
+    title: 'product color variation title de',
     subtitle: null,
   },
   {
-    _id: 'variation-text-3',
+    _id: 'product-text-variation-2-en-text',
+    productVariationId: 'product-text-variation-2',
     locale: 'en',
-    productVariationId: 'product-text-variation-3',
-    title: 'product text variation title ',
+    title: 'product text variation title',
+    subtitle: null,
+  },
+  {
+    _id: 'product-text-variation-2-de-text',
+    productVariationId: 'product-text-variation-2',
+    locale: 'de',
+    title: 'product text variation title de',
     subtitle: null,
   },
 ];
@@ -291,27 +298,19 @@ export const ProductVariationTexts = [
 export const ProductVariations = [
   {
     _id: 'product-color-variation-1',
-    texts: {
-      _id: 'variation-color-1',
-      locale: 'en',
-      title: 'product color variation title',
-      subtitle: null,
-    },
+    productId: 'proxy-product',
+    authorId: 'admin',
     type: 'COLOR',
-    key: 'key-3',
-    options: ['variation-option-4-value', 'variation-option-5-value'],
+    key: 'color-variant',
+    options: ['color-variant-red', 'color-variant-blue'],
   },
   {
-    _id: 'product-text-variation-3',
-    texts: {
-      _id: 'variation-text-3',
-      locale: 'en',
-      title: 'product text variation title ',
-      subtitle: null,
-    },
+    _id: 'product-text-variation-2',
+    productId: 'proxy-product',
+    authorId: 'admin',
     type: 'TEXT',
-    key: 'key-3',
-    options: ['variation-option-1-value', 'variation-option-2-value'],
+    key: 'text-variant',
+    options: ['text-variant-a', 'text-variant-b', 'variation-option-1-value'],
   },
 ];
 
@@ -554,39 +553,37 @@ export const ProxyProduct = {
     assignments: [
       {
         vector: {
-          COLOR: 'red',
+          'color-variant': 'color-variant-red',
+          'text-variant': 'text-variant-a',
         },
         productId: ProxySimpleProduct1._id,
       },
       {
         vector: {
-          COLOR: 'red',
+          'color-variant': 'color-variant-blue',
+          'text-variant': 'text-variant-a',
         },
         productId: ProxySimpleProduct2._id,
       },
       {
         vector: {
-          COLOR: 'blue',
+          'color-variant': 'color-variant-red',
+          'text-variant': 'text-variant-b',
         },
         productId: ProxySimpleProduct3._id,
       },
       {
         vector: {
-          COLOR: 'blue',
+          'color-variant': 'color-variant-blue',
+          'text-variant': 'text-variant-b',
         },
         productId: ProxyPlanProduct1._id,
       },
       {
         vector: {
-          COLOR: 'blue',
+          'color-variant': 'color-variant-blue',
         },
         productId: ProxyPlanProduct2._id,
-      },
-      {
-        vector: {
-          COLOR: 'red',
-        },
-        productId: ProxyPlanProduct3._id,
       },
     ],
   },

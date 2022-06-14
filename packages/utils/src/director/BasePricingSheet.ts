@@ -62,6 +62,16 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
 
       return filteredCalculation;
     },
+
+    resetCalculation(calculationSheet) {
+      calculationSheet.filterBy().forEach(({ amount, ...row }: Calculation) => {
+        pricingSheet.calculation.push({
+          ...row,
+          amount: amount * -1,
+        } as Calculation);
+      });
+      return pricingSheet.calculation;
+    },
   };
 
   return pricingSheet;

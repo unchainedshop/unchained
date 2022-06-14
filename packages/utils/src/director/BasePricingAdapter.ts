@@ -20,15 +20,17 @@ export const BasePricingAdapter = <
     return false;
   },
 
-  actions: (params) => ({
-    calculate: async () => {
-      return [];
-    },
-    calculationSheet: () => BasePricingSheet(params),
-    resultSheet: () => BasePricingSheet(params),
-    getCalculation: () => params.calculation,
-    getContext: () => params.context,
-  }),
+  actions: (params) => {
+    const calculation = [];
+    return {
+      calculate: async () => {
+        return [];
+      },
+      resultSheet: () => BasePricingSheet({ calculation }),
+      getCalculation: () => calculation,
+      getContext: () => params.context,
+    };
+  },
 
   log(message: string, { level = LogLevel.Debug, ...options } = {}) {
     return log(message, { level, ...options });

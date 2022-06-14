@@ -61,6 +61,8 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   };
 
   filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
+
+  resetCalculation: (sheetToInvert: IBasePricingSheet<Calculation>) => Array<Calculation>;
 }
 
 export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricingSheet<Calculation> & {
@@ -90,39 +92,39 @@ export interface IPricingAdapterActions<
   calculate: () => Promise<Array<Calculation>>;
   getCalculation: () => Array<Calculation>;
   getContext: () => PricingAdapterContext;
-  calculationSheet: () => IBasePricingSheet<Calculation>;
-  resultSheet: () => IBasePricingSheet<Calculation>;
 }
 
 export type IPricingAdapter<
-  PricingContext extends BasePricingAdapterContext,
+  PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
   Sheet extends IBasePricingSheet<Calculation>,
 > = IBaseAdapter & {
   orderIndex: number;
 
-  isActivatedFor: (context: PricingContext) => boolean;
+  isActivatedFor: (context: PricingAdapterContext) => boolean;
 
   actions: (params: {
-    context: PricingContext;
-    calculation: Array<Calculation>;
+    context: PricingAdapterContext;
+    calculationSheet: Sheet;
     discounts: Array<Discount>;
-  }) => IPricingAdapterActions<Calculation, PricingContext> & {
-    calculationSheet: () => Sheet;
-    resultSheet: () => Sheet;
-  };
+  }) => IPricingAdapterActions<Calculation, PricingAdapterContext> & { resultSheet: () => Sheet };
 };
 
 export type IPricingDirector<
   PricingContext extends BasePricingContext,
-  PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  Adapter extends IBaseAdapter,
+  PricingAdapterContext extends BasePricingAdapterContext,
+  PricingAdapterSheet extends IBasePricingSheet<Calculation>,
+  Adapter extends IPricingAdapter<PricingAdapterContext, Calculation, PricingAdapterSheet>,
 > = IBaseDirector<Adapter> & {
   buildPricingContext: (context: any, requestContext: Context) => Promise<PricingAdapterContext>;
   actions: (
     pricingContext: PricingContext,
     requestContext: Context,
     buildPricingContext?: (pricingCtx: any, requestCtx: Context) => Promise<PricingAdapterContext>,
-  ) => Promise<IPricingAdapterActions<Calculation, PricingAdapterContext>>;
+  ) => Promise<
+    IPricingAdapterActions<Calculation, PricingAdapterContext> & {
+      calculationSheet: () => PricingAdapterSheet;
+    }
+  >;
 };

@@ -1849,13 +1849,13 @@ describe('Products', () => {
     });
   });
 
-  describe('query.products.simulatePriceRange should', () => {
+  describe('query.products.simulatedPriceRange should', () => {
     it('return minimum and maximum simulated price range of a configurable product', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -1906,7 +1906,7 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -1957,12 +1957,12 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
               ... on ConfigurableProduct {
-                simulatedPriceRange(vectors: [{ key: "COLOR", value: "red" }]) {
+                simulatedPriceRange(vectors: [{ key: "color-variant", value: "color-variant-red" }]) {
                   _id
                   minPrice {
                     _id
@@ -1991,13 +1991,13 @@ describe('Products', () => {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 500000,
+          amount: 1500000,
           currency: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 1500000,
+          amount: 10000000,
           currency: 'CHF',
         },
       });
@@ -2010,7 +2010,7 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -2062,7 +2062,7 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -2113,12 +2113,12 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
               ... on ConfigurableProduct {
-                catalogPriceRange(vectors: [{ key: "COLOR", value: "red" }]) {
+                catalogPriceRange(vectors: [{ key: "color-variant", value: "color-variant-red" }]) {
                   _id
                   minPrice {
                     _id
@@ -2147,13 +2147,13 @@ describe('Products', () => {
         minPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 500000,
+          amount: 1500000,
           currency: "CHF",
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
-          amount: 1500000,
+          amount: 10000000,
           currency: "CHF",
         },
       });

@@ -2,7 +2,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { IncomingMessage, OutgoingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
-import { Context, UnchainedAPI, UnchainedCoreOptions, UnchainedServerOptions } from './api';
+import { Context, SortOption, UnchainedAPI, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
 import { MessageTypes, PlatformOptions } from './platform';
 
@@ -147,8 +147,11 @@ import {
   WorkerSchedule,
   WorkStatus as WorkerStatusType,
 } from './worker';
+import { UnchainedCoreOptions } from './core';
 
 declare module 'meteor/unchained:utils' {
+  function slugify(text: string): string;
+  function buildSortOptions(sort: Array<SortOption>): { [key: string]: [value: number] };
   function randomValueHex(len: number): string;
   function checkId(
     value: string,
@@ -236,7 +239,13 @@ declare module 'meteor/unchained:utils' {
     Adapter extends IPricingAdapter<AdapterPricingContext, Calculation, IPricingSheet<Calculation>>,
   >(
     directorName: string,
-  ) => IPricingDirector<PricingContext, AdapterPricingContext, Calculation, Adapter>;
+  ) => IPricingDirector<
+    PricingContext,
+    Calculation,
+    AdapterPricingContext,
+    IPricingSheet<Calculation>,
+    Adapter
+  >;
 
   const BasePricingSheet: <Calculation extends PricingCalculation>(
     params: PricingSheetParams<Calculation>,

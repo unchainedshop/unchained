@@ -19,13 +19,13 @@ export const DeliveryPricingAdapter: IDeliveryPricingAdapter = {
   },
 
   actions: (params) => {
-    const { context, calculation } = params;
+    const { context } = params;
     const { currency } = context;
-    const calculationSheet = DeliveryPricingSheet({ calculation, currency });
+    const baseActions = basePricingAdapter.actions(params);
     const resultSheet = DeliveryPricingSheet({ currency });
 
     return {
-      ...basePricingAdapter.actions(params),
+      ...baseActions,
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>
@@ -33,7 +33,6 @@ export const DeliveryPricingAdapter: IDeliveryPricingAdapter = {
         );
         return resultRaw;
       },
-      calculationSheet: () => calculationSheet,
       resultSheet: () => resultSheet,
     };
   },

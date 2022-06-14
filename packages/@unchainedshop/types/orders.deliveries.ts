@@ -56,11 +56,7 @@ export type OrderDeliveriesModule = {
     requestContext: Context,
   ) => Promise<OrderDelivery>;
 
-  updateContext: (
-    orderDeliveryId: string,
-    params: { context: any },
-    requestContext: Context,
-  ) => Promise<OrderDelivery>;
+  updateContext: (orderDeliveryId: string, context: any, requestContext: Context) => Promise<boolean>;
 
   updateStatus: (
     orderDeliveryId: string,

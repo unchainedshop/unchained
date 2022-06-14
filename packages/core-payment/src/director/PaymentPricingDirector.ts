@@ -54,12 +54,10 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
     const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
     return {
       ...actions,
-      resultSheet() {
-        const calculation = actions.getCalculation();
+      calculationSheet() {
         const context = actions.getContext();
-
         return PaymentPricingSheet({
-          calculation,
+          calculation: actions.getCalculation(),
           currency: context.currency,
         });
       },

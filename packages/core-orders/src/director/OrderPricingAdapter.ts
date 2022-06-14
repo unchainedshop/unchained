@@ -21,10 +21,9 @@ export const OrderPricingAdapter: IPricingAdapter<
   },
 
   actions: (params) => {
-    const { context, calculation } = params;
+    const { context } = params;
     const { currency } = context;
     const baseActions = basePricingAdapter.actions(params);
-    const calculationSheet = OrderPricingSheet({ calculation, currency });
     const resultSheet = OrderPricingSheet({ currency });
 
     return {
@@ -36,7 +35,6 @@ export const OrderPricingAdapter: IPricingAdapter<
         );
         return resultRaw;
       },
-      calculationSheet: () => calculationSheet,
       resultSheet: () => resultSheet,
     };
   },

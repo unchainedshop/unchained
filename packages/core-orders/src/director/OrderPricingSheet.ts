@@ -4,12 +4,12 @@ import {
   OrderPricingRowCategory,
   IOrderPricingSheet,
 } from '@unchainedshop/types/orders.pricing';
-import { PricingSheetParams } from '@unchainedshop/types/pricing';
+import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const OrderPricingSheet = (
   params: PricingSheetParams<OrderPricingCalculation>,
 ): IOrderPricingSheet => {
-  const basePricingSheet = BasePricingSheet<OrderPricingCalculation>(params);
+  const basePricingSheet: IBasePricingSheet<OrderPricingCalculation> = BasePricingSheet(params);
 
   const pricingSheet = {
     ...basePricingSheet,

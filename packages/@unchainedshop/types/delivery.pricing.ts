@@ -52,6 +52,7 @@ export type DeliveryPricingContext =
   | { item: OrderDelivery };
 
 export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation>;
+
 export type IDeliveryPricingAdapter = IPricingAdapter<
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
@@ -60,7 +61,8 @@ export type IDeliveryPricingAdapter = IPricingAdapter<
 
 export type IDeliveryPricingDirector = IPricingDirector<
   DeliveryPricingContext,
-  DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
+  DeliveryPricingAdapterContext,
+  IDeliveryPricingSheet,
   IDeliveryPricingAdapter
 >;

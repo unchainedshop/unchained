@@ -4,7 +4,7 @@ import {
   BasePricingContext,
   IPricingDirector,
   IPricingAdapter,
-  IPricingSheet,
+  IBasePricingSheet,
   PricingCalculation,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -15,15 +15,27 @@ export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,
   AdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>,
+  PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IBasePricingSheet<Calculation>>,
 >(
   directorName: string,
-): IPricingDirector<DirectorContext, AdapterContext, Calculation, PricingAdapter> => {
+): IPricingDirector<
+  DirectorContext,
+  Calculation,
+  AdapterContext,
+  IBasePricingSheet<Calculation>,
+  PricingAdapter
+> => {
   const baseDirector = BaseDirector<PricingAdapter>(directorName, {
     adapterSortKey: 'orderIndex',
   });
 
-  const director: IPricingDirector<DirectorContext, AdapterContext, Calculation, PricingAdapter> = {
+  const director: IPricingDirector<
+    DirectorContext,
+    Calculation,
+    AdapterContext,
+    IBasePricingSheet<Calculation>,
+    PricingAdapter
+  > = {
     ...baseDirector,
     buildPricingContext: async () => {
       return {} as AdapterContext;
@@ -32,13 +44,9 @@ export const BasePricingDirector = <
       const context = await buildPricingContext(pricingContext, requestContext);
 
       let calculation: Array<Calculation> = [];
-      const calculationSheet = BasePricingSheet({
-        calculation,
-      });
-      const resultSheet = BasePricingSheet({ calculation: [] });
 
       return {
-        calculate: async () => {
+        async calculate() {
           const Adapters = baseDirector.getAdapters({
             adapterFilter: (Adapter) => {
               return Adapter.isActivatedFor(context);
@@ -55,6 +63,7 @@ export const BasePricingDirector = <
                 configuration: await context.modules.orders.discounts.configurationForPricingAdapterKey(
                   discount,
                   Adapter.key,
+                  this.calculationSheet(),
                   context,
                 ),
               })),
@@ -63,13 +72,14 @@ export const BasePricingDirector = <
             try {
               const adapter = Adapter.actions({
                 context,
-                calculation: resolvedCalculation,
+                calculationSheet: this.calculationSheet(),
                 discounts: discounts.filter(({ configuration }) => configuration !== null),
               });
 
               const nextCalculationResult = await adapter.calculate();
               if (!nextCalculationResult) return null;
-              return resolvedCalculation.concat(nextCalculationResult);
+              calculation = resolvedCalculation.concat(nextCalculationResult);
+              return calculation;
             } catch (error) {
               log(error, { level: LogLevel.Error });
             }
@@ -78,10 +88,17 @@ export const BasePricingDirector = <
 
           return calculation;
         },
-        getCalculation: () => calculation,
-        getContext: () => context,
-        resultSheet: () => resultSheet,
-        calculationSheet: () => calculationSheet,
+        getCalculation() {
+          return calculation;
+        },
+        getContext() {
+          return context;
+        },
+        calculationSheet() {
+          return BasePricingSheet({
+            calculation,
+          });
+        },
       };
     },
   };

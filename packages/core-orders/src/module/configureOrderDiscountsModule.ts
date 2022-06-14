@@ -161,12 +161,18 @@ export const configureOrderDiscountsModule = ({
     },
 
     // Adapter
-    configurationForPricingAdapterKey: async (orderDiscount, adapterKey, requestContext) => {
+    configurationForPricingAdapterKey: async (
+      orderDiscount,
+      adapterKey,
+      calculationSheet,
+      requestContext,
+    ) => {
       const adapter = await getAdapter(orderDiscount, requestContext);
       if (!adapter) return null;
 
       return adapter.discountForPricingAdapterKey({
         pricingAdapterKey: adapterKey,
+        calculationSheet,
       });
     },
 
@@ -180,7 +186,10 @@ export const configureOrderDiscountsModule = ({
       if (fetchedDiscount) return fetchedDiscount;
 
       const order = await requestContext.modules.orders.findOrder({ orderId });
-      const director = OrderDiscountDirector.actions({ order, orderDiscount: doc }, requestContext);
+      const director = await OrderDiscountDirector.actions(
+        { order, orderDiscount: doc },
+        requestContext,
+      );
       const discountKey = await director.resolveDiscountKeyFromStaticCode({
         code,
       });

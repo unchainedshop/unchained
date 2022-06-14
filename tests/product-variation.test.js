@@ -46,15 +46,15 @@ describe('ProductsVariation', () => {
       expect(translatedProductVariationTexts.length).toEqual(2);
       expect(translatedProductVariationTexts).toMatchObject([
         {
-          _id: 'variation-color-1',
+          _id: 'product-color-variation-1-en-text',
           locale: 'en',
           title: 'product color variation title',
           subtitle: null
         },
         {
-          _id: 'variation-color-7',
+          _id: 'product-color-variation-1-de-text',
           locale: 'de',
-          title: 'product color variation title',
+          title: 'product color variation title de',
           subtitle: null
         }
       ]);
@@ -110,10 +110,15 @@ describe('ProductsVariation', () => {
           },
         });
       expect(translatedProductVariationTexts).toMatchObject([{
-        _id: 'variation-text-3',
+        _id: 'product-text-variation-2-en-text',
         locale: 'en',
         subtitle: null,
-        title: 'product text variation title ',
+        title: 'product text variation title',
+      }, {
+        _id: 'product-text-variation-2-de-text',
+        locale: 'de',
+        subtitle: null,
+        title: 'product text variation title de',
       }]);
     });
   });
@@ -576,7 +581,7 @@ describe('ProductsVariation', () => {
             productVariationOptionValue: 'variation-option-1-value',
           },
         });
-      expect(removeProductVariationOption.options.length).toEqual(1);
+      expect(removeProductVariationOption.options.length).toEqual(2);
       expect(removeProductVariationOption.options.filter(o => o.value === 'variation-option-1-value').length).toEqual(0);
     });
 

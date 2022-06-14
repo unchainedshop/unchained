@@ -84,33 +84,30 @@ const ProductSwissTax: IProductPricingAdapter = {
         }
         const taxRate = getTaxRate(context);
         ProductPricingAdapter.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
-        pricingAdapter
-          .calculationSheet()
-          .filterBy({ isTaxable: true })
-          .forEach(({ isNetPrice, ...row }) => {
-            if (!isNetPrice) {
-              const taxAmount = row.amount - row.amount / (1 + taxRate);
-              pricingAdapter.resultSheet().calculation.push({
-                ...row,
-                amount: -taxAmount,
-                isTaxable: false,
-                isNetPrice: false,
-                meta: { adapter: ProductSwissTax.key },
-              });
-              pricingAdapter.resultSheet().addTax({
-                amount: taxAmount,
-                rate: taxRate,
-                meta: { adapter: ProductSwissTax.key },
-              });
-            } else {
-              const taxAmount = row.amount * taxRate;
-              pricingAdapter.resultSheet().addTax({
-                amount: taxAmount,
-                rate: taxRate,
-                meta: { adapter: ProductSwissTax.key },
-              });
-            }
-          });
+        params.calculationSheet.filterBy({ isTaxable: true }).forEach(({ isNetPrice, ...row }) => {
+          if (!isNetPrice) {
+            const taxAmount = row.amount - row.amount / (1 + taxRate);
+            pricingAdapter.resultSheet().calculation.push({
+              ...row,
+              amount: -taxAmount,
+              isTaxable: false,
+              isNetPrice: false,
+              meta: { adapter: ProductSwissTax.key },
+            });
+            pricingAdapter.resultSheet().addTax({
+              amount: taxAmount,
+              rate: taxRate,
+              meta: { adapter: ProductSwissTax.key },
+            });
+          } else {
+            const taxAmount = row.amount * taxRate;
+            pricingAdapter.resultSheet().addTax({
+              amount: taxAmount,
+              rate: taxRate,
+              meta: { adapter: ProductSwissTax.key },
+            });
+          }
+        });
         return pricingAdapter.calculate();
       },
     };

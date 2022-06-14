@@ -1,35 +1,28 @@
 import {
   ProductPricingAdapterContext,
   ProductPricingCalculation,
-  IProductPricingSheet,
+  IProductPricingAdapter,
 } from '@unchainedshop/types/products.pricing';
-import { IPricingAdapter } from '@unchainedshop/types/pricing';
 import { BasePricingAdapter } from 'meteor/unchained:utils';
 import { ProductPricingSheet } from './ProductPricingSheet';
 
 const basePricingAdapter = BasePricingAdapter<ProductPricingAdapterContext, ProductPricingCalculation>();
 
-export const ProductPricingAdapter: IPricingAdapter<
-  ProductPricingAdapterContext,
-  ProductPricingCalculation,
-  IProductPricingSheet
-> = {
+export const ProductPricingAdapter: IProductPricingAdapter = {
   ...basePricingAdapter,
 
   isActivatedFor: () => {
     return false;
   },
 
-  actions: ({ context, calculation }) => {
+  actions: (params) => {
+    const { context } = params;
     const { currency, quantity } = context;
-    const calculationSheet = ProductPricingSheet({
-      calculation,
-      currency,
-      quantity,
-    });
+    const baseActions = basePricingAdapter.actions(params);
     const resultSheet = ProductPricingSheet({ currency, quantity });
 
     return {
+      ...baseActions,
       calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultRaw.forEach(({ amount, category }) =>
@@ -37,17 +30,7 @@ export const ProductPricingAdapter: IPricingAdapter<
         );
         return resultRaw;
       },
-      calculationSheet: () => calculationSheet,
       resultSheet: () => resultSheet,
-      resetCalculation() {
-        // revert old prices
-        calculationSheet.filterBy().forEach(({ amount, ...row }) => {
-          resultSheet.calculation.push({
-            ...row,
-            amount: amount * -1,
-          });
-        });
-      },
     };
   },
 };

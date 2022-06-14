@@ -1,16 +1,15 @@
 import { BasePricingSheet } from 'meteor/unchained:utils';
-
 import {
   PaymentPricingCalculation,
   PaymentPricingRowCategory,
   IPaymentPricingSheet,
 } from '@unchainedshop/types/payments.pricing';
-import { PricingSheetParams } from '@unchainedshop/types/pricing';
+import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing';
 
 export const PaymentPricingSheet = (
   params: PricingSheetParams<PaymentPricingCalculation>,
 ): IPaymentPricingSheet => {
-  const basePricingSheet = BasePricingSheet<PaymentPricingCalculation>(params);
+  const basePricingSheet: IBasePricingSheet<PaymentPricingCalculation> = BasePricingSheet(params);
 
   const pricingSheet = {
     ...basePricingSheet,
