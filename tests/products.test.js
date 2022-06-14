@@ -1849,13 +1849,13 @@ describe('Products', () => {
     });
   });
 
-  describe('query.products.simulatePriceRange should', () => {
+  describe('query.products.simulatedPriceRange should', () => {
     it('return minimum and maximum simulated price range of a configurable product', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -1906,7 +1906,7 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -1957,7 +1957,7 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -2010,7 +2010,7 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -2062,7 +2062,7 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
@@ -2113,7 +2113,7 @@ describe('Products', () => {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query SimulatedPriceRange($productId: ID!) {
+          query simulatedPriceRange($productId: ID!) {
             product(productId: $productId) {
               _id
               status
