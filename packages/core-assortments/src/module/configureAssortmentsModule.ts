@@ -265,7 +265,7 @@ export const configureAssortmentsModule = async ({
     },
 
     findAssortments: async ({ limit, offset, sort, ...query }) => {
-      const defaultSortOption: Array<SortOption> = [{ key: 'squence', value: SortDirection.ASC }];
+      const defaultSortOption: Array<SortOption> = [{ key: 'sequence', value: SortDirection.ASC }];
       const assortments = Assortments.find(buildFindSelector(query), {
         skip: offset,
         limit,
