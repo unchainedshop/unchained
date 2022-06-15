@@ -28,7 +28,7 @@ export type ArbitraryTemplateType = {
 };
 
 export type TemplateResolver = (
-  params: { template: string;[x: string]: any },
+  params: { template: string; [x: string]: any },
   requestContext: Context,
 ) => Promise<Array<EmailTemplateType | SMSTemplateType | ArbitraryTemplateType>>;
 
