@@ -4,7 +4,7 @@ import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
 import { Context, SortOption, UnchainedAPI, UnchainedServerOptions } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
-import { MessageTypes, PlatformOptions } from './platform';
+import { MessageTypes as MessageTypesType, PlatformOptions } from './platform';
 
 import { BookmarkServices, BookmarksModule } from './bookmarks';
 import {
@@ -537,7 +537,7 @@ declare module 'meteor/unchained:roles' {
   function has(obj: { [key: string]: any }, key: string): boolean;
 }
 declare module 'meteor/unchained:platform' {
-  const MessageTypes: MessageTypes;
+  const MessageTypes: typeof MessageTypesType;
   const queueWorkers: Array<any>;
 
   function startPlatform(options: PlatformOptions): Promise<Context>;

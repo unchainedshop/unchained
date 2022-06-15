@@ -7,7 +7,7 @@ import {
   IPricingSheet,
   PricingCalculation,
 } from './pricing';
-import { Product } from './products';
+import { Product, ProductConfiguration } from './products';
 import { User } from './user';
 
 export enum ProductPricingRowCategory {
@@ -26,11 +26,9 @@ export interface ProductPricingCalculation extends PricingCalculation {
 export interface ProductPricingAdapterContext extends BasePricingAdapterContext {
   country: string;
   currency: string;
-  discounts: Array<OrderDiscount>;
-  order: Order;
   product: Product;
   quantity: number;
-  user: User;
+  configuration: Array<ProductConfiguration>;
 }
 
 export type ProductPricingContext = {
@@ -40,11 +38,12 @@ export type ProductPricingContext = {
   order?: Order;
   product?: Product;
   quantity?: number;
+  configuration: Array<ProductConfiguration>;
   user?: User;
 };
 
 export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalculation> {
-  addItem: (params: ProductPricingCalculation) => void;
+  addItem: (params: Omit<ProductPricingCalculation, 'category' | 'discountId'>) => void;
   itemSum: () => number;
   getItemRows: () => ProductPricingCalculation[];
   unitPrice: (params?: { useNetPrice: boolean }) => ProductPricingCalculation;

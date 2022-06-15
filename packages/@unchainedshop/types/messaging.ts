@@ -28,13 +28,13 @@ export type ArbitraryTemplateType = {
 };
 
 export type TemplateResolver = (
-  params: { template: string; [x: string]: any },
+  params: { template: string;[x: string]: any },
   requestContext: Context,
 ) => Promise<Array<EmailTemplateType | SMSTemplateType | ArbitraryTemplateType>>;
 
 export interface MessagingModule {
-  renderToText: (template: string, data: { subject: string } & Record<string, any>) => string;
-  renderMjmlToHtml: (template: string, data: { subject: string } & Record<string, any>) => string;
+  renderToText: (template: string, data: Record<string, any>) => string;
+  renderMjmlToHtml: (template: string, data: Record<string, any>) => string;
 }
 
 export type IMessagingDirector = {
