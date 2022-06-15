@@ -5,7 +5,7 @@ import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
 import { OrderPayment } from './orders.payments';
 import { OrderPosition } from './orders.positions';
-import { IBasePricingSheet, PricingCalculation } from './pricing';
+import { IPricingSheet, PricingCalculation } from './pricing';
 
 export interface DiscountConfiguration {
   fixedRate?: number;
@@ -32,7 +32,7 @@ export interface DiscountAdapterActions {
 
   discountForPricingAdapterKey: (params: {
     pricingAdapterKey: string;
-    calculationSheet: IBasePricingSheet<PricingCalculation>;
+    calculationSheet: IPricingSheet<PricingCalculation>;
   }) => DiscountConfiguration;
 
   reserve: (params: { code: string }) => Promise<any>;

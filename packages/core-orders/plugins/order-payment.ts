@@ -34,7 +34,7 @@ const OrderPayment: IOrderPricingAdapter = {
 
         pricingAdapter.resultSheet().addPayment({ amount: paymentFees });
         if (tax !== 0) {
-          pricingAdapter.resultSheet().addTaxes({ amount: tax });
+          pricingAdapter.resultSheet().addTax({ amount: tax });
         }
 
         return pricingAdapter.calculate();

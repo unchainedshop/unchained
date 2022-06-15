@@ -1,6 +1,6 @@
 import {
   BasePricingAdapterContext,
-  IBasePricingSheet,
+  IPricingSheet,
   IPricingAdapter,
   PricingCalculation,
 } from '@unchainedshop/types/pricing';
@@ -10,7 +10,7 @@ import { BasePricingSheet } from './BasePricingSheet';
 export const BasePricingAdapter = <
   Context extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
->(): IPricingAdapter<Context, Calculation, IBasePricingSheet<Calculation>> => ({
+>(): IPricingAdapter<Context, Calculation, IPricingSheet<Calculation>> => ({
   key: '',
   label: '',
   version: '',

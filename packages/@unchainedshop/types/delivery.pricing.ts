@@ -51,7 +51,11 @@ export type DeliveryPricingContext =
     }
   | { item: OrderDelivery };
 
-export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation>;
+export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation> & {
+  feeSum: () => number;
+  addFee: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta?: any }) => void;
+  getFeeRows: () => Array<DeliveryPricingCalculation>;
+};
 
 export type IDeliveryPricingAdapter = IPricingAdapter<
   DeliveryPricingAdapterContext,

@@ -11,10 +11,10 @@ export const OrderPricingSheet = (
 ): IOrderPricingSheet => {
   const basePricingSheet: IBasePricingSheet<OrderPricingCalculation> = BasePricingSheet(params);
 
-  const pricingSheet = {
+  const pricingSheet: IOrderPricingSheet = {
     ...basePricingSheet,
 
-    addItems({ amount, meta }: { amount: number; meta?: any }) {
+    addItems({ amount, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Items,
         amount,
@@ -22,7 +22,7 @@ export const OrderPricingSheet = (
       });
     },
 
-    addDiscounts({ amount, discountId, meta }: { amount: number; discountId: string; meta?: any }) {
+    addDiscount({ amount, discountId, meta }: { amount: number; discountId: string; meta?: any }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Discounts,
         amount,
@@ -31,7 +31,7 @@ export const OrderPricingSheet = (
       });
     },
 
-    addTaxes({ amount, meta }: { amount: number; meta?: any }) {
+    addTax({ amount, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Taxes,
         amount,
@@ -39,7 +39,7 @@ export const OrderPricingSheet = (
       });
     },
 
-    addDelivery({ amount, meta }: { amount: number; meta?: any }) {
+    addDelivery({ amount, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Delivery,
         amount,
@@ -47,7 +47,7 @@ export const OrderPricingSheet = (
       });
     },
 
-    addPayment({ amount, meta }: { amount: number; meta?: any }) {
+    addPayment({ amount, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Payment,
         amount,
@@ -55,33 +55,31 @@ export const OrderPricingSheet = (
       });
     },
 
-    gross(): number {
+    gross() {
       // tax is included 2 times, this is only true for Order Pricing!
       return basePricingSheet.sum() - pricingSheet.taxSum();
     },
 
-    taxSum(): number {
+    taxSum() {
       return basePricingSheet.sum({
         category: OrderPricingRowCategory.Taxes,
       });
     },
 
-    itemsSum(): number {
+    itemsSum() {
       return basePricingSheet.sum({
         category: OrderPricingRowCategory.Items,
       });
     },
 
-    discountSum(discountId: string): number {
+    discountSum(discountId) {
       return basePricingSheet.sum({
         category: OrderPricingRowCategory.Discounts,
         discountId,
       });
     },
 
-    discountPrices(
-      explicitDiscountId: string,
-    ): Array<{ discountId: string; amount: number; currency: string }> {
+    discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
         .getDiscountRows(explicitDiscountId)
         .map(({ discountId }) => discountId);
@@ -104,7 +102,7 @@ export const OrderPricingSheet = (
         .filter(Boolean);
     },
 
-    getDiscountRows(discountId: string) {
+    getDiscountRows(discountId) {
       return basePricingSheet.filterBy({
         category: OrderPricingRowCategory.Discounts,
         discountId,
@@ -117,7 +115,7 @@ export const OrderPricingSheet = (
       });
     },
 
-    getTaxesRows() {
+    getTaxRows() {
       return basePricingSheet.filterBy({
         category: OrderPricingRowCategory.Taxes,
       });

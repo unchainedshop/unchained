@@ -11,7 +11,7 @@ export const ProductPricingSheet = (
 ): IProductPricingSheet => {
   const basePricingSheet = BasePricingSheet<ProductPricingCalculation>(params);
 
-  const pricingSheet = {
+  const pricingSheet: IProductPricingSheet = {
     ...basePricingSheet,
 
     addItem({ amount, isTaxable, isNetPrice, meta }) {
@@ -58,7 +58,7 @@ export const ProductPricingSheet = (
       });
     },
 
-    discountSum(discountId: string) {
+    discountSum(discountId) {
       return basePricingSheet.sum({
         category: ProductPricingRowCategory.Discount,
         discountId,
@@ -76,7 +76,7 @@ export const ProductPricingSheet = (
       };
     },
 
-    discountPrices(explicitDiscountId: string) {
+    discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
         .getDiscountRows(explicitDiscountId)
         .map(({ discountId }) => discountId);

@@ -2,7 +2,7 @@ import { Context } from './api';
 import { FindOptions, TimestampFields, _ID } from './common';
 import { DiscountAdapterActions, DiscountConfiguration, DiscountContext } from './discount';
 import { OrderPrice } from './orders.pricing';
-import { IBasePricingSheet, PricingCalculation } from './pricing';
+import { IPricingSheet, PricingCalculation } from './pricing';
 
 export enum OrderDiscountTrigger {
   USER = 'USER',
@@ -34,7 +34,7 @@ export type OrderDiscountsModule = {
   configurationForPricingAdapterKey: (
     orderDiscount: OrderDiscount,
     adapterKey: string,
-    calculationSheet: IBasePricingSheet<PricingCalculation>,
+    calculationSheet: IPricingSheet<PricingCalculation>,
     pricingContext: DiscountContext & Context,
   ) => Promise<DiscountConfiguration>;
 

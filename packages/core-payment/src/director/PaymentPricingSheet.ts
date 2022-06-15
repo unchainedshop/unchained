@@ -11,7 +11,7 @@ export const PaymentPricingSheet = (
 ): IPaymentPricingSheet => {
   const basePricingSheet: IBasePricingSheet<PaymentPricingCalculation> = BasePricingSheet(params);
 
-  const pricingSheet = {
+  const pricingSheet: IPaymentPricingSheet = {
     ...basePricingSheet,
 
     addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
@@ -58,14 +58,14 @@ export const PaymentPricingSheet = (
       });
     },
 
-    discountSum(discountId: string) {
+    discountSum(discountId) {
       return basePricingSheet.sum({
         category: PaymentPricingRowCategory.Discount,
         discountId,
       });
     },
 
-    discountPrices(explicitDiscountId: string) {
+    discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
         .getDiscountRows(explicitDiscountId)
         .map(({ discountId }) => discountId);
@@ -94,7 +94,7 @@ export const PaymentPricingSheet = (
       });
     },
 
-    getDiscountRows(discountId: string) {
+    getDiscountRows(discountId) {
       return basePricingSheet.filterBy({
         category: PaymentPricingRowCategory.Discount,
         discountId,

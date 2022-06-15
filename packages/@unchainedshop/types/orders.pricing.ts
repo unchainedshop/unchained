@@ -5,9 +5,9 @@ import { OrderPayment } from './orders.payments';
 import { OrderPosition } from './orders.positions';
 import {
   BasePricingAdapterContext,
-  IBasePricingSheet,
   IPricingAdapter,
   IPricingDirector,
+  IPricingSheet,
   PricingCalculation,
   PricingDiscount,
 } from './pricing';
@@ -55,12 +55,10 @@ export interface OrderPricingContext {
   orderPayment: OrderPayment;
 }
 
-export interface IOrderPricingSheet extends IBasePricingSheet<OrderPricingCalculation> {
-  addDiscounts: (params: { amount: number; discountId: string; meta?: any }) => void;
+export interface IOrderPricingSheet extends IPricingSheet<OrderPricingCalculation> {
   addDelivery: (params: { amount: number; meta?: any }) => void;
   addItems: (params: { amount: number; meta?: any }) => void;
   addPayment: (params: { amount: number; meta?: any }) => void;
-  addTaxes: (params: { amount: number; meta?: any }) => void;
 
   itemsSum: () => number;
 

@@ -58,14 +58,14 @@ export const DeliveryPricingSheet = (
       });
     },
 
-    discountSum(discountId: string) {
+    discountSum(discountId) {
       return basePricingSheet.sum({
         category: DeliveryPricingRowCategory.Discount,
         discountId,
       });
     },
 
-    discountPrices(explicitDiscountId: string) {
+    discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
         .getDiscountRows(explicitDiscountId)
         .map(({ discountId }) => discountId);
@@ -94,7 +94,7 @@ export const DeliveryPricingSheet = (
       });
     },
 
-    getDiscountRows(discountId: string) {
+    getDiscountRows(discountId) {
       return basePricingSheet.filterBy({
         category: DeliveryPricingRowCategory.Discount,
         discountId,

@@ -65,11 +65,10 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   resetCalculation: (sheetToInvert: IBasePricingSheet<Calculation>) => Array<Calculation>;
 }
 
-export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricingSheet<Calculation> & {
-  feeSum: () => number;
-  discountSum: (discountId: string) => number;
-  discountPrices: (explicitDiscountId?: string) => Array<PricingDiscount>;
-
+export interface IPricingSheet<Calculation extends PricingCalculation>
+  extends IBasePricingSheet<Calculation> {
+  discountPrices: (discountId?: string) => Array<PricingDiscount>;
+  discountSum: (discountId?: string) => number;
   addDiscount: (params: {
     amount: number;
     isTaxable: boolean;
@@ -77,13 +76,11 @@ export type IPricingSheet<Calculation extends PricingCalculation> = IBasePricing
     discountId: string;
     meta?: any;
   }) => void;
-  addFee: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta?: any }) => void;
-  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
-
-  getFeeRows: () => Array<Calculation>;
   getDiscountRows: (discountId: string) => Array<Calculation>;
+
+  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
   getTaxRows: () => Array<Calculation>;
-};
+}
 
 export interface IPricingAdapterActions<
   Calculation extends PricingCalculation,
@@ -97,7 +94,7 @@ export interface IPricingAdapterActions<
 export type IPricingAdapter<
   PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  Sheet extends IBasePricingSheet<Calculation>,
+  Sheet extends IPricingSheet<Calculation>,
 > = IBaseAdapter & {
   orderIndex: number;
 
@@ -114,7 +111,7 @@ export type IPricingDirector<
   PricingContext extends BasePricingContext,
   Calculation extends PricingCalculation,
   PricingAdapterContext extends BasePricingAdapterContext,
-  PricingAdapterSheet extends IBasePricingSheet<Calculation>,
+  PricingAdapterSheet extends IPricingSheet<Calculation>,
   Adapter extends IPricingAdapter<PricingAdapterContext, Calculation, PricingAdapterSheet>,
 > = IBaseDirector<Adapter> & {
   buildPricingContext: (context: any, requestContext: Context) => Promise<PricingAdapterContext>;

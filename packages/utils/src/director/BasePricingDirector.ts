@@ -4,7 +4,7 @@ import {
   BasePricingContext,
   IPricingDirector,
   IPricingAdapter,
-  IBasePricingSheet,
+  IPricingSheet,
   PricingCalculation,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from 'meteor/unchained:logger';
@@ -15,14 +15,14 @@ export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,
   AdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
-  PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IBasePricingSheet<Calculation>>,
+  PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>,
 >(
   directorName: string,
 ): IPricingDirector<
   DirectorContext,
   Calculation,
   AdapterContext,
-  IBasePricingSheet<Calculation>,
+  IPricingSheet<Calculation>,
   PricingAdapter
 > => {
   const baseDirector = BaseDirector<PricingAdapter>(directorName, {
@@ -33,7 +33,7 @@ export const BasePricingDirector = <
     DirectorContext,
     Calculation,
     AdapterContext,
-    IBasePricingSheet<Calculation>,
+    IPricingSheet<Calculation>,
     PricingAdapter
   > = {
     ...baseDirector,

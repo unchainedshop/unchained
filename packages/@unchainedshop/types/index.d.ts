@@ -107,6 +107,7 @@ import {
   IPricingSheet,
   PricingCalculation,
   PricingSheetParams,
+  IBasePricingSheet,
 } from './pricing';
 import {
   ProductServices,
@@ -249,7 +250,7 @@ declare module 'meteor/unchained:utils' {
 
   const BasePricingSheet: <Calculation extends PricingCalculation>(
     params: PricingSheetParams<Calculation>,
-  ) => IPricingSheet<Calculation>;
+  ) => IBasePricingSheet<Calculation>;
 }
 
 declare module 'meteor/unchained:logger' {
