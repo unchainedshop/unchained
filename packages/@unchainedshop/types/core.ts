@@ -1,6 +1,7 @@
+import { GridFSBucket } from 'mongodb';
 import { Db, MigrationRepository, ModuleInput } from './common';
 import { Logger } from './logs';
-import { UnchainedAPI } from './api';
+import { Context, UnchainedAPI } from './api';
 import { Modules, ModuleOptions } from './modules';
 import { Services } from './services';
 
@@ -10,10 +11,15 @@ export interface Migration {
   up: (params: { logger: Logger | Console; unchainedAPI: UnchainedAPI }) => Promise<void>;
 }
 
+export interface BulkImporter {
+  createBulkImporter: (options: any, requestContext: Context) => any;
+  BulkImportPayloads: GridFSBucket;
+}
+
 export interface UnchainedCore {
   modules: Modules;
   services: Services;
-  bulkImporter: any;
+  bulkImporter: BulkImporter;
   options: ModuleOptions;
 }
 

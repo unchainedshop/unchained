@@ -48,7 +48,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
   version: '1.0',
   type: 'BULK_IMPORT',
 
-  doWork: async (rawPayload, unchainedAPI) => {
+  doWork: async (rawPayload, context) => {
     try {
       const {
         createShouldUpsertIfIDExists = false,
@@ -56,14 +56,14 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
         authorId = 'root',
       } = rawPayload;
 
-      const bulkImporter = unchainedAPI.bulkImporter.createBulkImporter(
+      const bulkImporter = context.bulkImporter.createBulkImporter(
         {
           logger,
           authorId,
           createShouldUpsertIfIDExists,
           skipCacheInvalidation,
         },
-        unchainedAPI,
+        context,
       );
 
       if (rawPayload.payloadFilePath) {
@@ -74,7 +74,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
       } else if (rawPayload.payloadId) {
         // stream payload from gridfs
         await streamPayloadToBulkImporter(bulkImporter, () =>
-          unchainedAPI.bulkImporter.BulkImportPayloads.openDownloadStream(rawPayload.payloadId),
+          context.bulkImporter.BulkImportPayloads.openDownloadStream(rawPayload.payloadId),
         );
       } else {
         const { events } = rawPayload;

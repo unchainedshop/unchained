@@ -1,5 +1,6 @@
 import mongodb from 'mongodb';
 import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/types/platform';
+import { BulkImporter } from '@unchainedshop/types/core';
 import * as AssortmentHandlers from './handlers/assortment';
 import * as FilterHandlers from './handlers/filter';
 import * as ProductHandlers from './handlers/product';
@@ -21,7 +22,7 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
   return entityOperation;
 };
 
-export const createBulkImporterFactory = (db, additionalHandlers) => {
+export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter => {
   // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
   const BulkImportPayloads = new mongodb.GridFSBucket(db, {
     bucketName: 'bulk_import_payloads',
@@ -29,13 +30,13 @@ export const createBulkImporterFactory = (db, additionalHandlers) => {
   });
 
   bulkOperationHandlers = {
-    ASSORTMENT: AssortmentHandlers,
+    ASSORTMENT: AssortmentHandlers as BulkImportHandler,
     PRODUCT: ProductHandlers,
     FILTER: FilterHandlers,
     ...additionalHandlers,
   };
 
-  const createBulkImporter = (options, requestContext) => {
+  const createBulkImporter: BulkImporter['createBulkImporter'] = (options, requestContext) => {
     const bulkOperations = {};
     const preparationIssues = [];
     const processedOperations = {};
@@ -91,7 +92,7 @@ export const createBulkImporterFactory = (db, additionalHandlers) => {
         const operationResults = {
           processedOperations,
           processedBulkOperations: (
-            await Promise.all(Object.values(bulkOperations).map((o) => o.execute()))
+            await Promise.all(Object.values(bulkOperations).map((o: any) => o.execute()))
           ).map((r) => r.result),
         };
         if (preparationIssues?.length) {
@@ -106,7 +107,7 @@ export const createBulkImporterFactory = (db, additionalHandlers) => {
       },
       invalidateCaches: async () => {
         if (skipCacheInvalidation) return;
-        await requestContext.modules.assortments.invalidateCache();
+        await requestContext.modules.assortments.invalidateCache({});
         await requestContext.modules.filters.invalidateCache({}, requestContext);
       },
     };
