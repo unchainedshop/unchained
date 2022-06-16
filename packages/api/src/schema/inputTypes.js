@@ -182,6 +182,7 @@ export default [
       isRoot: Boolean
       tags: [String!]
       isActive: Boolean
+      sequence: Int
     }
 
     input UpdateAssortmentTextInput {
