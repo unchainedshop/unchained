@@ -11,6 +11,7 @@ Npm.depends({
   uuid: '7.0.1',
   'simpl-schema': '1.12.0',
   '@unchainedshop/logger': '1.1.0',
+  '@unchainedshop/roles': '1.1.1',
 });
 
 Package.onUse((api) => {
@@ -21,7 +22,6 @@ Package.onUse((api) => {
   api.use('unchained:utils@1.1.0');
   api.use('unchained:events@1.1.0');
   api.use('unchained:file-upload@1.1.0');
-  api.use('unchained:roles@1.1.0');
 
   api.mainModule('src/users-index.ts', 'server');
 });

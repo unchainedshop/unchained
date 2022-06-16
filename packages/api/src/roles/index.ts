@@ -1,4 +1,4 @@
-import { Roles, Role } from 'meteor/unchained:roles';
+import { Roles, Role } from '@unchainedshop/roles';
 
 import { all } from './all';
 import { loggedIn } from './loggedIn';

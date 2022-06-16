@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import clone from 'lodash.clone';
 import { RoleInterface, RolesInterface } from '@unchainedshop/types/roles';
 import { has } from './utils/has';
@@ -93,16 +92,6 @@ export const Roles: RolesInterface = {
 
     return context.modules.users.addRoles(context.userId, userRoles);
   },
-
-  /**
-   * If the user doesn't has permission it will throw a error
-   * Roles.userHasPermission(userId, action, [extra])
-   */
-  async checkPermission(context, action, args) {
-    if (!(await Roles.userHasPermission(context, action, args))) {
-      throw new Meteor.Error('unauthorized', 'The user has no permission to perform this action');
-    }
-  },
 };
 
 /**
@@ -119,7 +108,7 @@ export class Role implements RoleInterface {
     this.allowRules = {};
     this.helpers = {};
 
-    Roles.roles[name] = this;
+    Roles.roles[name] = this as any as RoleInterface;
   }
 
   /**
@@ -149,7 +138,7 @@ export class Role implements RoleInterface {
   /**
    * Adds allow properties to a role
    */
-  allow(action: string, allow: any) {
+  allow(action, allow) {
     if (!Roles.actions.includes(action)) {
       Roles.registerAction(action);
     }
@@ -168,12 +157,12 @@ export class Role implements RoleInterface {
 /**
  * The admin role, who recives the default actions.
  */
-Roles.adminRole = new Role('admin');
+Roles.adminRole = new Role('admin') as any as RoleInterface;
 /**
  * All the logged in users users
  */
-Roles.loggedInRole = new Role('__loggedIn__');
+Roles.loggedInRole = new Role('__loggedIn__') as any as RoleInterface;
 /**
  * Always, no exception
  */
-Roles.allRole = new Role('__all__');
+Roles.allRole = new Role('__all__') as any as RoleInterface;

@@ -1,5 +1,5 @@
 import { GetUserRoleActionsService } from '@unchainedshop/types/user';
-import { Roles } from 'meteor/unchained:roles';
+import { Roles } from '@unchainedshop/roles';
 
 const permissions = async (userRoles: any, allRoles: any) => {
   const actions = userRoles?.flatMap((role) => {

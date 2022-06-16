@@ -5,10 +5,7 @@ export interface RoleInterface {
   allowRules: {
     [name: string]: any;
   };
-  allow(
-    action: string,
-    fn: (root: any, props: any, context: Context) => Promise<boolean> | boolean,
-  ): Promise<boolean>;
+  allow(action: string, fn: (root: any, props: any, context: Context) => boolean): void;
   helpers: Record<string, unknown>;
 }
 
@@ -35,7 +32,6 @@ export interface RolesInterface {
   ): Promise<boolean>;
   userHasPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<boolean>;
   addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
-  checkPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<void | never>;
   adminRole?: RoleInterface;
   loggedInRole?: RoleInterface;
   allRole?: RoleInterface;

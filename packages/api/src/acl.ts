@@ -1,5 +1,5 @@
 import { CheckPermissionArgs } from '@unchainedshop/types/roles';
-import { Roles } from 'meteor/unchained:roles';
+import { Roles } from '@unchainedshop/roles';
 import { NoPermissionError, PermissionSystemError } from './errors';
 
 const defaultOptions = {
