@@ -1,5 +1,5 @@
 import { Context, Root } from '@unchainedshop/types/api';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 
 export default async function logoutAllSessions(root: Root, _: any, context: Context) {
   const { modules, userId } = context;

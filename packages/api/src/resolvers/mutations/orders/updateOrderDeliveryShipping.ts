@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
 import { OrderDeliveryNotFoundError, InvalidIdError, OrderDeliveryTypeError } from '../../../errors';

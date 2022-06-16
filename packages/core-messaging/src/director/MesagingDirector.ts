@@ -1,5 +1,5 @@
 import { IMessagingDirector, TemplateResolver } from '@unchainedshop/types/messaging';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 
 const TemplateResolvers = new Map<string, TemplateResolver>();
 

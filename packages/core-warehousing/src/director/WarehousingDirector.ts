@@ -4,7 +4,7 @@ import {
   WarehousingContext,
 } from '@unchainedshop/types/warehousing';
 import { DeliveryDirector } from 'meteor/unchained:core-delivery';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { WarehousingError } from './WarehousingError';
 

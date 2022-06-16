@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { EnrollmentStatus } from 'meteor/unchained:core-enrollments';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors';
 
 export default async function terminateEnrollment(

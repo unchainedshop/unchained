@@ -17,9 +17,9 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0');
-  api.use('unchained:events@1.0.0');
-  api.use('unchained:file-upload@1.0.0');
+  api.use('unchained:utils@1.1.0');
+  api.use('unchained:events@1.1.0');
+  api.use('unchained:file-upload@1.1.0');
 
   api.mainModule('src/products-index.ts', 'server');
 });

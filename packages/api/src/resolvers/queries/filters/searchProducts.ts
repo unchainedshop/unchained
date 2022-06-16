@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { Root, Context } from '@unchainedshop/types/api';
 import { SearchFilterQuery } from '@unchainedshop/types/filters';
 import { QueryStringRequiredError } from '../../../errors';

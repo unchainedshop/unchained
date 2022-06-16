@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { PaymentProvider } from '@unchainedshop/types/payments';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async (

@@ -1,5 +1,5 @@
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import sign from './sign';
 import promisePipe from './promisePipe';
 import buildHashedFilename from '../../src/buildHashedFilename';

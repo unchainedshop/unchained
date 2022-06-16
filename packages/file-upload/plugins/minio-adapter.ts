@@ -2,7 +2,7 @@ import { IFileAdapter } from '@unchainedshop/types/files';
 import { FileAdapter, FileDirector } from 'meteor/unchained:file-upload';
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
 import Minio from 'minio';
 import { Readable } from 'stream';

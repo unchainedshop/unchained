@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { AssortmentMediaText } from '@unchainedshop/types/assortments.media';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { AssortmentMediaNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function updateAssortmentMediaTexts(

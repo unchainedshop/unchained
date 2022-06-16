@@ -1,7 +1,7 @@
 import fs from 'fs';
 import util from 'util';
 import { resolve } from 'path';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 
 const readFile = util.promisify(fs.readFile);
 

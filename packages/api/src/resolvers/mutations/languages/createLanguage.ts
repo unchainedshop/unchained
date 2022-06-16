@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { Language } from '@unchainedshop/types/languages';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 
 export default async function createLanguage(
   root: Root,

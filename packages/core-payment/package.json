@@ -28,7 +28,9 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "simpl-schema": "^1.12.0",
-    "xml2js": "0.4.23"
+    "xml2js": "0.4.23",
+    "@unchainedshop/logger": "../@unchainedshop/logger"
+
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

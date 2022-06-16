@@ -28,7 +28,9 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "mime-types": "2.1.32",
-    "minio": "7.0.18"
+    "minio": "7.0.18",
+    "@unchainedshop/logger": "../@unchainedshop/logger"
+
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

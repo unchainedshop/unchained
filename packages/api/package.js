@@ -14,6 +14,7 @@ Npm.depends({
   locale: '0.1.0',
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',
+  '@unchainedshop/logger': '1.1.0',
   // 'graphql-scalars': '1.9.0', // needs to be peer dep!
 });
 
@@ -25,11 +26,10 @@ Package.onUse((api) => {
   api.use('check');
   api.use('typescript');
 
-  api.use('unchained:events@1.0.0');
-  api.use('unchained:logger@1.0.0');
+  api.use('unchained:events@1.1.0');
 
-  api.use('unchained:core@1.0.0');
-  api.use('unchained:roles@1.0.0');
+  api.use('unchained:core@1.1.0');
+  api.use('unchained:roles@1.1.0');
 
   api.mainModule('src/api-index.ts', 'server');
 });

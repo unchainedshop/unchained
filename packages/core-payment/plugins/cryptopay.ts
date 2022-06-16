@@ -8,7 +8,7 @@ import { ethers } from 'ethers';
 import BIP32Factory from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import * as bitcoin from 'bitcoinjs-lib';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core-payment:cryptopay');
 

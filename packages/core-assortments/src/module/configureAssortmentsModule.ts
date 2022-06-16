@@ -7,7 +7,7 @@ import {
   AssortmentsSettingsOptions,
 } from '@unchainedshop/types/assortments';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import {
   generateDbMutations,
   generateDbFilterById,

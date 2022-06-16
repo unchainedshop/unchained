@@ -10,6 +10,7 @@ Npm.depends({
   locale: '0.1.0',
   uuid: '7.0.1',
   'simpl-schema': '1.12.0',
+  '@unchainedshop/logger': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -17,11 +18,10 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0');
-  api.use('unchained:logger@1.0.0');
-  api.use('unchained:events@1.0.0');
-  api.use('unchained:file-upload@1.0.0');
-  api.use('unchained:roles@1.0.0');
+  api.use('unchained:utils@1.1.0');
+  api.use('unchained:events@1.1.0');
+  api.use('unchained:file-upload@1.1.0');
+  api.use('unchained:roles@1.1.0');
 
   api.mainModule('src/users-index.ts', 'server');
 });
@@ -31,8 +31,8 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb@1.0.0');
-  api.use('unchained:core-users@1.0.0');
+  api.use('unchained:mongodb@1.1.0');
+  api.use('unchained:core-users@1.1.0');
 
   api.mainModule('tests/users-index.test.ts');
 });

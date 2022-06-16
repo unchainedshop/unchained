@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { OrderStatus } from '@unchainedshop/types/orders';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors';
 
 export default async function confirmOrder(

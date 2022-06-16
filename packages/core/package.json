@@ -26,7 +26,9 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@unchainedshop/logger": "../@unchainedshop/logger"
+  },
   "devDependencies": {
     "@types/chai": "^4.2.22",
     "@types/mocha": "^9.0.0",

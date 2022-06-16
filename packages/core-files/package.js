@@ -10,6 +10,7 @@ Npm.depends({
   minio: '7.0.18',
   'mime-types': '2.1.32',
   'simpl-schema': '1.12.0',
+  '@unchainedshop/logger': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -17,9 +18,8 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:logger@1.0.0');
-  api.use('unchained:events@1.0.0');
-  api.use('unchained:file-upload@1.0.0');
+  api.use('unchained:events@1.1.0');
+  api.use('unchained:file-upload@1.1.0');
 
   api.mainModule('src/files-index.ts', 'server');
 });
@@ -29,8 +29,8 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb@1.0.0');
-  api.use('unchained:core-files@1.0.0');
+  api.use('unchained:mongodb@1.1.0');
+  api.use('unchained:core-files@1.1.0');
 
   api.mainModule('tests/files-index.test.ts');
 });

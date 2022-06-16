@@ -13,6 +13,7 @@ Npm.depends({
   '@accounts/password': '0.32.1',
   '@accounts/server': '0.33.1',
   '@graphql-modules/core': '0.7.17',
+  '@unchainedshop/logger': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -21,8 +22,8 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0');
-  api.use('unchained:core-worker@1.0.0');
+  api.use('unchained:utils@1.1.0');
+  api.use('unchained:core-worker@1.1.0');
 
   api.mainModule('src/accounts-index.ts');
 });

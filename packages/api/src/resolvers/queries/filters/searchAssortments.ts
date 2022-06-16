@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { SearchQuery } from '@unchainedshop/types/filters';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { QueryStringRequiredError } from '../../../errors';
 
 export default async function searchAssortments(root: Root, query: SearchQuery, context: Context) {

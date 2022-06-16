@@ -4,7 +4,7 @@ import {
   DetermineDefaultProvider,
   FilterProviders,
 } from '@unchainedshop/types/delivery';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core-delivery');
 

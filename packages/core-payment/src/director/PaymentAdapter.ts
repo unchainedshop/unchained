@@ -1,5 +1,5 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { PaymentError } from './PaymentError';
 
 export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> = {

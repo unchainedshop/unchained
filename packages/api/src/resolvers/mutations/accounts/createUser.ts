@@ -1,6 +1,6 @@
 import { UserData } from '@unchainedshop/types/accounts';
 import { Context, Root } from '@unchainedshop/types/api';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { hashPassword } from '../../../hashPassword';
 
 export default async function createUser(root: Root, params: UserData, context: Context) {

@@ -1,5 +1,5 @@
 import { IFileAdapter } from '@unchainedshop/types/files';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
   createSignedURL() {

@@ -3,7 +3,7 @@ import { Collection, Filter, ModuleMutations } from '@unchainedshop/types/common
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger';

@@ -10,7 +10,7 @@ import { PaymentCredentials } from '@unchainedshop/types/payments';
 import { Quotation } from '@unchainedshop/types/quotations';
 import { Email, User as UserType, UserProfile } from '@unchainedshop/types/user';
 import { Locale } from 'locale';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { checkAction, checkTypeResolver } from '../../acl';
 import { actions } from '../../roles';
 

@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { AssortmentFilter } from '@unchainedshop/types/assortments';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { AssortmentNotFoundError, FilterNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function addAssortmentFilter(

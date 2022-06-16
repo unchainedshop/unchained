@@ -1,6 +1,6 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 import { BaseAdapter } from 'meteor/unchained:utils';
 
 const logger = createLogger('unchained:platform:zombie-killer');

@@ -2,7 +2,7 @@ import { IPaymentActions, IPaymentAdapter } from '@unchainedshop/types/payments'
 import { PaymentAdapter, PaymentDirector, PaymentError } from 'meteor/unchained:core-payment';
 import { TransactionCompletionBehavior } from 'postfinancecheckout/src/models/TransactionCompletionBehavior';
 import { PostFinanceCheckout } from 'postfinancecheckout';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 import { CreationEntityState } from 'postfinancecheckout/src/models/CreationEntityState';
 import { TransactionState } from 'postfinancecheckout/src/models/TransactionState';
 import {

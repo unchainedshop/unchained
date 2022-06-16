@@ -1,6 +1,6 @@
 import { UnchainedAPI, Migration } from '@unchainedshop/types/api';
 import { MigrationRepository } from '@unchainedshop/types/common';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById } from 'meteor/unchained:utils';
 import { createMigrationRunner } from './createMigrationRunner';
 

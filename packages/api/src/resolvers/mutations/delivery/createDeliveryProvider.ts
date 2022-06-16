@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { DeliveryProvider } from '@unchainedshop/types/delivery';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { ProviderConfigurationInvalid } from '../../../errors';
 
 export default async function createDeliveryProvider(

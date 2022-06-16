@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { DeliveryProviderType } from '@unchainedshop/types/delivery';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 
 export default function deliveryInterfaces(
   root: Root,

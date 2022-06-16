@@ -6,14 +6,17 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  '@unchainedshop/logger': '1.1.0',
+});
+
 Package.onUse((api) => {
   api.versionsFrom('2.7.3');
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0');
-  api.use('unchained:events@1.0.0');
-  api.use('unchained:logger@1.0.0');
+  api.use('unchained:utils@1.1.0');
+  api.use('unchained:events@1.1.0');
 
   api.mainModule('src/warehousing-index.ts', 'server');
 });

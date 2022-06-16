@@ -1,5 +1,5 @@
 import { IDeliveryAdapter, IDeliveryDirector } from '@unchainedshop/types/delivery';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { DeliveryError } from './DeliveryError';
 

@@ -1,5 +1,5 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/types/common';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 
 export const BaseDirector = <AdapterType extends IBaseAdapter>(
   directorName: string,

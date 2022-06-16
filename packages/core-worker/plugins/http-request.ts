@@ -1,7 +1,7 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import fetch from 'isomorphic-unfetch';
 import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 
 const postFetch = async (url, { data, headers }) => {
   return fetch(url, {

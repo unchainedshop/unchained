@@ -30,7 +30,9 @@
     "JSONStream": "^1.3.5",
     "event-iterator": "^2.0.0",
     "moniker": "0.1.2",
-    "open": "^8.4.0"
+    "open": "^8.4.0",
+    "@unchainedshop/logger": "../@unchainedshop/logger"
+
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",

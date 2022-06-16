@@ -8,13 +8,11 @@ const subscribedEvents = new Set();
 
 const RedisEventEmitter = (): EmitAdapter => {
   const redisPublisher = redis.createClient({
-    port: REDIS_PORT,
-    host: REDIS_HOST,
+    url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
   });
 
   const redisSubscriber = redis.createClient({
-    port: REDIS_PORT,
-    host: REDIS_HOST,
+    url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
   });
 
   return {

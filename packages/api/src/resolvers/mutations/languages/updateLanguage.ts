@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { Language } from '@unchainedshop/types/languages';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { InvalidIdError, LanguageNotFoundError } from '../../../errors';
 
 export default async function updateLanguage(

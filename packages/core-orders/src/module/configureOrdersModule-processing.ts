@@ -5,7 +5,7 @@ import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from 'meteor/unchained:utils';
 import { ordersSettings } from '../orders-settings';
 

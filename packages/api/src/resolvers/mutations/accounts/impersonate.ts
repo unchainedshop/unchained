@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { Context } from '@unchainedshop/types/api';
 import { UserNotFoundError, NoPermissionError } from '../../../errors';
 

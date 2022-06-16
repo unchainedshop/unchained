@@ -3,7 +3,7 @@ import { IncomingMessage } from 'http';
 import { Locales } from 'locale';
 import 'abort-controller/polyfill';
 import LRU from 'lru-cache';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import {
   resolveBestCountry,
   resolveBestSupported,

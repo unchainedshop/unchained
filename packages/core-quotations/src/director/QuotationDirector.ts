@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { LogLevel, log } from 'meteor/unchained:logger';
+import { LogLevel, log } from '@unchainedshop/logger';
 import {
   IQuotationAdapter,
   IQuotationDirector,

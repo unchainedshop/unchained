@@ -3,7 +3,7 @@ import {
   EmitAdapter,
   EventDirector as IEventDirector,
 } from '@unchainedshop/types/events';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:events');
 

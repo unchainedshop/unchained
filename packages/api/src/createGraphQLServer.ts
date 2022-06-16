@@ -1,7 +1,7 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { processRequest } from 'graphql-upload';
 import { WebApp } from 'meteor/webapp';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 import { getCurrentContextResolver } from './context';

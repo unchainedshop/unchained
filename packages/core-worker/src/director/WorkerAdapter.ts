@@ -1,5 +1,5 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 
 export const WorkerAdapter: Omit<IWorkerAdapter<any, void>, 'key' | 'label' | 'type' | 'version'> = {
   async doWork() {

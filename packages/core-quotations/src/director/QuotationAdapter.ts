@@ -1,4 +1,4 @@
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 
 import { IQuotationAdapter } from '@unchainedshop/types/quotations';
 import { QuotationError } from './QuotationError';

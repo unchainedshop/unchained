@@ -28,7 +28,9 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "mustache": "4.1.0",
-    "mjml": "4.8.1"
+    "mjml": "4.8.1",
+    "@unchainedshop/logger": "../@unchainedshop/logger"
+
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

@@ -12,7 +12,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0');
+  api.use('unchained:utils@1.1.0');
 
   api.mainModule('src/mongodb-index.js');
 });
@@ -22,7 +22,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb@1.0.0');
+  api.use('unchained:mongodb@1.1.0');
 
   api.mainModule('test/mongodb-index.tests.js');
 });

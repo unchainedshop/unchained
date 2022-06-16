@@ -8,7 +8,7 @@ import {
 } from '@unchainedshop/types/enrollments';
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema';

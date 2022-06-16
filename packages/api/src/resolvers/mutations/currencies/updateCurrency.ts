@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { Currency } from '@unchainedshop/types/currencies';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { CurrencyNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function updateCurrency(

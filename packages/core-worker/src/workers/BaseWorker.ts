@@ -1,6 +1,6 @@
 import { IWorker, Work } from '@unchainedshop/types/worker';
 import later from 'later';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import os from 'os';
 import { WorkerDirector } from '../director/WorkerDirector';
 

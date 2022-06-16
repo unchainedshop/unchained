@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { LanguageQuery } from '@unchainedshop/types/languages';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 
 export default async function languagesCount(
   root: Root,

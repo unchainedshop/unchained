@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { CountryQuery } from '@unchainedshop/types/countries';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 
 export default async function countriesCount(
   root: Root,

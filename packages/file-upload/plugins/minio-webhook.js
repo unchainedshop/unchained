@@ -1,5 +1,5 @@
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import bodyParser from 'body-parser';
 
 const { MINIO_WEBHOOK_AUTH_TOKEN } = process.env;

@@ -1,6 +1,6 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { PaymentAdapter, PaymentError, PaymentDirector } from 'meteor/unchained:core-payment';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 import createDatatransAPI from './api';
 import type {
   AuthorizeAuthenticatedResponseSuccess,

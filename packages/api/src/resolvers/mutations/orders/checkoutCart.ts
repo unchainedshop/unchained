@@ -1,5 +1,5 @@
 import { Context, Root } from '@unchainedshop/types/api';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { OrderCheckoutError } from '../../../errors';
 import { getOrderCart } from '../utils/getOrderCart';
 

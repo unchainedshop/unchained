@@ -1,5 +1,5 @@
 import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import Twilio from 'twilio';
 

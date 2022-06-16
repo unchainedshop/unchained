@@ -1,4 +1,4 @@
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 import { Root, Context } from '@unchainedshop/types/api';
 import { EventQuery } from '@unchainedshop/types/events';
 

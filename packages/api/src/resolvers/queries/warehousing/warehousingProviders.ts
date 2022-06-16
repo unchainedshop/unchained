@@ -1,6 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { WarehousingProviderQuery } from '@unchainedshop/types/warehousing';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 
 export default async function warehousingProviders(
   root: Root,

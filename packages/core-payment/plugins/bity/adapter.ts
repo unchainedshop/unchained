@@ -1,7 +1,7 @@
 import { PaymentDirector, PaymentAdapter, PaymentError } from 'meteor/unchained:core-payment';
 
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 
 import { OrderPricingSheet } from 'meteor/unchained:core-orders';
 import bodyParser from 'body-parser';

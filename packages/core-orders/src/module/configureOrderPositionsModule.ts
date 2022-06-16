@@ -2,7 +2,7 @@ import { Collection, Filter, ModuleMutations, Query } from '@unchainedshop/types
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, generateDbObjectId } from 'meteor/unchained:utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
 import { ordersSettings } from '../orders-settings';

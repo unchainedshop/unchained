@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { Context } from '@unchainedshop/types/api';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 import { WebhookData } from './types';
 import { getTransaction, getTransactionCompletion } from './api';
 

@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { Context, Root, SortOption } from '@unchainedshop/types/api';
 import { QuotationQuery } from '@unchainedshop/types/quotations';
 

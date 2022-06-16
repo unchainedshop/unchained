@@ -8,8 +8,8 @@ import {
   setEmitAdapter,
   setEmitHistoryAdapter,
 } from '../src/events-index';
-import { EmitAdapter } from '../src/events.types';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
+import { EmitAdapter } from '@unchainedshop/types/events';
 
 const subscribedEvents = new Set();
 

@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { ProductVariationText } from '@unchainedshop/types/products.variations';
 import { ProductVariationNotFoundError, InvalidIdError } from '../../../errors';

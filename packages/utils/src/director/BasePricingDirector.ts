@@ -7,7 +7,7 @@ import {
   IPricingSheet,
   PricingCalculation,
 } from '@unchainedshop/types/pricing';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from './BaseDirector';
 import { BasePricingSheet } from './BasePricingSheet';
 

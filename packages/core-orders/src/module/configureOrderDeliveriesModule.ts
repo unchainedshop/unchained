@@ -6,7 +6,7 @@ import {
   OrderDeliveryStatus,
 } from '@unchainedshop/types/orders.deliveries';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 

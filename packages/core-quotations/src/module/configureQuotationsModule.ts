@@ -7,7 +7,7 @@ import {
   QuotationsSettingsOptions,
 } from '@unchainedshop/types/quotations';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
 import { QuotationsCollection } from '../db/QuotationsCollection';
 import { QuotationsSchema } from '../db/QuotationsSchema';

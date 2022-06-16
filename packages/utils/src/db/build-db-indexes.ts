@@ -1,5 +1,5 @@
 import { Collection, Indexes, Document } from '@unchainedshop/types/common';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 
 const buildIndexes = <T>(collection: Collection<T>, indexes: Indexes<T>): Promise<Array<void | Error>> =>
   Promise.all(

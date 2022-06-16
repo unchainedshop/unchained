@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
   'simpl-schema': '1.12.0',
   xml2js: '0.4.23',
+  '@unchainedshop/logger': '1.1.0',
 });
 
 Package.onUse((api) => {
@@ -16,9 +17,8 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0');
-  api.use('unchained:events@1.0.0');
-  api.use('unchained:logger@1.0.0');
+  api.use('unchained:utils@1.1.0');
+  api.use('unchained:events@1.1.0');
 
   api.mainModule('src/payment-index.ts', 'server');
 });

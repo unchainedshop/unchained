@@ -1,6 +1,6 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { PaymentDirector, PaymentAdapter, PaymentError } from 'meteor/unchained:core-payment';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core-payment:braintree');
 

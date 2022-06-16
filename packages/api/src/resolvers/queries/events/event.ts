@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { _ID } from '@unchainedshop/types/common';
 import { Root, Context } from '@unchainedshop/types/api';
 

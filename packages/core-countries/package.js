@@ -19,8 +19,8 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.0.0');
-  api.use('unchained:events@1.0.0');
+  api.use('unchained:utils@1.1.0');
+  api.use('unchained:events@1.1.0');
 
   api.mainModule('src/countries-index.ts', 'server');
 });
@@ -30,7 +30,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:mongodb@1.0.0');
+  api.use('unchained:mongodb@1.1.0');
   api.use('unchained:core-countries');
 
   api.mainModule('tests/countries-index.test.ts');

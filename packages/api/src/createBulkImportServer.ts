@@ -1,4 +1,4 @@
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 import { Context } from '@unchainedshop/types/api';
 import fs from 'fs';
 

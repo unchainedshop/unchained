@@ -1,5 +1,5 @@
 import { AccountsModule } from '@unchainedshop/types/accounts';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { v4 as uuidv4 } from 'uuid';
 import { accountsSettings } from '../accounts-settings';
 import { accountsPassword } from '../accounts/accountsPassword';

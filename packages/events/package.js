@@ -7,15 +7,14 @@ Package.describe({
 });
 
 Npm.depends({
-  redis: '3.0.2',
+  redis: '4.1.0',
+  '@unchainedshop/logger': '1.1.0',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.7.3');
   api.use('ecmascript');
   api.use('typescript');
-
-  api.use('unchained:logger@1.0.0');
 
   api.mainModule('src/events-index.ts', 'server');
 });

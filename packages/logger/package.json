@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/core-logger",
+  "name": "@unchainedshop/logger",
   "version": "1.1.0",
   "main": "lib/logger-index.js",
   "types": "lib/logger-index.d.ts",

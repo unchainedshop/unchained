@@ -13,14 +13,13 @@ Npm.depends({
   locale: '0.1.0',
   'simpl-schema': '1.12.0',
   bson: '4.6.2',
+  '@unchainedshop/logger': '1.1.0',
 });
 
 Package.onUse((api) => {
   api.versionsFrom('2.7.3');
   api.use('ecmascript');
   api.use('typescript@4.4.0');
-
-  api.use('unchained:logger@1.0.0');
 
   api.mainModule('src/utils-index.js', 'server');
 });
@@ -30,7 +29,7 @@ Package.onTest((api) => {
   api.use('ecmascript');
   api.use('typescript@4.4.0');
 
-  api.use('unchained:utils@1.0.0');
+  api.use('unchained:utils@1.1.0');
 
   api.mainModule('tests/utils-index.test.js');
 });

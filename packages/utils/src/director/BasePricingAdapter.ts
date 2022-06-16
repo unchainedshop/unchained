@@ -4,7 +4,7 @@ import {
   IPricingAdapter,
   PricingCalculation,
 } from '@unchainedshop/types/pricing';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { BasePricingSheet } from './BasePricingSheet';
 
 export const BasePricingAdapter = <

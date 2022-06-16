@@ -3,7 +3,7 @@ import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import bodyParser from 'body-parser';
 import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { PaymentAdapter, PaymentDirector, PaymentError } from 'meteor/unchained:core-payment';
-import { createLogger } from 'meteor/unchained:logger';
+import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core-payment:stripe');
 

@@ -1,4 +1,4 @@
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 
 import { IFilterAdapter } from '@unchainedshop/types/filters';
 

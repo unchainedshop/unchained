@@ -1,5 +1,5 @@
 import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { WarehousingError } from './WarehousingError';
 
 export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 'version'> = {

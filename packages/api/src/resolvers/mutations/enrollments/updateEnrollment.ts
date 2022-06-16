@@ -1,4 +1,4 @@
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { EnrollmentStatus } from 'meteor/unchained:core-enrollments';
 import { Context, Root } from '@unchainedshop/types/api';
 import { EnrollmentPlan, Enrollment } from '@unchainedshop/types/enrollments';

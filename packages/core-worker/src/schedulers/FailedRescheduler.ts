@@ -1,5 +1,5 @@
 import { IScheduler, Work } from '@unchainedshop/types/worker';
-import { log } from 'meteor/unchained:logger';
+import { log } from '@unchainedshop/logger';
 import { WorkerDirector } from '../director/WorkerDirector';
 import { WorkerEventTypes } from '../director/WorkerEventTypes';
 

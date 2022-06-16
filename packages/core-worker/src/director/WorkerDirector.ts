@@ -5,7 +5,7 @@ import {
   WorkScheduleConfigureation,
 } from '@unchainedshop/types/worker';
 import { EventEmitter } from 'events';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from 'meteor/unchained:utils';
 import { WorkerEventTypes } from './WorkerEventTypes';
 

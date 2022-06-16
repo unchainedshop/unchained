@@ -4,7 +4,7 @@ import {
   WarehousingProviderType,
 } from 'meteor/unchained:core-warehousing';
 import Sheets from 'node-sheets';
-import { log, LogLevel } from 'meteor/unchained:logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import 'abort-controller/polyfill';
 import LRU from 'lru-cache';
 import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
