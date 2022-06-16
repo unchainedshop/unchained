@@ -30,9 +30,9 @@
     "lodash.clone": "4.5.0"
   },
   "devDependencies": {
-    "@types/node": "^16.7.10",
+    "@types/node": "^16.11.41",
     "@unchainedshop/types": "../@unchainedshop/types",
-    "chai": "^4.3.4",
-    "typescript": "^4.4.4"
+    "chai": "^4.3.6",
+    "typescript": "^4.7.3"
   }
 }

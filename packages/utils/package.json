@@ -26,17 +26,17 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "bson": "^4.6.2",
+    "bson": "^4.6.4",
     "hashids": "^2.2.10",
     "locale": "0.1.0",
     "lru-cache": "6.0.0",
-    "simpl-schema": "1.12.0"
+    "simpl-schema": "^1.12.2"
   },
   "devDependencies": {
-    "@types/mocha": "^9.1.0",
+    "@types/mocha": "^9.1.1",
     "@unchainedshop/types": "../@unchainedshop/types",
     "chai": "^4.3.6",
-    "mocha": "^9.2.2",
-    "typescript": "^4.6.3"
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.3"
   }
 }
