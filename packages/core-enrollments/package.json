@@ -36,7 +36,6 @@
     "@types/chai": "^4.2.22",
     "@types/locale": "^0.1.1",
     "@types/mocha": "^9.0.0",
-    "@types/simpl-schema": "^1.12.0",
     "@unchainedshop/types": "../@unchainedshop/types",
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",

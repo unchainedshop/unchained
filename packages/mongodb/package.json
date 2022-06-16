@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "mongodb": "^4.4.1"
+    "mongodb": "^4.3.1"
   },
   "devDependencies": {
     "@types/node": "^16.7.10",

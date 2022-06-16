@@ -7,9 +7,9 @@ Package.describe({
 });
 
 Npm.depends({
-  'safe-stable-stringify': '1.1.0',
-  winston: '3.3.3',
-  'winston-transport': '4.4.0',
+  'safe-stable-stringify': '2.3.1',
+  winston: '3.7.2',
+  'winston-transport': '4.5.0',
 });
 
 Package.onUse((api) => {
