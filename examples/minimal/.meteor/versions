@@ -67,10 +67,8 @@ unchained:core-warehousing@1.1.0
 unchained:core-worker@1.1.0
 unchained:events@1.1.0
 unchained:file-upload@1.1.0
-unchained:logger@1.1.0
 unchained:mongodb@1.1.0
 unchained:platform@1.1.0
-unchained:roles@1.1.0
 unchained:utils@1.1.0
 underscore@1.0.10
 webapp@1.13.1
