@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-languages',
-  version: '1.1.0',
+  version: '1.1.1',
   summary: 'Unchained Engine Core: Languages',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

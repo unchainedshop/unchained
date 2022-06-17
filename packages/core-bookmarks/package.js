@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-bookmarks',
-  version: '1.1.0',
+  version: '1.1.1',
   summary: 'Unchained Engine Core: Warehousing',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

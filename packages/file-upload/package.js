@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:file-upload',
-  version: '1.1.0',
+  version: '1.1.1',
   summary: 'Unchained Engine: Core File Upload',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

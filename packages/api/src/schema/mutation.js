@@ -799,7 +799,6 @@ export default [
 
       """
       Register a work attempt manually.
-
       Note: Usually, work attempts are handled internally by the inbuilt cron
       worker. This mutation is part of the interface for "outside" workers.
       """

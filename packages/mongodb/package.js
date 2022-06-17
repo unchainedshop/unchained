@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:mongodb',
-  version: '1.1.0',
+  version: '1.1.1',
   summary: 'Unchained Engine: MongoDB provider for unchained platform',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

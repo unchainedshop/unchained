@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '1.1.0',
+  version: '1.1.1',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
