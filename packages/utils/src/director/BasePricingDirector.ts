@@ -6,10 +6,10 @@ import {
   IPricingAdapter,
   IPricingSheet,
   PricingCalculation,
+  IPricingAdapterActions,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from './BaseDirector';
-import { BasePricingSheet } from './BasePricingSheet';
 
 export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,
@@ -45,7 +45,7 @@ export const BasePricingDirector = <
 
       let calculation: Array<Calculation> = [];
 
-      return {
+      const actions: IPricingAdapterActions<Calculation, AdapterContext> = {
         async calculate() {
           const Adapters = baseDirector.getAdapters({
             adapterFilter: (Adapter) => {
@@ -94,11 +94,10 @@ export const BasePricingDirector = <
         getContext() {
           return context;
         },
-        calculationSheet() {
-          return BasePricingSheet({
-            calculation,
-          });
-        },
+      };
+
+      return actions as IPricingAdapterActions<Calculation, AdapterContext> & {
+        calculationSheet: () => IPricingSheet<Calculation>;
       };
     },
   };

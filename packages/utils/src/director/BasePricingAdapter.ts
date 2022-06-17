@@ -3,9 +3,9 @@ import {
   IPricingSheet,
   IPricingAdapter,
   PricingCalculation,
+  IPricingAdapterActions,
 } from '@unchainedshop/types/pricing';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { BasePricingSheet } from './BasePricingSheet';
 
 export const BasePricingAdapter = <
   Context extends BasePricingAdapterContext,
@@ -22,13 +22,16 @@ export const BasePricingAdapter = <
 
   actions: (params) => {
     const calculation = [];
-    return {
+    const actions: IPricingAdapterActions<Calculation, Context> = {
       calculate: async () => {
         return [];
       },
-      resultSheet: () => BasePricingSheet({ calculation }),
       getCalculation: () => calculation,
       getContext: () => params.context,
+    };
+
+    return actions as IPricingAdapterActions<Calculation, Context> & {
+      resultSheet: () => IPricingSheet<Calculation>;
     };
   },
 

@@ -10,7 +10,7 @@ export const BaseDiscountDirector = (directorName: string): IDiscountDirector =>
   return {
     ...baseDirector,
 
-    actions: (discountContext, requestContext) => {
+    actions: async (discountContext, requestContext) => {
       const context = { ...discountContext, ...requestContext };
 
       return {
@@ -31,7 +31,7 @@ export const BaseDiscountDirector = (directorName: string): IDiscountDirector =>
               .getAdapters()
               .filter((Adapter) => Adapter.isManualAdditionAllowed(options?.code))
               .map(async (Adapter) => {
-                const adapter = Adapter.actions({ context });
+                const adapter = await Adapter.actions({ context });
                 return {
                   key: Adapter.key,
                   isValid: await adapter.isValidForCodeTriggering(options),
@@ -46,7 +46,7 @@ export const BaseDiscountDirector = (directorName: string): IDiscountDirector =>
           if (!context.order) return [];
           const discounts = await Promise.all(
             baseDirector.getAdapters().map(async (Adapter) => {
-              const adapter = Adapter.actions({ context });
+              const adapter = await Adapter.actions({ context });
               return {
                 key: Adapter.key,
                 isValid: await adapter.isValidForSystemTriggering(),

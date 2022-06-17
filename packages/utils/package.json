@@ -1,5 +1,5 @@
 {
-  "name": "unchained-utils",
+  "name": "@unchainedshop/utils",
   "version": "1.1.1",
   "main": "lib/utils-index.js",
   "types": "lib/utils-index.d.ts",
@@ -8,7 +8,7 @@
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc -p tsconfig.build.json",
     "watch": "tsc --watch",
-    "link:core": "npm link @unchainedshop/types",
+    "link:core": "npm link @unchainedshop/types && npm link @unchainedshop/logger",
     "test": "METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
@@ -26,17 +26,17 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
+    "@unchainedshop/logger": "latest",
+    "abort-controller": "3.0.0",
     "bson": "^4.6.4",
     "hashids": "^2.2.10",
     "locale": "0.1.0",
-    "lru-cache": "6.0.0",
-    "simpl-schema": "^1.12.2",
-    "@unchainedshop/logger": "../@unchainedshop/logger"
-
+    "lru-cache": "^7.10.1",
+    "simpl-schema": "^1.12.2"
   },
   "devDependencies": {
     "@types/mocha": "^9.1.1",
-    "@unchainedshop/types": "../@unchainedshop/types",
+    "@unchainedshop/types": "latest",
     "chai": "^4.3.6",
     "mocha": "^10.0.0",
     "typescript": "^4.7.3"

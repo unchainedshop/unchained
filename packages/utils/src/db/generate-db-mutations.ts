@@ -53,17 +53,25 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
 
           let modifier: Update<T>;
 
-          if (doc.$set) {
+          if ((doc as Update<T>)?.$set) {
             const values = schema.clean(doc, { isModifier: true });
-            modifier = values;
-            modifier.$set = values.$set || {};
-            modifier.$set.updated = new Date();
-            modifier.$set.updatedBy = userId;
+            modifier = {
+              ...values,
+              $set: {
+                ...(values.$set || {}),
+                updated: new Date(),
+                updatedBy: userId,
+              },
+            };
           } else {
             const values = schema.clean(doc);
-            modifier = { $set: values };
-            modifier.$set.updated = new Date();
-            modifier.$set.updatedBy = userId;
+            modifier = {
+              $set: {
+                ...values,
+                updated: new Date(),
+                updatedBy: userId,
+              },
+            };
           }
 
           schema.validate(modifier, { modifier: true });

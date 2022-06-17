@@ -14,7 +14,7 @@ export const BaseDiscountAdapter: Omit<IDiscountAdapter, 'key' | 'label' | 'vers
     return false;
   },
 
-  actions: () => ({
+  actions: async () => ({
     // return true if a discount is valid to be part of the order
     // without input of a user. that could be a time based global discount
     // like a 10% discount day

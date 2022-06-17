@@ -30,12 +30,11 @@
     "apollo-server-express": "^2.25.2",
     "graphql-scalars": "^1.9.0",
     "graphql": "^15.8.0",
-    "@unchainedshop/logger": "../@unchainedshop/logger"
   },
   "devDependencies": {
     "@types/graphql-upload": "^8.0.11",
     "@types/locale": "^0.1.1",
-    "@unchainedshop/types": "../@unchainedshop/types",
+    "@unchainedshop/types": "latest",
     "apollo-server-express": "^2.25.3",
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",
@@ -49,6 +48,8 @@
     "dataloader": "2.0.0",
     "locale": "0.1.0",
     "lodash.isnumber": "3.0.3",
-    "lru-cache": "6.0.0"
+    "lru-cache": "6.0.0",
+    "@unchainedshop/logger": "latest",
+    "@unchainedshop/roles": "latest"
   }
 }
