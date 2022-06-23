@@ -44,7 +44,7 @@
     "@apollo/client": "^3.6.9",
     "@babel/core": "^7.18.5",
     "@babel/preset-env": "^7.18.2",
-    "@shelf/jest-mongodb": "^3.0.1",
+    "@shelf/jest-mongodb": "^2.2.2",
     "@types/jest": "^27.5.2",
     "@types/lodash.clone": "^4.5.7",
     "@types/mocha": "^9.1.1",
