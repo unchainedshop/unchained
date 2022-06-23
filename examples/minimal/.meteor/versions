@@ -69,7 +69,7 @@ unchained:events@1.1.1
 unchained:file-upload@1.1.1
 unchained:mongodb@1.1.1
 unchained:platform@1.1.1
-unchained:utils@1.1.1
+unchained:utils@1.1.2
 underscore@1.0.10
 webapp@1.13.1
 webapp-hashing@1.1.0
