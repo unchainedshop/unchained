@@ -14,13 +14,6 @@ export const BaseDiscountDirector = (directorName: string): IDiscountDirector =>
       const context = { ...discountContext, ...requestContext };
 
       return {
-        interface(discountKey: string) {
-          const Adapter = baseDirector.getAdapter(discountKey);
-          if (!Adapter) return null;
-          const adapter = Adapter.actions({ context });
-          return adapter;
-        },
-
         resolveDiscountKeyFromStaticCode: async (options) => {
           if (!context.order) return null;
 
