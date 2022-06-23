@@ -383,10 +383,6 @@ export default [
         limit: Int = 10
         offset: Int = 0
         status: [WorkStatus!]
-        selectTypes: [WorkType!]
-          @deprecated(
-            reason: "For naming consistency reason this field will be removed in the future, Please types field instead"
-          )
         created: DateFilterInput
         queryString: String
         sort: [SortOptionInput!]

@@ -19,8 +19,8 @@ const HundredOff: IDiscountAdapter = {
     return true;
   },
 
-  actions: ({ context }) => ({
-    ...OrderDiscountAdapter.actions({ context }),
+  actions: async ({ context }) => ({
+    ...(await OrderDiscountAdapter.actions({ context })),
 
     isValidForSystemTriggering: async () => {
       return false;

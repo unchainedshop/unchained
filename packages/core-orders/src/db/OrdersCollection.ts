@@ -16,9 +16,9 @@ export const OrdersCollection = async (db: Db) => {
         userId: 'text',
         orderNumber: 'text',
         status: 'text',
-        'contact.telNumber': 'text',
         'contact.emailAddress': 'text',
-      },
+        'contact.telNumber': 'text',
+      } as any,
       options: {
         weights: {
           _id: 8,

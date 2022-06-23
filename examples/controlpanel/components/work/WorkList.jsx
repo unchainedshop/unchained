@@ -12,7 +12,7 @@ const WorkList = ({
   onFilterChange,
   onDateRangeChange,
   statusTypes,
-  selectTypes,
+  types,
   loading,
   updateHasMore,
   created,
@@ -126,16 +126,10 @@ export default compose(
         $offset: Int
         $limit: Int
         $status: [WorkStatus!]
-        $selectTypes: [WorkType!]
+        $types: [WorkType!]
         $created: DateFilterInput
       ) {
-        workQueue(
-          offset: $offset
-          limit: $limit
-          status: $status
-          selectTypes: $selectTypes
-          created: $created
-        ) {
+        workQueue(offset: $offset, limit: $limit, status: $status, types: $types, created: $created) {
           _id
           type
           scheduled

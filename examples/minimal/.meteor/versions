@@ -44,7 +44,7 @@ routepolicy@1.1.1
 socket-stream-client@0.5.0
 tracker@1.2.0
 typescript@4.5.4
-unchained:api@1.1.1
+unchained:api@1.1.2
 unchained:core@1.1.1
 unchained:core-accountsjs@1.1.1
 unchained:core-assortments@1.1.1
@@ -58,13 +58,13 @@ unchained:core-files@1.1.1
 unchained:core-filters@1.1.1
 unchained:core-languages@1.1.1
 unchained:core-messaging@1.1.1
-unchained:core-orders@1.1.1
-unchained:core-payment@1.1.1
+unchained:core-orders@1.1.2
+unchained:core-payment@1.1.2
 unchained:core-products@1.1.1
 unchained:core-quotations@1.1.1
 unchained:core-users@1.1.1
 unchained:core-warehousing@1.1.1
-unchained:core-worker@1.1.1
+unchained:core-worker@1.1.2
 unchained:events@1.1.1
 unchained:file-upload@1.1.1
 unchained:mongodb@1.1.1

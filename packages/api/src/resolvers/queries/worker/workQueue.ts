@@ -8,17 +8,15 @@ export default async function workers(
     limit,
     offset,
     status,
-    selectTypes,
+    types,
     created,
     queryString,
-    types,
     sort,
   }: {
     limit?: number;
     offset?: number;
     queryString?: string;
     status?: Array<WorkStatus>;
-    selectTypes?: Array<string>;
     types?: Array<string>;
     created?: {
       start: Date;
@@ -33,12 +31,11 @@ export default async function workers(
   });
   return modules.worker.findWorkQueue({
     status,
-    selectTypes,
+    types,
     created,
     skip: offset,
     limit,
     queryString,
     sort,
-    types,
   });
 }

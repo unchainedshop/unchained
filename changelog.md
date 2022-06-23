@@ -16,7 +16,7 @@
 ## Minor
 
 - [api] `query.events` is now extended with additional filter parameters `created` get events created
-  after the provided event and the previous `type` field is changed to `types` and accepts array of event
+  after the provided event and the previous `selectTypes` field is changed to `types` and accepts array of event
   types. in addition it is now possible to `sort` the results any field on event type
 - [api] A new input field `sort` has been added to many generel queries that return lists of something,
   for ex. Query.products
@@ -37,6 +37,7 @@
 - [core] A bug has been fixed that accidentally made order positions immutable for further changes
 - [core] A warehousing plugin now get's to know the actual warehousingProvider's ID
 - [core] A bug that rendered the Bulk Importer unusable for product media changes has been fixed
+- [api] Fix issue with schema not extendable due use of @deprecated on ARGUMENT_DEFINITION
 
 # Unchained Engine v1.0 ("Maiglöggli")
 

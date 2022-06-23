@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-orders",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "lib/orders-index.js",
   "types": "lib/orders-index.d.ts",
   "type": "module",
@@ -29,7 +29,6 @@
   "dependencies": {
     "simpl-schema": "^1.12.0",
     "@unchainedshop/logger": "latest"
-
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

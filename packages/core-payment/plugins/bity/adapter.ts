@@ -8,7 +8,7 @@ import bodyParser from 'body-parser';
 import { acl, roles, useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
-import ClientOAuth2 from 'client-oauth2';
+import ClientOAuth2 from '@unchainedshop/client-oauth2';
 import { Context } from '@unchainedshop/types/api';
 import { BityModule } from './module/configureBityModule';
 

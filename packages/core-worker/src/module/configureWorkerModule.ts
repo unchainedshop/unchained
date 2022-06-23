@@ -20,16 +20,14 @@ const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 const buildQuerySelector = ({
   created,
   scheduled,
-  selectTypes,
+  types,
   status,
   workId,
   queryString,
-  types,
   ...rest
 }: Query & {
   created?: { end?: Date; start?: Date };
   scheduled?: { end?: Date; start?: Date };
-  selectTypes?: Array<string>;
   status?: Array<WorkStatus>;
   workId?: string;
   queryString?: string;
@@ -76,8 +74,8 @@ const buildQuerySelector = ({
       ? { $gte: scheduled.start || new Date(0), $lte: scheduled.end }
       : { $gte: scheduled.start || new Date(0) };
   }
-  if (selectTypes || types) {
-    query.type = { $in: [...(selectTypes || []), ...(types || [])] };
+  if (types) {
+    query.type = { $in: types };
   }
 
   if (workId) {

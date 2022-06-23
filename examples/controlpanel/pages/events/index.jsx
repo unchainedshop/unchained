@@ -21,7 +21,7 @@ export default connectApollo(({ ...rest }) => {
         <EventList
           queryOptions={{ pollInterval: 2000 }}
           limit={10}
-          selectTypes={workTypeFilter}
+          types={workTypeFilter}
           onFilterChange={onFilterChange}
         />
       </Container>

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '1.1.1',
+  version: '1.1.2',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -17,6 +17,8 @@ Npm.depends({
   '@unchainedshop/logger': '1.1.0',
   '@unchainedshop/roles': '1.1.1',
   // 'graphql-scalars': '1.9.0', // needs to be peer dep!
+  // graphql peer dep
+  // apollo-server-express peer dep
 });
 
 Package.onUse((api) => {

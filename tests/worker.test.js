@@ -558,8 +558,8 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus!], $selectTypes: [WorkType!]) {
-            workQueue(status: $status, selectTypes: $selectTypes) {
+          query ($status: [WorkStatus!], $types: [WorkType!]) {
+            workQueue(status: $status, types: $types) {
               _id
               type
               status
@@ -567,7 +567,7 @@ describe('Worker Module', () => {
           }
         `,
         variables: {
-          selectTypes: ['EXTERNAL'],
+          types: ['EXTERNAL'],
         },
       });
       expect(workQueue.filter((e) => e.type !== 'EXTERNAL').length).toEqual(0);
@@ -578,8 +578,8 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus!], $selectTypes: [WorkType!]) {
-            workQueue(status: $status, selectTypes: $selectTypes) {
+          query ($status: [WorkStatus!], $types: [WorkType!]) {
+            workQueue(status: $status, types: $types) {
               _id
               type
               status
@@ -599,8 +599,8 @@ describe('Worker Module', () => {
         data: { workQueue },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query ($status: [WorkStatus!], $selectTypes: [WorkType!]) {
-            workQueue(status: $status, selectTypes: $selectTypes) {
+          query ($status: [WorkStatus!], $types: [WorkType!]) {
+            workQueue(status: $status, types: $types) {
               _id
               type
               status
@@ -609,7 +609,7 @@ describe('Worker Module', () => {
         `,
         variables: {
           status: ['SUCCESS'],
-          selectTypes: ['EXTERNAL'],
+          types: ['EXTERNAL'],
         },
       });
       expect(

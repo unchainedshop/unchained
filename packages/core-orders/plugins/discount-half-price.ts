@@ -19,8 +19,8 @@ const HalfPrice: IDiscountAdapter = {
     return false;
   },
 
-  actions: ({ context }) => ({
-    ...OrderDiscountAdapter.actions({ context }),
+  actions: async ({ context }) => ({
+    ...(await OrderDiscountAdapter.actions({ context })),
 
     isValidForSystemTriggering: async () => {
       const { order } = context;
