@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.7.1
+FROM geoffreybooth/meteor-base:2.7.3
 
 # Install app dependencies
 RUN mkdir -p /source
@@ -11,9 +11,11 @@ ADD examples/controlpanel/package.json /source/examples/controlpanel/
 ADD examples/controlpanel/package-lock.json /source/examples/controlpanel/
 ADD packages/@unchainedshop /source/packages/@unchainedshop
 
-RUN \
-  NODE_ENV=development MONGOMS_VERSION=5.0.6 meteor npm install @shelf/jest-mongodb && \
-  NODE_ENV=development meteor npm install
+ENV MONGO_MEMORY_SERVER_FILE /source/jest-mongodb-config.js
+ENV MONGOMS_VERSION 5.0.9
+ENV NODE_ENV development
+
+RUN meteor npm install
 
 
 ADD . /source/
