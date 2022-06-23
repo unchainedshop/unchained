@@ -17,7 +17,7 @@ export default async (remoteToken, unchainedAPI) => {
           token: remoteToken,
         },
         query:
-          'mutation consume($token: String!) { controlConsumeSingleSignOnToken(token: $token) { domain } }',
+          'mutation consume($token: ID!) { controlConsumeSingleSignOnToken(token: $token) { domain } }',
       }),
     });
     const json = await result.json();
