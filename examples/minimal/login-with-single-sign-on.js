@@ -3,7 +3,7 @@ import fetch from 'isomorphic-unfetch';
 
 const { ROOT_URL, NODE_ENV, UNCHAINED_CLOUD_ENDPOINT } = process.env;
 
-export default async (remoteToken, unchainedAPI) => {
+const loginWithSingleSignOn = async (remoteToken, unchainedAPI) => {
   try {
     const thisDomain = new URL(ROOT_URL).hostname;
     const result = await fetch(UNCHAINED_CLOUD_ENDPOINT, {
@@ -62,5 +62,18 @@ export default async (remoteToken, unchainedAPI) => {
   } catch (e) {
     console.error(e); // eslint-disable-line
     return null;
+  }
+};
+
+export default (unchainedApi) => (req, res, next) => {
+  if (req.query?.token) {
+    loginWithSingleSignOn(req.query.token, unchainedApi).then((authCookie) => {
+      if (res?.setHeader) {
+        res.setHeader('Set-Cookie', authCookie);
+        next();
+      }
+    });
+  } else {
+    next();
   }
 };
