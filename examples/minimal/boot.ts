@@ -110,11 +110,9 @@ Meteor.startup(async () => {
   // The following lines will activate SSO from Unchained Cloud to your instance,
   // if you want to further secure your app and close this rabbit hole,
   // remove the following lines
-  WebApp.connectHandlers.use('/', loginWithSingleSignOn);
-  WebApp.connectHandlers.use(
-    '/.well-known/unchained/cloud-sso',
-    loginWithSingleSignOn,
-  );
+  const singleSignOn = loginWithSingleSignOn(unchainedApi);
+  WebApp.connectHandlers.use('/', singleSignOn);
+  WebApp.connectHandlers.use('/.well-known/unchained/cloud-sso', singleSignOn);
   // until here
 
   embedControlpanelInMeteorWebApp(WebApp);
