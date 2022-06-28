@@ -57,14 +57,12 @@ unchained:core-events@1.1.3
 unchained:core-files@1.1.3
 unchained:core-filters@1.1.3
 unchained:core-languages@1.1.3
-unchained:core-messaging@1.1.3
 unchained:core-orders@1.1.3
 unchained:core-payment@1.1.3
 unchained:core-products@1.1.3
 unchained:core-quotations@1.1.3
 unchained:core-users@1.1.3
 unchained:core-warehousing@1.1.3
-unchained:core-worker@1.1.3
 unchained:mongodb@1.1.3
 unchained:platform@1.1.3
 underscore@1.0.10
