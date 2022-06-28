@@ -3,7 +3,7 @@ import { initDb } from 'meteor/unchained:mongodb';
 import {
   configureFilesModule,
   fileServices,
-} from 'meteor/unchained:core-files';
+} from '@unchainedshop/core-files';
 import { FilesModule } from '@unchainedshop/types/files';
 
 describe('Test exports', () => {

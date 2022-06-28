@@ -3,48 +3,46 @@ import { startPlatform, withAccessToken } from 'meteor/unchained:platform';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
-import '@unchainedshop/core-delivery/plugins/post';
-import '@unchainedshop/core-delivery/plugins/pick-mup';
-import '@unchainedshop/core-delivery/plugins/send-message';
-import '@unchainedshop/core-delivery/plugins/stores';
-import '@unchainedshop/core-delivery/plugins/free-delivery';
-import '@unchainedshop/core-delivery/plugins/delivery-swiss-tax';
+import '@unchainedshop/plugins/lib/delivery/post';
+import '@unchainedshop/plugins/lib/delivery/pick-mup';
+import '@unchainedshop/plugins/lib/delivery/send-message';
+import '@unchainedshop/plugins/lib/delivery/stores';
+import '@unchainedshop/plugins/lib/delivery/free-delivery';
+import '@unchainedshop/plugins/lib/delivery/delivery-swiss-tax';
 
-import 'meteor/unchained:core-warehousing/plugins/store';
+import '@unchainedshop/plugins/lib/warehousing/store';
 
-import 'meteor/unchained:core-orders/plugins/discount-half-price-manual';
-import 'meteor/unchained:core-orders/plugins/discount-100-off';
+import '@unchainedshop/plugins/lib/payment/invoice';
+import '@unchainedshop/plugins/lib/payment/invoice-prepaid';
+import '@unchainedshop/plugins/lib/payment/datatrans-v2';
+import '@unchainedshop/plugins/lib/payment/paypal-checkout';
+import '@unchainedshop/plugins/lib/payment/cryptopay';
+import { configureAppleTransactionsModule } from '@unchainedshop/plugins/lib/payment/apple-iap';
+import '@unchainedshop/plugins/lib/payment/stripe';
+import '@unchainedshop/plugins/lib/payment/postfinance-checkout';
+import '@unchainedshop/plugins/lib/payment/worldline-saferpay';
+import { configureBityModule } from '@unchainedshop/plugins/lib/payment/bity';
 
-import 'meteor/unchained:core-payment/plugins/invoice';
-import 'meteor/unchained:core-payment/plugins/invoice-prepaid';
-import 'meteor/unchained:core-payment/plugins/datatrans-v2';
-import 'meteor/unchained:core-payment/plugins/paypal-checkout';
-import 'meteor/unchained:core-payment/plugins/cryptopay';
-import { configureAppleTransactionsModule } from 'meteor/unchained:core-payment/plugins/apple-iap';
-import 'meteor/unchained:core-payment/plugins/stripe';
-import 'meteor/unchained:core-payment/plugins/postfinance-checkout';
-import 'meteor/unchained:core-payment/plugins/worldline-saferpay';
-import { configureBityModule } from 'meteor/unchained:core-payment/plugins/bity';
-import 'meteor/unchained:core-payment/plugins/free-payment';
+import '@unchainedshop/plugins/lib/pricing/discount-half-price-manual';
+import '@unchainedshop/plugins/lib/pricing/discount-100-off';
+import '@unchainedshop/plugins/lib/pricing/free-payment';
+import '@unchainedshop/plugins/lib/pricing/order-items';
+import '@unchainedshop/plugins/lib/pricing/order-discount';
+import '@unchainedshop/plugins/lib/pricing/order-delivery';
+import '@unchainedshop/plugins/lib/pricing/order-payment';
+import '@unchainedshop/plugins/lib/pricing/product-catalog-price';
+import '@unchainedshop/plugins/lib/pricing/product-price-coinbase-exchange';
+import '@unchainedshop/plugins/lib/pricing/product-price-cryptopay';
+import '@unchainedshop/plugins/lib/pricing/product-price-rateconversion';
+import '@unchainedshop/plugins/lib/pricing/product-discount';
+import '@unchainedshop/plugins/lib/pricing/product-swiss-tax';
 
-import 'meteor/unchained:core-orders/plugins/order-items';
-import 'meteor/unchained:core-orders/plugins/order-discount';
-import 'meteor/unchained:core-orders/plugins/order-delivery';
-import 'meteor/unchained:core-orders/plugins/order-payment';
+import '@unchainedshop/plugins/lib/filters/strict-equal';
+import '@unchainedshop/plugins/lib/filters/local-search';
 
-import 'meteor/unchained:core-products/plugins/product-catalog-price';
-import 'meteor/unchained:core-products/plugins/product-price-coinbase-exchange';
-import 'meteor/unchained:core-products/plugins/product-price-cryptopay';
-import 'meteor/unchained:core-products/plugins/product-price-rateconversion';
-import 'meteor/unchained:core-products/plugins/product-discount';
-import 'meteor/unchained:core-products/plugins/product-swiss-tax';
+import '@unchainedshop/plugins/lib/quotations/manual';
 
-import 'meteor/unchained:core-filters/plugins/strict-equal';
-import 'meteor/unchained:core-filters/plugins/local-search';
-
-import 'meteor/unchained:core-quotations/plugins/manual';
-
-import 'meteor/unchained:core-enrollments/plugins/licensed';
+import '@unchainedshop/plugins/lib/enrollments/licensed';
 
 import '@unchainedshop/plugins/lib/worker/external';
 import '@unchainedshop/plugins/lib/worker/http-request';

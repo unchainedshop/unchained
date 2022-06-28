@@ -12,7 +12,7 @@ The sample code below will create a custom product price plugin that will round 
 import {
   ProductPricingAdapter,
   ProductPricingDirector,
-} from 'meteor/unchained:core-pricing';
+} from '@unchainedshop/core-pricing';
 
 const roundToNext = (value) =>
   value % 50 === 50 / 2 ? value + 50 / 2 : value + (50 - (value % 50));
@@ -75,7 +75,7 @@ ProductPricingDirector.registerAdapter(ProductPriceRound);
 Finally you can import this file in the boot file like :
 
 ```
-import 'meteor/unchained:core-pricing/plugins/product-round-price';
+import '@unchainedshop/core-pricing/plugins/product-round-price';
 
 Meteor.startup(() => {
   ...

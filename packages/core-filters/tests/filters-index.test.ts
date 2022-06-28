@@ -3,8 +3,8 @@ import { initDb } from 'meteor/unchained:mongodb';
 import {
   configureFiltersModule,
   FilterType,
-} from 'meteor/unchained:core-filters';
-import { configureProductsModule } from 'meteor/unchained:core-products';
+} from '@unchainedshop/core-filters';
+import { configureProductsModule } from '@unchainedshop/core-products';
 import { FiltersModule } from '@unchainedshop/types/filters';
 import { Context } from '@unchainedshop/types/api';
 import { ProductsModule } from '@unchainedshop/types/products';

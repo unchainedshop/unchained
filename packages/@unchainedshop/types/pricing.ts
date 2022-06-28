@@ -78,7 +78,7 @@ export interface IPricingSheet<Calculation extends PricingCalculation>
   }) => void;
   getDiscountRows: (discountId: string) => Array<Calculation>;
 
-  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
+  addTax: (params: { amount: number; rate?: number; meta?: any }) => void;
   getTaxRows: () => Array<Calculation>;
 }
 

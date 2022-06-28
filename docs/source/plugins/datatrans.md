@@ -8,8 +8,8 @@ If you already have Datatrans chances are high you're still using the legacy API
 
 Activate either of those in your project by selecting to import one (and only one):
 
-- Old Legacy API (v1): `import 'meteor/unchained:core-payment/plugins/datatrans';`
-- Current API (v2): `import 'meteor/unchained:core-payment/plugins/datatrans-v2';`
+- Old Legacy API (v1): `import '@unchainedshop/core-payment/plugins/datatrans';`
+- Current API (v2): `import '@unchainedshop/core-payment/plugins/datatrans-v2';`
 
 The rest of this page will center around the new v2 plugin. If you need support for the legacy plugin, check the source of the plugin and if questions arise, send us an e-mail.
 

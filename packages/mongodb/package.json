@@ -6,7 +6,7 @@
   "types": "lib/mongodb-index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
     "build:watch": "npm run build --watch",
     "test": "METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },

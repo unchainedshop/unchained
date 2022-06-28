@@ -21,7 +21,7 @@ const options = {
 You can override the default slugify function like that:
 
 ```
-import { AssortmentTexts } from 'meteor/unchained:core-products';
+import { AssortmentTexts } from '@unchainedshop/core-products';
 const oldMakeSlug = AssortmentTexts.makeSlug;
 AssortmentTexts.makeSlug = rest =>
   oldMakeSlug(rest, {

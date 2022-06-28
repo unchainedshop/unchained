@@ -5,7 +5,7 @@ description: Configure the Events Module
 
 Unchained supports the publish-subscribe (pub/sub) event model to keep track of events emitted in each module. By default it uses nodejs EventEmitter module to handle events but can easily extended to use any event tracker module by extending the `EventAdapter` class which we will briefly see later.
 
-The `unchained:core-events` module exports three utility functions that can be used to interact with the registered event tracker, or register new custom events.
+The `@unchainedshop/core-events` module exports three utility functions that can be used to interact with the registered event tracker, or register new custom events.
 
 - `registerEvents`: adds custom events that will be tracked. it takes array of event names.
 - `emit(eventName, payload)`: used to emit events, either pre-built events or custom events registered using `registerEvents`. It take two arguments, name of the event we want to emit and an object of the data associated with the event.
@@ -171,7 +171,7 @@ In order to do this, The custom events need to be registered at platform boot ti
 
 ```
 import { Meteor } from 'meteor/meteor';
-import { registerEvents } from 'meteor/unchained:core-events';
+import { registerEvents } from '@unchainedshop/core-events';
 
 Meteor.startup(() => {
   ...
@@ -188,7 +188,7 @@ Meteor.startup(() => {
 After initializing this at system start up, you can `emit` and `subscribe` in your code base.
 
 ```
-import { registerEvents } from 'meteor/unchained:core-events';
+import { registerEvents } from '@unchainedshop/core-events';
 
 subscribe('CUSTOM_EVENT_ONE', ({ payload }) => {
     console.log(payload.from);
@@ -207,7 +207,7 @@ We can easily swap the default event tracker module (EventEmitter) used by uncha
 
 ```
 import redis from 'redis';
-import EventDirector, { EventAdapter } from 'meteor/unchained:core-events';
+import EventDirector, { EventAdapter } from '@unchainedshop/core-events';
 
 const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
 

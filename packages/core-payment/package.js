@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-payment',
-  version: '1.1.3',
+  version: '1.1.4',
   summary: 'Unchained Engine Core: Payment',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -8,7 +8,6 @@ Package.describe({
 
 Npm.depends({
   'simpl-schema': '1.12.0',
-  xml2js: '0.4.23',
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
   // '@unchainedshop/events': '1.1.4', // PEER

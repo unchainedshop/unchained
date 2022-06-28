@@ -341,7 +341,7 @@ declare module '@unchainedshop/core-delivery' {
   ) => IDeliveryPricingSheet;
 }
 
-declare module 'meteor/unchained:core-enrollments' {
+declare module '@unchainedshop/core-enrollments' {
   function configureEnrollmentsModule(
     params: ModuleInput<EnrollmentsSettingsOptions>,
   ): Promise<EnrollmentsModule>;
@@ -358,18 +358,18 @@ declare module '@unchainedshop/plugins/lib/worker/GenerateOrderWorker' {
   function configureGenerateOrderAutoscheduling(): void;
 }
 
-declare module 'meteor/unchained:core-events' {
+declare module '@unchainedshop/core-events' {
   function configureEventsModule(params: ModuleInput<Record<string, never>>): Promise<EventsModule>;
 }
 
-declare module 'meteor/unchained:core-files' {
+declare module '@unchainedshop/core-files' {
   function configureFilesModule(params: ModuleInput<FilesSettingsOptions>): Promise<FilesModule>;
 
   const fileServices: FileServices;
   const filesSettings: FilesSettings;
 }
 
-declare module 'meteor/unchained:core-filters' {
+declare module '@unchainedshop/core-filters' {
   function configureFiltersModule(params: ModuleInput<FiltersSettingsOptions>): Promise<FiltersModule>;
 
   const filtersSettings: FiltersSettings;
@@ -379,7 +379,7 @@ declare module 'meteor/unchained:core-filters' {
   const FilterDirector: IFilterDirector;
 }
 
-declare module 'meteor/unchained:core-languages' {
+declare module '@unchainedshop/core-languages' {
   function configureLanguagesModule(
     params: ModuleInput<Record<string, never>>,
   ): Promise<LanguagesModule>;
@@ -393,7 +393,7 @@ declare module '@unchainedshop/core-messaging' {
   const messagingLogger: Logger;
 }
 
-declare module 'meteor/unchained:core-orders' {
+declare module '@unchainedshop/core-orders' {
   function configureOrdersModule(params: ModuleInput<OrdersSettingsOptions>): Promise<OrdersModule>;
 
   const orderServices: OrderServices;
@@ -411,7 +411,7 @@ declare module 'meteor/unchained:core-orders' {
   const OrderPricingSheet: (params: PricingSheetParams<OrderPricingCalculation>) => IOrderPricingSheet;
 }
 
-declare module 'meteor/unchained:core-payment' {
+declare module '@unchainedshop/core-payment' {
   function configurePaymentModule(params: ModuleInput<PaymentSettingsOptions>): Promise<PaymentModule>;
 
   const paymentSettings: PaymentSettings;
@@ -430,7 +430,7 @@ declare module 'meteor/unchained:core-payment' {
   const PaymentProviderType: typeof PaymentProviderTypeType;
 }
 
-declare module 'meteor/unchained:core-products' {
+declare module '@unchainedshop/core-products' {
   function configureProductsModule(params: ModuleInput<Record<string, never>>): Promise<ProductsModule>;
 
   const productServices: ProductServices;
@@ -446,7 +446,7 @@ declare module 'meteor/unchained:core-products' {
   const ProductStatus: typeof ProductStatusType;
 }
 
-declare module 'meteor/unchained:core-quotations' {
+declare module '@unchainedshop/core-quotations' {
   function configureQuotationsModule(
     params: ModuleInput<QuotationsSettingsOptions>,
   ): Promise<QuotationsModule>;
@@ -460,13 +460,13 @@ declare module 'meteor/unchained:core-quotations' {
   const QuotationError: typeof QuotationErrorType;
 }
 
-declare module 'meteor/unchained:core-users' {
+declare module '@unchainedshop/core-users' {
   function configureUsersModule(params: ModuleInput<Record<string, never>>): Promise<UsersModule>;
 
   const userServices: UserServices;
 }
 
-declare module 'meteor/unchained:core-warehousing' {
+declare module '@unchainedshop/core-warehousing' {
   function configureWarehousingModule(
     params: ModuleInput<Record<string, never>>,
   ): Promise<WarehousingModule>;
@@ -493,7 +493,7 @@ declare module '@unchainedshop/core-worker' {
   const FailedRescheduler: IScheduler;
 }
 
-declare module 'meteor/unchained:core' {
+declare module '@unchainedshop/core' {
   function initCore(options: UnchainedCoreOptions): Promise<Context>;
 }
 

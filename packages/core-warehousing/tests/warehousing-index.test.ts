@@ -1,7 +1,7 @@
 import { Db } from '@unchainedshop/types/common';
 import { WarehousingModule } from '@unchainedshop/types/warehousing';
 import { assert } from 'chai';
-import { configureWarehousingModule } from 'meteor/unchained:core-warehousing';
+import { configureWarehousingModule } from '@unchainedshop/core-warehousing';
 import { initDb } from 'meteor/unchained:mongodb';
 
 describe('Test exports', () => {

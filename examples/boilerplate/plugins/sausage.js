@@ -1,4 +1,4 @@
-import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-pricing';
+import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-pricing';
 import fetch from 'isomorphic-unfetch';
 
 const PRODUCT_TAG_SAUSAGE = 'sausage';

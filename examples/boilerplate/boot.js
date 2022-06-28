@@ -4,7 +4,7 @@ import { startPlatform } from 'meteor/unchained:platform';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
 
-import 'meteor/unchained:core-events/plugins/node-event-emitter';
+import '@unchainedshop/core-events/plugins/node-event-emitter';
 import './plugins/sausage'
 
 import seed from './seed';

@@ -1,7 +1,7 @@
 import { SetupWorkqueueOptions, PlatformOptions, MessageTypes } from '@unchainedshop/types/platform';
 import { Meteor } from 'meteor/meteor';
 import { startAPIServer, roles } from 'meteor/unchained:api';
-import { initCore } from 'meteor/unchained:core';
+import { initCore } from '@unchainedshop/core';
 import { initDb } from 'meteor/unchained:mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';

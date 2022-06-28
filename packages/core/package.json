@@ -27,15 +27,33 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "latest",
-    "@unchainedshop/core-worker": "latest"
+    "@unchainedshop/core-accountsjs": "^1.1.3",
+    "@unchainedshop/core-assortments": "^1.1.4",
+    "@unchainedshop/core-bookmarks": "^1.1.4",
+    "@unchainedshop/core-countries": "^1.1.3",
+    "@unchainedshop/core-currencies": "^1.1.3",
+    "@unchainedshop/core-delivery": "^1.1.3",
+    "@unchainedshop/core-enrollments": "^1.1.3",
+    "@unchainedshop/core-events": "^1.1.3",
+    "@unchainedshop/core-files": "^1.1.3",
+    "@unchainedshop/core-filters": "^1.1.3",
+    "@unchainedshop/core-languages": "^1.1.3",
+    "@unchainedshop/core-messaging": "^1.1.3",
+    "@unchainedshop/core-orders": "^1.1.3",
+    "@unchainedshop/core-payment": "^1.1.4",
+    "@unchainedshop/core-products": "^1.1.3",
+    "@unchainedshop/core-quotations": "^1.1.3",
+    "@unchainedshop/core-users": "^1.1.3",
+    "@unchainedshop/core-warehousing": "^1.1.3",
+    "@unchainedshop/core-worker": "^1.1.3",
+    "@unchainedshop/logger": "^1.1.3"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.22",
-    "@types/mocha": "^9.0.0",
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
     "@unchainedshop/types": "latest",
-    "chai": "^4.3.4",
+    "chai": "^4.3.6",
     "cross-env": "^7.0.3",
-    "typescript": "^4.4.3"
+    "typescript": "^4.7.4"
   }
 }

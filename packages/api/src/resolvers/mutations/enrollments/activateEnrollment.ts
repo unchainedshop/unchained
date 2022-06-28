@@ -1,5 +1,5 @@
 import { Context, Root } from '@unchainedshop/types/api';
-import { EnrollmentStatus } from 'meteor/unchained:core-enrollments';
+import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { log } from '@unchainedshop/logger';
 import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors';
 

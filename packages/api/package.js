@@ -12,12 +12,11 @@ Npm.depends({
   'abort-controller': '3.0.0',
   dataloader: '2.0.0',
   locale: '0.1.0',
-  'lodash.isnumber': '3.0.3',
-  'body-parser': '1.19.0',
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/roles': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
   // '@unchainedshop/events': '1.1.4', // PEER
+  // '@unchainedshop/core': '1.1.3', // PEER
   // 'graphql-scalars': '1.9.0', // needs to be peer dep!
   // graphql peer dep
   // apollo-server-express peer dep
@@ -30,8 +29,6 @@ Package.onUse((api) => {
   api.use('webapp');
   api.use('check');
   api.use('typescript');
-
-  api.use('unchained:core@1.1.3');
 
   api.mainModule('src/api-index.ts', 'server');
 });

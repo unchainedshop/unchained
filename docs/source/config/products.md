@@ -8,7 +8,7 @@ description: Configure the Products Module
 You can override the default slugify function like that:
 
 ```
-import { ProductTexts } from 'meteor/unchained:core-products';
+import { ProductTexts } from '@unchainedshop/core-products';
 const oldMakeSlug = ProductTexts.makeSlug;
 ProductTexts.makeSlug = rest =>
   oldMakeSlug(rest, {
