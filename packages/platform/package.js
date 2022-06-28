@@ -7,16 +7,16 @@ Package.describe({
 });
 
 Npm.depends({
-  JSONStream: '1.3.5',
-  'event-iterator': '2.0.0',
+  // JSONStream: '1.3.5', // PEER
+  // 'event-iterator': '2.0.0', // PEER
   moniker: '0.1.2',
   open: '8.4.0',
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
   // '@unchainedshop/events': '1.1.4', // PEER
-  // '@unchainedshop/plugins': '1.1.3',
-  // '@unchainedshop/core-worker': '1.1.3',
-  // '@unchainedshop/core-messaging': '1.1.3',
+  // '@unchainedshop/plugins': '1.1.3', // PEER
+  // '@unchainedshop/core-worker': '1.1.3', // PEER
+  // '@unchainedshop/core-messaging': '1.1.3', // PEER
 });
 
 Package.onUse((api) => {
