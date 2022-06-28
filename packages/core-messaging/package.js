@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-messaging',
-  version: '1.1.1',
+  version: '1.1.3',
   summary: 'Unchained Engine Core: Messaging',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -9,7 +9,7 @@ Package.describe({
 Npm.depends({
   mustache: '4.1.0',
   mjml: '4.8.1',
-  '@unchainedshop/logger': '1.1.0',
+  '@unchainedshop/logger': '1.1.3',
 });
 
 Package.onUse((api) => {

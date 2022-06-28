@@ -4,7 +4,7 @@ import {
   PaymentPricingCalculation,
 } from '@unchainedshop/types/payments.pricing';
 import { IPricingAdapter } from '@unchainedshop/types/pricing';
-import { BasePricingAdapter } from 'meteor/unchained:utils';
+import { BasePricingAdapter } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet';
 
 const basePricingAdapter = BasePricingAdapter<PaymentPricingAdapterContext, PaymentPricingCalculation>();

@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { User } from '@unchainedshop/types/user';
 import { check, Match } from 'meteor/check';
-import { randomValueHex } from 'meteor/unchained:utils';
+import { randomValueHex } from '@unchainedshop/utils';
 import { accountsSettings } from 'meteor/unchained:core-accountsjs';
 import moniker from 'moniker';
 

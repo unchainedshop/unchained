@@ -1,5 +1,5 @@
 import later from 'later';
-import { generateRandomHash } from 'meteor/unchained:utils';
+import { generateRandomHash } from '@unchainedshop/utils';
 
 const everyHourSchedule = later.parse.text('every 59 minutes');
 const emptyObject = () => {

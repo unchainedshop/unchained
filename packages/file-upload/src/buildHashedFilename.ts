@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { slugify } from 'meteor/unchained:utils';
+import { slugify } from '@unchainedshop/utils';
 import baseX from 'base-x';
 
 const b62 = baseX('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');

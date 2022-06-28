@@ -5,7 +5,7 @@ import {
   WarehousingProviderQuery,
 } from '@unchainedshop/types/warehousing';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection';
 import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema';
 import { WarehousingDirector } from '../director/WarehousingDirector';

@@ -4,7 +4,7 @@ import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { OrdersSchema } from '../db/OrdersSchema';
 
 const ORDER_EVENTS: string[] = [

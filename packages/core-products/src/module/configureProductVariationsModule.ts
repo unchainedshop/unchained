@@ -11,7 +11,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection';
 import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema';
 

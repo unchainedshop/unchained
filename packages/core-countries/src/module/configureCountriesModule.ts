@@ -8,7 +8,7 @@ import {
   generateDbMutations,
   systemLocale,
   buildSortOptions,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection';
 import { CountriesSchema } from '../db/CountriesSchema';
 

@@ -1,6 +1,6 @@
 import { AccountsServer, ServerHooks } from '@accounts/server';
 import crypto from 'crypto';
-import { randomValueHex } from 'meteor/unchained:utils';
+import { randomValueHex } from '@unchainedshop/utils';
 
 export class UnchainedAccountsServer extends AccountsServer {
   DEFAULT_LOGIN_EXPIRATION_DAYS = 30;

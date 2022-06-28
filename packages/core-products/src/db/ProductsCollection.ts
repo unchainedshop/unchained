@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 import { Product, ProductText } from '@unchainedshop/types/products';
 
 export const ProductsCollection = async (db: Db) => {

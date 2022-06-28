@@ -13,7 +13,7 @@ import {
   generateDbFilterById,
   findPreservingIds,
   buildSortOptions,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';

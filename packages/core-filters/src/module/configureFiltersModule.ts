@@ -8,7 +8,7 @@ import {
 } from '@unchainedshop/types/filters';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { FilterType } from '../db/FilterType';
 import { FilterDirector } from '../director/FilterDirector';
 import { FiltersCollection } from '../db/FiltersCollection';
@@ -74,16 +74,16 @@ export const configureFiltersModule = async ({
     const productIdsMap =
       filter.type === FilterType.SWITCH
         ? {
-            true: await findProductIds(filter, { value: true }, requestContext),
-            false: await findProductIds(filter, { value: false }, requestContext),
-          }
+          true: await findProductIds(filter, { value: true }, requestContext),
+          false: await findProductIds(filter, { value: false }, requestContext),
+        }
         : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
-            const accumulator = await accumulatorPromise;
-            return {
-              ...accumulator,
-              [option]: await findProductIds(filter, { value: option }, requestContext),
-            };
-          }, Promise.resolve({}));
+          const accumulator = await accumulatorPromise;
+          return {
+            ...accumulator,
+            [option]: await findProductIds(filter, { value: option }, requestContext),
+          };
+        }, Promise.resolve({}));
 
     return [allProductIds, productIdsMap];
   };

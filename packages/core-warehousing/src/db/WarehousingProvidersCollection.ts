@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common';
 import { WarehousingProvider } from '@unchainedshop/types/warehousing';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const WarehousingProvidersCollection = async (db: Db) => {
   const WarehousingProviders = db.collection<WarehousingProvider>('warehousing-providers');

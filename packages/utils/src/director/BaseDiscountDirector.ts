@@ -1,6 +1,6 @@
 import { IDiscountAdapter, IDiscountDirector } from '@unchainedshop/types/discount';
 import { log } from '@unchainedshop/logger';
-import { BaseDirector } from 'meteor/unchained:utils';
+import { BaseDirector } from './BaseDirector';
 
 export const BaseDiscountDirector = (directorName: string): IDiscountDirector => {
   const baseDirector = BaseDirector<IDiscountAdapter>(directorName, {

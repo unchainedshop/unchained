@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:platform',
-  version: '1.1.1',
+  version: '1.1.3',
   summary: 'Unchained Engine',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -11,7 +11,8 @@ Npm.depends({
   'event-iterator': '2.0.0',
   moniker: '0.1.2',
   open: '8.4.0',
-  '@unchainedshop/logger': '1.1.0',
+  '@unchainedshop/logger': '1.1.3',
+  '@unchainedshop/utils': '1.1.3',
 });
 
 Package.onUse((api) => {
@@ -22,16 +23,15 @@ Package.onUse((api) => {
   api.use('check');
   api.use('email');
 
-  api.use('unchained:utils@1.1.0');
-  api.use('unchained:events@1.1.0');
+  api.use('unchained:events@1.1.3');
 
-  api.use('unchained:mongodb@1.1.0');
-  api.use('unchained:core@1.1.0');
-  api.use('unchained:api@1.1.0');
+  api.use('unchained:mongodb@1.1.3');
+  api.use('unchained:core@1.1.3');
+  api.use('unchained:api@1.1.3');
 
-  api.use('unchained:core-worker@1.1.0');
-  api.use('unchained:core-accountsjs@1.1.0');
-  api.use('unchained:core-messaging@1.1.0');
+  api.use('unchained:core-worker@1.1.3');
+  api.use('unchained:core-accountsjs@1.1.3');
+  api.use('unchained:core-messaging@1.1.3');
 
   api.mainModule('src/platform-index.ts', 'server');
 });

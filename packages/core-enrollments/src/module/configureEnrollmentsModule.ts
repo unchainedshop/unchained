@@ -9,7 +9,7 @@ import {
 import { Locale } from 'locale';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
 import { EnrollmentStatus } from '../db/EnrollmentStatus';

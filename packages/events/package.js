@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:events',
-  version: '1.1.1',
+  version: '1.1.3',
   summary: 'Unchained Engine: Event Director',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -8,7 +8,7 @@ Package.describe({
 
 Npm.depends({
   redis: '4.1.0',
-  '@unchainedshop/logger': '1.1.0',
+  '@unchainedshop/logger': '1.1.3',
 });
 
 Package.onUse((api) => {

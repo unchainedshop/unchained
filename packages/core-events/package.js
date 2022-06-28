@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-events',
-  version: '1.1.1',
+  version: '1.1.3',
   summary: 'Unchained Engine: Core Events',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
   'simpl-schema': '1.12.0',
+  '@unchainedshop/utils': '1.1.3',
 });
 
 Package.onUse((api) => {
@@ -15,8 +16,7 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.1.0');
-  api.use('unchained:events@1.1.0');
+  api.use('unchained:events@1.1.3');
 
   api.mainModule('src/events-index.ts', 'server');
 });

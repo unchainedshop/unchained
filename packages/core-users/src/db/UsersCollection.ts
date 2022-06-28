@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common';
 import { User } from '@unchainedshop/types/user';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const UsersCollection = async (db: Db) => {
   const Users = db.collection<User>('users');

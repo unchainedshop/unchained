@@ -7,7 +7,7 @@ import {
   findUnusedSlug,
   generateDbFilterById,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
@@ -153,10 +153,10 @@ export const configureAssortmentTextsModule = ({
     updateTexts: async (assortmentId, texts, userId) => {
       const assortmentTexts = Array.isArray(texts)
         ? await Promise.all(
-            texts.map(async ({ locale, ...text }) =>
-              upsertLocalizedText(assortmentId, locale, text, userId),
-            ),
-          )
+          texts.map(async ({ locale, ...text }) =>
+            upsertLocalizedText(assortmentId, locale, text, userId),
+          ),
+        )
         : [];
 
       emit('ASSORTMENT_UPDATE_TEXTS', {

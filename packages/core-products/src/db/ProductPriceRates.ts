@@ -1,6 +1,6 @@
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
 import { Db } from '@unchainedshop/types/common';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const ProductPriceRates = async (db: Db) => {
   const ProductRates = db.collection<ProductPriceRate>('product_rates');

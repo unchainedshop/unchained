@@ -9,7 +9,7 @@ import {
   resolveBestSupported,
   resolveUserRemoteAddress,
   systemLocale,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 
 const { NODE_ENV } = process.env;
 

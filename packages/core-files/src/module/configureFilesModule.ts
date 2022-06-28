@@ -1,7 +1,7 @@
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { File, FilesModule, FilesSettingsOptions } from '@unchainedshop/types/files';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema';
 import { filesSettings } from '../files-settings';
@@ -64,9 +64,9 @@ export const configureFilesModule = async ({
         (currentSelector, key) =>
           meta[key] !== undefined
             ? {
-                ...currentSelector,
-                [`meta.${key}`]: meta[key],
-              }
+              ...currentSelector,
+              [`meta.${key}`]: meta[key],
+            }
             : currentSelector,
         {},
       );

@@ -6,7 +6,7 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById } from 'meteor/unchained:utils';
+import { generateDbFilterById } from '@unchainedshop/utils';
 import { ordersSettings } from '../orders-settings';
 
 const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];

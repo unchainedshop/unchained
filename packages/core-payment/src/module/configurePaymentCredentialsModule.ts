@@ -3,7 +3,7 @@ import {
   PaymentModule,
 } from '@unchainedshop/types/payments';
 import { Collection } from '@unchainedshop/types/common';
-import { generateDbFilterById, generateDbObjectId } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
 
 export const configurePaymentCredentialsModule = (
   PaymentCredentials: Collection<PaymentCredentialsType>,
@@ -62,13 +62,13 @@ export const configurePaymentCredentialsModule = (
       const result = await PaymentCredentials.updateOne(
         _id
           ? generateDbFilterById(_id, {
-              userId,
-              paymentProviderId,
-            })
+            userId,
+            paymentProviderId,
+          })
           : {
-              userId,
-              paymentProviderId,
-            },
+            userId,
+            paymentProviderId,
+          },
         {
           $setOnInsert: {
             _id: insertedId,

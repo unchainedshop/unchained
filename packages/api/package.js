@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:api',
-  version: '1.1.2',
+  version: '1.1.3',
   summary: 'Unchained Engine: GraphQL API',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -14,8 +14,9 @@ Npm.depends({
   locale: '0.1.0',
   'lodash.isnumber': '3.0.3',
   'body-parser': '1.19.0',
-  '@unchainedshop/logger': '1.1.0',
-  '@unchainedshop/roles': '1.1.1',
+  '@unchainedshop/logger': '1.1.3',
+  '@unchainedshop/roles': '1.1.3',
+  '@unchainedshop/utils': '1.1.3',
   // 'graphql-scalars': '1.9.0', // needs to be peer dep!
   // graphql peer dep
   // apollo-server-express peer dep
@@ -29,8 +30,8 @@ Package.onUse((api) => {
   api.use('check');
   api.use('typescript');
 
-  api.use('unchained:events@1.1.0');
-  api.use('unchained:core@1.1.0');
+  api.use('unchained:events@1.1.3');
+  api.use('unchained:core@1.1.3');
 
   api.mainModule('src/api-index.ts', 'server');
 });

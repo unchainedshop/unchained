@@ -14,7 +14,7 @@ import {
   Schemas,
   slugify,
   systemLocale,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import './generate-db-mutations.test';
 
 describe('Test exports', () => {

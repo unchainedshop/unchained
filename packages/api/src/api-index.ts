@@ -11,7 +11,7 @@ export * as roles from './roles';
 
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
-const UNCHAINED_API_VERSION = '1.1.2'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '1.1.3'; // eslint-disable-line
 
 export const startAPIServer = (options: UnchainedServerOptions) => {
   const { unchainedAPI, roles, context: customContext, ...apolloServerOptions } = options || {};

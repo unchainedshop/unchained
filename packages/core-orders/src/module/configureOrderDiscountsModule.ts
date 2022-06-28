@@ -4,7 +4,7 @@ import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector';

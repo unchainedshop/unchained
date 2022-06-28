@@ -5,7 +5,7 @@ import {
   IQuotationDirector,
   QuotationContext,
 } from '@unchainedshop/types/quotations';
-import { BaseDirector } from 'meteor/unchained:utils';
+import { BaseDirector } from '@unchainedshop/utils';
 import { QuotationError } from './QuotationError';
 
 const baseDirector = BaseDirector<IQuotationAdapter>('QuotationDirector', {

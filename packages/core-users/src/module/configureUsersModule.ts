@@ -8,7 +8,7 @@ import {
   generateDbMutations,
   Schemas,
   systemLocale,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { FileDirector } from 'meteor/unchained:file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';

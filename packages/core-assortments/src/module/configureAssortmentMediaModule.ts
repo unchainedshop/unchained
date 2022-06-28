@@ -11,7 +11,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { FileDirector } from 'meteor/unchained:file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
 import { AssortmentMediasSchema } from '../db/AssortmentMediasSchema';

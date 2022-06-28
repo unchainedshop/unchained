@@ -7,7 +7,7 @@ import {
 } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
@@ -24,9 +24,9 @@ const buildFindByContextDataSelector = (context: any): Query => {
     (currentSelector, key) =>
       context[key] !== undefined
         ? {
-            ...currentSelector,
-            [`context.${key}`]: context[key],
-          }
+          ...currentSelector,
+          [`context.${key}`]: context[key],
+        }
         : currentSelector,
     {},
   );

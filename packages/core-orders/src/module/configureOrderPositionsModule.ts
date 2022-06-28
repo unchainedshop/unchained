@@ -3,7 +3,7 @@ import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from 'meteor/unchained:events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, generateDbObjectId } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, generateDbObjectId } from '@unchainedshop/utils';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
 import { ordersSettings } from '../orders-settings';
 
@@ -76,8 +76,7 @@ export const configureOrderPositionsModule = ({
       const originalProductId = originalProduct ? originalProduct._id : undefined;
 
       log(
-        `Create ${quantity}x Position with Product ${productId} ${
-          quotationId ? ` (${quotationId})` : ''
+        `Create ${quantity}x Position with Product ${productId} ${quotationId ? ` (${quotationId})` : ''
         }`,
         { orderId, productId, originalProductId, userId: requestContext.userId },
       );
@@ -317,8 +316,8 @@ export const configureOrderPositionsModule = ({
       const upsertedOrderPosition = await OrderPositions.findOne(
         upsertedId
           ? {
-              _id: upsertedId,
-            }
+            _id: upsertedId,
+          }
           : selector,
       );
 

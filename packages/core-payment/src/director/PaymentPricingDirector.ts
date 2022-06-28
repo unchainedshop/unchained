@@ -5,7 +5,7 @@ import {
   PaymentPricingCalculation,
   PaymentPricingContext,
 } from '@unchainedshop/types/payments.pricing';
-import { BasePricingDirector } from 'meteor/unchained:utils';
+import { BasePricingDirector } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet';
 
 const baseDirector = BasePricingDirector<

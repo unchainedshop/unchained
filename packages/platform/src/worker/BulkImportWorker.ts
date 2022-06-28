@@ -1,7 +1,7 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from '@unchainedshop/logger';
-import { BaseAdapter } from 'meteor/unchained:utils';
+import { BaseAdapter } from '@unchainedshop/utils';
 import fs from 'fs';
 import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';

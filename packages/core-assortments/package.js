@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-assortments',
-  version: '1.1.1',
+  version: '1.1.3',
   summary: 'Unchained Engine Core: Assortments',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -10,7 +10,8 @@ Npm.depends({
   locale: '0.1.0',
   ramda: '0.27.1',
   'simpl-schema': '1.12.0',
-  '@unchainedshop/logger': '1.1.0',
+  '@unchainedshop/logger': '1.1.3',
+  '@unchainedshop/utils': '1.1.3',
 });
 
 Package.onUse((api) => {
@@ -18,9 +19,8 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:utils@1.1.0');
-  api.use('unchained:events@1.1.0');
-  api.use('unchained:file-upload@1.1.0');
+  api.use('unchained:events@1.1.3');
+  api.use('unchained:file-upload@1.1.3');
 
   api.mainModule('src/assortments-index.ts', 'server');
 });

@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common';
 import { Work } from '@unchainedshop/types/worker';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 const ONE_DAY_IN_SECONDS = 86400;
 

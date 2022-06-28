@@ -1,4 +1,4 @@
-import { Schemas } from 'meteor/unchained:utils';
+import { Schemas } from '@unchainedshop/utils';
 import SimpleSchema from 'simpl-schema';
 
 export const DeliveryProvidersSchema = new SimpleSchema(

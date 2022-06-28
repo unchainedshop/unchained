@@ -150,7 +150,7 @@ import {
 } from './worker';
 import { UnchainedCoreOptions } from './core';
 
-declare module 'meteor/unchained:utils' {
+declare module '@unchainedshop/utils' {
   function slugify(text: string): string;
   function buildSortOptions(sort: Array<SortOption>): { [key: string]: [value: number] };
   function randomValueHex(len: number): string;

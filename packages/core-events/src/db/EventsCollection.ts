@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common';
 import { Event } from '@unchainedshop/types/events';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 const TWO_DAYS_SEC = 172800;
 

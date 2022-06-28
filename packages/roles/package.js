@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:roles',
-  version: '1.1.1',
+  version: '1.1.3',
   summary: 'Unchained Engine: Roles',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',

@@ -7,7 +7,7 @@ import {
 } from '@unchainedshop/types/common';
 import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import os from 'os';
 import { WorkQueueCollection } from '../db/WorkQueueCollection';
 import { WorkQueueSchema } from '../db/WorkQueueSchema';

@@ -7,7 +7,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { FileDirector } from 'meteor/unchained:file-upload';
 import { ProductsModule } from '@unchainedshop/types/products';
 import { ProductMediaCollection } from '../db/ProductMediaCollection';

@@ -1,7 +1,7 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import { WorkerDirector } from 'meteor/unchained:core-worker';
 import { createLogger } from '@unchainedshop/logger';
-import { BaseAdapter } from 'meteor/unchained:utils';
+import { BaseAdapter } from '@unchainedshop/utils';
 
 const logger = createLogger('unchained:platform:zombie-killer');
 
@@ -70,11 +70,11 @@ export const ZombieKillerWorker: IWorkerAdapter<
       const deletedFilesCount =
         fileIdsToRemove.length > 0
           ? await services.files.removeFiles(
-              {
-                fileIds: fileIdsToRemove,
-              },
-              unchainedAPI,
-            )
+            {
+              fileIds: fileIdsToRemove,
+            },
+            unchainedAPI,
+          )
           : 0;
 
       // Return delete count

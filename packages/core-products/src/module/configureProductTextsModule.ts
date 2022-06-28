@@ -7,7 +7,7 @@ import {
   findUnusedSlug,
   generateDbFilterById,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { productsSettings } from '../products-settings';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXTS'];
@@ -147,8 +147,8 @@ export const configureProductTextsModule = ({
     updateTexts: async (productId, texts, userId) => {
       const productTexts = texts
         ? await Promise.all(
-            texts.map(({ locale, ...text }) => upsertLocalizedText(productId, locale, text, userId)),
-          )
+          texts.map(({ locale, ...text }) => upsertLocalizedText(productId, locale, text, userId)),
+        )
         : [];
 
       emit('PRODUCT_UPDATE_TEXTS', {

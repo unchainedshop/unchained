@@ -3,7 +3,7 @@ import {
   DeliveryPricingCalculation,
   IDeliveryPricingAdapter,
 } from '@unchainedshop/types/delivery.pricing';
-import { BasePricingAdapter } from 'meteor/unchained:utils';
+import { BasePricingAdapter } from '@unchainedshop/utils';
 import { DeliveryPricingSheet } from './DeliveryPricingSheet';
 
 const basePricingAdapter = BasePricingAdapter<

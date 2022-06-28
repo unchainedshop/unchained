@@ -1,4 +1,4 @@
-import { BasePricingSheet } from 'meteor/unchained:utils';
+import { BasePricingSheet } from '@unchainedshop/utils';
 import {
   ProductPricingCalculation,
   ProductPricingRowCategory,

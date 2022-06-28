@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common';
-import { generateDbObjectId } from 'meteor/unchained:utils';
+import { generateDbObjectId } from '@unchainedshop/utils';
 import { BityCredentialsCollection, BityCredentialsType } from '../db/BityCredentialsCollection';
 
 export interface BityModule {

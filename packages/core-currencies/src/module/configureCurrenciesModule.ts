@@ -1,7 +1,7 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbMutations, generateDbFilterById, buildSortOptions } from 'meteor/unchained:utils';
+import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
 import { CurrenciesSchema } from '../db/CurrenciesSchema';
 

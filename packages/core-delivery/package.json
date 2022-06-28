@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-devlivery",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "main": "lib/devlivery-index.js",
   "types": "lib/devlivery-index.d.ts",
   "type": "module",
@@ -28,8 +28,8 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "simpl-schema": "1.12.0",
-    "@unchainedshop/logger": "latest"
-
+    "@unchainedshop/logger": "latest",
+    "@unchainedshop/utils": "latest"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

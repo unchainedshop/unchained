@@ -1,7 +1,7 @@
 import { UnchainedAPI, UnchainedLoaders } from '@unchainedshop/types/api';
 import DataLoader from 'dataloader';
 import { IncomingMessage } from 'http';
-import { systemLocale } from 'meteor/unchained:utils';
+import { systemLocale } from '@unchainedshop/utils';
 import { Locale } from 'locale';
 
 export default async (

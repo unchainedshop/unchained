@@ -1,6 +1,6 @@
 import { AssortmentsSettingsOptions } from '@unchainedshop/types/assortments';
 import { Db } from '@unchainedshop/types/common';
-import { slugify as defaultSlugify } from 'meteor/unchained:utils';
+import { slugify as defaultSlugify } from '@unchainedshop/utils';
 import zipTreeByDeepness from './utils/tree-zipper/zipTreeByDeepness';
 import makeMongoDBCache from './product-cache/mongodb';
 

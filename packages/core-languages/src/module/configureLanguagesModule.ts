@@ -6,7 +6,7 @@ import {
   generateDbFilterById,
   systemLocale,
   buildSortOptions,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { LanguagesCollection } from '../db/LanguagesCollection';
 import { LanguagesSchema } from '../db/LanguagesSchema';
 

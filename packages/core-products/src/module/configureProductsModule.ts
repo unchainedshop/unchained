@@ -11,7 +11,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   buildSortOptions,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';

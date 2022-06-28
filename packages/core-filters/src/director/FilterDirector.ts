@@ -1,6 +1,6 @@
 import { FindOptions, Query } from '@unchainedshop/types/common';
 import { FilterAdapterActions, IFilterAdapter, IFilterDirector } from '@unchainedshop/types/filters';
-import { BaseDirector } from 'meteor/unchained:utils';
+import { BaseDirector } from '@unchainedshop/utils';
 
 const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
   adapterSortKey: 'orderIndex',

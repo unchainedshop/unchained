@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { OrderPayment as OrderPaymentType } from '@unchainedshop/types/orders.payments';
 import { PaymentProviderType } from 'meteor/unchained:core-payment';
-import { objectInvert } from 'meteor/unchained:utils';
+import { objectInvert } from '@unchainedshop/utils';
 
 const OrderPaymentMap = {
   OrderPaymentGeneric: PaymentProviderType.GENERIC,

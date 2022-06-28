@@ -1,7 +1,7 @@
 import { AssortmentLink, AssortmentsModule } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById, generateDbObjectId } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',
@@ -32,11 +32,11 @@ export const configureAssortmentLinksModule = ({
     findLinks: async ({ assortmentId, parentAssortmentId }, options) => {
       const selector = parentAssortmentId
         ? {
-            parentAssortmentId,
-          }
+          parentAssortmentId,
+        }
         : {
-            $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
-          };
+          $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
+        };
 
       const links = AssortmentLinks.find(
         selector,

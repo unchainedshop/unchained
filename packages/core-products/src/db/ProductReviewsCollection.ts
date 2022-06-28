@@ -1,6 +1,6 @@
 import { ProductReview } from '@unchainedshop/types/products.reviews';
 import { Db } from '@unchainedshop/types/common';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const ProductReviewsCollection = async (db: Db) => {
   const ProductReviews = db.collection<ProductReview>('product_reviews');

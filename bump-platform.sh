@@ -1,9 +1,9 @@
 ./clean-packages.sh &&
 cd packages/@unchainedshop/types && npm publish && cd .. &&
 
-cd ../logger && meteor publish &&
-cd ../roles && meteor publish &&
-cd ../utils && meteor publish &&
+cd ../logger && npm install && npm publish &&
+cd ../roles && npm install && npm publish &&
+cd ../utils && npm install && npm publish &&
 cd ../events && meteor publish &&
 cd ../mongodb && meteor publish &&
 cd ../file-upload && meteor publish &&
