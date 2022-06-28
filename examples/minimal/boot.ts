@@ -3,12 +3,12 @@ import { startPlatform, withAccessToken } from 'meteor/unchained:platform';
 import { WebApp } from 'meteor/webapp';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
-import 'meteor/unchained:core-delivery/plugins/post';
-import 'meteor/unchained:core-delivery/plugins/pick-mup';
-import 'meteor/unchained:core-delivery/plugins/send-message';
-import 'meteor/unchained:core-delivery/plugins/stores';
-import 'meteor/unchained:core-delivery/plugins/free-delivery';
-import 'meteor/unchained:core-delivery/plugins/delivery-swiss-tax';
+import '@unchainedshop/core-delivery/plugins/post';
+import '@unchainedshop/core-delivery/plugins/pick-mup';
+import '@unchainedshop/core-delivery/plugins/send-message';
+import '@unchainedshop/core-delivery/plugins/stores';
+import '@unchainedshop/core-delivery/plugins/free-delivery';
+import '@unchainedshop/core-delivery/plugins/delivery-swiss-tax';
 
 import 'meteor/unchained:core-warehousing/plugins/store';
 

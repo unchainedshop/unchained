@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { DeliveryPricingAdapter, DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
+import { DeliveryPricingAdapter, DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 import {
   DeliveryPricingAdapterContext,
   IDeliveryPricingAdapter,

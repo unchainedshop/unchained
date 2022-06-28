@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { User } from '@unchainedshop/types/user';
 import { check, Match } from 'meteor/check';
 import { randomValueHex } from '@unchainedshop/utils';
-import { accountsSettings } from 'meteor/unchained:core-accountsjs';
+import { accountsSettings } from '@unchainedshop/core-accountsjs';
 import moniker from 'moniker';
 
 export const setupAccounts = (unchainedAPI: Context) => {

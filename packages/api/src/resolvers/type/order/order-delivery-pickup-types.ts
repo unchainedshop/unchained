@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { DeliveryLocation, DeliveryProvider } from '@unchainedshop/types/delivery';
 import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/types/orders.deliveries';
-import { DeliveryDirector } from 'meteor/unchained:core-delivery';
+import { DeliveryDirector } from '@unchainedshop/core-delivery';
 
 type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;
 

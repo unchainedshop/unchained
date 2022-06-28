@@ -1,6 +1,6 @@
 import { Users } from 'meteor/unchained:core-users';
-import { Countries } from 'meteor/unchained:core-countries';
-import { Currencies } from 'meteor/unchained:core-currencies';
+import { Countries } from '@unchainedshop/core-countries';
+import { Currencies } from '@unchainedshop/core-currencies';
 import { Languages } from 'meteor/unchained:core-languages';
 import { hashPassword } from 'meteor/unchained:api';
 

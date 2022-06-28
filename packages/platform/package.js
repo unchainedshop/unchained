@@ -17,6 +17,7 @@ Npm.depends({
   // '@unchainedshop/plugins': '1.1.3', // PEER
   // '@unchainedshop/core-worker': '1.1.3', // PEER
   // '@unchainedshop/core-messaging': '1.1.3', // PEER
+  // '@unchainedshop/core-accountsjs': '1.1.3', // PEER
 });
 
 Package.onUse((api) => {
@@ -30,8 +31,6 @@ Package.onUse((api) => {
   api.use('unchained:mongodb@1.1.3');
   api.use('unchained:core@1.1.3');
   api.use('unchained:api@1.1.3');
-
-  api.use('unchained:core-accountsjs@1.1.3');
 
   api.mainModule('src/platform-index.ts', 'server');
 });

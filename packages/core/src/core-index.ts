@@ -1,10 +1,10 @@
 import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core';
-import { configureAccountsModule } from 'meteor/unchained:core-accountsjs';
-import { configureAssortmentsModule } from 'meteor/unchained:core-assortments';
-import { bookmarkServices, configureBookmarksModule } from 'meteor/unchained:core-bookmarks';
-import { configureCountriesModule, countryServices } from 'meteor/unchained:core-countries';
-import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
-import { configureDeliveryModule } from 'meteor/unchained:core-delivery';
+import { configureAccountsModule } from '@unchainedshop/core-accountsjs';
+import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
+import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
+import { configureCountriesModule, countryServices } from '@unchainedshop/core-countries';
+import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
+import { configureDeliveryModule } from '@unchainedshop/core-delivery';
 import { configureEnrollmentsModule } from 'meteor/unchained:core-enrollments';
 import { configureEventsModule } from 'meteor/unchained:core-events';
 import { configureFilesModule, fileServices } from 'meteor/unchained:core-files';

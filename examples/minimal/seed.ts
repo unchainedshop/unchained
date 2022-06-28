@@ -1,5 +1,5 @@
 import { hashPassword } from 'meteor/unchained:api';
-import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
+import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType } from 'meteor/unchained:core-payment';
 import { v4 as uuidv4 } from 'uuid';
 

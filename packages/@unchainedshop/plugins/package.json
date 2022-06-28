@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
+    "@unchainedshop/core-delivery": "^1.1.3",
     "@unchainedshop/core-messaging": "^1.1.3",
     "@unchainedshop/core-worker": "^1.1.3",
     "@unchainedshop/events": "latest",
@@ -37,6 +38,7 @@
     "body-parser": "^1.20.0",
     "event-iterator": "^2.0.0",
     "minio": "^7.0.28",
+    "moment": "^2.29.3",
     "mongodb": "^4.7.0",
     "redis": "^4.1.0",
     "typescript": "^4.7.4"

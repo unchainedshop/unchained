@@ -284,7 +284,7 @@ declare module '@unchainedshop/file-upload' {
  * Core packages
  */
 
-declare module 'meteor/unchained:core-accountsjs' {
+declare module '@unchainedshop/core-accountsjs' {
   function configureAccountsModule(
     params: ModuleInput<AccountsSettingsOptions>,
   ): Promise<AccountsModule>;
@@ -292,7 +292,7 @@ declare module 'meteor/unchained:core-accountsjs' {
   const accountsSettings: AccountsSettings;
 }
 
-declare module 'meteor/unchained:core-assortments' {
+declare module '@unchainedshop/core-assortments' {
   function configureAssortmentsModule(
     params: ModuleInput<AssortmentsSettingsOptions>,
   ): Promise<AssortmentsModule>;
@@ -300,7 +300,7 @@ declare module 'meteor/unchained:core-assortments' {
   const assortmentsSettings: AssortmentsSettings;
 }
 
-declare module 'meteor/unchained:core-bookmarks' {
+declare module '@unchainedshop/core-bookmarks' {
   function configureBookmarksModule(
     params: ModuleInput<Record<string, never>>,
   ): Promise<BookmarksModule>;
@@ -308,7 +308,7 @@ declare module 'meteor/unchained:core-bookmarks' {
   const bookmarkServices: BookmarkServices;
 }
 
-declare module 'meteor/unchained:core-countries' {
+declare module '@unchainedshop/core-countries' {
   function configureCountriesModule(
     params: ModuleInput<Record<string, never>>,
   ): Promise<CountriesModule>;
@@ -316,13 +316,13 @@ declare module 'meteor/unchained:core-countries' {
   const countryServices: CountryServices;
 }
 
-declare module 'meteor/unchained:core-currencies' {
+declare module '@unchainedshop/core-currencies' {
   function configureCurrenciesModule(
     params: ModuleInput<Record<string, never>>,
   ): Promise<CurrenciesModule>;
 }
 
-declare module 'meteor/unchained:core-delivery' {
+declare module '@unchainedshop/core-delivery' {
   function configureDeliveryModule(
     params: ModuleInput<DeliverySettingsOptions>,
   ): Promise<DeliveryModule>;

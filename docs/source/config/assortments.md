@@ -6,7 +6,7 @@ description: Configure the Assortments Module
 Control the zip function to derive a flat sorted array of products out of an assortment tree:
 
 ```
-import zipTreeBySimplyFlattening from "meteor/unchained:core-assortments/tree-zipper/zipTreeBySimplyFlattening"
+import zipTreeBySimplyFlattening from "@unchainedshop/core-assortments/tree-zipper/zipTreeBySimplyFlattening"
 const options = {
   modules: {
     assortments: {

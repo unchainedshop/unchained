@@ -1,5 +1,5 @@
 import { OrderDelivery as OrderDeliveryType } from '@unchainedshop/types/orders.deliveries';
-import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
+import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { objectInvert } from '@unchainedshop/utils';
 import { Context } from '@unchainedshop/types/api';
 

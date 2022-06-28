@@ -7,8 +7,14 @@ Package.describe({
 });
 //
 // Npm.depends({
+//   '@unchainedshop/core-accountsjs': '1.1.3',
 //   '@unchainedshop/core-worker': '1.1.3',
 //   '@unchainedshop/core-messaging': '1.1.3',
+//   '@unchainedshop/core-assortments': '1.1.3',
+//   '@unchainedshop/core-bookmarks': '1.1.3',
+//   '@unchainedshop/core-countries': '1.1.3',
+//   '@unchainedshop/core-currencies': '1.1.3',
+//   '@unchainedshop/core-delivery': '1.1.3',
 // });
 
 Package.onUse((api) => {
@@ -17,12 +23,6 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:core-accountsjs@1.1.3');
-  api.use('unchained:core-assortments@1.1.3');
-  api.use('unchained:core-bookmarks@1.1.3');
-  api.use('unchained:core-countries@1.1.3');
-  api.use('unchained:core-currencies@1.1.3');
-  api.use('unchained:core-delivery@1.1.3');
   api.use('unchained:core-enrollments@1.1.3');
   api.use('unchained:core-events@1.1.3');
   api.use('unchained:core-files@1.1.3');
@@ -36,12 +36,6 @@ Package.onUse((api) => {
   api.use('unchained:core-warehousing@1.1.3');
 
   api.imply([
-    'unchained:core-accountsjs',
-    'unchained:core-assortments',
-    'unchained:core-bookmarks',
-    'unchained:core-countries',
-    'unchained:core-currencies',
-    'unchained:core-delivery',
     'unchained:core-enrollments',
     'unchained:core-events',
     'unchained:core-files',

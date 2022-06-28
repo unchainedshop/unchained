@@ -9,11 +9,11 @@ cd ../mongodb && meteor publish &&
 cd ../file-upload && npm install && npm publish &&
 
 cd ../core-worker && npm install && npm publish &&
-cd ../core-accountsjs && meteor publish &&
-cd ../core-assortments && meteor publish &&
-cd ../core-bookmarks && meteor publish &&
-cd ../core-currencies && meteor publish &&
-cd ../core-countries && meteor publish &&
+cd ../core-accountsjs && npm install && npm publish &&
+cd ../core-assortments && npm install && npm publish &&
+cd ../core-bookmarks && npm install && npm publish &&
+cd ../core-currencies && npm install && npm publish &&
+cd ../core-countries && npm install && npm publish &&
 cd ../core-delivery && meteor publish &&
 cd ../core-files && meteor publish &&
 cd ../core-languages && meteor publish &&
