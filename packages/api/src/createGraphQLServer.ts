@@ -46,7 +46,6 @@ export default (options) => {
   } = options || {};
 
   const context = getCurrentContextResolver();
-  console.log([...typeDefs, ...additionalTypeDefs]);
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
