@@ -6,7 +6,7 @@ import {
   ProductReviewVoteType,
   ProductVote,
 } from '@unchainedshop/types/products.reviews';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection';
 import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema';

@@ -12,6 +12,7 @@ Npm.depends({
   'simpl-schema': '1.12.0',
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
+  '@unchainedshop/events': '1.1.4',
 });
 
 Package.onUse((api) => {
@@ -19,7 +20,6 @@ Package.onUse((api) => {
   api.use('ecmascript');
   api.use('typescript');
 
-  api.use('unchained:events@1.1.3');
   api.use('unchained:file-upload@1.1.3');
 
   api.mainModule('src/files-index.ts', 'server');

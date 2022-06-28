@@ -2,7 +2,7 @@ import { Locale } from 'locale';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from '@unchainedshop/logger';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   generateDbMutations,

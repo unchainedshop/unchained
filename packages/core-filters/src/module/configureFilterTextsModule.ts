@@ -1,7 +1,7 @@
 import { Collection, Filter } from '@unchainedshop/types/common';
 import { FiltersModule, FilterText } from '@unchainedshop/types/filters';
 import { Locale } from 'locale';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { findLocalizedText, generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXTS'];

@@ -6,7 +6,7 @@ import {
   PaymentProvider,
   PaymentProviderQuery,
 } from '@unchainedshop/types/payments';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { PaymentPricingDirector } from '../director/PaymentPricingDirector';
 import { PaymentPricingSheet } from '../director/PaymentPricingSheet';

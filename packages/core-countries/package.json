@@ -31,7 +31,8 @@
     "i18n-iso-countries": "^7.1.0",
     "lru-cache": "6.0.0",
     "simpl-schema": "1.12.0",
-    "@unchainedshop/utils": "latest"
+    "@unchainedshop/utils": "latest",
+    "@unchainedshop/events": "latest"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

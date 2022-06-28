@@ -1,6 +1,6 @@
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { File, FilesModule, FilesSettingsOptions } from '@unchainedshop/types/files';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema';

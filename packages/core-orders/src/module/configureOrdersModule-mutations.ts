@@ -2,7 +2,7 @@ import { Collection, ModuleMutations } from '@unchainedshop/types/common';
 import { Order, OrderStatus, OrderMutations, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { OrdersSchema } from '../db/OrdersSchema';

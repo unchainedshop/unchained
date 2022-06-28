@@ -1,6 +1,6 @@
 import { ModuleMutations } from '@unchainedshop/types/common';
 import { Event, EmitAdapter } from '@unchainedshop/types/events';
-import { getEmitHistoryAdapter, setEmitHistoryAdapter } from 'meteor/unchained:events';
+import { getEmitHistoryAdapter, setEmitHistoryAdapter } from '@unchainedshop/events';
 
 export const configureEventHistoryAdapter = (mutations: ModuleMutations<Event>) => {
   if (!getEmitHistoryAdapter()) {

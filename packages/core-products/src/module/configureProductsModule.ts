@@ -5,7 +5,7 @@ import {
   ProductsModule,
   ProductsSettingsOptions,
 } from '@unchainedshop/types/products';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findPreservingIds,
   generateDbFilterById,

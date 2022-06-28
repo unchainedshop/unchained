@@ -5,7 +5,7 @@ import {
   OrderPaymentsModule,
   OrderPaymentStatus,
 } from '@unchainedshop/types/orders.payments';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';

@@ -17,6 +17,7 @@ Npm.depends({
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/roles': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
+  '@unchainedshop/events': '1.1.4',
   // 'graphql-scalars': '1.9.0', // needs to be peer dep!
   // graphql peer dep
   // apollo-server-express peer dep
@@ -30,7 +31,6 @@ Package.onUse((api) => {
   api.use('check');
   api.use('typescript');
 
-  api.use('unchained:events@1.1.3');
   api.use('unchained:core@1.1.3');
 
   api.mainModule('src/api-index.ts', 'server');

@@ -5,7 +5,7 @@ import {
 } from '@unchainedshop/types/products.variations';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { Locale } from 'locale';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   generateDbFilterById,

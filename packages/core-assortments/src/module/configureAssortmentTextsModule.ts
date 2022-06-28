@@ -1,7 +1,7 @@
 import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
 import { Locale } from 'locale';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   findUnusedSlug,

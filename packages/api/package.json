@@ -40,7 +40,8 @@
     "lru-cache": "6.0.0",
     "@unchainedshop/logger": "latest",
     "@unchainedshop/roles": "latest",
-    "@unchainedshop/utils": "latest"
+    "@unchainedshop/utils": "latest",
+    "@unchainedshop/events": "latest"
   },
   "devDependencies": {
     "@types/graphql-upload": "^8.0.11",

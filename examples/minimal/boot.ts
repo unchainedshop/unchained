@@ -59,7 +59,7 @@ import { configureGridFSFileUploadModule } from 'meteor/unchained:file-upload/pl
 // import 'meteor/unchained:file-upload/plugins/minio-adapter';
 // import 'meteor/unchained:file-upload/plugins/minio-webhook';
 
-import 'meteor/unchained:events/plugins/node-event-emitter';
+import '@unchainedshop/events/lib/plugins/node-event-emitter';
 
 import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
