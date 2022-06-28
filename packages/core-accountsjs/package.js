@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:core-accountsjs',
-  version: '1.1.1',
+  version: '1.1.2',
   summary: 'Unchained Engine Core: Accounts',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -9,11 +9,12 @@ Package.describe({
 Npm.depends({
   '@accounts/database-manager': '0.33.1',
   '@accounts/mongo': '0.34.0',
-  '@accounts/mongo-password': '0.32.3',
+  '@accounts/mongo-password': '0.32.4',
   '@accounts/password': '0.32.1',
   '@accounts/server': '0.33.1',
   '@graphql-modules/core': '0.7.17',
   '@unchainedshop/logger': '1.1.0',
+  '@levminer/speakeasy': '1.3.3'
 });
 
 Package.onUse((api) => {

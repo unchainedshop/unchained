@@ -6,7 +6,7 @@ export default async function enableTOTP(
   params: { code: string; secretBase32: string },
   { modules, userId }: Context,
 ) {
-  log(`mutation disableTOTP ${params.code}`, {
+  log(`mutation enableTOTP ${params.code}`, {
     userId,
   });
 
