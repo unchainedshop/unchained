@@ -1,5 +1,7 @@
 import { IFileAdapter } from '@unchainedshop/types/files';
-import { FileAdapter, FileDirector } from 'meteor/unchained:file-upload';
+import { FileAdapter } from '../director/FileAdapter';
+import { FileDirector } from '../director/FileDirector';
+
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from '@unchainedshop/logger';
@@ -7,7 +9,7 @@ import mimeType from 'mime-types';
 import Minio from 'minio';
 import { Readable } from 'stream';
 import { URL } from 'url';
-import buildHashedFilename from '../src/buildHashedFilename';
+import buildHashedFilename from '../buildHashedFilename';
 
 const {
   MINIO_ACCESS_KEY,

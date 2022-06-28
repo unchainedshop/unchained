@@ -2,7 +2,7 @@ import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
 import { log, LogLevel } from '@unchainedshop/logger';
 import sign from './sign';
 import promisePipe from './promisePipe';
-import buildHashedFilename from '../../src/buildHashedFilename';
+import buildHashedFilename from '../../buildHashedFilename';
 
 const { ROOT_URL } = process.env;
 

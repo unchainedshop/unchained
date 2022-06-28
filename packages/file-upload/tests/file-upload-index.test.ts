@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { initDb } from 'meteor/unchained:mongodb';
-import { FileDirector, FileAdapter } from 'meteor/unchained:file-upload';
+import { FileDirector, FileAdapter } from '@unchainedshop/file-upload';
 
 describe('Test exports', () => {
   it('Check expors', () => {

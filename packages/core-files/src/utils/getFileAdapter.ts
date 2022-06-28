@@ -1,4 +1,4 @@
-import { FileDirector } from 'meteor/unchained:file-upload';
+import { FileDirector } from '@unchainedshop/file-upload';
 
 export const getFileAdapter = () => {
   const adapters = FileDirector.getAdapters();

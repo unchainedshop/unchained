@@ -47,8 +47,6 @@ socket-stream-client@0.5.0
 tracker@1.2.0
 typescript@4.5.4
 unchained:core-files@1.1.1
-
-unchained:file-upload@1.1.0
 unchained:mongodb@1.1.0
 underscore@1.0.10
 webapp@1.13.1

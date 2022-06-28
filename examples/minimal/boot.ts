@@ -52,12 +52,12 @@ import 'meteor/unchained:core-worker/plugins/heartbeat';
 import 'meteor/unchained:core-worker/plugins/email';
 import 'meteor/unchained:core-worker/plugins/sms';
 
-import 'meteor/unchained:file-upload/plugins/gridfs/gridfs-adapter';
-import 'meteor/unchained:file-upload/plugins/gridfs/gridfs-webhook';
-import { configureGridFSFileUploadModule } from 'meteor/unchained:file-upload/plugins/gridfs';
+import '@unchainedshop/file-upload/lib/plugins/gridfs/gridfs-adapter';
+import '@unchainedshop/file-upload/lib/plugins/gridfs/gridfs-webhook';
+import { configureGridFSFileUploadModule } from '@unchainedshop/file-upload/lib/plugins/gridfs';
 
-// import 'meteor/unchained:file-upload/plugins/minio-adapter';
-// import 'meteor/unchained:file-upload/plugins/minio-webhook';
+// import '@unchainedshop/file-upload/plugins/minio-adapter';
+// import '@unchainedshop/file-upload/plugins/minio-webhook';
 
 import '@unchainedshop/events/lib/plugins/node-event-emitter';
 

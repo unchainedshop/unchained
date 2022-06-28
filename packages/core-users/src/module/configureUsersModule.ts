@@ -9,7 +9,7 @@ import {
   Schemas,
   systemLocale,
 } from '@unchainedshop/utils';
-import { FileDirector } from 'meteor/unchained:file-upload';
+import { FileDirector } from '@unchainedshop/file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';

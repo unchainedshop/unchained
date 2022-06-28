@@ -31,7 +31,8 @@
     "simpl-schema": "1.12.0",
     "@unchainedshop/logger": "latest",
     "@unchainedshop/utils": "latest",
-    "@unchainedshop/events": "latest"
+    "@unchainedshop/events": "latest",
+    "@unchainedshop/file-upload": "latest"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

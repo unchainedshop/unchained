@@ -1,5 +1,6 @@
 import { IFileAdapter } from '@unchainedshop/types/files';
-import { FileAdapter, FileDirector } from 'meteor/unchained:file-upload';
+import { FileAdapter } from '../../director/FileAdapter';
+import { FileDirector } from '../../director/FileDirector';
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
 import mimeType from 'mime-types';
@@ -7,7 +8,7 @@ import { URL } from 'url';
 import { Readable } from 'stream';
 import sign from './sign';
 import promisePipe from './promisePipe';
-import buildHashedFilename from '../../src/buildHashedFilename';
+import buildHashedFilename from '../../buildHashedFilename';
 
 const { UNCHAINED_PUT_URL_EXPIRY, ROOT_URL } = process.env;
 

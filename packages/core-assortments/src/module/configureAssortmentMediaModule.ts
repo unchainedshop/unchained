@@ -12,7 +12,7 @@ import {
   generateDbMutations,
   generateDbObjectId,
 } from '@unchainedshop/utils';
-import { FileDirector } from 'meteor/unchained:file-upload';
+import { FileDirector } from '@unchainedshop/file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
 import { AssortmentMediasSchema } from '../db/AssortmentMediasSchema';
 

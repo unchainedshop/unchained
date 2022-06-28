@@ -1,6 +1,6 @@
 Package.describe({
   name: 'unchained:file-upload',
-  version: '1.1.3',
+  version: '1.1.4',
   summary: 'Unchained Engine: Core File Upload',
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
@@ -28,7 +28,7 @@ Package.onTest((api) => {
   api.use('typescript');
 
   api.use('unchained:mongodb@1.1.3');
-  api.use('unchained:file-upload@1.1.3');
+  api.use('unchained:file-upload@1.1.4');
 
   api.mainModule('tests/file-upload-index.test.ts');
 });
