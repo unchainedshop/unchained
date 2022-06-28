@@ -17,7 +17,7 @@ Npm.depends({
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/roles': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
-  '@unchainedshop/events': '1.1.4',
+  // '@unchainedshop/events': '1.1.4', // PEER
   // 'graphql-scalars': '1.9.0', // needs to be peer dep!
   // graphql peer dep
   // apollo-server-express peer dep

@@ -13,10 +13,10 @@ Npm.depends({
   open: '8.4.0',
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
-  '@unchainedshop/events': '1.1.4',
-  '@unchainedshop/core-worker': '1.1.3',
-  '@unchainedshop/core-messaging': '1.1.3',
-  // '@unchainedshop/plugins': '1.1.3', // TODO: Re-enable when released
+  // '@unchainedshop/events': '1.1.4', // PEER
+  // '@unchainedshop/plugins': '1.1.3',
+  // '@unchainedshop/core-worker': '1.1.3',
+  // '@unchainedshop/core-messaging': '1.1.3',
 });
 
 Package.onUse((api) => {

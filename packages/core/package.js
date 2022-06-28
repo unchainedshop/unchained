@@ -5,11 +5,11 @@ Package.describe({
   git: 'https://github.com/unchainedshop/unchained',
   documentation: 'README.md',
 });
-
-Npm.depends({
-  '@unchainedshop/core-worker': '1.1.3',
-  '@unchainedshop/core-messaging': '1.1.3',
-});
+//
+// Npm.depends({
+//   '@unchainedshop/core-worker': '1.1.3',
+//   '@unchainedshop/core-messaging': '1.1.3',
+// });
 
 Package.onUse((api) => {
   api.versionsFrom('2.7.3');

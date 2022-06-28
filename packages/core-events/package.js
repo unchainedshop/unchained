@@ -9,7 +9,7 @@ Package.describe({
 Npm.depends({
   'simpl-schema': '1.12.0',
   '@unchainedshop/utils': '1.1.3',
-  '@unchainedshop/events': '1.1.4',
+  // '@unchainedshop/events': '1.1.4', // PEER
 });
 
 Package.onUse((api) => {
