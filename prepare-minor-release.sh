@@ -1,4 +1,4 @@
-cd packages/@unchainedshop/types && npm version --no-git-tag-version minor && cd .. &&
+cd packages/@unchainedshop/types && npm version --no-git-tag-version minor &&
 
 cd ../logger && npm version --no-git-tag-version minor &&
 cd ../roles && npm version --no-git-tag-version minor &&
@@ -6,7 +6,6 @@ cd ../utils && npm version --no-git-tag-version minor &&
 cd ../events && npm version --no-git-tag-version minor &&
 cd ../mongodb && npm version --no-git-tag-version minor &&
 cd ../file-upload && npm version --no-git-tag-version minor &&
-
 cd ../core-worker && npm version --no-git-tag-version minor &&
 cd ../core-accountsjs && npm version --no-git-tag-version minor &&
 cd ../core-assortments && npm version --no-git-tag-version minor &&
@@ -27,7 +26,7 @@ cd ../core-enrollments && npm version --no-git-tag-version minor &&
 cd ../core-warehousing && npm version --no-git-tag-version minor &&
 cd ../core-events && npm version --no-git-tag-version minor &&
 cd ../core && npm version --no-git-tag-version minor &&
-
+cd .. &&
 cd ../api && npm version --no-git-tag-version minor &&
 cd ../platform && npm version --no-git-tag-version minor &&
 cd ../../examples/minimal && npm version --no-git-tag-version minor &&
