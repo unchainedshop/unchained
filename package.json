@@ -37,7 +37,7 @@
     "postinstall": "npm run link-types",
     "link-types": "run-p --print-label link-types:*",
     "link-types:root": "npm link @unchainedshop/types",
-    "link-types:minimal": "cd examples/minimal && npm link @unchainedshop/types",
+    "link-types:minimal": "cd examples/minimal && npm run link-types",
     "link-types:controlpanel": "cd examples/controlpanel && npm link @unchainedshop/types"
   },
   "devDependencies": {
