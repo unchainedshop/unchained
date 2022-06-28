@@ -22,7 +22,6 @@ react-fast-refresh@0.2.3
 routepolicy@1.1.1
 typescript@4.5.4
 unchained:api@1.1.2
-unchained:core@1.1.0
 underscore@1.0.10
 webapp@1.13.1
 webapp-hashing@1.1.0

@@ -29,7 +29,6 @@ Package.onUse((api) => {
   api.use('email');
 
   api.use('unchained:mongodb@1.1.3');
-  api.use('unchained:core@1.1.3');
   api.use('unchained:api@1.1.3');
 
   api.mainModule('src/platform-index.ts', 'server');

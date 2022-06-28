@@ -26,7 +26,7 @@
   },
   "scripts": {
     "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
-    "link-types": "npm link @unchainedshop/core-messaging && npm link @unchainedshop/core-worker && npm link @unchainedshop/events && npm link @unchainedshop/file-upload && npm link @unchainedshop/logger && npm install @unchainedshop/plugins",
+    "link-types": "npm link @unchainedshop/types && npm link @unchainedshop/core && npm link @unchainedshop/events && npm link @unchainedshop/file-upload && npm link @unchainedshop/logger && npm link @unchainedshop/plugins",
     "dev": "cross-env METEOR_PACKAGE_DIRS=../../packages SERVER_NODE_OPTIONS='-r ./node_env.js' meteor --exclude-archs web.browser.legacy,web.cordova,web.browser --no-release-check --no-lint -p 4010",
     "build": "cross-env METEOR_PACKAGE_DIRS=../../packages meteor build --server-only --directory .build",
     "debug": "cross-env METEOR_PACKAGE_DIRS=../../packages SERVER_NODE_OPTIONS='-r ./node_env.js' meteor --exclude-archs web.browser.legacy,web.cordova,web.browser debug -p 4010"

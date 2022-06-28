@@ -7,8 +7,6 @@ import '@unchainedshop/plugins/lib/delivery/post';
 import '@unchainedshop/plugins/lib/delivery/pick-mup';
 import '@unchainedshop/plugins/lib/delivery/send-message';
 import '@unchainedshop/plugins/lib/delivery/stores';
-import '@unchainedshop/plugins/lib/delivery/free-delivery';
-import '@unchainedshop/plugins/lib/delivery/delivery-swiss-tax';
 
 import '@unchainedshop/plugins/lib/warehousing/store';
 
@@ -26,6 +24,7 @@ import { configureBityModule } from '@unchainedshop/plugins/lib/payment/bity';
 import '@unchainedshop/plugins/lib/pricing/discount-half-price-manual';
 import '@unchainedshop/plugins/lib/pricing/discount-100-off';
 import '@unchainedshop/plugins/lib/pricing/free-payment';
+import '@unchainedshop/plugins/lib/pricing/free-delivery';
 import '@unchainedshop/plugins/lib/pricing/order-items';
 import '@unchainedshop/plugins/lib/pricing/order-discount';
 import '@unchainedshop/plugins/lib/pricing/order-delivery';
@@ -36,6 +35,7 @@ import '@unchainedshop/plugins/lib/pricing/product-price-cryptopay';
 import '@unchainedshop/plugins/lib/pricing/product-price-rateconversion';
 import '@unchainedshop/plugins/lib/pricing/product-discount';
 import '@unchainedshop/plugins/lib/pricing/product-swiss-tax';
+import '@unchainedshop/plugins/lib/pricing/delivery-swiss-tax';
 
 import '@unchainedshop/plugins/lib/filters/strict-equal';
 import '@unchainedshop/plugins/lib/filters/local-search';

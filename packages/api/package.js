@@ -13,8 +13,8 @@ Npm.depends({
   dataloader: '2.0.0',
   locale: '0.1.0',
   '@unchainedshop/logger': '1.1.3',
-  '@unchainedshop/roles': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
+  // '@unchainedshop/roles': '1.1.3', // PEER
   // '@unchainedshop/events': '1.1.4', // PEER
   // '@unchainedshop/core': '1.1.3', // PEER
   // 'graphql-scalars': '1.9.0', // needs to be peer dep!
