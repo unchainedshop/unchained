@@ -18,11 +18,10 @@ import { setupWorkqueue } from './setup/setupWorkqueue';
 import { createMigrationRepository } from './migrations/migrationRepository';
 
 // Workers
-import './worker/BulkImportWorker';
-import './worker/ZombieKillerWorker';
-
-import 'meteor/unchained:core-enrollments/workers/GenerateOrderWorker';
-import 'meteor/unchained:core-messaging/workers/MessageWorker';
+import '@unchainedshop/plugins/lib/worker/BulkImportWorker';
+import '@unchainedshop/plugins/lib/worker/ZombieKillerWorker';
+import '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
+import '@unchainedshop/plugins/lib/worker/MessageWorker';
 
 export { MessageTypes };
 

@@ -1,5 +1,5 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
+import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 
 export const ExternalWorkerPlugin: IWorkerAdapter<void, void> = {
   ...WorkerAdapter,

@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { SetupWorkqueueOptions } from '@unchainedshop/types/platform';
-import { EventListenerWorker, FailedRescheduler, IntervalWorker } from 'meteor/unchained:core-worker';
+import { EventListenerWorker, FailedRescheduler, IntervalWorker } from '@unchainedshop/core-worker';
 
 export const setupWorkqueue = (
   unchainedAPI: Context,

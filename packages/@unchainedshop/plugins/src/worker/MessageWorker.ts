@@ -1,6 +1,9 @@
 import { IWorkerAdapter, Work } from '@unchainedshop/types/worker';
-import { MessagingDirector, messagingLogger } from 'meteor/unchained:core-messaging';
-import { WorkerAdapter, WorkerDirector } from 'meteor/unchained:core-worker';
+import { MessagingDirector } from '@unchainedshop/core-messaging';
+import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
+import { createLogger } from '@unchainedshop/logger';
+
+export const messagingLogger = createLogger('unchained:core-messaging');
 
 export const MessageWorker: IWorkerAdapter<
   { template: string; _id?: string; [x: string]: any },

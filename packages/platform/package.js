@@ -14,6 +14,9 @@ Npm.depends({
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
   '@unchainedshop/events': '1.1.4',
+  '@unchainedshop/core-worker': '1.1.3',
+  '@unchainedshop/core-messaging': '1.1.3',
+  // '@unchainedshop/plugins': '1.1.3', // TODO: Re-enable when released
 });
 
 Package.onUse((api) => {
@@ -28,9 +31,7 @@ Package.onUse((api) => {
   api.use('unchained:core@1.1.3');
   api.use('unchained:api@1.1.3');
 
-  api.use('unchained:core-worker@1.1.3');
   api.use('unchained:core-accountsjs@1.1.3');
-  api.use('unchained:core-messaging@1.1.3');
 
   api.mainModule('src/platform-index.ts', 'server');
 });

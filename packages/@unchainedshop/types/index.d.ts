@@ -354,7 +354,7 @@ declare module 'meteor/unchained:core-enrollments' {
   const EnrollmentDirector: IEnrollmentDirector;
 }
 
-declare module 'meteor/unchained:core-enrollments/workers/GenerateOrderWorker' {
+declare module '@unchainedshop/plugins/lib/worker/GenerateOrderWorker' {
   function configureGenerateOrderAutoscheduling(): void;
 }
 
@@ -385,7 +385,7 @@ declare module 'meteor/unchained:core-languages' {
   ): Promise<LanguagesModule>;
 }
 
-declare module 'meteor/unchained:core-messaging' {
+declare module '@unchainedshop/core-messaging' {
   function configureMessagingModule(params: ModuleInput<Record<string, never>>): MessagingModule;
 
   const MessagingDirector: IMessagingDirector;
@@ -477,7 +477,7 @@ declare module 'meteor/unchained:core-warehousing' {
   const WarehousingProviderType: typeof WarehousingProviderTypeType;
 }
 
-declare module 'meteor/unchained:core-worker' {
+declare module '@unchainedshop/core-worker' {
   function configureWorkerModule(params: ModuleInput<Record<string, never>>): Promise<WorkerModule>;
 
   const WorkerDirector: IWorkerDirector;

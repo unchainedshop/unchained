@@ -1,5 +1,5 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { WorkerDirector } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
 import { BaseAdapter } from '@unchainedshop/utils';
 

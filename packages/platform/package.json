@@ -33,7 +33,10 @@
     "open": "^8.4.0",
     "@unchainedshop/logger": "latest",
     "@unchainedshop/utils": "latest",
-    "@unchainedshop/events": "latest"
+    "@unchainedshop/events": "latest",
+    "@unchainedshop/core-worker": "latest",
+    "@unchainedshop/core-messaging": "latest",
+    "@unchainedshop/plugins": "latest"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",

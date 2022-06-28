@@ -1,4 +1,4 @@
-import { WorkerDirector } from 'meteor/unchained:core-worker';
+import { WorkerDirector } from '@unchainedshop/core-worker';
 
 export const generateWorkerTypeDefs = () => {
   return [

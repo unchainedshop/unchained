@@ -8,7 +8,7 @@ import {
   enrollmentsSettings,
   EnrollmentStatus,
 } from 'meteor/unchained:core-enrollments';
-import { WorkerAdapter, WorkerDirector } from 'meteor/unchained:core-worker';
+import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 
 const generateOrder = async (
   enrollment: Enrollment,

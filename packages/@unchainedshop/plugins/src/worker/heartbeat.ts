@@ -1,5 +1,5 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
+import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 
 const wait = async (time: number) => {
   return new Promise((resolve) => {

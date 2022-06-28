@@ -1,11 +1,11 @@
-import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
+import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import Twilio from 'twilio';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;
 
-const logger = createLogger('unchained:core-worker');
+const logger = createLogger('unchained:plugins:worker:sms');
 
 const SmsWorkerPlugin: IWorkerAdapter<
   {

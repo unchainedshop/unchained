@@ -46,20 +46,20 @@ import 'meteor/unchained:core-quotations/plugins/manual';
 
 import 'meteor/unchained:core-enrollments/plugins/licensed';
 
-import 'meteor/unchained:core-worker/plugins/external';
-import 'meteor/unchained:core-worker/plugins/http-request';
-import 'meteor/unchained:core-worker/plugins/heartbeat';
-import 'meteor/unchained:core-worker/plugins/email';
-import 'meteor/unchained:core-worker/plugins/sms';
+import '@unchainedshop/plugins/lib/worker/external';
+import '@unchainedshop/plugins/lib/worker/http-request';
+import '@unchainedshop/plugins/lib/worker/heartbeat';
+import '@unchainedshop/plugins/lib/worker/email';
+import '@unchainedshop/plugins/lib/worker/sms';
 
-import '@unchainedshop/file-upload/lib/plugins/gridfs/gridfs-adapter';
-import '@unchainedshop/file-upload/lib/plugins/gridfs/gridfs-webhook';
-import { configureGridFSFileUploadModule } from '@unchainedshop/file-upload/lib/plugins/gridfs';
+import '@unchainedshop/plugins/lib/files/gridfs/gridfs-adapter';
+import '@unchainedshop/plugins/lib/files/gridfs/gridfs-webhook';
+import { configureGridFSFileUploadModule } from '@unchainedshop/plugins/lib/files/gridfs';
 
-// import '@unchainedshop/file-upload/plugins/minio-adapter';
-// import '@unchainedshop/file-upload/plugins/minio-webhook';
+// import '@unchainedshop/plugins/lib/files/minio/minio-adapter';
+// import '@unchainedshop/plugins/lib/files/minio/minio-webhook';
 
-import '@unchainedshop/events/lib/plugins/node-event-emitter';
+import '@unchainedshop/plugins/lib/events/node-event-emitter';
 
 import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';

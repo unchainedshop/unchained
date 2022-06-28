@@ -318,7 +318,7 @@ developers to easily add new resolvers and access the core API's through typescr
 - [core] Removed Assortment helpers `addFilter`, `removeFilter`, `searchProducts`
 - [core] Removed Assortment Filter helper `assortmentFilter.filter`
 - [core] `findProviderById` & `findReviewById` removed
-- [core] You cannot `import 'meteor/unchained:core-worker/plugins/heartbeat'` anymore without typescript
+- [core] You cannot `import '@unchainedshop/core-worker/plugins/heartbeat'` anymore without typescript
   package
 - [api] NotFoundErrors have been removed from various queries which return an optional single entity,
   like Query.product(...): Product #299, affects `Query.country`, `Query.currency`,

@@ -1,9 +1,9 @@
-import { WorkerDirector, WorkerAdapter } from 'meteor/unchained:core-worker';
+import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
 import { Email } from 'meteor/email';
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 
-const logger = createLogger('unchained:core-worker');
+const logger = createLogger('unchained:plugins:worker:email');
 
 const EmailWorkerPlugin: IWorkerAdapter<
   {

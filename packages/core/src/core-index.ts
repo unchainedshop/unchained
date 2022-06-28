@@ -10,14 +10,14 @@ import { configureEventsModule } from 'meteor/unchained:core-events';
 import { configureFilesModule, fileServices } from 'meteor/unchained:core-files';
 import { configureFiltersModule } from 'meteor/unchained:core-filters';
 import { configureLanguagesModule } from 'meteor/unchained:core-languages';
-import { configureMessagingModule } from 'meteor/unchained:core-messaging';
+import { configureMessagingModule } from '@unchainedshop/core-messaging';
 import { configureOrdersModule, orderServices } from 'meteor/unchained:core-orders';
 import { configurePaymentModule, paymentServices } from 'meteor/unchained:core-payment';
 import { configureProductsModule, productServices } from 'meteor/unchained:core-products';
 import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
 import { configureUsersModule, userServices } from 'meteor/unchained:core-users';
 import { configureWarehousingModule } from 'meteor/unchained:core-warehousing';
-import { configureWorkerModule } from 'meteor/unchained:core-worker';
+import { configureWorkerModule } from '@unchainedshop/core-worker';
 
 export const initCore = async ({
   db,

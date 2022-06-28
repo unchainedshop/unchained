@@ -27,7 +27,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "latest"
+    "@unchainedshop/logger": "latest",
+    "@unchainedshop/core-worker": "latest"
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",

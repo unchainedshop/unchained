@@ -1,6 +1,5 @@
 import { IFileAdapter } from '@unchainedshop/types/files';
-import { FileAdapter } from '../../director/FileAdapter';
-import { FileDirector } from '../../director/FileDirector';
+import { FileAdapter, FileDirector } from '@unchainedshop/file-upload';
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
 import mimeType from 'mime-types';
@@ -8,7 +7,7 @@ import { URL } from 'url';
 import { Readable } from 'stream';
 import sign from './sign';
 import promisePipe from './promisePipe';
-import buildHashedFilename from '../../buildHashedFilename';
+import buildHashedFilename from '@unchainedshop/file-upload/lib/buildHashedFilename';
 
 const { UNCHAINED_PUT_URL_EXPIRY, ROOT_URL } = process.env;
 

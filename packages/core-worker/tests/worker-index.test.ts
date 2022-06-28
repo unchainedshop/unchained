@@ -4,7 +4,7 @@ import { assert } from 'chai';
 import {
   configureWorkerModule,
   WorkerDirector,
-} from 'meteor/unchained:core-worker';
+} from '@unchainedshop/core-worker';
 import { initDb } from 'meteor/unchained:mongodb';
 
 import { ExternalWorkerPlugin } from '../plugins/external';
