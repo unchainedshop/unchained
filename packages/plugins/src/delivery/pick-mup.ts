@@ -1,4 +1,4 @@
-import { DeliveryProviderType, IDeliveryAdapter } from '@unchainedshop/types/delivery';
+import type { DeliveryProviderType, IDeliveryAdapter } from '@unchainedshop/types/delivery';
 import fetch from 'isomorphic-unfetch';
 import { DeliveryAdapter, DeliveryDirector, DeliveryError } from '@unchainedshop/core-delivery';
 

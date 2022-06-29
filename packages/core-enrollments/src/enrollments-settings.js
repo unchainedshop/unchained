@@ -1,4 +1,4 @@
-import later from 'later';
+import later from '@breejs/later';
 import { generateRandomHash } from '@unchainedshop/utils';
 
 const everyHourSchedule = later.parse.text('every 59 minutes');

@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { IWorker, WorkerSchedule } from '@unchainedshop/types/worker';
-import later from 'later';
+import later from '@breejs/later';
 import { BaseWorker } from './BaseWorker';
 
 const { NODE_ENV } = process.env;

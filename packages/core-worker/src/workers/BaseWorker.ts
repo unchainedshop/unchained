@@ -1,5 +1,5 @@
 import { IWorker, Work } from '@unchainedshop/types/worker';
-import later from 'later';
+import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';
 import { WorkerDirector } from '../director/WorkerDirector';
