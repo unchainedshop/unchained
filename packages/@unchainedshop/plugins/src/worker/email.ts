@@ -23,7 +23,7 @@ function writeFile(filename, data, done) {
   });
 }
 
-const openInBrowser(options) {
+const openInBrowser = (options) => {
   const filename = `${Date.now()}.html`;
   const content = `
     <b>From:&nbsp</b>${options.from}<br/>
@@ -90,7 +90,7 @@ const EmailWorkerPlugin: IWorkerAdapter<
         ...rest,
       };
       if (checkEmailInterceptionEnabled()) {
-        openInBrowser(sendMailOptions)
+        openInBrowser(sendMailOptions);
         return { success: true, result: { intercepted: true } };
       }
       const transporter = nodemailer.createTransport(process.env.MAIL_URL);
