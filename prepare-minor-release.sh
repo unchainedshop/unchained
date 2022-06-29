@@ -1,4 +1,4 @@
-cd packages/@unchainedshop/types && npm version --no-git-tag-version minor &&
+cd packages/types && npm version --no-git-tag-version minor &&
 
 cd ../logger && npm version --no-git-tag-version minor &&
 cd ../roles && npm version --no-git-tag-version minor &&
