@@ -43,7 +43,7 @@ export default compose(
     queryName: 'events',
     query: gql`
       query Events($offset: Int, $limit: Int, $type: String) {
-        events(offset: $offset, limit: $limit, type: $type) {
+        events(offset: $offset, limit: $limit, types: $type) {
           _id
           type
           created
