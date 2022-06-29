@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "npm run clean && tsc -p tsconfig.build.json'",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
     "watch": "tsc --watch",
     "test": "TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },

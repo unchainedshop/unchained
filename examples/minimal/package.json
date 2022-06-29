@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/example-minimal",
+  "name": "example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
   "private": true,
   "version": "1.1.1",

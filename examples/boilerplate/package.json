@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/engine-boilerplate",
+  "name": "example-boilerplate",
   "version": "1.0.0",
   "license": "EUPL-1.2",
   "private": true,
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.13",
-    "@unchainedshop/controlpanel": "^1.0.0-beta3",
+    "@unchainedshop/controlpanel": "*",
     "apollo-server-express": "^2.21.0",
     "client-oauth2": "github:unchainedshop/js-client-oauth2#master",
     "dotenv-extended": "^2.9.0",

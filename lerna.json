@@ -1,8 +1,5 @@
 {
-  "packages": [
-    "packages/*",
-    "examples/*"
-  ],
+  "packages": ["packages/*", "examples/controlpanel", "examples/kitchensink"],
   "useNx": false,
   "version": "1.1.7"
 }

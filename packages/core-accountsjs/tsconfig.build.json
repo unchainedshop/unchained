@@ -21,7 +21,7 @@
     "types": [
       "node"
     ],
-    "baseUrl": ".", // This must be specified if "paths" is.
+    "baseUrl": ".",
     "paths": {
       "@unchainedshop/*": [
         "node_modules/@unchainedshop/types/index.d.ts"
