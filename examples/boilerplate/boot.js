@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { startPlatform } from '@unchainedshop/platform';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
@@ -9,13 +8,10 @@ import './plugins/sausage'
 
 import seed from './seed';
 
-Meteor.startup(async () => {
-  await startPlatform({
-    introspection: true,
-
-  });
-
-  seed();
-
-  embedControlpanelInMeteorWebApp(WebApp);
+startPlatform({
+  introspection: true,
+}).then(api => {
+  seed(api);
 });
+
+embedControlpanelInMeteorWebApp(WebApp);

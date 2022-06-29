@@ -61,17 +61,14 @@ const generateOrderConfirmationTemplate ({ order }) => {
 lastly we use `MessagingDirector.configureTemplate` after `startPlatform` on system boot to overwrite the default email template.
 
 ```
-import { Meteor } from 'meteor/meteor';
 import { MessageTypes } from '@unchainedshop/platform';
 
-Meteor.startup(() => {
-  ...
-  startPlatform({...});
-  ...
-  MessagingDirector.configureTemplate(
-    MessageTypes.ORDER_CONFIRMATION,
-    generateOrderConfirmationTemplate,
-  );
-});
+...
+startPlatform({...});
+...
+MessagingDirector.configureTemplate(
+  MessageTypes.ORDER_CONFIRMATION,
+  generateOrderConfirmationTemplate,
+);
 
 ```

@@ -6,7 +6,9 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noImplicitReturns": true,
@@ -16,11 +18,17 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "baseUrl": ".", // This must be specified if "paths" is.
     "paths": {
-      "meteor/unchained:*": ["node_modules/@unchainedshop/types/index.d.ts"]
+      "@unchainedshop/*": [
+        "node_modules/@unchainedshop/types/index.d.ts"
+      ]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

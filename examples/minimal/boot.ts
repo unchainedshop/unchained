@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { startPlatform, withAccessToken } from '@unchainedshop/platform';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';

@@ -170,19 +170,16 @@ In addition to the built in event that come with unchained you can register your
 In order to do this, The custom events need to be registered at platform boot time using `registerEvents` helper function that takes array of event names to be tracked.
 
 ```
-import { Meteor } from 'meteor/meteor';
 import { registerEvents } from '@unchainedshop/core-events';
 
-Meteor.startup(() => {
-  ...
-  startPlatform({...});
-  ...
-  registerEvents([
-      'CUSTOM_EVENT_ONE',
-      'CUSTOM_EVENT_TWO',
-      'CUSTOM_EVENT_THREE',
-  ])
-});
+...
+startPlatform({...});
+...
+registerEvents([
+  'CUSTOM_EVENT_ONE',
+  'CUSTOM_EVENT_TWO',
+  'CUSTOM_EVENT_THREE',
+])
 ```
 
 After initializing this at system start up, you can `emit` and `subscribe` in your code base.

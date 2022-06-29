@@ -10,25 +10,22 @@ Setting up the Unchained Engine is simple:
 Add unchained:platform to your meteor project, copy the dependencies part of the minimal example to your own project's package.json, then start the engine:
 
 ```
-import { Meteor } from 'meteor/meteor';
 import { startPlatform } from '@unchainedshop/platform';
 
-Meteor.startup(async () => {
-  const unchainedApi = await startPlatform();
-  await unchainedApi.modules.accounts.createUser(
-    {
-      email: 'admin@unchained.local',
-      guest: false,
-      initialPassword: 'true',
-      lastBillingAddress: {},
-      password: hashPassword('admin'),
-      profile: { address: {} },
-      roles: ['admin'],
-      username: 'admin',
-    },
-    { skipMessaging: true },
-  );
-});
+const unchainedApi = await startPlatform();
+await unchainedApi.modules.accounts.createUser(
+  {
+    email: 'admin@unchained.local',
+    guest: false,
+    initialPassword: 'true',
+    lastBillingAddress: {},
+    password: hashPassword('admin'),
+    profile: { address: {} },
+    roles: ['admin'],
+    username: 'admin',
+  },
+  { skipMessaging: true },
+);
 ```
 
 These options are available:
