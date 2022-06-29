@@ -1,0 +1,75 @@
+{
+    "name": "@unchainedshop/example-kitchensink",
+    "description": "Kitchensink for Unchained Engine",
+    "private": true,
+    "version": "1.1.1",
+    "license": "EUPL-1.2",
+    "type": "module",
+    "homepage": "https://unchained.shop",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/unchainedshop/unchained.git"
+    },
+    "contributors": [
+        "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
+        "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
+        "Marco Wettstein <maw@panter.ch>",
+        "Simon Emanuel Schmid <simon@unchained.shop> (https://unchained.shop)",
+        "Mikael Araya Mengistu <mikaeln@unchained.shop> (https://unchained.shop)"
+    ],
+    "bugs": {
+        "url": "https://github.com/unchainedshop/unchained/issues"
+    },
+    "scripts": {
+        "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
+        "dev": "PORT=4010 node --loader ts-node/esm boot.ts"
+    },
+    "dependencies": {
+        "@babel/runtime": "^7.18.6",
+        "@paypal/checkout-server-sdk": "^1.0.3",
+        "@unchainedshop/client-oauth2": "^4.3.3",
+        "@unchainedshop/controlpanel": "*",
+        "@unchainedshop/platform": "*",
+        "@unchainedshop/plugins": "*",
+        "apollo-server-express": "^2.25.3",
+        "bcrypt": "^5.0.1",
+        "bip32": "^3.0.1",
+        "bitcoinjs-lib": "^6.0.1",
+        "body-parser": "^1.20.0",
+        "cookie": "^0.4.2",
+        "dotenv-extended": "^2.9.0",
+        "ethers": "^5.6.9",
+        "event-iterator": "^2.0.0",
+        "graphql": "^15.8.0",
+        "graphql-scalars": "^1.17.0",
+        "graphql-upload": "^13.0.0",
+        "isomorphic-unfetch": "^3.1.0",
+        "JSONStream": "^1.3.5",
+        "locale": "^0.1.0",
+        "moment": "^2.29.3",
+        "mongodb": "^4.6.0",
+        "open": "^8.4.0",
+        "postfinancecheckout": "^3.0.5",
+        "simpl-schema": "^1.12.0",
+        "stripe": "^8.222.0",
+        "tiny-secp256k1": "^1.1.6",
+        "ts-node": "^10.8.1",
+        "twilio": "^3.77.1",
+        "uuid": "^8.3.2",
+        "xml-js": "^1.6.11"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.18.6",
+        "@babel/preset-env": "^7.18.6",
+        "@babel/register": "^7.18.6",
+        "@unchainedshop/types": "*",
+        "babel-eslint": "^10.1.0",
+        "cross-env": "^7.0.3",
+        "eslint": "^7.32.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-prettier": "^4.1.0",
+        "prettier": "^2.6.2",
+        "typescript": "^4.7.4"
+    }
+}

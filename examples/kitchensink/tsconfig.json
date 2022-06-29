@@ -1,0 +1,42 @@
+{
+    "ts-node": {
+        // It is faster to skip typechecking.
+        // Remove if you want ts-node to do typechecking.
+        "transpileOnly": true,
+    },
+    "compilerOptions": {
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "lib": [
+            "esnext"
+        ],
+        "module": "esnext",
+        "moduleResolution": "node",
+        "noImplicitReturns": true,
+        "noUnusedLocals": false,
+        "outDir": "lib",
+        "preserveWatchOutput": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "target": "esnext",
+        "types": [
+            "node"
+        ],
+        "baseUrl": ".", // This must be specified if "paths" is.
+        "paths": {
+            "@unchainedshop/*": [
+                "node_modules/@unchainedshop/types/index.d.ts"
+            ]
+        }
+    },
+    "include": [
+        "./*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
