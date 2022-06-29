@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
 import bodyParser from 'body-parser';
-import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
+import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_PRICING_WEBHOOK_PATH = '/graphql/cryptopay-pricing' } = process.env;
 

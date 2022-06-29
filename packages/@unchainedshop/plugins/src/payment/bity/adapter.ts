@@ -5,7 +5,7 @@ import { createLogger } from '@unchainedshop/logger';
 
 import { OrderPricingSheet } from '@unchainedshop/core-orders';
 import bodyParser from 'body-parser';
-import { acl, roles, useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
+import { acl, roles, useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import crypto from 'crypto';
 import fetch from 'isomorphic-unfetch';
 import ClientOAuth2 from '@unchainedshop/client-oauth2';

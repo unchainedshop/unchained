@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import bodyParser from 'body-parser';
-import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
+import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { OrderPricingSheet } from '@unchainedshop/core-orders';
 import { ethers } from 'ethers';

@@ -1,8 +1,8 @@
 {
-  "name": "@unchained/api",
+  "name": "@unchainedshop/api",
   "version": "1.1.3",
-  "main": "lib/core-index.js",
-  "types": "lib/core-index.d.ts",
+  "main": "lib/api-index.js",
+  "types": "lib/api-index.d.ts",
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
@@ -29,31 +29,32 @@
   "peerDependencies": {
     "@unchainedshop/roles": "1.1.x",
     "@unchainedshop/events": "1.1.x",
-    "apollo-server-express": "^2.25.2",
-    "graphql-scalars": "^1.9.0",
-    "graphql": "^15.8.0"
+    "@unchainedshop/core": "1.1.x",
+    "apollo-server-express": "2.x",
+    "graphql-scalars": "^1.x",
+    "graphql": "^15.x"
   },
   "dependencies": {
+    "@unchainedshop/logger": "1.1.3",
+    "@unchainedshop/utils": "^1.1.4",
     "accounting": "0.4.1",
-    "body-parser": "1.19.0",
-    "dataloader": "2.0.0",
+    "dataloader": "^2.1.0",
     "locale": "0.1.0",
     "lodash.isnumber": "3.0.3",
-    "lru-cache": "6.0.0",
-    "@unchainedshop/logger": "1.1.3",
-    "@unchainedshop/utils": "1.1.3"
+    "lru-cache": "^7.10.2"
   },
   "devDependencies": {
     "@types/graphql-upload": "^8.0.11",
     "@types/locale": "^0.1.1",
-    "@unchainedshop/types": "1.1.3",
-    "@unchainedshop/roles": "1.1.x",
     "@unchainedshop/events": "1.1.x",
-    "apollo-server-express": "^2.25.3",
+    "@unchainedshop/roles": "1.1.x",
+    "@unchainedshop/types": "1.1.x",
+    "@unchainedshop/core": "1.1.x",
+    "apollo-server-express": "^2.25.4",
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",
     "graphql": "^15.8.0",
-    "graphql-scalars": "^1.16.0",
-    "typescript": "^4.4.3"
+    "graphql-scalars": "^1.17.0",
+    "typescript": "^4.7.4"
   }
 }

@@ -1,4 +1,4 @@
-import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
+import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { log, LogLevel } from '@unchainedshop/logger';
 import sign from './sign';
 import promisePipe from './promisePipe';

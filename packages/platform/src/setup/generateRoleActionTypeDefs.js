@@ -1,4 +1,4 @@
-import { roles } from 'meteor/unchained:api';
+import { roles } from '@unchainedshop/api';
 
 export const generateRoleActionTypeDefs = () => [
   /* GraphQL */ `

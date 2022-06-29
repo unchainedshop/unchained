@@ -2,7 +2,7 @@ import { Users } from '@unchainedshop/core-users';
 import { Countries } from '@unchainedshop/core-countries';
 import { Currencies } from '@unchainedshop/core-currencies';
 import { Languages } from '@unchainedshop/core-languages';
-import { hashPassword } from 'meteor/unchained:api';
+import { hashPassword } from '@unchainedshop/api';
 
 import i18nConfiguration from './i18n.config';
 

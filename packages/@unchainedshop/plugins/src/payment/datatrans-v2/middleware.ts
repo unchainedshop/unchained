@@ -1,4 +1,4 @@
-import { useMiddlewareWithCurrentContext } from 'meteor/unchained:api';
+import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import bodyParser from 'body-parser';
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '@unchainedshop/types/api';

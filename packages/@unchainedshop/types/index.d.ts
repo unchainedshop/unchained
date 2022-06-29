@@ -504,7 +504,7 @@ type APIRoles = {
   updateUserRole(context: Context, roleName: string): any;
 };
 
-declare module 'meteor/unchained:api' {
+declare module '@unchainedshop/api' {
   function startAPIServer(options: UnchainedServerOptions): {
     apolloGraphQLServer: ApolloServer;
     bulkImportServer: any;

@@ -15,9 +15,8 @@ Npm.depends({
   '@unchainedshop/utils': '1.1.3',
   // '@unchainedshop/events': '1.1.4', // PEER
   // '@unchainedshop/plugins': '1.1.3', // PEER
-  // '@unchainedshop/core-worker': '1.1.3', // PEER
-  // '@unchainedshop/core-messaging': '1.1.3', // PEER
-  // '@unchainedshop/core-accountsjs': '1.1.3', // PEER
+  // '@unchainedshop/core': '1.1.x', // PEER
+  // '@unchainedshop/api': '1.1.x', // PEER
 });
 
 Package.onUse((api) => {
@@ -27,7 +26,6 @@ Package.onUse((api) => {
   api.use('typescript');
 
   api.use('unchained:mongodb@1.1.3');
-  api.use('unchained:api@1.1.3');
 
   api.mainModule('src/platform-index.ts', 'server');
 });
