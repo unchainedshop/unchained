@@ -11,7 +11,7 @@ ADD examples/minimal/package.json /source/examples/minimal/
 ADD examples/minimal/package-lock.json /source/examples/minimal/
 ADD examples/controlpanel/package.json /source/examples/controlpanel/
 ADD examples/controlpanel/package-lock.json /source/examples/controlpanel/
-ADD packages/@unchainedshop /source/packages/@unchainedshop
+ADD packages /source/node_modules
 
 ENV MONGO_MEMORY_SERVER_FILE /source/jest-mongodb-config.js
 ENV MONGOMS_DOWNLOAD_URL http://downloads.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.9.tgz
