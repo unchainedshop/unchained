@@ -1,3 +1,8 @@
+# vNext
+
+- `disableEmailInterception` is not available as option anymore, but you can still disable interception
+  in development setting the environment variable `UNCHAINED_DISABLE_EMAIL_INTERCEPTION`
+
 # Unchained Engine v1.1
 
 ## Breaking Changes for Plugin Developers
@@ -16,8 +21,8 @@
 ## Minor
 
 - [api] `query.events` is now extended with additional filter parameters `created` get events created
-  after the provided event and the previous `selectTypes` field is changed to `types` and accepts array of event
-  types. in addition it is now possible to `sort` the results any field on event type
+  after the provided event and the previous `selectTypes` field is changed to `types` and accepts array
+  of event types. in addition it is now possible to `sort` the results any field on event type
 - [api] A new input field `sort` has been added to many generel queries that return lists of something,
   for ex. Query.products
 - [api] A new input field `queryString` has been added to many generel queries that return lists of

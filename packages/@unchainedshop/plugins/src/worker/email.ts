@@ -1,9 +1,56 @@
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
-import { Email } from 'meteor/email';
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import open from 'open';
 
 const logger = createLogger('unchained:plugins:worker:email');
+
+const checkEmailInterceptionEnabled = () => {
+  return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
+};
+
+function writeFile(filename, data, done) {
+  fs.mkdtemp(path.join(os.tmpdir(), 'email-'), (err1, folder) => {
+    if (err1) return done(err1);
+    const temporaryFolderPath = `${folder}/${filename}`;
+    return fs.writeFile(temporaryFolderPath, data, (err2) => {
+      if (err2) return done(err2);
+      return done(null, temporaryFolderPath);
+    });
+  });
+}
+
+const openInBrowser(options) {
+  const filename = `${Date.now()}.html`;
+  const content = `
+    <b>From:&nbsp</b>${options.from}<br/>
+    <b>To:&nbsp;</b>${options.to}<br/>
+    <b>Cc:&nbsp;</b>${options.cc}<br/>
+    <b>Bcc:&nbsp;</b>${options.bcc}<br/>
+    <b>Reply-To:&nbsp;</b>${options.replyTo}<br/>
+    <br/>
+    <b>subject:&nbsp;</b>${options.subject}<br/>
+    <b>attachments:&nbsp;</b>${(options.attachments || [])
+      .map(({ filename: attachmentFilename, path: attachmentPath }) => {
+        const absoluteFilePath = path.join(process.cwd(), attachmentPath);
+        return `<a href="${absoluteFilePath}">${attachmentFilename}</a>`;
+      })
+      .join(',&nbsp;')}<br/>
+    <hr/>
+    ${(options.html || options.text).replace(/(\r\n|\n|\r)/gm, '<br/>')}
+    `;
+  writeFile(filename, content, (err, filePath) => {
+    if (err) {
+      logger.error(err);
+      return;
+    }
+    logger.verbose('unchained:platform -> Mailman detected an outgoing email');
+    open(filePath);
+  });
+};
 
 const EmailWorkerPlugin: IWorkerAdapter<
   {
@@ -36,13 +83,18 @@ const EmailWorkerPlugin: IWorkerAdapter<
     }
 
     try {
-      // https://docs.meteor.com/api/email.html#Email-send
-      const result = Email.send({
+      const sendMailOptions = {
         from,
         to,
         subject,
         ...rest,
-      });
+      };
+      if (checkEmailInterceptionEnabled()) {
+        openInBrowser(sendMailOptions)
+        return { success: true, result: { intercepted: true } };
+      }
+      const transporter = nodemailer.createTransport(process.env.MAIL_URL);
+      const result = await transporter.sendMail(sendMailOptions);
       return { success: true, result };
     } catch (err) {
       return {

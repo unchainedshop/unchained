@@ -44,11 +44,6 @@ const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
   return !UNCHAINED_DISABLE_WORKER;
 };
 
-const checkEmailInterceptionEnabled = (disableEmailInterception) => {
-  if (disableEmailInterception) return false;
-  return NODE_ENV !== 'production' && !UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
-};
-
 export const queueWorkers = [];
 
 export const startPlatform = async (
@@ -64,7 +59,6 @@ export const startPlatform = async (
     plugins,
     cache,
     workQueueOptions,
-    disableEmailInterception,
     context,
     introspection,
     playground,
@@ -133,8 +127,6 @@ export const startPlatform = async (
     corsOrigins,
     cacheControl,
   });
-
-  if (checkEmailInterceptionEnabled(disableEmailInterception)) interceptEmails();
 
   // Setup work queues for scheduled work
   if (isWorkQueueEnabled) {

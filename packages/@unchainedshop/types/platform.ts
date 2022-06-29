@@ -55,7 +55,6 @@ export type PlatformOptions = {
   options?: UnchainedCoreOptions['options'];
   rolesOptions?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
-  disableEmailInterception?: any;
   introspection?: boolean;
   playground?: boolean;
   tracing?: boolean;
