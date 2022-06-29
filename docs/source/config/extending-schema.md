@@ -66,7 +66,7 @@ const resolverDefs = {
 
 ```js
 import { Meteor } from 'meteor/meteor'
-import { startPlatform } from 'meteor/unchained:platform'
+import { startPlatform } from '@unchainedshop/platform'
 import { WebApp } from 'meteor/webapp'
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel'
 

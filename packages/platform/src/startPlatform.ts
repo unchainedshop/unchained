@@ -5,7 +5,6 @@ import { initCore } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
-import { interceptEmails } from './interceptEmails';
 import { runMigrations } from './migrations/runMigrations';
 import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
 import { generateWorkerTypeDefs } from './setup/generateWorkTypeDefs';
@@ -29,7 +28,7 @@ const logger = createLogger('unchained');
 
 const REQUIRED_ENV_VARIABLES = ['EMAIL_WEBSITE_NAME', 'EMAIL_WEBSITE_URL', 'EMAIL_FROM'];
 
-const { NODE_ENV, UNCHAINED_DISABLE_EMAIL_INTERCEPTION, UNCHAINED_DISABLE_WORKER } = process.env;
+const { NODE_ENV, UNCHAINED_DISABLE_WORKER } = process.env;
 
 const exitOnMissingEnvironmentVariables = () => {
   const failedEnv = REQUIRED_ENV_VARIABLES.filter((key) => !process.env[key]);

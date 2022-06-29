@@ -19,7 +19,6 @@ const startAndWaitForMeteor = async () => {
             ...process.env,
             MONGO_URL: `${process.env.MONGO_URL}${global.__MONGOD__.opts.instance.dbName}`,
             NODE_ENV: 'development',
-            METEOR_PACKAGE_DIRS: '../../packages',
             UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
             UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
             EMAIL_WEBSITE_NAME: 'Unchained Website',

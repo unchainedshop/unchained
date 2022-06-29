@@ -62,7 +62,7 @@ lastly we use `MessagingDirector.configureTemplate` after `startPlatform` on sys
 
 ```
 import { Meteor } from 'meteor/meteor';
-import { MessageTypes } from 'meteor/unchained:platform';
+import { MessageTypes } from '@unchainedshop/platform';
 
 Meteor.startup(() => {
   ...

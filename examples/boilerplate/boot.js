@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { startPlatform } from 'meteor/unchained:platform';
+import { startPlatform } from '@unchainedshop/platform';
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
 

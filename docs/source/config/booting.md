@@ -11,7 +11,7 @@ Add unchained:platform to your meteor project, copy the dependencies part of the
 
 ```
 import { Meteor } from 'meteor/meteor';
-import { startPlatform } from 'meteor/unchained:platform';
+import { startPlatform } from '@unchainedshop/platform';
 
 Meteor.startup(async () => {
   const unchainedApi = await startPlatform();

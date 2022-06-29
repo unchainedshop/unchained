@@ -1,14 +1,14 @@
 {
-  "name": "@unchainedshop/platform",
+  "name": "@unchainedshop/core-delivery",
   "version": "1.1.4",
-  "main": "lib/platform-index.js",
-  "types": "lib/platform-index.d.ts",
+  "main": "lib/delivery-index.js",
+  "types": "lib/delivery-index.d.ts",
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc -p tsconfig.build.json",
     "watch": "tsc --watch",
-    "link:core": "npm link  @unchainedshop/types",
+    "link:core": "npm link @unchainedshop/types",
     "test": "TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
@@ -27,28 +27,18 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "JSONStream": "^1.3.5",
-    "event-iterator": "^2.0.0",
-    "moniker": "0.1.2",
-    "open": "^8.4.0",
-    "@unchainedshop/events": "1.1.x",
-    "@unchainedshop/file-upload": "1.1.x",
-    "@unchainedshop/logger": "1.1.x",
-    "@unchainedshop/mongodb": "1.1.x",
-    "@unchainedshop/roles": "1.1.x",
-    "@unchainedshop/utils": "1.1.x",
-    "@unchainedshop/api": "1.1.x",
-    "@unchainedshop/core": "1.1.x"
+    "@unchainedshop/logger": "1.1.3",
+    "@unchainedshop/utils": "1.1.3",
+    "simpl-schema": "^1.12.2"
   },
   "peerDependencies": {
-    "@unchainedshop/plugins": "1.1.x"
+    "@unchainedshop/events": "1.1.x"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",
     "@types/mocha": "^9.1.1",
-    "@types/moment": "^2.13.0",
-    "@unchainedshop/plugins": "1.1.x",
-    "@unchainedshop/types": "1.1.x",
+    "@unchainedshop/events": "1.1.x",
+    "@unchainedshop/types": "^1.1.2",
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",
     "typescript": "^4.7.4"
