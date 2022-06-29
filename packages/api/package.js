@@ -27,7 +27,6 @@ Package.onUse((api) => {
 
   api.use('ecmascript');
   api.use('webapp');
-  api.use('check');
   api.use('typescript');
 
   api.mainModule('src/api-index.ts', 'server');

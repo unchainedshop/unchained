@@ -25,7 +25,6 @@ Package.onUse((api) => {
 
   api.use('ecmascript');
   api.use('typescript');
-  api.use('check');
 
   api.use('unchained:mongodb@1.1.3');
   api.use('unchained:api@1.1.3');
