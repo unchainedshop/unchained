@@ -2,6 +2,7 @@
   "name": "@unchainedshop/engine-boilerplate",
   "version": "1.0.0",
   "license": "EUPL-1.2",
+  "private": true,
   "homepage": "https://unchained.shop",
   "contributors": [
     "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",

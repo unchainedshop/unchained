@@ -8,7 +8,6 @@
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc -p tsconfig.build.json",
     "watch": "tsc --watch",
-    "link:core": "npm link @unchainedshop/types",
     "test": "TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
   },
   "repository": {
@@ -27,16 +26,16 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "@unchainedshop/roles": "1.1.x",
-    "@unchainedshop/events": "1.1.x",
     "@unchainedshop/core": "1.1.x",
+    "@unchainedshop/events": "1.1.x",
+    "@unchainedshop/roles": "1.1.x",
     "apollo-server-express": "2.x",
-    "graphql-scalars": "^1.x",
-    "graphql": "^15.x"
+    "graphql": "^15.x",
+    "graphql-scalars": "^1.x"
   },
   "dependencies": {
-    "@unchainedshop/logger": "1.1.3",
-    "@unchainedshop/utils": "^1.1.4",
+    "@unchainedshop/logger": "*",
+    "@unchainedshop/utils": "*",
     "accounting": "0.4.1",
     "dataloader": "^2.1.0",
     "locale": "0.1.0",
@@ -46,11 +45,11 @@
   "devDependencies": {
     "@types/graphql-upload": "^8.0.11",
     "@types/locale": "^0.1.1",
-    "@unchainedshop/events": "1.1.x",
-    "@unchainedshop/roles": "1.1.x",
-    "@unchainedshop/types": "1.1.x",
-    "@unchainedshop/core": "1.1.x",
-    "apollo-server-express": "^2.25.4",
+    "@unchainedshop/core": "*",
+    "@unchainedshop/events": "*",
+    "@unchainedshop/roles": "*",
+    "@unchainedshop/types": "*",
+    "apollo-server-express": "*",
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",
     "graphql": "^15.8.0",

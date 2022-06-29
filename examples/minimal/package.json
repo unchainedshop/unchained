@@ -1,6 +1,7 @@
 {
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Bootstrap Project for Unchained Engine",
+  "private": true,
   "version": "1.1.1",
   "license": "EUPL-1.2",
   "homepage": "https://unchained.shop",
@@ -26,7 +27,6 @@
   },
   "scripts": {
     "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
-    "link-types": "npm link @unchainedshop/types && npm link @unchainedshop/platform && npm link @unchainedshop/plugins && npm link @unchainedshop/controlpanel",
     "dev": "SERVER_NODE_OPTIONS='-r ./node_env.js' meteor --exclude-archs web.browser.legacy,web.cordova,web.browser --no-release-check --no-lint -p 4010",
     "build": "meteor build --server-only --directory .build",
     "debug": "SERVER_NODE_OPTIONS='-r ./node_env.js' meteor --exclude-archs web.browser.legacy,web.cordova,web.browser debug -p 4010"
@@ -35,9 +35,9 @@
     "@babel/runtime": "^7.18.6",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@unchainedshop/client-oauth2": "^4.3.3",
-    "@unchainedshop/controlpanel": "^1.1.3",
-    "@unchainedshop/platform": "^1.1.5",
-    "@unchainedshop/plugins": "^1.1.5",
+    "@unchainedshop/controlpanel": "*",
+    "@unchainedshop/platform": "*",
+    "@unchainedshop/plugins": "*",
     "JSONStream": "^1.3.5",
     "apollo-server-express": "^2.25.3",
     "bcrypt": "^5.0.1",
@@ -69,7 +69,7 @@
     "@babel/core": "^7.18.6",
     "@babel/preset-env": "^7.18.6",
     "@babel/register": "^7.18.6",
-    "@unchainedshop/types": "^1.1.5",
+    "@unchainedshop/types": "*",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
