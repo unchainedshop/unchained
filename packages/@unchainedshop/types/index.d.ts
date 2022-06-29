@@ -525,7 +525,7 @@ declare module '@unchainedshop/api' {
   const roles: APIRoles;
 }
 
-declare module 'meteor/unchained:mongodb' {
+declare module '@unchainedshop/mongodb' {
   function initDb(): Promise<Db>;
 }
 

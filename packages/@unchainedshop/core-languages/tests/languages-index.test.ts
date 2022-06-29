@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { initDb } from 'meteor/unchained:mongodb';
+import { initDb } from '@unchainedshop/mongodb';
 import { configureLanguagesModule } from '@unchainedshop/core-languages';
 
 describe('Test exports', () => {

@@ -4,7 +4,7 @@ import { UsersModule } from '@unchainedshop/types/user';
 import { assert } from 'chai';
 import { configureQuotationsModule } from '@unchainedshop/core-quotations';
 import { configureUsersModule } from '@unchainedshop/core-users';
-import { initDb } from 'meteor/unchained:mongodb';
+import { initDb } from '@unchainedshop/mongodb';
 import '../plugins/manual';
 
 describe('Test exports', () => {

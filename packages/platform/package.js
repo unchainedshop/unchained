@@ -13,6 +13,7 @@ Npm.depends({
   open: '8.4.0',
   '@unchainedshop/logger': '1.1.3',
   '@unchainedshop/utils': '1.1.3',
+  '@unchainedshop/mongodb': '1.1.4',
   // '@unchainedshop/events': '1.1.4', // PEER
   // '@unchainedshop/plugins': '1.1.3', // PEER
   // '@unchainedshop/core': '1.1.x', // PEER
@@ -24,8 +25,6 @@ Package.onUse((api) => {
 
   api.use('ecmascript');
   api.use('typescript');
-
-  api.use('unchained:mongodb@1.1.3');
 
   api.mainModule('src/platform-index.ts', 'server');
 });

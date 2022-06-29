@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { initDb } from 'meteor/unchained:mongodb';
+import { initDb } from '@unchainedshop/mongodb';
 import { configureBookmarksModule } from '@unchainedshop/core-bookmarks';
 
 describe('Test exports', () => {

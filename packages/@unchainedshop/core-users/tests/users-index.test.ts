@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { initDb } from 'meteor/unchained:mongodb';
+import { initDb } from '@unchainedshop/mongodb';
 import { configureUsersModule } from '@unchainedshop/core-users';
 import { UsersModule } from '@unchainedshop/types/user';
 import { Db } from '@unchainedshop/types/common';

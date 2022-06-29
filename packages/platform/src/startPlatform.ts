@@ -2,7 +2,7 @@ import { SetupWorkqueueOptions, PlatformOptions, MessageTypes } from '@unchained
 import { Meteor } from 'meteor/meteor';
 import { startAPIServer, roles } from '@unchainedshop/api';
 import { initCore } from '@unchainedshop/core';
-import { initDb } from 'meteor/unchained:mongodb';
+import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
 import { interceptEmails } from './interceptEmails';

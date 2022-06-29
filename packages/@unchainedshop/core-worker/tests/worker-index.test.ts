@@ -5,7 +5,7 @@ import {
   configureWorkerModule,
   WorkerDirector,
 } from '@unchainedshop/core-worker';
-import { initDb } from 'meteor/unchained:mongodb';
+import { initDb } from '@unchainedshop/mongodb';
 
 import { ExternalWorkerPlugin } from '../plugins/external';
 
