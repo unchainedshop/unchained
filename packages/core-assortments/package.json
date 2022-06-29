@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-assortments",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "main": "lib/assortments-index.js",
   "types": "lib/assortments-index.d.ts",
   "type": "module",
@@ -26,8 +26,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^1.1.8",
-    "@unchainedshop/utils": "^1.1.8",
+    "@unchainedshop/logger": "^1.1.9",
+    "@unchainedshop/utils": "^1.1.9",
     "locale": "^0.1.0",
     "ramda": "^0.28.0",
     "simpl-schema": "^1.12.2"
@@ -40,9 +40,9 @@
     "@types/chai": "^4.3.1",
     "@types/locale": "^0.1.1",
     "@types/mocha": "^9.1.1",
-    "@unchainedshop/events": "^1.1.8",
-    "@unchainedshop/file-upload": "^1.1.8",
-    "@unchainedshop/types": "^1.1.8",
+    "@unchainedshop/events": "^1.1.9",
+    "@unchainedshop/file-upload": "^1.1.9",
+    "@unchainedshop/types": "^1.1.9",
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",
     "typescript": "^4.7.4"
