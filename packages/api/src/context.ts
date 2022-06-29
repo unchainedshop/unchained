@@ -1,11 +1,13 @@
 import { UnchainedAPI, UnchainedContextResolver } from '@unchainedshop/types/api';
-import { WebApp } from 'meteor/webapp';
 import { IncomingMessage } from 'http';
 import instantiateLoaders from './loaders';
 import { getLocaleContext } from './locale-context';
 import { getUserContext } from './user-context';
 
 let context;
+
+// Stub
+const WebApp = { connectHandlers: { use: () => {} } };
 
 export const getCurrentContextResolver = (): UnchainedContextResolver => context;
 

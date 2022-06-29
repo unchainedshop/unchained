@@ -1,6 +1,6 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { GraphQLOptions } from 'apollo-server-express';
-import { Locale } from 'locale';
+import type { Locale } from 'locale';
 import { User } from './user';
 import { UnchainedCore } from './core';
 

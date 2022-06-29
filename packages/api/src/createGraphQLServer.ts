@@ -1,12 +1,14 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { processRequest } from 'graphql-upload';
-import { WebApp } from 'meteor/webapp';
 import { log, LogLevel } from '@unchainedshop/logger';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 import { getCurrentContextResolver } from './context';
 
 const { APOLLO_ENGINE_KEY } = process.env;
+
+// Stub
+const WebApp = { connectHandlers: { use: () => {} } };
 
 const handleUploads = (options) => async (req, res, next) => {
   const contentType = req.headers['content-type'];

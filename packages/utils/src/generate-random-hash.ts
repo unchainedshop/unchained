@@ -1,4 +1,4 @@
-import Hashids from 'hashids/cjs';
+import Hashids from 'hashids';
 
 const hashids = new Hashids('unchained', 6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
 

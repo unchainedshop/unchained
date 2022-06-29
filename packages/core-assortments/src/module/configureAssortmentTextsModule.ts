@@ -1,6 +1,6 @@
 import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments';
 import { Collection } from '@unchainedshop/types/common';
-import { Locale } from 'locale';
+import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -9,6 +9,8 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings';
+
+const { Locale } = localePkg;
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
 

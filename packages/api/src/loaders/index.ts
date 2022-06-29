@@ -2,7 +2,9 @@ import { UnchainedAPI, UnchainedLoaders } from '@unchainedshop/types/api';
 import DataLoader from 'dataloader';
 import { IncomingMessage } from 'http';
 import { systemLocale } from '@unchainedshop/utils';
-import { Locale } from 'locale';
+import localePkg from 'locale';
+
+const { Locale } = localePkg;
 
 export default async (
   req: IncomingMessage,

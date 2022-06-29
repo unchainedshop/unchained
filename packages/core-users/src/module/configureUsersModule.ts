@@ -1,4 +1,4 @@
-import { Locale } from 'locale';
+import localePkg from 'locale';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from '@unchainedshop/logger';
@@ -8,6 +8,8 @@ import { FileDirector } from '@unchainedshop/file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';
+
+const { Locale } = localePkg;
 
 const USER_EVENTS = [
   'USER_UPDATE',

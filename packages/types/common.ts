@@ -13,9 +13,11 @@ import {
   UpdateFilter,
   UpdateOptions,
 } from 'mongodb';
+import type { Locale, Locales } from 'locale';
 import { LogOptions } from './logs';
 
-export { Locale, Locales } from 'locale';
+export { Locale, Locales };
+
 /*
  * MongoDb
  */

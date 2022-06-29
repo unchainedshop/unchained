@@ -6,7 +6,7 @@ import {
   EnrollmentsModule,
   EnrollmentsSettingsOptions,
 } from '@unchainedshop/types/enrollments';
-import { Locale } from 'locale';
+import type { Locale } from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
