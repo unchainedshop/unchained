@@ -1,5 +1,4 @@
 import { SetupWorkqueueOptions, PlatformOptions, MessageTypes } from '@unchainedshop/types/platform';
-import { Meteor } from 'meteor/meteor';
 import { startAPIServer, roles } from '@unchainedshop/api';
 import { initCore } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
@@ -138,7 +137,7 @@ export const startPlatform = async (
 
   // Setup filter cache
   if (!options.filters?.skipInvalidationOnStartup) {
-    Meteor.defer(() => unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI));
+    setImmediate(() => unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI));
   }
 
   return unchainedAPI;

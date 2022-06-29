@@ -62,7 +62,7 @@ import '@unchainedshop/plugins/lib/events/node-event-emitter';
 import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
 
-Meteor.startup(async () => {
+const start = async () => {
   const unchainedApi = await startPlatform({
     introspection: true,
     playground: true,
@@ -103,7 +103,7 @@ Meteor.startup(async () => {
     context: withAccessToken(),
   });
 
-  seed(unchainedApi);
+  await seed(unchainedApi);
 
   // The following lines will activate SSO from Unchained Cloud to your instance,
   // if you want to further secure your app and close this rabbit hole,
@@ -114,4 +114,6 @@ Meteor.startup(async () => {
   // until here
 
   embedControlpanelInMeteorWebApp(WebApp);
-});
+};
+
+start();
