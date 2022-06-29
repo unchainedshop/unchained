@@ -7,9 +7,6 @@ import { getCurrentContextResolver } from './context';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
-// Stub
-const WebApp = { connectHandlers: { use: () => {} } };
-
 const handleUploads = (options) => async (req, res, next) => {
   const contentType = req.headers['content-type'];
   const isUpload = contentType && contentType.startsWith('multipart/form-data');
@@ -38,7 +35,7 @@ const logGraphQLServerError = (error) => {
   } catch (e) {} // eslint-disable-line
 };
 
-export default (options) => {
+export default (expressApp, options) => {
   const {
     corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
@@ -105,7 +102,7 @@ export default (options) => {
     },
   });
 
-  WebApp.connectHandlers.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
-  WebApp.connectHandlers.use(middleware);
+  expressApp.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
+  expressApp.use(middleware);
   return server;
 };

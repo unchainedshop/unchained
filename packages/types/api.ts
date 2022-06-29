@@ -57,6 +57,7 @@ export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => P
 
 export type UnchainedServerOptions = {
   unchainedAPI: UnchainedAPI;
+  expressApp: any;
   roles?: any;
   typeDefs: Array<string>;
   resolvers: Record<string, any>;

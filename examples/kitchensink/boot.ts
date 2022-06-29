@@ -1,4 +1,5 @@
 import './node_env';
+import express from 'express';
 import { startPlatform, withAccessToken } from '@unchainedshop/platform';
 // import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
@@ -62,7 +63,10 @@ import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
 
 const start = async () => {
+  const app = express();
+
   const unchainedApi = await startPlatform({
+    expressApp: app,
     introspection: true,
     playground: true,
     tracing: true,
@@ -107,12 +111,15 @@ const start = async () => {
   // The following lines will activate SSO from Unchained Cloud to your instance,
   // if you want to further secure your app and close this rabbit hole,
   // remove the following lines
-//   const singleSignOn = loginWithSingleSignOn(unchainedApi);
-//   WebApp.connectHandlers.use('/', singleSignOn);
-//   WebApp.connectHandlers.use('/.well-known/unchained/cloud-sso', singleSignOn);
+  //   const singleSignOn = loginWithSingleSignOn(unchainedApi);
+  //   WebApp.connectHandlers.use('/', singleSignOn);
+  //   WebApp.connectHandlers.use('/.well-known/unchained/cloud-sso', singleSignOn);
   // until here
 
-//   embedControlpanelInMeteorWebApp(WebApp);
+  //   embedControlpanelInMeteorWebApp(WebApp);
+
+  await app.listen({ port: process.env.PORT || 4000 });
+  console.log(`🚀 Server ready at http://localhost:4000/graphql`);
 };
 
 start();

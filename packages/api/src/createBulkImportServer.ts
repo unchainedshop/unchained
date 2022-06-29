@@ -90,6 +90,6 @@ const bulkImportMiddleware = async (req, res) => {
   }
 };
 
-export default () => {
-  useMiddlewareWithCurrentContext(BULK_IMPORT_API_PATH, bulkImportMiddleware);
+export default (expressApp) => {
+  useMiddlewareWithCurrentContext(expressApp, BULK_IMPORT_API_PATH, bulkImportMiddleware);
 };

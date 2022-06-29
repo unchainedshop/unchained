@@ -41,6 +41,7 @@ export enum MessageTypes {
 }
 
 export type PlatformOptions = {
+  expressApp: any;
   typeDefs?: Array<string>;
   resolvers?: any;
   schema?: any;

@@ -6,9 +6,6 @@ import { getUserContext } from './user-context';
 
 let context;
 
-// Stub
-const WebApp = { connectHandlers: { use: () => {} } };
-
 export const getCurrentContextResolver = (): UnchainedContextResolver => context;
 
 export const setCurrentContextResolver = (newContext: UnchainedContextResolver) => {
@@ -35,8 +32,8 @@ export const createContextResolver =
     };
   };
 
-export const useMiddlewareWithCurrentContext = (path, middleware) => {
-  WebApp.connectHandlers.use(
+export const useMiddlewareWithCurrentContext = (expressApp, path, middleware) => {
+  expressApp.use(
     path,
     async (req: IncomingMessage & { unchainedContext?: UnchainedAPI }, res, ...rest) => {
       req.unchainedContext = await context({ req, res });

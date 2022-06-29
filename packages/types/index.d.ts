@@ -513,6 +513,7 @@ declare module '@unchainedshop/api' {
   function hashPassword(password: string): string;
 
   function useMiddlewareWithCurrentContext(
+    expressApp: any,
     path: string,
     fn: (
       req: IncomingMessage & { unchainedContext: UnchainedAPI },
