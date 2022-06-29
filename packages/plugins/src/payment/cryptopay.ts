@@ -30,79 +30,81 @@ enum CryptopayCurrencies { // eslint-disable-line
 const MAX_RATE_AGE = parseInt(CRYPTOPAY_MAX_RATE_AGE, 10);
 const MAX_ALLOWED_DIFF = parseFloat(CRYPTOPAY_MAX_CONV_DIFF); // Accept payments when the converted amount differs by adapterActions much (in percent)
 
-useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
+export default (app) => {
+  useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
 
-useMiddlewareWithCurrentContext(CRYPTOPAY_WEBHOOK_PATH, async (request, response) => {
-  // Return a 200 response to acknowledge receipt of the event
-  const resolvedContext = request.unchainedContext as Context;
-  const { currency, contract, decimals, address, amount, secret } = request.body;
-  if (secret !== CRYPTOPAY_SECRET) {
-    logger.warn(`Cryptopay Plugin: Invalid Cryptopay Secret provided`);
-    response.end(JSON.stringify({ success: false }));
-    return;
-  }
-  const orderPayment = await resolvedContext.modules.orders.payments.findOrderPaymentByContextData({
-    context: { currency, address },
-  });
-  if (orderPayment) {
-    if (currency === CryptopayCurrencies.ETH && contract && contract !== '') {
-      const ERC20CurrencyCount = await resolvedContext.modules.currencies.count({
-        includeInactive: false,
-        contractAddress: contract,
+  useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, async (request, response) => {
+    // Return a 200 response to acknowledge receipt of the event
+    const resolvedContext = request.unchainedContext as Context;
+    const { currency, contract, decimals, address, amount, secret } = request.body;
+    if (secret !== CRYPTOPAY_SECRET) {
+      logger.warn(`Cryptopay Plugin: Invalid Cryptopay Secret provided`);
+      response.end(JSON.stringify({ success: false }));
+      return;
+    }
+    const orderPayment = await resolvedContext.modules.orders.payments.findOrderPaymentByContextData({
+      context: { currency, address },
+    });
+    if (orderPayment) {
+      if (currency === CryptopayCurrencies.ETH && contract && contract !== '') {
+        const ERC20CurrencyCount = await resolvedContext.modules.currencies.count({
+          includeInactive: false,
+          contractAddress: contract,
+        });
+        if (!ERC20CurrencyCount) {
+          logger.warn(`Cryptopay Plugin: ERC20 token address ${contract} not whitelisted.`);
+          response.end(JSON.stringify({ success: false }));
+          return;
+        }
+      }
+      const order = await resolvedContext.modules.orders.findOrder({
+        orderId: orderPayment.orderId,
       });
-      if (!ERC20CurrencyCount) {
-        logger.warn(`Cryptopay Plugin: ERC20 token address ${contract} not whitelisted.`);
+      const pricing = OrderPricingSheet({
+        calculation: order.calculation,
+        currency: order.currency,
+      });
+      const totalAmount = pricing?.total({ useNetPrice: false }).amount;
+      let convertedAmount: number;
+      if (order.currency === currency) {
+        convertedAmount = amount / 10 ** (decimals - 8); // All crypto native prices denoted with 8 decimals
+      } else {
+        // Need to convert
+        const rate = await resolvedContext.modules.products.prices.rates.getRate(
+          order.currency,
+          contract && contract !== '' ? contract : currency, // Convert to the smart contract if given
+          MAX_RATE_AGE,
+        );
+        if (rate) {
+          // We assume that we are converting to a fiat currency here (with 2 decimals).
+          // Paying an order with prices in crypto in another crypto is not supported.
+          convertedAmount = Math.round((amount / 10 ** decimals) * rate * 100);
+        }
+      }
+      if (convertedAmount && convertedAmount >= totalAmount * (1 - MAX_ALLOWED_DIFF)) {
+        await resolvedContext.modules.orders.checkout(
+          order._id,
+          {
+            transactionContext: { address },
+            paymentContext: { address },
+          },
+          resolvedContext,
+        );
+        response.end(JSON.stringify({ success: true }));
+      } else {
+        logger.warn(
+          `Cryptopay Plugin: OrderPayment ${orderPayment._id} not marked as paid. Converted amount is ${convertedAmount}`,
+        );
         response.end(JSON.stringify({ success: false }));
-        return;
       }
-    }
-    const order = await resolvedContext.modules.orders.findOrder({
-      orderId: orderPayment.orderId,
-    });
-    const pricing = OrderPricingSheet({
-      calculation: order.calculation,
-      currency: order.currency,
-    });
-    const totalAmount = pricing?.total({ useNetPrice: false }).amount;
-    let convertedAmount: number;
-    if (order.currency === currency) {
-      convertedAmount = amount / 10 ** (decimals - 8); // All crypto native prices denoted with 8 decimals
     } else {
-      // Need to convert
-      const rate = await resolvedContext.modules.products.prices.rates.getRate(
-        order.currency,
-        contract && contract !== '' ? contract : currency, // Convert to the smart contract if given
-        MAX_RATE_AGE,
-      );
-      if (rate) {
-        // We assume that we are converting to a fiat currency here (with 2 decimals).
-        // Paying an order with prices in crypto in another crypto is not supported.
-        convertedAmount = Math.round((amount / 10 ** decimals) * rate * 100);
-      }
-    }
-    if (convertedAmount && convertedAmount >= totalAmount * (1 - MAX_ALLOWED_DIFF)) {
-      await resolvedContext.modules.orders.checkout(
-        order._id,
-        {
-          transactionContext: { address },
-          paymentContext: { address },
-        },
-        resolvedContext,
-      );
-      response.end(JSON.stringify({ success: true }));
-    } else {
-      logger.warn(
-        `Cryptopay Plugin: OrderPayment ${orderPayment._id} not marked as paid. Converted amount is ${convertedAmount}`,
+      logger.info(
+        `Cryptopay Plugin: No orderPayment with address ${address} and currency ${currency} found`,
       );
       response.end(JSON.stringify({ success: false }));
     }
-  } else {
-    logger.info(
-      `Cryptopay Plugin: No orderPayment with address ${address} and currency ${currency} found`,
-    );
-    response.end(JSON.stringify({ success: false }));
-  }
-});
+  });
+};
 
 const Cryptopay: IPaymentAdapter = {
   ...PaymentAdapter,

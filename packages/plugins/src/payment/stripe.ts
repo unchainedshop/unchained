@@ -27,80 +27,86 @@ const {
 
 const stripe = createStripeClient(STRIPE_SECRET);
 
-useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, bodyParser.raw({ type: 'application/json' }));
+export default (app) => {
+  useMiddlewareWithCurrentContext(
+    app,
+    STRIPE_WEBHOOK_PATH,
+    bodyParser.raw({ type: 'application/json' }),
+  );
 
-useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, async (request, response) => {
-  const sig = request.headers['stripe-signature'];
-  const resolvedContext = request.unchainedContext as Context;
-  const { modules, services } = resolvedContext;
+  useMiddlewareWithCurrentContext(app, STRIPE_WEBHOOK_PATH, async (request, response) => {
+    const sig = request.headers['stripe-signature'];
+    const resolvedContext = request.unchainedContext as Context;
+    const { modules, services } = resolvedContext;
 
-  let event;
+    let event;
 
-  try {
-    event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_ENDPOINT_SECRET);
-  } catch (err) {
-    response.writeHead(400);
-    response.end(`Webhook Error: ${err.message}`);
-    return;
-  }
-
-  try {
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentIntent = event.data.object;
-      const orderPaymentId = paymentIntent.metadata?.orderPaymentId;
-
-      await modules.orders.payments.logEvent(orderPaymentId, event, resolvedContext.userId);
-
-      const orderPayment = await modules.orders.payments.findOrderPayment({
-        orderPaymentId,
-      });
-
-      const order = await modules.orders.checkout(
-        orderPayment.orderId,
-        {
-          transactionContext: {
-            paymentIntentId: paymentIntent.id,
-          },
-          paymentContext: {
-            paymentIntentId: paymentIntent.id,
-          },
-        },
-        resolvedContext,
-      );
-
-      logger.info(`Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {
-        orderId: order._id,
-      });
-    } else if (event.type === 'setup_intent.succeeded') {
-      const setupIntent = event.data.object;
-      const { paymentProviderId, userId } = setupIntent.metadata;
-
-      await services.payment.registerPaymentCredentials(
-        paymentProviderId,
-        {
-          transactionContext: {
-            setupIntentId: setupIntent.id,
-          },
-        },
-        resolvedContext,
-      );
-
-      logger.info(`Stripe Webhook: Unchained registered payment credentials for ${userId}`, {
-        userId,
-      });
-    } else {
-      response.writeHead(404);
-      response.end();
+    try {
+      event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_ENDPOINT_SECRET);
+    } catch (err) {
+      response.writeHead(400);
+      response.end(`Webhook Error: ${err.message}`);
       return;
     }
-  } catch (err) {
-    response.writeHead(400);
-    response.end(`Webhook Error: ${err.message}`);
-    return;
-  }
-  // Return a 200 response to acknowledge receipt of the event
-  response.end(JSON.stringify({ received: true }));
-});
+
+    try {
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object;
+        const orderPaymentId = paymentIntent.metadata?.orderPaymentId;
+
+        await modules.orders.payments.logEvent(orderPaymentId, event, resolvedContext.userId);
+
+        const orderPayment = await modules.orders.payments.findOrderPayment({
+          orderPaymentId,
+        });
+
+        const order = await modules.orders.checkout(
+          orderPayment.orderId,
+          {
+            transactionContext: {
+              paymentIntentId: paymentIntent.id,
+            },
+            paymentContext: {
+              paymentIntentId: paymentIntent.id,
+            },
+          },
+          resolvedContext,
+        );
+
+        logger.info(`Stripe Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {
+          orderId: order._id,
+        });
+      } else if (event.type === 'setup_intent.succeeded') {
+        const setupIntent = event.data.object;
+        const { paymentProviderId, userId } = setupIntent.metadata;
+
+        await services.payment.registerPaymentCredentials(
+          paymentProviderId,
+          {
+            transactionContext: {
+              setupIntentId: setupIntent.id,
+            },
+          },
+          resolvedContext,
+        );
+
+        logger.info(`Stripe Webhook: Unchained registered payment credentials for ${userId}`, {
+          userId,
+        });
+      } else {
+        response.writeHead(404);
+        response.end();
+        return;
+      }
+    } catch (err) {
+      response.writeHead(400);
+      response.end(`Webhook Error: ${err.message}`);
+      return;
+    }
+    // Return a 200 response to acknowledge receipt of the event
+    response.end(JSON.stringify({ received: true }));
+  });
+};
 
 const createRegistrationIntent = async ({ userId, name, email, paymentProviderId }, options = {}) => {
   const customer = await stripe.customers.create({

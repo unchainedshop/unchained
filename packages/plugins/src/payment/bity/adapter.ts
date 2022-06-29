@@ -185,56 +185,58 @@ const estimateBityOrder = async (data: any, context: Context) => {
   return response.json();
 };
 
-useMiddlewareWithCurrentContext(BITY_OAUTH_INIT_PATH, async (req, res) => {
-  if (req.method === 'GET') {
-    try {
-      const resolvedContext = req.unchainedContext;
-      await checkAction(resolvedContext, actions.managePaymentProviders);
+export default (app) => {
+  useMiddlewareWithCurrentContext(app, BITY_OAUTH_INIT_PATH, async (req, res) => {
+    if (req.method === 'GET') {
+      try {
+        const resolvedContext = req.unchainedContext;
+        await checkAction(resolvedContext, actions.managePaymentProviders);
 
-      const bityAuthClient = createBityAuth();
-      const uri = bityAuthClient.code.getUri();
-      logger.info(`Bity Webhook: Login ${uri}`);
-      res.writeHead(302, {
-        Location: uri,
-      });
-      res.end();
-      return;
-    } catch (e) {
-      logger.warn(`Bity Webhook: Failed with ${e.message}`);
-      res.writeHead(503);
-      res.end(JSON.stringify(e));
-      return;
+        const bityAuthClient = createBityAuth();
+        const uri = bityAuthClient.code.getUri();
+        logger.info(`Bity Webhook: Login ${uri}`);
+        res.writeHead(302, {
+          Location: uri,
+        });
+        res.end();
+        return;
+      } catch (e) {
+        logger.warn(`Bity Webhook: Failed with ${e.message}`);
+        res.writeHead(503);
+        res.end(JSON.stringify(e));
+        return;
+      }
     }
-  }
-  res.writeHead(404);
-  res.end();
-});
+    res.writeHead(404);
+    res.end();
+  });
 
-useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res, next) => {
-  bodyParser.urlencoded({ extended: false })(req, res, next);
-});
+  useMiddlewareWithCurrentContext(app, BITY_OAUTH_PATH, async (req, res, next) => {
+    bodyParser.urlencoded({ extended: false })(req, res, next);
+  });
 
-useMiddlewareWithCurrentContext(BITY_OAUTH_PATH, async (req, res) => {
-  if (req.method === 'GET') {
-    try {
-      const resolvedContext = req.unchainedContext as Context;
-      await checkAction(resolvedContext, actions.managePaymentProviders);
-      const bityAuthClient = createBityAuth();
-      const user = await bityAuthClient.code.getToken(req.originalUrl);
-      await upsertBityCredentials(user, resolvedContext);
-      res.writeHead(200);
-      res.end('Bity Credentials Setup Complete');
-      return;
-    } catch (e) {
-      logger.warn(`Bity Webhook: Failed with ${e.message}`);
-      res.writeHead(503);
-      res.end(JSON.stringify(e));
-      return;
+  useMiddlewareWithCurrentContext(app, BITY_OAUTH_PATH, async (req, res) => {
+    if (req.method === 'GET') {
+      try {
+        const resolvedContext = req.unchainedContext as Context;
+        await checkAction(resolvedContext, actions.managePaymentProviders);
+        const bityAuthClient = createBityAuth();
+        const user = await bityAuthClient.code.getToken(req.originalUrl);
+        await upsertBityCredentials(user, resolvedContext);
+        res.writeHead(200);
+        res.end('Bity Credentials Setup Complete');
+        return;
+      } catch (e) {
+        logger.warn(`Bity Webhook: Failed with ${e.message}`);
+        res.writeHead(503);
+        res.end(JSON.stringify(e));
+        return;
+      }
     }
-  }
-  res.writeHead(404);
-  res.end();
-});
+    res.writeHead(404);
+    res.end();
+  });
+};
 
 let bityAuthClient;
 const loadToken = async (context: Context) => {

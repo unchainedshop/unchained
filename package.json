@@ -35,7 +35,8 @@
     "dev": "run-p --print-label dev:*",
     "dev:minimal": "cd examples/minimal && npm run dev",
     "dev:controlpanel": "cd examples/controlpanel && npm run dev",
-    "build": "npx lerna --no-bail run build"
+    "build": "lerna --no-bail run build",
+    "bootstrap": "lerna bootstrap --hoist '@unchainedshop/**' --no-private"
   },
   "devDependencies": {
     "@apollo/client": "^3.6.9",

@@ -1,7 +1,7 @@
 import './node_env';
 import express from 'express';
 import { startPlatform, withAccessToken } from '@unchainedshop/platform';
-// import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
+import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
 import '@unchainedshop/plugins/lib/delivery/post';
 import '@unchainedshop/plugins/lib/delivery/pick-mup';
@@ -12,14 +12,18 @@ import '@unchainedshop/plugins/lib/warehousing/store';
 
 import '@unchainedshop/plugins/lib/payment/invoice';
 import '@unchainedshop/plugins/lib/payment/invoice-prepaid';
-import '@unchainedshop/plugins/lib/payment/datatrans-v2';
 import '@unchainedshop/plugins/lib/payment/paypal-checkout';
-import '@unchainedshop/plugins/lib/payment/cryptopay';
-import { configureAppleTransactionsModule } from '@unchainedshop/plugins/lib/payment/apple-iap';
-import '@unchainedshop/plugins/lib/payment/stripe';
-import '@unchainedshop/plugins/lib/payment/postfinance-checkout';
+import setupDatatrans from '@unchainedshop/plugins/lib/payment/datatrans-v2';
+import setupCryptopay from '@unchainedshop/plugins/lib/payment/cryptopay';
+import setupAppleIAP, {
+  configureAppleTransactionsModule,
+} from '@unchainedshop/plugins/lib/payment/apple-iap';
+import setupStripe from '@unchainedshop/plugins/lib/payment/stripe';
+import setupPostfinance from '@unchainedshop/plugins/lib/payment/postfinance-checkout';
 import '@unchainedshop/plugins/lib/payment/worldline-saferpay';
-import { configureBityModule } from '@unchainedshop/plugins/lib/payment/bity';
+import setupBity, {
+  configureBityModule,
+} from '@unchainedshop/plugins/lib/payment/bity';
 
 import '@unchainedshop/plugins/lib/pricing/discount-half-price-manual';
 import '@unchainedshop/plugins/lib/pricing/discount-100-off';
@@ -31,7 +35,7 @@ import '@unchainedshop/plugins/lib/pricing/order-delivery';
 import '@unchainedshop/plugins/lib/pricing/order-payment';
 import '@unchainedshop/plugins/lib/pricing/product-catalog-price';
 import '@unchainedshop/plugins/lib/pricing/product-price-coinbase-exchange';
-import '@unchainedshop/plugins/lib/pricing/product-price-cryptopay';
+import setupCryptopayPricing from '@unchainedshop/plugins/lib/pricing/product-price-cryptopay';
 import '@unchainedshop/plugins/lib/pricing/product-price-rateconversion';
 import '@unchainedshop/plugins/lib/pricing/product-discount';
 import '@unchainedshop/plugins/lib/pricing/product-swiss-tax';
@@ -51,11 +55,11 @@ import '@unchainedshop/plugins/lib/worker/email';
 import '@unchainedshop/plugins/lib/worker/sms';
 
 import '@unchainedshop/plugins/lib/files/gridfs/gridfs-adapter';
-import '@unchainedshop/plugins/lib/files/gridfs/gridfs-webhook';
+import setupGridFSWebhook from '@unchainedshop/plugins/lib/files/gridfs/gridfs-webhook';
 import { configureGridFSFileUploadModule } from '@unchainedshop/plugins/lib/files/gridfs';
 
 // import '@unchainedshop/plugins/lib/files/minio/minio-adapter';
-// import '@unchainedshop/plugins/lib/files/minio/minio-webhook';
+// import setupMinio from '@unchainedshop/plugins/lib/files/minio/minio-webhook';
 
 import '@unchainedshop/plugins/lib/events/node-event-emitter';
 
@@ -111,12 +115,21 @@ const start = async () => {
   // The following lines will activate SSO from Unchained Cloud to your instance,
   // if you want to further secure your app and close this rabbit hole,
   // remove the following lines
-  //   const singleSignOn = loginWithSingleSignOn(unchainedApi);
-  //   WebApp.connectHandlers.use('/', singleSignOn);
-  //   WebApp.connectHandlers.use('/.well-known/unchained/cloud-sso', singleSignOn);
+  const singleSignOn = loginWithSingleSignOn(unchainedApi);
+  app.use('/', singleSignOn);
+  app.use('/.well-known/unchained/cloud-sso', singleSignOn);
   // until here
 
-  //   embedControlpanelInMeteorWebApp(WebApp);
+  setupGridFSWebhook(app);
+  setupCryptopay(app);
+  setupCryptopayPricing(app);
+  setupStripe(app);
+  setupPostfinance(app);
+  setupDatatrans(app);
+  setupPaypal(app);
+  setupBity(app);
+  setupAppleIAP(app);
+  embedControlpanelInMeteorWebApp({ connectHandlers: app });
 
   await app.listen({ port: process.env.PORT || 4000 });
   console.log(`🚀 Server ready at http://localhost:4000/graphql`);

@@ -9,39 +9,42 @@ const isAuthorized = ({ authorization = '' }) => {
   return type === 'Bearer' && token === MINIO_WEBHOOK_AUTH_TOKEN;
 };
 
-useMiddlewareWithCurrentContext(
-  '/minio/',
-  bodyParser.json({
-    strict: false,
-  }),
-);
+export default (app) => {
+  useMiddlewareWithCurrentContext(
+    app,
+    '/minio/',
+    bodyParser.json({
+      strict: false,
+    }),
+  );
 
-useMiddlewareWithCurrentContext('/minio/', async (req, res) => {
-  try {
-    if (req.method === 'POST' && req.body) {
-      const { headers } = req;
-      const { Records = [], EventName } = req.body;
-      if (EventName === 's3:ObjectCreated:Put' && isAuthorized(headers)) {
-        const [{ s3 }] = Records;
-        const { object } = s3;
-        const { size, contentType: type } = object;
-        const [fileId] = object.key.split('.');
-        const { services } = req.unchainedContext;
-        await services.files.linkFile({ fileId, type, size }, req.unchainedContext);
-        res.writeHead(200);
-        res.end();
-        return;
+  useMiddlewareWithCurrentContext(app, '/minio/', async (req, res) => {
+    try {
+      if (req.method === 'POST' && req.body) {
+        const { headers } = req;
+        const { Records = [], EventName } = req.body;
+        if (EventName === 's3:ObjectCreated:Put' && isAuthorized(headers)) {
+          const [{ s3 }] = Records;
+          const { object } = s3;
+          const { size, contentType: type } = object;
+          const [fileId] = object.key.split('.');
+          const { services } = req.unchainedContext;
+          await services.files.linkFile({ fileId, type, size }, req.unchainedContext);
+          res.writeHead(200);
+          res.end();
+          return;
+        }
       }
+      res.writeHead(404);
+      res.end();
+      return;
+    } catch (e) {
+      log(e.message, { level: LogLevel.Error });
+      res.writeHead(503);
+      res.end(JSON.stringify(e));
     }
-    res.writeHead(404);
-    res.end();
-    return;
-  } catch (e) {
-    log(e.message, { level: LogLevel.Error });
-    res.writeHead(503);
-    res.end(JSON.stringify(e));
-  }
-});
+  });
+};
 
 /*
 

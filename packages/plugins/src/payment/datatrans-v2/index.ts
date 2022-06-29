@@ -10,11 +10,13 @@ import type {
   StatusResponseSuccess,
   ValidateResponseSuccess,
 } from './api/types';
-import './middleware';
+import setupDatatrans from './middleware';
 import parseRegistrationData from './parseRegistrationData';
 import roundedAmountFromOrder from './roundedAmountFromOrder';
 
 const logger = createLogger('unchained:core-payment:datatrans');
+
+export default setupDatatrans;
 
 // v2
 const { DATATRANS_SECRET, DATATRANS_SIGN_KEY, DATATRANS_API_ENDPOINT, DATATRANS_MERCHANT_ID } =
