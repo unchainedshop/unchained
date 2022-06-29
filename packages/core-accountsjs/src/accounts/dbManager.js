@@ -1,6 +1,8 @@
-import MongoDBInterface from '@accounts/mongo';
+import mongoPkg from '@accounts/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
 import { randomBytes } from 'crypto';
+
+const MongoDBInterface = mongoPkg.default;
 
 const METEOR_ID_LENGTH = 17;
 

@@ -29,6 +29,9 @@
     "@unchainedshop/utils": "^1.1.7",
     "mongodb": "^4.3.1"
   },
+  "peerDependencies": {
+    "mongodb-memory-server": "^8.7.2"
+  },
   "devDependencies": {
     "@types/node": "^16.11.41",
     "@unchainedshop/types": "^1.1.7",

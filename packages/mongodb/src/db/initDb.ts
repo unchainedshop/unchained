@@ -1,8 +1,19 @@
 import { Db, MongoClient } from 'mongodb';
 
-const url = process.env.MONGO_URL || 'mongodb://localhost:4011';
+let mongod;
+
+export const startDb = async () => {
+  const { MongoMemoryServer } = await import('mongodb-memory-server');
+  mongod = await MongoMemoryServer.create();
+  return mongod.getUri();
+};
+
+export const stopDb = async () => {
+  await mongod.stop();
+};
 
 const initDbNative = async (): Promise<Db> => {
+  const url = process.env.MONGO_URL || (await startDb());
   const client = new MongoClient(url);
 
   const dbName = 'meteor';
@@ -11,7 +22,7 @@ const initDbNative = async (): Promise<Db> => {
   return db;
 };
 
-const isMeteor = typeof Meteor === "object";
+const isMeteor = typeof Meteor === 'object';
 
 if (isMeteor) {
   const { NpmModuleMongodb } = await import('meteor/npm-mongo');

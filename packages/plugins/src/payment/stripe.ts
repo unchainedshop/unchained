@@ -5,15 +5,6 @@ import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:core-payment:stripe');
-
-const {
-  STRIPE_SECRET,
-  STRIPE_ENDPOINT_SECRET,
-  EMAIL_WEBSITE_NAME,
-  STRIPE_WEBHOOK_PATH = '/graphql/stripe',
-} = process.env;
-
 /*
 Test Webhooks:
 
@@ -23,7 +14,18 @@ stripe listen --forward-to http://localhost:3000/graphql/stripe
 stripe trigger payment_intent.succeeded
 */
 
-const stripe = require('stripe')(STRIPE_SECRET); // eslint-disable-line
+import createStripeClient from 'stripe';
+
+const logger = createLogger('unchained:core-payment:stripe');
+
+const {
+  STRIPE_SECRET,
+  STRIPE_ENDPOINT_SECRET,
+  EMAIL_WEBSITE_NAME,
+  STRIPE_WEBHOOK_PATH = '/graphql/stripe',
+} = process.env;
+
+const stripe = createStripeClient(STRIPE_SECRET);
 
 useMiddlewareWithCurrentContext(STRIPE_WEBHOOK_PATH, bodyParser.raw({ type: 'application/json' }));
 

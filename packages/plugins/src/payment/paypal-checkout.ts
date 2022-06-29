@@ -2,7 +2,7 @@ import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { PaymentDirector, PaymentAdapter, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 
-const checkoutNodeJssdk = require('@paypal/checkout-server-sdk'); // eslint-disable-line
+import checkoutNodeJssdk from '@paypal/checkout-server-sdk'; // eslint-disable-line
 
 const logger = createLogger('unchained:core-payment');
 
