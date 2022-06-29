@@ -126,13 +126,14 @@ const start = async () => {
   setupStripe(app);
   setupPostfinance(app);
   setupDatatrans(app);
-  setupPaypal(app);
   setupBity(app);
   setupAppleIAP(app);
   embedControlpanelInMeteorWebApp({ connectHandlers: app });
 
-  await app.listen({ port: process.env.PORT || 4000 });
-  console.log(`🚀 Server ready at http://localhost:4000/graphql`);
+  await app.listen({ port: process.env.PORT || 3000 });
+  console.log(
+    `🚀 Server ready at http://localhost:${process.env.PORT || 3000}/graphql`,
+  );
 };
 
 start();

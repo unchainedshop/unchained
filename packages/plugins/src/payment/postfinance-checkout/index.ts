@@ -17,8 +17,10 @@ import {
   voidTransaction,
 } from './api';
 import { orderIsPaid } from './utils';
-import './middleware';
+import setupPostfinance from './middleware';
 import { CompletionModes, IntegrationModes, SignResponse } from './types';
+
+export default setupPostfinance;
 
 const {
   PFCHECKOUT_SPACE_ID,
