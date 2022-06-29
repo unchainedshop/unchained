@@ -1,8 +1,8 @@
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { log, LogLevel } from '@unchainedshop/logger';
+import buildHashedFilename from '@unchainedshop/file-upload/lib/buildHashedFilename';
 import sign from './sign';
 import promisePipe from './promisePipe';
-import buildHashedFilename from '@unchainedshop/file-upload/lib/buildHashedFilename';
 
 const { ROOT_URL } = process.env;
 

@@ -62,13 +62,13 @@ export const configurePaymentCredentialsModule = (
       const result = await PaymentCredentials.updateOne(
         _id
           ? generateDbFilterById(_id, {
-            userId,
-            paymentProviderId,
-          })
+              userId,
+              paymentProviderId,
+            })
           : {
-            userId,
-            paymentProviderId,
-          },
+              userId,
+              paymentProviderId,
+            },
         {
           $setOnInsert: {
             _id: insertedId,

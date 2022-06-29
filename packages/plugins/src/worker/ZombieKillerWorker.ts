@@ -70,11 +70,11 @@ export const ZombieKillerWorker: IWorkerAdapter<
       const deletedFilesCount =
         fileIdsToRemove.length > 0
           ? await services.files.removeFiles(
-            {
-              fileIds: fileIdsToRemove,
-            },
-            unchainedAPI,
-          )
+              {
+                fileIds: fileIdsToRemove,
+              },
+              unchainedAPI,
+            )
           : 0;
 
       // Return delete count

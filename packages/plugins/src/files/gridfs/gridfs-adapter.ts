@@ -5,9 +5,9 @@ import http, { OutgoingHttpHeaders } from 'http';
 import mimeType from 'mime-types';
 import { URL } from 'url';
 import { Readable } from 'stream';
+import buildHashedFilename from '@unchainedshop/file-upload/lib/buildHashedFilename';
 import sign from './sign';
 import promisePipe from './promisePipe';
-import buildHashedFilename from '@unchainedshop/file-upload/lib/buildHashedFilename';
 
 const { UNCHAINED_PUT_URL_EXPIRY, ROOT_URL } = process.env;
 

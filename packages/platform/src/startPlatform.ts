@@ -27,7 +27,7 @@ const logger = createLogger('unchained');
 
 const REQUIRED_ENV_VARIABLES = ['EMAIL_WEBSITE_NAME', 'EMAIL_WEBSITE_URL', 'EMAIL_FROM'];
 
-const { NODE_ENV, UNCHAINED_DISABLE_WORKER } = process.env;
+const { UNCHAINED_DISABLE_WORKER } = process.env;
 
 const exitOnMissingEnvironmentVariables = () => {
   const failedEnv = REQUIRED_ENV_VARIABLES.filter((key) => !process.env[key]);

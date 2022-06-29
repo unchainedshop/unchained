@@ -64,9 +64,9 @@ export const configureFilesModule = async ({
         (currentSelector, key) =>
           meta[key] !== undefined
             ? {
-              ...currentSelector,
-              [`meta.${key}`]: meta[key],
-            }
+                ...currentSelector,
+                [`meta.${key}`]: meta[key],
+              }
             : currentSelector,
         {},
       );

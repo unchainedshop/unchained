@@ -147,8 +147,8 @@ export const configureProductTextsModule = ({
     updateTexts: async (productId, texts, userId) => {
       const productTexts = texts
         ? await Promise.all(
-          texts.map(({ locale, ...text }) => upsertLocalizedText(productId, locale, text, userId)),
-        )
+            texts.map(({ locale, ...text }) => upsertLocalizedText(productId, locale, text, userId)),
+          )
         : [];
 
       emit('PRODUCT_UPDATE_TEXTS', {

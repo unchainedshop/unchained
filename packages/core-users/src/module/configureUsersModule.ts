@@ -3,12 +3,7 @@ import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-  Schemas,
-  systemLocale,
-} from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations, Schemas, systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';

@@ -32,11 +32,11 @@ export const configureAssortmentLinksModule = ({
     findLinks: async ({ assortmentId, parentAssortmentId }, options) => {
       const selector = parentAssortmentId
         ? {
-          parentAssortmentId,
-        }
+            parentAssortmentId,
+          }
         : {
-          $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
-        };
+            $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
+          };
 
       const links = AssortmentLinks.find(
         selector,

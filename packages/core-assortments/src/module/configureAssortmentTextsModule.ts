@@ -153,10 +153,10 @@ export const configureAssortmentTextsModule = ({
     updateTexts: async (assortmentId, texts, userId) => {
       const assortmentTexts = Array.isArray(texts)
         ? await Promise.all(
-          texts.map(async ({ locale, ...text }) =>
-            upsertLocalizedText(assortmentId, locale, text, userId),
-          ),
-        )
+            texts.map(async ({ locale, ...text }) =>
+              upsertLocalizedText(assortmentId, locale, text, userId),
+            ),
+          )
         : [];
 
       emit('ASSORTMENT_UPDATE_TEXTS', {

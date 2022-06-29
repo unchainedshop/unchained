@@ -76,7 +76,8 @@ export const configureOrderPositionsModule = ({
       const originalProductId = originalProduct ? originalProduct._id : undefined;
 
       log(
-        `Create ${quantity}x Position with Product ${productId} ${quotationId ? ` (${quotationId})` : ''
+        `Create ${quantity}x Position with Product ${productId} ${
+          quotationId ? ` (${quotationId})` : ''
         }`,
         { orderId, productId, originalProductId, userId: requestContext.userId },
       );
@@ -316,8 +317,8 @@ export const configureOrderPositionsModule = ({
       const upsertedOrderPosition = await OrderPositions.findOne(
         upsertedId
           ? {
-            _id: upsertedId,
-          }
+              _id: upsertedId,
+            }
           : selector,
       );
 
