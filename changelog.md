@@ -2,6 +2,8 @@
 
 - `disableEmailInterception` is not available as option anymore, but you can still disable interception
   in development setting the environment variable `UNCHAINED_DISABLE_EMAIL_INTERCEPTION`
+- All atmosphere packages have been transformed to npm packages, all plugins are now in a separate
+  package `@unchainedshop/plugins`. See here for an overview:
 
 # Unchained Engine v1.1
 
@@ -92,7 +94,7 @@ Our Roadmap ahead:
   prevent a conflict that may occur with other systems environment variables.
 - [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore,
   explicitly set it by providing a slug property
-- [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
+- [core] Remove cron worker `@unchainedshop/core-worker/workers/cron`, use the interval worker instead
 - [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule`
   has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define
   schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed

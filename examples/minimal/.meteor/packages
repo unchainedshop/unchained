@@ -8,5 +8,5 @@ webapp@1.13.1
 mongo@1.15.0
 ecmascript@0.16.2
 disable-oplog@1.0.7
-unchained:platform@1.0.0-rc.23
+unchained:platform
 typescript@4.5.4

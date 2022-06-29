@@ -253,7 +253,7 @@ declare module '@unchainedshop/utils' {
   ) => IBasePricingSheet<Calculation>;
 }
 
-declare module 'meteor/unchained:logger' {
+declare module '@unchainedshop/logger' {
   function log(message: string, options?: LogOptions): void;
   function createLogger(moduleName: string, moreTransports?: Transports): Logger;
 
@@ -529,7 +529,7 @@ declare module 'meteor/unchained:mongodb' {
   function initDb(): Promise<Db>;
 }
 
-declare module 'meteor/unchained:roles' {
+declare module '@unchainedshop/roles' {
   const Roles: RolesInterface;
   const Role: RoleInterfaceFactory;
 
