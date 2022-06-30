@@ -27,10 +27,8 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/utils": "^1.1.9",
+    "@unchainedshop/events": "*",
     "simpl-schema": "^1.12.2"
-  },
-  "peerDependencies": {
-    "@unchainedshop/events": "1.1.x"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",

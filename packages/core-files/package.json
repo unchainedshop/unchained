@@ -28,13 +28,11 @@
   "dependencies": {
     "@unchainedshop/logger": "^1.1.9",
     "@unchainedshop/utils": "^1.1.9",
+    "@unchainedshop/events": "*",
+    "@unchainedshop/file-upload": "*",
     "mime-types": "^2.1.35",
     "minio": "^7.0.28",
     "simpl-schema": "^1.12.2"
-  },
-  "peerDependencies": {
-    "@unchainedshop/events": "1.1.x",
-    "@unchainedshop/file-upload": "1.1.x"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",

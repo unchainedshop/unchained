@@ -26,14 +26,14 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "@unchainedshop/core": "1.1.x",
-    "@unchainedshop/events": "1.1.x",
-    "@unchainedshop/roles": "1.1.x",
     "apollo-server-express": "2.x",
     "graphql": "^15.x",
     "graphql-scalars": "^1.x"
   },
   "dependencies": {
+    "@unchainedshop/core": "^1.1.9",
+    "@unchainedshop/events": "^1.1.9",
+    "@unchainedshop/roles": "^1.1.9",
     "@unchainedshop/logger": "^1.1.9",
     "@unchainedshop/utils": "^1.1.9",
     "accounting": "0.4.1",
@@ -45,9 +45,6 @@
   "devDependencies": {
     "@types/graphql-upload": "^8.0.11",
     "@types/locale": "^0.1.1",
-    "@unchainedshop/core": "^1.1.9",
-    "@unchainedshop/events": "^1.1.9",
-    "@unchainedshop/roles": "^1.1.9",
     "@unchainedshop/types": "^1.1.9",
     "apollo-server-express": "*",
     "chai": "^4.3.6",

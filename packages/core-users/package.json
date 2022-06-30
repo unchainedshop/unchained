@@ -28,20 +28,15 @@
   "dependencies": {
     "@unchainedshop/logger": "^1.1.9",
     "@unchainedshop/utils": "^1.1.9",
+    "@unchainedshop/events": "^1.1.9",
+    "@unchainedshop/file-upload": "^1.1.9",
+    "@unchainedshop/roles": "^1.1.9",
     "locale": "^0.1.0",
     "simpl-schema": "^1.12.2"
-  },
-  "peerDependencies": {
-    "@unchainedshop/events": "1.1.x",
-    "@unchainedshop/file-upload": "1.1.x",
-    "@unchainedshop/roles": "1.1.x"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",
     "@types/mocha": "^9.1.1",
-    "@unchainedshop/events": "^1.1.9",
-    "@unchainedshop/file-upload": "^1.1.9",
-    "@unchainedshop/roles": "^1.1.9",
     "@unchainedshop/types": "^1.1.9",
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",

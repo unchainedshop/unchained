@@ -28,10 +28,8 @@
   "dependencies": {
     "@unchainedshop/logger": "^1.1.9",
     "@unchainedshop/utils": "^1.1.9",
+    "@unchainedshop/events": "^1.1.9",
     "simpl-schema": "^1.12.2"
-  },
-  "peerDependencies": {
-    "@unchainedshop/events": "1.1.x"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",
