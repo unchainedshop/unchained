@@ -7,7 +7,7 @@
     "url": "git+https://github.com/unchainedshop/unchained.git"
   },
   "type": "module",
-  "main": "lin/index.js",
+  "main": "lib/index.js",
   "types": "index.d.ts",
   "scripts": {
     "prepublishOnly": "npm install && npm run build",
