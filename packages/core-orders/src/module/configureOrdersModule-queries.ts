@@ -42,7 +42,7 @@ export const configureOrdersModuleQueries = ({
     },
 
     findOrders: async ({ limit, offset, queryString, sort, ...query }, options) => {
-      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.ASC }];
+      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.DESC }];
       const findOptions: FindOptions = {
         skip: offset,
         limit,
