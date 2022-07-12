@@ -1,4 +1,5 @@
 import { build } from 'esbuild';
+import { execSync } from 'child_process';
 import fg from 'fast-glob';
 
 export const buildNode = async ({ ...args }) => {
@@ -11,6 +12,17 @@ export const buildNode = async ({ ...args }) => {
     watch: Boolean(process.env.ESBUILD_WATCH),
     sourcemap: true,
     logLevel: 'info',
+    plugins: [
+      {
+        name: 'TypeScriptDeclarationsPlugin',
+        setup(build) {
+          build.onEnd((result) => {
+            if (result.errors.length > 0) return;
+            execSync('tsc');
+          });
+        },
+      },
+    ],
     ...args,
   });
 };

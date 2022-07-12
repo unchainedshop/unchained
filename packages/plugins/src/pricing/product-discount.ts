@@ -1,4 +1,4 @@
-import { Discount, DiscountConfiguration } from '@unchainedshop/types/discount';
+import type { Discount, DiscountConfiguration } from '@unchainedshop/types/discount';
 import {
   IProductPricingAdapter,
   ProductPricingRowCategory,
