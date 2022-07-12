@@ -1,6 +1,7 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
 import fetch from 'isomorphic-unfetch';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
+import xmlJs from 'xml-js';
 
 import Cache from './utils/cache';
 
@@ -42,7 +43,6 @@ const SUPPORTED_CURRENCIES = [
 ];
 
 const cache = new Cache(CACHE_PERIOD);
-const xmlJs = require('xml-js'); // eslint-disable-line
 
 const getEURexchangeRateForCurrency = async (currency) => {
   const response = cache.get(currency, () =>

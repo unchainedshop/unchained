@@ -5,10 +5,11 @@
   "types": "lib/events-index.d.ts",
   "type": "module",
   "scripts": {
+    "prepublishOnly": "npm install && npm run build",
     "clean": "rm -rf lib",
-    "build": "npm run clean && tsc -p tsconfig.build.json",
-    "watch": "tsc --watch",
-    "test": "TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4212"
+    "build": "npm run clean && node esbuild.js",
+    "watch": "ESBUILD_WATCH=1 node esbuild.js",
+    "test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -26,18 +27,18 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/utils": "^1.1.9",
     "@unchainedshop/events": "^1.1.9",
+    "@unchainedshop/utils": "^1.1.9",
     "simpl-schema": "^1.12.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.1",
-    "@types/mocha": "^9.1.1",
     "@unchainedshop/types": "^1.1.9",
-    "chai": "^4.3.6",
     "cross-env": "^7.0.3",
+    "esbuild": "^0.14.49",
+    "fast-glob": "^3.2.11",
     "isomorphic-unfetch": "^3.1.0",
+    "jest": "^28.1.2",
     "mongodb": "^4.7.0",
-    "typescript": "^4.7.4"
+    "ts-jest": "^28.0.5"
   }
 }

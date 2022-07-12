@@ -1,8 +1,29 @@
 {
-  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "noEmit": true,
-    "types": ["node", "mocha"]
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "esnext"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "outDir": "lib",
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "esnext",
+    "types": [
+      "node",
+      "jest"
+    ]
   },
-  "include": ["src", "tests"]
+  "include": [
+    "src"
+  ]
 }

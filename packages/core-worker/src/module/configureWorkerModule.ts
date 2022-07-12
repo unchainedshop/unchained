@@ -9,6 +9,7 @@ import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import os from 'os';
+import { SortDirection } from '@unchainedshop/types/api';
 import { WorkQueueCollection } from '../db/WorkQueueCollection';
 import { WorkQueueSchema } from '../db/WorkQueueSchema';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector';
@@ -86,11 +87,11 @@ const buildQuerySelector = ({
   return { ...query, ...rest };
 };
 
-const defaultSort: Array<{ key: string; value: 'DESC' | 'ASC' }> = [
-  { key: 'started', value: 'DESC' },
-  { key: 'priority', value: 'DESC' },
-  { key: 'originalWorkId', value: 'ASC' },
-  { key: 'created', value: 'ASC' },
+const defaultSort: Array<{ key: string; value: SortDirection }> = [
+  { key: 'started', value: SortDirection.DESC },
+  { key: 'priority', value: SortDirection.DESC },
+  { key: 'originalWorkId', value: SortDirection.ASC },
+  { key: 'created', value: SortDirection.ASC },
 ];
 
 export const configureWorkerModule = async ({
@@ -164,7 +165,7 @@ export const configureWorkerModule = async ({
       const workQueues = WorkQueue.find(selector, {
         skip,
         limit,
-        sort: buildSortOptions(sort),
+        sort: buildSortOptions(sort as any),
       });
 
       return workQueues.toArray();

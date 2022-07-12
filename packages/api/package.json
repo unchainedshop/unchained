@@ -5,10 +5,11 @@
   "types": "lib/api-index.d.ts",
   "type": "module",
   "scripts": {
+    "prepublishOnly": "npm install && npm run build",
     "clean": "rm -rf lib",
-    "build": "npm run clean && tsc -p tsconfig.build.json",
-    "watch": "tsc --watch",
-    "test": "TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+    "build": "npm run clean && node esbuild.js",
+    "watch": "ESBUILD_WATCH=1 node esbuild.js",
+    "test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -33,8 +34,8 @@
   "dependencies": {
     "@unchainedshop/core": "^1.1.9",
     "@unchainedshop/events": "^1.1.9",
-    "@unchainedshop/roles": "^1.1.9",
     "@unchainedshop/logger": "^1.1.9",
+    "@unchainedshop/roles": "^1.1.9",
     "@unchainedshop/utils": "^1.1.9",
     "accounting": "0.4.1",
     "dataloader": "^2.1.0",
@@ -47,10 +48,12 @@
     "@types/locale": "^0.1.1",
     "@unchainedshop/types": "^1.1.9",
     "apollo-server-express": "*",
-    "chai": "^4.3.6",
     "cross-env": "^7.0.3",
+    "esbuild": "^0.14.49",
+    "fast-glob": "^3.2.11",
     "graphql": "^15.8.0",
     "graphql-scalars": "^1.17.0",
-    "typescript": "^4.7.4"
+    "jest": "^28.1.2",
+    "ts-jest": "^28.0.5"
   }
 }

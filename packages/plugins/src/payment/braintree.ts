@@ -91,7 +91,7 @@ const BraintreeDirect: IPaymentAdapter = {
       },
 
       sign: async () => {
-        const braintree = require('braintree'); // eslint-disable-line
+        const braintree = (await import('braintree')).default; // eslint-disable-line
         const gateway = getGateway(braintree);
         const result = await gateway.clientToken.generate({});
         if (result.success) {
@@ -105,7 +105,7 @@ const BraintreeDirect: IPaymentAdapter = {
         const { order } = params.paymentContext;
         if (!paypalPaymentMethodNonce)
           throw new Error('You have to provide paypalPaymentMethodNonce in paymentContext');
-        const braintree = require('braintree'); // eslint-disable-line
+        const braintree = (await import('braintree')).default; // eslint-disable-line
         const gateway = getGateway(braintree);
         const address = order.billingAddress || {};
         const pricing = modules.orders.pricingSheet(order);

@@ -2,7 +2,7 @@
   "name": "@unchainedshop/logger",
   "version": "1.1.9",
   "main": "lib/logger-index.js",
-  "types": "src/logger-index.ts",
+  "types": "lib/logger-index.d.ts",
   "type": "module",
   "scripts": {
     "prepublishOnly": "npm install && npm run build",
@@ -32,15 +32,11 @@
     "winston-transport": "^4.5.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.6",
-    "@babel/preset-env": "^7.18.6",
-    "@babel/preset-typescript": "^7.18.6",
     "@types/chai": "^4.3.1",
     "@types/jest": "^28.1.3",
     "@types/mocha": "^9.1.1",
     "@types/winston": "^2.4.4",
     "@unchainedshop/types": "^1.1.9",
-    "babel-jest": "^28.1.1",
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",
     "esbuild": "^0.14.49",

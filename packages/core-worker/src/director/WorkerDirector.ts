@@ -1,9 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import {
-  IWorkerAdapter,
-  IWorkerDirector,
-  WorkScheduleConfigureation,
-} from '@unchainedshop/types/worker';
+import { IWorkerAdapter, IWorkerDirector, WorkScheduleConfiguration } from '@unchainedshop/types/worker';
 import { EventEmitter } from 'events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
@@ -11,7 +7,7 @@ import { WorkerEventTypes } from './WorkerEventTypes';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
-const AutoScheduleMap = new Map<string, WorkScheduleConfigureation>();
+const AutoScheduleMap = new Map<string, WorkScheduleConfiguration>();
 
 const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
   adapterKeyField: 'type',
