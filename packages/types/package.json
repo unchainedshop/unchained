@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/types",
   "version": "1.1.9",
-  "description": "Types for unchained core meteor packages",
+  "description": "Types for unchained core packages",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unchainedshop/unchained.git"

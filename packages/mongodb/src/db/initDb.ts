@@ -1,11 +1,24 @@
+import { mkdirSync } from 'fs';
 import { Db, MongoClient } from 'mongodb';
 
 let mongod;
 
 export const startDb = async () => {
   const { MongoMemoryServer } = await import('mongodb-memory-server');
-  mongod = await MongoMemoryServer.create();
-  return mongod.getUri();
+
+  try {
+    mkdirSync(`${process.cwd()}/.db`);
+  } catch (e) {
+    //
+  }
+  console.log(`Local MongoDB Server Data: ${`${process.cwd()}/.db`}`);
+  mongod = await MongoMemoryServer.create({
+    instance: {
+      dbPath: `${process.cwd()}/.db`,
+      storageEngine: 'wiredTiger',
+    },
+  });
+  return `${mongod.getUri()}unchained`;
 };
 
 export const stopDb = async () => {
@@ -15,10 +28,8 @@ export const stopDb = async () => {
 const initDbNative = async (): Promise<Db> => {
   const url = process.env.MONGO_URL || (await startDb());
   const client = new MongoClient(url);
-
-  const dbName = 'meteor';
   await client.connect();
-  const db = client.db(dbName);
+  const db = client.db();
   return db;
 };
 

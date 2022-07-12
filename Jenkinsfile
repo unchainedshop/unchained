@@ -16,7 +16,7 @@ pipeline {
         script {
           sh 'cp ${DOTENV_PATH} ./env'
           docker.build("ci:latest")
-          sh 'docker run ci:latest sh -c "meteor npm run lint:ci && meteor npm run test:ci"'
+          sh 'docker run ci:latest sh -c "npm run lint:ci && npm run test:ci"'
         }
       }
     }

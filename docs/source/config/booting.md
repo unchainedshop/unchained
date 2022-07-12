@@ -7,7 +7,7 @@ description: Start the Unchained Engine
 
 Setting up the Unchained Engine is simple:
 
-Add unchained:platform to your meteor project, copy the dependencies part of the minimal example to your own project's package.json, then start the engine:
+Add @unchainedshop/platform to your unchained project, copy the dependencies part of the minimal example to your own project's package.json, then start the engine:
 
 ```
 import { startPlatform } from '@unchainedshop/platform';

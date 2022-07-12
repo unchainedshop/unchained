@@ -15,6 +15,8 @@ const startAndWaitForMeteor = async () => {
         env: {
           ...process.env,
           MONGO_URL: `${process.env.MONGO_URL}${global.__MONGOD__.opts.instance.dbName}`,
+          PORT: 3000,
+          ROOT_URL: 'http://localhost:3000',
           NODE_ENV: 'development',
           UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
           UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
@@ -41,7 +43,7 @@ const startAndWaitForMeteor = async () => {
         if (dataAsString.indexOf("Can't listen") !== -1) {
           reject(dataAsString);
         }
-        if (dataAsString.indexOf('App running at: ') !== -1) {
+        if (dataAsString.indexOf('Server ready at ') !== -1) {
           resolve(dataAsString.substring(19));
         }
       });

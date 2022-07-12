@@ -4,7 +4,7 @@ import { USER_TOKEN } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 import { SuccTranscationHookPayload, SuccTransactionApiResponse } from './seeds/postfinance-checkout';
-import { orderIsPaid } from '../packages/core-payment/plugins/postfinance-checkout/utils';
+import { orderIsPaid } from '../packages/plugins/payment/postfinance-checkout/utils';
 
 let db;
 let graphqlFetch;

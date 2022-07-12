@@ -23,7 +23,7 @@ The following diagram shows all applications and services provided by Unchained 
 
 As you can see the Unchained Engine ecosystem consists of
 
-- the **Engine** itself as server-side only graphQL API included in an [Meteor](https://www.meteor.com/) app to serve all functionality to manage the store \*
+- the **Engine** itself as server-side only GraphQL API included in an [Node](https://www.nodejs.com/) app to serve all functionality to manage the store \*
 - the **Control Panel** which provides a UI to manage the store's users, products, orders and more as [Next.js](https://nextjs.org/) app \*
 - the **storefront** boilerplate web app which provides a customizable UI for the public store itself as [Next.js](https://nextjs.org/) project
 
@@ -52,16 +52,22 @@ import { Link } from 'gatsby'
     Launch store 🚀
   </Button>
 
-  <Card
-    style={{ marginTop: 32 }}
-    heading="I want to start the engine locally"
-    description={<span>Getting started tutorial for developers to setup your local environment with an Unchained Engine and our store front-end (storefront) ready for you to use and customize.</span>}
-    actions={
-      <Button as={<Link to="/installation/install-engine" />} size="large" className="launch-button">
-        Start engine  🏎
-      </Button>
-    }
-  />
+{' '}
+<Card
+  style={{ marginTop: 32 }}
+  heading="I want to start the engine locally"
+  description={
+    <span>
+      Getting started tutorial for developers to setup your local environment with an Unchained Engine
+      and our store front-end (storefront) ready for you to use and customize.
+    </span>
+  }
+  actions={
+    <Button as={<Link to="/installation/install-engine" />} size="large" className="launch-button">
+      Start engine 🏎
+    </Button>
+  }
+/>
 
   <Button as={<Link to="/installation/install-engine" />} size="large" className="launch-button-mobile">
     Start engine  🏎

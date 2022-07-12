@@ -1,4 +1,4 @@
-FROM geoffreybooth/meteor-base:2.7.3
+FROM node:16
 
 # Install app dependencies
 RUN mkdir -p /source
@@ -19,7 +19,7 @@ ENV MONGOMS_DOWNLOAD_DIR /source
 ENV MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
 ENV MONGOMS_RUNTIME_DOWNLOAD false
 
-RUN NODE_ENV=development meteor npm install
+RUN NODE_ENV=development npm install
 
 # Install MongoDB on Ubuntu 22.04
 RUN apt install -y gnupg

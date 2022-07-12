@@ -4,7 +4,6 @@ tsconfig.tsbuildinfo
 .vscode
 .DS_Store
 .env
-.meteor
 .npm
 /globalConfig.json
 /docs/static/api
