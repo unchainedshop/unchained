@@ -21,12 +21,7 @@
     "types": [
       "node",
       "jest"
-    ],
-    "paths": {
-      "@unchainedshop/*": [
-        "./node_modules/@unchainedshop/types/index.d.ts"
-      ]
-    }
+    ]
   },
   "include": [
     "src"
