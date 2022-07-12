@@ -29,17 +29,3 @@ cd ../core && npm publish &&
 cd ../api && npm publish &&
 cd ../plugins && npm publish &&
 cd ../platform && npm publish
-
-
-
-npm install --save-dev esbuild fast-glob jest ts-jest && npm uninstall @types/chai @types/mocha typescript mocha chai babel-jest @babel/core @babel/preset-env @babel/preset-typescript && rm tsconfig.build.json
-
-"scripts": {
-    "prepublishOnly": "npm install && npm run build",
-    "clean": "rm -rf lib",
-    "build": "npm run clean && node esbuild.js",
-    "watch": "ESBUILD_WATCH=1 node esbuild.js",
-    "test": "jest --watch"
-  },
-
-npm link @unchainedshop/types && npm run build && npx tsc && npm run test
