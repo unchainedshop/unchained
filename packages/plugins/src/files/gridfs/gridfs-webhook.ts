@@ -26,6 +26,7 @@ export default (app) =>
           if (file.expires === null) {
             res.writeHead(503);
             res.end('File already linked');
+            return;
           }
           const writeStream = await modules.gridfsFileUploads.createWriteStream(
             directoryName,
@@ -45,8 +46,8 @@ export default (app) =>
       if (req.method === 'GET') {
         const fileId = fileName;
         const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
-        await promisePipe(readStream, res);
         res.writeHead(200);
+        await promisePipe(readStream, res);
         res.end();
         return;
       }
