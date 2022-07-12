@@ -2,13 +2,17 @@
   "name": "@unchainedshop/platform",
   "version": "1.1.9",
   "main": "lib/platform-index.js",
+  "exports": {
+    ".": "./lib/platform-index.js",
+    "./*": "./lib/*"
+  },
   "types": "lib/platform-index.d.ts",
   "type": "module",
   "scripts": {
     "prepublishOnly": "npm install && npm run build",
     "clean": "rm -rf lib",
-    "build": "npm run clean && node esbuild.js",
-    "watch": "ESBUILD_WATCH=1 node esbuild.js",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
     "test": "jest --watch"
   },
   "repository": {
@@ -45,9 +49,8 @@
     "@types/moment": "^2.13.0",
     "@unchainedshop/types": "^1.1.9",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.14.49",
-    "fast-glob": "^3.2.11",
     "jest": "^28.1.2",
-    "ts-jest": "^28.0.5"
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.4"
   }
 }

@@ -45,11 +45,10 @@ const loginWithSingleSignOn = async (remoteToken, unchainedAPI: Context) => {
           },
           { skipMessaging: true },
         ));
-      const { tokenExpires, token } =
-        await unchainedAPI.modules.accounts.createLoginToken(
-          ssoUserId,
-          unchainedAPI,
-        );
+      const { tokenExpires, token } = await unchainedAPI.modules.accounts.createLoginToken(
+        ssoUserId,
+        unchainedAPI,
+      );
       const expires = new Date(tokenExpires || new Date().getTime() + 100000);
       const authCookie = cookie.serialize('token', token, {
         domain: thisDomain || 'localhost',

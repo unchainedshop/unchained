@@ -21,17 +21,22 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "scripts": {
-    "lint": "eslint . --cache  --fix --ext=jsx --ext=js",
-    "dev": "PORT=4010 node --es-module-specifier-resolution node --loader ts-node/esm boot.ts"
+    "lint": "prettier -w .",
+    "start": "node --es-module-specifier-resolution node lib/boot.js",
+    "build": "tsc",
+    "dev:run": "PORT=4010 node --es-module-specifier-resolution node --loader ts-node/esm boot.ts",
+    "dev": "nodemon --delay 2500 --watch ../../packages --watch . -i lib -e ts  --exec \"npm run dev:run\""
   },
   "dependencies": {
     "@babel/runtime": "^7.18.6",
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@unchainedshop/api": "*",
+    "@unchainedshop/api": "^1.1.9",
     "@unchainedshop/client-oauth2": "^4.3.3",
-    "@unchainedshop/controlpanel": "*",
-    "@unchainedshop/platform": "*",
-    "@unchainedshop/plugins": "*",
+    "@unchainedshop/controlpanel": "^1.1.9",
+    "@unchainedshop/core-delivery": "^1.1.9",
+    "@unchainedshop/core-payment": "^1.1.9",
+    "@unchainedshop/platform": "^1.1.9",
+    "@unchainedshop/plugins": "^1.1.9",
     "apollo-server-express": "^2.25.3",
     "bcrypt": "^5.0.1",
     "bip32": "^3.0.1",
@@ -56,7 +61,6 @@
     "simpl-schema": "^1.12.0",
     "stripe": "^8.222.0",
     "tiny-secp256k1": "^1.1.6",
-    "ts-node": "^10.8.1",
     "twilio": "^3.77.1",
     "uuid": "^8.3.2",
     "xml-js": "^1.6.11"
@@ -65,15 +69,10 @@
     "@babel/core": "^7.18.6",
     "@babel/preset-env": "^7.18.6",
     "@babel/register": "^7.18.6",
-    "@unchainedshop/types": "*",
-    "babel-eslint": "^10.1.0",
-    "cross-env": "^7.0.3",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-prettier": "^4.1.0",
-    "nodemon": "^2.0.18",
+    "@unchainedshop/types": "^1.1.9",
+    "nodemon": "^2.0.19",
     "prettier": "^2.6.2",
+    "ts-node": "^10.8.2",
     "typescript": "^4.7.4"
   }
 }

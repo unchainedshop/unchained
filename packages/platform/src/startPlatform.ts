@@ -16,10 +16,10 @@ import { setupWorkqueue } from './setup/setupWorkqueue';
 import { createMigrationRepository } from './migrations/migrationRepository';
 
 // Workers
-import '@unchainedshop/plugins/lib/worker/BulkImportWorker';
-import '@unchainedshop/plugins/lib/worker/ZombieKillerWorker';
-import '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
-import '@unchainedshop/plugins/lib/worker/MessageWorker';
+import '@unchainedshop/plugins/worker/BulkImportWorker';
+import '@unchainedshop/plugins/worker/ZombieKillerWorker';
+import '@unchainedshop/plugins/worker/GenerateOrderWorker';
+import '@unchainedshop/plugins/worker/MessageWorker';
 
 export { MessageTypes };
 

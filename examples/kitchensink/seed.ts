@@ -14,9 +14,7 @@ const {
 } = process.env;
 
 const seedPassword =
-  UNCHAINED_SEED_PASSWORD === 'generate'
-    ? uuidv4().split('-').pop()
-    : UNCHAINED_SEED_PASSWORD;
+  UNCHAINED_SEED_PASSWORD === 'generate' ? uuidv4().split('-').pop() : UNCHAINED_SEED_PASSWORD;
 
 export default async (unchainedApi) => {
   const { modules } = unchainedApi;
@@ -39,57 +37,51 @@ export default async (unchainedApi) => {
     );
 
     const languages = await Promise.all(
-      [UNCHAINED_LANG ? UNCHAINED_LANG.toLowerCase() : 'de'].map(
-        async (code) => {
-          const languageId = await modules.languages.create(
-            {
-              isoCode: code,
-              isActive: true,
-              authorId: adminId,
-            },
-            adminId,
-          );
-          const language = await modules.languages.findLanguage({ languageId });
-          return language.isoCode;
-        },
-      ),
+      [UNCHAINED_LANG ? UNCHAINED_LANG.toLowerCase() : 'de'].map(async (code) => {
+        const languageId = await modules.languages.create(
+          {
+            isoCode: code,
+            isActive: true,
+            authorId: adminId,
+          },
+          adminId,
+        );
+        const language = await modules.languages.findLanguage({ languageId });
+        return language.isoCode;
+      }),
     );
 
     const currencies = await Promise.all(
-      [UNCHAINED_CURRENCY ? UNCHAINED_CURRENCY.toUpperCase() : 'CHF'].map(
-        async (code) => {
-          const currencyId = await modules.currencies.create(
-            {
-              isoCode: code,
-              isActive: true,
-              authorId: adminId,
-            },
-            adminId,
-          );
-          const currency = await modules.currencies.findCurrency({
-            currencyId,
-          });
-          return currency;
-        },
-      ),
+      [UNCHAINED_CURRENCY ? UNCHAINED_CURRENCY.toUpperCase() : 'CHF'].map(async (code) => {
+        const currencyId = await modules.currencies.create(
+          {
+            isoCode: code,
+            isActive: true,
+            authorId: adminId,
+          },
+          adminId,
+        );
+        const currency = await modules.currencies.findCurrency({
+          currencyId,
+        });
+        return currency;
+      }),
     );
 
     const countries = await Promise.all(
-      [UNCHAINED_COUNTRY ? UNCHAINED_COUNTRY.toUpperCase() : 'CH'].map(
-        async (code, key) => {
-          const countryId = await modules.countries.create(
-            {
-              isoCode: code,
-              isActive: true,
-              authorId: adminId,
-              defaultCurrencyId: currencies[key]._id,
-            },
-            adminId,
-          );
-          const country = await modules.countries.findCountry({ countryId });
-          return country.isoCode;
-        },
-      ),
+      [UNCHAINED_COUNTRY ? UNCHAINED_COUNTRY.toUpperCase() : 'CH'].map(async (code, key) => {
+        const countryId = await modules.countries.create(
+          {
+            isoCode: code,
+            isActive: true,
+            authorId: adminId,
+            defaultCurrencyId: currencies[key]._id,
+          },
+          adminId,
+        );
+        const country = await modules.countries.findCountry({ countryId });
+        return country.isoCode;
+      }),
     );
 
     const deliveryProvider = await modules.delivery.create(
@@ -128,9 +120,9 @@ export default async (unchainedApi) => {
       \ncountries: ${countries.join(',')}
       \ncurrencies: ${currencies.map((c) => c.isoCode).join(',')}
       \nlanguages: ${languages.join(',')}
-      \ndeliveryProvider: ${deliveryProvider._id} (${
-      deliveryProvider.adapterKey
-    })\npaymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
+      \ndeliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})\npaymentProvider: ${
+      paymentProvider._id
+    } (${paymentProvider.adapterKey})
       \nuser: admin@unchained.local / ${seedPassword}`);
   } catch (e) {
     logger.error(e);

@@ -7,5 +7,3 @@ dotenv.load({
   errorOnExtra: !process.env.SUPPRESS_ENV_ERRORS,
   includeProcessEnv: true,
 });
-
-import('./file_env');

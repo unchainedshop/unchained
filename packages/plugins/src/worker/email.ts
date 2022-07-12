@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import open from 'open';
+import nodemailer from 'nodemailer';
 
 const logger = createLogger('unchained:plugins:worker:email');
 

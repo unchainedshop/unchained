@@ -354,7 +354,7 @@ declare module '@unchainedshop/core-enrollments' {
   const EnrollmentDirector: IEnrollmentDirector;
 }
 
-declare module '@unchainedshop/plugins/lib/worker/GenerateOrderWorker' {
+declare module '@unchainedshop/plugins/worker/GenerateOrderWorker' {
   function configureGenerateOrderAutoscheduling(): void;
 }
 
@@ -503,6 +503,10 @@ type APIRoles = {
   configureRoles(params: any): any;
   updateUserRole(context: Context, roleName: string): any;
 };
+
+declare module '@unchainedshop/controlpanel' {
+  function embedControlpanelInMeteorWebApp({ connectHandlers: any }): any;
+}
 
 declare module '@unchainedshop/api' {
   function startAPIServer(options: UnchainedServerOptions): {

@@ -3,13 +3,17 @@
   "version": "1.1.9",
   "description": "MongoDB provider for unchained platform",
   "main": "lib/mongodb-index.js",
+  "exports": {
+    ".": "./lib/mongodb-index.js",
+    "./*": "./lib/*"
+  },
   "types": "lib/mongodb-index.d.ts",
   "type": "module",
   "scripts": {
     "prepublishOnly": "npm install && npm run build",
     "clean": "rm -rf lib",
-    "build": "npm run clean && node esbuild.js",
-    "watch": "ESBUILD_WATCH=1 node esbuild.js",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
     "test": "jest --watch"
   },
   "repository": {
@@ -37,6 +41,6 @@
     "@types/node": "^16.11.41",
     "@unchainedshop/types": "^1.1.9",
     "chai": "^4.3.6",
-    "esbuild": "^0.14.49"
+    "typescript": "^4.7.4"
   }
 }
