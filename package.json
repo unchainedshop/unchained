@@ -20,8 +20,9 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "workspaces": [
-    "./packages/*",
-    "./examples/*"
+    "packages/*",
+    "examples/controlpanel",
+    "examples/kitchensink"
   ],
   "scripts": {
     "lint": "eslint packages tests --fix --ext=js --ext=ts",
