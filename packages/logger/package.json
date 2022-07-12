@@ -5,6 +5,7 @@
   "types": "src/logger-index.ts",
   "type": "module",
   "scripts": {
+    "prepublishOnly": "npm install && npm run build",
     "clean": "rm -rf lib",
     "build": "npm run clean && node esbuild.js",
     "watch": "ESBUILD_WATCH=1 node esbuild.js",
