@@ -9,13 +9,13 @@ dotenv.load();
 const startAndWaitForMeteor = async () => {
   return new Promise((resolve, reject) => {
     try {
-      global.__SUBPROCESS_METEOR__ = spawn('npm', ['start'], {
+      global.__SUBPROCESS_UNCHAINED__ = spawn('npm', ['start'], {
         detached: true,
         cwd: `${process.cwd()}/examples/kitchensink`,
         env: {
           ...process.env,
           MONGO_URL: `${process.env.MONGO_URL}${global.__MONGOD__.opts.instance.dbName}`,
-          PORT: 3000,
+          PORT: '3000',
           ROOT_URL: 'http://localhost:3000',
           NODE_ENV: 'development',
           UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
@@ -35,7 +35,7 @@ const startAndWaitForMeteor = async () => {
           CRYPTOPAY_BTC_TESTNET: 'true',
         },
       });
-      global.__SUBPROCESS_METEOR__.stdout.on('data', (data) => {
+      global.__SUBPROCESS_UNCHAINED__.stdout.on('data', (data) => {
         const dataAsString = `${data}`;
         if (process.env.DEBUG) {
           console.log(dataAsString); // eslint-disable-line
@@ -54,7 +54,7 @@ const startAndWaitForMeteor = async () => {
 };
 
 export default async (globalConfig) => {
-  if (!global.__SUBPROCESS_METEOR__) {
+  if (!global.__SUBPROCESS_UNCHAINED__) {
     await setupInMemoryMongoDB(globalConfig);
     await startAndWaitForMeteor(globalConfig);
     await wipeDatabase();

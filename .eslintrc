@@ -33,7 +33,7 @@
           "_id",
           "__MONGO_URI__",
           "__MONGO_DB_NAME__",
-          "__SUBPROCESS_METEOR__",
+          "__SUBPROCESS_UNCHAINED__",
           "__MONGOD__"
         ]
       }

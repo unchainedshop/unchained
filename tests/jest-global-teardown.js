@@ -2,8 +2,8 @@ import teardownInMemoryMongoDB from '@shelf/jest-mongodb/teardown';
 import { disconnect } from './helpers';
 
 async function cleanup() {
-  global.__SUBPROCESS_METEOR__.unref();
-  global.__SUBPROCESS_METEOR__.kill('SIGHUP');
+  global.__SUBPROCESS_UNCHAINED__.unref();
+  global.__SUBPROCESS_UNCHAINED__.kill('SIGHUP');
   return teardownInMemoryMongoDB();
 }
 
