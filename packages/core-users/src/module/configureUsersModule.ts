@@ -1,4 +1,5 @@
 import localePkg from 'locale';
+import type { Locale as LocaleType } from 'locale';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from '@unchainedshop/logger';
@@ -37,7 +38,7 @@ const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) =
   return selector;
 };
 
-const getUserLocale = (user: User, params: { localeContext?: Locale } = {}) => {
+const getUserLocale = (user: User, params: { localeContext?: LocaleType } = {}) => {
   const locale =
     params.localeContext ||
     (user.lastLogin?.locale && new Locale(user.lastLogin.locale)) ||
