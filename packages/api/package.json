@@ -53,7 +53,7 @@
     "@types/locale": "^0.1.1",
     "@types/node": "^16.11.44",
     "@unchainedshop/types": "^1.2.0",
-    "apollo-server-express": "*",
+    "apollo-server-express": "2.x",
     "graphql": "^15.8.0",
     "graphql-scalars": "^1.17.0",
     "jest": "^28.1.2",
