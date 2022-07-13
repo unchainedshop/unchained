@@ -86,7 +86,7 @@ export default (app) => {
             const order = await modules.orders.checkout(
               orderPayment.orderId,
               { paymentContext: { transactionId: transaction.transactionId } },
-              resolvedContext,
+              { ...resolvedContext, userId },
             );
             res.writeHead(200);
             logger.info(

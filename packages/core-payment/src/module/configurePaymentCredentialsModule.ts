@@ -61,10 +61,7 @@ export const configurePaymentCredentialsModule = (
       const insertedId = _id || generateDbObjectId();
       const result = await PaymentCredentials.updateOne(
         _id
-          ? generateDbFilterById(_id, {
-              userId,
-              paymentProviderId,
-            })
+          ? generateDbFilterById(_id)
           : {
               userId,
               paymentProviderId,
