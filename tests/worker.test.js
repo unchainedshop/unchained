@@ -408,12 +408,10 @@ describe('Worker Module', () => {
 
       expect(addWorkResult.errors).toBeUndefined();
 
-      // Hint: If we are super unlucky, the worker already picked up the retry
-      // work in this 1 millisecond
-      await wait(2000);
+      await wait(3000);
 
       // Expect copy & reschedule
-      const { data: { workQueue: workQueueBefore } = {} } =
+      const { data: { workQueue: workQueue } = {} } =
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
@@ -432,35 +430,12 @@ describe('Worker Module', () => {
         });
 
       expect(
-        workQueueBefore.filter(({ type, status, retries }) => type === 'HEARTBEAT' && status === "FAILED" && retries === 1),
-      ).toHaveLength(1);
-
-      const workBefore = workQueueBefore.pop();
-
-      expect(workBefore.original._id).toBe(addWorkResult.data.addWork._id);
-      expect(workBefore.retries).toBe(1);
-
-      // Await the expected reschedule time (should be done by the plugin itself)
-      await wait(2000);
-
-      const { data: { workQueue: workQueueAfter } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            query {
-              workQueue(status: [NEW,ALLOCATED]) {
-                _id
-                type
-                worker
-                retries
-                # schedule
-              }
-            }
-          `,
-        });
-
-      expect(
-        workQueueAfter.filter(({ type, retries }) => type === 'HEARTBEAT' && retries === 0),
-      ).toHaveLength(1);
+        workQueue.filter(({ type, _id, original, retries }) => {
+          if (type !== "HEARTBEAT") return false;
+          if (retries === 2 && _id === addWorkResult.data.addWork._id) return true;
+          if (retries === 1 && original._id === addWorkResult.data.addWork._id) return true;
+        }),
+      ).toHaveLength(2);
     });
   });
 
