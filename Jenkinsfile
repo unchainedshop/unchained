@@ -34,8 +34,8 @@ pipeline {
             stage('Building') {
               steps{
                 script {
-                  sh 'cp -R packages ./examples/kitchensink/node_modules'
-                  kitchensink = docker.build("registry.ucc.dev/unchained/kitchensink","-f ./examples/kitchensink/Dockerfile.multi-stage ./examples/kitchensink")
+                  sh 'cp -R packages ./examples/kitchensink/packages'
+                  kitchensink = docker.build("registry.ucc.dev/unchained/kitchensink","-f ./examples/kitchensink/Dockerfile ./examples/kitchensink")
                 }
               }
             }

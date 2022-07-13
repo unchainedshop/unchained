@@ -9,7 +9,7 @@
   "types": "lib/file-upload-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build",
+    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -31,8 +31,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^1.2.0",
-    "@unchainedshop/utils": "^1.2.0",
+    "@unchainedshop/logger": "^1.1.9",
+    "@unchainedshop/utils": "^1.1.9",
     "base-x": "4.0.0",
     "mime-types": "^2.1.35",
     "minio": "^7.0.28"
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/minio": "^7.0.13",
     "@types/node": "^16.11.44",
-    "@unchainedshop/types": "^1.2.0",
+    "@unchainedshop/types": "^1.1.9",
     "apollo-server-express": "2.x",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",

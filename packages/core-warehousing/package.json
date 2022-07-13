@@ -9,7 +9,7 @@
   "types": "lib/warehousing-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build",
+    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -31,15 +31,15 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^1.2.0",
-    "@unchainedshop/logger": "^1.2.0",
-    "@unchainedshop/utils": "^1.2.0",
+    "@unchainedshop/events": "^1.1.9",
+    "@unchainedshop/logger": "^1.1.9",
+    "@unchainedshop/utils": "^1.1.9",
     "lru-cache": "^7.10.2",
     "simpl-schema": "^1.12.2"
   },
   "devDependencies": {
     "@types/node": "^16.11.44",
-    "@unchainedshop/types": "^1.2.0",
+    "@unchainedshop/types": "^1.1.9",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"

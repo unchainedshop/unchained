@@ -13,7 +13,7 @@
     "./*": "./lib/*"
   },
   "scripts": {
-    "prepublishOnly": "npm install && npm run build",
+    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "tsc",
     "watch": "tsc -w"

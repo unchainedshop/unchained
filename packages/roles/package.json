@@ -10,7 +10,7 @@
   "types": "lib/roles-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build",
+    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.44",
-    "@unchainedshop/types": "^1.2.0",
+    "@unchainedshop/types": "^1.1.9",
     "chai": "^4.3.6",
     "typescript": "^4.7.4"
   }
