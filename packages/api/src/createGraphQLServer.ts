@@ -89,20 +89,23 @@ export default (expressApp, options) => {
         }
       : corsOrigins;
 
-  const middleware = server.getMiddleware({
-    path: '/graphql',
-    cors: !originFn
-      ? undefined
-      : {
-          origin: originFn,
-          credentials: true,
-        },
-    bodyParserConfig: {
-      limit: '5mb',
-    },
+  server.start().then(() => {
+    const middleware = server.getMiddleware({
+      path: '/graphql',
+      cors: !originFn
+        ? undefined
+        : {
+            origin: originFn,
+            credentials: true,
+          },
+      bodyParserConfig: {
+        limit: '5mb',
+      },
+    });
+
+    expressApp.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
+    expressApp.use(middleware);
   });
 
-  expressApp.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
-  expressApp.use(middleware);
   return server;
 };

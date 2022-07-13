@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-files",
-  "version": "1.1.9",
+  "version": "1.2.0",
   "main": "lib/files-index.js",
   "exports": {
     ".": "./lib/files-index.js",
@@ -31,17 +31,18 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "*",
-    "@unchainedshop/file-upload": "*",
-    "@unchainedshop/logger": "^1.1.9",
-    "@unchainedshop/utils": "^1.1.9",
+    "@unchainedshop/events": "^1.2.0",
+    "@unchainedshop/file-upload": "^1.2.0",
+    "@unchainedshop/logger": "^1.2.0",
+    "@unchainedshop/utils": "^1.2.0",
     "mime-types": "^2.1.35",
     "minio": "^7.0.28",
     "simpl-schema": "^1.12.2"
   },
   "devDependencies": {
     "@types/minio": "^7.0.13",
-    "@unchainedshop/types": "^1.1.9",
+    "@types/node": "^16.11.44",
+    "@unchainedshop/types": "^1.2.0",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"
