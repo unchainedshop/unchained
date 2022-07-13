@@ -343,7 +343,9 @@ describe('Worker Module', () => {
           ) {
             addWork(type: $type, input: $input, scheduled: $scheduled) {
               _id
+              status
               type
+              started
             }
           }
         `,
@@ -356,64 +358,31 @@ describe('Worker Module', () => {
       expect(addWorkResult.data.addWork.type).toBe('HEARTBEAT');
       expect(addWorkResult.errors).toBeUndefined();
 
-      const { data: { workQueue: workQueueBefore } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            query {
-              workQueue(status: [NEW]) {
-                _id
-                worker
-                type
-              }
-            }
-          `,
-        });
-
-      expect(
-        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT'),
-      ).toHaveLength(1);
-
-      // Test if work is not done immediately
-      await wait(1000);
-
-      const { data: { workQueue: workQueueMiddle } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            query {
-              workQueue(status: [NEW]) {
-                _id
-                status
-                type
-                worker
-              }
-            }
-          `,
-        });
-
-      expect(
-        workQueueMiddle.filter(({ type }) => type === 'HEARTBEAT'),
-      ).toHaveLength(1);
-
       // Test if work is done eventually
       await wait(3000);
 
-      const { data: { workQueue: workQueueAfter } = {} } =
+      const { data: { workQueue } = {} } =
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue(status: [NEW]) {
+              workQueue: workQueue(status: [NEW, SUCCESS]) {
                 _id
                 status
+                started
                 type
                 worker
-              }
+              },
             }
           `,
         });
 
       expect(
-        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
+        workQueue.filter(({ type, status }) => type === 'HEARTBEAT' && status === "NEW"),
       ).toHaveLength(0);
+
+      expect(
+        workQueue.filter(({ type, status, started }) => type === 'HEARTBEAT' && status === "SUCCESS" && new Date(started).getTime() >= scheduled.getTime() ),
+      ).toHaveLength(1);
     });
 
     it('Worker fails and retries', async () => {
@@ -441,14 +410,14 @@ describe('Worker Module', () => {
 
       // Hint: If we are super unlucky, the worker already picked up the retry
       // work in this 1 millisecond
-      await wait(1);
+      await wait(2000);
 
       // Expect copy & reschedule
       const { data: { workQueue: workQueueBefore } = {} } =
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue(status: [NEW]) {
+              workQueue(status: [NEW,ALLOCATED,FAILED]) {
                 _id
                 status
                 type
@@ -463,7 +432,7 @@ describe('Worker Module', () => {
         });
 
       expect(
-        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT'),
+        workQueueBefore.filter(({ type, status, retries }) => type === 'HEARTBEAT' && status === "FAILED" && retries === 1),
       ).toHaveLength(1);
 
       const workBefore = workQueueBefore.pop();
@@ -478,7 +447,7 @@ describe('Worker Module', () => {
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue(status: [NEW]) {
+              workQueue(status: [NEW,ALLOCATED]) {
                 _id
                 type
                 worker
@@ -490,7 +459,7 @@ describe('Worker Module', () => {
         });
 
       expect(
-        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
+        workQueueAfter.filter(({ type, retries }) => type === 'HEARTBEAT' && retries === 0),
       ).toHaveLength(1);
     });
   });
@@ -588,7 +557,7 @@ describe('Worker Module', () => {
         `,
         variables: {
           status: ['SUCCESS'],
-          
+
         },
       });
       expect(workQueue.filter((e) => e.status !== 'SUCCESS').length).toEqual(0);
