@@ -332,7 +332,7 @@ describe('Worker Module', () => {
 
     it('Add future work', async () => {
       const scheduled = new Date();
-      scheduled.setSeconds(scheduled.getSeconds() + 2);
+      scheduled.setSeconds(scheduled.getSeconds() + 1);
 
       const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
