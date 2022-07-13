@@ -474,7 +474,7 @@ describe('Auth for admin users', () => {
       });
 
       const work = await intervalUntilTimeout(async () => {
-        const work = await (db.collection('work_queue')).find({ type: "EMAIL", "input.to": email }).toArray();
+        const work = await (db.collection('work_queue')).find({ type: "EMAIL", "input.to": email, retries: 20 }).toArray();
         if (work?.length) return work;
         return false;
       }, 5000);
@@ -505,7 +505,7 @@ describe('Auth for admin users', () => {
       });
 
       const work = await intervalUntilTimeout(async () => {
-        const work = await (db.collection('work_queue')).find({ type: "EMAIL", "input.to": email }).toArray();
+        const work = await (db.collection('work_queue')).find({ type: "EMAIL", "input.to": email, retries: 20 }).toArray();
         if (work?.length) return work;
         return false;
       }, 5000);
