@@ -129,7 +129,7 @@ export default (app) => {
             const checkedOut = await modules.orders.checkout(
               order._id,
               {
-                transactionContext: {
+                paymentContext: {
                   receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
                 },
               },
