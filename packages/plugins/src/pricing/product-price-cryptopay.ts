@@ -3,7 +3,7 @@ import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
 import bodyParser from 'body-parser';
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 
-const { CRYPTOPAY_SECRET, CRYPTOPAY_PRICING_WEBHOOK_PATH = '/graphql/cryptopay-pricing' } = process.env;
+const { CRYPTOPAY_SECRET, CRYPTOPAY_PRICING_WEBHOOK_PATH = '/payment/cryptopay-pricing' } = process.env;
 
 export default (app) => {
   useMiddlewareWithCurrentContext(app, CRYPTOPAY_PRICING_WEBHOOK_PATH, bodyParser.json());

@@ -29,10 +29,10 @@ const {
   BITY_BANK_ACCOUNT_NAME,
   BITY_BANK_ACCOUNT_ZIP,
   BITY_API_ENDPOINT = 'https://exchange.api.bity.com',
-  BITY_OAUTH_INIT_PATH = '/graphql/bity-auth',
-  BITY_OAUTH_REDIRECT_URI = 'http://localhost:4010/graphql/bity',
+  BITY_OAUTH_INIT_PATH = '/payment/bity-auth',
+  BITY_OAUTH_REDIRECT_URI = 'http://localhost:4010/payment/bity',
   BITY_OAUTH_STATE = 'unchained',
-  BITY_OAUTH_PATH = '/graphql/bity',
+  BITY_OAUTH_PATH = '/payment/bity',
 } = process.env;
 
 const createBityAuth = () => {

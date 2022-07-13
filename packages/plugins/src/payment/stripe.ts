@@ -10,7 +10,7 @@ Test Webhooks:
 
 brew install stripe/stripe-cli/stripe
 stripe login --api-key sk_....
-stripe listen --forward-to http://localhost:3000/graphql/stripe
+stripe listen --forward-to http://localhost:3000/payment/stripe
 stripe trigger payment_intent.succeeded
 */
 
@@ -22,7 +22,7 @@ const {
   STRIPE_SECRET,
   STRIPE_ENDPOINT_SECRET,
   EMAIL_WEBSITE_NAME,
-  STRIPE_WEBHOOK_PATH = '/graphql/stripe',
+  STRIPE_WEBHOOK_PATH = '/payment/stripe',
 } = process.env;
 
 const stripe = createStripeClient(STRIPE_SECRET);

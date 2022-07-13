@@ -14,7 +14,7 @@ const logger = createLogger('unchained:core-payment:cryptopay');
 
 const {
   CRYPTOPAY_SECRET,
-  CRYPTOPAY_WEBHOOK_PATH = '/graphql/cryptopay',
+  CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
   CRYPTOPAY_BTC_XPUB,
   CRYPTOPAY_ETH_XPUB,
   CRYPTOPAY_BTC_TESTNET = false,

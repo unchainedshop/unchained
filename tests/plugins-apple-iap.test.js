@@ -292,7 +292,7 @@ let graphqlFetch;
           },
         });
 
-        const result = await fetch("http://localhost:3000/graphql/apple-iap", {
+        const result = await fetch("http://localhost:3000/payment/apple-iap", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -306,7 +306,7 @@ let graphqlFetch;
         expect(order.status).toBe("CONFIRMED");
       }, 10000);
       it("notification_type = DID_RECOVER should just store the current receipt", async () => {
-        const result = await fetch("http://localhost:3000/graphql/apple-iap", {
+        const result = await fetch("http://localhost:3000/payment/apple-iap", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -323,7 +323,7 @@ let graphqlFetch;
       }, 10000);
 
       it("notification_type = DID_CHANGE_RENEWAL_STATUS should terminate enrollment", async () => {
-        const result = await fetch("http://localhost:3000/graphql/apple-iap", {
+        const result = await fetch("http://localhost:3000/payment/apple-iap", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

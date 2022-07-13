@@ -5,7 +5,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { WebhookData } from './types';
 import { getTransaction, getTransactionCompletion } from './api';
 
-const { PFCHECKOUT_WEBHOOK_PATH = '/graphql/postfinance-checkout' } = process.env;
+const { PFCHECKOUT_WEBHOOK_PATH = '/payment/postfinance-checkout' } = process.env;
 
 const logger = createLogger('unchained:core-payment:postfinance-checkout');
 

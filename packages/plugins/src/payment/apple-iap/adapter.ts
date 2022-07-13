@@ -13,7 +13,7 @@ const logger = createLogger('unchained:core-payment:iap');
 const {
   APPLE_IAP_SHARED_SECRET,
   APPLE_IAP_ENVIRONMENT = 'sandbox',
-  APPLE_IAP_WEBHOOK_PATH = '/graphql/apple-iap',
+  APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap',
 } = process.env;
 
 // https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store

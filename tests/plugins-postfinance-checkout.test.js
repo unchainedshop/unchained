@@ -254,7 +254,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
 
         // Simulate WebHook call
         const result = await fetch(
-          'http://localhost:3000/graphql/postfinance-checkout',
+          'http://localhost:3000/payment/postfinance-checkout',
           {
             method: 'POST',
             headers: {
