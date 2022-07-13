@@ -1,9 +1,24 @@
 # vNext
 
+## Breaking Changes
+
+- Unchained has been converted from meteor atmosphere packages to ESM npm packages and is now compatible
+  with most recent Node.js versions and a broad range of builders and webserver frameworks like
+  express.js, connect, next, fastify. To upgrade with your existing meteor app you will have to:
+
+1. rename all imports prefixed with `meteor/unchained:` to `@unchainedshop/`
+2. add the packages to your app's package.json as dependencies
+3. remove all unchainedshop atmosphere packages
+4. forward the `WebApp.connectHandlers` to the `expressApp` field when starting the server
+
 - `disableEmailInterception` is not available as option anymore, but you can still disable interception
   in development setting the environment variable `UNCHAINED_DISABLE_EMAIL_INTERCEPTION`
 - All atmosphere packages have been transformed to npm packages, all plugins are now in a separate
   package `@unchainedshop/plugins`. See here for an overview:
+
+## Minor
+
+## Patches
 
 # Unchained Engine v1.1
 

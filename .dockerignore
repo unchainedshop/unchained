@@ -9,20 +9,10 @@ dockercfg
 
 packages/*/.npm
 
-examples/controlpanel/.git
-examples/controlpanel/.next
-examples/controlpanel/node_modules
-examples/controlpanel/.eslintcache
-examples/controlpanel/out
-
-examples/minimal/.git
-examples/minimal/.build
-examples/minimal/.tmp
-examples/minimal/node_modules
-examples/minimal/.eslintcache
-
-examples/boilerplate/.git
-examples/boilerplate/.build
-examples/boilerplate/.tmp
-examples/boilerplate/node_modules
-examples/boilerplate/.eslintcache
+examples/*/.git
+examples/*/.next
+examples/*/node_modules
+examples/*/.eslintcache
+examples/*/out
+examples/*/.build
+examples/*/.tmp

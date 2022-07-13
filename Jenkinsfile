@@ -5,7 +5,7 @@ pipeline {
   environment {
     REGISTRY_AUTH = credentials('eec0f0c2-9b9d-4b26-8da5-58222499d901')
     DOTENV_PATH = credentials('unchained-dotenv')
-    minimal = ''
+    kitchensink = ''
     docs = ''
     controlpanel = ''
   }
@@ -29,20 +29,20 @@ pipeline {
     }
     stage('Build') {
       parallel {
-        stage('Example: Minimal') {
+        stage('Example: Kitchensink') {
           stages {
             stage('Building') {
               steps{
                 script {
-                  sh 'cp -R packages ./examples/minimal/packages'
-                  minimal = docker.build("registry.ucc.dev/unchained/minimal","-f ./examples/minimal/Dockerfile.multi-stage ./examples/minimal")
+                  sh 'cp -R packages ./examples/kitchensink/node_modules'
+                  kitchensink = docker.build("registry.ucc.dev/unchained/kitchensink","-f ./examples/kitchensink/Dockerfile.multi-stage ./examples/kitchensink")
                 }
               }
             }
             stage('Pushing to Registry') {
               steps {
                 script {
-                  minimal.push("${GIT_BRANCH}-latest")
+                  kitchensink.push("${GIT_BRANCH}-latest")
                 }
               }
             }
@@ -91,7 +91,7 @@ pipeline {
       steps {
         script {
           controlpanel.push("next")
-          minimal.push("next")
+          kitchensink.push("next")
           docs.push("next")
         }
       }
@@ -101,7 +101,7 @@ pipeline {
       steps {
         script {
           controlpanel.push("latest")
-          minimal.push("latest")
+          kitchensink.push("latest")
           docs.push("latest")
         }
       }
@@ -111,7 +111,7 @@ pipeline {
       steps {
         script {
           controlpanel.push("stable")
-          minimal.push("stable")
+          kitchensink.push("stable")
           docs.push("stable")
         }
       }
