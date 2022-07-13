@@ -1,8 +1,8 @@
-import './node_env';
-import './file_env';
+import './load_env';
 import express from 'express';
+
 import { startPlatform, withAccessToken } from '@unchainedshop/platform';
-import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
+import serveStatic from 'serve-static';
 
 import '@unchainedshop/plugins/delivery/post';
 import '@unchainedshop/plugins/delivery/pick-mup';
@@ -116,6 +116,7 @@ const start = async () => {
   const singleSignOn = loginWithSingleSignOn(unchainedApi);
   app.use('/', singleSignOn);
   app.use('/.well-known/unchained/cloud-sso', singleSignOn);
+  app.use(serveStatic('.', { index: ['index.html'] }));
   // until here
 
   setupGridFSWebhook(app);
@@ -126,7 +127,6 @@ const start = async () => {
   setupDatatrans(app);
   setupBity(app);
   setupAppleIAP(app);
-  embedControlpanelInMeteorWebApp({ connectHandlers: app });
 
   await app.listen({ port: process.env.PORT || 3000 });
   console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}/graphql`);

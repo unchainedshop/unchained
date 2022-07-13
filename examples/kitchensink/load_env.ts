@@ -1,4 +1,13 @@
+import dotenv from 'dotenv-extended';
 import fs from 'fs';
+
+dotenv.load({
+  silent: Boolean(process.env.SUPPRESS_ENV_ERRORS),
+  errorOnMissing: !process.env.SUPPRESS_ENV_ERRORS,
+  errorOnRegex: !process.env.SUPPRESS_ENV_ERRORS,
+  errorOnExtra: !process.env.SUPPRESS_ENV_ERRORS,
+  includeProcessEnv: true,
+});
 
 // eslint-disable-next-line
 console.log('Docker Helper: Load _FILE env into env at App Startup');
