@@ -5,7 +5,7 @@ import http, { OutgoingHttpHeaders } from 'http';
 import mimeType from 'mime-types';
 import { URL } from 'url';
 import { Readable } from 'stream';
-import buildHashedFilename from '@unchainedshop/file-upload/lib/buildHashedFilename';
+import { buildHashedFilename } from '@unchainedshop/file-upload';
 import sign from './sign';
 import promisePipe from './promisePipe';
 

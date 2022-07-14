@@ -9,17 +9,10 @@ import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
 import { generateWorkerTypeDefs } from './setup/generateWorkTypeDefs';
 import { generateRoleActionTypeDefs } from './setup/generateRoleActionTypeDefs';
 import { setupAccounts } from './setup/setupAccounts';
-import { setupAutoScheduling } from './setup/setupAutoScheduling';
 import { setupCarts } from './setup/setupCarts';
 import { setupTemplates } from './setup/setupTemplates';
 import { setupWorkqueue } from './setup/setupWorkqueue';
 import { createMigrationRepository } from './migrations/migrationRepository';
-
-// Workers
-import '@unchainedshop/plugins/lib/worker/BulkImportWorker';
-import '@unchainedshop/plugins/lib/worker/ZombieKillerWorker';
-import '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
-import '@unchainedshop/plugins/lib/worker/MessageWorker';
 
 export { MessageTypes };
 
@@ -133,8 +126,6 @@ export const startPlatform = async (
     const handlers = setupWorkqueue(unchainedAPI, workQueueOptions);
     handlers.forEach((handler) => queueWorkers.push(handler));
     await setupCarts(unchainedAPI, workQueueOptions);
-
-    setupAutoScheduling();
   }
 
   // Setup filter cache

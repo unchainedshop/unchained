@@ -18,7 +18,9 @@ import setupCryptopay from '@unchainedshop/plugins/lib/payment/cryptopay';
 import setupAppleIAP, {
   configureAppleTransactionsModule,
 } from '@unchainedshop/plugins/lib/payment/apple-iap';
-import setupBity, { configureBityModule } from '@unchainedshop/plugins/lib/payment/bity';
+import setupBity, {
+  configureBityModule,
+} from '@unchainedshop/plugins/lib/payment/bity';
 import setupStripe from '@unchainedshop/plugins/lib/payment/stripe';
 import setupPostfinance from '@unchainedshop/plugins/lib/payment/postfinance-checkout';
 
@@ -45,6 +47,10 @@ import '@unchainedshop/plugins/lib/quotations/manual';
 
 import '@unchainedshop/plugins/lib/enrollments/licensed';
 
+import '@unchainedshop/plugins/lib/worker/BulkImportWorker';
+import '@unchainedshop/plugins/lib/worker/ZombieKillerWorker';
+import '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
+import '@unchainedshop/plugins/lib/worker/MessageWorker';
 import '@unchainedshop/plugins/lib/worker/external';
 import '@unchainedshop/plugins/lib/worker/http-request';
 import '@unchainedshop/plugins/lib/worker/heartbeat';
@@ -59,6 +65,8 @@ import { configureGridFSFileUploadModule } from '@unchainedshop/plugins/lib/file
 // import setupMinio from '@unchainedshop/plugins/lib/files/minio/minio-webhook';
 
 import '@unchainedshop/plugins/lib/events/node-event-emitter';
+
+import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/GenerateOrderWorker';
 
 import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
@@ -123,6 +131,8 @@ Meteor.startup(async () => {
   setupDatatrans(WebApp.connectHandlers);
   setupBity(WebApp.connectHandlers);
   setupAppleIAP(WebApp.connectHandlers);
+
+  configureGenerateOrderAutoscheduling();
 
   embedControlpanelInMeteorWebApp(WebApp);
 });

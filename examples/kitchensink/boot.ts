@@ -46,6 +46,10 @@ import '@unchainedshop/plugins/quotations/manual';
 
 import '@unchainedshop/plugins/enrollments/licensed';
 
+import '@unchainedshop/plugins/worker/BulkImportWorker';
+import '@unchainedshop/plugins/worker/ZombieKillerWorker';
+import '@unchainedshop/plugins/worker/GenerateOrderWorker';
+import '@unchainedshop/plugins/worker/MessageWorker';
 import '@unchainedshop/plugins/worker/external';
 import '@unchainedshop/plugins/worker/http-request';
 import '@unchainedshop/plugins/worker/heartbeat';
@@ -60,6 +64,8 @@ import { configureGridFSFileUploadModule } from '@unchainedshop/plugins/files/gr
 // import setupMinio from '@unchainedshop/plugins/files/minio/minio-webhook';
 
 import '@unchainedshop/plugins/events/node-event-emitter';
+
+import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/GenerateOrderWorker';
 
 import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
@@ -127,6 +133,8 @@ const start = async () => {
   setupDatatrans(app);
   setupBity(app);
   setupAppleIAP(app);
+
+  configureGenerateOrderAutoscheduling();
 
   await app.listen({ port: process.env.PORT || 3000 });
   console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}/graphql`);

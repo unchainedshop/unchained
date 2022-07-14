@@ -1,5 +1,5 @@
 import { IFileAdapter } from '@unchainedshop/types/files';
-import { FileAdapter, FileDirector } from '@unchainedshop/file-upload';
+import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
@@ -8,7 +8,6 @@ import mimeType from 'mime-types';
 import Minio from 'minio';
 import { Readable } from 'stream';
 import { URL } from 'url';
-import buildHashedFilename from '@unchainedshop/lib/buildHashedFilename';
 
 const {
   MINIO_ACCESS_KEY,
