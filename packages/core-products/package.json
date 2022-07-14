@@ -30,9 +30,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^1.1.9",
-    "@unchainedshop/file-upload": "^1.1.9",
-    "@unchainedshop/utils": "^1.1.9",
+    "@unchainedshop/events": "1.x",
+    "@unchainedshop/file-upload": "1.x",
+    "@unchainedshop/utils": "1.x",
     "locale": "^0.1.0",
     "lru-cache": "^7.10.2",
     "simpl-schema": "^1.12.2"
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/locale": "^0.1.1",
     "@types/node": "^16.11.44",
-    "@unchainedshop/types": "^1.1.9",
+    "@unchainedshop/types": "1.x",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"

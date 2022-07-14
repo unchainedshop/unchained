@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^1.1.9",
+    "@unchainedshop/logger": "1.x",
     "abort-controller": "3.0.0",
     "bson": "^4.6.4",
     "hashids": "^2.2.10",
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.44",
-    "@unchainedshop/types": "^1.1.9",
+    "@unchainedshop/types": "1.x",
     "typescript": "^4.7.4"
   }
 }

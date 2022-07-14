@@ -31,13 +31,13 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@breejs/later": "^4.1.0",
-    "@unchainedshop/logger": "^1.1.9",
-    "@unchainedshop/utils": "^1.1.9",
+    "@unchainedshop/logger": "1.x",
+    "@unchainedshop/utils": "1.x",
     "simpl-schema": "^1.12.2"
   },
   "devDependencies": {
     "@types/node": "^16.11.44",
-    "@unchainedshop/types": "^1.1.9",
+    "@unchainedshop/types": "1.x",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"

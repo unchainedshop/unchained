@@ -30,13 +30,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^1.1.9",
+    "@unchainedshop/logger": "1.x",
     "mjml": "^4.13.0",
     "mustache": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.44",
-    "@unchainedshop/types": "^1.1.9",
+    "@unchainedshop/types": "1.x",
     "jest": "^28.1.3",
     "locale": "^0.1.0",
     "ts-jest": "^28.0.5",
