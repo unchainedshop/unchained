@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Types for unchained core packages",
   "repository": {
     "type": "git",
@@ -8,6 +8,7 @@
   },
   "type": "module",
   "types": "index.d.ts",
+  "main": "index.d.ts",
   "exports": {
     ".": "./index.d.ts",
     "./*": "./lib/*"

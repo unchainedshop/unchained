@@ -40,7 +40,7 @@
     "dev": "run-p --print-label dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch-packages": "workspaces-run --only-fs 'packages/**' --parallel -- npm run watch",
-    "publish-packages": "npm run build && npm publish -ws",
+    "publish-packages": "(npm run build || true) && npm publish -ws",
     "build": "npm run build --workspaces --if-present"
   },
   "devDependencies": {

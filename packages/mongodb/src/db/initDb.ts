@@ -36,7 +36,7 @@ const initDbNative = async (): Promise<Db> => {
 const isMeteor = typeof Meteor === 'object';
 
 if (isMeteor) {
-  const { NpmModuleMongodb } = await import('meteor/npm-mongo');
+  const { NpmModuleMongodb } = require('meteor/npm-mongo');
   const originalFn = NpmModuleMongodb.Collection.prototype.updateOne;
   NpmModuleMongodb.Collection.prototype.updateOne = async function updateOne(...rest) {
     const result = await originalFn.bind(this)(...rest);

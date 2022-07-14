@@ -49,7 +49,7 @@ import '@unchainedshop/plugins/lib/enrollments/licensed';
 
 import '@unchainedshop/plugins/lib/worker/BulkImportWorker';
 import '@unchainedshop/plugins/lib/worker/ZombieKillerWorker';
-import '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
+import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
 import '@unchainedshop/plugins/lib/worker/MessageWorker';
 import '@unchainedshop/plugins/lib/worker/external';
 import '@unchainedshop/plugins/lib/worker/http-request';
@@ -65,8 +65,6 @@ import { configureGridFSFileUploadModule } from '@unchainedshop/plugins/lib/file
 // import setupMinio from '@unchainedshop/plugins/lib/files/minio/minio-webhook';
 
 import '@unchainedshop/plugins/lib/events/node-event-emitter';
-
-import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/GenerateOrderWorker';
 
 import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
