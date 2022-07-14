@@ -8,7 +8,7 @@ import mimeType from 'mime-types';
 import Minio from 'minio';
 import { Readable } from 'stream';
 import { URL } from 'url';
-import buildHashedFilename from '@unchainedshop/file-upload/buildHashedFilename';
+import buildHashedFilename from '@unchainedshop/lib/buildHashedFilename';
 
 const {
   MINIO_ACCESS_KEY,

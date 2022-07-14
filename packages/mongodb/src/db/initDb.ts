@@ -49,8 +49,9 @@ if (isMeteor) {
 }
 
 const initDbMeteor = async (): Promise<Db> => {
-  const { MongoInternals } = await import('meteor/mongo');
-  return MongoInternals.defaultRemoteCollectionDriver().mongo.db as Db;
+  const { MongoInternals } = require('meteor/mongo'); // eslint-disable-line
+  const db = MongoInternals.defaultRemoteCollectionDriver().mongo.db; // eslint-disable-line
+  return db;
 };
 
 const initDb = isMeteor ? initDbMeteor : initDbNative;

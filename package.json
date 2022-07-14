@@ -26,7 +26,7 @@
   },
   "workspaces": [
     "packages/*",
-    "examples/*"
+    "examples/kitchensink"
   ],
   "scripts": {
     "lint": "eslint packages tests --fix --ext=js --ext=ts",

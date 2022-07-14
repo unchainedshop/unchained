@@ -1,6 +1,6 @@
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { log, LogLevel } from '@unchainedshop/logger';
-import buildHashedFilename from '@unchainedshop/file-upload/buildHashedFilename';
+import buildHashedFilename from '@unchainedshop/file-upload/lib/buildHashedFilename';
 import sign from './sign';
 import promisePipe from './promisePipe';
 

@@ -1,12 +1,13 @@
 # vNext
 
+Unchained has been converted from meteor atmosphere packages to ESM npm packages and is now compatible with most recent Node.js versions and a broad range of builders and webserver frameworks like express.js, connect, next, fastify. It also improves bootup performance of meteor apps by 2-3x in dev mode.
+
+
 ## Breaking Changes
 
-- Unchained has been converted from meteor atmosphere packages to ESM npm packages and is now compatible
-  with most recent Node.js versions and a broad range of builders and webserver frameworks like
-  express.js, connect, next, fastify. To upgrade with your existing meteor app you will have to:
+- To upgrade from meteor to NPM with your existing meteor app you will have to:
 
-1. rename all imports prefixed with `meteor/unchained:` to `@unchainedshop/`
+1. rename all imports prefixed with `meteor/unchained:` to `@unchainedshop/`, then import all the plugins from the new `@unchainedshop/plugins` package
 2. add the packages to your app's package.json as dependencies
 3. remove all unchainedshop atmosphere packages
 4. forward the `WebApp.connectHandlers` to the `expressApp` field when starting the server

@@ -13,15 +13,15 @@ import '@unchainedshop/plugins/warehousing/store';
 import '@unchainedshop/plugins/payment/invoice';
 import '@unchainedshop/plugins/payment/invoice-prepaid';
 import '@unchainedshop/plugins/payment/paypal-checkout';
+import '@unchainedshop/plugins/payment/worldline-saferpay';
 import setupDatatrans from '@unchainedshop/plugins/payment/datatrans-v2';
 import setupCryptopay from '@unchainedshop/plugins/payment/cryptopay';
 import setupAppleIAP, {
   configureAppleTransactionsModule,
 } from '@unchainedshop/plugins/payment/apple-iap';
+import setupBity, { configureBityModule } from '@unchainedshop/plugins/payment/bity';
 import setupStripe from '@unchainedshop/plugins/payment/stripe';
 import setupPostfinance from '@unchainedshop/plugins/payment/postfinance-checkout';
-import '@unchainedshop/plugins/payment/worldline-saferpay';
-import setupBity, { configureBityModule } from '@unchainedshop/plugins/payment/bity';
 
 import '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import '@unchainedshop/plugins/pricing/discount-100-off';

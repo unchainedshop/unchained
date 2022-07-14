@@ -1,0 +1,4 @@
+FROM geoffreybooth/meteor-base:2.7.3
+
+VOLUME /app
+WORKDIR /app

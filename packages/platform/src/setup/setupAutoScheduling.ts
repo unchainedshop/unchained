@@ -1,4 +1,4 @@
-import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/GenerateOrderWorker';
+import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
 
 export const setupAutoScheduling = () => {
   configureGenerateOrderAutoscheduling();
