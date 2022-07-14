@@ -1,18 +1,12 @@
 .git
 .github
-docs
-.eslintcache
-node_modules
+.next
 .env
-codeship.aes
-dockercfg
+.tmp
+.build
+docs
+node_modules
 
-packages/*/.npm
-
-examples/*/.git
-examples/*/.next
-examples/*/node_modules
-examples/*/.eslintcache
-examples/*/out
-examples/*/.build
-examples/*/.tmp
+examples/kitchensink/lib
+examples/controlpanel/out
+packages/*/lib
