@@ -1,12 +1,11 @@
 {
   "name": "@unchainedshop/plugins",
-  "version": "1.2.1",
+  "version": "1.2.4",
   "exports": {
     "./*": "./lib/*"
   },
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",

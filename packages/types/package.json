@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Types for unchained core packages",
   "repository": {
     "type": "git",
@@ -13,7 +13,6 @@
     "./*": "./lib/*"
   },
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "tsc",
     "watch": "tsc -w"

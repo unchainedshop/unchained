@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-events",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "lib/events-index.js",
   "exports": {
     ".": "./lib/events-index.js",
@@ -9,7 +9,6 @@
   "types": "lib/events-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",

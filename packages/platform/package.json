@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "lib/platform-index.js",
   "exports": {
     ".": "./lib/platform-index.js",
@@ -9,7 +9,6 @@
   "types": "lib/platform-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/mongodb",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "MongoDB provider for unchained platform",
   "main": "lib/mongodb-index.js",
   "exports": {
@@ -10,7 +10,6 @@
   "types": "lib/mongodb-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",

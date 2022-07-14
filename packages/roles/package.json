@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/roles",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Roles package for unchained engine",
   "main": "lib/roles-index.js",
   "exports": {
@@ -10,7 +10,6 @@
   "types": "lib/roles-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",

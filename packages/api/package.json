@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "lib/api-index.js",
   "exports": {
     ".": "./lib/api-index.js",
@@ -9,7 +9,6 @@
   "types": "lib/api-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",

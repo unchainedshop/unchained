@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-payment",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "lib/payment-index.js",
   "exports": {
     ".": "./lib/payment-index.js",
@@ -9,7 +9,6 @@
   "types": "lib/payment-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",

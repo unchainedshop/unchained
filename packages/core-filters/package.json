@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-filters",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "lib/filters-index.js",
   "exports": {
     ".": "./lib/filters-index.js",
@@ -9,7 +9,6 @@
   "types": "lib/filters-index.d.ts",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "npm install && npm run build || :",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
