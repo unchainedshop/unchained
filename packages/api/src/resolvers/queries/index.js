@@ -51,7 +51,7 @@ import shopInfo from './shopInfo';
 import translatedAssortmentMediaTexts from './assortments/translatedAssortmentMediaTexts';
 import translatedAssortmentTexts from './assortments/translatedAssortmentTexts';
 import translatedFilterTexts from './filters/translatedFilterTexts';
-import translatedProductMediaTexts from './products/translatedProductMediaTexts.ts';
+import translatedProductMediaTexts from './products/translatedProductMediaTexts';
 import translatedProductTexts from './products/translatedProductTexts';
 import translatedProductVariationTexts from './products/translatedProductVariationTexts';
 import user from './users/user';

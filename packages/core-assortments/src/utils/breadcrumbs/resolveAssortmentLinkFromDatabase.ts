@@ -1,5 +1,5 @@
 import { AssortmentLink } from '@unchainedshop/types/assortments';
-import { Collection, QuerySelector } from 'mongodb';
+import type { Collection, QuerySelector } from 'mongodb';
 
 export function resolveAssortmentLinkFromDatabase(
   AssortmentLinks: Collection<AssortmentLink>,

@@ -1,6 +1,9 @@
 import { UnchainedAPI, UnchainedUserContext } from '@unchainedshop/types/api';
 import { IncomingMessage } from 'http';
-import { check } from 'meteor/check';
+
+function isString(input) {
+  return typeof input === 'string' && Object.prototype.toString.call(input) === '[object String]';
+}
 
 export const getUserContext = async (
   req: IncomingMessage & { cookies?: any },
@@ -22,7 +25,7 @@ export const getUserContext = async (
   }
   if (loginToken) {
     // throw an error if the token is not a string
-    check(loginToken, String);
+    if (!isString(loginToken)) throw new Error('Access Token is not a string');
 
     // the hashed token is the key to find the possible current user in the db
     const hashedToken = unchainedAPI.modules.accounts.createHashLoginToken(loginToken);

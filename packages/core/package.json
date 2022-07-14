@@ -1,15 +1,18 @@
 {
   "name": "@unchainedshop/core",
-  "version": "1.1.1",
+  "version": "1.2.2",
   "main": "lib/core-index.js",
+  "exports": {
+    ".": "./lib/core-index.js",
+    "./*": "./lib/*"
+  },
   "types": "lib/core-index.d.ts",
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "npm run clean && tsc -p tsconfig.build.json",
-    "watch": "tsc --watch",
-    "link:core": "npm link  @unchainedshop/types",
-    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
+    "test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -27,14 +30,32 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "latest"
+    "@unchainedshop/core-accountsjs": "1.x",
+    "@unchainedshop/core-assortments": "1.x",
+    "@unchainedshop/core-bookmarks": "1.x",
+    "@unchainedshop/core-countries": "1.x",
+    "@unchainedshop/core-currencies": "1.x",
+    "@unchainedshop/core-delivery": "1.x",
+    "@unchainedshop/core-enrollments": "1.x",
+    "@unchainedshop/core-events": "1.x",
+    "@unchainedshop/core-files": "1.x",
+    "@unchainedshop/core-filters": "1.x",
+    "@unchainedshop/core-languages": "1.x",
+    "@unchainedshop/core-messaging": "1.x",
+    "@unchainedshop/core-orders": "1.x",
+    "@unchainedshop/core-payment": "1.x",
+    "@unchainedshop/core-products": "1.x",
+    "@unchainedshop/core-quotations": "1.x",
+    "@unchainedshop/core-users": "1.x",
+    "@unchainedshop/core-warehousing": "1.x",
+    "@unchainedshop/core-worker": "1.x",
+    "@unchainedshop/logger": "1.x"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.22",
-    "@types/mocha": "^9.0.0",
-    "@unchainedshop/types": "latest",
-    "chai": "^4.3.4",
-    "cross-env": "^7.0.3",
-    "typescript": "^4.4.3"
+    "@types/node": "^16.11.44",
+    "@unchainedshop/types": "1.x",
+    "jest": "^28.1.2",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.4"
   }
 }

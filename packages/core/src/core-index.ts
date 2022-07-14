@@ -1,23 +1,23 @@
 import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core';
-import { configureAccountsModule } from 'meteor/unchained:core-accountsjs';
-import { configureAssortmentsModule } from 'meteor/unchained:core-assortments';
-import { bookmarkServices, configureBookmarksModule } from 'meteor/unchained:core-bookmarks';
-import { configureCountriesModule, countryServices } from 'meteor/unchained:core-countries';
-import { configureCurrenciesModule } from 'meteor/unchained:core-currencies';
-import { configureDeliveryModule } from 'meteor/unchained:core-delivery';
-import { configureEnrollmentsModule } from 'meteor/unchained:core-enrollments';
-import { configureEventsModule } from 'meteor/unchained:core-events';
-import { configureFilesModule, fileServices } from 'meteor/unchained:core-files';
-import { configureFiltersModule } from 'meteor/unchained:core-filters';
-import { configureLanguagesModule } from 'meteor/unchained:core-languages';
-import { configureMessagingModule } from 'meteor/unchained:core-messaging';
-import { configureOrdersModule, orderServices } from 'meteor/unchained:core-orders';
-import { configurePaymentModule, paymentServices } from 'meteor/unchained:core-payment';
-import { configureProductsModule, productServices } from 'meteor/unchained:core-products';
-import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
-import { configureUsersModule, userServices } from 'meteor/unchained:core-users';
-import { configureWarehousingModule } from 'meteor/unchained:core-warehousing';
-import { configureWorkerModule } from 'meteor/unchained:core-worker';
+import { configureAccountsModule } from '@unchainedshop/core-accountsjs';
+import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
+import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
+import { configureCountriesModule, countryServices } from '@unchainedshop/core-countries';
+import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
+import { configureDeliveryModule } from '@unchainedshop/core-delivery';
+import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
+import { configureEventsModule } from '@unchainedshop/core-events';
+import { configureFilesModule, fileServices } from '@unchainedshop/core-files';
+import { configureFiltersModule } from '@unchainedshop/core-filters';
+import { configureLanguagesModule } from '@unchainedshop/core-languages';
+import { configureMessagingModule } from '@unchainedshop/core-messaging';
+import { configureOrdersModule, orderServices } from '@unchainedshop/core-orders';
+import { configurePaymentModule, paymentServices } from '@unchainedshop/core-payment';
+import { configureProductsModule, productServices } from '@unchainedshop/core-products';
+import { configureQuotationsModule } from '@unchainedshop/core-quotations';
+import { configureUsersModule, userServices } from '@unchainedshop/core-users';
+import { configureWarehousingModule } from '@unchainedshop/core-warehousing';
+import { configureWorkerModule } from '@unchainedshop/core-worker';
 
 export const initCore = async ({
   db,

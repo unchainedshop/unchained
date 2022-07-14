@@ -3,9 +3,9 @@ import {
   IWarehousingDirector,
   WarehousingContext,
 } from '@unchainedshop/types/warehousing';
-import { DeliveryDirector } from 'meteor/unchained:core-delivery';
+import { DeliveryDirector } from '@unchainedshop/core-delivery';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { BaseDirector } from 'meteor/unchained:utils';
+import { BaseDirector } from '@unchainedshop/utils';
 import { WarehousingError } from './WarehousingError';
 
 const getReferenceDate = (context: WarehousingContext) => {

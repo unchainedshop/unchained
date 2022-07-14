@@ -3,7 +3,7 @@ import {
   ProductPricingCalculation,
   IProductPricingAdapter,
 } from '@unchainedshop/types/products.pricing';
-import { BasePricingAdapter } from 'meteor/unchained:utils';
+import { BasePricingAdapter } from '@unchainedshop/utils';
 import { ProductPricingSheet } from './ProductPricingSheet';
 
 const basePricingAdapter = BasePricingAdapter<ProductPricingAdapterContext, ProductPricingCalculation>();

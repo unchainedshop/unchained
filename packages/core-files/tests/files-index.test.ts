@@ -1,9 +1,9 @@
 import { assert } from 'chai';
-import { initDb } from 'meteor/unchained:mongodb';
+import { initDb } from '@unchainedshop/mongodb';
 import {
   configureFilesModule,
   fileServices,
-} from 'meteor/unchained:core-files';
+} from '@unchainedshop/core-files';
 import { FilesModule } from '@unchainedshop/types/files';
 
 describe('Test exports', () => {

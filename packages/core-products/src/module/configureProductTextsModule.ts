@@ -1,14 +1,16 @@
 import { Collection } from '@unchainedshop/types/common';
 import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products';
-import { Locale } from 'locale';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import localePkg from 'locale';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   findUnusedSlug,
   generateDbFilterById,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { productsSettings } from '../products-settings';
+
+const { Locale } = localePkg;
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXTS'];
 

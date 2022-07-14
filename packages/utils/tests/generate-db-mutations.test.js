@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { generateDbMutations, Schemas } from 'meteor/unchained:utils';
+import { generateDbMutations, Schemas } from '@unchainedshop/utils';
 import SimpleSchema from 'simpl-schema';
 import { ObjectId } from 'bson';
 

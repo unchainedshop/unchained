@@ -1,5 +1,5 @@
 import clone from 'lodash.clone';
-import { RoleInterface, RolesInterface } from '@unchainedshop/types/roles';
+import type { RoleInterface, RolesInterface } from '@unchainedshop/types/roles';
 import { has } from './utils/has';
 import { isFunction } from './utils/isFunction';
 

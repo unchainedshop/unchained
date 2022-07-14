@@ -1,6 +1,5 @@
 import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { processRequest } from 'graphql-upload';
-import { WebApp } from 'meteor/webapp';
 import { log, LogLevel } from '@unchainedshop/logger';
 import typeDefs from './schema';
 import resolvers from './resolvers';
@@ -36,7 +35,7 @@ const logGraphQLServerError = (error) => {
   } catch (e) {} // eslint-disable-line
 };
 
-export default (options) => {
+export default (expressApp, options) => {
   const {
     corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
@@ -46,7 +45,6 @@ export default (options) => {
   } = options || {};
 
   const context = getCurrentContextResolver();
-
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
@@ -91,6 +89,10 @@ export default (options) => {
         }
       : corsOrigins;
 
+  // server.start().then(() => {
+  //
+  // });
+
   const middleware = server.getMiddleware({
     path: '/graphql',
     cors: !originFn
@@ -104,7 +106,8 @@ export default (options) => {
     },
   });
 
-  WebApp.connectHandlers.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
-  WebApp.connectHandlers.use(middleware);
+  expressApp.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
+  expressApp.use(middleware);
+
   return server;
 };

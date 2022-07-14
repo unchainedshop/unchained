@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { DeliveryError, DeliveryProvider as DeliveryProviderType } from '@unchainedshop/types/delivery';
 import crypto from 'crypto';
-import { DeliveryPricingDirector } from 'meteor/unchained:core-delivery';
+import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 
 type HelperType<P, T> = (provider: DeliveryProviderType, params: P, context: Context) => T;
 

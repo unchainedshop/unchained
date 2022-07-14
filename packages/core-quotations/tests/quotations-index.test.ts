@@ -2,9 +2,9 @@ import { Context } from '@unchainedshop/types/api';
 import { QuotationsModule } from '@unchainedshop/types/quotations';
 import { UsersModule } from '@unchainedshop/types/user';
 import { assert } from 'chai';
-import { configureQuotationsModule } from 'meteor/unchained:core-quotations';
-import { configureUsersModule } from 'meteor/unchained:core-users';
-import { initDb } from 'meteor/unchained:mongodb';
+import { configureQuotationsModule } from '@unchainedshop/core-quotations';
+import { configureUsersModule } from '@unchainedshop/core-users';
+import { initDb } from '@unchainedshop/mongodb';
 import '../plugins/manual';
 
 describe('Test exports', () => {

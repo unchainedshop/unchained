@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { PaymentProviderType } from 'meteor/unchained:core-payment';
+import { PaymentProviderType } from '@unchainedshop/core-payment';
 
 import {
   InvalidIdError,

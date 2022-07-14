@@ -1,15 +1,18 @@
 {
-  "name": "unchained-core-events",
-  "version": "1.1.1",
+  "name": "@unchainedshop/core-events",
+  "version": "1.2.2",
   "main": "lib/events-index.js",
+  "exports": {
+    ".": "./lib/events-index.js",
+    "./*": "./lib/*"
+  },
   "types": "lib/events-index.d.ts",
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "npm run clean && tsc -p tsconfig.build.json",
-    "watch": "tsc --watch",
-    "link:core": "npm link  @unchainedshop/types",
-    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4212"
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
+    "test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -27,16 +30,17 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "simpl-schema": "1.12.0"
+    "@unchainedshop/events": "1.x",
+    "@unchainedshop/utils": "1.x",
+    "simpl-schema": "^1.12.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.22",
-    "@types/mocha": "^9.0.0",
-    "@unchainedshop/types": "latest",
-    "chai": "^4.3.4",
-    "cross-env": "^7.0.3",
+    "@types/node": "^16.11.44",
+    "@unchainedshop/types": "1.x",
     "isomorphic-unfetch": "^3.1.0",
-    "mongodb": "^4.4.1",
-    "typescript": "^4.4.3"
+    "jest": "^28.1.2",
+    "mongodb": "^4.7.0",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.4"
   }
 }

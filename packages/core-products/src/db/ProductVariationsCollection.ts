@@ -1,6 +1,6 @@
 import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations';
 import { Db } from '@unchainedshop/types/common';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const ProductVariationsCollection = async (db: Db) => {
   const ProductVariations = db.collection<ProductVariation>('product_variations');

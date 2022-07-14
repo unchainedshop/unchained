@@ -18,7 +18,7 @@ You have to configure the [webhooks](https://checkout.postfinance.ch/space/selec
 | `PFCHECKOUT_SPACE_ID`     |                                        |                                         |
 | `PFCHECKOUT_USER_ID`      |                                        |                                         |
 | `PFCHECKOUT_SECRET`       |                                        |
-| `PFCHECKOUT_WEBHOOK_PATH` | `/graphql/postfinance-checkout`        | Path needs to correspond to the path that you configured in the PostFinance Checkout webinterface |
+| `PFCHECKOUT_WEBHOOK_PATH` | `/payment/postfinance-checkout`        | Path needs to correspond to the path that you configured in the PostFinance Checkout webinterface |
 | `PFCHECKOUT_SUCCESS_URL`  |                                        | URL that the user is forwarded to after a successful payment. `?order_id=<unchained id of the order>` is automatically added |
 | `PFCHECKOUT_FAILED_URL`   |                                        | URL that the user is forwarded to after a failed payment. `?order_id=<unchained id of the order>` is automatically added |
 

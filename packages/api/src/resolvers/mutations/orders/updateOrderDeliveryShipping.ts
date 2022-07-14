@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { DeliveryProviderType } from 'meteor/unchained:core-delivery';
+import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { OrderDeliveryNotFoundError, InvalidIdError, OrderDeliveryTypeError } from '../../../errors';
 
 export default async function updateOrderDeliveryShipping(

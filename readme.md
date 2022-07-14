@@ -4,8 +4,6 @@ Licensed under the EUPL 1.2
 
 [![CLA assistant](https://cla-assistant.io/readme/badge/unchainedshop/unchained)](https://cla-assistant.io/unchainedshop/unchained)
 
-[![Codeship Status for unchainedshop/currybag-website](https://app.codeship.com/projects/2f18b4a0-57dc-0138-8b6d-4230a644a556/status?branch=master)](https://app.codeship.com/projects/391300)
-
 ### **📖 [View Documentation](https://docs.unchained.shop)**
 
 ## Code of conduct
@@ -21,15 +19,17 @@ Please see our [Contribution Guidelines](/contributing.md).
 
 ### Prerequisites
 
-- Meteor 1.11
-- Node.js 12.18.3 (lts/erbium, see [.nvmrc](.nvmrc))
+- Node.js 16 (see [.nvmrc](.nvmrc))
 
 ### Run the example
 
 ```bash
 git clone https://github.com/unchainedshop/unchained.git
 npm install
-npm run dev
+npm run build
+cd examples/kitchensink
+npm run build
+npm start
 ```
 
 1. Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user:
@@ -39,7 +39,4 @@ npm run dev
 
 ## Migration to Unchained 1.0
 
-- Install new peer dependencies: graphql-upload, graphql-scalars, mongodb
-- Migrate all custom plugins (see docs for templates)
-- Setting renamed: generateOrderNumber -> orderNumberHashFn
-- Setting removed: autoSchedulingCronText
+See [changelog.md](changelog.md)

@@ -1,5 +1,5 @@
 import { MessageTypes } from '@unchainedshop/types/platform';
-import { MessagingDirector } from 'meteor/unchained:core-messaging';
+import { MessagingDirector } from '@unchainedshop/core-messaging';
 import { resolveOrderRejectionTemplate } from '../templates/resolveOrderRejectionTemplate';
 import { resolveAccountActionTemplate } from '../templates/resolveAccountActionTemplate';
 import { resolveForwardDeliveryTemplate } from '../templates/resolveForwardDeliveryTemplate';

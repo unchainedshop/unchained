@@ -1,6 +1,6 @@
 import { AssortmentMedia, AssortmentMediaText } from '@unchainedshop/types/assortments.media';
 import { Db } from '@unchainedshop/types/common';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const AssortmentMediaCollection = async (db: Db) => {
   const AssortmentMedias = db.collection<AssortmentMedia>('assortment_media');

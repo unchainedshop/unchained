@@ -6,14 +6,14 @@ import {
   AssortmentQuery,
   AssortmentsSettingsOptions,
 } from '@unchainedshop/types/assortments';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
   generateDbMutations,
   generateDbFilterById,
   findPreservingIds,
   buildSortOptions,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';

@@ -8,8 +8,8 @@ import {
   DeliverySettingsOptions,
 } from '@unchainedshop/types/delivery';
 import { PaymentProvider } from '@unchainedshop/types/payments';
-import { emit, registerEvents } from 'meteor/unchained:events';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { emit, registerEvents } from '@unchainedshop/events';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection';
 import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema';

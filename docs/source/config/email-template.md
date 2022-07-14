@@ -19,10 +19,10 @@ existing message templates are defined [here](https://github.com/unchainedshop/u
 
 Internally unchained uses [mjml format](https://documentation.mjml.io/) or simple text for email templating.
 
-first import `MessagingDirector` from `unchained:core-messaging`. for demonstration purpose lets just use simple text based template but feel free to create full fledge [mjml format](https://documentation.mjml.io/) template or use any other kind of rendering engine. See the existing templates for reference.
+first import `MessagingDirector` from `@unchainedshop/core-messaging`. for demonstration purpose lets just use simple text based template but feel free to create full fledge [mjml format](https://documentation.mjml.io/) template or use any other kind of rendering engine. See the existing templates for reference.
 
 ```
-import { MessagingDirector } from 'meteor/unchained:core-messaging';
+import { MessagingDirector } from '@unchainedshop/core-messaging';
 
 const template = `
 Hello, thank you for visiting Unchained store {{date}} We hope you become part of our community in the future :).
@@ -61,17 +61,14 @@ const generateOrderConfirmationTemplate ({ order }) => {
 lastly we use `MessagingDirector.configureTemplate` after `startPlatform` on system boot to overwrite the default email template.
 
 ```
-import { Meteor } from 'meteor/meteor';
-import { MessageTypes } from 'meteor/unchained:platform';
+import { MessageTypes } from '@unchainedshop/platform';
 
-Meteor.startup(() => {
-  ...
-  startPlatform({...});
-  ...
-  MessagingDirector.configureTemplate(
-    MessageTypes.ORDER_CONFIRMATION,
-    generateOrderConfirmationTemplate,
-  );
-});
+...
+startPlatform({...});
+...
+MessagingDirector.configureTemplate(
+  MessageTypes.ORDER_CONFIRMATION,
+  generateOrderConfirmationTemplate,
+);
 
 ```

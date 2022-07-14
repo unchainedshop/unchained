@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductStatus } from 'meteor/unchained:core-products';
+import { ProductStatus } from '@unchainedshop/core-products';
 import { ProductNotFoundError, ProductWrongStatusError, InvalidIdError } from '../../../errors';
 
 export default async function createEnrollment(

@@ -1,6 +1,6 @@
 import { UnchainedAPI, UnchainedLocaleContext } from '@unchainedshop/types/api';
 import { IncomingMessage } from 'http';
-import { Locales } from 'locale';
+import localePkg from 'locale';
 import 'abort-controller/polyfill';
 import LRU from 'lru-cache';
 import { log, LogLevel } from '@unchainedshop/logger';
@@ -9,7 +9,9 @@ import {
   resolveBestSupported,
   resolveUserRemoteAddress,
   systemLocale,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
+
+const { Locales } = localePkg;
 
 const { NODE_ENV } = process.env;
 

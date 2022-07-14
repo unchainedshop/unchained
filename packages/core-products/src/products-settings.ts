@@ -1,5 +1,5 @@
 import { ProductsSettingsOptions } from '@unchainedshop/types/products';
-import { slugify as defaultSlugify } from 'meteor/unchained:utils';
+import { slugify as defaultSlugify } from '@unchainedshop/utils';
 
 export const productsSettings = {
   slugify: null,

@@ -1,4 +1,4 @@
-import { generateRandomHash } from 'meteor/unchained:utils';
+import { generateRandomHash } from '@unchainedshop/utils';
 
 export const quotationsSettings = {
   quotationNumberHashFn: null,

@@ -65,20 +65,17 @@ const resolverDefs = {
 **Register the type and resolver definition**
 
 ```js
-import { Meteor } from 'meteor/meteor'
-import { startPlatform } from 'meteor/unchained:platform'
+import { startPlatform } from '@unchainedshop/platform'
 import { WebApp } from 'meteor/webapp'
 import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel'
 
-Meteor.startup(async () => {
-  await startPlatform({
-    introspection: true,
-    typeDefs: [...typeDefs],
-    resolvers: [resolvers],
-  })
-  seed()
-  embedControlpanelInMeteorWebApp(WebApp)
+await startPlatform({
+  introspection: true,
+  typeDefs: [...typeDefs],
+  resolvers: [resolvers],
 })
+seed()
+embedControlpanelInMeteorWebApp(WebApp)
 ```
 
 That was all, everything is setup and the schema will be updated to include the custom types defined above for product entity.

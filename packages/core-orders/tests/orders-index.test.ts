@@ -1,6 +1,6 @@
 import { assert } from 'chai';
-import { initDb } from 'meteor/unchained:mongodb';
-import { configureOrdersModule } from 'meteor/unchained:core-orders';
+import { initDb } from '@unchainedshop/mongodb';
+import { configureOrdersModule } from '@unchainedshop/core-orders';
 import { OrdersModule } from '@unchainedshop/types/orders';
 
 describe('Test exports', () => {

@@ -11,10 +11,16 @@ export * as roles from './roles';
 
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
-const UNCHAINED_API_VERSION = '1.1.2'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '1.2.0'; // eslint-disable-line
 
 export const startAPIServer = (options: UnchainedServerOptions) => {
-  const { unchainedAPI, roles, context: customContext, ...apolloServerOptions } = options || {};
+  const {
+    unchainedAPI,
+    roles,
+    expressApp,
+    context: customContext,
+    ...apolloServerOptions
+  } = options || {};
 
   const contextResolver = createContextResolver(unchainedAPI, roles, UNCHAINED_API_VERSION);
 
@@ -26,8 +32,8 @@ export const startAPIServer = (options: UnchainedServerOptions) => {
       : contextResolver,
   );
 
-  const apolloGraphQLServer = createGraphQLServer(apolloServerOptions);
-  const bulkImportServer = createBulkImportServer();
+  const apolloGraphQLServer = createGraphQLServer(expressApp, apolloServerOptions);
+  const bulkImportServer = createBulkImportServer(expressApp);
 
   return {
     apolloGraphQLServer,

@@ -1,4 +1,4 @@
-// import { ProductStatus } from 'meteor/unchained:core-products';
+// import { ProductStatus } from '@unchainedshop/core-products';
 import { Context } from '@unchainedshop/types/api';
 import { Query } from '@unchainedshop/types/common';
 import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters';

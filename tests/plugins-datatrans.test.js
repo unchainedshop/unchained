@@ -102,6 +102,7 @@ describe('Plugins: Datatrans Payments', () => {
 
   describe('mutation.signPaymentProviderForCheckout (Datatrans) should', () => {
     it('starts a new transaction and checks if it is valid', async () => {
+      jest.setTimeout(10000);
       const {
         data: { signPaymentProviderForCheckout },
       } = await graphqlFetch({

@@ -5,7 +5,7 @@ import {
   OrderPricingCalculation,
   OrderPricingContext,
 } from '@unchainedshop/types/orders.pricing';
-import { BasePricingDirector } from 'meteor/unchained:utils';
+import { BasePricingDirector } from '@unchainedshop/utils';
 import { OrderPricingSheet } from './OrderPricingSheet';
 
 const baseDirector = BasePricingDirector<

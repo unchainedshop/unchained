@@ -9,36 +9,33 @@ dotenv.load();
 const startAndWaitForMeteor = async () => {
   return new Promise((resolve, reject) => {
     try {
-      global.__SUBPROCESS_METEOR__ = spawn(
-        'meteor',
-        ['--no-release-check', `--no-lint`, '--raw-logs', '--once'],
-        {
-          detached: true,
-          cwd: `${process.cwd()}/examples/minimal`,
-          env: {
-            ...process.env,
-            MONGO_URL: `${process.env.MONGO_URL}${global.__MONGOD__.opts.instance.dbName}`,
-            NODE_ENV: 'development',
-            METEOR_PACKAGE_DIRS: '../../packages',
-            UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
-            UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
-            EMAIL_WEBSITE_NAME: 'Unchained Website',
-            EMAIL_WEBSITE_URL: 'http://localhost:4010',
-            EMAIL_FROM: 'noreply@unchained.local',
-            DATATRANS_SECRET: 'secret',
-            DATATRANS_SIGN_KEY: '1337',
-            DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
-            APPLE_IAP_SHARED_SECRET: '73b61776e7304f8ab1c2404df9192078',
-            CRYPTOPAY_SECRET: 'secret',
-            CRYPTOPAY_BTC_XPUB:
-              'tpubDDsGg7jiaNfukcctBwCogVUqdfU7p7X4Uoge2FNCk64YD6THTBxdGahRuAq9uuJxFErJuihg7RdgbG3YHW5AgT17f7m6MAQjauiUAPJytQG',
-            CRYPTOPAY_ETH_XPUB:
-              'xpub6DWGtXnV4tfoCvDZyao1zh4664ZZ7hw2TFgGiKskeAZ1ga2Uen8epiDQzaHYrFkn2X5wf6sbTgpHqsNzaTuGstEhmN2nR2szqGyoWuiYHrf',
-            CRYPTOPAY_BTC_TESTNET: 'true',
-          },
+      global.__SUBPROCESS_UNCHAINED__ = spawn('npm', ['start'], {
+        detached: true,
+        cwd: `${process.cwd()}/examples/kitchensink`,
+        env: {
+          ...process.env,
+          MONGO_URL: `${process.env.MONGO_URL}${global.__MONGOD__.opts.instance.dbName}`,
+          PORT: '3000',
+          ROOT_URL: 'http://localhost:3000',
+          NODE_ENV: 'development',
+          UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
+          UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
+          EMAIL_WEBSITE_NAME: 'Unchained Website',
+          EMAIL_WEBSITE_URL: 'http://localhost:4010',
+          EMAIL_FROM: 'noreply@unchained.local',
+          DATATRANS_SECRET: 'secret',
+          DATATRANS_SIGN_KEY: '1337',
+          DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
+          APPLE_IAP_SHARED_SECRET: '71c41914012b4ad7be859f6c26432298',
+          CRYPTOPAY_SECRET: 'secret',
+          CRYPTOPAY_BTC_XPUB:
+            'tpubDDsGg7jiaNfukcctBwCogVUqdfU7p7X4Uoge2FNCk64YD6THTBxdGahRuAq9uuJxFErJuihg7RdgbG3YHW5AgT17f7m6MAQjauiUAPJytQG',
+          CRYPTOPAY_ETH_XPUB:
+            'xpub6DWGtXnV4tfoCvDZyao1zh4664ZZ7hw2TFgGiKskeAZ1ga2Uen8epiDQzaHYrFkn2X5wf6sbTgpHqsNzaTuGstEhmN2nR2szqGyoWuiYHrf',
+          CRYPTOPAY_BTC_TESTNET: 'true',
         },
-      );
-      global.__SUBPROCESS_METEOR__.stdout.on('data', (data) => {
+      });
+      global.__SUBPROCESS_UNCHAINED__.stdout.on('data', (data) => {
         const dataAsString = `${data}`;
         if (process.env.DEBUG) {
           console.log(dataAsString); // eslint-disable-line
@@ -46,7 +43,7 @@ const startAndWaitForMeteor = async () => {
         if (dataAsString.indexOf("Can't listen") !== -1) {
           reject(dataAsString);
         }
-        if (dataAsString.indexOf('App running at: ') !== -1) {
+        if (dataAsString.indexOf('Server ready at ') !== -1) {
           resolve(dataAsString.substring(19));
         }
       });
@@ -57,7 +54,7 @@ const startAndWaitForMeteor = async () => {
 };
 
 export default async (globalConfig) => {
-  if (!global.__SUBPROCESS_METEOR__) {
+  if (!global.__SUBPROCESS_UNCHAINED__) {
     await setupInMemoryMongoDB(globalConfig);
     await startAndWaitForMeteor(globalConfig);
     await wipeDatabase();

@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common';
 import { File } from '@unchainedshop/types/files';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const MediaObjectsCollection = async (db: Db) => {
   const MediaObjects = db.collection<File>('media_objects');

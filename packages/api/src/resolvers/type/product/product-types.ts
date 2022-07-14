@@ -1,6 +1,6 @@
 import { ProductHelperTypes } from '@unchainedshop/types/products';
-import { ProductTypes } from 'meteor/unchained:core-products';
-import { objectInvert } from 'meteor/unchained:utils';
+import { ProductTypes } from '@unchainedshop/core-products';
+import { objectInvert } from '@unchainedshop/utils';
 
 export const Product: ProductHelperTypes = {
   __resolveType: (obj) => {

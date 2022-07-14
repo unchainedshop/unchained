@@ -1,5 +1,5 @@
 import { IWorker, Work } from '@unchainedshop/types/worker';
-import later from 'later';
+import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';
 import { WorkerDirector } from '../director/WorkerDirector';
@@ -53,7 +53,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
       autorescheduleTypes: async ({ referenceDate }) => {
         return Promise.all(
           WorkerDirector.getAutoSchedules().map(async ([type, work]) => {
-            const { schedule, input, ...rest } = work;
+            const { schedule, input, priority, ...rest } = work;
             const fixedSchedule = { ...schedule };
             fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
             const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
@@ -63,6 +63,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
               input: input(),
               scheduled: nextDate,
               worker: workerId,
+              priority: priority || 0,
               ...rest,
               retries: 0,
             });

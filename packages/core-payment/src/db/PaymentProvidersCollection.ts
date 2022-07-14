@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common';
 import { PaymentProvider } from '@unchainedshop/types/payments';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const PaymentProvidersCollection = async (db: Db) => {
   const PaymentProviders = db.collection<PaymentProvider>('payment-providers');

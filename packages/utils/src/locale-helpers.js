@@ -1,4 +1,6 @@
-import { Locales, Locale } from 'locale';
+import localePkg from 'locale';
+
+const { Locales, Locale } = localePkg;
 
 const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH' } = process.env;
 

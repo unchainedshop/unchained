@@ -1,17 +1,19 @@
 import { ProductMedia, ProductMediaModule, ProductMediaText } from '@unchainedshop/types/products.media';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { Locale } from 'locale';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import localePkg from 'locale';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
-import { FileDirector } from 'meteor/unchained:file-upload';
+} from '@unchainedshop/utils';
+import { FileDirector } from '@unchainedshop/file-upload';
 import { ProductsModule } from '@unchainedshop/types/products';
 import { ProductMediaCollection } from '../db/ProductMediaCollection';
 import { ProductMediaSchema } from '../db/ProductMediaSchema';
+
+const { Locale } = localePkg;
 
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',

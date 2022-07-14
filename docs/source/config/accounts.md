@@ -5,9 +5,9 @@ description: Configure the Accounts Module
 
 Disable automatically sending verification e-mails after signup or enrollment:
 
-The accounts management system in Unchained Engine is reliant on [accounts-js](https://github.com/accounts-js/accounts) which is employed in `unchained:core-users`.
+The accounts management system in Unchained Engine is reliant on [accounts-js](https://github.com/accounts-js/accounts) which is employed in `@unchainedshop/core-users`.
 
-`unchained:core-users` exports 4 values `randomValueHex`, `dbManager`, `accountsPassword` and `accountsServer`.
+`@unchainedshop/core-users` exports 4 values `randomValueHex`, `dbManager`, `accountsPassword` and `accountsServer`.
 
 - `randomValueHex` generates random string which is used for in the login tokens generation process.
 

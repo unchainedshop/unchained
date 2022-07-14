@@ -5,9 +5,9 @@ import {
   OrderDelivery,
   OrderDeliveryStatus,
 } from '@unchainedshop/types/orders.deliveries';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];

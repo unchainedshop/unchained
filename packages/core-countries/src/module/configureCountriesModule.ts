@@ -2,13 +2,13 @@ import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/countries';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   generateDbMutations,
   systemLocale,
   buildSortOptions,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection';
 import { CountriesSchema } from '../db/CountriesSchema';
 

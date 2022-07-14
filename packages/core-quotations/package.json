@@ -1,15 +1,18 @@
 {
   "name": "@unchainedshop/core-quotations",
-  "version": "1.1.1",
+  "version": "1.2.2",
   "main": "lib/quotations-index.js",
+  "exports": {
+    ".": "./lib/quotations-index.js",
+    "./*": "./lib/*"
+  },
   "types": "lib/quotations-index.d.ts",
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "npm run clean && tsc -p tsconfig.build.json",
-    "watch": "tsc --watch",
-    "link:core": "npm link  @unchainedshop/types",
-    "test": "cross-env METEOR_PACKAGE_DIRS=../ TEST_CLIENT=0 TEST_WATCH=1 meteor test-packages ./ --driver-package meteortesting:mocha --port 4200"
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
+    "test": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -27,17 +30,17 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "simpl-schema": "1.12.0",
-    "@unchainedshop/logger": "latest"
-
+    "@unchainedshop/events": "1.x",
+    "@unchainedshop/logger": "1.x",
+    "@unchainedshop/utils": "1.x",
+    "simpl-schema": "^1.12.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.22",
     "@types/locale": "^0.1.1",
-    "@types/mocha": "^9.0.0",
-    "@unchainedshop/types": "latest",
-    "chai": "^4.3.4",
-    "cross-env": "^7.0.3",
-    "typescript": "^4.4.3"
+    "@types/node": "^16.11.44",
+    "@unchainedshop/types": "1.x",
+    "jest": "^28.1.2",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.4"
   }
 }

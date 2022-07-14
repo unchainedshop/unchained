@@ -6,10 +6,10 @@ import {
   EnrollmentsModule,
   EnrollmentsSettingsOptions,
 } from '@unchainedshop/types/enrollments';
-import { Locale } from 'locale';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import type { Locale } from 'locale';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
 import { EnrollmentStatus } from '../db/EnrollmentStatus';

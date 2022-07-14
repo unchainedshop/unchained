@@ -12703,7 +12703,7 @@
       {
         "kind": "ENUM",
         "name": "WorkType",
-        "description": "This is just a placeholder. Extend WorkType with the active plugins on\nstartup. See /examples/minimal/boot.js:92",
+        "description": "This is just a placeholder. Extend WorkType with the active plugins on\nstartup. See /examples/kitchensink/boot.js:92",
         "specifiedByUrl": null,
         "fields": null,
         "inputFields": null,

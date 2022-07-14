@@ -4,17 +4,19 @@ import {
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { Locale } from 'locale';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import localePkg from 'locale';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
-import { FileDirector } from 'meteor/unchained:file-upload';
+} from '@unchainedshop/utils';
+import { FileDirector } from '@unchainedshop/file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
 import { AssortmentMediasSchema } from '../db/AssortmentMediasSchema';
+
+const { Locale } = localePkg;
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',

@@ -6,9 +6,9 @@ import {
   FiltersModule,
   FiltersSettingsOptions,
 } from '@unchainedshop/types/filters';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { FilterType } from '../db/FilterType';
 import { FilterDirector } from '../director/FilterDirector';
 import { FiltersCollection } from '../db/FiltersCollection';

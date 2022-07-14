@@ -1,6 +1,5 @@
 import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries';
 import { Modules } from '@unchainedshop/types/modules';
-import 'abort-controller/polyfill';
 import LRU from 'lru-cache';
 
 // REMARK: --> combines defaultCurrency and resolveDefaultCurrencyCode helpers

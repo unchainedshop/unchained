@@ -1,5 +1,5 @@
 import { LinkFileService } from '@unchainedshop/types/files';
-import { FileDirector } from 'meteor/unchained:file-upload';
+import { FileDirector } from '@unchainedshop/file-upload';
 
 export const linkFileService: LinkFileService = async ({ fileId, size, type }, requestContext) => {
   const {

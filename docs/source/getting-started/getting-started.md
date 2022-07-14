@@ -77,7 +77,7 @@ Now you have a fully running Unchained E-Commerce environment running locally. C
 Next, we will add a new file to the project and name it `engine/sausage.js`:
 
 ```js
-import { ProductPricingDirector, ProductPricingAdapter } from 'meteor/unchained:core-pricing'
+import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-pricing'
 import fetch from 'isomorphic-unfetch'
 
 const PRODUCT_TAG_SAUSAGE = 'sausage'

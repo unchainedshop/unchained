@@ -5,13 +5,13 @@ import {
   ProductsModule,
   ProductsSettingsOptions,
 } from '@unchainedshop/types/products';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findPreservingIds,
   generateDbFilterById,
   generateDbMutations,
   buildSortOptions,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';

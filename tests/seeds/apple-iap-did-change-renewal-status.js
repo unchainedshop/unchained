@@ -346,6 +346,6 @@ export default {
   environment: 'Sandbox',
   auto_renew_status: 'false',
   bvrs: '1',
-  password: '73b61776e7304f8ab1c2404df9192078',
+  password: '71c41914012b4ad7be859f6c26432298',
   bid: 'unchained.ios-native-storefront',
 };

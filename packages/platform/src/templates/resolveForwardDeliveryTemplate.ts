@@ -1,6 +1,6 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
 import moment from 'moment';
-import { systemLocale } from 'meteor/unchained:utils';
+import { systemLocale } from '@unchainedshop/utils';
 import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
 import { getOrderPositionsData } from './utils/getOrderPositionsData';
 

@@ -6,17 +6,24 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "incremental": true,
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
-    "noErrorTruncation": true,
     "noImplicitReturns": true,
     "noUnusedLocals": false,
-    "outDir": "./lib",
+    "outDir": "lib",
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "sourceMap": true,
+    "target": "esnext",
+    "types": [
+      "node",
+      "jest"
+    ]
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

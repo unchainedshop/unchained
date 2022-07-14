@@ -1,6 +1,6 @@
 import { AccountsServer, ServerHooks } from '@accounts/server';
 import crypto from 'crypto';
-import { randomValueHex } from 'meteor/unchained:utils';
+import { randomValueHex } from '@unchainedshop/utils';
 
 export class UnchainedAccountsServer extends AccountsServer {
   DEFAULT_LOGIN_EXPIRATION_DAYS = 30;
@@ -63,7 +63,6 @@ export class UnchainedAccountsServer extends AccountsServer {
   // https://github.com/accounts-js/accounts/blob/7f4da2d34a88fbf77cccbff799d2a59ce43649b6/packages/server/src/accounts-server.ts#L263
   async loginWithUser(user) {
     // Random.secret uses a default value of 43
-    // https://github.com/meteor/meteor/blob/devel/packages/random/AbstractRandomGenerator.js#L78
     const date = new Date();
 
     const when = new Date(date.getTime() + this.getTokenLifetimeMs());

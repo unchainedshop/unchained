@@ -1,7 +1,7 @@
-import { emit, registerEvents } from 'meteor/unchained:events';
+import { emit, registerEvents } from '@unchainedshop/events';
 import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
-import { generateDbFilterById, generateDbMutations } from 'meteor/unchained:utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { BookmarksCollection } from '../db/BookmarksCollection';
 import { BookmarkSchema } from '../db/BookmarksSchema';
 

@@ -1,5 +1,5 @@
 import { AssortmentProduct } from '@unchainedshop/types/assortments';
-import { Collection, QuerySelector } from 'mongodb';
+import type { Collection, QuerySelector } from 'mongodb';
 
 export function resolveAssortmentProductFromDatabase(
   AssortmentProducts: Collection<AssortmentProduct>,

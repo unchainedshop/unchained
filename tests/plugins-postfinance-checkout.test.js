@@ -4,7 +4,7 @@ import { USER_TOKEN } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
 import { SuccTranscationHookPayload, SuccTransactionApiResponse } from './seeds/postfinance-checkout';
-import { orderIsPaid } from '../packages/core-payment/plugins/postfinance-checkout/utils';
+import { orderIsPaid } from '../packages/plugins/lib/payment/postfinance-checkout/utils';
 
 let db;
 let graphqlFetch;
@@ -254,7 +254,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
 
         // Simulate WebHook call
         const result = await fetch(
-          'http://localhost:3000/graphql/postfinance-checkout',
+          'http://localhost:3000/payment/postfinance-checkout',
           {
             method: 'POST',
             headers: {

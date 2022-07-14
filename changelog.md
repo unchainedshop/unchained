@@ -1,3 +1,39 @@
+# Unchained Engine v1.2
+
+Unchained has been converted from Meteor atmosphere packages to ESM npm packages and is now compatible
+with most recent Node.js versions and a broad range of builders and webservers like express.js, connect,
+next, fastify. Switch even improved bootup performance of meteor apps by 2-3x in dev mode.
+
+To show how that works, we have added a new example "kitchensink" which is a Express.js based Node.js 16
+app in ESM mode.
+
+## Breaking Changes
+
+- To upgrade from meteor to NPM with your existing meteor app you will have to:
+
+1. rename all imports prefixed with `meteor/unchained:` to `@unchainedshop/`, then import all the plugins
+   from the new `@unchainedshop/plugins` package
+2. add the packages to your app's package.json as dependencies
+3. remove all unchainedshop atmosphere packages
+4. forward the `WebApp.connectHandlers` to the `expressApp` field when starting the server
+
+- `disableEmailInterception` is not available as option anymore, but you can still disable interception
+  in development setting the environment variable `UNCHAINED_DISABLE_EMAIL_INTERCEPTION`
+- All atmosphere packages have been transformed to npm packages, all plugins are now in a separate
+  package `@unchainedshop/plugins`. Check out the kitchensink's boot.ts to see how to load them.
+- The payment webhook endpoints changed from
+  `/graphql/stripe, /graphql/apple-iap, /graphql/cryptopay, /graphql/postfinance-checkout, /graphql/cryptopay-pricing`
+  to
+  `/payment/stripe, /payment/apple-iap, /payment/cryptopay, /payment/postfinance-checkout, /pricing/cryptopay`
+- Boilerplate has been removed because it was very outdated. A new create-unchained-app version which
+  supports the kitchensink will follow suit.
+
+## Patches
+
+- Fix TOTP high severity bug
+- Fix SSO with Unchained Cloud
+- Fix discount pricing calculation issues
+
 # Unchained Engine v1.1
 
 ## Breaking Changes for Plugin Developers
@@ -16,8 +52,8 @@
 ## Minor
 
 - [api] `query.events` is now extended with additional filter parameters `created` get events created
-  after the provided event and the previous `selectTypes` field is changed to `types` and accepts array of event
-  types. in addition it is now possible to `sort` the results any field on event type
+  after the provided event and the previous `selectTypes` field is changed to `types` and accepts array
+  of event types. in addition it is now possible to `sort` the results any field on event type
 - [api] A new input field `sort` has been added to many generel queries that return lists of something,
   for ex. Query.products
 - [api] A new input field `queryString` has been added to many generel queries that return lists of
@@ -87,7 +123,7 @@ Our Roadmap ahead:
   prevent a conflict that may occur with other systems environment variables.
 - [core] upsertLocalizedText for products and assortments does not automatically change the slug anymore,
   explicitly set it by providing a slug property
-- [core] Remove cron worker `unchained:core-worker/workers/cron`, use the interval worker instead
+- [core] Remove cron worker `@unchainedshop/core-worker/workers/cron`, use the interval worker instead
 - [core] `cronText` has been removed from `configureAutoscheduling` in favor of `schedule`, `schedule`
   has to be a later.js compliant schedule definition. If you want to reuse the custom cronText define
   schedule like `later.parse.text('every 5 mins');` Likewise `autoSchedulingCronText` has been removed
@@ -318,7 +354,7 @@ developers to easily add new resolvers and access the core API's through typescr
 - [core] Removed Assortment helpers `addFilter`, `removeFilter`, `searchProducts`
 - [core] Removed Assortment Filter helper `assortmentFilter.filter`
 - [core] `findProviderById` & `findReviewById` removed
-- [core] You cannot `import 'meteor/unchained:core-worker/plugins/heartbeat'` anymore without typescript
+- [core] You cannot `import '@unchainedshop/core-worker/plugins/heartbeat'` anymore without typescript
   package
 - [api] NotFoundErrors have been removed from various queries which return an optional single entity,
   like Query.product(...): Product #299, affects `Query.country`, `Query.currency`,

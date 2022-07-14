@@ -4,16 +4,18 @@ import {
   ProductVariationText,
 } from '@unchainedshop/types/products.variations';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
-import { Locale } from 'locale';
-import { emit, registerEvents } from 'meteor/unchained:events';
+import localePkg from 'locale';
+import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from 'meteor/unchained:utils';
+} from '@unchainedshop/utils';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection';
 import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema';
+
+const { Locale } = localePkg;
 
 const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_CREATE_VARIATION',

@@ -1,5 +1,5 @@
 import { IFileAdapter, IFileDirector, UploadFileCallback } from '@unchainedshop/types/files';
-import { BaseDirector } from 'meteor/unchained:utils';
+import { BaseDirector } from '@unchainedshop/utils';
 
 const FileUploadRegistry = new Map<string, UploadFileCallback>();
 

@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common';
 import { Country } from '@unchainedshop/types/countries';
-import { buildDbIndexes } from 'meteor/unchained:utils';
+import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const CountriesCollection = async (db: Db) => {
   const Countries = db.collection<Country>('countries');

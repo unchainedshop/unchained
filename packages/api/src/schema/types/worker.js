@@ -9,7 +9,7 @@ export default [
     }
 
     # This is just a placeholder. Extend WorkType with the active plugins on
-    # startup. See /examples/minimal/boot.js:92
+    # startup. See /examples/kitchensink/boot.js:92
     enum WorkType {
       UNKNOWN
     }

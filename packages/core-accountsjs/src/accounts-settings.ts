@@ -1,4 +1,4 @@
-import { Schemas } from 'meteor/unchained:utils';
+import { Schemas } from '@unchainedshop/utils';
 
 const defaultAutoMessagingAfterUserCreation = true;
 const defaultMergeUserCartsOnLogin = true;

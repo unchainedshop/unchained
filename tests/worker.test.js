@@ -332,7 +332,7 @@ describe('Worker Module', () => {
 
     it('Add future work', async () => {
       const scheduled = new Date();
-      scheduled.setSeconds(scheduled.getSeconds() + 2);
+      scheduled.setSeconds(scheduled.getSeconds() + 1);
 
       const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -343,7 +343,9 @@ describe('Worker Module', () => {
           ) {
             addWork(type: $type, input: $input, scheduled: $scheduled) {
               _id
+              status
               type
+              started
             }
           }
         `,
@@ -356,64 +358,31 @@ describe('Worker Module', () => {
       expect(addWorkResult.data.addWork.type).toBe('HEARTBEAT');
       expect(addWorkResult.errors).toBeUndefined();
 
-      const { data: { workQueue: workQueueBefore } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            query {
-              workQueue(status: [NEW]) {
-                _id
-                worker
-                type
-              }
-            }
-          `,
-        });
-
-      expect(
-        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT'),
-      ).toHaveLength(1);
-
-      // Test if work is not done immediately
-      await wait(1000);
-
-      const { data: { workQueue: workQueueMiddle } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            query {
-              workQueue(status: [NEW]) {
-                _id
-                status
-                type
-                worker
-              }
-            }
-          `,
-        });
-
-      expect(
-        workQueueMiddle.filter(({ type }) => type === 'HEARTBEAT'),
-      ).toHaveLength(1);
-
       // Test if work is done eventually
       await wait(3000);
 
-      const { data: { workQueue: workQueueAfter } = {} } =
+      const { data: { workQueue } = {} } =
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue(status: [NEW]) {
+              workQueue: workQueue(status: [NEW, SUCCESS]) {
                 _id
                 status
+                started
                 type
                 worker
-              }
+              },
             }
           `,
         });
 
       expect(
-        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
+        workQueue.filter(({ type, status }) => type === 'HEARTBEAT' && status === "NEW"),
       ).toHaveLength(0);
+
+      expect(
+        workQueue.filter(({ type, status, started }) => type === 'HEARTBEAT' && status === "SUCCESS" && new Date(started).getTime() >= scheduled.getTime() ),
+      ).toHaveLength(1);
     });
 
     it('Worker fails and retries', async () => {
@@ -439,16 +408,14 @@ describe('Worker Module', () => {
 
       expect(addWorkResult.errors).toBeUndefined();
 
-      // Hint: If we are super unlucky, the worker already picked up the retry
-      // work in this 1 millisecond
-      await wait(1);
+      await wait(3000);
 
       // Expect copy & reschedule
-      const { data: { workQueue: workQueueBefore } = {} } =
+      const { data: { workQueue: workQueue } = {} } =
         await graphqlFetchAsAdminUser({
           query: /* GraphQL */ `
             query {
-              workQueue(status: [NEW]) {
+              workQueue(status: [NEW,ALLOCATED,FAILED]) {
                 _id
                 status
                 type
@@ -463,35 +430,12 @@ describe('Worker Module', () => {
         });
 
       expect(
-        workQueueBefore.filter(({ type }) => type === 'HEARTBEAT'),
-      ).toHaveLength(1);
-
-      const workBefore = workQueueBefore.pop();
-
-      expect(workBefore.original._id).toBe(addWorkResult.data.addWork._id);
-      expect(workBefore.retries).toBe(1);
-
-      // Await the expected reschedule time (should be done by the plugin itself)
-      await wait(2000);
-
-      const { data: { workQueue: workQueueAfter } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            query {
-              workQueue(status: [NEW]) {
-                _id
-                type
-                worker
-                retries
-                # schedule
-              }
-            }
-          `,
-        });
-
-      expect(
-        workQueueAfter.filter(({ type }) => type === 'HEARTBEAT'),
-      ).toHaveLength(1);
+        workQueue.filter(({ type, _id, original, retries }) => {
+          if (type !== "HEARTBEAT") return false;
+          if (retries === 2 && _id === addWorkResult.data.addWork._id) return true;
+          if (retries === 1 && original._id === addWorkResult.data.addWork._id) return true;
+        }),
+      ).toHaveLength(2);
     });
   });
 
@@ -588,7 +532,7 @@ describe('Worker Module', () => {
         `,
         variables: {
           status: ['SUCCESS'],
-          
+
         },
       });
       expect(workQueue.filter((e) => e.status !== 'SUCCESS').length).toEqual(0);

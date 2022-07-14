@@ -1,8 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { User } from '@unchainedshop/types/user';
-import { check, Match } from 'meteor/check';
-import { randomValueHex } from 'meteor/unchained:utils';
-import { accountsSettings } from 'meteor/unchained:core-accountsjs';
+import { randomValueHex } from '@unchainedshop/utils';
+import { accountsSettings } from '@unchainedshop/core-accountsjs';
 import moniker from 'moniker';
 
 export const setupAccounts = (unchainedAPI: Context) => {
@@ -42,7 +41,6 @@ export const setupAccounts = (unchainedAPI: Context) => {
 
   accountsServer.services.guest = {
     async authenticate(params: { email?: string | null }) {
-      check(params.email, Match.OneOf(String, null, undefined));
       const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
 
       const guestUserId = await unchainedAPI.modules.accounts.createUser(

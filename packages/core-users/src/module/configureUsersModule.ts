@@ -1,18 +1,16 @@
-import { Locale } from 'locale';
+import localePkg from 'locale';
+import type { Locale as LocaleType } from 'locale';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log } from '@unchainedshop/logger';
-import { emit, registerEvents } from 'meteor/unchained:events';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-  Schemas,
-  systemLocale,
-} from 'meteor/unchained:utils';
-import { FileDirector } from 'meteor/unchained:file-upload';
+import { emit, registerEvents } from '@unchainedshop/events';
+import { generateDbFilterById, generateDbMutations, Schemas, systemLocale } from '@unchainedshop/utils';
+import { FileDirector } from '@unchainedshop/file-upload';
 import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';
+
+const { Locale } = localePkg;
 
 const USER_EVENTS = [
   'USER_UPDATE',
@@ -40,7 +38,7 @@ const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) =
   return selector;
 };
 
-const getUserLocale = (user: User, params: { localeContext?: Locale } = {}) => {
+const getUserLocale = (user: User, params: { localeContext?: LocaleType } = {}) => {
   const locale =
     params.localeContext ||
     (user.lastLogin?.locale && new Locale(user.lastLogin.locale)) ||
