@@ -4,8 +4,7 @@ FROM node:16 as bundler
 RUN mkdir -p /source
 WORKDIR /source
 
-ADD package.json /source/
-ADD package-lock.json /source/
+ADD package* /source/
 RUN NODE_ENV=development npm install
 
 ADD . /source/
