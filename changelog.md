@@ -1,13 +1,18 @@
-# vNext
+# Unchained Engine v1.2
 
-Unchained has been converted from meteor atmosphere packages to ESM npm packages and is now compatible with most recent Node.js versions and a broad range of builders and webserver frameworks like express.js, connect, next, fastify. It also improves bootup performance of meteor apps by 2-3x in dev mode.
+Unchained has been converted from Meteor atmosphere packages to ESM npm packages and is now compatible
+with most recent Node.js versions and a broad range of builders and webservers like express.js, connect,
+next, fastify. Switch even improved bootup performance of meteor apps by 2-3x in dev mode.
 
+To show how that works, we have added a new example "kitchensink" which is a Express.js based Node.js 16
+app in ESM mode.
 
 ## Breaking Changes
 
 - To upgrade from meteor to NPM with your existing meteor app you will have to:
 
-1. rename all imports prefixed with `meteor/unchained:` to `@unchainedshop/`, then import all the plugins from the new `@unchainedshop/plugins` package
+1. rename all imports prefixed with `meteor/unchained:` to `@unchainedshop/`, then import all the plugins
+   from the new `@unchainedshop/plugins` package
 2. add the packages to your app's package.json as dependencies
 3. remove all unchainedshop atmosphere packages
 4. forward the `WebApp.connectHandlers` to the `expressApp` field when starting the server
@@ -15,11 +20,13 @@ Unchained has been converted from meteor atmosphere packages to ESM npm packages
 - `disableEmailInterception` is not available as option anymore, but you can still disable interception
   in development setting the environment variable `UNCHAINED_DISABLE_EMAIL_INTERCEPTION`
 - All atmosphere packages have been transformed to npm packages, all plugins are now in a separate
-  package `@unchainedshop/plugins`. See here for an overview:
-
-## Minor
+  package `@unchainedshop/plugins`. Check out the kitchensink's boot.ts to see how to load them.
 
 ## Patches
+
+- Fix TOTP high severity bug
+- Fix SSO with Unchained Cloud
+- Fix discount pricing calculation issues
 
 # Unchained Engine v1.1
 
