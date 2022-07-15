@@ -156,7 +156,7 @@ const Cryptopay: IPaymentAdapter = {
           const bip32 = BIP32Factory(ecc);
           const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
           const btcDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
-            context: { currency: CryptopayCurrencies.BTC },
+            context: { cryptoAddresses: { currency: CryptopayCurrencies.BTC } },
           });
           const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
           cryptoAddresses.push({
@@ -170,7 +170,7 @@ const Cryptopay: IPaymentAdapter = {
         if (CRYPTOPAY_ETH_XPUB) {
           const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
           const ethDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
-            context: { currency: CryptopayCurrencies.ETH },
+            context: { cryptoAddresses: { currency: CryptopayCurrencies.ETH } },
           });
           cryptoAddresses.push({
             currency: CryptopayCurrencies.ETH,
