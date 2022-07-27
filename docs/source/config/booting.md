@@ -38,7 +38,8 @@ These options are available:
 - providerInvalidationMaxAgeDays: number (Set the max age for cart invalidation on startup, default: `30`)
 - typeDefs: Object (GraphQL Schema that gets merged with the default schema)
 - resolvers: Object (GraphQL Resolvers that get merged with the default API)
-- modules: Core Module specific configuration (see next pages)
+- modules: Custom modules configuration point. allows you to extends the functionality the engine.
+- options: Configuration options used to change the default behavior of a module.
 
 Other options are forwarded to the Apollo Engine, the available options are documented here: https://www.apollographql.com/docs/apollo-server
 
@@ -71,7 +72,7 @@ accepts the following object
    corsOrigins,
 }
 ```
-### options
+### Options
 
 with options you can configure the platform with following keys
 
@@ -127,17 +128,85 @@ On [Quotations](./quotations.md) module
 
 - `quotationNumberHashFn`: a function with with `quotation` and `index` input returns string
 
+
+### Modules 
+
+Enables the developer to add additional functionality to the core engine. There might be cases where the out of the box functionalities might not solve a particular problem. on such cases it is possible to add a custom module that will be available through out the engine context just like the built in modules. 
+In most cases this goes together when [extending the schema](./extending-schema.md) to include additional mutations and queries with custom resolvers.
+
+It accepts key-value pair where the `key` is the module name and the value is a object that has one field named `configure`.
+configure function receives an single object `ModuleInput` as it's only argument just like any other build in module. this mean you can pass the custom module configuration option like you would with the built in module.
+
+Below is an example custom module that will be used to change currency of a cart after creation.
+
+```
+import { OrdersCollection } from '@unchainedshop/core-orders';
+import { generateDbFilterById } from '@unchainedshop/utils';
+type CurrencyModule = {
+    changeCartCurrency: (currency: string, cartId: string) =>  Promise<Order>
+};
+  
+const currencyModule = {
+  configure: async ({ db }: { db: Db }): Promise<CurrencyModule> => {
+    const Orders = await OrdersCollection(db);
+
+    return {
+      async changeCartCurrency(currency, cartId) {
+        const selector = generateDbFilterById(cartId);
+        Orders.updateOne(selector, {
+          $set: {
+            currency,
+            context: { currency },
+          },
+        });
+
+        return Orders.findOne({ _id: cartId });
+      },
+    };
+  },
+};
+
+```
+
+Let's go through the code line by line
+
+1. Imported the modules and utility functions we want to use in the module (OrdersCollection & generateDbFilterById)
+2. Added a type of the module. in this case our module only contains single function `changeCartCurrency`
+3. Defined the actual module by creating an object with `configure` function as it's only key. returns an object with key-value pairs that match the module type definition. Since our custom module has only one property configure function should return an object with the exact property mapping.
+
+
+After defining the custom module the final step is registering it to the engin and making it globally available for use just like the built in modules.
+
+```
+startPlatform({
+    ...
+    modules: {
+      ...
+      currencyModule
+      ...
+    }, 
+    ...
+  })
+
+
+```
+
+**Note: avoid giving the custom module a name that is identical to the built in module. this will replace the existing module and change result in runtime error**
+
+Now the `currencyModule` is available globally though out unchained context and can be access like below
+
+```
+  unchainedContext.modules.currencyModule.changeCartCurrency(...)
+
+```
+
+Read more about unchained context and how to access it in [Accessing Unchained Context](./accessing-unchained-context)
+
+
+
 # Enable Controlpanel
 
 1. Add @unchainedshop/controlpanel as dependency (`npm install @unchainedshop/controlpanel`)
 
 2. Use the embedControlpanelInMeteorWebApp function after startPlatform
 
-```
-import { WebApp } from 'meteor/webapp';
-import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
-
-Meteor.startup(() => {
-  embedControlpanelInMeteorWebApp(WebApp);
-});
-```
