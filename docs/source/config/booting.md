@@ -131,11 +131,11 @@ On [Quotations](./quotations.md) module
 
 ### Modules 
 
-Enables the developer to add additional functionality to the core engine. There might be cases where the out of the box functionalities might not solve a particular problem. on such cases it is possible to add a custom module that will be available through out the engine context just like the built in modules. 
+Enables the developer to add additional functionality to the core engine. There might be cases where the out of the box functionalities is not solve a particular problem. On such cases it is possible to add a custom module that will be available through out the engine context just like the built in modules. 
 In most cases this goes together when [extending the schema](./extending-schema.md) to include additional mutations and queries with custom resolvers.
 
-It accepts key-value pair where the `key` is the module name and the value is a object that has one field named `configure`.
-configure function receives an single object `ModuleInput` as it's only argument just like any other build in module. this mean you can pass the custom module configuration option like you would with the built in module.
+It accepts key-value pair where the `key` is the module name and `value` is a object that has one field named `configure`.
+configure function receives a single object `ModuleInput` as it's only argument just like any other build in module. this mean you can pass the custom module configuration option like you would with the built in module, have the underling database available inside the module configuration as well as a migration.
 
 Below is an example custom module that will be used to change currency of a cart after creation.
 
