@@ -1,7 +1,11 @@
 ---
-title: "Module: Delivery"
+title: 'Module: Delivery'
 description: Configure the Delivery Module
 ---
+
+- sortProviders: with default `undefined`,
+- filterSupportedProviders
+- determineDefaultProvider
 
 Adjust detection of available delivery providers:
 

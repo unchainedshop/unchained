@@ -3,6 +3,11 @@ title: "Module: Assortments"
 description: Configure the Assortments Module
 ---
 
+- setCachedProductIds:
+- getCachedProductIds:
+- zipTree:
+- slugify:
+
 Control the zip function to derive a flat sorted array of products out of an assortment tree:
 
 ```
@@ -30,3 +35,5 @@ AssortmentTexts.makeSlug = rest =>
     }
   });
 ```
+
+For more on Order module read the [API](#)
