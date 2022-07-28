@@ -1,4 +1,4 @@
-const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options');
+const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options')
 
 module.exports = {
   pathPrefix: '/docs/unchained',
@@ -16,10 +16,7 @@ module.exports = {
         //   "1": "version-1"
         // },
         sidebarCategories: {
-          null: [
-            'index',
-            '[Changelog](https://github.com/unchainedshop/unchained/releases)',
-          ],
+          null: ['index', '[Changelog](https://github.com/unchainedshop/unchained/releases)'],
           'Installation (cloud)': [
             'getting-started/engine-launch',
             'getting-started/storefront-setup',
@@ -36,14 +33,11 @@ module.exports = {
             'deployment/deploy-storefront-vercel',
             'deployment/amazon-documentdb',
           ],
-          Concepts: [
-            'concepts/architecture',
-            'concepts/carts',
-            'concepts/search',
-          ],
+          Concepts: ['concepts/architecture', 'concepts/carts', 'concepts/search'],
           Plugins: ['plugins/plugin-overview'],
           Configuration: [
             'config/booting',
+            'config/overview',
             'config/orders',
             'config/accounts',
             'config/assortments',
@@ -71,4 +65,4 @@ module.exports = {
       },
     },
   ],
-};
+}
