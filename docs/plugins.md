@@ -96,9 +96,11 @@ export enum FilterError {
   NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
 }
 
+## Order
 
 
-OrderDiscountAdapter : IDiscountAdapter
+### OrderDiscountAdapter : IDiscountAdapter
+
 key
 label
 version
@@ -114,4 +116,58 @@ actions() returns object with the following properties
 	- discountForPricingAdapterKey(): Object returns the appropriate discount context for a calculation adapter
 
 log(message: string, options)
+
+
+### OrderPricingAdapter: IPricingAdapter<OrderPricingAdapterContext, OrderPricingCalculation, IPricingSheet>
+  key,
+  label,
+  version,
+  orderIndex: 0,
+
+  isActivatedFor(context: PricingAdapterContext):Boolean indicated if a price is going to be applied for a certain order context or not
+  actions(params): Object returns an IPricingAdapterContext object 
+	- calculate() Array<Calculation> return the final order price after tax, discount, delivery etc... is applied
+	- getCalculation() Array<Calculation> returns all the price values included in price calculation
+	- getContext(): PricingAdapterContext returns current order context
+	- resultSheet()
+  log(message: string, options)
+
+
+
+defines how every price is calculated to order including tax, discount, delivery, 
+### OrderPriceSheet: IOrderPricingSheet 
+    calculation: array<Calculation>,
+    currency,
+    quantity
+
+	- getRawPriceSheet(): Array<Calculation> returns array of all the variables for current order price calculation
+	- isValid(): Boolean returns true id a order has at least one valid calculation item by default, but can be changed to be based on other logic
+	- sub(filter: filterFunction): number calculated the current order price, if a filter function s passed it will be used to filter the Calculation object in the current order context
+	- taxSum(): number defines how tax should be applied 
+	- gross(): number gets the sum of all calculation items
+	- net(): number returns net price of an order after tax is deducted from gross price
+	- total({category: CalculationCategory, useNetPrice: boolean }): Currency returns the final price net or gross based on the argument given
+	- filterBy(filter: Object): Array<Calculation> returns calculations remaining after applying the filter. filter is a key value pair of the fields representing calculation types that should be filtered 
+	- resetCalculation(): OrderPriceSheet resets all order calculation items amount to non positive number hence invalidating them
+	- addItems({amount, meta}): adds calculation items for item category to be included in price calculation
+	- addDiscount({amount, discountId, meta}): Add discount Calculation category item to be included in order price calculation
+	- addTax({amount, meta}) adds tax Calculation category item to be included in final order price calculation
+	- addDelivery({amount, meta}): Add delivery Calculation category item to be included as a delivery in order price
+	- addPayment({amount, meta}): Add payment Calculation category item to be included in final order price
+	- gross(): number returns gross price of an order, tax is included in order price calculation  2 times
+	- taxSum() returns the sum or TAXES OrderPriceRowCategory in price sheet calculation
+	- itemsSum(): returns sum of Items OrderPriceRowCategory in price sheet calculation
+	- discountSum(): returns sum of Discounts items ina price sheet calculation for a given discount ID
+	- discountPrices(): returns all the discount prices applied to an order for a given discount ID
+	- getDiscountRows(): Array<Calculation>: returns all the discount Calculation items found on the current order price sheet
+	- getItemRows(): returns all the ITEMS calculation items found on the current order price sheet
+	- getTaxRows(): returns all the TAXES calculation items found on the current order price sheet
+	- getDeliveryRow(): returns all the DELIVERY calculation items found on the current order price sheet
+	- getPaymentRows(): returns all the PAYMENT calculation items found on the current order price sheet
+
+
+
+
+
+
 
