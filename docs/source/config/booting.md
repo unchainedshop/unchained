@@ -76,55 +76,55 @@ accepts the following object
 
 with options you can configure the platform with following keys
 
-On [Account](./accounts.md) module
+On [Account](./accounts) module
 
 - `mergeUserCartsOnLogin`: a boolean with default value `true`
 - `autoMessagingAfterUserCreation`: a boolean with default value `true`
 - `server = {}`
 - `password = {}`
 
-On [Assortments](./assortments.md) module
+On [Assortments](./assortments) module
 
 - `setCachedProductIds`: function with `assortmentId` and `productIds` input returns a number promise
 - `getCachedProductIds`: a function with `filterId` input
 - `zipTree`: a function with `data` input returns a array of string
 - `slugify`: a function with `title` input returns a string
 
-On [Delivery](./delivery.md) module 
+On [Delivery](./delivery) module 
 
 - `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number 
 - `filterSupportedProviders`: a function with `params` and `context` inputs returns promise of array of `DeliveryProvider`
 - `determineDefaultProvider`: a function with `params` and `context` inputs returns promise of  `DeliveryProvider`
 
-On [Enrollments](./enrollments.md) module
+On [Enrollments](./enrollments) module
 
 -  `autoSchedulingSchedule`: array of object
 -  `autoSchedulingInput`: a function
 -  `enrollmentNumberHashFn`: function with two inputs `enrollment` and `index` returns string
 
-On [Files](./files.md) module 
+On [Files](./files) module 
 
 -  `transformUrl`: function with two inputs `url` and `params` of object return string
 
-On [Filters](./filters.md) module 
+On [Filters](./filters) module 
 
 -  `setCachedProductIds`: a function with `filterId`, `productIds` and `productIdsMap` input returns a number promise
 -  `getCachedProductIds`: a function with `filterId` input 
 -  `skipInvalidationOnStartup`: boolean with default `false`
 
-On [Orders](./orders.md) module
+On [Orders](./orders) module
 
 -  `ensureUserHasCart`: a boolean with default false
 -  `orderNumberHashFn`: a function with `order` and `index` input
 -  `validateOrderPosition`: a function with `validationParams` and `context` input
 
-On [Payment](./payment.md) module 
+On [Payment](./payment) module 
 
 -  `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
 -  `filterSupportedProviders`: 
 -  `determineDefaultProvider`:
 
-On [Quotations](./quotations.md) module
+On [Quotations](./quotations) module
 
 - `quotationNumberHashFn`: a function with with `quotation` and `index` input returns string
 

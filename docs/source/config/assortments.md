@@ -5,8 +5,8 @@ description: Configure the Assortments Module
 
 - setCachedProductIds:
 - getCachedProductIds:
-- zipTree:
-- slugify:
+- zipTree: the default function build the tree in one direction.
+- slugify: here the engine cleans the slug
 
 Control the zip function to derive a flat sorted array of products out of an assortment tree:
 
