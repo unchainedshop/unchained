@@ -168,6 +168,74 @@ defines how every price is calculated to order including tax, discount, delivery
 
 
 
+## core Payment
+
+PaymentAdapter: IPaymentAdapter
+key
+label
+version
+- initialConfiguration: Array<Object> payment adapter key value pair configuration
+- typeSupported(): Boolean checks if current payment method (GENERIC|CARD|INVOICE) is supported by adapter and returns 
+- actions(): Object returns object with the following properties
+	
+	- configurationError(paymentProvider: PaymentProvider,
+      requestContext: Context): String returns the problem/error the current adapter has based on a certain rule. example missing environment variable or configuration value. this error is related with the developer or system maintainer
+	
+	- isActive(paymentProvider: PaymentProvider, requestContext: Context): Boolean defines the state of adapter and if this payment adapter should be applied in a certain scenario or not 
+	
+	- isPayLaterAllowed(paymentProvider: PaymentProvider, requestContext: Context): Boolean if this returns true the order will not be blocked for checkout and payment can happen at a later time
+	
+	- charge(transactionContext?: any): Boolean it will charge the order amount to the selected payment provider. when charge returns true the order can be checked out and the order payment status will change to PAID, when it returns false the order can still be checkout but the  payment status will stay the same (OPEN), if it throws an error the checkout process will be canceled and order payment status will stay the same
+
+Payment errors
+
+ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
+NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
+INCOMPLETE_CONFIGURATION = 'INCOMPLETE_CONFIGURATION',
+WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
+
+
+PaymentPricingAdapter: IPricingAdapter<PaymentPricingAdapterContext,PaymentPricingCalculation,IPaymentPricingSheet>
+  key: '',
+  label: '',
+  version: '',
+  orderIndex: 0,
+
+  - isActivatedFor: (context: PricingAdapterContext) => boolean; defines condition a particular payment adapter is applied
+  - actions: ({ context: PricingAdapterContext; calculationSheet: Sheet;discounts: Array<Discount>; }) => IPricingAdapterActions<Calculation,PricingAdapterContext> & { resultSheet: () => Sheet }; returns object containing
+		-	calculate() calculate the payment amount based on the calculation items considered with this particular adapter 
+		-	getCalculation() returns array of Calculation items applied through this payment adapter
+		- 	getContext() return payment adapters context
+		- 	resultSheet() returns the Calculation items
+ - log: (message: string, options?: LogOptions) => void;
+
+PaymentProviderType {
+  CARD = 'CARD',
+  INVOICE = 'INVOICE',
+  GENERIC = 'GENERIC',
+}
 
 
 
+ProductPricingAdapter: IProductPricingAdapter
+
+key: string;
+label: string;
+	version: string;
+orderIndex: number;
+
+  - isManualAdditionAllowed: (code: string) => Promise<boolean>;
+  - isManualRemovalAllowed: () => Promise<boolean>;
+
+  - actions: ({ context: DiscountContext & Context }) => Promise<DiscountAdapterActions>;
+		- isValidForSystemTriggering: () => Promise<boolean>;
+		return true if a discount is valid to be part of the order without input of a user. that could be a time based global discount like a 10% discount day if you return false, this discount will get removed from the order before any price calculation takes place.
+  		- isValidForCodeTriggering: ({ code: string }) => Promise<boolean>;
+		return true if a discount is valid to be part of the order. if you return false, this discount will get removed from the order before any price calculation takes place.
+		- discountForPricingAdapterKey: ({pricingAdapterKey: string; calculationSheet: IPricingSheet<PricingCalculation>;}) => DiscountConfiguration;
+		returns the appropriate discount context for a calculation adapter
+  		- reserve: ({ code: string }) => Promise<any>;  return an arbitrary JSON serializable object with reservation data this method is called when a discount is added through a manual code and let's you manually deduct expendable discounts (coupon balances for ex.) before checkout
+  
+  		- release: () => Promise<void>; return void, allows you to free up any reservations in backend systems
+
+- log: (message: string, options?: LogOptions) => void;
