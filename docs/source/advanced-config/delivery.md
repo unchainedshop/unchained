@@ -1,4 +1,8 @@
 
+---
+title: "Delivery plugins"
+description: Customize delivery 
+---
 
 ```typescript
 import { IDeliveryAdapter } from "@unchainedshop/types/delivery";
@@ -9,12 +13,10 @@ import {
 } from "meteor/unchained:core-delivery";
 import { AppContext } from "../types/app-context";
 
-
-const d
-const OrderlyPickup: IDeliveryAdapter = {
+const ShopPickUp: IDeliveryAdapter = {
   ...DeliveryAdapter,
 
-  key: "ch.orderly.delivery.pickup",
+  key: "ch.shop.delivery.pickup",
   label: "Pickup at Clerk",
   version: "1.0",
 
@@ -81,5 +83,56 @@ const OrderlyPickup: IDeliveryAdapter = {
     };
   },
 };
+
+```
+
+
+
+### DeliveryPriceAdapter
+
+```typescript
+
+import {
+  DeliveryPricingAdapter,
+  DeliveryPricingDirector,
+} from "meteor/unchained:core-delivery";
+import type { IDeliveryPricingAdapter } from "@unchainedshop/types/delivery.pricing";
+
+
+export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
+  ...DeliveryPricingAdapter,
+
+  key: "shop.pricing.delivery-fee",
+  version: "1.0",
+  label: "shop Delivery",
+  orderIndex: 10,
+
+  isActivatedFor: ({ provider }: DeliveryPricingAdapterContext) => {
+    return provider.adapterKey === "ch.shop.delivery.runner";
+  },
+
+  actions: (params: DeliveryPricingAdapterContext) => {
+    const pricingAdapter = DeliveryPricingAdapter.actions(params);
+    const { modules } = params.context
+
+    return {
+      ...pricingAdapter,
+      calculate: async () => {
+        const amount = parseInt(shopTheme.deliveryFeeAmountCHF, 10);
+        if (amount > 0) {
+          pricingAdapter.resultSheet().addFee({
+            amount,
+            isNetPrice: false,
+            isTaxable: true,
+            meta: { adapter: 'delivery-price-key },
+          });
+        }
+
+        return pricingAdapter.calculate();
+      },
+    };
+  },
+};
+
 
 ```
