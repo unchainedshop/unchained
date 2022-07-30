@@ -43,15 +43,18 @@ These options are available:
 
 Other options are forwarded to the Apollo Engine, the available options are documented here: https://www.apollographql.com/docs/apollo-server
 
-*******
+---
+
 The platfrom starts with
+
 ```bass
 startPlatform()
-````
+```
+
 accepts the following object
 
 ```bash
-{  
+{
    modules = {},
    services = {},
    typeDefs = [],
@@ -72,6 +75,7 @@ accepts the following object
    corsOrigins,
 }
 ```
+
 ### Options
 
 with options you can configure the platform with following keys
@@ -90,48 +94,47 @@ On [Assortments](./assortments) module
 - `zipTree`: a function with `data` input returns a array of string
 - `slugify`: a function with `title` input returns a string
 
-On [Delivery](./delivery) module 
+On [Delivery](./delivery) module
 
-- `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number 
+- `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
 - `filterSupportedProviders`: a function with `params` and `context` inputs returns promise of array of `DeliveryProvider`
-- `determineDefaultProvider`: a function with `params` and `context` inputs returns promise of  `DeliveryProvider`
+- `determineDefaultProvider`: a function with `params` and `context` inputs returns promise of `DeliveryProvider`
 
 On [Enrollments](./enrollments) module
 
--  `autoSchedulingSchedule`: array of object
--  `autoSchedulingInput`: a function
--  `enrollmentNumberHashFn`: function with two inputs `enrollment` and `index` returns string
+- `autoSchedulingSchedule`: array of object
+- `autoSchedulingInput`: a function
+- `enrollmentNumberHashFn`: function with two inputs `enrollment` and `index` returns string
 
-On [Files](./files) module 
+On [Files](./files) module
 
--  `transformUrl`: function with two inputs `url` and `params` of object return string
+- `transformUrl`: function with two inputs `url` and `params` of object return string
 
-On [Filters](./filters) module 
+On [Filters](./filters) module
 
--  `setCachedProductIds`: a function with `filterId`, `productIds` and `productIdsMap` input returns a number promise
--  `getCachedProductIds`: a function with `filterId` input 
--  `skipInvalidationOnStartup`: boolean with default `false`
+- `setCachedProductIds`: a function with `filterId`, `productIds` and `productIdsMap` input returns a number promise
+- `getCachedProductIds`: a function with `filterId` input
+- `skipInvalidationOnStartup`: boolean with default `false`
 
 On [Orders](./orders) module
 
--  `ensureUserHasCart`: a boolean with default false
--  `orderNumberHashFn`: a function with `order` and `index` input
--  `validateOrderPosition`: a function with `validationParams` and `context` input
+- `ensureUserHasCart`: a boolean with default false
+- `orderNumberHashFn`: a function with `order` and `index` input
+- `validateOrderPosition`: a function with `validationParams` and `context` input
 
-On [Payment](./payment) module 
+On [Payment](./payment) module
 
--  `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
--  `filterSupportedProviders`: 
--  `determineDefaultProvider`:
+- `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
+- `filterSupportedProviders`:
+- `determineDefaultProvider`:
 
 On [Quotations](./quotations) module
 
 - `quotationNumberHashFn`: a function with with `quotation` and `index` input returns string
 
+### Modules
 
-### Modules 
-
-Enables the developer to add additional functionality to the core engine. There might be cases where out of the box functionalities is not enough to solve a particular problem. On such cases it is possible to add a custom module that will be available through out the engine context just like built in modules. 
+Enables the developer to add additional functionality to the core engine. There might be cases where out of the box functionalities is not enough to solve a particular problem. On such cases it is possible to add a custom module that will be available through out the engine context just like built in modules.
 In most cases this goes together when [extending the schema](./extending-schema.md) to include additional mutations and queries with custom resolvers.
 
 It accepts key-value pair where `key` is the module name and `value` is a object that has one field named `configure`.
@@ -145,7 +148,7 @@ import { generateDbFilterById } from '@unchainedshop/utils';
 type CurrencyModule = {
     changeCartCurrency: (currency: string, cartId: string) =>  Promise<Order>
 };
-  
+
 const currencyModule = {
   configure: async ({ db }: { db: Db }): Promise<CurrencyModule> => {
     const Orders = await OrdersCollection(db);
@@ -174,7 +177,6 @@ Let's go through the code line by line
 2. Added a type of the module. in this case our module only contains single function `changeCartCurrency`
 3. Defined the actual module by creating an object with `configure` function as it's only key. returns an object with key-value pairs that match the module type definition. Since our custom module has only one property configure function should return an object with the exact property mapping.
 
-
 After defining the custom module the final step is registering it to the engin and making it globally available for use just like the built in modules.
 
 ```
@@ -184,7 +186,7 @@ startPlatform({
       ...
       currencyModule
       ...
-    }, 
+    },
     ...
   })
 
@@ -196,17 +198,32 @@ startPlatform({
 Now the `currencyModule` is available globally though out unchained context and can be access like below
 
 ```
-  unchainedContext.modules.currencyModule.changeCartCurrency(...)
+  unchainedConte
+
+  - CountryServices: In xt.modules.currencyModule.changeCartCurrency(...)
 
 ```
 
 Read more about unchained context and how to access it in [Accessing Unchained Context](./accessing-unchained-context)
 
+### Services
 
+The following services are available
+
+- bookmarkServices: In bookmarkService, migrateBookmarksService function exists and accepts params: { `fromUser`, `toUser`,`shouldMerge` } and context which is { `modules`, `userId` }
+
+- countryServices: In country services resolveDefaultCurrencyCode function exists and it is a function which accepts `params`: { isoCode } and context: { modules }
+
+- fileServices: an object with following functions
+
+  - linkFile: accepts `params`: { fileId, size, type } and `context`: { modules, userId },
+  - createSignedURL: accepts `params`: { directoryName, fileName, meta, userId } and context: { modules }
+  - createSignedURLuploadFileFromURL,
+  - createSignedURLuploadFileFromStream,
+  - removeFiles,
 
 # Enable Controlpanel
 
 1. Add @unchainedshop/controlpanel as dependency (`npm install @unchainedshop/controlpanel`)
 
 2. Use the embedControlpanelInMeteorWebApp function after startPlatform
-
