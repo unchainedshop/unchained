@@ -36,4 +36,4 @@ AssortmentTexts.makeSlug = rest =>
   });
 ```
 
-For more on Order module read the [API](#)
+For more on Order module read the **[API]**

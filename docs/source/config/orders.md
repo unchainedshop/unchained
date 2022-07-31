@@ -21,4 +21,4 @@ const options = {
 };
 ```
 
-For more on Order module read the [API](#)
+For more on Order module read the **[API]**
