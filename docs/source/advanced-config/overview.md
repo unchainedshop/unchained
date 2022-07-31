@@ -1,5 +1,5 @@
 ---
-title: "Advanced Configuration: Overview"
+title: "Overview"
 description: Customizing unchained with custom plugins
 ---
 
