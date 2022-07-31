@@ -62,6 +62,8 @@ module.exports = {
             'advanced-config/messaging',
             'advanced-config/order',
             'advanced-config/payment',
+            'advanced-config/quotation',
+            'advanced-config/warehousing',
           ],
           'API Reference': [
             'api/entities',
