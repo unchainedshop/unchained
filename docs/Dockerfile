@@ -17,7 +17,7 @@ COPY . /usr/src/app/
 
 
 RUN npm run api-docs
-RUN npm run type-docs
+
 
 RUN npm run build
 
