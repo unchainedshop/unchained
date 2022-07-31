@@ -55,6 +55,14 @@ module.exports = {
             'config/enrollments',
             'config/events',
           ],
+          'Advanced Configuration': [
+            'advanced-config/overview',
+            'advanced-config/delivery',
+            'advanced-config/filter',
+            'advanced-config/messaging',
+            'advanced-config/order',
+            'advanced-config/payment',
+          ],
           'API Reference': [
             'api/entities',
             '[GraphQL API Reference](https://docs.unchained.shop/api)',

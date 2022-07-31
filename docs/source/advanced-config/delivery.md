@@ -1,4 +1,3 @@
-
 ---
 title: "Delivery plugins"
 description: Customize delivery 

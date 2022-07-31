@@ -1,6 +1,5 @@
-
 ---
-title: "order plugins"
+title: "Order plugins"
 description: Customize order 
 ---
 

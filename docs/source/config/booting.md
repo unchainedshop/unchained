@@ -94,7 +94,7 @@ On [Assortments](./assortments) module
 - `zipTree`: a function with `data` input returns a array of string
 - `slugify`: a function with `title` input returns a string
 
-On [Delivery](./delivery) module
+On [Delivery](./delivery) module 
 
 - `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
 - `filterSupportedProviders`: a function with `params` and `context` inputs returns promise of array of `DeliveryProvider`
@@ -106,11 +106,11 @@ On [Enrollments](./enrollments) module
 - `autoSchedulingInput`: a function
 - `enrollmentNumberHashFn`: function with two inputs `enrollment` and `index` returns string
 
-On [Files](./files) module
+On [Files](./files) module 
 
 - `transformUrl`: function with two inputs `url` and `params` of object return string
 
-On [Filters](./filters) module
+On [Filters](./filters) module 
 
 - `setCachedProductIds`: a function with `filterId`, `productIds` and `productIdsMap` input returns a number promise
 - `getCachedProductIds`: a function with `filterId` input
@@ -122,7 +122,7 @@ On [Orders](./orders) module
 - `orderNumberHashFn`: a function with `order` and `index` input
 - `validateOrderPosition`: a function with `validationParams` and `context` input
 
-On [Payment](./payment) module
+On [Payment](./payment) module 
 
 - `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
 - `filterSupportedProviders`:
@@ -204,7 +204,7 @@ Now the `currencyModule` is available globally though out unchained context and 
 
 ```
 
-Read more about unchained context and how to access it in [Accessing Unchained Context](./accessing-unchained-context)
+Read more about unchained context and how to access it in **Accessing Unchained Context**
 
 ### Services
 
