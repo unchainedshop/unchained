@@ -222,6 +222,21 @@ The following services are available
   - createSignedURLuploadFileFromStream,
   - removeFiles,
 
+- orderServices:
+  - migrateOrderCartsService: accepts `params`: { fromUser, toUser, shouldMerge } and requestContext: Context,
+  - createUserCartService: accepts `params`: { user, orderNumber, countryCode } and `requestContext`: { countryContext, modules, services }
+- paymentServices:
+  - chargeService: accepts `params`: { paymentContext, paymentProviderId } and `context`: { modules, userId }
+  - registerPaymentCredentialsService: accepts `paymentProviderId`, `paymentContext` and `context`: { modules, userId },
+  - cancelService: accepts `params`: { paymentContext, paymentProviderId } and `context`: { modules, userId }
+  - confirmService: accepts `params`: { paymentContext, paymentProviderId } and `context`: { modules, userId }
+- productServices: removeProductService accepts `params`: { productId }, `context`: { modules, userId }
+- userServices:
+  - getUserCountryService: accepts `user`, `params`: { localeContext } and `context`: { modules }
+  - getUserLanguageService: accepts `user`, `params`: { localeContext } and `context`: { modules }
+  - getUserRoleActionsService: accepts `user` and `context`
+  - updateUserAvatarAfterUploadService: accepts `params`: { file: File } and context: { modules, services, userId } 
+
 # Enable Controlpanel
 
 1. Add @unchainedshop/controlpanel as dependency (`npm install @unchainedshop/controlpanel`)
