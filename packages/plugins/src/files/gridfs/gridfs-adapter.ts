@@ -1,11 +1,10 @@
 import { IFileAdapter } from '@unchainedshop/types/files';
-import { FileAdapter, FileDirector } from '@unchainedshop/file-upload';
+import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
 import mimeType from 'mime-types';
 import { URL } from 'url';
 import { Readable } from 'stream';
-import { buildHashedFilename } from '@unchainedshop/file-upload';
 import sign from './sign';
 import promisePipe from './promisePipe';
 

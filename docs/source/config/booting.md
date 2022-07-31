@@ -237,6 +237,58 @@ The following services are available
   - getUserRoleActionsService: accepts `user` and `context`
   - updateUserAvatarAfterUploadService: accepts `params`: { file: File } and context: { modules, services, userId } 
 
+
+  ### rolesOptions
+
+  `roleOptions` option enables you to customize the existing roles for an API and assign roles to new query and/or mutation resolvers you have created.
+  it expects an object with `additionalRoles` & `additionalActions` fields.
+  - `additionalRoles` an object with key defining the role name and value a function that will assign the appropriate role, it gets the global `Role` class as it's only argument to allow or deny access to default or custom actions registered on the engine.
+  -  `additionalActions` array of custom action names you want to assign default or custom roles.
+
+  **You can access the built in roles, you can import it from @unchaiendshop/api**
+  below is a sample code that will demonstrate simple usage of customizing built in roles and adding custom roles.
+  
+  
+  ```typescript
+  import { startPlatform } from "@unchainedshop/platform";
+  import { roles } from "@unchainedshop/api";
+
+  const customActions = {
+  buyTicket: "buyTicket",
+  requestRefund: "requestRefund",
+  }
+
+  roles.allRoles.ADMIN.allow(customActions.buyTicket, () => true);
+  roles.allRoles.ADMIN.allow(customActions.requestRefund, () => true);
+
+  roles.allRoles.ALL.allow(customActions.buyTicket, () => false);
+  roles.allRoles.ALL.allow(customActions.requestRefund, () => false);
+
+  const roleOptions = {
+    additionalRoles: {
+      attendee(role: RolesInterface) {
+        role.allow(roles.actions.viewProducts, () => true)
+        role.allow(roles.actions.viewUsers, () => false)
+        role.allow(customActions.buyTicket, () => true)
+        role.allow(customActions.requestRefund, () => true)
+      }
+    },
+    additionalActions: Object.values(customActions)
+  }
+
+  await startPlatform({
+    ...,
+    roleOptions,
+    ...
+  })
+  ```
+
+In the above code we added new custom role `attendee` and 2 actions `buyTicket` & `requestRefund`. In order to access the built in actions and role we also imported roles object from `@unchainedshop/api`
+`roles` is an instance of `APIRoles` we used to access both default and built in roles.
+
+
+
+
 # Enable Controlpanel
 
 1. Add @unchainedshop/controlpanel as dependency (`npm install @unchainedshop/controlpanel`)
