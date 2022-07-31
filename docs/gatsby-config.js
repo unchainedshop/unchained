@@ -12,9 +12,6 @@ module.exports = {
         description: 'A guide to using the Unchained Engine',
         githubRepo: 'unchainedshop/unchained',
         defaultVersion: '2',
-        // versions: {
-        //   "1": "version-1"
-        // },
         sidebarCategories: {
           null: ['index', '[Changelog](https://github.com/unchainedshop/unchained/releases)'],
           'Installation (cloud)': [
@@ -54,6 +51,17 @@ module.exports = {
             'config/users',
             'config/enrollments',
             'config/events',
+          ],
+          'Advanced Configuration': [
+            'advanced-config/overview',
+            'advanced-config/delivery',
+            'advanced-config/filter',
+            'advanced-config/messaging',
+            'advanced-config/order',
+            'advanced-config/payment',
+            'advanced-config/quotation',
+            'advanced-config/warehousing',
+            'advanced-config/worker',
           ],
           'API Reference': [
             'api/entities',
