@@ -106,11 +106,11 @@ On [Enrollments](./enrollments) module
 - `autoSchedulingInput`: a function
 - `enrollmentNumberHashFn`: function with two inputs `enrollment` and `index` returns string
 
-On [Files](./files) module 
+On [Files](./files) module
 
 - `transformUrl`: function with two inputs `url` and `params` of object return string
 
-On [Filters](./filters) module 
+On [Filters](./filters) module
 
 - `setCachedProductIds`: a function with `filterId`, `productIds` and `productIdsMap` input returns a number promise
 - `getCachedProductIds`: a function with `filterId` input
@@ -122,7 +122,7 @@ On [Orders](./orders) module
 - `orderNumberHashFn`: a function with `order` and `index` input
 - `validateOrderPosition`: a function with `validationParams` and `context` input
 
-On [Payment](./payment) module 
+On [Payment](./payment) module
 
 - `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
 - `filterSupportedProviders`:
@@ -135,7 +135,7 @@ On [Quotations](./quotations) module
 ### Modules
 
 Enables the developer to add additional functionality to the core engine. There might be cases where out of the box functionalities is not enough to solve a particular problem. On such cases it is possible to add a custom module that will be available through out the engine context just like built in modules.
-In most cases this goes together when [extending the schema](./extending-schema.md) to include additional mutations and queries with custom resolvers.
+In most cases this goes together when [extending the schema](./extending-schema) to include additional mutations and queries with custom resolvers.
 
 It accepts key-value pair where `key` is the module name and `value` is a object that has one field named `configure`.
 configure function receives a single object `ModuleInput` as it's only argument just like any other build in module. this mean you can pass the custom module configuration option like you would with the built in modules, have the underling database available inside the module configuration as well as a migration.
@@ -210,45 +210,180 @@ Read more about unchained context and how to access it in **Accessing Unchained 
 
 The following services are available
 
-- bookmarkServices: In bookmarkService, migrateBookmarksService function exists and accepts params: { `fromUser`, `toUser`,`shouldMerge` } and context which is { `modules`, `userId` }
+- bookmarkServices: enables to manage bookmarks after login using `migrateBookmarksService`,
+  - `migrateBookmarksService`: accepts `params`: { `fromUser`, `toUser`,`shouldMerge` } and `context` which is { `modules`, `userId` }
 
-- countryServices: In country services resolveDefaultCurrencyCode function exists and it is a function which accepts `params`: { isoCode } and context: { modules }
+```typescript
+ import { startPlatform } from "@unchainedshop/platform";
+
+ const services = {
+      bookmarks: {
+        migrateBookmarks: async ({ fromUser, toUser, shouldMerge },{ modules, userId }) => {
+          await modules.bookmarks.deleteByUserId(toUser._id, userId);
+        },
+      },
+    }
+
+ await startPlatform({
+   ...,
+    services,
+   ...
+ })
+```
+
+- countryServices: In country services resolveDefaultCurrencyCode function exists and it is a function which accepts `params`: { isoCode } and `context`: { modules } and set default currency
+
+```typescript
+ import { startPlatform } from "@unchainedshop/platform";
+
+ const services = {
+      countries: {
+        resolveDefaultCurrencyCode: async ( { isoCode }, { modules } ) => {
+        },
+      },
+    }
+
+ await startPlatform({
+   ...,
+    services,
+   ...
+ })
+```
 
 - fileServices: an object with following functions
 
-  - linkFile: accepts `params`: { fileId, size, type } and `context`: { modules, userId },
-  - createSignedURL: accepts `params`: { directoryName, fileName, meta, userId } and context: { modules }
-  - createSignedURLuploadFileFromURL,
-  - createSignedURLuploadFileFromStream,
-  - removeFiles,
+  - linkFile: enables file to linked with user accepts `params`: { fileId, size, type } and `context`: { modules, userId },
 
-- orderServices:
-  - migrateOrderCartsService: accepts `params`: { fromUser, toUser, shouldMerge } and requestContext: Context,
+```typescript
+import { startPlatform } from '@unchainedshop/platform'
+
+const services = {
+  files: {
+    linkFile: async ( { fileId, size, type }, { modules, userId } ) => {
+      const file = await modules.files.findFile({ fileId });
+
+      await modules.files.update(file._id, userId)
+    },
+  },
+}
+
+await startPlatform({
+  ...,
+  services,
+  ...
+})
+
+```
+
+- createSignedURL: returns signed file using file adaptor and accepts `params`: { directoryName, fileName, meta, userId } and `context`: { modules }
+
+```typescript
+import { startPlatform } from "@unchainedshop/platform";
+
+ const services = {
+      files: {
+        createSignedURL: async ( { fileName, userId }, { modules } ) => {
+         },
+      },
+    }
+
+ await startPlatform({
+   ...,
+    services,
+   ...
+ })
+```
+
+- uploadFileFromURL: enables to upload files from URL and accepts `params`: { directoryName, fileInput, meta, userId } and `context`: { modules }
+
+```typescript
+import { startPlatform } from "@unchainedshop/platform";
+
+const services = {
+  files: {
+    uploadFileFromURL: async ( { fileInput, userId }, { modules } ) => {
+      const fileData = await fileUploadAdapter.uploadFileFromURL(fileInput);
+
+      const fileId = await files.create(fileData, userId);
+      },
+    },
+  }
+
+ await startPlatform({
+   ...,
+    services,
+   ...
+ })
+```
+
+- uploadFileFromStream: enables to upload files and accepts `params`: { directoryName, rawFile, meta, userId } and `unchainedContext`: { modules }
+
+```typescript
+import { startPlatform } from "@unchainedshop/platform";
+
+const services = {
+  files: {
+    uploadFileFromURL: async ( { fileInput, userId }, { modules } ) => {
+      const fileData = await fileUploadAdapter.uploadFileFromStream(rawFile);
+
+      const fileId = await files.create(fileData, userId);
+      },
+    },
+  }
+
+ await startPlatform({
+   ...,
+    services,
+   ...
+ })
+```
+
+- removeFiles: remove files and accepts `params`: { fileIds }, `context`: { modules, userId }
+
+```typescript
+import { startPlatform } from "@unchainedshop/platform";
+
+const services = {
+  files: {
+    removeFiles: async ( { fileIds }, { modules } ) => {
+      await files.deleteMany(fileIds, userId);
+      },
+    },
+  }
+
+ await startPlatform({
+   ...,
+    services,
+   ...
+ })
+```
+- orderServices: an object with following functions
+  - migrateOrderCartsService: accepts `params`: { fromUser, toUser, shouldMerge } and `requestContext`: Context,
   - createUserCartService: accepts `params`: { user, orderNumber, countryCode } and `requestContext`: { countryContext, modules, services }
-- paymentServices:
+- paymentServices: an object with following functions
   - chargeService: accepts `params`: { paymentContext, paymentProviderId } and `context`: { modules, userId }
   - registerPaymentCredentialsService: accepts `paymentProviderId`, `paymentContext` and `context`: { modules, userId },
   - cancelService: accepts `params`: { paymentContext, paymentProviderId } and `context`: { modules, userId }
   - confirmService: accepts `params`: { paymentContext, paymentProviderId } and `context`: { modules, userId }
 - productServices: removeProductService accepts `params`: { productId }, `context`: { modules, userId }
-- userServices:
+- userServices: an object with following functions
+
   - getUserCountryService: accepts `user`, `params`: { localeContext } and `context`: { modules }
   - getUserLanguageService: accepts `user`, `params`: { localeContext } and `context`: { modules }
   - getUserRoleActionsService: accepts `user` and `context`
-  - updateUserAvatarAfterUploadService: accepts `params`: { file: File } and context: { modules, services, userId } 
-
+  - updateUserAvatarAfterUploadService: accepts `params`: { file: File } and context: { modules, services, userId }
 
   ### rolesOptions
 
   `roleOptions` option enables you to customize the existing roles for an API and assign roles to new query and/or mutation resolvers you have created.
   it expects an object with `additionalRoles` & `additionalActions` fields.
+
   - `additionalRoles` an object with key defining the role name and value a function that will assign the appropriate role, it gets the global `Role` class as it's only argument to allow or deny access to default or custom actions registered on the engine.
-  -  `additionalActions` array of custom action names you want to assign default or custom roles.
+  - `additionalActions` array of custom action names you want to assign default or custom roles.
 
   **You can access the built in roles, you can import it from @unchaiendshop/api**
   below is a sample code that will demonstrate simple usage of customizing built in roles and adding custom roles.
-  
-  
+
   ```typescript
   import { startPlatform } from "@unchainedshop/platform";
   import { roles } from "@unchainedshop/api";
@@ -286,8 +421,13 @@ The following services are available
 In the above code we added new custom role `attendee` and 2 actions `buyTicket` & `requestRefund`. In order to access the built in actions and role we also imported roles object from `@unchainedshop/api`
 `roles` is an instance of `APIRoles` we used to access both default and built in roles.
 
+### bulkImporter
 
+`bulkImporter` accepts handler objects
 
+### workQueueOptions
+
+`workQueueOptions` accepts `batchCount`, `disableWorker`, `schedule`, `WorkerSchedule` and `workerId`;
 
 # Enable Controlpanel
 
