@@ -2,7 +2,16 @@
 title: 'Boot up'
 description: Start the Unchained Engine
 ---
+### Table of contents
 
+- [Platform Configuration](#platform-configuration) 
+- [Options](#options)
+- [Modules](#modules)
+- [Services](#services)
+- [RoleOptions](#rolesoptions)
+- [BulkImporter](#bulkimporter)
+- [WorkQueueOptions](#workqueueoptions)
+- [Controlpanel](#enable-controlpanel)
 # Platform Configuration
 
 Setting up the Unchained Engine is simple:
@@ -96,9 +105,9 @@ On [Assortments](./assortments) module
 
 On [Delivery](./delivery) module
 
-- `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
-- `filterSupportedProviders`: a function with `params` and `context` inputs returns promise of array of `DeliveryProvider`
-- `determineDefaultProvider`: a function with `params` and `context` inputs returns promise of `DeliveryProvider`
+- `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number. This key is deprecated please use `filterSupportedProviders`
+- `filterSupportedProviders`: a function with `params`: { providers, order } and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) inputs returns promise of array of `DeliveryProvider`
+- `determineDefaultProvider`: a function with `params`: { providers, order } and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) inputs returns promise of `DeliveryProvider`
 
 On [Enrollments](./enrollments) module
 
@@ -108,7 +117,7 @@ On [Enrollments](./enrollments) module
 
 On [Files](./files) module
 
-- `transformUrl`: function with two inputs `url` and `params` of object return string
+- `transformUrl`: function with two inputs `url` and [`params`](https://docs.unchained.shop/types/interfaces/files.FilesSettings.html#transformUrl) of object return string
 
 On [Filters](./filters) module
 
@@ -120,13 +129,13 @@ On [Orders](./orders) module
 
 - `ensureUserHasCart`: a boolean with default false
 - `orderNumberHashFn`: a function with `order` and `index` input
-- `validateOrderPosition`: a function with `validationParams` and `context` input
+- `validateOrderPosition`: a function with `validationParams` and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) input
 
 On [Payment](./payment) module
 
-- `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number
-- `filterSupportedProviders`: a function with `params` and `context` inputs returns promise of array of `PaymentProvider`
-- `determineDefaultProvider`: a function with `params` and `context` inputs returns promise of `PaymentProvider`
+- `sortProviders`: with default `undefined` a function with two input payment providers `a` and `b` returns number. This key is deprecated please use `filterSupportedProviders`
+- `filterSupportedProviders`: a function with `params`: { providers, order } and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) inputs returns promise of array of `PaymentProvider`
+- `determineDefaultProvider`: a function with `params`: { providers, order } and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) inputs returns promise of `PaymentProvider`
 
 On [Quotations](./quotations) module
 
