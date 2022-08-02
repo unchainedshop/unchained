@@ -373,6 +373,9 @@ import { startPlatform } from '@unchainedshop/platform'
 const services = {
   orders: {
     migrateOrderCarts: async ({ fromUser, toUser, shouldMerge }, requestContext ) => {
+      const fromCart = await requestContext.modules.orders.cart({ countryContext: requestContext.countryContext }, fromUser);
+      const toCart = await requestContext.modules.orders.cart({ countryContext: requestContext.countryContext }, toUser);
+
       await requestContext.modules.orders.migrateCart({ fromCart, shouldMerge, toCart }, requestContext)
     },
   },
@@ -393,8 +396,8 @@ import { startPlatform } from '@unchainedshop/platform'
 
 const services = {
   orders: {
-    createUserCartService: async ({ fromUser, toUser, shouldMerge }, requestContext ) => {
-      await await modules.orders.create({orderNumber, countryCode}, user_id)
+    createUserCartService: async ({ user, orderNumber, countryCode }, requestContext ) => {
+      await requestContext.modules.orders.create({orderNumber, countryCode}, user._id)
     },
   },
 }
