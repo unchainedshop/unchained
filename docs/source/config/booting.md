@@ -517,7 +517,7 @@ import { startPlatform } from '@unchainedshop/platform'
 
 const services = {
   users: {
-      getUserCountry: async (user, { localeContext }, { modules }) => {
+      getUserCountry: async (user, params, { modules }) => {
           const userLocale = modules.users.userLocale(user, params);
 
           return modules.countries.findCountry({ isoCode: userLocale.country.toUpperCase() });
@@ -539,7 +539,7 @@ import { startPlatform } from '@unchainedshop/platform'
 
 const services = {
   users: {
-      getUserLanguage: async (user, { localeContext }, { modules }) => {
+      getUserLanguage: async (user, params, { modules }) => {
         const userLocale = modules.users.userLocale(user, params);
 
         return modules.languages.findLanguage({ isoCode: userLocale.language });
@@ -554,15 +554,16 @@ await startPlatform({
 })
 ```
 
-- getUserRoleActions: accepts `user` and `context`
+- getUserRoleActions: enables to get role actions for user and accepts `user` and `context`
 
 ```typescript
 import { startPlatform } from '@unchainedshop/platform'
+import { Roles } from "@unchainedshop/api";
 
 const services = {
   users: {
-      getUserRoleActions: async ({ productId }, { modules, userId }) => {
-
+      getUserRoleActions: async (user, context) => {
+        Roles.getUserRoles(user?._id, user.roles, true)
     },
   },
 }
