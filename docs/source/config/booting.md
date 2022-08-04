@@ -9,8 +9,8 @@ description: Start the Unchained Engine
 - [Modules](#12-modules)
 - [Services](#13-services)
 - [RoleOptions](#14-rolesoptions)
-- [BulkImporter](#bulkimporter)
-- [WorkQueueOptions](#workqueueoptions)
+- [BulkImporter](#15-bulkimporter)
+- [WorkQueueOptions](#16-workqueueoptions)
 
 
 
@@ -329,24 +329,10 @@ await startPlatform({
 In the above code we added new custom role `attendee` and 2 actions `buyTicket` & `requestRefund`. In order to access the built in actions and role we also imported roles object from `@unchainedshop/api`
 `roles` is an instance of `APIRoles` we used to access both default and built in roles.
 
-### bulkImporter
+## 1.5 bulkImporter
+- **bulkImporter(params: [{ handlers?: Record<string, [BulkImportHandler](https://docs.unchained.shop/types/types/platform.BulkImportHandler.html)> }])**: Enables you to define custom bulk import handlers. for more information about bulk import API refer [here](/api/entities/#bulk-import-api)
 
-`bulkImporter` accepts handler objects
+## 1.6 workQueueOptions
 
-### workQueueOptions
+- **workQueueOptions(params: [SetupWorkqueueOptions](https://docs.unchained.shop/types/types/interfaces/platform.SetupWorkqueueOptions.html))**: Used for setting  default cron worker to perform a task within a given interval
 
-`workQueueOptions` accepts `batchCount`, `disableWorker`, `schedule`, `WorkerSchedule` and `workerId`;
-
-```typescript
-import { startPlatform } from "@unchainedshop/platform";
-
-await startPlatform({
-  ...,
-  workQueueOptions: {
-      batchCount: 12,
-      disableWorker: true,
-      workerId: 'vnjzdlnjfhgjzfhglkjfh',
-    },
-  ...
-})
-```
