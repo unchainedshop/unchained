@@ -231,186 +231,55 @@ Read more about unchained context and how to access it in **Accessing Unchained 
 ## 1.3 Services
 
 Services allow you to add utility functions that can be used throughout the engine context. Unchained provides build in services or utility functions for most of the modules. It is also possible to register a custom service just like modules and access it like built in ones. this is useful in encapsulating a certain operation in a single function and utilize it everywhere and keep your code DRY. 
-Each service is passed the Unchained API context as it's second argument.
+You can access built in or custom services from unchained context anywhere in the application like so:
+```
+unchainedApiContext.services.serviceName.[function name]
+```
+#### Custom Service
+  It is possible to create a custom service for your need and have it available throughout the engine context like the built-in services. Custom services function can accept first arguments that will be used in the service and will also receive unchained context as there second argument
+
+  ```
+  function serviceFunc(args: obj, context: Context) {
+    ...
+  }
+  ``` 
+
+### Built in Services
 
 ### 1.3.1 `bookmarkServices`
   Enables you to manage bookmarks
-  - `migrateBookmarksService(params: { fromUser, toUser,shouldMerge })`: Used to migrate bookmarked products from one user account to another. Useful for example when we want to keep a product a user has bookmarked before registering after they register.
+  - **migrateBookmarksService(params: [MigrateBookmarksService](https://docs.unchained.shop/types/types/bookmarks.MigrateBookmarksService.html))**: Used to migrate bookmarked products from one user account to another. Useful for example when we want to keep a product a user has bookmarked before registering after they register.
 
-```typescript
-const services = {
-  ...
-  bookmarks: {
-    migrateBookmarks: async ({ fromUser, toUser, shouldMerge }, { modules, userId }) => {
-      await modules.bookmarks.deleteByUserId(toUser._id, userId);
-    },
-  },
-  ...
-};
-
-```
 ### 1.3.2 `countryServices`
-- `resolveDefaultCurrencyCode`: returns a default currency for a given country code passed as its only argument. 
+- **resolveDefaultCurrencyCode(params: [ResolveDefaultCurrencyCodeService](https://docs.unchained.shop/types/types/countries.ResolveDefaultCurrencyCodeService.html))**: returns a default currency for a given country code passed as its only argument. 
 
-```typescript
- 
- const services = {
-  ...
-  countries: {
-    resolveDefaultCurrencyCode: async ({ isoCode }, { modules }) => {},
-  },
-  ...
-};
+### 1.3.3 `fileServices`
 
-```
+  - **linkFile(params: [LinkFileService](https://docs.unchained.shop/types/types/files.LinkFileService.html))**: Used to link files uploaded to an S3-compatible storage server after a successful upload using `createSignedURL`.
+  - **createSignedURL(params: [CreateSignedURLService](https://docs.unchained.shop/types/types/files.CreateSignedURLService.html))**: Returns pre-signed URLs, a client can upload files directly to an S3-compatible cloud storage server (S3) without exposing the S3 credentials to the user. 
+  - **uploadFileFromURL(params: [UploadFileFromURLService](https://docs.unchained.shop/types/types/files.UploadFileFromURLService.html))**: Used to upload files from URL.
+  - **uploadFileFromStream(params: [UploadFileFromStreamService](https://docs.unchained.shop/types/types/files.UploadFileFromStreamService.html))**: Used to upload base64 file stream.
+  - **removeFiles(params: [RemoveFilesService](https://docs.unchained.shop/types/types/files.RemoveFilesService.html))**: Used to remove a single file.
 
-1.3.3 `fileServices`: an object with following functions
-
-  - `linkFile`: enables file to linked with user accepts ,
-  - `createSignedURL`: returns signed file using file adaptor and accepts `params`: { directoryName, fileName, meta, userId }
-  - `uploadFileFromURL`: enables to upload files from URL and accepts `params`: { directoryName, fileInput, meta, userId }
-  - `uploadFileFromStream`: enables to upload files and accepts `params`: { directoryName, rawFile, meta, userId }
-  - `removeFiles`: remove files and accepts `params`: { fileIds }
-
-```typescript
-const services = {
-  files: {
-    linkFile: async ({ fileId, size, type }, { modules, userId }) => {
-      const file = await modules.files.findFile({ fileId });
-
-      await modules.files.update(file._id, userId);
-    },
-    createSignedURL: async ({ fileName, userId }, { modules }) => {},
-    uploadFileFromURL: async ({ fileInput, userId }, { modules }) => {
-      const fileData = await fileUploadAdapter.uploadFileFromURL(fileInput);
-
-      const fileId = await files.create(fileData, userId);
-    },
-    removeFiles: async ({ fileIds }, { modules }) => {
-      await files.deleteMany(fileIds, userId);
-    },
-  },
-};
-
-```
-
-### 1.3.4 `orderServices`: an object with following functions
-  - `migrateOrderCartsService`: enables to migrate order cart and accepts `params`: { fromUser, toUser, shouldMerge }
-  - `createUserCartService`: accepts `params`: { user, orderNumber, countryCode }
-
-```typescript
- const services = {
-  orders: {
-    createUserCartService: async ({ user, orderNumber, countryCode }, requestContext) => {
-      await requestContext.modules.orders.create({ orderNumber, countryCode }, user._id);
-    },
-    migrateOrderCarts: async ({ fromUser, toUser, shouldMerge }, requestContext) => {
-      const fromCart = await requestContext.modules.orders.cart(
-        { countryContext: requestContext.countryContext },
-        fromUser,
-      );
-      const toCart = await requestContext.modules.orders.cart(
-        { countryContext: requestContext.countryContext },
-        toUser,
-      );
-
-      await requestContext.modules.orders.migrateCart({ fromCart, shouldMerge, toCart }, requestContext);
-    },
-  },
-};
-
-```
+### 1.3.4 `orderServices`
+  - **migrateOrderCartsService(params: [MigrateOrderCartsService](https://docs.unchained.shop/types/types/orders.MigrateOrderCartsService.html))**: Used to migrate order cart from one user to another. useful for example when we want to keep products a user has added to cart before logging in after they log in.
+  - **createUserCartService(params: [CreateUserCartService](https://docs.unchained.shop/types/types/orders.CreateUserCartService.html))**: Used to create cart for current user or a user with the specified ID through its arguments.
 
 ### 1.3.5 `paymentServices`
-  - `chargeService`: accepts `params`: { paymentContext, paymentProviderId }
-  - `registerPaymentCredentialsService`: enables to register payment provider and accepts `paymentProviderId`, `paymentContext`
-  - `cancelService`: enables cancel payment and accepts `params`: { paymentContext, paymentProviderId }
-  - `confirmService`: enables cancel payment and accepts `params`: { paymentContext, paymentProviderId }
-
-```typescript
-
-const services = {
-  payment: {
-    charge: async () => {},
-    registerPaymentCredentials: async (paymentProviderId, paymentContext, requestContext) => {
-      await requestContext.modules.payment.paymentProviders.register(
-        paymentProviderId,
-        paymentContext,
-        requestContext,
-      );
-    },
-    cancel: async ({ paymentContext, paymentProviderId }, requestContext) => {
-      await requestContext.modules.payment.paymentProviders.cancel(
-        paymentProviderId,
-        { ...paymentContext, userId: requestContext.userId, paymentProviderId },
-        requestContext,
-      );
-    },
-    confirm: async ({ paymentContext, paymentProviderId }, requestContext) => {
-      await requestContext.modules.payment.paymentProviders.confirm(
-        paymentProviderId,
-        { ...paymentContext, userId: requestContext.userId, paymentProviderId },
-        requestContext,
-      );
-    },
-  },
-};
-```
+  - **chargeService(params: [ChargeService](https://docs.unchained.shop/types/types/payments.ChargeService.html))**: Used to charge order payment with the provided payment.
+  - **registerPaymentCredentialsService(params: [RegisterPaymentCredentialsService](https://docs.unchained.shop/types/types/payments.RegisterPaymentCredentialsService.html))**: Used to assign user payment credential to the provided payment provider.
+  - **cancelService(params: [CancelService](https://docs.unchained.shop/types/types/payments.CancelService.html))**: Used for canceling payment
+  - **confirmService(params: [ConfirmService](https://docs.unchained.shop))**:  Used to confirm a payment when received. 
 
 ### 1.3.6 `productServices`
-- `removeProductService` function which removes product and accepts `params`: { productId }
-
-```typescript
-const services = {
-  products: {
-      removeProductService: async ({ productId }, { modules, userId }) => {
-        await modules.assortments.products.delete(productId);
-        await modules.products.delete(productId, userId);
-    },
-  },
-}
-```
+- **removeProductService(params: [RemoveProductService](https://docs.unchained.shop/types/types/products.RemoveProductService.html))**: Used to delete product. **Note once a product is deleted there is no way reverting the action**.
 
 ### 1.3.7 `userServices`
-  - `getUserCountry`: enables to get user country and accepts `user` & `{ localeContext }`
-  - `getUserLanguage`: enables to get user language and accepts `user`, `{ localeContext }`
-  - `getUserRoleActions`: enables to get role actions for user and accepts `user`
-  - `updateUserAvatarAfterUpload`: enables to update user avatar and accepts ``{ file: File }`
+  - **getUserCountry(params: [GetUserRoleActionsService](https://docs.unchained.shop/types/types/user.GetUserRoleActionsService.html))**: Returns the specified user country
+  - **getUserLanguage(params: [GetUserLanguageService](https://docs.unchained.shop/types/types/user.GetUserLanguageService.html))**: Returns the specified user Language
+  - **getUserRoleActions(params: [GetUserRoleActionsService](https://docs.unchained.shop/types/types/user.GetUserRoleActionsService.html))**: Returns the specified user roles
+  - **updateUserAvatarAfterUpload(params: [UpdateUserAvatarAfterUploadService](https://docs.unchained.shop/types/types/user.UpdateUserAvatarAfterUploadService.html))**: Used to update user avatar.
 
-```typescript
-
-const services = {
-  users: {
-    getUserCountry: async (user, params, { modules }) => {
-      const userLocale = modules.users.userLocale(user, params);
-
-      return modules.countries.findCountry({ isoCode: userLocale.country.toUpperCase() });
-    },
-    getUserLanguage: async (user, params, { modules }) => {
-      const userLocale = modules.users.userLocale(user, params);
-
-      return modules.languages.findLanguage({ isoCode: userLocale.language });
-    },
-    getUserRoleActions: async (user, context) => {
-      Roles.getUserRoles(user?._id, user.roles, true);
-    },
-    updateUserAvatarAfterUpload: async ({ file }, { modules, services, userId }) => {
-      await modules.users.updateAvatar(userId, file._id, file.createdBy);
-    },
-  },
-};
-```
-
-**Note: You can also pass your own custom service but it must not be identical to the built in service name. this will replace the existing service and change result in runtime error**
-
-```typescript
-const customServices = {
-  customService1: {
-      // do something
-    },
-  },
-
-```
  ## 1.4 rolesOptions
 
 `roleOptions` option enables you to customize the existing roles for an API and assign roles to new query and/or mutation resolvers you have created.
