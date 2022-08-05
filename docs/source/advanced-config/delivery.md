@@ -5,7 +5,7 @@ description: Customize delivery
 
 ## 1. DeliveryAdapter
 
-In order to register available delivery options, you either have to use the built in ones or have to add a plugin to the supported delivery provider by implementing the [IDeliveryAdapter](https:docs.unchained.shop/types/types/delivery.IDeliveryAdapter.html) interface and registering the adapter on the global [DeliveryDirector](https://docs.unchained.shop/types/types/delivery.IDeliveryDirector.html)
+In order to register available delivery options, you either have to use the built in ones or have to add a plugin to the supported delivery provider by implementing the [IDeliveryAdapter](https://docs.unchained.shop/types/types/delivery.IDeliveryAdapter.html) interface and registering the adapter on the global [DeliveryDirector](https://docs.unchained.shop/types/types/delivery.IDeliveryDirector.html)
 
 Below we have sample delivery adapter 
 
@@ -22,7 +22,6 @@ const ShopPickUp: IDeliveryAdapter = {
   key: 'ch.shop.delivery.pickup',
   label: 'Pickup at Clerk',
   version: '1.0',
-
   initialConfiguration: (DeliveryConfiguration = []),
 
   typeSupported: (type: DeliveryProviderType): boolean => {
@@ -103,7 +102,8 @@ const ShopPickUp: IDeliveryAdapter = {
 ## 2. DeliveryPriceAdapter
 
 Delivery pricing adapter is used to do the actual delivery cost calculation. The adapter is run for every single item included in an order.
-in order to add a custom delivery price logic for orders you need to implement [IDeliveryPricingAdapter](https://docs.unchained.shop/types/types/delivery_pricing.IDeliveryPricingAdapter.html)
+in order to add a custom delivery price logic for orders you need to implement [IDeliveryPricingAdapter](https://docs.unchained.shop/types/types/delivery_pricing.IDeliveryPricingAdapter.html).
+There can be more than one delivery pricing plugin configurations and all of them will be executed based on there `orderIndex` value. Delivery pricing adapter with lower `orderIndex` will be executed first
 
 below is a an example of delivery price for the above delivery adapter that will charge $50  as a delivery fee for orders that use `ShopPickUp` (the above adapter) for there delivery provider.
 
