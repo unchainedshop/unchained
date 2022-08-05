@@ -103,6 +103,9 @@ const ShopPickUp: IDeliveryAdapter = {
 ## 2. DeliveryPriceAdapter
 
 Delivery pricing adapter is used to do the actual delivery cost calculation. The adapter is run for every single item included in an order.
+in order to add a custom delivery price logic for orders you need to implement [IDeliveryPricingAdapter](https://docs.unchained.shop/types/types/delivery_pricing.IDeliveryPricingAdapter.html)
+
+below is a an example of delivery price for the above delivery adapter that will charge $50  as a delivery fee for orders that use `ShopPickUp` (the above adapter) for there delivery provider.
 
 ```typescript
 
@@ -116,13 +119,13 @@ import type { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pric
 import { Discount } from '@unchainedshop/types/discount';
 
 export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
-  key: 'shop.pricing.delivery-fee',
+  key: 'ch.shop.delivery.pickup-fee',
   version: '1.0',
   label: 'shop Delivery',
   orderIndex: 10,
 
   isActivatedFor: ({ provider }: DeliveryPricingAdapterContext) => {
-    return provider.adapterKey === 'ch.shop.delivery.runner';
+    return provider.adapterKey === 'ch.shop.delivery.pickupr';
   },
 
   actions: (
