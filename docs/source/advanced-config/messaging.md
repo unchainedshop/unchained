@@ -3,36 +3,51 @@ title: "Messaging plugins"
 description: Customize messaging 
 ---
 
+It is possible to trigger `SMS` or `EMAIL` notification for various operation performed. Notification are are added to the work queue for processing, By default Email notification is triggered by the engine to the following operations.
+- User Enrollment
+- User email verification
+- Order delivery
+- Order confirmation
+- Order rejection
+- Quotation status change
+
+You can override the default template and/or add your own email/SMS notification. In order to add a custom `EMAIL` or `SMS` notification you must create a function that implement the [TemplateResolver](https://docs.unchained.shop/types/types/messaging.TemplateResolver.html) and register the template the [IMessagingDirector](https://docs.unchained.shop/types/types/messaging.IMessagingDirector.html). After that you only need to add work in the queue with the corresponding type(EMAIL/SMS) with template name you want to use and any required dynamic data required in the template.
+
+Bellow is an example of a simple error notification email message configuration setup, that will send an automated email to support team when a user encounter error during some action.
+
+## Implement TemplateResolver
 
 ```typescript
+
+import { Context } from "@unchainedshop/types/api";
+import { TemplateResolver } from "@unchainedshop/types/messaging";
+
+
+const ERROR_EMAIL_TEMPLATE = `
+{userName} encountered {error} in {resolverName}
+`
+
 const errorReported: TemplateResolver = async (
-  { userId, orderId, orderNumber, reason, phoneNumber, emailAddress },
-  context: AppContext
+  { userId, emailSubject, error, resolverName },
+  context: Context
 ) => {
   const { modules } = context;
-  const user = await modules.users.findUserById(userId);
-  const orderNumberShort = getModuloOrderNumber(orderNumber);
-  
+  const user = await modules.users.findUserById(userId);  
 
   return [
     {
       type: "EMAIL",
       retries: 0,
       input: {
-        from: "noreply@dshop.local",
+        from: user.contact.emailAddress,
         to: "support@dshop.local",
-        replyTo: process.env.EMAIL_TO || emailAddress,
-        subject: `Email subject`,
-        text: modules.messaging.renderToText(``,
+        replyTo: user.contact.emailAddress,
+        subject: emailSubject || 'Error occurred',
+        text: modules.messaging.renderToText(ERROR_EMAIL_TEMPLATE,
           {
-            subject: "",
-            orderNumber,
-            orderId,
-            orderNumberShort,
-            user,
-            reason,
-            phoneNumber,
-            emailAddress,
+            userName: `${user.profile.address.firstName} ${user.profile.address.lastName}`
+            error,
+            resolverName,
           }
         ),
       },
@@ -42,14 +57,21 @@ const errorReported: TemplateResolver = async (
 
 ```
 
+## Register email template into Messaging director
+
 
 ```typescript
+import { MessagingDirector } from "@unchainedshop/core-messaging";
+
 MessagingDirector.registerTemplate("ERROR_REPORT", errorReported);
 ```
 
+## Trigger message
+
+Triggering the message is done by adding a work in the work queue and is treated like any other work, you simple specify the work type as `MESSAGE` and the template you want to use for the message as input to the work.
 
 ```typescript
-export default async (root, params, context: AppContext) => {
+const someResolver =  async (root, params, context: AppContext) => {
   const { modules, userId, countryContext } = context;
 
   await modules.worker.addWork(
@@ -59,7 +81,8 @@ export default async (root, params, context: AppContext) => {
       input: {
         template: "ERROR_REPORT",
         userId,
-        country: countryContext,
+        error: 'Required more information',
+        resolverName: 'someResolver'
         ...params,
       },
     },

@@ -4,7 +4,7 @@ description: Customizing unchained with custom plugins
 ---
 
 
-The engine is flexible and can be extended to supported different business rules application through plugins. 
+The engine is flexible and can be extended to supported different business rules through plugins. 
 You can customize every thing from how searches work to how each items price is calculated by implementing various interfaces available
 in no time.
 

@@ -9,8 +9,7 @@ import {
   DeliveryAdapter,
   DeliveryDirector,
   DeliveryProviderType,
-} from "meteor/unchained:core-delivery";
-import { AppContext } from "../types/app-context";
+} from "@unchainedshop/core-delivery";
 
 const ShopPickUp: IDeliveryAdapter = {
   ...DeliveryAdapter,
@@ -94,7 +93,7 @@ const ShopPickUp: IDeliveryAdapter = {
 import {
   DeliveryPricingAdapter,
   DeliveryPricingDirector,
-} from "meteor/unchained:core-delivery";
+} from "@unchainedshop/core-delivery";
 import type { IDeliveryPricingAdapter } from "@unchainedshop/types/delivery.pricing";
 
 

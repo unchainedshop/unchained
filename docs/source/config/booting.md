@@ -18,14 +18,14 @@ description: Start the Unchained Engine
 
 Setting up the Unchained Engine is simple:
 
-Add `@unchainedshop/platform` to your unchained project, copy the dependencies part of the minimal example to your own project's package.json, or you the script we have ready to generate a project template by running `npm  init @unchainedshop` and choose the template that best suits your need.
+Add `@unchainedshop/platform` to your unchained project, copy the dependencies part of the minimal example to your own project's package.json, or you can use the script we have prepared to scaffold a project template by running `npm  init @unchainedshop` and choose the template that best suits your need.
 
-The entry point for unchained engine is `startPlatform` imported from `@unchainedshop/platform` which will start the awesome e-commerce engine ready for a shop.
+The main entry point for unchained engine is `startPlatform` imported from `@unchainedshop/platform` which will start the awesome e-commerce engine ready for a shop.
 
 ```typescript
 import { startPlatform } from '@unchainedshop/platform'
 
-const unchainedApi = await startPlatform()
+const unchainedApi = await startPlatform({})
 
 ```
 `startPlatform` returns the unchained api that lets you control all the modules and services defined. for example you can create seed the database with configurations like add currency, language, payment provider, admin accounts etc...
@@ -54,7 +54,7 @@ These options are available:
   - `schema`:  Object (GraphQL Schema that gets merged with the default schema)
   - `resolvers`: Object (GraphQL Resolvers that get merged with the default API)
   - [`options: ModuleOptions`](#11-options):  Configuration options used to change the default behavior of built in module.
-  - `rolesOptions: IRoleOptionConfig`: Used to manage built in and custom user privileges
+  - `rolesOptions: [IRoleOptionConfig](https://docs.unchained.shop/types/types/interfaces/roles.IRoleOptionConfig.html)`: Used to manage built in and custom user privileges
   - `expressApp`: Node instance to use
   - `bulkImporter`: bulkImporterOptions
   - `plugins`

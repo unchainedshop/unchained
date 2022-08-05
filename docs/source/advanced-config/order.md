@@ -13,7 +13,7 @@ import { IDiscountAdapter } from "@unchainedshop/types/discount";
 import {
   OrderDiscountDirector,
   OrderDiscountAdapter,
-} from "meteor/unchained:core-orders";
+} from "@unchainedshop/core-orders";
 
 const ShopDiscount_TAG = "ShopDiscount";
 

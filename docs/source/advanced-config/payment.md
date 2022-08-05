@@ -83,7 +83,7 @@ import { IPaymentPricingAdapter } from "@unchainedshop/types/payments.pricing";
 import {
   PaymentPricingAdapter,
   PaymentPricingDirector,
-} from "meteor/unchained:core-payment";
+} from "@unchainedshop/core-payment";
 
 
 const TRANSACTION_FEE = 29;
