@@ -84,7 +84,7 @@ export interface DeliveryLocation {
   };
 }
 
-interface DeliveryAdapterActions {
+export interface DeliveryAdapterActions {
   configurationError: (transactionContext?: any) => DeliveryError;
   estimatedDeliveryThroughput: (warehousingThroughputTime: number) => Promise<number>;
   isActive: () => boolean;

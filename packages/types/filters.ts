@@ -175,7 +175,7 @@ export type FiltersModule = {
  * Director
  */
 
-type FilterContext = {
+export type FilterContext = {
   filter?: Filter;
   searchQuery: SearchQuery;
 };

@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { Event as EventType } from '@unchainedshop/types/events';
 
-type HelperType<P, T> = (work: EventType, params: P, context: Context) => T;
+export type HelperType<P, T> = (work: EventType, params: P, context: Context) => T;
 
 export interface EventHelperTypes {
   type: HelperType<never, string>;

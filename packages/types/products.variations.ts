@@ -119,7 +119,7 @@ export type ProductVariationsModule = {
   };
 };
 
-type HelperType<P, T> = (productVariation: ProductVariation, params: P, context: Context) => T;
+export type HelperType<P, T> = (productVariation: ProductVariation, params: P, context: Context) => T;
 
 export interface ProductVariationHelperTypes {
   options: HelperType<
@@ -132,7 +132,7 @@ export interface ProductVariationHelperTypes {
   texts: HelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
 }
 
-type OptionHelperType<P, T> = (
+export type OptionHelperType<P, T> = (
   option: { _id: string; productVariationOption: string },
   params: P,
   context: Context,
@@ -144,7 +144,7 @@ export interface ProductVariationOptionHelperTypes {
   value: OptionHelperType<never, string>;
 }
 
-type AssignmentHelperType<T> = (
+export type AssignmentHelperType<T> = (
   data: { product: Product; assignment: ProductAssignment },
   _: never,
   context: Context,
@@ -156,7 +156,7 @@ export interface ProductVariationAssignmentHelperTypes {
   product: AssignmentHelperType<Promise<Product>>;
 }
 
-type AssignmentVectorHelperType<T> = (
+export type AssignmentVectorHelperType<T> = (
   data: { product: Product } & ProductConfiguration,
   _: never,
   context: Context,

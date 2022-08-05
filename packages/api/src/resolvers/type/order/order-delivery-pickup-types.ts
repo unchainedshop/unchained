@@ -5,7 +5,7 @@ import { DeliveryDirector } from '@unchainedshop/core-delivery';
 
 type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;
 
-interface OrderDeliveryPickupHelperTypes {
+export interface OrderDeliveryPickupHelperTypes {
   activePickUpLocation: HelperType<Promise<DeliveryLocation>>;
   discounts: HelperType<Promise<Array<OrderDeliveryDiscount>>>;
   pickUpLocations: HelperType<Promise<Array<DeliveryLocation>>>;

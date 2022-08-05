@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { Country as CountryType } from '@unchainedshop/types/countries';
 import { Currency } from '@unchainedshop/types/currencies';
 
-type HelperType<P, T> = (country: CountryType, params: P, context: Context) => T;
+export type HelperType<P, T> = (country: CountryType, params: P, context: Context) => T;
 
 export interface CountryHelperTypes {
   flagEmoji: HelperType<never, string>;

@@ -81,7 +81,7 @@ export type ProductMediaModule = {
   };
 };
 
-type HelperType<P, T> = (productMedia: ProductMedia, params: P, context: Context) => T;
+export type HelperType<P, T> = (productMedia: ProductMedia, params: P, context: Context) => T;
 
 export interface ProductMediaHelperTypes {
   texts: HelperType<{ forceLocale?: string }, Promise<ProductMediaText>>;

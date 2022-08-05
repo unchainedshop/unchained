@@ -133,7 +133,7 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
   delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;
 };
 
-type HelperType<P, T> = (provider: WarehousingProvider, params: P, context: Context) => T;
+export type HelperType<P, T> = (provider: WarehousingProvider, params: P, context: Context) => T;
 
 export interface WarehousingProviderHelperTypes {
   configurationError: HelperType<never, Promise<WarehousingError>>;
