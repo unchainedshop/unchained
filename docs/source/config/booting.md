@@ -57,7 +57,6 @@ These options are available:
   - `rolesOptions: [IRoleOptionConfig](https://docs.unchained.shop/types/types/interfaces/roles.IRoleOptionConfig.html)`: Used to manage built in and custom user privileges
   - `expressApp`: Node instance to use
   - `bulkImporter`: bulkImporterOptions
-  - `plugins`
   - `workQueueOptions`
   - `context`
 
