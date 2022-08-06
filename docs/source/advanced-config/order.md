@@ -23,11 +23,7 @@ import { OrderPricingCalculation } from '@unchainedshop/types/orders.pricing';
 import { IPricingAdapter, IPricingAdapterActions } from '@unchainedshop/types/pricing';
 import { Discount } from '@unchainedshop/types/discount';
 
-export const ShopOrderPricingAdapter: IPricingAdapter<
-  OrderPricingAdapterContext,
-  OrderPricingCalculation,
-  IOrderPricingSheet
-> = {
+export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
   key: 'shop-order-service-pricing',
   label: 'Default service charge price',
   version: '1.0',
