@@ -3,49 +3,49 @@ title: 'Warehousing Plugin'
 description: 'Customize warehousing'
 ---
 
+## WarehousingAdapter
+
+You can define a custom Warehousing adapter to simulate the stock availability. In order to define a warehousing adapter you should implement the 
+[IWarehousingAdapter](https://docs.unchained.shop/types/types/types/warehousing.IWarehousingAdapter.html) and register it to the global warehousing director that implements the [IWarehousingDirector](https://docs.unchained.shop/types/types/warehousing.IWarehousingDirector.html) interface.
+
 ```typescript
 
+import { WarehousingAdapter, WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import {
-  WarehousingDirector,
-  WarehousingAdapter,
+  IWarehousingAdapter,
+  WarehousingError,
+  WarehousingAdapterActions,
+  WarehousingContext,
   WarehousingProviderType,
-} from '@unchainedshop/core-warehousing';
-import type { IWarehousingAdapter, WarehousingConfiguration, WarehousingContext, WarehousingAdapterActions, WarehousingError } from '@unchainedshop/types/warehousing';
-import { ProductStatus } from '@unchainedshop/core-products';
+} from '@unchainedshop/types/warehousing';
+import { Context } from '@unchainedshop/types/api';
 
-const ShopWarehouse: IWarehousingAdapter = {
-  ...WarehousingAdapter,
-
-  key: 'ch.Shop.unchained.warehousing',
+const Store: IWarehousingAdapter = {
+  key: 'shop.unchained.warehousing.store',
   version: '1.0',
-  label: 'Shop Warehousing',
+  label: 'Store',
   orderIndex: 0,
-
-  initialConfiguration: WarehousingConfiguration =  [{ key: 'address', value: null }],
+  initialConfiguration = [{ key: 'name', value: 'Flagship Store' }],
 
   typeSupported: (type: WarehousingProviderType): boolean => {
     return type === WarehousingProviderType.PHYSICAL;
   },
 
-  actions: (config: WarehousingConfiguration,
-    context: WarehousingContext & Context): WarehousingAdapterActions => {
-    const { product, referenceDate } = context;
-
+  actions: (
+    config: WarehousingConfiguration,
+    context: WarehousingContext & Context,
+  ): WarehousingAdapterActions => {
     return {
-      isActive: (): boolean => {
+      isActive: async (): boolean => {
         return true;
       },
 
-      configurationError: (): WarehousingError => {
+      configurationError: async (): WarehousingError => {
         return null;
       },
 
       stock: async (referenceDate: Date): Promise<number> => {
-        const sku = product.warehousing && product.warehousing.sku;
-        if (product.status !== ProductStatus.ACTIVE) return undefined;
-        if (!sku) return undefined;
-        // return available stock
-        return 300
+        return 99999;
       },
 
       productionTime: async (quantityToProduce: number): Promise<number> => {
@@ -59,9 +59,22 @@ const ShopWarehouse: IWarehousingAdapter = {
   },
 };
 
+
 ```
 
+- **typeSupported(type: [WarehousingProviderType](https://docs.unchained.shop/types/types/enums/warehousing.WarehousingProviderType.html))**: Defines the warehousing provider type an adapter is valid for.
+- **isActive**: Defines if the adapter is valid or not based any conditions you set.
+- **configurationError(): [WarehousingError](https:/docs.unchained.shop/types/types/enums/warehousing.WarehousingError.html)**: Any error that occurred during the initialization of an adapter. it can be a missing env or any value missing for a proper functioning of the adapter.
+- **stock(referenceDate: Date)**: It should return the available stock of a product for the provided reference date. in the example above we are simply returning `99999` as stock count.
+- **productionTime(quantityToProduct: number)**: Returns an estimate to produce number of product passed as an argument.
+- **commissioningTime(quantity: number)**: number of days required to product a quantity passed as an argument 
+
+
+
+## Register warehousing adapter
 
 ```typescript
-WarehousingDirector.registerAdapter(ShopWarehouse);
+import { WarehousingDirector } from '@unchainedshop/core-warehousing';
+
+WarehousingDirector.registerAdapter(Store);
 ```
