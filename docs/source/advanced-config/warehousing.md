@@ -6,7 +6,11 @@ description: 'Customize warehousing'
 ## WarehousingAdapter
 
 You can define a custom Warehousing adapter to simulate the stock availability. In order to define a warehousing adapter you should implement the 
-[IWarehousingAdapter](https://docs.unchained.shop/types/types/types/warehousing.IWarehousingAdapter.html) and register it to the global warehousing director that implements the [IWarehousingDirector](https://docs.unchained.shop/types/types/warehousing.IWarehousingDirector.html) interface.
+[IWarehousingAdapter](https://docs.unchained.shop/types/types/types/warehousing.IWarehousingAdapter.html) and register it to the global warehousing director that implements the [IWarehousingDirector](https://docs.unchained.shop/types/types/warehousing.IWarehousingDirector.html) interface. 
+
+A store can have multiple Warehousing adapters configured and all of them are executed ordered by there `orderIndex` value. Warehousing adapters with lower `orderIndex` are executed first.
+
+Below is a simple warehousing adapter implementation that will always show a stock is always available for all products.
 
 ```typescript
 
