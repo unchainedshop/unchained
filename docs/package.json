@@ -5,11 +5,12 @@
     "build": "gatsby build",
     "start": "gatsby serve -H 0.0.0.0 -p 9000",
     "api-docs": "dociql --target-dir static/api config.yml",
-    "type-docs": "typedoc"
+    "type-docs": "cp -Rf ./node_modules/@unchainedshop/types/lib/docs/ ./static/types"
   },
   "dependencies": {
     "@mdx-js/react": "^1.6.22",
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.21",
+    "@unchainedshop/types": "^1.2.5",
     "gatsby": "2.24.47",
     "gatsby-telemetry": "^2.12.0",
     "react": "16.13.1",
@@ -17,8 +18,6 @@
   },
   "devDependencies": {
     "@unchainedshop/dociql": "^1.0.0",
-    "prettier": "^2.3.2",
-    "typedoc": "^0.23.9",
-    "typescript": "^4.7.4"
+    "prettier": "^2.3.2"
   }
 }

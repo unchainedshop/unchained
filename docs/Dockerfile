@@ -9,10 +9,11 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package* /usr/src/app/
-RUN NODE_ENV=development npm install
 COPY types /usr/src/app/types
-RUN NODE_ENV=development npm install ./types
+RUN cd types && NODE_ENV=development npm install && NODE_ENV=development npm run build && npm link
+COPY package* /usr/src/app/
+RUN NODE_ENV=development npm install && npm link @unchainedshop/types
+
 
 # Build app
 COPY . /usr/src/app/
