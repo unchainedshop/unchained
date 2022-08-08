@@ -5,7 +5,7 @@ sidebar_title: Launch engine
 
 > This chapter explains how to launch your own Unchained Engine instance on our Unchained hosted service.
 
-![diagram](../images/getting-started/Engine_Setup.png)
+![diagram](../images/Unchained_Ecosystem.png)
 
 This tutorial will help you:
 

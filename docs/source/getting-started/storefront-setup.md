@@ -5,7 +5,7 @@ sidebar_title: Install storefront
 
 > To test the Unchained Engine we setup Unchained's test storefront project created with [Next.js](https://nextjs.org/) and [React.js](https://reactjs.org/) locally.
 
-![diagram](../images/getting-started/Storefront_Setup.png)
+![diagram](../images/Unchained_Ecosystem.png)
 
 This tutorial helps you:
 

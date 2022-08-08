@@ -6,7 +6,7 @@ sidebar_title: Install engine
 > In this section, we will walk you through the steps required to start up an Unchained Engine API server locally.
 > To achieve this, we install and configure a new [Meteor](https://www.meteor.com/) app with the Unchained Engine included.
 
-![diagram](../images/getting-started/Engine_Setup.png)
+![diagram](../images/Unchained_Ecosystem.png)
 
 This tutorial helps you:
 

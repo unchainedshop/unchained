@@ -29,7 +29,7 @@ sidebar_title: Add products
 
 > This chapter teaches you how to add new products and categories to your store. It explains the major entities like categories, pricing & products required to show some products in the storefront app.
 
-![diagram](../images/getting-started/Engine_Setup.png)
+![diagram](../images/Unchained_Ecosystem.png)
 
 This tutorial helps you to ...
 

@@ -5,7 +5,7 @@ sidebar_title: Deploy storefront
 
 > In this section we will walk through on how to deploy your **Storefront** web app to [Vercel](https://vercel.com/)
 
-![diagram](../images/getting-started/Storefront_Setup.png)
+![diagram](../images/Unchained_Ecosystem.png)
 
 This tutorial helps you:
 
