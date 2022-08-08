@@ -11,6 +11,8 @@ WORKDIR /usr/src/app
 # Install app dependencies
 COPY package* /usr/src/app/
 RUN NODE_ENV=development npm install
+COPY types /usr/src/app/types
+RUN NODE_ENV=development npm install ./types
 
 # Build app
 COPY . /usr/src/app/
