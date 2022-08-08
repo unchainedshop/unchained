@@ -4,13 +4,12 @@ sidebar_title: Install engine
 ---
 
 > In this section, we will walk you through the steps required to start up an Unchained Engine API server locally.
-> To achieve this, we install and configure a new [Meteor](https://www.meteor.com/) app with the Unchained Engine included.
 
 ![diagram](../images/Unchained_Ecosystem.png)
 
 This tutorial helps you:
 
-- Install and run locally the Meteor application with the Unchained Engine embedded.
+- Configure and run unchained engine.
 - Access the local Admin UI example admin app
 - Open the graphQL playground of your local Unchained Engine
 
@@ -54,7 +53,7 @@ Unchained engine <--
 npm install
 ```
 
-The installation script downloads, installs and initialises all files and packages required to build and run a new Meteor app that has the Unchained Engine backed in.
+The installation script downloads, installs and initialises all files and packages required to build and run unchained engine.
 
 ## Step 2: Start the Unchained Engine
 
@@ -62,7 +61,7 @@ The installation script downloads, installs and initialises all files and packag
 npm run dev
 ```
 
-Open [localhost:4010](http://localhost:4010) to check if your meteor app is running correctly. You should see an **Login Screen**. Well, log-in!
+Open [localhost:4010](http://localhost:4010) to check if your unchained engine is running correctly. You should see an **Login Screen**. Well, log-in!
 
 **Username**: _admin@unchained.local_<br />
 **Password**: _password_

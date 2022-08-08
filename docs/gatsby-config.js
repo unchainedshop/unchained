@@ -49,7 +49,7 @@ module.exports = {
             'config/users',
             'config/enrollments',
           ],
-          'Advanced Configuration': [
+          'Extending Unchained': [
             'advanced-config/overview',
             'advanced-config/delivery',
             'advanced-config/filter',
