@@ -52,6 +52,7 @@ pipeline {
             stage('Building') {
               steps{
                 script {
+                  rm -Rf /docs/types && cp -R ./packages/types /docs/types
                   docs = docker.build("registry.ucc.dev/unchained/docs",'-f ./docs/Dockerfile ./docs')
                 }
               }

@@ -1,7 +1,10 @@
 {
-    "entryPoints": ["../packages/types/*.ts", "../packages/types/*.d.ts"],
+    "entryPoints": [
+        "./types/*.ts",
+        "./types/*.d.ts"
+    ],
     "out": "static/types",
-    "tsconfig": "../packages/types/tsconfig.json",
+    "tsconfig": "./types/tsconfig.json",
     "githubPages": false,
     "readme": "none",
     "excludeExternals": true,
