@@ -4,6 +4,7 @@ import { Logger } from './logs';
 import { Context, UnchainedAPI } from './api';
 import { Modules, ModuleOptions } from './modules';
 import { Services } from './services';
+import { IRoleOptionConfig } from './roles';
 
 export interface Migration {
   id: number;
@@ -35,4 +36,5 @@ export interface UnchainedCoreOptions {
   >;
   services: Record<string, any>;
   options: ModuleOptions;
+  roleOptions: IRoleOptionConfig;
 }

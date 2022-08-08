@@ -3,7 +3,12 @@ title: "Module: Payment"
 description: Configure the Payment Module
 ---
 
+- sortProviders: default is `undefined`, this key is deprecated in favor of `filterSupportedProviders`
+- filterSupportedProviders: filter payment providers by given custom function or the default which is by creation date
+- determineDefaultProvider: set first payment provider from the list of payment providers by default or by given custom function,
 Custom sorting of payment providers:
+
+Example of custom function
 
 ```
 const options = {

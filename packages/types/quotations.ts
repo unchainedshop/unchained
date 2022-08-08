@@ -79,7 +79,7 @@ export interface QuotationTransformations {
 
 // Processing
 
-type QuotationContextParams = (
+export type QuotationContextParams = (
   quotation: Quotation,
   params: { quotationContext?: any },
   requestContext: Context,

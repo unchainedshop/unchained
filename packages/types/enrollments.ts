@@ -94,7 +94,7 @@ export interface EnrollmentTransformations {
 
 // Processing
 
-type EnrollmentContextParams = (
+export type EnrollmentContextParams = (
   enrollment: Enrollment,
   params: { enrollmentContext?: any },
   requestContext: Context,
@@ -195,7 +195,7 @@ export type EnrollmentsModule = EnrollmentQueries &
 
 // Director
 
-type EnrollmentContext = {
+export type EnrollmentContext = {
   enrollment: Enrollment;
 };
 

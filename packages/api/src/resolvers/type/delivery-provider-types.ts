@@ -3,7 +3,7 @@ import { DeliveryError, DeliveryProvider as DeliveryProviderType } from '@unchai
 import crypto from 'crypto';
 import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 
-type HelperType<P, T> = (provider: DeliveryProviderType, params: P, context: Context) => T;
+export type HelperType<P, T> = (provider: DeliveryProviderType, params: P, context: Context) => T;
 
 export interface DeliveryProviderHelperTypes {
   interface: HelperType<

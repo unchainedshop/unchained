@@ -52,7 +52,7 @@ export interface ProductPrice {
   maxQuantity?: number;
 }
 
-interface ProductPriceRange {
+export interface ProductPriceRange {
   _id: string;
   minPrice: ProductPrice;
   maxPrice: ProductPrice;
@@ -376,7 +376,7 @@ export interface ProductServices {
  * API Types
  */
 
-type HelperType<P, T> = (product: Product, params: P, context: Context) => T;
+export type HelperType<P, T> = (product: Product, params: P, context: Context) => T;
 
 export interface ProductHelperTypes {
   __resolveType: HelperType<never, string>;
@@ -536,7 +536,11 @@ export interface ProductBundleItemHelperTypes {
   product: (bundleItem: ProductBundleItem, _: never, context: Context) => Promise<Product>;
 }
 
-type ProductCatalogHelperType<P, T> = (productPrice: ProductPrice, params: P, context: Context) => T;
+export type ProductCatalogHelperType<P, T> = (
+  productPrice: ProductPrice,
+  params: P,
+  context: Context,
+) => T;
 
 export interface ProductCatalogPriceHelperTypes {
   isTaxable: ProductCatalogHelperType<never, boolean>;

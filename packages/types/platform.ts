@@ -54,7 +54,7 @@ export type PlatformOptions = {
   modules?: UnchainedCoreOptions['modules'];
   services?: UnchainedCoreOptions['modules'];
   options?: UnchainedCoreOptions['options'];
-  rolesOptions?: any;
+  rolesOptions?: UnchainedCoreOptions['roleOptions'];
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
   introspection?: boolean;
   playground?: boolean;

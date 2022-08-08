@@ -15,7 +15,10 @@ RUN NODE_ENV=development npm install
 # Build app
 COPY . /usr/src/app/
 
+
 RUN npm run api-docs
+
+
 RUN npm run build
 
 EXPOSE 9000

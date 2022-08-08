@@ -2,7 +2,7 @@ import { Context } from './api';
 import { ModuleMutations, Query, TimestampFields, _ID } from './common';
 import { User } from './user';
 
-type UserProductFilter = {
+export type UserProductFilter = {
   userId: string;
   productId: string;
 };
