@@ -137,7 +137,7 @@ const start = async () => {
   configureGenerateOrderAutoscheduling();
 
   await app.listen({ port: process.env.PORT || 3000 });
-  console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}/graphql`);
+  console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
 };
 
 start();
