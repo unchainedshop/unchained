@@ -1,5 +1,5 @@
 ---
-title: 'Plugin: Payment through PostFinance Checkout'
+title: 'Payment through PostFinance Checkout'
 description: Configuration Options for our PostFinance Checkout Integration
 ---
 

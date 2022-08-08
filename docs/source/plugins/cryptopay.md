@@ -1,5 +1,5 @@
 ---
-title: 'Plugin: Decentralized, Self-Hosted Cryptocurrency Payments'
+title: 'Decentralized, Self-Hosted Cryptocurrency Payments'
 description: Usage and Configuration Options for the Cryptopay Plugin
 ---
 

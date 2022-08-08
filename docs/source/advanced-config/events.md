@@ -1,5 +1,5 @@
 ---
-title: 'Module: Events'
+title: 'Events'
 description: Configure the Events Module
 ---
 

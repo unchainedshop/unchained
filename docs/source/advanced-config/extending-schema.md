@@ -1,5 +1,5 @@
 ---
-title: 'Module: Extending the Schema'
+title: 'Extending the Schema'
 description: Extending the schema to hold custom types
 ---
 

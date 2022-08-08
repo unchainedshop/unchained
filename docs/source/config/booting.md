@@ -120,7 +120,6 @@ Below are all the available built in module configuration options:
 - `slugify`: a function with `title` input returns a string
 
 [Delivery](./delivery) module
-- `sortProviders`: with default `undefined`, a sort function with two parameters. This key is deprecated please use `filterSupportedProviders`
 - `filterSupportedProviders`: a function with `params`: { providers, order } and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) inputs returns promise of array of `DeliveryProvider`
 - `determineDefaultProvider`: a function with `params`: { providers, order } and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) inputs returns promise of `DeliveryProvider`
 
@@ -147,8 +146,6 @@ Below are all the available built in module configuration options:
 - `validateOrderPosition`: a function with `validationParams` and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) input
 
 [Payment](./payment) module
-
-- `sortProviders`: with default `undefined`, a sort function with two parameters. This key is deprecated please use `filterSupportedProviders`
 - `filterSupportedProviders`: a function with `params`: { providers, order } and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) inputs returns promise of array of `PaymentProvider`
 - `determineDefaultProvider`: a function with `params`: { providers, order } and `context` with type [`Context`](https://docs.unchained.shop/types/api.Context.html) inputs returns promise of `PaymentProvider`
 
@@ -159,7 +156,7 @@ Below are all the available built in module configuration options:
 ## 1.2 Modules
 
 Enables the developer to add additional functionality to the core engine. There might be cases where the out of the box functionalities are not enough to solve a particular problem. On such cases it is possible to add a custom module that will be available through out the engine context just like built in modules.
-In most cases this goes together with [extending the schema](./extending-schema) to include additional mutations and queries with custom resolvers.
+In most cases this goes together with [extending the schema](../advanced-config/extending-schema) to include additional mutations and queries with custom resolvers.
 
 It accepts key-value pair where `key` is the module name and `value` is an object that has one field named `configure`.
 configure function receives a single object `ModuleInput` as it's only argument just like any other build in module. this mean you can pass the custom module configuration option like you would with the built in modules and have the underling database available inside the module configuration as well as a migration.
@@ -329,7 +326,7 @@ In the above code we added new custom role `attendee` and 2 actions `buyTicket` 
 `roles` is an instance of `APIRoles` we used to access both default and built in roles.
 
 ## 1.5 bulkImporter
-- **bulkImporter(params: [{ handlers?: Record<string, [BulkImportHandler](https://docs.unchained.shop/types/types/platform.BulkImportHandler.html)> }])**: Enables you to define custom bulk import handlers. for more information about bulk import API refer [here](/api/entities/#bulk-import-api)
+- **bulkImporter(params: [{ handlers?: Record<string, [BulkImportHandler](https://docs.unchained.shop/types/types/platform.BulkImportHandler.html)> }])**: Enables you to define custom bulk import handlers. for more information about bulk import API refer [here](../advanced-config/entities#bulk-import-api)
 
 ## 1.6 workQueueOptions
 

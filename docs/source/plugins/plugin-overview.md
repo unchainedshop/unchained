@@ -1,5 +1,5 @@
 ---
-title: Plugin overview
+title: overview
 sidebar_title: Overview
 ---
 
