@@ -52,7 +52,7 @@ pipeline {
             stage('Building') {
               steps{
                 script {
-                  rm -Rf /docs/types && cp -R ./packages/@unchainedshop/types /docs/types
+                  sh 'rm -Rf /docs/types && cp -R ./packages/@unchainedshop/types /docs/types'
                   docs = docker.build("registry.ucc.dev/unchained/docs",'-f ./docs/Dockerfile ./docs')
                 }
               }
