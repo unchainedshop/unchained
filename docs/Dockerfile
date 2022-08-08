@@ -1,4 +1,4 @@
-FROM node:12-slim
+FROM node:14-slim
 
 ENV NODE_ENV production
 ENV GATSBY_TELEMETRY_DISABLED 1
@@ -15,9 +15,8 @@ RUN NODE_ENV=development npm install
 # Build app
 COPY . /usr/src/app/
 
-
 RUN npm run api-docs
-
+RUN npm run type-docs
 
 RUN npm run build
 
