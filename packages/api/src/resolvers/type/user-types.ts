@@ -1,4 +1,4 @@
-import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
+import { Context, SortOption } from '@unchainedshop/types/api';
 import { Bookmark } from '@unchainedshop/types/bookmarks';
 import { Contact } from '@unchainedshop/types/common';
 import { Country } from '@unchainedshop/types/countries';
@@ -161,11 +161,10 @@ export const User: UserHelperTypes = {
 
   orders: async (user, params, context) => {
     await checkAction(context, viewUserOrders, [user, params]);
-    const defaultSortOption: Array<SortOption> = [{ key: 'updated', value: SortDirection.DESC }];
     return context.modules.orders.findOrders({
       userId: user._id,
       includeCarts: params.includeCarts,
-      sort: params.sort || defaultSortOption,
+      sort: params.sort,
       queryString: params.queryString,
     });
   },
@@ -183,11 +182,10 @@ export const User: UserHelperTypes = {
   },
 
   quotations: async (user, params, context) => {
-    const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.DESC }];
     await checkAction(context, viewUserQuotations, [user, params]);
     return context.modules.quotations.findQuotations({
       userId: user._id,
-      sort: params.sort || defaultSortOption,
+      sort: params.sort,
       queryString: params.queryString,
     });
   },
