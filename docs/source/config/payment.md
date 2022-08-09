@@ -1,5 +1,5 @@
 ---
-title: "Module: Payment"
+title: "Payment"
 description: Configure the Payment Module
 ---
 

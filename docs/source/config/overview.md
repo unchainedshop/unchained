@@ -1,6 +1,5 @@
 ---
-title: 'Module: Overview'
-# description: What is module?
+title: 'Overview'
 ---
 
 The unchained engine has several modules with out the box functionalities. The developer can the use this with default configuration or minimum configuration.

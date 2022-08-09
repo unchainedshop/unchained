@@ -64,13 +64,14 @@ npm install
 The installation script downloads, installs and initializes all files and packages required to build and run the storefront web app.
 
 ## Step 2: Setup connection
+If you are running unchained engine locally, you don't need to setup and environment variables and you can connect with the default setting to the local engine instance. You can refer to the default values in `.env.default` file. 
 
-Before running the web app, you need to create an `.env` file in the root directory of _my-storefront-webapp_ and add the graphql API endpoint of your Unchained Engine instance to the settings.
+But if you want to connect to a remote unchained engine instance or you have changed the port of your local engine instance, before running the web app, you need to create an `.env` file in the root directory of _my-storefront-webapp_ and add the graphql API endpoint of your Unchained Engine instance to the settings.
 
 You retrieve the URL for the endpoint after successful creation of the Unchained Engine instance in [Step 1 - Launch Engine](./engine-launch). Append it with the `graphql` path.
 
 ```
-printf "UNCHAINED_ENDPOINT=http://localhost:4010/graphql" > .env
+printf "UNCHAINED_ENDPOINT=(https://my-shop.unchained.shop/graphql" > .env
 ```
 
 Check the [Install engine](../installation/install-engine) guide to create and connect to your local instance of the Unchained Engine.

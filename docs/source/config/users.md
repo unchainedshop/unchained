@@ -1,5 +1,5 @@
 ---
-title: 'Module: Users'
+title: 'Users'
 description: Configure the Users Module
 ---
 

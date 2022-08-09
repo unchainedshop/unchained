@@ -1,5 +1,5 @@
 ---
-title: "Module: Products"
+title: "Products"
 description: Configure the Products Module
 ---
 

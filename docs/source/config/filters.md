@@ -1,5 +1,5 @@
 ---
-title: 'Module: Filters'
+title: 'Filters'
 description: Configure the Filters Module
 ---
 
