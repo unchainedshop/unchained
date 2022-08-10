@@ -215,6 +215,7 @@ export default [
         offset: Int = 0
         includeCarts: Boolean = false
         queryString: String
+        sort: [SortOptionInput!]
       ): [Order!]!
 
       """

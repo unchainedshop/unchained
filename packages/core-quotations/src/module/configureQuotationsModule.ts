@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
 import { ModuleInput, ModuleMutations, Update } from '@unchainedshop/types/common';
 import {
   Quotation,
@@ -242,10 +242,11 @@ export const configureQuotationsModule = async ({
     },
 
     findQuotations: async ({ limit, offset, sort, ...query }, options) => {
+      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.DESC }];
       const quotations = Quotations.find(buildFindSelector(query), {
         limit,
         skip: offset,
-        sort: buildSortOptions(sort),
+        sort: buildSortOptions(sort || defaultSortOption),
         ...options,
       });
 

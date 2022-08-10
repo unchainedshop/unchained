@@ -1,4 +1,4 @@
-import { Context } from './api';
+import { Context, SortOption } from './api';
 import { Address, Configuration, Contact, FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { OrderDeliveriesModule } from './orders.deliveries';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
@@ -78,6 +78,7 @@ export interface OrderQueries {
     params: OrderQuery & {
       limit?: number;
       offset?: number;
+      sort?: Array<SortOption>;
     },
     options?: FindOptions,
   ) => Promise<Array<Order>>;

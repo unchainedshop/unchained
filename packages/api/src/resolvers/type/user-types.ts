@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { Context, SortOption } from '@unchainedshop/types/api';
 import { Bookmark } from '@unchainedshop/types/bookmarks';
 import { Contact } from '@unchainedshop/types/common';
 import { Country } from '@unchainedshop/types/countries';
@@ -24,7 +24,7 @@ export interface UserHelperTypes {
   country: HelperType<{ localeContext: Locale }, Country>;
   email: HelperType<any, string>;
   emails: HelperType<any, Array<string>>;
-  enrollments: HelperType<any, Array<Enrollment>>;
+  enrollments: HelperType<{ sort?: Array<SortOption>; queryString?: string }, Array<Enrollment>>;
   isEmailVerified: HelperType<any, boolean>;
   isGuest: HelperType<any, boolean>;
   isInitialPassword: HelperType<any, boolean>;
@@ -36,11 +36,14 @@ export interface UserHelperTypes {
   allowedActions: HelperType<any, Array<string>>;
   // locale: HelperType<{ localeContext: Locale }, Locale>;
   name: HelperType<any, string>;
-  orders: HelperType<{ includeCarts: boolean }, Array<Order>>;
+  orders: HelperType<
+    { includeCarts: boolean; sort?: Array<SortOption>; queryString?: string },
+    Array<Order>
+  >;
   paymentCredentials: HelperType<any, Array<PaymentCredentials>>;
   primaryEmail: HelperType<any, Email>;
   profile: HelperType<any, UserProfile>;
-  quotations: HelperType<any, Array<Quotation>>;
+  quotations: HelperType<{ sort?: Array<SortOption>; queryString?: string }, Array<Quotation>>;
   roles: HelperType<any, Array<string>>;
   tags: HelperType<any, Array<string>>;
   username: HelperType<any, string>;
@@ -158,14 +161,12 @@ export const User: UserHelperTypes = {
 
   orders: async (user, params, context) => {
     await checkAction(context, viewUserOrders, [user, params]);
-    return context.modules.orders.findOrders(
-      { userId: user._id, includeCarts: params.includeCarts },
-      {
-        sort: {
-          updated: -1,
-        },
-      },
-    );
+    return context.modules.orders.findOrders({
+      userId: user._id,
+      includeCarts: params.includeCarts,
+      sort: params.sort,
+      queryString: params.queryString,
+    });
   },
 
   paymentCredentials: async (user, params, context) => {
@@ -182,13 +183,10 @@ export const User: UserHelperTypes = {
 
   quotations: async (user, params, context) => {
     await checkAction(context, viewUserQuotations, [user, params]);
-    return context.modules.quotations.findQuotations(
-      { userId: user._id },
-      {
-        sort: {
-          created: -1,
-        },
-      },
-    );
+    return context.modules.quotations.findQuotations({
+      userId: user._id,
+      sort: params.sort,
+      queryString: params.queryString,
+    });
   },
 };

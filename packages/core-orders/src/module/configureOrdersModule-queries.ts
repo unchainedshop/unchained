@@ -1,6 +1,7 @@
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
 import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders';
-import { generateDbFilterById } from '@unchainedshop/utils';
+import { generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
 
 const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: Query = {};
@@ -40,13 +41,12 @@ export const configureOrdersModuleQueries = ({
       return Orders.findOne(selector, options);
     },
 
-    findOrders: async ({ limit, offset, queryString, ...query }, options) => {
+    findOrders: async ({ limit, offset, queryString, sort, ...query }, options) => {
+      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.DESC }];
       const findOptions: FindOptions = {
         skip: offset,
         limit,
-        sort: {
-          created: -1,
-        },
+        sort: buildSortOptions(sort || defaultSortOption),
       };
       const selector = buildFindSelector({ queryString, ...query });
 

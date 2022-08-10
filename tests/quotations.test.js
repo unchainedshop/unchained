@@ -22,10 +22,11 @@ describe('TranslatedFilterTexts', () => {
       jest.setTimeout(10000);
       const {
         data: { quotations },
+        errors
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query Quotations($limit: Int = 10, $offset: Int = 0) {
-            quotations(limit: $limit, offset: $offset) {
+            quotations(limit: $limit, offset: $offset, sort: [{key: "created", value: ASC}]) {
               _id
               user {
                 _id
@@ -61,6 +62,7 @@ describe('TranslatedFilterTexts', () => {
         `,
         variables: {},
       });
+      
       expect(quotations.length).toEqual(2);
       expect(quotations).toMatchObject([
         {

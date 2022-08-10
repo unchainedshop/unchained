@@ -70,11 +70,11 @@ export default [
       roles: [String!]
       tags: [String!]
       cart(orderNumber: String): Order
-      orders(includeCarts: Boolean = false): [Order!]!
-      quotations: [Quotation!]!
+      orders(includeCarts: Boolean = false, sort: [SortOptionInput!], queryString: String): [Order!]!
+      quotations(sort: [SortOptionInput!], queryString: String): [Quotation!]!
       bookmarks: [Bookmark!]!
       paymentCredentials: [PaymentCredentials!]!
-      enrollments: [Enrollment!]!
+      enrollments(sort: [SortOptionInput!], queryString: String): [Enrollment!]!
       allowedActions: [RoleAction!]!
     }
   `,

@@ -1,5 +1,5 @@
 import { Filter } from 'mongodb';
-import { Context } from './api';
+import { Context, SortOption } from './api';
 import {
   Address,
   Contact,
@@ -68,9 +68,10 @@ export type UsersModule = {
   count: (query: UserQuery) => Promise<number>;
   findUserById: (userId: _ID) => Promise<User>;
   findUserByToken: (query: { resetToken?: string; hashedToken?: string }) => Promise<User>;
-  findUser: (selector: UserQuery, options?: FindOptions) => Promise<User>;
+  findUser: (selector: UserQuery & { sort?: Array<SortOption> }, options?: FindOptions) => Promise<User>;
   findUsers: (
     query: UserQuery & {
+      sort?: Array<SortOption>;
       limit?: number;
       offset?: number;
     },
