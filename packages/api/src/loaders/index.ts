@@ -1,4 +1,4 @@
-import { UnchainedAPI, UnchainedLoaders } from '@unchainedshop/types/api';
+import { UnchainedLoaders } from '@unchainedshop/types/api';
 import DataLoader from 'dataloader';
 import { IncomingMessage } from 'http';
 import { systemLocale } from '@unchainedshop/utils';
@@ -6,12 +6,13 @@ import localePkg from 'locale';
 import { AssortmentText } from '@unchainedshop/types/assortments';
 import { FilterText } from '@unchainedshop/types/filters';
 import { ProductText } from '@unchainedshop/types/products';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
 const { Locale } = localePkg;
 
 export default async (
   req: IncomingMessage,
-  unchainedAPI: UnchainedAPI,
+  unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLoaders['loaders']> => {
   return {
     assortmentTextLoader: new DataLoader<{ assortmentId: string; locale: string }, AssortmentText>(

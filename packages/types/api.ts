@@ -16,11 +16,6 @@ export interface UnchainedUserContext {
   user?: User;
 }
 
-export interface UnchainedAPI extends UnchainedCore {
-  version?: string;
-  roles?: any;
-}
-
 export type SortOption = {
   key: string;
   value: SortDirection;
@@ -47,8 +42,12 @@ export interface UnchainedHTTPServerContext {
   res: OutgoingMessage;
 }
 
-export type Context = UnchainedAPI &
-  UnchainedUserContext &
+export type UnchainedAPI = UnchainedCore;
+
+export type Context = UnchainedCore & {
+  version?: string;
+  roles?: any;
+} & UnchainedUserContext &
   UnchainedLocaleContext &
   UnchainedLoaders &
   UnchainedHTTPServerContext;
@@ -56,7 +55,7 @@ export type Context = UnchainedAPI &
 export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => Promise<Context>;
 
 export type UnchainedServerOptions = {
-  unchainedAPI: UnchainedAPI;
+  unchainedAPI: UnchainedCore;
   expressApp: any;
   roles?: any;
   typeDefs: Array<string>;

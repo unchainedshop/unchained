@@ -1,4 +1,4 @@
-import { UnchainedAPI, UnchainedLocaleContext } from '@unchainedshop/types/api';
+import { UnchainedLocaleContext } from '@unchainedshop/types/api';
 import { IncomingMessage } from 'http';
 import localePkg from 'locale';
 import 'abort-controller/polyfill';
@@ -10,6 +10,7 @@ import {
   resolveUserRemoteAddress,
   systemLocale,
 } from '@unchainedshop/utils';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
 const { Locales } = localePkg;
 
@@ -24,7 +25,7 @@ const localeContextCache = new LRU({
 
 export const getLocaleContext = async (
   req: IncomingMessage,
-  unchainedAPI: UnchainedAPI,
+  unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLocaleContext> => {
   const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
   const cachedContext = localeContextCache.get(cacheKey) as UnchainedLocaleContext;

@@ -2,6 +2,7 @@ import { Db } from 'mongodb';
 import { Context, SortOption } from './api';
 import { Assortment } from './assortments';
 import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
+import { UnchainedCore } from './core';
 import { Product } from './products';
 
 export enum FilterType {
@@ -88,7 +89,7 @@ export type FiltersModule = {
 
   filterExists: (params: { filterId: string }) => Promise<boolean>;
 
-  invalidateCache: (query: Query, requestContext: Context) => Promise<void>;
+  invalidateCache: (query: Query, unchainedAPI: UnchainedCore) => Promise<void>;
 
   // Mutations
   create: (

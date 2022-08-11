@@ -1,4 +1,5 @@
-import { UnchainedAPI, UnchainedUserContext } from '@unchainedshop/types/api';
+import { UnchainedUserContext } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { IncomingMessage } from 'http';
 
 function isString(input) {
@@ -7,7 +8,7 @@ function isString(input) {
 
 export const getUserContext = async (
   req: IncomingMessage & { cookies?: any },
-  unchainedAPI: UnchainedAPI,
+  unchainedAPI: UnchainedCore,
 ): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];

@@ -1,8 +1,7 @@
-import { ApolloServer } from 'apollo-server-express';
 import { IncomingMessage, OutgoingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
-import { Context, UnchainedAPI, UnchainedServerOptions } from './api';
+import { Context } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
 import { MessageTypes as MessageTypesType, PlatformOptions } from './platform';
 
@@ -139,7 +138,7 @@ import {
   WorkerSchedule,
   WorkStatus as WorkerStatusType,
 } from './worker';
-import { UnchainedCoreOptions } from './core';
+import { UnchainedCore, UnchainedCoreOptions } from './core';
 
 declare module '@unchainedshop/utils' {
   function resolveBestSupported(language: string, locales: Locales): Locale;
@@ -460,7 +459,7 @@ declare module '@unchainedshop/api' {
     expressApp: any,
     path: string,
     fn: (
-      req: IncomingMessage & { unchainedContext: UnchainedAPI },
+      req: IncomingMessage & { unchainedContext: UnchainedCore },
       res: OutgoingMessage,
     ) => Promise<any>,
   ): void;

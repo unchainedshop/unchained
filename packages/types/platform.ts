@@ -1,6 +1,5 @@
 import { BulkOperationBase } from 'mongodb';
-import { UnchainedAPI } from './api';
-import { UnchainedCoreOptions } from './core';
+import { UnchainedCore, UnchainedCoreOptions } from './core';
 import { WorkerSchedule } from './worker';
 
 export type BulkImportOperation = (
@@ -11,7 +10,7 @@ export type BulkImportOperation = (
     skipCacheInvalidation?: boolean;
     logger?: any;
   },
-  unchainedAPI: UnchainedAPI,
+  unchainedAPI: UnchainedCore,
 ) => Promise<void>;
 
 export type BulkImportHandler = {

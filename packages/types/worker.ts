@@ -1,6 +1,7 @@
 import { EventEmitter } from 'stream';
 import { Context } from './api';
 import { IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
+import { UnchainedCore } from './core';
 
 export enum WorkStatus {
   NEW = 'NEW',
@@ -165,7 +166,7 @@ export type IWorker<P extends { workerId: string }> = {
 
   actions: (
     params: P,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => {
     autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work>>;
     process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;
@@ -180,7 +181,7 @@ export type IScheduler = {
   label: string;
   version: string;
 
-  actions: (requestContext: Context) => {
+  actions: (unchainedAPI: UnchainedCore) => {
     start: () => void;
     stop: () => void;
   };
