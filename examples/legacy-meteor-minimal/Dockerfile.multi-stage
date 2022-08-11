@@ -17,11 +17,6 @@ FROM node:14 as runtime
 
 RUN useradd -u 501 -d /home/meteor meteor
 
-RUN mkdir /unchained-uploads && \
-  chmod 777 /unchained-uploads
-
-VOLUME /unchained-uploads
-
 RUN apt-get update && apt-get install -y curl pdftk
 
 # Install app dependencies
@@ -35,13 +30,12 @@ COPY --from=bundler /bundle /webapp/
 RUN NODE_ENV=production npm run install --production
 WORKDIR /webapp
 
-HEALTHCHECK --start-period=10s --interval=20s --timeout=2s \
-  CMD curl -f http://localhost:3000/graphql -H 'content-type: application/json' --data-binary '{"operationName":null,"variables":{},"query":"{\n  shopInfo {\n    _id\n  }\n}\n"}' || exit
-
-ENV PORT 3000
+ENV PORT 4010
 ENV NODE_ENV production
-ENV FILE_STORAGE_PATH /unchained-uploads
 
-EXPOSE 3000
+HEALTHCHECK --start-period=10s --interval=20s --timeout=2s \
+  CMD curl -f http://localhost:4010/graphql -H 'content-type: application/json' --data-binary '{"operationName":null,"variables":{},"query":"{\n  shopInfo {\n    _id\n  }\n}\n"}' || exit
+
+EXPOSE 4010
 USER meteor
 CMD node -r ./file_env.js main.js

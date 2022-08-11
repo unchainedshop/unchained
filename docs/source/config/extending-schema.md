@@ -66,8 +66,6 @@ const resolverDefs = {
 
 ```js
 import { startPlatform } from '@unchainedshop/platform'
-import { WebApp } from 'meteor/webapp'
-import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel'
 
 await startPlatform({
   introspection: true,
@@ -75,7 +73,6 @@ await startPlatform({
   resolvers: [resolvers],
 })
 seed()
-embedControlpanelInMeteorWebApp(WebApp)
 ```
 
 That was all, everything is setup and the schema will be updated to include the custom types defined above for product entity.

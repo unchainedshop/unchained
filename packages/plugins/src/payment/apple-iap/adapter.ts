@@ -1,7 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import bodyParser from 'body-parser';
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';

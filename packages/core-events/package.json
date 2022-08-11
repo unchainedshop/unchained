@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-events",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "main": "lib/events-index.js",
   "exports": {
     ".": "./lib/events-index.js",
@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/node": "^16.11.44",
     "@unchainedshop/types": "1.x",
-    "isomorphic-unfetch": "^3.1.0",
+    "node-fetch": "^3.2.10",
     "jest": "^28.1.2",
     "mongodb": "^4.7.0",
     "ts-jest": "^28.0.5",

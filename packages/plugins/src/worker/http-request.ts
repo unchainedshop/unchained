@@ -1,5 +1,5 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 

@@ -32,7 +32,7 @@ npm run build
 npm start
 ```
 
-1. Navigate to http://localhost:4000/ to view the controlpanel. You can login with: user:
+1. Navigate to http://localhost:4000/ to view the welcome screen. You can login with: user:
    admin@unchained.local / password: password
 
 2. Navigate to http://localhost:4010/graphql to view the GraphQL Playground

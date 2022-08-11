@@ -7,7 +7,6 @@ pipeline {
     DOTENV_PATH = credentials('unchained-dotenv')
     kitchensink = ''
     docs = ''
-    controlpanel = ''
   }
   tools { dockerTool "docker" }
   stages {
@@ -66,31 +65,12 @@ pipeline {
             }
           }
         }
-        stage('Examples: Controlpanel') {
-          stages {
-            stage('Building') {
-              steps{
-                script {
-                  controlpanel = docker.build("registry.ucc.dev/unchained/controlpanel","-f ./examples/controlpanel/Dockerfile ./examples/controlpanel")
-                }
-              }
-            }
-            stage('Pushing to Registry') {
-              steps {
-                script {
-                  controlpanel.push("${GIT_BRANCH}-latest")
-                }
-              }
-            }
-          }
-        }
       }
     }
     stage('Deploy to Test') {
       when { branch 'develop' }
       steps {
         script {
-          controlpanel.push("next")
           kitchensink.push("next")
           docs.push("next")
         }
@@ -100,7 +80,6 @@ pipeline {
       when { branch 'master' }
       steps {
         script {
-          controlpanel.push("latest")
           kitchensink.push("latest")
           docs.push("latest")
         }
@@ -110,7 +89,6 @@ pipeline {
       when { buildingTag() }
       steps {
         script {
-          controlpanel.push("stable")
           kitchensink.push("stable")
           docs.push("stable")
         }

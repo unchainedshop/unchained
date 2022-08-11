@@ -504,10 +504,6 @@ type APIRoles = {
   updateUserRole(context: Context, roleName: string): any;
 };
 
-declare module '@unchainedshop/controlpanel' {
-  function embedControlpanelInMeteorWebApp({ connectHandlers: any }): any;
-}
-
 declare module '@unchainedshop/api' {
   function startAPIServer(options: UnchainedServerOptions): {
     apolloGraphQLServer: ApolloServer;

@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import cookie from 'cookie';
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 
 const { ROOT_URL, NODE_ENV, UNCHAINED_CLOUD_ENDPOINT } = process.env;
 

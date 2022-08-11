@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
 import { USER_TOKEN } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
@@ -254,7 +254,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
 
         // Simulate WebHook call
         const result = await fetch(
-          'http://localhost:3000/payment/postfinance-checkout',
+          'http://localhost:4010/payment/postfinance-checkout',
           {
             method: 'POST',
             headers: {

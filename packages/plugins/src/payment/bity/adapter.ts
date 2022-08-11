@@ -7,7 +7,7 @@ import { OrderPricingSheet } from '@unchainedshop/core-orders';
 import bodyParser from 'body-parser';
 import { acl, roles, useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import crypto from 'crypto';
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 import ClientOAuth2 from '@unchainedshop/client-oauth2';
 import { Context } from '@unchainedshop/types/api';
 import { BityModule } from './module/configureBityModule';

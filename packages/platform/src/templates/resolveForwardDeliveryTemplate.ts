@@ -17,7 +17,7 @@ const mjmlTemplate = `
           <mj-text align="left" font-size="20px" color="#232323" font-family="Helvetica Neue" font-weight="200">
             <span>Order number: {{orderNumber}}</span><br/>
             <span>Order date: {{orderDate}}</span>
-            <a href="{{controlpanelLink}}">{{controlpanelLink}}</a>
+            <a href="{{adminUILink}}">{{adminUILink}}</a>
           </mj-text>
           <mj-text align="left" font-size="20px" color="#232323">Delivery address</mj-text>
           <mj-text align="left">
@@ -53,7 +53,7 @@ const textTemplate = `
   \n
   Order number: {{orderNumber}}\n
   Order date: {{orderDate}}\n
-  Link: {{controlpanelLink}}\n
+  Link: {{adminUILink}}\n
   \n
   Delivery address:\n
   -----------------\n
@@ -96,11 +96,11 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async (
 
   const subject = `${EMAIL_WEBSITE_NAME}: New Order / ${order.orderNumber}`;
 
-  const controlpanelLink = `${ROOT_URL}/orders/view/?_id=${order._id}`;
+  const adminUILink = `${ROOT_URL}/orders/view/?_id=${order._id}`;
 
   const data = {
     contact: order.contact || {},
-    controlpanelLink,
+    adminUILink,
     items: getOrderPositionsData(order, { locale: systemLocale }, context),
     orderDate,
     orderNumber: order.orderNumber,

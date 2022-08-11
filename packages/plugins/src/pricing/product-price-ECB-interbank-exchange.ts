@@ -1,5 +1,5 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 import xmlJs from 'xml-js';
 

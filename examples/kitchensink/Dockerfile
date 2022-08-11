@@ -23,11 +23,11 @@ RUN NODE_ENV=production npm install --omit=dev
 ARG GIT_COMMIT="n/a"
 RUN echo "${GIT_COMMIT}" > /webapp/version.txt
 
-HEALTHCHECK --start-period=10s --interval=20s --timeout=2s \
-  CMD curl -f http://localhost:3000/graphql -H 'content-type: application/json' --data-binary '{"operationName":null,"variables":{},"query":"{\n  shopInfo {\n    _id\n  }\n}\n"}' || exit
-
-ENV PORT 3000
+ENV PORT 4010
 ENV NODE_ENV production
 
-EXPOSE 3000
+HEALTHCHECK --start-period=10s --interval=20s --timeout=2s \
+  CMD curl -f http://localhost:4010/graphql -H 'content-type: application/json' --data-binary '{"operationName":null,"variables":{},"query":"{\n  shopInfo {\n    _id\n  }\n}\n"}' || exit
+
+EXPOSE 4010
 CMD npm start

@@ -6,6 +6,7 @@ import {
   uploadFormData,
   putFile,
 } from "./helpers";
+import fetch from 'node-fetch';
 import { ADMIN_TOKEN, USER_TOKEN } from "./seeds/users";
 import { PngAssortmentMedia, SimpleAssortment } from "./seeds/assortments";
 

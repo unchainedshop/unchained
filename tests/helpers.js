@@ -1,8 +1,7 @@
 import { MongoClient, Collection } from 'mongodb';
-import { execute, toPromise } from '@apollo/client/core';
+import { execute, toPromise, gql } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
-import gql from 'graphql-tag';
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 import FormData from 'form-data';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
@@ -85,7 +84,7 @@ const convertLinkToFetch =
     );
 
 export const createAnonymousGraphqlFetch = () => {
-  const uri = 'http://localhost:3000/graphql';
+  const uri = 'http://localhost:4010/graphql';
   const link = createUploadLink({
     uri,
     fetch,
@@ -95,7 +94,7 @@ export const createAnonymousGraphqlFetch = () => {
 };
 
 export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
-  const uri = 'http://localhost:3000/graphql';
+  const uri = 'http://localhost:4010/graphql';
   const link = createUploadLink({
     uri,
     fetch,
@@ -115,7 +114,7 @@ export const uploadFormData = async ({ token = '', body }) => {
         },
       }
     : {};
-  return fetch('http://localhost:3000/graphql', {
+  return fetch('http://localhost:4010/graphql', {
     ...options,
     method: 'POST',
     body,

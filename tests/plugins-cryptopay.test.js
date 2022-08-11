@@ -1,4 +1,4 @@
-import fetch from "isomorphic-unfetch";
+import fetch from "node-fetch";
 import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers";
 import { USER_TOKEN } from "./seeds/users";
 import { SimplePaymentProvider } from "./seeds/payments";
@@ -228,7 +228,7 @@ describe.skip("Plugins: Cryptopay Payments", () => {
     });
 
     it("Invalid secret", async () => {
-      const result = await fetch("http://localhost:3000/payment/cryptopay", {
+      const result = await fetch("http://localhost:4010/payment/cryptopay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -248,7 +248,7 @@ describe.skip("Plugins: Cryptopay Payments", () => {
     }, 10000);
 
     it("Pay too little for product with crypto prices", async () => {
-      const result = await fetch("http://localhost:3000/payment/cryptopay", {
+      const result = await fetch("http://localhost:4010/payment/cryptopay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -268,7 +268,7 @@ describe.skip("Plugins: Cryptopay Payments", () => {
     }, 10000);
 
     it("Pay product with crypto prices", async () => {
-      const result = await fetch("http://localhost:3000/payment/cryptopay", {
+      const result = await fetch("http://localhost:4010/payment/cryptopay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -288,7 +288,7 @@ describe.skip("Plugins: Cryptopay Payments", () => {
     }, 10000);
 
     it("Pay too little for converted prices", async () => {
-      const result = await fetch("http://localhost:3000/payment/cryptopay", {
+      const result = await fetch("http://localhost:4010/payment/cryptopay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -308,7 +308,7 @@ describe.skip("Plugins: Cryptopay Payments", () => {
     }, 10000);
 
     it("Pay product with fiat prices in SHIB", async () => {
-      const result = await fetch("http://localhost:3000/payment/cryptopay", {
+      const result = await fetch("http://localhost:4010/payment/cryptopay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

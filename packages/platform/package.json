@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "main": "lib/platform-index.js",
   "exports": {
     ".": "./lib/platform-index.js",
@@ -45,7 +45,6 @@
     "open": "^8.4.0"
   },
   "devDependencies": {
-    "@types/moment": "^2.13.0",
     "@types/node": "^16.11.44",
     "@unchainedshop/types": "1.x",
     "cross-env": "^7.0.3",

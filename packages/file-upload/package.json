@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/file-upload",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "main": "lib/file-upload-index.js",
   "exports": {
     ".": "./lib/file-upload-index.js",
@@ -40,7 +40,6 @@
     "@types/minio": "^7.0.13",
     "@types/node": "^16.11.44",
     "@unchainedshop/types": "1.x",
-    "apollo-server-express": "2.x",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"

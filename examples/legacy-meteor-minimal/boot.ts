@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { startPlatform, withAccessToken } from '@unchainedshop/platform';
 import { WebApp } from 'meteor/webapp';
-import { embedControlpanelInMeteorWebApp } from '@unchainedshop/controlpanel';
 
 import '@unchainedshop/plugins/lib/delivery/post';
 import '@unchainedshop/plugins/lib/delivery/pick-mup';
@@ -131,6 +130,4 @@ Meteor.startup(async () => {
   setupAppleIAP(WebApp.connectHandlers);
 
   configureGenerateOrderAutoscheduling();
-
-  embedControlpanelInMeteorWebApp(WebApp);
 });

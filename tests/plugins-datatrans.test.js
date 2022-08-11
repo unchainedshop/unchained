@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
 import { USER_TOKEN, User } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';
@@ -146,7 +146,7 @@ describe('Plugins: Datatrans Payments', () => {
         '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
       const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
       const result = await fetch(
-        'http://localhost:3000/payment/datatrans/webhook',
+        'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
           headers: {
@@ -172,7 +172,7 @@ describe('Plugins: Datatrans Payments', () => {
         '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
       const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
       const result = await fetch(
-        'http://localhost:3000/payment/datatrans/webhook',
+        'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
           headers: {
@@ -195,7 +195,7 @@ describe('Plugins: Datatrans Payments', () => {
       const refno = Buffer.from(orderPaymentId, "hex").toString("base64");
 
       const result = await fetch(
-        'http://localhost:3000/payment/datatrans/webhook',
+        'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
           headers: {
@@ -216,7 +216,7 @@ describe('Plugins: Datatrans Payments', () => {
         'a146037afae54a78b61865b9c2bb38a60c687692833a1388a03176574cb2a004';
       const refno = Buffer.from(orderPaymentId, "hex").toString("base64");
       const result = await fetch(
-        'http://localhost:3000/payment/datatrans/webhook',
+        'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
           headers: {
@@ -251,7 +251,7 @@ describe('Plugins: Datatrans Payments', () => {
       const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
 
       const result = await fetch(
-        'http://localhost:3000/payment/datatrans/webhook',
+        'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
           headers: {

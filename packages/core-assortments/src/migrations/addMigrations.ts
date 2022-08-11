@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { Migration } from '@unchainedshop/types/api';
+import { Migration } from '@unchainedshop/types/core';
 import { MigrationRepository } from '@unchainedshop/types/common';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 
@@ -21,6 +20,8 @@ export default function addMigrations(repository: MigrationRepository<Migration>
               _id: assortment._id as any,
             },
             {
+              // eslint-disable-next-line
+              // @ts-ignore
               $set: { productIds: assortment._cachedProductIds }, // eslint-disable-line
             },
             {

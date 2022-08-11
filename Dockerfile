@@ -8,7 +8,6 @@ WORKDIR /source
 ADD packages /source/
 ADD package* /source/
 ADD examples/kitchensink/package* /source/examples/kitchensink/
-ADD examples/controlpanel/package* /source/examples/controlpanel/
 ADD jest-mongodb-config.js /source/jest-mongodb-config.js
 
 RUN NODE_ENV=development npm install

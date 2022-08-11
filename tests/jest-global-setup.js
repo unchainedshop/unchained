@@ -15,8 +15,8 @@ const startAndWaitForMeteor = async () => {
         env: {
           ...process.env,
           MONGO_URL: `${process.env.MONGO_URL}${global.__MONGOD__.opts.instance.dbName}`,
-          PORT: '3000',
-          ROOT_URL: 'http://localhost:3000',
+          PORT: '4010',
+          ROOT_URL: 'http://localhost:4010',
           NODE_ENV: 'development',
           UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
           UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,

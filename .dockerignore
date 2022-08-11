@@ -9,5 +9,4 @@ docs
 node_modules
 
 examples/kitchensink/lib
-examples/controlpanel/out
 packages/*/lib

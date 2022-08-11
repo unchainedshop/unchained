@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import { initDb } from '@unchainedshop/mongodb';
 import { FileDirector, FileAdapter } from '@unchainedshop/file-upload';
 
 describe('Test exports', () => {

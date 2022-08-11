@@ -33,10 +33,12 @@ const initDbNative = async (): Promise<Db> => {
   return db;
 };
 
+// eslint-disable-next-line
+// @ts-ignore
 const isMeteor = typeof Meteor === 'object';
 
 if (isMeteor) {
-  const { NpmModuleMongodb } = require('meteor/npm-mongo');
+  const { NpmModuleMongodb } = require('meteor/npm-mongo'); // eslint-disable-line
   const originalFn = NpmModuleMongodb.Collection.prototype.updateOne;
   NpmModuleMongodb.Collection.prototype.updateOne = async function updateOne(...rest) {
     const result = await originalFn.bind(this)(...rest);
