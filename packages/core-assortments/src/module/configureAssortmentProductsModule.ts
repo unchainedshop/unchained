@@ -1,5 +1,5 @@
 import { AssortmentProduct, AssortmentsModule } from '@unchainedshop/types/assortments';
-import { Collection } from '@unchainedshop/types/common';
+import { Collection, Filter } from '@unchainedshop/types/common';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
 
@@ -21,7 +21,7 @@ export const configureAssortmentProductsModule = ({
   return {
     // Queries
     findAssortmentIds: async ({ productId, tags }) => {
-      const selector = { productId };
+      const selector: Filter<AssortmentProduct> = { productId };
       if (tags) {
         selector.tags = { $in: tags };
       }
@@ -31,7 +31,7 @@ export const configureAssortmentProductsModule = ({
     },
 
     findProductIds: async ({ assortmentId, tags }) => {
-      const selector = { assortmentId };
+      const selector: Filter<AssortmentProduct> = { assortmentId };
       if (tags) {
         selector.tags = { $in: tags };
       }

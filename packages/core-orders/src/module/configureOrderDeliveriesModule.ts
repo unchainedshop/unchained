@@ -54,6 +54,8 @@ export const configureOrderDeliveriesModule = ({
       },
     };
     if (status === OrderDeliveryStatus.DELIVERED) {
+      // eslint-disable-next-line
+      // @ts-ignore
       modifier.$set.delivered = date;
     }
 

@@ -19,7 +19,7 @@ export const EnrollmentsCollection = async (db: Db) => {
         status: 'text',
         'contact.telNumber': 'text',
         'contact.emailAddress': 'text',
-      },
+      } as any,
       options: {
         weights: {
           _id: 8,

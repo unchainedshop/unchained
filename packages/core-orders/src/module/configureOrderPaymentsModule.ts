@@ -83,9 +83,13 @@ export const configureOrderPaymentsModule = ({
       },
     };
     if (transactionId) {
+      // eslint-disable-next-line
+      // @ts-ignore
       modifier.$set.transactionId = transactionId;
     }
     if (status === OrderPaymentStatus.PAID) {
+      // eslint-disable-next-line
+      // @ts-ignore
       modifier.$set.paid = date;
     }
 

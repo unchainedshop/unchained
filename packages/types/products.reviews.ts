@@ -1,3 +1,4 @@
+import { SortOption } from './api';
 import { TimestampFields, _ID } from './common';
 
 export enum ProductReviewVoteType {
@@ -40,7 +41,7 @@ export type ProductReviewsModule = {
     query: ProductReviewQuery & {
       limit?: number;
       offset?: number;
-      sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
+      sort?: Array<SortOption>;
     },
   ) => Promise<Array<ProductReview>>;
 

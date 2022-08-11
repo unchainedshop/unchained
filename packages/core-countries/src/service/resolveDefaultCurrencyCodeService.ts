@@ -28,7 +28,7 @@ export const resolveDefaultCurrencyCodeService: ResolveDefaultCurrencyCodeServic
   { isoCode },
   { modules },
 ) => {
-  const currencyCode = currencyCodeCache.get(isoCode);
+  const currencyCode = currencyCodeCache.get(isoCode) as string;
   if (currencyCode) return currencyCode;
 
   const country = await modules.countries.findCountry({ isoCode });

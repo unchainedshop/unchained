@@ -93,5 +93,7 @@ export const configureCountriesModule = async ({
       emit('COUNTRY_REMOVE', { countryId });
       return deletedCount;
     },
+
+    deletePermanently: mutations.deletePermanently,
   };
 };

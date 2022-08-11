@@ -17,6 +17,7 @@ export type ProductVariation = {
 } & TimestampFields;
 
 export type ProductVariationText = {
+  _id?: _ID;
   authorId: string;
   locale: string;
   productVariationId: string;

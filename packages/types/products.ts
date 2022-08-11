@@ -208,6 +208,7 @@ export type ProductsModule = {
         currency: string;
         quantity?: number;
         useNetPrice?: boolean;
+        configuration?: Array<ProductConfiguration>;
       },
       requestContext: Context,
     ) => Promise<ProductPrice>;

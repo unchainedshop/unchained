@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
 import { LanguagesModule, Language, LanguageQuery } from '@unchainedshop/types/languages';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -28,7 +28,10 @@ export const configureLanguagesModule = async ({
 
   const Languages = await LanguagesCollection(db);
 
-  const mutations = generateDbMutations<Language>(Languages, LanguagesSchema);
+  const mutations = generateDbMutations<Language>(
+    Languages,
+    LanguagesSchema,
+  ) as ModuleMutations<Language>;
 
   return {
     findLanguage: async ({ languageId, isoCode }) => {

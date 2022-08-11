@@ -244,7 +244,7 @@ export const configureOrderPositionsModule = ({
       });
 
       const calculation = await requestContext.modules.products.calculate(
-        { item: orderPosition },
+        { item: orderPosition, configuration: orderPosition.configuration },
         requestContext,
       );
       const selector = buildFindByIdSelector(orderPosition._id);
