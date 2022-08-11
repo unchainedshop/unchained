@@ -1,4 +1,4 @@
-import { Migration } from '@unchainedshop/types/api';
+import { Migration } from '@unchainedshop/types/core';
 import { MigrationRepository, Db } from '@unchainedshop/types/common';
 
 export const createMigrationRepository = (db: Db): MigrationRepository<Migration> => {

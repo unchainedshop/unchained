@@ -27,7 +27,7 @@ export interface AccountsSettingsOptions {
 export interface AccountsSettings {
   autoMessagingAfterUserCreation: boolean;
   mergeUserCartsOnLogin: boolean;
-  configureSettings: (options?: AccountsSettingsOptions) => void;
+  configureSettings: (options: AccountsSettingsOptions, context: any) => void;
 }
 
 /*

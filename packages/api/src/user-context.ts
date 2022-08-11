@@ -28,7 +28,7 @@ export const getUserContext = async (
     if (!isString(loginToken)) throw new Error('Access Token is not a string');
 
     // the hashed token is the key to find the possible current user in the db
-    const hashedToken = unchainedAPI.modules.accounts.createHashLoginToken(loginToken);
+    const hashedToken = unchainedAPI.modules.accounts.createHashLoginToken(loginToken as string);
 
     const currentUser = await unchainedAPI.modules.users.findUserByToken({
       hashedToken,
@@ -52,11 +52,11 @@ export const getUserContext = async (
         return {
           user: currentUser,
           userId: currentUser._id,
-          loginToken,
+          loginToken: loginToken as string,
         };
       }
     }
-    return { loginToken };
+    return { loginToken: loginToken as string };
   }
 
   return {};

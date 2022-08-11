@@ -11,7 +11,7 @@ export { default as slugify } from './slugify';
 export { default as pipePromises } from './pipe-promises';
 export { default as generateRandomHash } from './generate-random-hash';
 export { default as randomValueHex } from './random-value-hex';
-export { default as buildSortOptions } from './buildSortOption';
+export { default as buildSortOptions } from './db/build-sort-option';
 
 /*
  * Db utils

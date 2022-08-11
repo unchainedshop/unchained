@@ -1,9 +1,10 @@
+import { AccountsSettings, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
 import { Schemas } from '@unchainedshop/utils';
 
 const defaultAutoMessagingAfterUserCreation = true;
 const defaultMergeUserCartsOnLogin = true;
 
-export const accountsSettings = {
+export const accountsSettings: AccountsSettings = {
   autoMessagingAfterUserCreation: null,
   mergeUserCartsOnLogin: null,
   configureSettings: (
@@ -12,7 +13,7 @@ export const accountsSettings = {
       autoMessagingAfterUserCreation = defaultAutoMessagingAfterUserCreation,
       server = {},
       password = {},
-    },
+    }: AccountsSettingsOptions,
     { accountsPassword, accountsServer },
   ) => {
     accountsSettings.mergeUserCartsOnLogin = mergeUserCartsOnLogin ?? defaultMergeUserCartsOnLogin;

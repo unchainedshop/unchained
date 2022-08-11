@@ -29,7 +29,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
 
   const deletePermanently = async (_id) => {
     checkId(_id);
-    const filter = generateDbFilterById(_id);
+    const filter = generateDbFilterById<T>(_id);
     const result = await collection.deleteOne(filter);
     return result.deletedCount;
   };
@@ -75,7 +75,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
           }
 
           schema.validate(modifier, { modifier: true });
-          const filter = generateDbFilterById(_id, { deleted: null });
+          const filter = generateDbFilterById<T>(_id, { deleted: null });
           await collection.updateOne(filter, modifier);
 
           return _id;
@@ -90,7 +90,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
             return deletePermanently(_id);
           }
           checkId(_id);
-          const filter = generateDbFilterById(_id, { deleted: null });
+          const filter = generateDbFilterById<T>(_id, { deleted: null });
           const modifier = { $set: { deleted: new Date(), deletedBy: userId } };
           const values = schema.clean(modifier, { isModifier: true });
           const result = await collection.updateOne(filter, values);

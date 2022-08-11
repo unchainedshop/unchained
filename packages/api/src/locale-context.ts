@@ -27,7 +27,7 @@ export const getLocaleContext = async (
   unchainedAPI: UnchainedAPI,
 ): Promise<UnchainedLocaleContext> => {
   const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
-  const cachedContext = localeContextCache.get(cacheKey);
+  const cachedContext = localeContextCache.get(cacheKey) as UnchainedLocaleContext;
 
   const userAgent = req.headers['user-agent'];
   const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);

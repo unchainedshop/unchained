@@ -11,8 +11,19 @@ const incrementSuffixedSlug = (slugIncludingSuffix, delimiter = DELIMITER) => {
   return addSuffixToSlug(slugWithoutSuffix, suffixedIndex + 1);
 };
 
-export default (checkSlugIsUniqueFn, { slugify }) => {
-  const findUnusedSlug = async ({ title, existingSlug, newSlug }) => {
+export default (
+  checkSlugIsUniqueFn: (slug: string) => Promise<boolean>,
+  { slugify }: { slugify?: (text: string) => string },
+): ((params: { title?: string; existingSlug: string; newSlug?: string }) => Promise<string>) => {
+  const findUnusedSlug = async ({
+    title,
+    existingSlug,
+    newSlug,
+  }: {
+    title?: string;
+    existingSlug?: string;
+    newSlug?: string;
+  }) => {
     const slug = newSlug || existingSlug || `${slugify(title)}`;
     if (!(await checkSlugIsUniqueFn(slug))) {
       const isSlugAlreadySuffixed = !!newSlug;

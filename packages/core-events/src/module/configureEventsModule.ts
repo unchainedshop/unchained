@@ -2,6 +2,7 @@ import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@un
 import { ModuleInput, ModuleMutations, Filter } from '@unchainedshop/types/common';
 import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events';
 import { getRegisteredEvents } from '@unchainedshop/events';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
@@ -37,7 +38,7 @@ export const configureEventsModule = async ({
       return Events.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort || [{ key: 'created', value: 'DESC' }]),
+        sort: buildSortOptions(sort || [{ key: 'created', value: SortDirection.DESC } as SortOption]),
       }).toArray();
     },
 

@@ -1,6 +1,7 @@
-import { AccountsModule } from '@unchainedshop/types/accounts';
+import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { v4 as uuidv4 } from 'uuid';
+import { ModuleInput } from '@unchainedshop/types/common';
 import { accountsSettings } from '../accounts-settings';
 import { accountsPassword } from '../accounts/accountsPassword';
 import { UnchainedAccountsServer } from '../accounts/accountsServer';
@@ -9,7 +10,10 @@ import { evaluateContext } from './utils/evaluateContext';
 import { filterContext } from './utils/filterContext';
 import { hashPassword } from './utils/hashPassword';
 
-export const configureAccountsModule = async ({ db, options }): Promise<AccountsModule> => {
+export const configureAccountsModule = async ({
+  db,
+  options,
+}: ModuleInput<AccountsSettingsOptions>): Promise<AccountsModule> => {
   const dbManager = createDbManager(db);
 
   const accountsServer = new UnchainedAccountsServer(
@@ -17,6 +21,7 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
       db: dbManager,
       useInternalUserObjectSanitizer: false,
       siteUrl: process.env.ROOT_URL,
+      tokenSecret: process.env.UNCHAINED_TOKEN_SECRET,
     },
     {
       password: accountsPassword,

@@ -7,7 +7,6 @@ export default async function translatedAssortmentMediaTexts(
   { modules, userId }: Context,
 ) {
   log(`query translatedAssortmentMediaTexts ${assortmentMediaId}`, {
-    modules,
     userId,
   });
 
