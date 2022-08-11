@@ -33,7 +33,7 @@ export const SwissTaxCategories = {
 const getTaxRate = (context: DeliveryPricingAdapterContext) => {
   const date = context.order && context.order.ordered ? new Date(context.order.ordered) : new Date();
 
-  const taxCategoryFromProvider = context.deliveryProvider?.configuration?.find(({ key }) => {
+  const taxCategoryFromProvider = context.provider?.configuration?.find(({ key }) => {
     if (key === 'swiss-tax-category') return true;
     return null;
   })?.value;

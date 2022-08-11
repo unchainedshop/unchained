@@ -18,9 +18,10 @@ const RedisEventEmitter = (): EmitAdapter => {
   return {
     publish: (eventName, payload) => redisPublisher.publish(eventName, JSON.stringify(payload)),
     subscribe: (eventName, callback) => {
-      redisSubscriber.on('message', (_channelName, payload) => callback(payload));
       if (!subscribedEvents.has(eventName)) {
-        redisSubscriber.subscribe(eventName);
+        redisSubscriber.subscribe(eventName, (payload) => {
+          callback(JSON.parse(payload));
+        });
         subscribedEvents.add(eventName);
       }
     },

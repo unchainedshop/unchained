@@ -25,6 +25,8 @@ const {
   STRIPE_WEBHOOK_PATH = '/payment/stripe',
 } = process.env;
 
+// eslint-disable-next-line
+// @ts-ignore
 const stripe = createStripeClient(STRIPE_SECRET);
 
 export default (app) => {

@@ -185,7 +185,7 @@ const Cryptopay: IPaymentAdapter = {
         return JSON.stringify(cryptoAddresses);
       },
 
-      charge: async () => {
+      charge: async (): Promise<false> => {
         return false;
       },
     };

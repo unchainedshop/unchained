@@ -72,10 +72,7 @@ const textTemplate = `
   {{/items}}
 `;
 
-export const resolveForwardDeliveryTemplate: TemplateResolver = async (
-  { config, orderId, transactionContext },
-  context,
-) => {
+export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config, orderId }, context) => {
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
   const orderPricing = modules.orders.pricingSheet(order);
@@ -86,7 +83,7 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async (
 
   const attachments = await getOrderAttachmentsData(order, { fileType: 'DELIVERY_NOTE' }, context);
 
-  const address = transactionContext?.address || order.billingAddress;
+  const address = order.billingAddress;
   const configObject = config.reduce((acc, { key, value }) => {
     return {
       ...acc,

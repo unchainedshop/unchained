@@ -30,7 +30,7 @@ const SendMessage: IDeliveryAdapter = {
         return null;
       },
 
-      send: async (transactionContext) => {
+      send: async () => {
         const { modules, order, userId } = context;
 
         return modules.worker.addWork(
@@ -41,7 +41,6 @@ const SendMessage: IDeliveryAdapter = {
               template: 'DELIVERY',
               orderId: order._id,
               config,
-              transactionContext,
             },
           },
           userId,

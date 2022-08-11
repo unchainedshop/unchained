@@ -22,7 +22,7 @@ const fetchPickMupLocations = async (key: string, idsFilter?: string) => {
   });
   const result = await data.json();
   const { stores = [] } = result || {};
-  return stores.flatMap(({ markets = [], location = {}, id } = {}) => {
+  return stores.flatMap(({ markets = [], location = {}, id }) => {
     return markets.map(({ full_name: fullName }) => {
       // eslint-disable-line
       const {

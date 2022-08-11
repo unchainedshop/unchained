@@ -292,7 +292,7 @@ const Datatrans: IPaymentAdapter = {
           currency,
           [objectKey]: JSON.parse(credentials.token),
         });
-        return (result as ValidateResponseSuccess)?.transactionId;
+        return Boolean((result as ValidateResponseSuccess)?.transactionId);
       },
 
       async register(transactionResponse) {

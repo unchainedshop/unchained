@@ -1,4 +1,8 @@
-import { IPaymentActions, IPaymentAdapter } from '@unchainedshop/types/payments';
+import {
+  IPaymentActions,
+  IPaymentAdapter,
+  PaymentChargeActionResult,
+} from '@unchainedshop/types/payments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { TransactionCompletionBehavior } from 'postfinancecheckout/src/models/TransactionCompletionBehavior';
 import { PostFinanceCheckout } from 'postfinancecheckout';
@@ -197,9 +201,9 @@ const PostfinanceCheckout: IPaymentAdapter = {
           transactionId,
           credentials: id && {
             ...tokenMeta,
-            token: id,
+            token: id.toString(),
           },
-        };
+        } as PaymentChargeActionResult;
       },
 
       cancel: async () => {

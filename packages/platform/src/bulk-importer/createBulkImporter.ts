@@ -30,7 +30,7 @@ export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter 
   });
 
   bulkOperationHandlers = {
-    ASSORTMENT: AssortmentHandlers as BulkImportHandler,
+    ASSORTMENT: AssortmentHandlers,
     PRODUCT: ProductHandlers,
     FILTER: FilterHandlers,
     ...additionalHandlers,

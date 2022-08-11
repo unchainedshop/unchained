@@ -21,11 +21,11 @@ const Store: IWarehousingAdapter = {
 
   actions: () => {
     return {
-      isActive: async () => {
+      isActive() {
         return true;
       },
 
-      configurationError: async () => {
+      configurationError() {
         return null;
       },
 
