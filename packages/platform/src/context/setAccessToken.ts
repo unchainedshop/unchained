@@ -9,7 +9,7 @@ export default async (unchainedAPI: Context, username: string, secret: string) =
           secret,
         },
       },
-    },
+    } as any,
     {},
   );
 };

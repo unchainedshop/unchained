@@ -2,7 +2,7 @@ import localePkg from 'locale';
 import type { Locale as LocaleType } from 'locale';
 import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
-import { log } from '@unchainedshop/logger';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, Schemas, systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
@@ -194,7 +194,10 @@ export const configureUsersModule = async ({
     },
 
     updateInitialPassword: async (user, initialPassword) => {
-      log(`Update initial password flag to ${initialPassword}`, { userId: user._id, level: 'verbose' });
+      log(`Update initial password flag to ${initialPassword}`, {
+        userId: user._id,
+        level: LogLevel.Verbose,
+      });
 
       const modifier = { $set: { initialPassword } };
       await Users.updateOne(generateDbFilterById(user._id), modifier);
@@ -220,6 +223,8 @@ export const configureUsersModule = async ({
       }
 
       if (meta) {
+        // eslint-disable-next-line
+        // @ts-ignore
         modifier.$set.meta = meta;
       }
 

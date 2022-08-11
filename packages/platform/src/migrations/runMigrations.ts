@@ -1,4 +1,5 @@
-import { UnchainedAPI, Migration } from '@unchainedshop/types/api';
+import { UnchainedAPI } from '@unchainedshop/types/api';
+import { Migration } from '@unchainedshop/types/core';
 import { MigrationRepository } from '@unchainedshop/types/common';
 import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';

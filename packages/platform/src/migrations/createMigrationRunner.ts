@@ -1,4 +1,8 @@
 class MigrationError extends Error {
+  public migrationId;
+
+  public date: Date;
+
   constructor(migrationId = null, ...params) {
     // Pass remaining arguments (including vendor specific ones) to parent constructor
     super(...params);

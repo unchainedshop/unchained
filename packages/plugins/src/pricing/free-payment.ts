@@ -21,6 +21,8 @@ export const PaymentFreePrice: IPaymentPricingAdapter = {
       calculate: async () => {
         pricingAdapter.resultSheet().addFee({
           amount: 0,
+          isNetPrice: false,
+          isTaxable: false,
           meta: { adapter: PaymentFreePrice.key },
         });
         return pricingAdapter.calculate();

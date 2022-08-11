@@ -1,4 +1,5 @@
 import { UnchainedServerOptions } from '@unchainedshop/types/api';
+import { ApolloServer } from 'apollo-server-express';
 import createBulkImportServer from './createBulkImportServer';
 import createGraphQLServer from './createGraphQLServer';
 import { createContextResolver, getCurrentContextResolver, setCurrentContextResolver } from './context';
@@ -13,7 +14,12 @@ export { createContextResolver, getCurrentContextResolver, setCurrentContextReso
 
 const UNCHAINED_API_VERSION = '1.2.0'; // eslint-disable-line
 
-export const startAPIServer = (options: UnchainedServerOptions) => {
+export const startAPIServer = (
+  options: UnchainedServerOptions,
+): {
+  apolloGraphQLServer: ApolloServer;
+  bulkImportServer: any;
+} => {
   const {
     unchainedAPI,
     roles,

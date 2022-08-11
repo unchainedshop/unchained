@@ -454,11 +454,6 @@ type APIRoles = {
 };
 
 declare module '@unchainedshop/api' {
-  function startAPIServer(options: UnchainedServerOptions): {
-    apolloGraphQLServer: ApolloServer;
-    bulkImportServer: any;
-  };
-
   function hashPassword(password: string): string;
 
   function useMiddlewareWithCurrentContext(
