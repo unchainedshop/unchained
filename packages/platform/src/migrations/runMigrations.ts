@@ -1,5 +1,4 @@
-import { Migration, UnchainedCore } from '@unchainedshop/types/core';
-import { MigrationRepository } from '@unchainedshop/types/common';
+import { Migration, UnchainedCore, MigrationRepository } from '@unchainedshop/types/core';
 import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
 import { createMigrationRunner } from './createMigrationRunner';

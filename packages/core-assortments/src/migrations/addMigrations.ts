@@ -1,5 +1,4 @@
-import { Migration } from '@unchainedshop/types/core';
-import { MigrationRepository } from '@unchainedshop/types/common';
+import { Migration, MigrationRepository } from '@unchainedshop/types/core';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 
 export default function addMigrations(repository: MigrationRepository<Migration>) {

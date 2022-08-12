@@ -3,7 +3,8 @@ import {
   ProductVariationsModule,
   ProductVariationText,
 } from '@unchainedshop/types/products.variations';
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {

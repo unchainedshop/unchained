@@ -6,15 +6,8 @@ import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } fr
 import { MessageTypes as MessageTypesType, PlatformOptions } from './platform';
 
 import { BookmarkServices, BookmarksModule } from './bookmarks';
-import {
-  Db,
-  IBaseAdapter,
-  IBaseDirector,
-  Locale,
-  Locales,
-  ModuleInput,
-  TimestampFields,
-} from './common';
+import { Db, IBaseAdapter, IBaseDirector, Locale, Locales, TimestampFields } from './common';
+
 import { CountriesModule, Country, CountryServices } from './countries';
 import { CurrenciesModule } from './currencies';
 import {
@@ -138,7 +131,7 @@ import {
   WorkerSchedule,
   WorkStatus as WorkerStatusType,
 } from './worker';
-import { UnchainedCore, UnchainedCoreOptions } from './core';
+import { UnchainedCore, UnchainedCoreOptions, ModuleInput } from './core';
 
 declare module '@unchainedshop/utils' {
   function resolveBestSupported(language: string, locales: Locales): Locale;

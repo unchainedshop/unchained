@@ -1,8 +1,9 @@
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { ModuleInput, ModuleMutations, Filter } from '@unchainedshop/types/common';
+import { Filter } from '@unchainedshop/types/common';
 import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';

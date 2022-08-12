@@ -2,7 +2,7 @@ import mjml from 'mjml';
 import mustache from 'mustache';
 import { MessagingModule } from '@unchainedshop/types/messaging';
 import { createLogger } from '@unchainedshop/logger';
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput } from '@unchainedshop/types/core';
 
 export const messagingLogger = createLogger('unchained:core-messaging');
 

@@ -6,14 +6,15 @@ import { UnchainedCore } from './core';
 
 export declare type Root = Record<string, unknown>;
 
-export enum SortDirection {
-  ASC = 'ASC',
-  DESC = 'DESC',
-}
 export interface UnchainedUserContext {
   loginToken?: string;
   userId?: string;
   user?: User;
+}
+
+export enum SortDirection {
+  ASC = 'ASC',
+  DESC = 'DESC',
 }
 
 export type SortOption = {

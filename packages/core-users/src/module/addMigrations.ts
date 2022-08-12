@@ -1,6 +1,5 @@
-// @ts-nocheck
-import { Migration } from '@unchainedshop/types/api';
-import { MigrationRepository } from '@unchainedshop/types/common';
+import { Migration, MigrationRepository } from '@unchainedshop/types/core';
+
 import { UsersCollection } from '../db/UsersCollection';
 
 export default function addMigrations(repository: MigrationRepository<Migration>) {
@@ -21,7 +20,7 @@ export default function addMigrations(repository: MigrationRepository<Migration>
               _id: user._id,
             },
             {
-              $set: { meta: user.profile.customFields },
+              $set: { meta: (user.profile as any).customFields },
             },
           );
         }),

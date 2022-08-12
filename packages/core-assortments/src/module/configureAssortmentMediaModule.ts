@@ -3,7 +3,9 @@ import {
   AssortmentMediaModule,
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media';
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {

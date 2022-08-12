@@ -1,4 +1,5 @@
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
   ProductReview,
   ProductReviewQuery,

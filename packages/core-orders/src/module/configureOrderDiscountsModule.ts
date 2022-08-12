@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
-import { Collection, Filter, ModuleMutations } from '@unchainedshop/types/common';
+import { Collection, Filter } from '@unchainedshop/types/common';
+import { ModuleMutations } from '@unchainedshop/types/core';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts';
 import { emit, registerEvents } from '@unchainedshop/events';

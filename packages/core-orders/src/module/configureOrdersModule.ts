@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
-import { ModuleInput, Update } from '@unchainedshop/types/common';
+import { Update } from '@unchainedshop/types/common';
+import { ModuleInput } from '@unchainedshop/types/core';
 import { Order, OrderStatus, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';

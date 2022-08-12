@@ -1,5 +1,7 @@
 import { Context } from './api';
-import { ModuleMutations, Query, TimestampFields, _ID } from './common';
+import { Query, TimestampFields, _ID } from './common';
+import { ModuleMutations } from './core';
+
 import { User } from './user';
 
 export type UserProductFilter = {

@@ -1,4 +1,4 @@
-import { ModuleMutations } from '@unchainedshop/types/common';
+import { ModuleMutations } from '@unchainedshop/types/core';
 import { Event, EmitAdapter } from '@unchainedshop/types/events';
 import { getEmitHistoryAdapter, setEmitHistoryAdapter } from '@unchainedshop/events';
 

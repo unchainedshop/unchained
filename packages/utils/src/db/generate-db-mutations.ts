@@ -1,12 +1,7 @@
 import SimpleSchema from 'simpl-schema';
-import {
-  Collection,
-  ModuleMutations,
-  ModuleCreateMutation,
-  _ID,
-  Update,
-  TimestampFields,
-} from '@unchainedshop/types/common';
+import { Collection, _ID, Update, TimestampFields } from '@unchainedshop/types/common';
+import { ModuleCreateMutation, ModuleMutations } from '@unchainedshop/types/core';
+
 import { checkId } from './check-id';
 import { generateDbObjectId } from './generate-db-object-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';

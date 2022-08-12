@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
   DeliveryContext,
   DeliveryModule,

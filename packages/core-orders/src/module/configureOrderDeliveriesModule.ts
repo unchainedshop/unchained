@@ -1,4 +1,6 @@
-import { Collection, Filter, ModuleMutations, Update } from '@unchainedshop/types/common';
+import { Collection, Filter, Update } from '@unchainedshop/types/common';
+import { ModuleMutations } from '@unchainedshop/types/core';
+
 import { OrdersModule } from '@unchainedshop/types/orders';
 import {
   OrderDeliveriesModule,

@@ -1,12 +1,6 @@
 import { Context } from './api';
-import {
-  FindOptions,
-  IBaseAdapter,
-  IBaseDirector,
-  ModuleMutations,
-  TimestampFields,
-  _ID,
-} from './common';
+import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
+import { ModuleMutations } from './core';
 
 export type File = {
   _id?: _ID;

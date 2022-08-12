@@ -1,4 +1,4 @@
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput } from '@unchainedshop/types/core';
 import { PaymentModule, PaymentSettingsOptions } from '@unchainedshop/types/payments';
 import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection';
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection';

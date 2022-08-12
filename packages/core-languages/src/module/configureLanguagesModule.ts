@@ -1,4 +1,4 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { LanguagesModule, Language, LanguageQuery } from '@unchainedshop/types/languages';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {

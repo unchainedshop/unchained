@@ -1,13 +1,11 @@
-import { GridFSBucket } from 'mongodb';
-import { Db, MigrationRepository, ModuleInput } from './common';
+import { Db, Update, _ID, GridFSBucket } from './common';
 import { Logger } from './logs';
-import { Context } from './api';
 import { Modules, ModuleOptions } from './modules';
 import { Services } from './services';
 import { IRoleOptionConfig } from './roles';
 
 export interface BulkImporter {
-  createBulkImporter: (options: any, requestContext: Context) => any;
+  createBulkImporter: (options: any) => any;
   BulkImportPayloads: GridFSBucket;
 }
 
@@ -22,6 +20,40 @@ export interface Migration {
   id: number;
   name: string;
   up: (params: { logger: Logger | Console; unchainedAPI: UnchainedCore }) => Promise<void>;
+}
+
+export interface MigrationRepository<Migration> {
+  db: Db;
+  migrations: Map<number, Migration>;
+  register: (migration: Migration) => void;
+  allMigrations: () => Array<Migration>;
+}
+
+/*
+ * Module
+ */
+
+export interface ModuleInput<Options extends Record<string, any>> {
+  db: Db;
+  migrationRepository?: MigrationRepository<Migration>;
+  options?: Options;
+}
+
+export interface ModuleCreateMutation<T> {
+  create: (doc: T, userId?: string) => Promise<string | null>;
+}
+
+export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
+  update: (_id: string, doc: Update<T> | T, userId?: string) => Promise<string>;
+  delete: (_id: string, userId?: string) => Promise<number>;
+  deletePermanently: (_id: string, userId?: string) => Promise<number>;
+}
+
+export interface ModuleMutationsWithReturnDoc<T> {
+  create: (doc: T, userId?: string) => Promise<T>;
+  update: (_id: _ID, doc: Update<T> | T, userId?: string) => Promise<T>;
+  delete: (_id: _ID, userId?: string) => Promise<T>;
+  deletePermanently: (_id: string, userId?: string) => Promise<T>;
 }
 
 export interface UnchainedCoreOptions {

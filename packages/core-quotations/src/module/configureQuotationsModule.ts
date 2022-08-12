@@ -1,5 +1,6 @@
 import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
-import { ModuleInput, ModuleMutations, Update } from '@unchainedshop/types/common';
+import { Update } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
   Quotation,
   QuotationQuery,

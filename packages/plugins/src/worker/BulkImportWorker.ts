@@ -5,10 +5,15 @@ import { BaseAdapter } from '@unchainedshop/utils';
 import fs from 'fs';
 import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
-const streamPayloadToBulkImporter = async (bulkImporter, createReadStream) => {
+const streamPayloadToBulkImporter = async (
+  bulkImporter,
+  createReadStream,
+  unchainedAPI: UnchainedCore,
+) => {
   logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
 
   const eventIterator = new EventIterator(
@@ -34,7 +39,7 @@ const streamPayloadToBulkImporter = async (bulkImporter, createReadStream) => {
   );
 
   for await (const event of eventIterator) { // eslint-disable-line
-    await bulkImporter.prepare(event);
+    await bulkImporter.prepare(event, unchainedAPI);
   }
 
   logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
@@ -48,7 +53,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
   version: '1.0',
   type: 'BULK_IMPORT',
 
-  doWork: async (rawPayload, context) => {
+  doWork: async (rawPayload, unchainedAPI) => {
     try {
       const {
         createShouldUpsertIfIDExists = false,
@@ -56,25 +61,26 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
         authorId = 'root',
       } = rawPayload;
 
-      const bulkImporter = context.bulkImporter.createBulkImporter(
-        {
-          logger,
-          authorId,
-          createShouldUpsertIfIDExists,
-          skipCacheInvalidation,
-        },
-        context,
-      );
+      const bulkImporter = unchainedAPI.bulkImporter.createBulkImporter({
+        logger,
+        authorId,
+        createShouldUpsertIfIDExists,
+        skipCacheInvalidation,
+      });
 
       if (rawPayload.payloadFilePath) {
         // stream payload from file system
-        await streamPayloadToBulkImporter(bulkImporter, () =>
-          fs.createReadStream(rawPayload.payloadFilePath),
+        await streamPayloadToBulkImporter(
+          bulkImporter,
+          () => fs.createReadStream(rawPayload.payloadFilePath),
+          unchainedAPI,
         );
       } else if (rawPayload.payloadId) {
         // stream payload from gridfs
-        await streamPayloadToBulkImporter(bulkImporter, () =>
-          context.bulkImporter.BulkImportPayloads.openDownloadStream(rawPayload.payloadId),
+        await streamPayloadToBulkImporter(
+          bulkImporter,
+          () => unchainedAPI.bulkImporter.BulkImportPayloads.openDownloadStream(rawPayload.payloadId),
+          unchainedAPI,
         );
       } else {
         const { events } = rawPayload;
@@ -82,12 +88,12 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
 
         await events.reduce(async (currentEventPromise, nextEvent) => {
           await currentEventPromise;
-          return bulkImporter.prepare(nextEvent);
+          return bulkImporter.prepare(nextEvent, unchainedAPI);
         }, Promise.resolve());
       }
 
       const [result, error] = await bulkImporter.execute();
-      await bulkImporter.invalidateCaches();
+      await bulkImporter.invalidateCaches(unchainedAPI);
 
       if (error) {
         return {

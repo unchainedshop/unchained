@@ -1,7 +1,7 @@
 import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { v4 as uuidv4 } from 'uuid';
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput } from '@unchainedshop/types/core';
 import { accountsSettings } from '../accounts-settings';
 import { accountsPassword } from '../accounts/accountsPassword';
 import { UnchainedAccountsServer } from '../accounts/accountsServer';
