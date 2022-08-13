@@ -31,6 +31,6 @@ In order to get a free cloud-hosted unchained instance, you need to [sign up her
 1. Click on **Open App** in the Instance Overview page to navigate to the Admin UI under your engine's domain.
 2. The URL looks something like <u>my-unchained-shop.unchained.rocks/sign-in</u>
 3. You should see the login window of the Admin UI. **DON'T TRY TO LOGIN YET, WE WILL GET TO THAT LATER**
-   ![diagram](../images/getting-started/Engine_Setup_Verification.png)
+   ![diagram](../images/getting-started/sandbox-login.png)
 
 Congratulations! 👏🏻 Your Unchained Engine is up and running!
