@@ -53,27 +53,27 @@ Initially the username and password are set as following:
 
 ![diagram](../images/getting-started/sandbox-login.png)
 
-<p class="warning">This is a test project using common hard-coded credentials. Change your password as soon as you intend to work professionally with the engine. (<b class="normal"><code class="language-text">User Profile</code> ➤ <code class="language-text">Account</code></b>)</p>
+<p class="warning">This is a test project using common hard-coded credentials. Change your password as soon as you intend to work professionally with the engine. (<b class="normal"><code class="language-text">Account</code> ➤ <code class="language-text">Change password</code></b>)</p>
 
 ## Step 1: Add Payment Provider
 
 One of the basic settings besides the **currency** & **language** is the **payment provider** for your store. We gonna add a simple _Pay per invoice_ method to our shop.<br />
 Check [Further Reading](#further-reading) at the end of this chapter for a (growing) list of payment plugins available for the Unchained Engine.
 
-- On top choose the menu entry **`System` ➤ `Payment`**
+- On side navigation choose the menu entry **`System setting` ➤ `Payment providers`**
   ![diagramm](../images/getting-started/add-payment-step-1.png)
 - Click on **`Add`** in the empty list view.
 - Select type **`Invoice`**, choose the adapter **`Invoice (manually)`** and click on **`Add new adapter`** to save invoice payment provider.
   ![diagramm](../images/getting-started/add-payment-step-2.png)
 - Click **`Save`** in the next screen as we do not need to add any additional configuration keys in this example project.
-- The new payment provider **INVOICE** should appear in the list.
+- The new payment provider **INVOICE** page will open.
   ![diagramm](../images/getting-started/add-payment-step-3.png)
 
 ## Step 2: Set Delivery Option
 
 The second important configuration is **delivery option** which defines where and how orders should be send to for furhter processing.<br />
 
-- On top choose the menu entry **`System` ➤ `Delivery`**
+- On top choose the menu entry **`System settings` ➤ `Delivery providers`**
 - Click on **`Add`** in the empty list view.
 - Select type **`Shipping`**, choose the adapter **`Forward Delivery via Messaging`** and click on **`Add Delivery provider`** to continue.
   ![diagramm](../images/getting-started/add-delivery-step-1.png)
@@ -85,14 +85,13 @@ The second important configuration is **delivery option** which defines where an
 
 It's time to add our first product to the store.
 
-- On top choose the menu entry **`Master Data` ➤ `Products`**
+- On side navigation menu entry **`Products`**
 - Click on **`Add`** in the empty product list.
 - Give the product a **name** and set the **type** to `Simple Product`.
   ![diagramm](../images/getting-started/new-product-form.png)
 - Click **`Add product`** to save the product and navigate to the product detail view.
 - (If you have one ready, add a nice product image under `Media`.)
 - Select **`Commerce`** on the left and set the price for your product.
-- IMPORTANT: If you want to update the product information (e.g. subtitle, description), switch to the tab `fr` first and set a title there (otherwise updating the product throws an error (yes, it's a bug 😒).
 - Per default a product is in the state **draft**. To make it available in the shop we need to **`publish`** it.<br />On the right you find the option to publish (and unpublish) to product.
   ![diagramm](../images/getting-started/product-detail-2.png)
 - Great! The product is ready to be assigned to a category.
@@ -102,13 +101,14 @@ It's time to add our first product to the store.
 
 Firstly, we will add two new categories which are called _Assortments_ in the Admin UI.
 
-- On top choose the menu entry **`Master Data` ➤ `Assortments`**.
+- On side navigation menu entry **`Assortments`**.
 - Click on **`Add`**.
+![diagramm](../images/getting-started/new-assortment-form.png)
 - Give your category a **title**, keep the _root node_ option checked.
 - Click **`Add Assortment`** to save the category and navigate to the category detail view.
 - (Same here, add a nice category image under `Media`.)
   ![diagram](../images/getting-started/assortment-detail-page.png)
-- Select **`Products`** on the left.
+- Select **`Products`** tab.
 - Search for the **(exact)** name of the product you added in [Step 3](#step-3-add-product), select it
   and click **`Add Product`** to link the product to the category
 
