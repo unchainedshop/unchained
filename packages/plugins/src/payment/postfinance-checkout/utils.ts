@@ -1,20 +1,28 @@
 import { Order, OrdersModule } from '@unchainedshop/types/orders';
-import { Transaction } from 'postfinancecheckout/src/models/Transaction';
-import { TransactionState } from 'postfinancecheckout/src/models/TransactionState';
+// @ts-ignore
+import type pf from 'postfinancecheckout';
+import { createRequire } from 'node:module';
+
+const pf: any = {};
+
+const require = createRequire(import.meta.url);
+const Postfinance: typeof pf = require('postfinancecheckout');
+
+const { PostFinanceCheckout } = Postfinance;
 
 export const transactionIsPaid = async (
-  transaction: Transaction,
+  transaction: pf.PostFinanceCheckout.model.Transaction,
   expectedCurrency: string,
   expectedAmount: number,
 ): Promise<boolean> => {
-  if (transaction.state === TransactionState.FULFILL) {
+  if (transaction.state === PostFinanceCheckout.model.TransactionState.FULFILL) {
     return (
       transaction.completedAmount !== undefined &&
       transaction.completedAmount.toFixed(2) === expectedAmount.toFixed(2) &&
       transaction.currency === expectedCurrency
     );
   }
-  if (transaction.state === TransactionState.AUTHORIZED) {
+  if (transaction.state === PostFinanceCheckout.model.TransactionState.AUTHORIZED) {
     return (
       transaction.authorizationAmount !== undefined &&
       transaction.authorizationAmount.toFixed(2) === expectedAmount.toFixed(2) &&
@@ -26,7 +34,7 @@ export const transactionIsPaid = async (
 
 export const orderIsPaid = async (
   order: Order,
-  transaction: Transaction,
+  transaction: pf.PostFinanceCheckout.model.Transaction,
   orderModule: OrdersModule,
 ): Promise<boolean> => {
   const pricing = orderModule.pricingSheet(order);

@@ -22,7 +22,12 @@
     "types": [
       "node",
       "jest"
-    ]
+    ],
+    "paths": {
+      "postfinancecheckout": [
+        "./src/payment/postfinance-checkout/silence-postfinancecheckout.d.ts"
+      ],
+    }
   },
   // "exclude": [
   //   "./src/payment/postfinance-checkout/*"

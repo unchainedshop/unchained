@@ -1,6 +1,12 @@
-import { PostFinanceCheckout } from 'postfinancecheckout';
-import { RefundCreate } from 'postfinancecheckout/src/models/RefundCreate';
-import { RefundType } from 'postfinancecheckout/src/models/RefundType';
+// @ts-ignore
+import type pf from 'postfinancecheckout';
+import { createRequire } from 'node:module';
+
+const pf: any = {};
+const require = createRequire(import.meta.url);
+const Postfinance: typeof pf = require('postfinancecheckout');
+
+const { PostFinanceCheckout } = Postfinance;
 
 const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
 const SPACE_ID = parseInt(PFCHECKOUT_SPACE_ID as string, 10);
@@ -48,7 +54,7 @@ const getTokenService = () => {
 
 export const getTransaction = async (
   transactionId: string,
-): Promise<PostFinanceCheckout.model.Transaction> => {
+): Promise<pf.PostFinanceCheckout.model.Transaction> => {
   const transactionService = getTransactionService();
   const transaction = await transactionService.read(SPACE_ID, parseInt(transactionId, 10));
   return transaction.body;
@@ -56,7 +62,7 @@ export const getTransaction = async (
 
 export const getTransactionCompletion = async (
   entityId: string,
-): Promise<PostFinanceCheckout.model.TransactionCompletion> => {
+): Promise<pf.PostFinanceCheckout.model.TransactionCompletion> => {
   const transactionCompletionService = getTransactionCompletionService();
   const transactionCompletion = await transactionCompletionService.read(
     SPACE_ID,
@@ -68,14 +74,14 @@ export const getTransactionCompletion = async (
 export const getToken = async (
   spaceId: number,
   tokenId: number,
-): Promise<PostFinanceCheckout.model.Token> => {
+): Promise<pf.PostFinanceCheckout.model.Token> => {
   const tokenService = getTokenService();
   const token = await tokenService.read(spaceId || SPACE_ID, tokenId);
   return token.body;
 };
 
 export const createTransaction = async (
-  transaction: PostFinanceCheckout.model.TransactionCreate,
+  transaction: pf.PostFinanceCheckout.model.TransactionCreate,
 ): Promise<number | null> => {
   const transactionService = getTransactionService();
   const transactionCreateRes = await transactionService.create(SPACE_ID, transaction);
@@ -99,11 +105,11 @@ export const refundTransaction = async (
   amount: number,
 ): Promise<boolean> => {
   const refundService = getRefundService();
-  const refund: RefundCreate = {
+  const refund: pf.PostFinanceCheckout.model.RefundCreate = {
     transaction: parseInt(transactionId, 10),
     externalId: orderId,
     amount,
-    type: RefundType.MERCHANT_INITIATED_ONLINE,
+    type: PostFinanceCheckout.model.RefundType.MERCHANT_INITIATED_ONLINE,
   };
   try {
     await refundService.refund(SPACE_ID, refund);
