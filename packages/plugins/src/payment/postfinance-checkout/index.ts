@@ -6,7 +6,7 @@ import {
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 
-import pf from 'postfinancecheckout';
+import * as pf from 'postfinancecheckout';
 import {
   confirmDeferredTransaction,
   createTransaction,

@@ -1,5 +1,5 @@
 import { Order, OrdersModule } from '@unchainedshop/types/orders';
-import pf from 'postfinancecheckout';
+import * as pf from 'postfinancecheckout';
 
 const { PostFinanceCheckout } = pf;
 

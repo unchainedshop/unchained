@@ -1,4 +1,4 @@
-import pf from 'postfinancecheckout';
+import * as pf from 'postfinancecheckout';
 
 const { PostFinanceCheckout } = pf;
 const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
