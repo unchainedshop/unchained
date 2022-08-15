@@ -60,7 +60,7 @@ const EmailWorkerPlugin: IWorkerAdapter<
     subject?: string;
     [x: string]: any;
   },
-  void
+  any
 > = {
   ...WorkerAdapter,
 
@@ -93,6 +93,9 @@ const EmailWorkerPlugin: IWorkerAdapter<
       if (checkEmailInterceptionEnabled()) {
         openInBrowser(sendMailOptions);
         return { success: true, result: { intercepted: true } };
+      }
+      if (!process.env.MAIL_URL) {
+        return { success: false, error: { name: 'NO_MAIL_URL_SET', message: 'MAIL_URL is not set' } };
       }
       const transporter = nodemailer.createTransport(process.env.MAIL_URL);
       const result = await transporter.sendMail(sendMailOptions);

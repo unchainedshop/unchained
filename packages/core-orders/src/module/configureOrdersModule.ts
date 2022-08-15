@@ -313,7 +313,6 @@ export const configureOrdersModule = async ({
     OrderDeliveries,
     OrderPayments,
     OrderPositions,
-    updateCalculation,
     updateStatus,
   });
   const orderMutations = configureOrderModuleMutations({

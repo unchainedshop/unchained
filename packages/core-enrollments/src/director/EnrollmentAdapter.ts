@@ -6,9 +6,10 @@ import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
 const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
   const lowerCase = interval.toLowerCase();
   const start = lowerCase === 'hours' ? startOfMinute(referenceDate) : startOfHour(referenceDate);
+
   return {
     start,
-    end: add(intervalCount, {
+    end: add(start, {
       [lowerCase]: intervalCount,
     }),
   };
