@@ -115,14 +115,18 @@ export interface OrderProcessing {
     params: { user: User; countryCode?: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  migrateCart: (
+  setCartOwner: (
     params: {
-      fromCart: Order;
-      shouldMerge: boolean;
-      toCart?: Order;
+      orderId: string;
+      userId: string;
     },
-    requestContext: Context,
-  ) => Promise<Order>;
+  ) => Promise<void>;
+  moveCartPositions: (
+    params: {
+      fromOrderId: string;
+      toOrderId: string;
+    },
+  ) => Promise<void>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<OrderTransactionContext>;
   sendOrderRejectionToCustomer: OrderContextParams<OrderTransactionContext>;
@@ -193,8 +197,9 @@ export type MigrateOrderCartsService = (
     fromUser: User;
     toUser: User;
     shouldMerge: boolean;
+    countryContext: string;
   },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Order>;
 
 export type CreateUserCartService = (

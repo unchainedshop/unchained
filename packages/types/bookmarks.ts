@@ -1,6 +1,5 @@
-import { Context } from './api';
 import { Query, TimestampFields, _ID } from './common';
-import { ModuleMutations } from './core';
+import { ModuleMutations, UnchainedCore } from './core';
 
 import { User } from './user';
 
@@ -38,8 +37,9 @@ export type MigrateBookmarksService = (
     fromUser: User;
     toUser: User;
     shouldMerge: boolean;
+    countryContext: string;
   },
-  context: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<void>;
 
 export interface BookmarkServices {

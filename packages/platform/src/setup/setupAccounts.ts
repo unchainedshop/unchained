@@ -82,8 +82,9 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           fromUser: userBeforeLogin,
           toUser: user,
           shouldMerge: accountsSettings.mergeUserCartsOnLogin,
+          countryContext,
         },
-        unchainedAPI as Context, // TODO: Type Refactor
+        unchainedAPI,
       );
 
       await unchainedAPI.services.bookmarks.migrateBookmarks(
@@ -91,8 +92,9 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           fromUser: userBeforeLogin,
           toUser: user,
           shouldMerge: accountsSettings.mergeUserCartsOnLogin,
+          countryContext,
         },
-        unchainedAPI as Context, // TODO: Type Refactor
+        unchainedAPI,
       );
     }
 

@@ -267,32 +267,23 @@ export const configureOrderModuleProcessing = ({
       );
     },
 
-    migrateCart: async ({ fromCart, shouldMerge, toCart }, requestContext) => {
-      const fromCartId = fromCart._id;
+    setCartOwner: async ({ orderId, userId }) => {
+      await Orders.updateOne(generateDbFilterById(orderId), {
+        $set: {
+          userId,
+        },
+      });
+    },
 
-      if (!toCart || !shouldMerge) {
-        // No destination cart, move whole cart
-        await Orders.updateOne(generateDbFilterById(fromCart._id), {
-          $set: {
-            userId: requestContext.userId,
-          },
-        });
-        return updateCalculation(fromCartId, requestContext);
-      }
-
-      // Move positions
-      const toCartId = toCart._id;
+    moveCartPositions: async ({ fromOrderId, toOrderId }) => {
       await OrderPositions.updateMany(
-        { orderId: fromCartId },
+        { orderId: fromOrderId },
         {
           $set: {
-            orderId: toCartId,
+            orderId: toOrderId,
           },
         },
       );
-
-      await updateCalculation(fromCartId, requestContext);
-      return updateCalculation(toCartId, requestContext);
     },
 
     processOrder: async (initialOrder, params, requestContext) => {
