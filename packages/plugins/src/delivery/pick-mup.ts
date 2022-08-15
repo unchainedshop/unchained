@@ -7,7 +7,6 @@ const fetchPickMupLocations = async (key: string, idsFilter?: string) => {
   const pickMupUrl = '';
 
   const data = await fetch(`${pickMupUrl}${idsFilter ? `&ids[]=${idsFilter}` : ''}`, {
-    credentials: 'omit',
     headers: {
       accept: 'application/json, text/javascript, */*; q=0.01',
       'accept-language': 'de',
@@ -20,9 +19,9 @@ const fetchPickMupLocations = async (key: string, idsFilter?: string) => {
     body: null,
     method: 'GET',
   });
-  const result = await data.json();
+  const result: any = await data.json();
   const { stores = [] } = result || {};
-  return stores.flatMap(({ markets = [], location = {}, id } = {}) => {
+  return stores.flatMap(({ markets = [], location = {}, id }) => {
     return markets.map(({ full_name: fullName }) => {
       // eslint-disable-line
       const {

@@ -1,5 +1,6 @@
 import 'abort-controller/polyfill';
 import LRU from 'lru-cache';
+import { Collection, Filter, Locale, Document } from '@unchainedshop/types/common';
 import { systemLocale } from './locale-helpers';
 
 const { NODE_ENV } = process.env;
@@ -15,36 +16,41 @@ const extendSelectorWithLocale = (selector, locale) => {
   return { ...localeSelector, ...selector };
 };
 
-const findLocalizedText = async (collection, selector, locale) => {
+const findLocalizedText = async <T extends Document>(
+  collection: Collection<T>,
+  selector: Filter<T>,
+  locale: Locale,
+): Promise<T> => {
   const cacheKey = JSON.stringify({
-    n: collection._name, // eslint-disable-line
+    n: collection.collectionName, // eslint-disable-line
     s: selector,
     l: locale,
   });
 
   const cachedText = textCache.get(cacheKey);
 
-  if (cachedText) return cachedText;
+  if (cachedText) return cachedText as T;
 
-  const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale));
+  const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale), {});
   if (exactTranslation) {
     textCache.set(cacheKey, exactTranslation);
-    return exactTranslation;
+    return exactTranslation as T;
   }
 
   if (systemLocale.normalized !== locale.normalized) {
     const fallbackTranslation = await collection.findOne(
       extendSelectorWithLocale(selector, systemLocale),
+      {},
     );
     if (fallbackTranslation) {
       textCache.set(cacheKey, fallbackTranslation);
-      return fallbackTranslation;
+      return fallbackTranslation as T;
     }
   }
 
   const foundText = await collection.findOne(selector, {});
   textCache.set(cacheKey, foundText);
-  return foundText;
+  return foundText as T;
 };
 
 export default findLocalizedText;

@@ -19,11 +19,11 @@ export const WorkerDirector: IWorkerDirector = {
   events: new EventEmitter(),
 
   getActivePluginTypes: () => {
-    return baseDirector.getAdapters().map((adapter) => adapter.type);
+    return WorkerDirector.getAdapters().map((adapter) => adapter.type);
   },
 
   registerAdapter: (Adapter) => {
-    if (baseDirector.getAdapter(Adapter.type))
+    if (WorkerDirector.getAdapter(Adapter.type))
       throw new Error(
         `WorkderDirector: There is already a adapter registered with type: ${Adapter.type}`,
       );
@@ -41,7 +41,7 @@ export const WorkerDirector: IWorkerDirector = {
   getAutoSchedules: () => Array.from(AutoScheduleMap),
 
   doWork: async ({ type, input, _id: workId }, requestContext: Context) => {
-    const adapter = baseDirector.getAdapter(type);
+    const adapter = WorkerDirector.getAdapter(type);
 
     if (!adapter) {
       log(`WorkderDirector: No registered adapter for type: ${type}`);

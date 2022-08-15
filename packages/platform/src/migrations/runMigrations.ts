@@ -1,5 +1,4 @@
-import { UnchainedAPI, Migration } from '@unchainedshop/types/api';
-import { MigrationRepository } from '@unchainedshop/types/common';
+import { Migration, UnchainedCore, MigrationRepository } from '@unchainedshop/types/core';
 import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
 import { createMigrationRunner } from './createMigrationRunner';
@@ -11,7 +10,7 @@ export const runMigrations = async ({
 }: {
   migrationRepository: MigrationRepository<Migration>;
   logger?: any;
-  unchainedAPI: UnchainedAPI;
+  unchainedAPI: UnchainedCore;
 }) => {
   const LastMigration = migrationRepository.db.collection('last-migration');
 

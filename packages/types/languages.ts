@@ -1,5 +1,6 @@
 import { SortOption } from './api';
-import { FindOptions, ModuleMutations, TimestampFields, _ID } from './common';
+import { FindOptions, TimestampFields, _ID } from './common';
+import { ModuleMutations } from './core';
 
 export type Language = {
   _id?: _ID;

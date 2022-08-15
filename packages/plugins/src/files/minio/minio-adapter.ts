@@ -1,4 +1,4 @@
-import { IFileAdapter } from '@unchainedshop/types/files';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files';
 import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 
 import https from 'https';
@@ -22,7 +22,7 @@ const PUT_URL_EXPIRY = 24 * 60 * 60;
 
 let client: Minio.Client;
 
-export async function connectToMinio(credentialsProvider) {
+export async function connectToMinio() {
   if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
     log(
       'Please configure Minio/S3 by providing MINIO_ENDPOINT & MINIO_BUCKET_NAME to use upload features',
@@ -43,11 +43,13 @@ export async function connectToMinio(credentialsProvider) {
       secretKey: MINIO_SECRET_KEY,
     });
 
+    // eslint-disable-next-line
+    // @ts-ignore
     if (NODE_ENV === 'development') minioClient?.traceOn(process.stdout);
 
-    if (credentialsProvider) {
-      await minioClient.setCredentialsProvider(credentialsProvider);
-    }
+    // if (credentialsProvider) {
+    //   await minioClient.setCredentialsProvider(credentialsProvider);
+    // }
 
     client = minioClient;
   } catch (error) {
@@ -131,7 +133,7 @@ export const MinioAdapter: IFileAdapter = {
       type: getMimeType(fileName),
       putURL: url,
       url: generateMinioUrl(directoryName, _id),
-    };
+    } as UploadFileData & { putURL: string };
   },
 
   async removeFiles(files) {
@@ -177,7 +179,7 @@ export const MinioAdapter: IFileAdapter = {
       size,
       type,
       url: generateMinioUrl(directoryName, _id),
-    };
+    } as UploadFileData;
   },
 
   async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname, headers }: any) {
@@ -205,7 +207,7 @@ export const MinioAdapter: IFileAdapter = {
       size,
       type,
       url: generateMinioUrl(directoryName, _id),
-    };
+    } as UploadFileData;
   },
 };
 

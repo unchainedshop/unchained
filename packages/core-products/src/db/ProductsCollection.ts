@@ -17,7 +17,7 @@ export const ProductsCollection = async (db: Db) => {
       options: {
         name: 'products_fulltext_search',
       },
-    },
+    } as any,
   ]);
 
   // ProductTexts indexes

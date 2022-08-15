@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/locale": "^0.1.1",
-    "@types/node": "^16.11.44",
+    "@types/node": "^16.11.48",
     "@unchainedshop/types": "1.x",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",

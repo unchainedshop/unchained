@@ -1,9 +1,9 @@
 import { AssortmentProduct } from '@unchainedshop/types/assortments';
-import type { Collection, QuerySelector } from 'mongodb';
+import { Filter, Collection } from '@unchainedshop/types/common';
 
 export function resolveAssortmentProductFromDatabase(
   AssortmentProducts: Collection<AssortmentProduct>,
-  selector: QuerySelector<AssortmentProduct> = {},
+  selector: Filter<AssortmentProduct> = {},
 ) {
   return async (productId: string) => {
     const products = AssortmentProducts.find(

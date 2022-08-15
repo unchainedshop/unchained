@@ -97,7 +97,7 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
       await Promise.all(
         enrollments.map(async (enrollment) => {
           try {
-            const director = await EnrollmentDirector.actions({ enrollment }, requestContext);
+            const director = await EnrollmentDirector.actions({ enrollment }, requestContext as Context); // TODO: Type Refactor
             const period = await director.nextPeriod();
             if (period) {
               const configuration = await director.configurationForOrder({
@@ -105,7 +105,7 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
                 period,
               });
               if (configuration) {
-                const order = await generateOrder(enrollment, configuration, requestContext);
+                const order = await generateOrder(enrollment, configuration, requestContext as Context); // TODO: Type Refactor
                 if (order) {
                   await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
                     ...period,

@@ -31,8 +31,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
     "apollo-server-express": "2.x",
-    "graphql": "^15.x",
-    "graphql-scalars": "^1.x"
+    "graphql": "^15.x"
   },
   "dependencies": {
     "@unchainedshop/core": "1.x",
@@ -42,19 +41,19 @@
     "@unchainedshop/utils": "1.x",
     "accounting": "0.4.1",
     "dataloader": "^2.1.0",
+    "graphql-upload": "^13.0.0",
+    "graphql-scalars": "^1.18.0",
     "locale": "0.1.0",
     "lodash.isnumber": "3.0.3",
-    "lru-cache": "^7.10.2",
-    "graphql-upload": "^13.0.0"
+    "lru-cache": "^7.10.2"
   },
   "devDependencies": {
     "@types/graphql-upload": "^8.0.11",
     "@types/locale": "^0.1.1",
-    "@types/node": "^16.11.44",
+    "@types/node": "^16.11.48",
     "@unchainedshop/types": "1.x",
     "apollo-server-express": "2.x",
     "graphql": "^15.8.0",
-    "graphql-scalars": "^1.17.0",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"

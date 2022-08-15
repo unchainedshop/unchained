@@ -1,4 +1,6 @@
-import { Collection, Filter, ModuleMutations, Update } from '@unchainedshop/types/common';
+import { Collection, Filter, Update } from '@unchainedshop/types/common';
+import { ModuleMutations } from '@unchainedshop/types/core';
+
 import { OrdersModule } from '@unchainedshop/types/orders';
 import {
   OrderDeliveriesModule,
@@ -54,6 +56,8 @@ export const configureOrderDeliveriesModule = ({
       },
     };
     if (status === OrderDeliveryStatus.DELIVERED) {
+      // eslint-disable-next-line
+      // @ts-ignore
       modifier.$set.delivered = date;
     }
 

@@ -28,7 +28,7 @@ const findAppropriateAdapters = (quotationContext: QuotationContext, requestCont
 export const QuotationDirector: IQuotationDirector = {
   ...baseDirector,
 
-  actions: (quotationContext, requestContext) => {
+  actions: async (quotationContext, requestContext) => {
     const context = { ...quotationContext, ...requestContext };
 
     const Adapter = findAppropriateAdapters(quotationContext, requestContext)?.shift();

@@ -1,9 +1,9 @@
-import { Context } from '@unchainedshop/types/api';
 import { SetupWorkqueueOptions } from '@unchainedshop/types/platform';
 import { EventListenerWorker, FailedRescheduler, IntervalWorker } from '@unchainedshop/core-worker';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
 export const setupWorkqueue = (
-  unchainedAPI: Context,
+  unchainedAPI: UnchainedCore,
   { workerId, batchCount, schedule }: SetupWorkqueueOptions = {},
 ) => {
   const handlers = [

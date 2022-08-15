@@ -1,4 +1,5 @@
-import { ModuleInput, ModuleMutations, Query, Tree } from '@unchainedshop/types/common';
+import { Query, Tree } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
   AssortmentsModule,
   Assortment,

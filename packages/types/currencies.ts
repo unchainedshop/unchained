@@ -1,5 +1,6 @@
 import { SortOption } from './api';
-import { ModuleMutations, TimestampFields, _ID } from './common';
+import { TimestampFields, _ID } from './common';
+import { ModuleMutations } from './core';
 
 export type Currency = {
   _id?: _ID;

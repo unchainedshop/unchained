@@ -5,7 +5,6 @@ import { getFileAdapter } from '../utils/getFileAdapter';
 export const removeFilesService: RemoveFilesService = async ({ fileIds }, requestContext) => {
   const {
     modules: { files },
-    userId,
   } = requestContext;
 
   if (fileIds && typeof fileIds !== 'string' && !Array.isArray(fileIds))
@@ -27,7 +26,7 @@ export const removeFilesService: RemoveFilesService = async ({ fileIds }, reques
 
   const fileIdsToDelete = fileObjects.map((f) => f._id).filter(Boolean);
 
-  await files.deleteMany(fileIdsToDelete, userId);
+  await files.deleteMany(fileIdsToDelete);
 
   return fileIdsToDelete.length;
 };

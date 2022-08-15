@@ -34,7 +34,7 @@ export default (app) =>
             fileName,
           );
           res.writeHead(200);
-          const { length } = await promisePipe(req, writeStream);
+          const { length } = (await promisePipe(req, writeStream)) as any;
           await services.files.linkFile({ fileId, size: length }, req.unchainedContext);
           res.end();
           return;

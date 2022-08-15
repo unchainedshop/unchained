@@ -9,6 +9,6 @@ export enum LogLevel {
 }
 
 export interface LogOptions extends LoggerOptions {
-  level: LogLevel;
+  level?: LogLevel;
   [x: string]: any;
 }

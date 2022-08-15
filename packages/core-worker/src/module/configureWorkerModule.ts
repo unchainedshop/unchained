@@ -1,10 +1,5 @@
-import {
-  ModifyResult,
-  ModuleInput,
-  ModuleMutations,
-  Projection,
-  Query,
-} from '@unchainedshop/types/common';
+import { ModifyResult, Projection, Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
@@ -245,23 +240,18 @@ export const configureWorkerModule = async ({
       return work;
     },
 
-    rescheduleWork: async (currentWork, scheduled, { userId }) => {
-      await mutations.update(
-        currentWork._id,
-        {
-          $set: {
-            scheduled,
-          },
+    rescheduleWork: async (currentWork, scheduled) => {
+      await mutations.update(currentWork._id, {
+        $set: {
+          scheduled,
         },
-        userId,
-      );
+      });
 
       const work = await WorkQueue.findOne(generateDbFilterById(currentWork._id), {});
 
       WorkerDirector.events.emit(WorkerEventTypes.RESCHEDULED, {
         work,
         oldScheduled: currentWork.scheduled,
-        userId,
       });
 
       return work;

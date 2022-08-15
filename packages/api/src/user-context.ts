@@ -1,4 +1,5 @@
-import { UnchainedAPI, UnchainedUserContext } from '@unchainedshop/types/api';
+import { UnchainedUserContext } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { IncomingMessage } from 'http';
 
 function isString(input) {
@@ -7,7 +8,7 @@ function isString(input) {
 
 export const getUserContext = async (
   req: IncomingMessage & { cookies?: any },
-  unchainedAPI: UnchainedAPI,
+  unchainedAPI: UnchainedCore,
 ): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
   let loginToken = req.headers['meteor-login-token'];
@@ -28,7 +29,7 @@ export const getUserContext = async (
     if (!isString(loginToken)) throw new Error('Access Token is not a string');
 
     // the hashed token is the key to find the possible current user in the db
-    const hashedToken = unchainedAPI.modules.accounts.createHashLoginToken(loginToken);
+    const hashedToken = unchainedAPI.modules.accounts.createHashLoginToken(loginToken as string);
 
     const currentUser = await unchainedAPI.modules.users.findUserByToken({
       hashedToken,
@@ -52,11 +53,11 @@ export const getUserContext = async (
         return {
           user: currentUser,
           userId: currentUser._id,
-          loginToken,
+          loginToken: loginToken as string,
         };
       }
     }
-    return { loginToken };
+    return { loginToken: loginToken as string };
   }
 
   return {};

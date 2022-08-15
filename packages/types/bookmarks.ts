@@ -1,5 +1,6 @@
-import { Context } from './api';
-import { ModuleMutations, Query, TimestampFields, _ID } from './common';
+import { Query, TimestampFields, _ID } from './common';
+import { ModuleMutations, UnchainedCore } from './core';
+
 import { User } from './user';
 
 export type UserProductFilter = {
@@ -23,8 +24,8 @@ export interface BookmarksModule extends ModuleMutations<Bookmark> {
   findById: (bookmarkId: string) => Promise<Bookmark>;
   find: (query: Query) => Promise<Array<Bookmark>>;
   existsByUserIdAndProductId: (filter: UserProductFilter) => Promise<boolean>;
-  replaceUserId: (fromUserId: string, toUserId: string, userId: string) => Promise<number>;
-  deleteByUserId: (toUserId: string, userId: string) => Promise<number>;
+  replaceUserId: (fromUserId: string, toUserId: string, userId?: string) => Promise<number>;
+  deleteByUserId: (toUserId: string) => Promise<number>;
 }
 
 /*
@@ -36,8 +37,9 @@ export type MigrateBookmarksService = (
     fromUser: User;
     toUser: User;
     shouldMerge: boolean;
+    countryContext: string;
   },
-  context: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<void>;
 
 export interface BookmarkServices {

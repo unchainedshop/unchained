@@ -6,19 +6,15 @@ import { UnchainedCore } from './core';
 
 export declare type Root = Record<string, unknown>;
 
-export enum SortDirection {
-  ASC = 'ASC',
-  DESC = 'DESC',
-}
 export interface UnchainedUserContext {
   loginToken?: string;
   userId?: string;
   user?: User;
 }
 
-export interface UnchainedAPI extends UnchainedCore {
-  version?: string;
-  roles?: any;
+export enum SortDirection {
+  ASC = 'ASC',
+  DESC = 'DESC',
 }
 
 export type SortOption = {
@@ -47,8 +43,12 @@ export interface UnchainedHTTPServerContext {
   res: OutgoingMessage;
 }
 
-export type Context = UnchainedAPI &
-  UnchainedUserContext &
+export type UnchainedAPI = UnchainedCore;
+
+export type Context = UnchainedCore & {
+  version?: string;
+  roles?: any;
+} & UnchainedUserContext &
   UnchainedLocaleContext &
   UnchainedLoaders &
   UnchainedHTTPServerContext;
@@ -56,7 +56,7 @@ export type Context = UnchainedAPI &
 export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => Promise<Context>;
 
 export type UnchainedServerOptions = {
-  unchainedAPI: UnchainedAPI;
+  unchainedAPI: UnchainedCore;
   expressApp: any;
   roles?: any;
   typeDefs: Array<string>;

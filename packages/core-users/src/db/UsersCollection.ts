@@ -18,7 +18,7 @@ export const UsersCollection = async (db: Db) => {
     {
       index: {
         'emails.address': 1,
-      },
+      } as any,
       options: {
         unique: true,
         sparse: true,
@@ -28,7 +28,7 @@ export const UsersCollection = async (db: Db) => {
     {
       index: {
         'services.email.verificationTokens.token': 1,
-      },
+      } as any,
       options: {
         sparse: true,
       },
@@ -37,7 +37,7 @@ export const UsersCollection = async (db: Db) => {
     {
       index: {
         'services.password.reset.token': 1,
-      },
+      } as any,
       options: {
         sparse: true,
       },
@@ -46,7 +46,7 @@ export const UsersCollection = async (db: Db) => {
     {
       index: {
         'services.resume.loginTokens.hashedToken': 1,
-      },
+      } as any,
       options: {
         sparse: true,
       },
@@ -63,7 +63,7 @@ export const UsersCollection = async (db: Db) => {
         'lastBillingAddress.company': 'text',
         'lastBillingAddress.addressLine': 'text',
         'lastBillingAddress.addressLine2': 'text',
-      },
+      } as any,
       options: {
         weights: {
           _id: 9,

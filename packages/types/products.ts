@@ -208,6 +208,7 @@ export type ProductsModule = {
         currency: string;
         quantity?: number;
         useNetPrice?: boolean;
+        configuration?: Array<ProductConfiguration>;
       },
       requestContext: Context,
     ) => Promise<ProductPrice>;
@@ -400,7 +401,7 @@ export interface ProductHelperTypes {
       queryString?: string;
       limit?: number;
       offset?: number;
-      sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
+      sort?: Array<SortOption>;
     },
     Promise<Array<ProductReview>>
   >;

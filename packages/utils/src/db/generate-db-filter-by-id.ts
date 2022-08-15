@@ -1,9 +1,9 @@
-import { Filter, Query, _ID } from '@unchainedshop/types/common';
+import { Filter, _ID } from '@unchainedshop/types/common';
 
-export const generateDbFilterById = (
+export const generateDbFilterById = <T extends { _id?: _ID }>(
   id: unknown,
-  query: Query = {},
-): Filter<{ _id?: _ID; [x: string]: any }> => {
+  query: Filter<T> = {},
+): Filter<T> => {
   const _id = id || null; // never undefined, else it will get the first one
   return { _id, ...query };
 };

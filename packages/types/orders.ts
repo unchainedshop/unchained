@@ -1,5 +1,6 @@
 import { Context, SortOption } from './api';
 import { Address, Configuration, Contact, FindOptions, LogFields, TimestampFields, _ID } from './common';
+import { UnchainedCore } from './core';
 import { OrderDeliveriesModule } from './orders.deliveries';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
 import { OrderPaymentsModule } from './orders.payments';
@@ -112,16 +113,10 @@ export interface OrderProcessing {
   reject: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
   ensureCartForUser: (
     params: { user: User; countryCode?: string },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  migrateCart: (
-    params: {
-      fromCart: Order;
-      shouldMerge: boolean;
-      toCart?: Order;
-    },
-    requestContext: Context,
-  ) => Promise<Order>;
+  setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
+  moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<OrderTransactionContext>;
   sendOrderRejectionToCustomer: OrderContextParams<OrderTransactionContext>;
@@ -143,7 +138,7 @@ export interface OrderMutations {
   delete: (orderId: string, userId?: string) => Promise<number>;
 
   initProviders: (order: Order, requestContext: Context) => Promise<Order>;
-  invalidateProviders: (requestContext: Context, maxAgeDays: number) => Promise<void>;
+  invalidateProviders: (unchainedAPI: UnchainedCore, maxAgeDays: number) => Promise<void>;
 
   setDeliveryProvider: (
     orderId: string,
@@ -192,8 +187,9 @@ export type MigrateOrderCartsService = (
     fromUser: User;
     toUser: User;
     shouldMerge: boolean;
+    countryContext: string;
   },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Order>;
 
 export type CreateUserCartService = (

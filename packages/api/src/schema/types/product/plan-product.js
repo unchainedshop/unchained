@@ -1,11 +1,11 @@
 export default [
   /* GraphQL */ `
     enum ProductPlanConfigurationInterval {
-      HOUR
-      DAY
-      WEEK
-      MONTH
-      YEAR
+      HOURS
+      DAYS
+      WEEKS
+      MONTHS
+      YEARS
     }
 
     enum ProductPlanUsageCalculationType {

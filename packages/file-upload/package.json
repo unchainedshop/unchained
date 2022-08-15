@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/minio": "^7.0.13",
-    "@types/node": "^16.11.44",
+    "@types/node": "^16.11.48",
     "@unchainedshop/types": "1.x",
     "jest": "^28.1.2",
     "ts-jest": "^28.0.5",

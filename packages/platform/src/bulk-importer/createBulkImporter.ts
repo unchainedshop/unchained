@@ -1,6 +1,6 @@
 import mongodb from 'mongodb';
 import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/types/platform';
-import { BulkImporter } from '@unchainedshop/types/core';
+import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core';
 import * as AssortmentHandlers from './handlers/assortment';
 import * as FilterHandlers from './handlers/filter';
 import * as ProductHandlers from './handlers/product';
@@ -22,7 +22,7 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
   return entityOperation;
 };
 
-export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter => {
+export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImporter => {
   // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
   const BulkImportPayloads = new mongodb.GridFSBucket(db, {
     bucketName: 'bulk_import_payloads',
@@ -30,13 +30,13 @@ export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter 
   });
 
   bulkOperationHandlers = {
-    ASSORTMENT: AssortmentHandlers as BulkImportHandler,
+    ASSORTMENT: AssortmentHandlers,
     PRODUCT: ProductHandlers,
     FILTER: FilterHandlers,
-    ...additionalHandlers,
+    ...(bulkImporterOptions?.handlers || {}),
   };
 
-  const createBulkImporter: BulkImporter['createBulkImporter'] = (options, requestContext) => {
+  const createBulkImporter: BulkImporter['createBulkImporter'] = (options) => {
     const bulkOperations = {};
     const preparationIssues = [];
     const processedOperations = {};
@@ -53,7 +53,7 @@ export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter 
     );
 
     return {
-      prepare: async (event) => {
+      prepare: async (event, unchainedAPI: UnchainedCore) => {
         const entity = event.entity.toUpperCase();
         const operation = event.operation.toLowerCase();
 
@@ -67,7 +67,7 @@ export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter 
         });
 
         try {
-          await handler(event.payload, { bulk, ...options }, requestContext);
+          await handler(event.payload, { bulk, ...options }, unchainedAPI);
           if (!processedOperations[entity]) processedOperations[entity] = {};
           if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
           processedOperations[entity][operation].push(payloadId);
@@ -105,10 +105,10 @@ export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter 
         logger.info(`Import finished without errors`);
         return [operationResults, null];
       },
-      invalidateCaches: async () => {
+      invalidateCaches: async (unchainedAPI: UnchainedCore) => {
         if (skipCacheInvalidation) return;
-        await requestContext.modules.assortments.invalidateCache({});
-        await requestContext.modules.filters.invalidateCache({}, requestContext);
+        await unchainedAPI.modules.assortments.invalidateCache({});
+        await unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI);
       },
     };
   };

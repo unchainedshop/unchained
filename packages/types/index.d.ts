@@ -1,30 +1,13 @@
-import { ApolloServer } from 'apollo-server-express';
 import { IncomingMessage, OutgoingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
-import { Context, SortOption, UnchainedAPI, UnchainedServerOptions } from './api';
+import { Context } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
 import { MessageTypes as MessageTypesType, PlatformOptions } from './platform';
 
 import { BookmarkServices, BookmarksModule } from './bookmarks';
-import {
-  Collection,
-  Db,
-  Document,
-  Filter,
-  FindOptions,
-  IBaseAdapter,
-  IBaseDirector,
-  Indexes,
-  Locale,
-  Locales,
-  ModuleCreateMutation,
-  ModuleInput,
-  ModuleMutations,
-  Query,
-  TimestampFields,
-  _ID,
-} from './common';
+import { Db, IBaseAdapter, IBaseDirector, Locale, Locales, TimestampFields } from './common';
+
 import { CountriesModule, Country, CountryServices } from './countries';
 import { CurrenciesModule } from './currencies';
 import {
@@ -148,51 +131,9 @@ import {
   WorkerSchedule,
   WorkStatus as WorkerStatusType,
 } from './worker';
-import { UnchainedCoreOptions } from './core';
+import { UnchainedCore, UnchainedCoreOptions, ModuleInput } from './core';
 
 declare module '@unchainedshop/utils' {
-  function slugify(text: string): string;
-  function buildSortOptions(sort: Array<SortOption>): { [key: string]: [value: number] };
-  function randomValueHex(len: number): string;
-  function checkId(
-    value: string,
-    error?:
-      | {
-          message: string;
-          path?: string | undefined;
-        }
-      | undefined,
-  ): void;
-
-  function findUnusedSlug(
-    checkSlugIsUniqueFn: (slug: string) => Promise<boolean>,
-    options: { slugify?: (text: string) => string },
-  ): (params: { title?: string; existingSlug: string; newSlug?: string }) => Promise<string>;
-
-  function findLocalizedText<T>(
-    collection: Collection<T>,
-    selector: Query,
-    locale: string | Locale,
-  ): Promise<T>;
-
-  function findPreservingIds<T>(
-    collection: Collection<T>,
-  ): (selector: Query, ids: Array<string>, options?: FindOptions) => Promise<Array<T>>;
-
-  function generateDbObjectId(): string;
-  function generateDbFilterById<T extends { _id?: _ID }>(id: any, query?: Filter<T>): Filter<T>;
-
-  function generateDbMutations<T extends { _id?: _ID }>(
-    collection: Collection<T>,
-    schema: SimpleSchema,
-    options?: { hasCreateOnly: boolean; permanentlyDeleteByDefault: boolean },
-  ): ModuleMutations<T> | ModuleCreateMutation<T>;
-
-  function buildDbIndexes<T extends Document>(
-    collection: Collection<T>,
-    indexes: Indexes<T>,
-  ): Promise<boolean>;
-
   function resolveBestSupported(language: string, locales: Locales): Locale;
   function resolveBestCountry(
     contextCountry: string,
@@ -505,18 +446,13 @@ type APIRoles = {
 };
 
 declare module '@unchainedshop/api' {
-  function startAPIServer(options: UnchainedServerOptions): {
-    apolloGraphQLServer: ApolloServer;
-    bulkImportServer: any;
-  };
-
   function hashPassword(password: string): string;
 
   function useMiddlewareWithCurrentContext(
     expressApp: any,
     path: string,
     fn: (
-      req: IncomingMessage & { unchainedContext: UnchainedAPI },
+      req: IncomingMessage & { unchainedContext: UnchainedCore },
       res: OutgoingMessage,
     ) => Promise<any>,
   ): void;

@@ -17,7 +17,7 @@ const logger = createLogger('unchained:core-payment:datatrans');
 
 const { postUrl, cancelUrl, errorUrl, successUrl, returnUrl } = getPaths(true);
 
-export default (app) => {
+export default (app: any) => {
   useMiddlewareWithCurrentContext(
     app,
     postUrl,
@@ -44,7 +44,7 @@ export default (app) => {
       const [, timestamp] = rawTimestamp.split('=');
 
       const comparableSignature = generateSignature({
-        security: DATATRANS_SECURITY,
+        security: DATATRANS_SECURITY as any,
         signKey: DATATRANS_SIGN2_KEY || DATATRANS_SIGN_KEY,
       })(timestamp, req.body);
 

@@ -1,5 +1,4 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
-import moment from 'moment';
 import { systemLocale } from '@unchainedshop/utils';
 import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
 import { getOrderPositionsData } from './utils/getOrderPositionsData';
@@ -72,21 +71,16 @@ const textTemplate = `
   {{/items}}
 `;
 
-export const resolveForwardDeliveryTemplate: TemplateResolver = async (
-  { config, orderId, transactionContext },
-  context,
-) => {
+export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config, orderId }, context) => {
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
   const orderPricing = modules.orders.pricingSheet(order);
 
-  const momentDate = moment(order.ordered);
-  momentDate.locale(systemLocale.normalized);
-  const orderDate = momentDate.format('lll');
+  const orderDate = new Date(order.ordered).toLocaleString();
 
   const attachments = await getOrderAttachmentsData(order, { fileType: 'DELIVERY_NOTE' }, context);
 
-  const address = transactionContext?.address || order.billingAddress;
+  const address = order.billingAddress;
   const configObject = config.reduce((acc, { key, value }) => {
     return {
       ...acc,

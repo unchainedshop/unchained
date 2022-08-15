@@ -1,4 +1,5 @@
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
   ProductReview,
   ProductReviewQuery,
@@ -8,6 +9,7 @@ import {
 } from '@unchainedshop/types/products.reviews';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection';
 import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema';
 
@@ -88,7 +90,7 @@ export const configureProductReviewsModule = async ({
       const reviewsList = ProductReviews.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort || [{ key: 'rating', value: 'DESC' }]),
+        sort: buildSortOptions(sort || [{ key: 'rating', value: SortDirection.DESC } as SortOption]),
       });
 
       return reviewsList.toArray();

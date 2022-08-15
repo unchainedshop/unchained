@@ -12,6 +12,7 @@ import {
   Sort,
   UpdateFilter,
   UpdateOptions,
+  GridFSBucket,
 } from 'mongodb';
 import type { Locale, Locales } from 'locale';
 import { LogOptions } from './logs';
@@ -33,6 +34,7 @@ export type {
   Sort,
   UpdateFilter as Update,
   UpdateOptions,
+  GridFSBucket,
 };
 
 export type _ID = string;
@@ -43,40 +45,6 @@ export type Indexes<T extends Document> = Array<{
   index: { [key in keyof T]?: IndexDirection }; // TODO: Support key with object path (e.g. 'product.proxy.assignments')
   options?: CreateIndexesOptions;
 }>;
-
-/*
- * Module
- */
-
-export interface MigrationRepository<Migration> {
-  db: Db;
-  migrations: Map<number, Migration>;
-  register: (migration: Migration) => void;
-  allMigrations: () => Array<Migration>;
-}
-
-export interface ModuleInput<Options extends Record<string, any>> {
-  db: Db;
-  migrationRepository?: MigrationRepository<any>;
-  options?: Options;
-}
-
-export interface ModuleCreateMutation<T> {
-  create: (doc: T, userId?: string) => Promise<string | null>;
-}
-
-export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
-  update: (_id: string, doc: UpdateFilter<T> | T, userId?: string) => Promise<string>;
-  delete: (_id: string, userId?: string) => Promise<number>;
-  deletePermanently: (_id: string, userId?: string) => Promise<number>;
-}
-
-export interface ModuleMutationsWithReturnDoc<T> {
-  create: (doc: T, userId?: string) => Promise<T>;
-  update: (_id: _ID, doc: UpdateFilter<T> | T, userId?: string) => Promise<T>;
-  delete: (_id: _ID, userId?: string) => Promise<T>;
-  deletePermanently: (_id: string, userId?: string) => Promise<T>;
-}
 
 /*
  * Data definitions

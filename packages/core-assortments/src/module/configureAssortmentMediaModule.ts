@@ -3,7 +3,9 @@ import {
   AssortmentMediaModule,
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media';
-import { ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -28,7 +30,7 @@ const ASSORTMENT_MEDIA_EVENTS = [
 FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules, userId }) => {
   await modules.assortments.media.create(
     {
-      assortmentId: file.meta.assortmentId,
+      assortmentId: file.meta.assortmentId as string,
       mediaId: file._id,
     },
     file.updatedBy || file.createdBy || userId,

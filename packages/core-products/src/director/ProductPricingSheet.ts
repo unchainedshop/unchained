@@ -65,14 +65,15 @@ export const ProductPricingSheet = (
       });
     },
 
-    unitPrice({ useNetPrice = false } = {}) {
+    unitPrice(unitPriceParams) {
       const netAmount = this.net();
       const grossAmount = this.gross();
       return {
-        amount: Math.round((useNetPrice ? netAmount : grossAmount) / this.quantity),
+        amount: Math.round((unitPriceParams?.useNetPrice ? netAmount : grossAmount) / this.quantity),
         currency: this.currency,
-        isNetPrice: useNetPrice,
+        isNetPrice: unitPriceParams?.useNetPrice,
         isTaxable: grossAmount !== netAmount,
+        category: ProductPricingRowCategory.Item,
       };
     },
 

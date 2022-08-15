@@ -169,7 +169,7 @@ export const PlanProduct = {
     ],
   },
   plan: {
-    billingInterval: 'WEEK',
+    billingInterval: 'WEEKS',
     billingIntervalCount: 1,
     usageCalculationType: 'LICENSED',
     trialInterval: null,

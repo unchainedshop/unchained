@@ -37,34 +37,26 @@ const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
 
 export const queueWorkers = [];
 
-export const startPlatform = async (
-  {
-    modules = {},
-    services = {},
-    typeDefs = [],
-    resolvers = [],
-    options = {},
-    rolesOptions = {},
-    expressApp,
-    bulkImporter: bulkImporterOptions,
-    schema,
-    plugins,
-    cache,
-    workQueueOptions,
-    context,
-    introspection,
-    playground,
-    tracing,
-    cacheControl,
-    corsOrigins,
-  }: PlatformOptions = {
-    modules: {},
-    services: {},
-    typeDefs: [],
-    resolvers: [],
-    options: {},
-  },
-) => {
+export const startPlatform = async ({
+  modules = {},
+  services = {},
+  typeDefs = [],
+  resolvers = [],
+  options = {},
+  rolesOptions = {},
+  expressApp,
+  bulkImporter: bulkImporterOptions,
+  schema,
+  plugins,
+  cache,
+  workQueueOptions,
+  context,
+  introspection,
+  playground,
+  tracing,
+  cacheControl,
+  corsOrigins,
+}: PlatformOptions) => {
   exitOnMissingEnvironmentVariables();
 
   // Configure database
@@ -72,7 +64,7 @@ export const startPlatform = async (
 
   // Prepare Migrations
   const migrationRepository = createMigrationRepository(db);
-  const bulkImporter = createBulkImporterFactory(db, bulkImporterOptions?.handlers);
+  const bulkImporter = createBulkImporterFactory(db, bulkImporterOptions);
 
   // Initialise core api using the database
   const unchainedAPI = await initCore({
@@ -82,6 +74,7 @@ export const startPlatform = async (
     modules,
     services,
     options,
+    roleOptions: rolesOptions,
   });
 
   const isWorkQueueEnabled = checkWorkQueueEnabled(workQueueOptions);

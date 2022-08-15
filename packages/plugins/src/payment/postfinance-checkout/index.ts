@@ -1,10 +1,12 @@
-import { IPaymentActions, IPaymentAdapter } from '@unchainedshop/types/payments';
+import {
+  IPaymentActions,
+  IPaymentAdapter,
+  PaymentChargeActionResult,
+} from '@unchainedshop/types/payments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
-import { TransactionCompletionBehavior } from 'postfinancecheckout/src/models/TransactionCompletionBehavior';
-import { PostFinanceCheckout } from 'postfinancecheckout';
 import { createLogger } from '@unchainedshop/logger';
-import { CreationEntityState } from 'postfinancecheckout/src/models/CreationEntityState';
-import { TransactionState } from 'postfinancecheckout/src/models/TransactionState';
+
+import * as pf from 'postfinancecheckout';
 import {
   confirmDeferredTransaction,
   createTransaction,
@@ -19,6 +21,8 @@ import {
 import { orderIsPaid } from './utils';
 import setupPostfinance from './middleware';
 import { CompletionModes, IntegrationModes, SignResponse } from './types';
+
+const { PostFinanceCheckout } = pf;
 
 export default setupPostfinance;
 
@@ -92,7 +96,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
         if (!credentials.meta) return false;
         const { linkedSpaceId } = credentials.meta;
         const tokenData = await getToken(linkedSpaceId, credentials.token);
-        return tokenData.state === CreationEntityState.ACTIVE;
+        return tokenData.state === PostFinanceCheckout.model.CreationEntityState.ACTIVE;
       },
 
       sign: async (transactionContext: any = {}) => {
@@ -120,9 +124,11 @@ const PostfinanceCheckout: IPaymentAdapter = {
         transaction.tokenizationMode =
           PostFinanceCheckout.model.TokenizationMode.ALLOW_ONE_CLICK_PAYMENT;
         if (completionMode === CompletionModes.Immediate) {
-          transaction.completionBehavior = TransactionCompletionBehavior.COMPLETE_IMMEDIATELY;
+          transaction.completionBehavior =
+            PostFinanceCheckout.model.TransactionCompletionBehavior.COMPLETE_IMMEDIATELY;
         } else if (completionMode === CompletionModes.Deferred) {
-          transaction.completionBehavior = TransactionCompletionBehavior.COMPLETE_DEFERRED;
+          transaction.completionBehavior =
+            PostFinanceCheckout.model.TransactionCompletionBehavior.COMPLETE_DEFERRED;
         }
         if (totalAmount) {
           const lineItemSum = new PostFinanceCheckout.model.LineItemCreate();
@@ -190,16 +196,16 @@ const PostfinanceCheckout: IPaymentAdapter = {
           });
         }
 
-        const { token: { id, ...tokenMeta } = {} } = transaction;
+        const { id, ...tokenMeta } = transaction.token || {};
 
         return {
           transaction,
           transactionId,
           credentials: id && {
             ...tokenMeta,
-            token: id,
+            token: id.toString(),
           },
-        };
+        } as PaymentChargeActionResult;
       },
 
       cancel: async () => {
@@ -209,7 +215,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           return false;
         }
         const transaction = await getTransaction(transactionId);
-        const refund = transaction.state === TransactionState.FULFILL;
+        const refund = transaction.state === PostFinanceCheckout.model.TransactionState.FULFILL;
         const order = await modules.orders.findOrder({
           orderId: orderPayment.orderId,
         });
@@ -229,7 +235,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
           return false;
         }
         const transaction = await getTransaction(transactionId);
-        if (transaction.state === TransactionState.AUTHORIZED) {
+        if (transaction.state === PostFinanceCheckout.model.TransactionState.AUTHORIZED) {
           return confirmDeferredTransaction(transactionId);
         }
         return false;

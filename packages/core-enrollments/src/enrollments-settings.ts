@@ -1,4 +1,5 @@
 import later from '@breejs/later';
+import { EnrollmentsSettingsOptions } from '@unchainedshop/types/enrollments';
 import { generateRandomHash } from '@unchainedshop/utils';
 
 const everyHourSchedule = later.parse.text('every 59 minutes');
@@ -14,7 +15,7 @@ export const enrollmentsSettings = {
     autoSchedulingSchedule = everyHourSchedule,
     autoSchedulingInput = emptyObject,
     enrollmentNumberHashFn = generateRandomHash,
-  } = {}) {
+  }: EnrollmentsSettingsOptions = {}) {
     this.autoSchedulingSchedule = autoSchedulingSchedule;
     this.autoSchedulingInput = autoSchedulingInput || emptyObject;
     this.enrollmentNumberHashFn = enrollmentNumberHashFn;

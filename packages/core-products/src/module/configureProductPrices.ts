@@ -52,7 +52,7 @@ export const configureProductPricesModule = ({
 
   const userPrice: ProductsModule['prices']['userPrice'] = async (
     product,
-    { quantity = 1, country, currency, useNetPrice },
+    { quantity = 1, country, currency, useNetPrice, configuration },
     requestContext,
   ) => {
     const user = await requestContext.modules.users.findUserById(requestContext.userId);
@@ -63,6 +63,7 @@ export const configureProductPricesModule = ({
         country,
         currency,
         quantity,
+        configuration,
       },
       requestContext,
     );

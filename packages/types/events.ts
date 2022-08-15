@@ -1,5 +1,6 @@
 import { SortOption } from './api';
-import { FindOptions, ModuleCreateMutation, Query, TimestampFields, _ID } from './common';
+import { FindOptions, Query, TimestampFields, _ID } from './common';
+import { ModuleCreateMutation } from './core';
 
 export type EventPayload = {
   context?: Record<string, unknown>;

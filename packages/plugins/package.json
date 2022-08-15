@@ -2,9 +2,44 @@
   "name": "@unchainedshop/plugins",
   "version": "1.2.11",
   "main": "lib/plugins-index.js",
+  "types": "lib/plugins-index.d.ts",
   "exports": {
     ".": "./lib/plugins-index.js",
     "./*": "./lib/*"
+  },
+  "typesVersions": {
+    "*": {
+      "delivery/*": [
+        "./lib/delivery/*"
+      ],
+      "enrollments/*": [
+        "./lib/enrollments/*"
+      ],
+      "events/*": [
+        "./lib/events/*"
+      ],
+      "files/*": [
+        "./lib/files/*"
+      ],
+      "filters/*": [
+        "./lib/filters/*"
+      ],
+      "payment/*": [
+        "./lib/payment/*"
+      ],
+      "pricing/*": [
+        "./lib/pricing/*"
+      ],
+      "quotations/*": [
+        "./lib/quotations/*"
+      ],
+      "warehousing/*": [
+        "./lib/warehousing/*"
+      ],
+      "worker/*": [
+        "./lib/worker/*"
+      ]
+    }
   },
   "type": "module",
   "scripts": {
@@ -29,7 +64,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
-    "@types/node": "^16.11.44",
+    "@types/node": "^16.11.48",
     "@unchainedshop/api": "1.x",
     "@unchainedshop/client-oauth2": "^4.3.3",
     "@unchainedshop/core-delivery": "1.x",
@@ -53,7 +88,6 @@
     "jest": "^28.1.2",
     "JSONStream": "^1.3.5",
     "minio": "^7.0.28",
-    "moment": "^2.29.3",
     "mongodb": "^4.7.0",
     "node-sheets": "^1.1.9",
     "nodemailer": "^6.7.5",

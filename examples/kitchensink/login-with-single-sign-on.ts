@@ -21,7 +21,7 @@ const loginWithSingleSignOn = async (remoteToken, unchainedAPI: Context) => {
           'mutation consume($token: ID!) { controlConsumeSingleSignOnToken(token: $token) { domain } }',
       }),
     });
-    const json = await result.json();
+    const json: any = await result.json();
     if (json?.errors?.length > 0) {
       throw new Error(json.errors[0].message);
     }

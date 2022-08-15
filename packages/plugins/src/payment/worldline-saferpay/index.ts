@@ -1,4 +1,4 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { IPaymentAdapter, PaymentChargeActionResult } from '@unchainedshop/types/payments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { PaymentPageInitializeInput, SaferpayClient } from './worldline-saferpay-client';
 
@@ -103,13 +103,16 @@ const WordlineSaferpay: IPaymentAdapter = {
           RequestHeader: saferpayClient.buildRequestHeader(orderPayment._id, 0),
           Token: transactionId,
         });
-        return (
+        const success =
           !paymentPageAssert.ErrorMessage &&
           paymentPageAssert.Transaction.Amount.Value === totalAmount.toString() &&
           paymentPageAssert.Transaction.Amount.CurrencyCode === order.currency &&
           (paymentPageAssert.Transaction.Status === 'AUTHORIZED' ||
-            paymentPageAssert.Transaction.Status === 'CAPTURED')
-        );
+            paymentPageAssert.Transaction.Status === 'CAPTURED');
+        if (success) {
+          return paymentPageAssert.Transaction as PaymentChargeActionResult;
+        }
+        return false;
       },
 
       cancel: async () => {

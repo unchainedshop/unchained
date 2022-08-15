@@ -27,7 +27,7 @@ export interface AccountsSettingsOptions {
 export interface AccountsSettings {
   autoMessagingAfterUserCreation: boolean;
   mergeUserCartsOnLogin: boolean;
-  configureSettings: (options?: AccountsSettingsOptions) => void;
+  configureSettings: (options: AccountsSettingsOptions, context: any) => void;
 }
 
 /*
@@ -107,7 +107,7 @@ export interface AccountsModule {
       oldPassword?: string;
       oldPlainPassword?: string;
     },
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   resetPassword: (
     params: { newPassword?: string; newPlainPassword?: string; token: string },
     context: Context,

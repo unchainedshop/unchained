@@ -67,7 +67,7 @@ export const configureFilterTextsModule = ({
     findLocalizedText: async ({ filterId, filterOptionValue, locale }) => {
       const parsedLocale = new Locale(locale);
 
-      const text = await findLocalizedText<FilterText>(
+      const text = await findLocalizedText(
         FilterTexts,
         {
           filterId,

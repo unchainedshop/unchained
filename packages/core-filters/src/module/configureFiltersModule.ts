@@ -1,5 +1,7 @@
 import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
-import { Filter as DbFilter, ModuleInput, ModuleMutations, Query } from '@unchainedshop/types/common';
+import { Filter as DbFilter, Query } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+
 import {
   Filter,
   FilterQuery,

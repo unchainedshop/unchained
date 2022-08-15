@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
   DeliveryContext,
   DeliveryModule,
@@ -7,7 +7,6 @@ import {
   DeliveryProviderQuery,
   DeliverySettingsOptions,
 } from '@unchainedshop/types/delivery';
-import { PaymentProvider } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet';
@@ -103,7 +102,7 @@ export const configureDeliveryModule = async ({
 
     findSupported: async (deliveryContext, requestContext) => {
       const foundProviders = await DeliveryProviders.find(buildFindSelector({})).toArray();
-      const providers: PaymentProvider[] = await asyncFilter(
+      const providers: DeliveryProvider[] = await asyncFilter(
         foundProviders,
         async (provider: DeliveryProvider) => {
           try {

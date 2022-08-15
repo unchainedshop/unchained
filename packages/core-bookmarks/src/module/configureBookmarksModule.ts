@@ -1,6 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { BookmarksCollection } from '../db/BookmarksCollection';
 import { BookmarkSchema } from '../db/BookmarksSchema';
@@ -52,7 +52,7 @@ export const configureBookmarksModule = async ({
           $set: {
             userId: toUserId,
             updated: new Date(),
-            updatedBy: userId,
+            updatedBy: userId || toUserId,
           },
         },
       );

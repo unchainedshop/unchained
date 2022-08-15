@@ -1,4 +1,5 @@
-import { UnchainedAPI, UnchainedContextResolver } from '@unchainedshop/types/api';
+import { UnchainedContextResolver } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { IncomingMessage, OutgoingMessage } from 'http';
 import instantiateLoaders from './loaders';
 import { getLocaleContext } from './locale-context';
@@ -13,7 +14,7 @@ export const setCurrentContextResolver = (newContext: UnchainedContextResolver) 
 };
 
 export const createContextResolver =
-  (unchainedAPI: UnchainedAPI, roles: any, version: string): UnchainedContextResolver =>
+  (unchainedAPI: UnchainedCore, roles: any, version: string): UnchainedContextResolver =>
   async ({ req, res, ...apolloContext }) => {
     const loaders = await instantiateLoaders(req, unchainedAPI);
     const userContext = await getUserContext(req, unchainedAPI);
@@ -36,7 +37,7 @@ export const useMiddlewareWithCurrentContext = (expressApp, path, middleware) =>
   expressApp.use(
     path,
     async function middlewareWithContext(
-      req: IncomingMessage & { unchainedContext?: UnchainedAPI },
+      req: IncomingMessage & { unchainedContext?: UnchainedCore },
       res: OutgoingMessage,
       next,
     ) {

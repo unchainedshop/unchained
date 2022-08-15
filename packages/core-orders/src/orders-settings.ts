@@ -1,6 +1,7 @@
+import { OrdersSettingsOptions } from '@unchainedshop/types/orders';
 import { generateRandomHash } from '@unchainedshop/utils';
 
-export const defaultValidateOrderPosition = ({ product }, { modules }) => {
+export const defaultValidateOrderPosition = async ({ product }, { modules }) => {
   if (!modules.products.isActive(product)) {
     throw new Error('This product is inactive');
   }
@@ -15,7 +16,7 @@ export const ordersSettings = {
     ensureUserHasCart = false,
     orderNumberHashFn = generateRandomHash,
     validateOrderPosition = defaultValidateOrderPosition,
-  } = {}) {
+  }: OrdersSettingsOptions = {}) {
     this.ensureUserHasCart = ensureUserHasCart;
     this.orderNumberHashFn = orderNumberHashFn;
     this.validateOrderPosition = validateOrderPosition;

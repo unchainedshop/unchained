@@ -1,6 +1,7 @@
-import { AccountsModule } from '@unchainedshop/types/accounts';
+import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { v4 as uuidv4 } from 'uuid';
+import { ModuleInput } from '@unchainedshop/types/core';
 import { accountsSettings } from '../accounts-settings';
 import { accountsPassword } from '../accounts/accountsPassword';
 import { UnchainedAccountsServer } from '../accounts/accountsServer';
@@ -9,7 +10,10 @@ import { evaluateContext } from './utils/evaluateContext';
 import { filterContext } from './utils/filterContext';
 import { hashPassword } from './utils/hashPassword';
 
-export const configureAccountsModule = async ({ db, options }): Promise<AccountsModule> => {
+export const configureAccountsModule = async ({
+  db,
+  options,
+}: ModuleInput<AccountsSettingsOptions>): Promise<AccountsModule> => {
   const dbManager = createDbManager(db);
 
   const accountsServer = new UnchainedAccountsServer(
@@ -17,6 +21,7 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
       db: dbManager,
       useInternalUserObjectSanitizer: false,
       siteUrl: process.env.ROOT_URL,
+      tokenSecret: process.env.UNCHAINED_TOKEN_SECRET,
     },
     {
       password: accountsPassword,
@@ -55,7 +60,13 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
     removeEmail: async (userId, email) => accountsPassword.removeEmail(userId, email),
 
     findUnverifiedUserByToken: async (token) => dbManager.findUserByEmailVerificationToken(token),
+
+    // eslint-disable-next-line
+    // @ts-ignore : Accountsjs is BADLY typed!
     findUserByEmail: async (email) => accountsPassword.findUserByEmail(email),
+
+    // eslint-disable-next-line
+    // @ts-ignore : Accountsjs is BADLY typed!
     findUserByUsername: async (username) => accountsPassword.findUserByUsername(username),
 
     sendVerificationEmail: async (email) => accountsPassword.sendVerificationEmail(email),
@@ -107,6 +118,8 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
     loginWithService: async (params, rawContext) => {
       const context = evaluateContext(filterContext(rawContext));
 
+      // eslint-disable-next-line
+      // @ts-ignore : Accountsjs is BADLY typed!
       const { user: tokenUser, token: loginToken } = await accountsServer.loginWithService(
         params.service,
         params,
@@ -114,6 +127,8 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
       );
 
       await accountsServer.getHooks().emit('LoginTokenCreated', {
+        // eslint-disable-next-line
+        // @ts-ignore : Accountsjs is BADLY typed!
         userId: tokenUser._id,
         user: tokenUser,
         connection: context,
@@ -121,6 +136,8 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
       });
 
       return {
+        // eslint-disable-next-line
+        // @ts-ignore : Accountsjs is BADLY typed!
         id: tokenUser._id,
         token: loginToken.token,
         tokenExpires: loginToken.when,
@@ -164,30 +181,31 @@ export const configureAccountsModule = async ({ db, options }): Promise<Accounts
       const newPassword = newHashedPassword || hashPassword(newPlainPassword);
       const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
 
-      const success = await accountsPassword
-        .changePassword(userId, oldPassword, newPassword)
-        .then(() => true) // Map null to success
-        .catch((error: Error) => {
-          log('Error while changing password', {
-            level: LogLevel.Error,
-            ...error,
-          });
-          return false;
+      try {
+        await accountsPassword.changePassword(userId, oldPassword, newPassword);
+        return true;
+      } catch (error) {
+        log('Error while changing password', {
+          level: LogLevel.Error,
+          ...error,
         });
-      return success;
+        return false;
+      }
     },
-    sendResetPasswordEmail: (email) =>
-      accountsPassword
-        .sendResetPasswordEmail(email)
-        .then(() => true) // Map null to success
-        .catch((error: Error) => {
-          log('Error while sending reset password', {
-            level: LogLevel.Error,
-            ...error,
-            email,
-          });
-          return false;
-        }),
+
+    sendResetPasswordEmail: async (email) => {
+      try {
+        await accountsPassword.sendResetPasswordEmail(email);
+        return true;
+      } catch (error) {
+        log('Error while sending reset password', {
+          level: LogLevel.Error,
+          ...error,
+          email,
+        });
+        return false;
+      }
+    },
 
     resetPassword: async ({ newPassword: newHashedPassword, newPlainPassword, token }, context) => {
       const user = await dbManager.findUserByResetPasswordToken(token);

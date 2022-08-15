@@ -50,6 +50,8 @@ const createBityAuth = () => {
       'https://auth.bity.com/scopes/exchange.history',
       'offline_access',
     ],
+    // eslint-disable-next-line
+    // @ts-ignore
     sendClientCredentialsInBody: true,
   });
 };
@@ -190,7 +192,7 @@ export default (app) => {
     if (req.method === 'GET') {
       try {
         const resolvedContext = req.unchainedContext;
-        await checkAction(resolvedContext, actions.managePaymentProviders);
+        await checkAction(resolvedContext, (actions as any).managePaymentProviders);
 
         const bityAuthClient = createBityAuth();
         const uri = bityAuthClient.code.getUri();
@@ -219,7 +221,7 @@ export default (app) => {
     if (req.method === 'GET') {
       try {
         const resolvedContext = req.unchainedContext as Context;
-        await checkAction(resolvedContext, actions.managePaymentProviders);
+        await checkAction(resolvedContext, (actions as any).managePaymentProviders);
         const bityAuthClient = createBityAuth();
         const user = await bityAuthClient.code.getToken(req.originalUrl);
         await upsertBityCredentials(user, resolvedContext);
@@ -337,7 +339,7 @@ const Bity: IPaymentAdapter = {
         });
       },
 
-      charge: async () => {
+      charge: async (): Promise<false> => {
         const { order } = params.paymentContext;
         const { bityPayload, bitySignature } = order?.context || {};
 

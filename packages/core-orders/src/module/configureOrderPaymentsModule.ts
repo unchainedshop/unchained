@@ -1,4 +1,6 @@
-import { Collection, Filter, ModuleMutations, Query, Update } from '@unchainedshop/types/common';
+import { Collection, Filter, Query, Update } from '@unchainedshop/types/common';
+import { ModuleMutations } from '@unchainedshop/types/core';
+
 import { OrdersModule } from '@unchainedshop/types/orders';
 import {
   OrderPayment,
@@ -83,9 +85,13 @@ export const configureOrderPaymentsModule = ({
       },
     };
     if (transactionId) {
+      // eslint-disable-next-line
+      // @ts-ignore
       modifier.$set.transactionId = transactionId;
     }
     if (status === OrderPaymentStatus.PAID) {
+      // eslint-disable-next-line
+      // @ts-ignore
       modifier.$set.paid = date;
     }
 

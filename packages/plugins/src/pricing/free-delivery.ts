@@ -20,6 +20,8 @@ export const DeliveryFreePrice: IDeliveryPricingAdapter = {
       calculate: async () => {
         pricingAdapter.resultSheet().addFee({
           amount: 0,
+          isTaxable: false,
+          isNetPrice: false,
           meta: { adapter: DeliveryFreePrice.key },
         });
         return pricingAdapter.calculate();

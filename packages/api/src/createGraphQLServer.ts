@@ -61,6 +61,8 @@ export default (expressApp, options) => {
         code,
         ...extensions,
       });
+      // eslint-disable-next-line
+      // @ts-ignore
       apolloError.path = path;
       return apolloError;
     },

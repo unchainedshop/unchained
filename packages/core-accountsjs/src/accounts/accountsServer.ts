@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { randomValueHex } from '@unchainedshop/utils';
 
 export class UnchainedAccountsServer extends AccountsServer {
+  public users;
+
   DEFAULT_LOGIN_EXPIRATION_DAYS = 30;
 
   LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
@@ -22,7 +24,7 @@ export class UnchainedAccountsServer extends AccountsServer {
 
   async removeExpiredTokens(userId) {
     const tokenLifetimeMs = this.getTokenLifetimeMs();
-    const oldestValidDate = new Date(new Date() - tokenLifetimeMs);
+    const oldestValidDate = new Date(new Date().getTime() - tokenLifetimeMs);
     await this.users.updateUser(
       {
         _id: userId,
@@ -43,10 +45,12 @@ export class UnchainedAccountsServer extends AccountsServer {
   }
 
   getTokenLifetimeMs() {
+    const options = this.options as any; // we know that loginExpirationInDays can exist!
+
     const loginExpirationInDays =
-      this.options.loginExpirationInDays === null
+      options.loginExpirationInDays === null
         ? this.LOGIN_UNEXPIRING_TOKEN_DAYS
-        : this.options.loginExpirationInDays;
+        : options.loginExpirationInDays;
     return (loginExpirationInDays || this.DEFAULT_LOGIN_EXPIRATION_DAYS) * 24 * 60 * 60 * 1000;
   }
 
@@ -61,6 +65,8 @@ export class UnchainedAccountsServer extends AccountsServer {
 
   // We override the loginWithUser to use Meteor specific mechanism instead of accountjs JWT
   // https://github.com/accounts-js/accounts/blob/7f4da2d34a88fbf77cccbff799d2a59ce43649b6/packages/server/src/accounts-server.ts#L263
+  // eslint-disable-next-line
+  // @ts-ignore : Dirty hack :()
   async loginWithUser(user) {
     // Random.secret uses a default value of 43
     const date = new Date();
@@ -92,13 +98,19 @@ export class UnchainedAccountsServer extends AccountsServer {
     };
   }
 
+  // eslint-disable-next-line
+  // @ts-ignore : Dirty hack :()
   async logout({ userId, token }) {
     try {
       await this.destroyToken(userId, token);
+      // eslint-disable-next-line
+      // @ts-ignore
       this.hooks.emit(ServerHooks.LogoutSuccess, {
         user: await this.users.findUserById(userId),
       });
     } catch (error) {
+      // eslint-disable-next-line
+      // @ts-ignore
       this.hooks.emit(ServerHooks.LogoutError, error);
       throw error;
     }

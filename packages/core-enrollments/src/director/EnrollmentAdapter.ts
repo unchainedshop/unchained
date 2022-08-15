@@ -1,13 +1,17 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import moment from 'moment';
+import { startOfHour, startOfMinute, add } from 'date-fns';
 
 import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
 
-const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEK') => {
-  const start = moment(referenceDate).startOf(interval === 'HOUR' ? 'minute' : 'hour');
+const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
+  const lowerCase = interval.toLowerCase();
+  const start = lowerCase === 'hours' ? startOfMinute(referenceDate) : startOfHour(referenceDate);
+
   return {
-    start: start.toDate(),
-    end: start.clone().add(intervalCount, interval).toDate(),
+    start,
+    end: add(start, {
+      [lowerCase]: intervalCount,
+    }),
   };
 };
 

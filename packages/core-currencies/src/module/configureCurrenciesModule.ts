@@ -1,4 +1,4 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
@@ -83,6 +83,10 @@ export const configureCurrenciesModule = async ({
       const deletedCount = await mutations.delete(currencyId, userId);
       emit('CURRENCY_REMOVE', { currencyId });
       return deletedCount;
+    },
+
+    deletePermanently: async (_id, userId) => {
+      return mutations.deletePermanently(_id, userId);
     },
   };
 };

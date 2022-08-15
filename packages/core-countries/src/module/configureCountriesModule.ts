@@ -1,4 +1,4 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/common';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/countries';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
@@ -93,5 +93,7 @@ export const configureCountriesModule = async ({
       emit('COUNTRY_REMOVE', { countryId });
       return deletedCount;
     },
+
+    deletePermanently: mutations.deletePermanently,
   };
 };

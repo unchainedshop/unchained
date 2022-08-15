@@ -1,5 +1,6 @@
-import { Context, SortOption } from './api';
-import { FindOptions, ModuleMutations, TimestampFields, _ID } from './common';
+import { SortOption } from './api';
+import { FindOptions, TimestampFields, _ID } from './common';
+import { ModuleMutations, UnchainedCore } from './core';
 
 export type Country = {
   _id?: _ID;
@@ -33,7 +34,7 @@ export type CountriesModule = ModuleMutations<Country> & {
 
 export type ResolveDefaultCurrencyCodeService = (
   params: { isoCode: string },
-  context: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<string>;
 
 export interface CountryServices {

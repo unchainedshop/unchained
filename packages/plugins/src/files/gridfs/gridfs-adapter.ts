@@ -1,4 +1,4 @@
-import { IFileAdapter } from '@unchainedshop/types/files';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files';
 import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
@@ -64,7 +64,7 @@ export const GridFSAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName),
       putURL,
       url,
-    };
+    } as UploadFileData & { putURL: string };
   },
 
   async uploadFileFromStream(directoryName: string, rawFile: any, { modules }: any) {
@@ -84,7 +84,7 @@ export const GridFSAdapter: IFileAdapter = {
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
 
-    const file = await promisePipe(stream, writeStream);
+    const file: any = await promisePipe(stream, writeStream);
     const url = `/gridfs/${directoryName}/${_id}`;
 
     return {
@@ -95,7 +95,7 @@ export const GridFSAdapter: IFileAdapter = {
       size: file.length,
       type: mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype,
       url,
-    };
+    } as UploadFileData;
   },
 
   async uploadFileFromURL(
@@ -111,7 +111,7 @@ export const GridFSAdapter: IFileAdapter = {
 
     const downloadStream = await createDownloadStream(href, headers);
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
-    const file = await promisePipe(downloadStream, writeStream);
+    const file: any = await promisePipe(downloadStream, writeStream);
     const url = `/gridfs/${directoryName}/${_id}`;
 
     return {
@@ -122,7 +122,7 @@ export const GridFSAdapter: IFileAdapter = {
       size: file.length,
       type: mimeType.lookup(fileName),
       url,
-    };
+    } as UploadFileData;
   },
 
   async removeFiles(files, { modules }: any) {

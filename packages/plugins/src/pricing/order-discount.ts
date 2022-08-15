@@ -133,6 +133,8 @@ const OrderDiscount: IOrderPricingAdapter = {
             pricingAdapter.resultSheet().addDiscount({
               amount: discountAmount * -1,
               discountId,
+              isTaxable: false,
+              isNetPrice: false,
               meta: {
                 adapter: OrderDiscount.key,
               },

@@ -1,12 +1,7 @@
 import SimpleSchema from 'simpl-schema';
-import {
-  Collection,
-  ModuleMutations,
-  ModuleCreateMutation,
-  _ID,
-  Update,
-  TimestampFields,
-} from '@unchainedshop/types/common';
+import { Collection, _ID, Update, TimestampFields } from '@unchainedshop/types/common';
+import { ModuleCreateMutation, ModuleMutations } from '@unchainedshop/types/core';
+
 import { checkId } from './check-id';
 import { generateDbObjectId } from './generate-db-object-id';
 import { generateDbFilterById } from './generate-db-filter-by-id';
@@ -29,7 +24,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
 
   const deletePermanently = async (_id) => {
     checkId(_id);
-    const filter = generateDbFilterById(_id);
+    const filter = generateDbFilterById<T>(_id);
     const result = await collection.deleteOne(filter);
     return result.deletedCount;
   };
@@ -75,7 +70,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
           }
 
           schema.validate(modifier, { modifier: true });
-          const filter = generateDbFilterById(_id, { deleted: null });
+          const filter = generateDbFilterById<T>(_id, { deleted: null });
           await collection.updateOne(filter, modifier);
 
           return _id;
@@ -90,7 +85,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
             return deletePermanently(_id);
           }
           checkId(_id);
-          const filter = generateDbFilterById(_id, { deleted: null });
+          const filter = generateDbFilterById<T>(_id, { deleted: null });
           const modifier = { $set: { deleted: new Date(), deletedBy: userId } };
           const values = schema.clean(modifier, { isModifier: true });
           const result = await collection.updateOne(filter, values);

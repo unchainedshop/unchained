@@ -1,6 +1,6 @@
 import { EventEmitter } from 'stream';
-import { Context } from './api';
 import { IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
+import { UnchainedCore } from './core';
 
 export enum WorkStatus {
   NEW = 'NEW',
@@ -82,13 +82,13 @@ export type WorkerModule = {
   type: (work: Work) => string;
 
   // Mutations
-  addWork: (data: WorkData, userId: string) => Promise<Work>;
+  addWork: (data: WorkData, userId?: string) => Promise<Work>;
 
   allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
 
-  doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
+  doWork: (work: Work, unchainedAPI: UnchainedCore) => Promise<WorkResult<any>>;
 
-  rescheduleWork: (work: Work, scheduled: Date, requestContext) => Promise<Work>;
+  rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
 
   ensureOneWork: (work: Work) => Promise<Work>;
 
@@ -130,7 +130,7 @@ export type WorkScheduleConfiguration = Omit<Partial<Work>, 'input'> & {
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;
 
-  doWork: (input: Input, requestContext: Context, workId: string) => Promise<WorkResult<Output>>;
+  doWork: (input: Input, unchainedAPI: UnchainedCore, workId: string) => Promise<WorkResult<Output>>;
 };
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
@@ -147,7 +147,7 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   // onEmit: (eventName: string, payload: any) => void;
   // offEmit: (eventName: string, payload: any) => void;
 
-  doWork: (work: Work, requestContext: Context) => Promise<WorkResult<any>>;
+  doWork: (work: Work, unchainedAPI: UnchainedCore) => Promise<WorkResult<any>>;
 };
 
 /*
@@ -165,7 +165,7 @@ export type IWorker<P extends { workerId: string }> = {
 
   actions: (
     params: P,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => {
     autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work>>;
     process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;
@@ -180,7 +180,7 @@ export type IScheduler = {
   label: string;
   version: string;
 
-  actions: (requestContext: Context) => {
+  actions: (unchainedAPI: UnchainedCore) => {
     start: () => void;
     stop: () => void;
   };
