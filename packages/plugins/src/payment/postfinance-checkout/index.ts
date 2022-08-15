@@ -7,6 +7,7 @@ import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/co
 import { createLogger } from '@unchainedshop/logger';
 import { createRequire } from 'node:module';
 
+// eslint-disable-next-line
 // @ts-ignore
 import type pf from 'postfinancecheckout';
 import {

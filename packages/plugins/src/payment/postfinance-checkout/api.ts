@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 // @ts-ignore
 import type pf from 'postfinancecheckout';
 import { createRequire } from 'node:module';
