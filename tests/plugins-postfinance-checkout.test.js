@@ -390,7 +390,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           mutation checkoutCart(
             $orderId: ID!
           ) {
-            checkoutCart( orderId: $orderId ) { 
+            checkoutCart( orderId: $orderId ) {
                 _id
             }
           }

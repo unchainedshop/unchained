@@ -22,6 +22,7 @@ describe('Bookmark', () => {
   describe('For admin user ', () => {
     it('return array of all current user bookmarks should ', async () => {
       const {
+        error,
         data: {
           user: { bookmarks },
         },
@@ -75,6 +76,7 @@ describe('Bookmark', () => {
         `,
         variables: {},
       });
+      console.log(error);
       expect(bookmarks.length).toEqual(2);
     });
 

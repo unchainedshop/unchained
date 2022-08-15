@@ -1,14 +1,6 @@
-// eslint-disable-next-line
-// @ts-ignore
-import type pf from 'postfinancecheckout';
-import { createRequire } from 'node:module';
+import pf from 'postfinancecheckout';
 
-const pf: any = {};
-const require = createRequire(import.meta.url);
-const Postfinance: typeof pf = require('postfinancecheckout');
-
-const { PostFinanceCheckout } = Postfinance;
-
+const { PostFinanceCheckout } = pf;
 const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.env;
 const SPACE_ID = parseInt(PFCHECKOUT_SPACE_ID as string, 10);
 const USER_ID = parseInt(PFCHECKOUT_USER_ID as string, 10);

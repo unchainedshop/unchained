@@ -5,11 +5,8 @@ import {
 } from '@unchainedshop/types/payments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
-import { createRequire } from 'node:module';
 
-// eslint-disable-next-line
-// @ts-ignore
-import type pf from 'postfinancecheckout';
+import pf from 'postfinancecheckout';
 import {
   confirmDeferredTransaction,
   createTransaction,
@@ -25,12 +22,7 @@ import { orderIsPaid } from './utils';
 import setupPostfinance from './middleware';
 import { CompletionModes, IntegrationModes, SignResponse } from './types';
 
-const pf: any = {};
-
-const require = createRequire(import.meta.url);
-const Postfinance: typeof pf = require('postfinancecheckout');
-
-const { PostFinanceCheckout } = Postfinance;
+const { PostFinanceCheckout } = pf;
 
 export default setupPostfinance;
 

@@ -1,15 +1,7 @@
 import { Order, OrdersModule } from '@unchainedshop/types/orders';
-// eslint-disable-next-line
-// @ts-ignore
-import type pf from 'postfinancecheckout';
-import { createRequire } from 'node:module';
+import pf from 'postfinancecheckout';
 
-const pf: any = {};
-
-const require = createRequire(import.meta.url);
-const Postfinance: typeof pf = require('postfinancecheckout');
-
-const { PostFinanceCheckout } = Postfinance;
+const { PostFinanceCheckout } = pf;
 
 export const transactionIsPaid = async (
   transaction: pf.PostFinanceCheckout.model.Transaction,
