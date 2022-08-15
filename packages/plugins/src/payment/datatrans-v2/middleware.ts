@@ -17,7 +17,7 @@ const logger = createLogger('unchained:core-payment:datatrans');
 
 const { postUrl, cancelUrl, errorUrl, successUrl, returnUrl } = getPaths(true);
 
-export default (app) => {
+export default (app: any) => {
   useMiddlewareWithCurrentContext(
     app,
     postUrl,

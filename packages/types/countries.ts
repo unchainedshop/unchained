@@ -1,4 +1,4 @@
-import { Context, SortOption } from './api';
+import { SortOption } from './api';
 import { FindOptions, TimestampFields, _ID } from './common';
 import { ModuleMutations, UnchainedCore } from './core';
 

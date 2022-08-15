@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "rootDir": "src",
     "lib": [
       "esnext"
     ],
@@ -23,9 +24,9 @@
       "jest"
     ]
   },
-  "exclude": [
-    "./src/payment/postfinance-checkout/*"
-  ],
+  // "exclude": [
+  //   "./src/payment/postfinance-checkout/*"
+  // ],
   "include": [
     "src"
   ]

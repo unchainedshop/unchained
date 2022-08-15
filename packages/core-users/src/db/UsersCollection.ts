@@ -28,7 +28,7 @@ export const UsersCollection = async (db: Db) => {
     {
       index: {
         'services.email.verificationTokens.token': 1,
-      }  as any,
+      } as any,
       options: {
         sparse: true,
       },
