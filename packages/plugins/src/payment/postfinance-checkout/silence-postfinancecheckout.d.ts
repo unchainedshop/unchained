@@ -29,6 +29,5 @@ export declare namespace PostFinanceCheckout {
     const TransactionIframeService: any;
     const TransactionLightboxService: any;
     const TokenService: any;
-
   }
 }

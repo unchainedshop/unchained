@@ -1,5 +1,4 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging';
-import moment from 'moment';
 import { systemLocale } from '@unchainedshop/utils';
 import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
 import { getOrderPositionsData } from './utils/getOrderPositionsData';
@@ -77,9 +76,7 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config,
   const order = await modules.orders.findOrder({ orderId });
   const orderPricing = modules.orders.pricingSheet(order);
 
-  const momentDate = moment(order.ordered);
-  momentDate.locale(systemLocale.normalized);
-  const orderDate = momentDate.format('lll');
+  const orderDate = new Date(order.ordered).toLocaleString();
 
   const attachments = await getOrderAttachmentsData(order, { fileType: 'DELIVERY_NOTE' }, context);
 

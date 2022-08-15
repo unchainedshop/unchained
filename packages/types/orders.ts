@@ -115,18 +115,8 @@ export interface OrderProcessing {
     params: { user: User; countryCode?: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  setCartOwner: (
-    params: {
-      orderId: string;
-      userId: string;
-    },
-  ) => Promise<void>;
-  moveCartPositions: (
-    params: {
-      fromOrderId: string;
-      toOrderId: string;
-    },
-  ) => Promise<void>;
+  setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
+  moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<OrderTransactionContext>;
   sendOrderRejectionToCustomer: OrderContextParams<OrderTransactionContext>;

@@ -3,7 +3,6 @@ import { randomValueHex } from '@unchainedshop/utils';
 import { accountsSettings } from '@unchainedshop/core-accountsjs';
 import moniker from 'moniker';
 import { UnchainedCore } from '@unchainedshop/types/core';
-import { Context } from '@unchainedshop/types/api';
 
 export const setupAccounts = (unchainedAPI: UnchainedCore) => {
   const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();

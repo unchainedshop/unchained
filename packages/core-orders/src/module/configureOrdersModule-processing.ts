@@ -16,14 +16,12 @@ export const configureOrderModuleProcessing = ({
   OrderPositions,
   OrderDeliveries,
   OrderPayments,
-  updateCalculation,
   updateStatus,
 }: {
   Orders: Collection<Order>;
   OrderPositions: Collection<OrderPosition>;
   OrderDeliveries: Collection<OrderDelivery>;
   OrderPayments: Collection<OrderPayment>;
-  updateCalculation: OrdersModule['updateCalculation'];
   updateStatus: OrdersModule['updateStatus'];
 }): OrderProcessing => {
   registerEvents(ORDER_PROCESSING_EVENTS);

@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { DeliveryPricingAdapter, DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 import {
   DeliveryPricingAdapterContext,
@@ -8,11 +7,7 @@ import {
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
 export const SwissTaxCategories = {
   DEFAULT: {
-    rate: (date) => {
-      const referenceDate = moment(date);
-      if (referenceDate.isBefore('2018-01-01')) {
-        return 0.08;
-      }
+    rate: () => {
       return 0.077;
     },
   },
@@ -31,8 +26,6 @@ export const SwissTaxCategories = {
 };
 
 const getTaxRate = (context: DeliveryPricingAdapterContext) => {
-  const date = context.order && context.order.ordered ? new Date(context.order.ordered) : new Date();
-
   const taxCategoryFromProvider = context.provider?.configuration?.find(({ key }) => {
     if (key === 'swiss-tax-category') return true;
     return null;
@@ -44,7 +37,7 @@ const getTaxRate = (context: DeliveryPricingAdapterContext) => {
   if (taxCategoryFromProvider === SwissTaxCategories.SPECIAL.value) {
     return SwissTaxCategories.SPECIAL.rate();
   }
-  return SwissTaxCategories.DEFAULT.rate(date);
+  return SwissTaxCategories.DEFAULT.rate();
 };
 
 const isDeliveryAddressInSwitzerland = ({ orderDelivery, order, country = null }) => {
