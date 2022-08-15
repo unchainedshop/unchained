@@ -32,6 +32,8 @@ app in ESM mode.
 ## Minor
 - [api] Add sort params to Query.orders, Query.quotations, User.orders, User.enrollments, User.quotations
 - [docs] Add typedocs and fix controlpanel references
+- [core] Improved types
+
 
 ## Patches
 
