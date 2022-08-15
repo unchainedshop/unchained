@@ -1,6 +1,7 @@
 import { hashPassword } from '@unchainedshop/api';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
+import { UnchainedAPI } from '@unchainedshop/types/api';
 import { v4 as uuidv4 } from 'uuid';
 
 const logger = console;
@@ -18,7 +19,7 @@ const seedPassword =
     ? uuidv4().split('-').pop()
     : UNCHAINED_SEED_PASSWORD;
 
-export default async (unchainedApi) => {
+export default async (unchainedApi: UnchainedAPI) => {
   const { modules } = unchainedApi;
   try {
     if ((await modules.users.count({ username: 'admin' })) > 0) {
