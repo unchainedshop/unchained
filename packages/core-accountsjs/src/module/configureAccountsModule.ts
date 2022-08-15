@@ -183,11 +183,13 @@ export const configureAccountsModule = async ({
 
       try {
         await accountsPassword.changePassword(userId, oldPassword, newPassword);
+        return true;
       } catch (error) {
         log('Error while changing password', {
           level: LogLevel.Error,
           ...error,
         });
+        return false;
       }
     },
 

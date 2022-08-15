@@ -107,7 +107,7 @@ export interface AccountsModule {
       oldPassword?: string;
       oldPlainPassword?: string;
     },
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   resetPassword: (
     params: { newPassword?: string; newPlainPassword?: string; token: string },
     context: Context,
