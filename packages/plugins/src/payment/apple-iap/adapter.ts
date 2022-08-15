@@ -22,7 +22,7 @@ const environments = {
   production: 'https://buy.itunes.apple.com/verifyReceipt',
 };
 
-const verifyReceipt = async ({ receiptData, password }) => {
+const verifyReceipt = async ({ receiptData, password }): Promise<any> => {
   const payload: any = {
     'receipt-data': receiptData,
   };

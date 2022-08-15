@@ -22,7 +22,7 @@ export default (
         return {
           json: async () => json,
           status: json?.error ? 500 : 204,
-        };
+        } as any;
       } catch (error) {
         log('DataTrans V2 (makeFetcher) -> Error while trying reading and parsing file', {
           level: LogLevel.Error,
@@ -31,7 +31,7 @@ export default (
         return {
           json: async () => ({ error: { code: 'MOCK', message: 'MOCK' } }),
           status: 500,
-        };
+        } as any;
       }
     };
   }
