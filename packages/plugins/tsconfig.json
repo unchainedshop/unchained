@@ -23,6 +23,9 @@
       "jest"
     ]
   },
+  "exclude": [
+    "./src/payment/postfinance-checkout/*"
+  ],
   "include": [
     "src"
   ]
