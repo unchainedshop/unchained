@@ -1,5 +1,5 @@
 ---
-title: 'Module: Events'
+title: 'Events'
 description: Configure the Events Module
 ---
 
@@ -236,8 +236,7 @@ const handler = new RedisEventEmitter();
 
 EventDirector.setEventAdapter(handler);
 
-Meteor.startup(() => {
-  ...
+
   startPlatform({...});
   ...
   registerEvents([
@@ -245,7 +244,7 @@ Meteor.startup(() => {
       'CUSTOM_EVENT_TWO',
       'CUSTOM_EVENT_THREE',
   ])
-});
+
 
 ```
 

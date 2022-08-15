@@ -1,5 +1,5 @@
 ---
-title: "Module: Files"
+title: "Files"
 description: Configure the Files Module
 ---
 

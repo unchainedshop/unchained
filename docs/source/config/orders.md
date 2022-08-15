@@ -1,5 +1,5 @@
 ---
-title: 'Module: Orders'
+title: 'Orders'
 description: Configure the Orders Module
 ---
 

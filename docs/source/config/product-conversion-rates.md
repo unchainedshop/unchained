@@ -1,5 +1,5 @@
 ---
-title: "Module: Product Conversion Rates"
+title: "Product Conversion Rates"
 description: Configure the product conversion rates
 ---
 

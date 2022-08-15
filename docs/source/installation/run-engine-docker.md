@@ -4,7 +4,7 @@ sidebar: "Run Engine in Docker"
 description: An alternative approach to start the engine in dev mode
 ---
 
-If you have issues installing or running the Meteor app or you don't want to install the Meteor cli on your computer, try it that way to ramp up a dev environment, copy the Dockerfile from the unchained repository https://github.com/unchainedshop/unchained/blob/master/Dockerfile to your engine folder and run the Docker command from there:
+If you have issues installing or running the engine or you don't want to install the nodejs cli on your computer, try it that way to ramp up a dev environment, copy the Dockerfile from the unchained repository https://github.com/unchainedshop/unchained/blob/master/Dockerfile to your engine folder and run the Docker command from there:
 
 ```
 docker build -f Dockerfile.dev -t unchained-local-dev .

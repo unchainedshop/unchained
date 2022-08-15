@@ -1,5 +1,5 @@
 ---
-title: 'Plugin: Payment through Datatrans'
+title: 'Payment through Datatrans'
 description: Configuration Options for our Datatrans Integration
 ---
 

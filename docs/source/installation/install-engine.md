@@ -4,14 +4,13 @@ sidebar_title: Install engine
 ---
 
 > In this section, we will walk you through the steps required to start up an Unchained Engine API server locally.
-> To achieve this, we install and configure a new [Meteor](https://www.meteor.com/) app with the Unchained Engine included.
 
-![diagram](../images/getting-started/Engine_Setup.png)
+![diagram](../images/Unchained_Ecosystem.png)
 
 This tutorial helps you:
 
-- Install and run locally the Meteor application with the Unchained Engine embedded.
-- Access the local Admin UI example admin app
+- Configure and run unchained engine.
+- Access the engine through the [Admin UI sandbox](https://sandbox.unchained.shop/log-in)
 - Open the graphQL playground of your local Unchained Engine
 
 .
@@ -25,7 +24,7 @@ mkdir my-unchained-engine
 cd my-unchained-engine
 ```
 
-2. Use the Unchained initialisation script to download the code.
+2. Use the Unchained initialization script to download the code.
 
 ```bash
 npm init @unchainedshop
@@ -40,7 +39,7 @@ Storefront
 Unchained engine <--
 ```
 
-4. Next two steps are to select the directory, as we already created a new empty directory you can simply press `enter`, and whether you want to initialise git which is up to you.
+4. Next two steps are to select the directory, as we already created a new empty directory you can simply press `enter`, and whether you want to initialize git which is up to you.
 
 ```bash
 ? Directory name relative to current directory
@@ -48,13 +47,13 @@ Unchained engine <--
 ? Do you want Initialize git? no / yes
 ```
 
-5. Install the npm packages
+5. Make sure your node version is 16+ and install the npm packages
 
 ```bash
 npm install
 ```
 
-The installation script downloads, installs and initialises all files and packages required to build and run a new Meteor app that has the Unchained Engine backed in.
+The installation script downloads, installs and initialises all files and packages required to build and run unchained engine.
 
 ## Step 2: Start the Unchained Engine
 
@@ -62,16 +61,19 @@ The installation script downloads, installs and initialises all files and packag
 npm run dev
 ```
 
-Open [localhost:4010](http://localhost:4010) to check if your meteor app is running correctly. You should see an **Login Screen**. Well, log-in!
+Open [localhost:4010](http://localhost:4010) to check if your unchained engine is running correctly. You should see the following **Landing page** in your browser 
+
+![diagram](../images/getting-started/engin_intro.png)
+
+## Open Admin UI sandbox
+On the initial landing page there are various options you can choose including [Use sandbox Admin UI](https://sandbox.unchained.shop/log-in). Click on that button to mange you local engine instance using the admin ui sandbox, it will redirect you to a login page, use the below credentials to login into the engine and make sure to change the credentials as soon as possible
 
 **Username**: _admin@unchained.local_<br />
 **Password**: _password_
 
-You should see the following admin console in your browser (Yes, the UI can be improved. However, it's an admin console that is not visible to any customer).
+![diagram](../images/getting-started/sandbox-login.png)
 
-![diagram](../images/AdminConsole.png)
-
-[localhost:4010/graphql](http://localhost:4010/graphql) opens the GraphQL playground for you to easily execute queries and mutations.
+You can also click on [Graphql playground](http://localhost:4010/graphql) to opens the GraphQL playground for you to easily execute queries and mutations.
 
 ## Step 3: Add Products
 

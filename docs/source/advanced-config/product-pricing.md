@@ -1,5 +1,5 @@
 ---
-title: 'Module: Product Pricing'
+title: 'Product Pricing'
 description: Configure the product price
 ---
 
@@ -77,7 +77,5 @@ Finally you can import this file in the boot file like :
 ```
 import '@unchainedshop/core-pricing/plugins/product-round-price';
 
-Meteor.startup(() => {
-  ...
-});
+startPlatform({...})
 ```

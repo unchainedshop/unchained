@@ -1,5 +1,5 @@
 ---
-title: 'Plugin: Payment through Wordline Saferpay'
+title: 'Payment through Wordline Saferpay'
 description: Configuration Options for our Worldline Saferpay Integration
 ---
 

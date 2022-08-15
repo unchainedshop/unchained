@@ -1,5 +1,5 @@
 ---
-title: 'Module: Delivery'
+title: 'Delivery'
 description: Configure the Delivery Module
 ---
 

@@ -14,7 +14,7 @@ This tutorial helps you:
 - Deploy an Unchained engine backed the project
 
 This tutorial assumes that you are familiar with the command line and
-JavaScript, and that you have a recent version of Meteor.js installed.
+JavaScript, and that you have a recent version of Node.js 16+ installed.
 
 # Building custom unchained engine
 
@@ -39,7 +39,7 @@ The above command will pull a boilerplate Unchained engine instance and a storef
 
 Your project directory now contains the following services:
 
-- **engine**: Contains a boilerplate Meteor project with Unchained as a dependency
+- **engine**: Contains a boilerplate Unchained engine
 - **storefront**: Contains a Next. js-based Web App that connects to Unchained.
 
 before you can run the instance locally there are few environment variables you need to set for each service.

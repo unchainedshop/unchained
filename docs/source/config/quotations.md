@@ -1,5 +1,5 @@
 ---
-title: 'Module: Quotations'
+title: 'Quotations'
 description: Configure the Quotation Module
 ---
 

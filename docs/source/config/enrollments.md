@@ -1,5 +1,5 @@
 ---
-title: 'Module: Enrollments'
+title: 'Enrollments'
 description: Configure the Enrollments Module
 ---
 

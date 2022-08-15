@@ -1,5 +1,5 @@
 ---
-title: 'Module: Accounts'
+title: 'Accounts'
 description: Configure the Accounts Module
 ---
 

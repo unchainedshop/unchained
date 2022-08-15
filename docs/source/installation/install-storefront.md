@@ -5,7 +5,7 @@ sidebar_title: Install storefront
 
 > To test the Unchained Engine we setup the test frontend project **Storefront** created with [React.js](https://reactjs.org/) and [Next.js](https://nextjs.org/) locally.
 
-![diagram](../images/getting-started/Storefront_Setup.png)
+![diagram](../images/Unchained_Ecosystem.png)
 
 This tutorial helps you:
 
@@ -63,15 +63,7 @@ npm install
 
 The installation script downloads, installs and initialises all files and packages required to build and run the storefront web app.
 
-## Step 2: Setup connection
-
-Before running the web app, you need to create an `.env` file in the root directory of _my-storefront-webapp_ and add the graphql API endpoint of your local Unchained Engine to the settings.
-
-```
-printf "UNCHAINED_ENDPOINT=http://localhost:4010/graphql" > .env
-```
-
-## Step 3: Start the app
+## Step 2: Start the app
 
 Now, start the app by using the following command. Make sure that the engine runs that you set the `UNCHAINED_ENDPOINT` environment variable to.
 
@@ -87,8 +79,7 @@ Your Unchained E-Commerce environment is fully setup and running locally.
 
 ## (Connect to a remote test Unchained Engine)
 
-If you skipped the step of adding new products and categories as described in the [Getting Started - Add Product](../getting-started/engine-controlpanel) guide, your store is empty.<br />
-With a little update of our `.env` settings we can change that by connecting to Unchained's remote test engine which contains some prefilled product data.
+Currently the store is empty since you haven't  added any product so far. With a little update of our `.env` settings we can change that by connecting to Unchained's remote test engine which contains some prefilled product data.
 
 - Stop the app: `ctrl+c`
 - Open the file in the _my-storefront-webapp_

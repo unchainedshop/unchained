@@ -3,7 +3,7 @@ title: Setup the Unchained Engine
 sidebar_title: Install engine
 ---
 
-> This tutorial walks you through installing and configuring a new [Meteor](https://www.meteor.com/) app with the server-side only Unchained Engine included.
+> This tutorial walks you through installing and configuring Unchained Engine.
 > An advanced understanding of [Node.js](https://nodejs.org) and [graphQL](https://graphql.org/) is required to follow this tutorial
 
 This tutorial helps you:
@@ -20,15 +20,13 @@ In this section, we will walk you through the steps required to start up an Unch
 Initialize a new Unchained Engine with `npm` (or another package manager such as Yarn):
 
 ```bash
-mkdir my-unchained-engine-meteor-app
-cd my-unchained-engine-meteor-app
+mkdir my-unchained-engine-app
+cd my-unchained-engine-app
 
 npm init @unchainedshop engine
 
 npm run install
 ```
-
-Your project directory now contains a Meteor project with Unchained as a dependency
 
 ## Step 2: Start the Unchained Engine
 
@@ -36,7 +34,7 @@ Your project directory now contains a Meteor project with Unchained as a depende
 npm run dev
 ```
 
-Open [localhost:4010](http://localhost:4010) to check if your meteor app is running correctly. You should see an **Login Screen**. Well, log-in!
+Open [localhost:4010](http://localhost:4010) to check if your app is running correctly. You should see an **Login Screen**. Well, log-in!
 
 Username: admin@unchained.local<br />
 Password: password

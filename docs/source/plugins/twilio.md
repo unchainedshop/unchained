@@ -1,5 +1,5 @@
 ---
-title: 'Plugin: Twilio SMS Communication'
+title: 'Twilio SMS Communication'
 description: Usage and Configuration Options for the Twilio SMS Plugin
 ---
 

@@ -31,7 +31,7 @@ Unchained Engine is built in layers:
 When you set up a new Unchained Engine project, you usually just boot the platform layer by running `startPlatform`.
 
 **App**
-Unchained Engine is loaded as a framework into a common Node.js project. Currently it needs to be a Meteor.js project but we're working hard converting Unchained Engine to modern javascript code at which point you could basically just load Unchained into any Node.js 14+ based project. The user-land app is where your project and your custom project-specific code live.
+Unchained Engine is loaded as a framework into a common Node.js project. The user-land app is where your project and your custom project-specific code live.
 
 **Platform** loads all the default core modules into a unified object, defines the GraphQL schema and resolvers, starts the API server, the work queue and orchestrates configuration of modules, e-mail templates and authentication. The packages "platform" and "api" both belong to the Platform Layer. In some very rare cases you might want to skip the it and directly access the core modules:
 

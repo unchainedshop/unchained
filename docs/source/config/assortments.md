@@ -1,5 +1,5 @@
 ---
-title: "Module: Assortments"
+title: "Assortments"
 description: Configure the Assortments Module
 ---
 

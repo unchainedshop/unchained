@@ -1,5 +1,6 @@
 ---
-title: 'Overview'
+title: 'Modules'
+description: Configure custom module
 ---
 
 The unchained engine has several modules with out the box functionalities. The developer can the use this with default configuration or minimum configuration.
