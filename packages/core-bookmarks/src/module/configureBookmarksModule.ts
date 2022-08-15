@@ -52,7 +52,7 @@ export const configureBookmarksModule = async ({
           $set: {
             userId: toUserId,
             updated: new Date(),
-            updatedBy: userId,
+            updatedBy: userId || toUserId,
           },
         },
       );
