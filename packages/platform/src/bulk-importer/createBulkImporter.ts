@@ -22,7 +22,7 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
   return entityOperation;
 };
 
-export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter => {
+export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImporter => {
   // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
   const BulkImportPayloads = new mongodb.GridFSBucket(db, {
     bucketName: 'bulk_import_payloads',
@@ -33,7 +33,7 @@ export const createBulkImporterFactory = (db, additionalHandlers): BulkImporter 
     ASSORTMENT: AssortmentHandlers,
     PRODUCT: ProductHandlers,
     FILTER: FilterHandlers,
-    ...additionalHandlers,
+    ...(bulkImporterOptions?.handlers || {}),
   };
 
   const createBulkImporter: BulkImporter['createBulkImporter'] = (options) => {
