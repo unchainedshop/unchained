@@ -2,6 +2,7 @@ import { IWorkerAdapter, Work } from '@unchainedshop/types/worker';
 import { MessagingDirector } from '@unchainedshop/core-messaging';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
+import { Context } from '@unchainedshop/types/api';
 
 export const messagingLogger = createLogger('unchained:core-messaging');
 
@@ -25,7 +26,7 @@ export const MessageWorker: IWorkerAdapter<
           template,
           ...payload,
         },
-        requestContext,
+        requestContext as Context, // TODO: Type Refactor
       );
 
       if (workConfigurations.length > 0) {
@@ -36,7 +37,7 @@ export const MessageWorker: IWorkerAdapter<
                 ...workConfiguration,
                 originalWorkId: workId,
               },
-              requestContext.userId,
+              null,
             );
             delete work.input;
             return work;

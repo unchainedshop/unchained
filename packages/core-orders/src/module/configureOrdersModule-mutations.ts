@@ -6,6 +6,7 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
+import { Context } from '@unchainedshop/types/api';
 import { OrdersSchema } from '../db/OrdersSchema';
 
 const ORDER_EVENTS: string[] = [
@@ -85,7 +86,7 @@ export const configureOrderModuleMutations = ({
         updated: { $gte: minValidDate },
       }).toArray();
 
-      await Promise.all(orders.map((order) => initProviders(order, requestContext)));
+      await Promise.all(orders.map((order) => initProviders(order, requestContext as Context))); // TODO: Refactor Types
     },
 
     setDeliveryProvider: async (orderId, deliveryProviderId, requestContext) => {

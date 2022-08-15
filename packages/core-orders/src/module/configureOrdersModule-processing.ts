@@ -263,7 +263,7 @@ export const configureOrderModuleProcessing = ({
           user,
           countryCode,
         },
-        requestContext,
+        requestContext as Context,
       );
     },
 

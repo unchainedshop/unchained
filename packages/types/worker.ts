@@ -82,7 +82,7 @@ export type WorkerModule = {
   type: (work: Work) => string;
 
   // Mutations
-  addWork: (data: WorkData, userId: string) => Promise<Work>;
+  addWork: (data: WorkData, userId?: string) => Promise<Work>;
 
   allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
 

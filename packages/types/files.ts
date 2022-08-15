@@ -1,6 +1,6 @@
 import { Context } from './api';
 import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
-import { ModuleMutations } from './core';
+import { ModuleMutations, UnchainedCore } from './core';
 
 export type File = {
   _id?: _ID;
@@ -38,7 +38,7 @@ export type FilesModule = ModuleMutations<File> & {
 
   findFiles: (selector: any) => Promise<Array<File>>;
 
-  deleteMany: (fileIds: Array<_ID>, userId: string) => Promise<void>;
+  deleteMany: (fileIds: Array<_ID>) => Promise<void>;
 };
 
 /*
@@ -60,7 +60,10 @@ export type UploadFileFromStreamService = (
   context: Context,
 ) => Promise<File>;
 
-export type RemoveFilesService = (params: { fileIds: Array<_ID> }, context: Context) => Promise<number>;
+export type RemoveFilesService = (
+  params: { fileIds: Array<_ID> },
+  unchainedAPI: UnchainedCore,
+) => Promise<number>;
 
 export type UploadFileFromURLService = (
   params: {
@@ -102,7 +105,7 @@ export interface IFileAdapter extends IBaseAdapter {
     fileName: string,
     unchainedContext: Context,
   ) => Promise<(UploadFileData & { putURL: string }) | null>;
-  removeFiles: (files: Array<File>, unchainedContext: Context) => Promise<void>;
+  removeFiles: (files: Array<File>, unchainedContext: UnchainedCore) => Promise<void>;
   uploadFileFromStream: (
     directoryName: string,
     rawFile: any,

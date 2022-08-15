@@ -3,6 +3,7 @@ import { randomValueHex } from '@unchainedshop/utils';
 import { accountsSettings } from '@unchainedshop/core-accountsjs';
 import moniker from 'moniker';
 import { UnchainedCore } from '@unchainedshop/types/core';
+import { Context } from '@unchainedshop/types/api';
 
 export const setupAccounts = (unchainedAPI: UnchainedCore) => {
   const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();
@@ -62,7 +63,6 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     const { userId, connection = {} } = props;
     const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
       connection;
-    console.log({ connection });
 
     await unchainedAPI.modules.users.updateHeartbeat(userId, {
       remoteAddress,
@@ -73,12 +73,6 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     });
 
     const user = await unchainedAPI.modules.users.findUserById(userId);
-    const context = {
-      ...unchainedAPI,
-      countryContext,
-      userId,
-      user,
-    };
 
     if (userIdBeforeLogin) {
       const userBeforeLogin = await unchainedAPI.modules.users.findUserById(userIdBeforeLogin);
@@ -89,7 +83,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           toUser: user,
           shouldMerge: accountsSettings.mergeUserCartsOnLogin,
         },
-        unchainedAPI,
+        unchainedAPI as Context, // TODO: Type Refactor
       );
 
       await unchainedAPI.services.bookmarks.migrateBookmarks(
@@ -98,7 +92,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           toUser: user,
           shouldMerge: accountsSettings.mergeUserCartsOnLogin,
         },
-        unchainedAPI,
+        unchainedAPI as Context, // TODO: Type Refactor
       );
     }
 
