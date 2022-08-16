@@ -43,7 +43,7 @@ export default (app) => {
       return;
     }
     const orderPayment = await resolvedContext.modules.orders.payments.findOrderPaymentByContextData({
-      context: { currency, address },
+      context: { cryptoAddresses: { currency, address } },
     });
     if (orderPayment) {
       if (currency === CryptopayCurrencies.ETH && contract && contract !== '') {
