@@ -37,9 +37,10 @@ app in ESM mode.
 
 ## Patches
 
-- Fix TOTP high severity bug
-- Fix SSO with Unchained Cloud
-- Fix discount pricing calculation issues
+- [core] Fix TOTP high severity bug
+- [core] Fix SSO with Unchained Cloud
+- [core] Fix discount pricing calculation issues
+- [core] Fix crash of findProductIds with assortmentId of non-existing assortment
 
 # Unchained Engine v1.1
 

@@ -277,6 +277,7 @@ export const configureAssortmentsModule = async ({
 
     findProductIds: async ({ assortmentId, forceLiveCollection, ignoreChildAssortments }) => {
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId), {});
+      if (!assortment) return [];
       return findProductIds(assortment, {
         forceLiveCollection,
         ignoreChildAssortments,
