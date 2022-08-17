@@ -1,5 +1,6 @@
 import './load_env';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 
 import { startPlatform, withAccessToken } from '@unchainedshop/platform';
 import serveStatic from 'serve-static';
@@ -72,6 +73,7 @@ import seed from './seed';
 
 const start = async () => {
   const app = express();
+  app.use(cookieParser());
 
   const unchainedApi = await startPlatform({
     expressApp: app,

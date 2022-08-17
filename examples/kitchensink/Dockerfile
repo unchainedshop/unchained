@@ -15,6 +15,8 @@ RUN rm -Rf node_modules
 
 FROM node:16-alpine as runtime
 
+RUN apk add --no-cache --update curl
+
 # Copy the app
 WORKDIR /webapp
 COPY --from=bundler /source /webapp
@@ -23,11 +25,11 @@ RUN NODE_ENV=production npm install --omit=dev
 ARG GIT_COMMIT="n/a"
 RUN echo "${GIT_COMMIT}" > /webapp/version.txt
 
-ENV PORT 4010
+ENV PORT 3000
 ENV NODE_ENV production
 
 HEALTHCHECK --start-period=10s --interval=20s --timeout=2s \
-  CMD wget -nv -t1 --post-data='{"operationName":null,"variables":{},"query":"{shopInfo {_id}}"}' --header="content-type: application/json" http://localhost:4010/graphql || exit 1
+  CMD curl -f http://localhost:3000/graphql -H 'content-type: application/json' --data-binary '{"operationName":null,"variables":{},"query":"{\n  shopInfo {\n    _id\n  }\n}\n"}' || exit
 
-EXPOSE 4010
+EXPOSE 3000
 CMD npm start
