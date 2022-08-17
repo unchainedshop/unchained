@@ -27,7 +27,7 @@ ENV PORT 4010
 ENV NODE_ENV production
 
 HEALTHCHECK --start-period=10s --interval=20s --timeout=2s \
-  CMD curl -f http://localhost:4010/graphql -H 'content-type: application/json' --data-binary '{"operationName":null,"variables":{},"query":"{\n  shopInfo {\n    _id\n  }\n}\n"}' || exit
+  CMD wget -nv -t1 --post-data='{"operationName":null,"variables":{},"query":"{shopInfo {_id}}"}' --header="content-type: application/json" http://localhost:4010/graphql || exit 1
 
 EXPOSE 4010
 CMD npm start
