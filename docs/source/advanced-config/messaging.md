@@ -93,4 +93,4 @@ const someResolver =  async (root, params, context: AppContext) => {
 ```
 
 If you want to override the existing template with your own custom template, follow the steps above and register the template using the same name as the message type you want to override. 
-Look into [MessageTypes](https://docs.unchained.shop/types/types/enums/platform.MessageTypes.html) definition to see all the built in message template name used in the engine.
+Look into [MessageTypes](https://docs.unchained.shop/types/enums/platform.MessageTypes.html) definition to see all the built in message template name used in the engine.
