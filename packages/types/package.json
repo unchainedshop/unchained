@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "1.2.16",
+  "version": "1.2.17",
   "description": "Types for unchained core packages",
   "repository": {
     "type": "git",
@@ -9,6 +9,11 @@
   "type": "module",
   "types": "index.d.ts",
   "main": "index.d.ts",
+  "files": [
+    "lib/*",
+    "*.d.ts",
+    "*.ts"
+  ],
   "exports": {
     ".": "./index.d.ts",
     "./*": "./lib/*"
@@ -31,13 +36,13 @@
   "devDependencies": {
     "@accounts/types": "^0.33.2",
     "@types/locale": "^0.1.1",
-    "@types/node": "^16.11.48",
+    "@types/node": "^16.11.49",
     "apollo-server-express": "^2.25.3",
-    "mongodb": "^4.7.0",
-    "simpl-schema": "^1.12.0",
-    "typedoc": "^0.23.9",
+    "mongodb": "^4.9.0",
+    "simpl-schema": "^1.12.3",
+    "typedoc": "^0.23.10",
     "typescript": "^4.7.4",
-    "winston": "^3.8.0",
+    "winston": "^3.8.1",
     "winston-transport": "4.5.0"
   }
 }
