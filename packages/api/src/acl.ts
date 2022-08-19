@@ -58,7 +58,7 @@ const wrapFunction = (fn, name, action, userOptions) => {
 
 const checkResolver = (action, userOptions) => {
   ensureActionExists(action, userOptions);
-  return (fn, name) => wrapFunction(fn, name, action, userOptions);
+  return (fn: any, name?: string) => wrapFunction(fn, name, action, userOptions);
 };
 
 const checkTypeResolver = (action, key) =>
@@ -89,9 +89,8 @@ const resolverDecorator = function resolverDecorator(action, userOptions) {
   };
 };
 
-export default resolverDecorator;
-
 // @resolverDecorator(action)
 // resolverToBeChecked: () => ...
+export default resolverDecorator;
 
 export { resolverDecorator, checkResolver, checkTypeResolver, checkAction };

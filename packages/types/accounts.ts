@@ -34,6 +34,19 @@ export interface AccountsSettings {
  * Module
  */
 
+export type LoginWithParams<N, T> = {
+  service: N;
+} & T;
+
+export type LoginWithGuestParams = LoginWithParams<'guest', Record<string, never>>;
+
+export type LoginWithPassword = {
+  user: { email: string } | { username: string };
+  password: string;
+  code?: string;
+};
+
+export type LoginWithPasswordParams = LoginWithParams<'password', LoginWithPassword>;
 export interface AccountsModule {
   dbManager: any;
 
@@ -74,13 +87,9 @@ export interface AccountsModule {
   }>;
   loginWithService: (
     params:
-      | { service: 'guest' }
-      | {
-          service: 'password';
-          user: { email: string } | { username: string };
-          password: string;
-          code?: string;
-        },
+      | LoginWithGuestParams
+      | LoginWithPasswordParams
+      | LoginWithParams<string, Record<string, any>>,
     context: Context,
   ) => Promise<{
     id: string;
