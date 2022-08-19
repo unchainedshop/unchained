@@ -43,7 +43,7 @@ const checkAction = async (context, action, args = emptyArray, options: any = em
   });
 };
 
-const wrapFunction = (fn, name, action, userOptions) => {
+const wrapFunction = (fn, name, action, userOptions?: any) => {
   const key = name || fn.name;
   const options = { ...defaultOptions, ...userOptions };
   ensureIsFunction(fn, action, options, key);
@@ -56,7 +56,7 @@ const wrapFunction = (fn, name, action, userOptions) => {
   };
 };
 
-const checkResolver = (action, userOptions) => {
+const checkResolver = (action, userOptions?: any) => {
   ensureActionExists(action, userOptions);
   return (fn: any, name?: string) => wrapFunction(fn, name, action, userOptions);
 };
@@ -70,7 +70,7 @@ const checkTypeResolver = (action, key) =>
     return obj[key];
   };
 
-const resolverDecorator = function resolverDecorator(action, userOptions) {
+const resolverDecorator = function resolverDecorator(action, userOptions?: any) {
   ensureActionExists(action, userOptions);
   return function decorator(target, key, descriptor) {
     const fn = descriptor.value || target[key];

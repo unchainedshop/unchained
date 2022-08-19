@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "1.2.17",
+  "version": "1.2.18",
   "main": "lib/api-index.js",
   "exports": {
     ".": "./lib/api-index.js",
@@ -51,7 +51,7 @@
     "@types/graphql-upload": "^8.0.11",
     "@types/locale": "^0.1.1",
     "@types/node": "^16.11.49",
-    "@unchainedshop/types": "^1.2.17",
+    "@unchainedshop/types": "^1.2.18",
     "apollo-server-express": "2.x",
     "graphql": "^15.8.0",
     "jest": "^28.1.3",
