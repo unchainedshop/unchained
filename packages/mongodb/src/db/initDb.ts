@@ -16,6 +16,7 @@ export const startDb = async () => {
     instance: {
       dbPath: `${process.cwd()}/.db`,
       storageEngine: 'wiredTiger',
+      port: parseInt(process.env.PORT, 10) + 1,
     },
   });
   return `${mongod.getUri()}unchained`;
