@@ -1,9 +1,10 @@
 import { Db, TimestampFields, _ID } from '@unchainedshop/types/common';
+import { Decimal128 } from 'mongodb';
 
 export type CryptopayTransaction = {
   _id?: _ID;
-  blocks: number[];
-  amount: number;
+  blockHeight: number;
+  amount: Decimal128;
   currency: string;
   decimals: number;
   contract: string;

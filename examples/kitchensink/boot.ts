@@ -16,7 +16,10 @@ import '@unchainedshop/plugins/payment/invoice-prepaid';
 import '@unchainedshop/plugins/payment/paypal-checkout';
 import '@unchainedshop/plugins/payment/worldline-saferpay';
 import setupDatatrans from '@unchainedshop/plugins/payment/datatrans-v2';
-import setupCryptopay from '@unchainedshop/plugins/payment/cryptopay';
+import {
+  setupCryptopayWebhooks,
+  configureCryptopayModule,
+} from '@unchainedshop/plugins/payment/cryptopay';
 import setupAppleIAP, {
   configureAppleTransactionsModule,
 } from '@unchainedshop/plugins/payment/apple-iap';
@@ -90,6 +93,9 @@ const start = async () => {
       gridfsFileUploads: {
         configure: configureGridFSFileUploadModule,
       },
+      cryptopay: {
+        configure: configureCryptopayModule,
+      },
     },
     options: {
       accounts: {
@@ -128,7 +134,7 @@ const start = async () => {
   // until here
 
   setupGridFSWebhook(app);
-  setupCryptopay(app);
+  setupCryptopayWebhooks(app);
   setupCryptopayPricing(app);
   setupStripe(app);
   setupPostfinance(app);
