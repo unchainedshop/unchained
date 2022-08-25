@@ -57,7 +57,7 @@ const Heartbeat: IWorkerAdapter<Arg, Result> = {
 };
 
 ```
-- **type**: type of the worker, this value is used to specify the worker you are targeting when adding a work to a work queue using the [WorkerModule](https://docs.unchained.shop/types/types/types/worker.WorkerModule.html).[addWork](https://docs.unchained.shop/types/types/worker.WorkerModule.html#__type.addWork):(data: [WorkData](https://docs.unchained.shop/types/types/interfaces/worker.WorkData.html), userId: string) function
+- **type**: type of the worker, this value is used to specify the worker you are targeting when adding a work to a work queue using the [WorkerModule](https://docs.unchained.shop/types/types/worker.WorkerModule.html).[addWork](https://docs.unchained.shop/types/types/worker.WorkerModule.html#__type.addWork):(data: [WorkData](https://docs.unchained.shop/types/interfaces/worker.WorkData.html), userId: string) function
 - **doWork**: function that defines the actual work that is going to be performed by the work adapter
 
 ## Registering Work Adapter

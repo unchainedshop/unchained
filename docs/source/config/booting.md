@@ -54,7 +54,7 @@ These options are available:
   - `schema`:  Object (GraphQL Schema that gets merged with the default schema)
   - `resolvers`: Object (GraphQL Resolvers that get merged with the default API)
   - [`options: ModuleOptions`](#11-options):  Configuration options used to change the default behavior of built in module.
-  - `rolesOptions: [IRoleOptionConfig](https://docs.unchained.shop/types/types/interfaces/roles.IRoleOptionConfig.html)`: Used to manage built in and custom user privileges
+  - `rolesOptions: [IRoleOptionConfig](https://docs.unchained.shop/types/interfaces/roles.IRoleOptionConfig.html)`: Used to manage built in and custom user privileges
   - `expressApp`: Node instance to use
   - `bulkImporter`: bulkImporterOptions
   - `workQueueOptions`
@@ -330,5 +330,5 @@ In the above code we added new custom role `attendee` and 2 actions `buyTicket` 
 
 ## 1.6 workQueueOptions
 
-- **workQueueOptions(params: [SetupWorkqueueOptions](https://docs.unchained.shop/types/types/interfaces/platform.SetupWorkqueueOptions.html))**: Used for setting  default cron worker to perform a task within a given interval
+- **workQueueOptions(params: [SetupWorkqueueOptions](https://docs.unchained.shop/types/interfaces/platform.SetupWorkqueueOptions.html))**: Used for setting  default cron worker to perform a task within a given interval
 

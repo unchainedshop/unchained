@@ -1,4 +1,4 @@
-const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options')
+const themeOptions = require('@unchainedshop/gatsby-theme-apollo-docs/theme-options');
 
 module.exports = {
   pathPrefix: '/docs/unchained',
@@ -31,7 +31,14 @@ module.exports = {
             'deployment/amazon-documentdb',
           ],
           Concepts: ['concepts/architecture', 'concepts/carts', 'concepts/search'],
-          Plugins: ['plugins/plugin-overview', 'plugins/cryptopay', 'plugins/datatrans', 'plugins/postfinance-checkout', 'plugins/twilio', 'plugins/worldline-saferpay'],
+          Plugins: [
+            'plugins/plugin-overview',
+            'plugins/cryptopay',
+            'plugins/datatrans',
+            'plugins/postfinance-checkout',
+            'plugins/twilio',
+            'plugins/worldline-saferpay',
+          ],
           Configuration: [
             'config/booting',
             'config/overview',
@@ -64,6 +71,7 @@ module.exports = {
             'advanced-config/entities',
             'advanced-config/extending-schema',
             'advanced-config/product-pricing',
+            'advanced-config/extending-db',
           ],
           'API Reference': [
             '[GraphQL API Reference](https://docs.unchained.shop/api)',
@@ -74,4 +82,4 @@ module.exports = {
       },
     },
   ],
-}
+};

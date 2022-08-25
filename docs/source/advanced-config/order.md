@@ -69,7 +69,7 @@ export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
 
 ```
 
-- **isActiveFor(context: [OrderPricingAdapterContext](https://docs.unchained.shop/types/types/interfaces/orders_pricing.OrderPricingAdapterContext.html))**: Used to activate or de-active a particular order price plugin based on the current context of the order or any other business rule.
+- **isActiveFor(context: [OrderPricingAdapterContext](https://docs.unchained.shop/types/interfaces/orders_pricing.OrderPricingAdapterContext.html))**: Used to activate or de-active a particular order price plugin based on the current context of the order or any other business rule.
 - **calculate**: is where the actual calculation of the order price is done based on the calculation items defined for the adapter.
 - **getContext**: returns the current order payment price plugin context.
 - **resultSheet**: return the price sheet items that are  applied on the price adapter.
@@ -83,11 +83,11 @@ OrderPriceDirector.registerAdapter(ShopOrderPricingAdapter)
 
 ### OrderDiscountAdapter 
 
-Order discount adapter is used to add different type of discounts your shop offers based on different input. in order to add order based discount to a shop you need to implement [IDiscountAdapter](https://docs.unchained.shop/types/types/interfaces/discount.DiscountAdapterActions.html) and register to the global **OrderDiscountDirector** which implements the [IDiscountDirector](https://docs.unchained.shop/types/types/discount.IDiscountDirector.html)
+Order discount adapter is used to add different type of discounts your shop offers based on different input. in order to add order based discount to a shop you need to implement [IDiscountAdapter](https://docs.unchained.shop/types/interfaces/discount.DiscountAdapterActions.html) and register to the global **OrderDiscountDirector** which implements the [IDiscountDirector](https://docs.unchained.shop/types/types/discount.IDiscountDirector.html)
 
 
 
-Below is an example of [IDiscountAdapter](https://docs.unchained.shop/types/types/interfaces/discount.DiscountAdapterActions.html) implementation that adds a discount for all order that have more than 2 products.
+Below is an example of [IDiscountAdapter](https://docs.unchained.shop/types/interfaces/discount.DiscountAdapterActions.html) implementation that adds a discount for all order that have more than 2 products.
 
 
 ```typescript

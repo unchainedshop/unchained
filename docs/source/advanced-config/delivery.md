@@ -92,14 +92,14 @@ const ShopPickUp: IDeliveryAdapter = {
 };
 ```
 
-- **typeSupported(type: [DeliveryProviderType](https://docs.unchained.shop/types/types/enums/delivery.DeliveryProviderType.html))**: Defines which type of delivery providers this adapter support.
+- **typeSupported(type: [DeliveryProviderType](https://docs.unchained.shop/types/enums/delivery.DeliveryProviderType.html))**: Defines which type of delivery providers this adapter support.
 - **configurationError(transactionContext: any): [DeliveryError](https://docs.unchained.shop/types/enums/delivery.DeliveryError.html)**: returns any issue found with the delivery adapter configuration.  its passed current transaction object that lets you check if everything is working for proper functioning of the adapter.
 - **estimatedDeliveryThroughput(warehousingThroughputTime: number)**: Used to send an estimation delivery time of the adapter.
 - **isActive**: Used to enable or disable the adapter.
 - **isAutoReleaseAllowed**: Determined if the delivery provider should change status automatically or if manual confirmation of delivery is required.
 - **pickUpLocationById(locationId: string): [DeliveryLocation](https://docs.unchained.shop/types/interfaces/delivery.DeliveryLocation.html)**: returns a delivery location with the specified ID from the list of locations returned from `pickUpLocations`.
 - **pickUpLocations: [DeliveryLocation](https://docs.unchained.shop/types/interfaces/delivery.DeliveryLocation.html)[]** returns list of delivery locations available with a particular delivery adapter
-- **send: boolean | [Work](https://docs.unchained.shop/types/types/types/worker.Work.html)**: Determines the if an order is delivered or not. if this function returns true the order delivery status will be changed to **DELIVERED**, if it returns false order delivery status stays the same (PENDING) but the order status can be changed but if it throws an error the order will be canceled.
+- **send: boolean | [Work](https://docs.unchained.shop/types/types/worker.Work.html)**: Determines the if an order is delivered or not. if this function returns true the order delivery status will be changed to **DELIVERED**, if it returns false order delivery status stays the same (PENDING) but the order status can be changed but if it throws an error the order will be canceled.
 
 
 
@@ -161,7 +161,7 @@ export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
 
 ```
 
-- **isActivatedFor: [DeliveryPricingAdapterContext](https://docs.unchained.shop/types/types/interfaces/delivery_pricing.DeliveryPricingAdapterContext.html)**: defines to which delivery adapters this delivery price adapter calculations should take place.
+- **isActivatedFor: [DeliveryPricingAdapterContext](https://docs.unchained.shop/types/interfaces/delivery_pricing.DeliveryPricingAdapterContext.html)**: defines to which delivery adapters this delivery price adapter calculations should take place.
 - **getCalculation: [Calculation[]](https://docs.unchained.shop/types/interfaces/pricing.PricingSheetParams.html#calculation)**: returns all the fees that will are included for calculation through the adapter.
-- **getContext: [DeliveryPricingAdapterContext](https://docs.unchained.shop/types/types/interfaces/delivery_pricing.DeliveryPricingAdapterContext.html)**: returns the pricing adapter context
+- **getContext: [DeliveryPricingAdapterContext](https://docs.unchained.shop/types/interfaces/delivery_pricing.DeliveryPricingAdapterContext.html)**: returns the pricing adapter context
 - **calculate: [Calculation[]](https://docs.unchained.shop/types/interfaces/pricing.PricingSheetParams.html#calculation)**: calculated the delivery price based on the the logic provided and returns the calculation breakdown (result sheet)
