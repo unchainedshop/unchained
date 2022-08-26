@@ -24,6 +24,19 @@ enum CryptopayCurrencies { // eslint-disable-line
   ETH = 'ETH',
 }
 
+const getDerivationPath = (currency: CryptopayCurrencies, index: number): string => {
+  const address = `${CRYPTOPAY_DERIVATION_START + index}`;
+  if (currency === CryptopayCurrencies.ETH) {
+    const pathComponents = ethers.utils.defaultPath.split('/');
+    pathComponents[pathComponents.length - 1] = address;
+    return pathComponents.join('/');
+  }
+  if (currency === CryptopayCurrencies.BTC) {
+    return `m/44'/0'/0'/0/${address}`;
+  }
+  return `0/${address}`;
+};
+
 const Cryptopay: IPaymentAdapter = {
   ...PaymentAdapter,
 
@@ -78,7 +91,11 @@ const Cryptopay: IPaymentAdapter = {
             return JSON.stringify(existingAddresses);
           }
         }
-        const cryptoAddresses: { currency: CryptopayCurrencies; address: string }[] = [];
+        const cryptoAddresses: {
+          currency: CryptopayCurrencies;
+          address: string;
+          derivationPath: string;
+        }[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
           const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
           const bip32 = BIP32Factory(ecc);
@@ -86,9 +103,11 @@ const Cryptopay: IPaymentAdapter = {
           const btcDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
             context: { cryptoAddresses: { currency: CryptopayCurrencies.BTC } },
           });
-          const child = hardenedMaster.derivePath(`0/${btcDerivationNumber}`);
+          const derivationPath = getDerivationPath(CryptopayCurrencies.BTC, btcDerivationNumber);
+          const child = hardenedMaster.derivePath(derivationPath);
           cryptoAddresses.push({
             currency: CryptopayCurrencies.BTC,
+            derivationPath,
             address: bitcoin.payments.p2pkh({
               pubkey: child.publicKey,
               network,
@@ -100,9 +119,11 @@ const Cryptopay: IPaymentAdapter = {
           const ethDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
             context: { cryptoAddresses: { currency: CryptopayCurrencies.ETH } },
           });
+          const derivationPath = getDerivationPath(CryptopayCurrencies.ETH, ethDerivationNumber);
           cryptoAddresses.push({
             currency: CryptopayCurrencies.ETH,
-            address: hardenedMaster.derivePath(`0/${ethDerivationNumber}`).address,
+            derivationPath,
+            address: hardenedMaster.derivePath(derivationPath).address,
           });
         }
         await modules.orders.payments.updateContext(
