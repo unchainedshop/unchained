@@ -25,7 +25,7 @@ enum CryptopayCurrencies { // eslint-disable-line
 }
 
 const getDerivationPath = (currency: CryptopayCurrencies, index: number): string => {
-  const address = `${CRYPTOPAY_DERIVATION_START + index}`;
+  const address = `${(parseInt(CRYPTOPAY_DERIVATION_START, 10) || 0) + index}`;
   if (currency === CryptopayCurrencies.ETH) {
     const pathComponents = ethers.utils.defaultPath.split('/');
     pathComponents[pathComponents.length - 1] = address;
@@ -54,13 +54,14 @@ const Cryptopay: IPaymentAdapter = {
     const adapterActions = {
       ...PaymentAdapter.actions(params),
 
+
       // eslint-disable-next-line
       configurationError() {
         // eslint-disable-line
         if (!CRYPTOPAY_SECRET) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
-        if (!CRYPTOPAY_BTC_XPUB === !CRYPTOPAY_ETH_XPUB) {
+        if (!CRYPTOPAY_BTC_XPUB && !CRYPTOPAY_ETH_XPUB) {
           return PaymentError.INCOMPLETE_CONFIGURATION;
         }
         return null;
@@ -69,6 +70,7 @@ const Cryptopay: IPaymentAdapter = {
       isActive() {
         // Only support orders that have prices in BTC or ETH for the moment
         if (adapterActions.configurationError() !== null) return false;
+        if (!params.paymentContext.order) return true;
         if (
           !Object.values(CryptopayCurrencies).includes(
             params.paymentContext.order.currency as CryptopayCurrencies,
@@ -84,9 +86,9 @@ const Cryptopay: IPaymentAdapter = {
 
       sign: async () => {
         const { orderPayment } = params.paymentContext;
-        if (orderPayment?.context.length) {
+        if (orderPayment?.context?.cryptoAddresses) {
           // Do not derive address a second time for order payment, return existing address
-          const existingAddresses = orderPayment.context.filter((c) => c.currency);
+          const existingAddresses = orderPayment.context.cryptoAddresses;
           if (existingAddresses) {
             return JSON.stringify(existingAddresses);
           }
@@ -101,7 +103,7 @@ const Cryptopay: IPaymentAdapter = {
           const bip32 = BIP32Factory(ecc);
           const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
           const btcDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
-            context: { cryptoAddresses: { currency: CryptopayCurrencies.BTC } },
+            context: { 'cryptoAddresses.currency': CryptopayCurrencies.BTC },
           });
           const derivationPath = getDerivationPath(CryptopayCurrencies.BTC, btcDerivationNumber);
           const child = hardenedMaster.derivePath(derivationPath);
@@ -115,20 +117,23 @@ const Cryptopay: IPaymentAdapter = {
           });
         }
         if (CRYPTOPAY_ETH_XPUB) {
-          const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
+          // we neuter for security reasons, it's still quite complicated for most ethereum clients to show an appropriate
+          // xpub, that's why
+          const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB).neuter();
           const ethDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
-            context: { cryptoAddresses: { currency: CryptopayCurrencies.ETH } },
+            context: { 'cryptoAddresses.currency': CryptopayCurrencies.ETH },
           });
           const derivationPath = getDerivationPath(CryptopayCurrencies.ETH, ethDerivationNumber);
+          const cleanedForHD = derivationPath.split('/').slice(-2).join('/');
           cryptoAddresses.push({
             currency: CryptopayCurrencies.ETH,
             derivationPath,
-            address: hardenedMaster.derivePath(derivationPath).address,
+            address: hardenedMaster.derivePath(cleanedForHD).address,
           });
         }
         await modules.orders.payments.updateContext(
           orderPayment._id,
-          { cryptoAddresses },
+          { ...orderPayment.context, cryptoAddresses },
           params.context,
         );
         return JSON.stringify(cryptoAddresses);
