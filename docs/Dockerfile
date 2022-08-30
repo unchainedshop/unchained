@@ -14,12 +14,8 @@ RUN cd types && NODE_ENV=development npm install && NODE_ENV=development npm run
 COPY package* /usr/src/app/
 RUN NODE_ENV=development npm install && npm link @unchainedshop/types
 
-
 # Build app
 COPY . /usr/src/app/
-
-RUN npm run api-docs
-RUN npm run type-docs
 
 RUN npm run build
 

@@ -2,9 +2,11 @@
   "scripts": {
     "predev": "gatsby clean",
     "dev": "gatsby develop",
+    "prebuild": "npm run clean && npm run api-docs && npm run type-docs",
     "build": "gatsby build",
     "start": "gatsby serve -H 0.0.0.0 -p 9000",
-    "api-docs": "dociql --target-dir ./static/api config.yml",
+    "clean": "rm -Rf public",
+    "api-docs": "dociql && mv public static/api",
     "type-docs": "cp -Rf ./node_modules/@unchainedshop/types/lib/docs/ ./static/types"
   },
   "dependencies": {
