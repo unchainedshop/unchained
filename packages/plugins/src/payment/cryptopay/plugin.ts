@@ -24,6 +24,13 @@ enum CryptopayCurrencies { // eslint-disable-line
   ETH = 'ETH',
 }
 
+type CryptopayAddress = {
+  currency: CryptopayCurrencies;
+  address: string;
+  currencyConversionRate: number;
+  derivationPath: string;
+};
+
 const getDerivationPath = (currency: CryptopayCurrencies, index: number): string => {
   const address = `${(parseInt(CRYPTOPAY_DERIVATION_START, 10) || 0) + index}`;
   if (currency === CryptopayCurrencies.ETH) {
@@ -53,7 +60,6 @@ const Cryptopay: IPaymentAdapter = {
 
     const adapterActions = {
       ...PaymentAdapter.actions(params),
-
 
       // eslint-disable-next-line
       configurationError() {
@@ -93,11 +99,7 @@ const Cryptopay: IPaymentAdapter = {
             return JSON.stringify(existingAddresses);
           }
         }
-        const cryptoAddresses: {
-          currency: CryptopayCurrencies;
-          address: string;
-          derivationPath: string;
-        }[] = [];
+        const cryptoAddresses: CryptopayAddress[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
           const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
           const bip32 = BIP32Factory(ecc);
@@ -110,6 +112,7 @@ const Cryptopay: IPaymentAdapter = {
           cryptoAddresses.push({
             currency: CryptopayCurrencies.BTC,
             derivationPath,
+            currencyConversionRate: 1,
             address: bitcoin.payments.p2pkh({
               pubkey: child.publicKey,
               network,
@@ -128,6 +131,7 @@ const Cryptopay: IPaymentAdapter = {
           cryptoAddresses.push({
             currency: CryptopayCurrencies.ETH,
             derivationPath,
+            currencyConversionRate: 1,
             address: hardenedMaster.derivePath(cleanedForHD).address,
           });
         }
@@ -136,18 +140,27 @@ const Cryptopay: IPaymentAdapter = {
           { ...orderPayment.context, cryptoAddresses },
           params.context,
         );
+
         return JSON.stringify(cryptoAddresses);
       },
 
       charge: async () => {
-        const addresses = params.paymentContext.orderPayment.context.cryptoAddresses || [];
+        const addresses: CryptopayAddress[] =
+          params.paymentContext.orderPayment.context.cryptoAddresses || [];
         const { order } = params.paymentContext;
         const foundWalletsWithBalances = (
           await Promise.all(
-            addresses.map(async ({ address, currency }) => {
+            addresses.map(async ({ address, currency, currencyConversionRate }) => {
               const walletAddress = await modules.cryptopay.getWalletAddress(address);
-              if (walletAddress && walletAddress.currency === currency) {
-                return walletAddress;
+              if (walletAddress) {
+                if (walletAddress.currency === currency) {
+                  return walletAddress;
+                }
+                return {
+                  ...walletAddress,
+                  amount: BigInt(walletAddress.amount) * BigInt(currencyConversionRate),
+                  currency,
+                };
               }
               return null;
             }),
