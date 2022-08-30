@@ -124,7 +124,7 @@ const start = async () => {
   const singleSignOn = loginWithSingleSignOn(unchainedApi);
   app.use('/', singleSignOn);
   app.use('/.well-known/unchained/cloud-sso', singleSignOn);
-  app.use(serveStatic('.', { index: ['index.html'] }));
+  app.use(serveStatic('static', { index: ['index.html'] }));
   // until here
 
   setupGridFSWebhook(app);
