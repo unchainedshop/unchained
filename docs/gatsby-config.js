@@ -26,7 +26,6 @@ module.exports = {
             'installation/run-engine-docker',
           ],
           Deployment: [
-            'deployment/deploy-engine-galaxy',
             'deployment/deploy-storefront-vercel',
             'deployment/amazon-documentdb',
           ],

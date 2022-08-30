@@ -4,13 +4,14 @@
     "dev": "gatsby develop",
     "build": "gatsby build",
     "start": "gatsby serve -H 0.0.0.0 -p 9000",
-    "api-docs": "dociql --target-dir static/api config.yml",
+    "api-docs": "dociql --target-dir ./static/api config.yml",
     "type-docs": "cp -Rf ./node_modules/@unchainedshop/types/lib/docs/ ./static/types"
   },
   "dependencies": {
     "@mdx-js/react": "^1.6.22",
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.21",
-    "@unchainedshop/types": "1.x",
+    "@unchainedshop/types": "^1.2.18",
+    "cheerio": "1.0.0-rc.2",
     "gatsby": "2.24.47",
     "gatsby-telemetry": "^2.12.0",
     "react": "16.13.1",
