@@ -9,7 +9,7 @@ import { useMiddlewareWithCurrentContext } from './context';
 
 const logger = createLogger('unchained:api');
 
-const { BULK_IMPORT_API_PATH = '/bulk-import' } = process.env;
+const { BULK_IMPORT_API_PATH = '/bulk-import', BULK_IMPORT_PAYLOAD_CACHE_DIRECTORY } = process.env;
 
 const errorHandler = (res) => (e) => {
   logger.error(e.message);
@@ -51,7 +51,7 @@ const bulkImportMiddleware = async (req, res) => {
     const input: any = {
       createShouldUpsertIfIDExists: !!req.query?.createShouldUpsertIfIDExists,
       skipCacheInvalidation: !!req.query?.skipCacheInvalidation,
-      fsPayloadCacheDirectory: req.query?.fsPayloadCacheDirectory,
+      fsPayloadCacheDirectory: BULK_IMPORT_PAYLOAD_CACHE_DIRECTORY,
       remoteAddress: resolvedContext.remoteAddress,
     };
 
