@@ -47,7 +47,7 @@ export type OrderPositionsModule = {
 
   delete: (orderPositionId: string, requestContext: Context) => Promise<OrderPosition>;
 
-  removePositions: ({ orderId: string }, requestContext: Context) => Promise<number>;
+  removePositions: ({ orderId }: { orderId: string }, requestContext: Context) => Promise<number>;
 
   updateProductItem: (
     doc: {

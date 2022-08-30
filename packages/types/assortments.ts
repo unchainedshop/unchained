@@ -313,7 +313,7 @@ export type AssortmentsModule = {
     findTexts: (query: Query, options?: FindOptions) => Promise<Array<AssortmentText>>;
 
     findLocalizedText: (params: { assortmentId: string; locale?: string }) => Promise<AssortmentText>;
-    searchTexts: ({ searchText: string }) => Promise<Array<string>>;
+    searchTexts: ({ searchText }: { searchText: string }) => Promise<Array<string>>;
 
     // Mutations
     updateTexts: (
@@ -331,7 +331,7 @@ export type AssortmentsModule = {
 
     makeSlug: (data: { slug?: string; title: string; assortmentId: string }) => Promise<string>;
 
-    deleteMany: ({ assortmentId: string }, userId?: string) => Promise<number>;
+    deleteMany: ({ assortmentId }: { assortmentId: string }, userId?: string) => Promise<number>;
   };
 };
 
