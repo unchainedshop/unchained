@@ -11,12 +11,13 @@ export default async function searchProducts(
     ignoreChildAssortments: boolean;
     includeInactive: boolean;
     queryString?: string;
+    orderBy?: string;
   },
   context: Context,
 ) {
   const { modules, userId } = context;
   const forceLiveCollection = false;
-  const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments } = query;
+  const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } = query;
 
   log(`query search ${assortmentId} ${JSON.stringify(query)}`, { userId });
 
@@ -30,7 +31,7 @@ export default async function searchProducts(
       assortmentId,
     });
     return modules.filters.search.searchProducts(
-      { queryString, includeInactive, filterQuery, productIds, filterIds },
+      { queryString, includeInactive, filterQuery, productIds, filterIds, ...rest },
       { forceLiveCollection },
       context,
     );
@@ -39,7 +40,7 @@ export default async function searchProducts(
   if (!queryString) throw new QueryStringRequiredError({});
 
   return modules.filters.search.searchProducts(
-    { queryString, includeInactive, filterQuery },
+    { queryString, includeInactive, filterQuery, ...rest },
     { forceLiveCollection },
     context,
   );

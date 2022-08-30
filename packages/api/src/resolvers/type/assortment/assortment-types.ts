@@ -39,6 +39,7 @@ export interface AssortmentHelperTypes {
       filterQuery?: SearchFilterQuery;
       includeInactive: boolean;
       ignoreChildAssortments: boolean;
+      orderBy?: string;
     },
     Promise<SearchProducts>
   >;
