@@ -21,7 +21,10 @@ const bufferToStream = (buffer: any) => {
   return stream;
 };
 
-const createDownloadStream = (fileUrl: string, headers: OutgoingHttpHeaders): Promise<Readable> => {
+const createDownloadStream = async (
+  fileUrl: string,
+  headers: OutgoingHttpHeaders,
+): Promise<Readable> => {
   const { href, protocol } = new URL(fileUrl);
   return new Promise((resolve, reject) => {
     try {

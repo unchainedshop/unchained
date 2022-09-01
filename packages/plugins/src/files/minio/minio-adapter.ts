@@ -72,7 +72,7 @@ connectToMinio().then((c) => {
   client = c;
 });
 
-const createDownloadStream = (
+const createDownloadStream = async (
   fileUrl: string,
   headers: OutgoingHttpHeaders,
 ): Promise<http.IncomingMessage> => {
