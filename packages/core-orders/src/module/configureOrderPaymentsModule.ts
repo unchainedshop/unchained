@@ -278,6 +278,8 @@ export const configureOrderPaymentsModule = ({
     },
 
     updateContext: async (orderPaymentId, context, requestContext) => {
+      if (!context) return false;
+      
       const selector = buildFindByIdSelector(orderPaymentId);
       const orderPayment = await OrderPayments.findOne(selector, {});
       const { orderId } = orderPayment;

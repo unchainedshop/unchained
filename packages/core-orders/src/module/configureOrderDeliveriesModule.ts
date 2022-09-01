@@ -185,6 +185,8 @@ export const configureOrderDeliveriesModule = ({
     },
 
     updateContext: async (orderDeliveryId, context, requestContext) => {
+      if (!context) return false;
+
       const selector = buildFindByIdSelector(orderDeliveryId);
       const orderDelivery = await OrderDeliveries.findOne(selector, {});
       const { orderId } = orderDelivery;

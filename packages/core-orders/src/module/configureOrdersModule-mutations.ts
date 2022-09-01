@@ -204,15 +204,16 @@ export const configureOrderModuleMutations = ({
     },
 
     updateContext: async (orderId, context, requestContext) => {
+      if (!context) return false;
+
       log('Update Arbitrary Context', { orderId, context });
-
       const selector = generateDbFilterById<Order>(orderId);
-
       selector.status = { $in: [null, OrderStatus.PENDING] };
+      const order = await Orders.findOne(selector);
 
       const result = await Orders.updateOne(selector, {
         $set: {
-          context,
+          context: { ...(order.context || {}), ...context },
           updated: new Date(),
           updatedBy: requestContext.userId,
         },
