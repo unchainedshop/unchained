@@ -67,5 +67,6 @@ export type ProductPriceRate = {
   baseCurrency: string;
   quoteCurrency: string;
   rate: number;
-  timestamp: number | null;
+  expiresAt: Date;
+  timestamp: Date;
 };

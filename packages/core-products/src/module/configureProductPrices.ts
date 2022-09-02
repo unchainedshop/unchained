@@ -1,6 +1,6 @@
 import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/types/products';
 import crypto from 'crypto';
-import { IProductPricingSheet } from '@unchainedshop/types/products.pricing';
+import { IProductPricingSheet, ProductPriceRate } from '@unchainedshop/types/products.pricing';
 import { ProductPricingDirector } from '../director/ProductPricingDirector';
 import { getPriceLevels } from './utils/getPriceLevels';
 import { getPriceRange } from './utils/getPriceRange';
@@ -233,35 +233,47 @@ export const configureProductPricesModule = ({
     },
 
     rates: {
-      getRate: async (baseCurrency, quoteCurrency, maxAge) => {
+      getRate: async (baseCurrency, quoteCurrency, referenceDate = new Date()) => {
         const priceRates = await (await ProductPriceRates(db)).ProductRates;
-        const currencyRateBase = await priceRates.findOne({ baseCurrency, quoteCurrency });
-        const currencyRateInv = await priceRates.findOne({
-          baseCurrency: quoteCurrency,
-          quoteCurrency: baseCurrency,
-        });
-
+        const mostRecentCurrencyRate = await priceRates.findOne(
+          {
+            $or: [
+              { baseCurrency, quoteCurrency },
+              {
+                baseCurrency: quoteCurrency,
+                quoteCurrency: baseCurrency,
+              },
+            ],
+            timestamp: { $lte: referenceDate },
+            expiresAt: { $gte: referenceDate },
+          },
+          { sort: { timestamp: -1 } },
+        );
         let rate = null;
-        if (
-          currencyRateBase &&
-          (!currencyRateBase.timestamp || currencyRateBase.timestamp >= Date.now() / 1000 - maxAge)
-        ) {
-          rate = currencyRateBase.rate;
-        } else if (
-          currencyRateInv &&
-          (!currencyRateInv.timestamp || currencyRateInv.timestamp >= Date.now() / 1000 - maxAge)
-        ) {
-          rate = 1 / currencyRateInv.rate;
+
+        if (!mostRecentCurrencyRate) return null;
+
+        if (mostRecentCurrencyRate.baseCurrency === baseCurrency) {
+          rate = mostRecentCurrencyRate.rate;
+        } else {
+          rate = 1 / mostRecentCurrencyRate.rate;
         }
+
         return rate;
       },
       updateRate: async (rate) => {
         const priceRates = await ProductPriceRates(db);
-        const { baseCurrency, quoteCurrency } = rate;
         try {
-          await priceRates.ProductRates.replaceOne({ baseCurrency, quoteCurrency }, rate, {
-            upsert: true,
-          });
+          await priceRates.ProductRates.insertOne(rate);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      updateRates: async (rates) => {
+        const priceRates = await ProductPriceRates(db);
+        try {
+          await priceRates.ProductRates.insertMany(rates);
           return true;
         } catch (e) {
           return false;

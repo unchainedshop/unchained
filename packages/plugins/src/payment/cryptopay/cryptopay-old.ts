@@ -18,7 +18,6 @@ const {
   CRYPTOPAY_BTC_XPUB,
   CRYPTOPAY_ETH_XPUB,
   CRYPTOPAY_BTC_TESTNET = false,
-  CRYPTOPAY_MAX_RATE_AGE = '360', // seconds
   CRYPTOPAY_MAX_CONV_DIFF = '0.01',
 } = process.env;
 
@@ -27,7 +26,6 @@ enum CryptopayCurrencies { // eslint-disable-line
   ETH = 'ETH',
 }
 
-const MAX_RATE_AGE = parseInt(CRYPTOPAY_MAX_RATE_AGE, 10);
 const MAX_ALLOWED_DIFF = parseFloat(CRYPTOPAY_MAX_CONV_DIFF); // Accept payments when the converted amount differs by adapterActions much (in percent)
 
 export default (app) => {
@@ -73,7 +71,6 @@ export default (app) => {
         const rate = await resolvedContext.modules.products.prices.rates.getRate(
           order.currency,
           contract && contract !== '' ? contract : currency, // Convert to the smart contract if given
-          MAX_RATE_AGE,
         );
         if (rate) {
           // We assume that we are converting to a fiat currency here (with 2 decimals).

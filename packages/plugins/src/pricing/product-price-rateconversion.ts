@@ -1,10 +1,6 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 
-const { RATECONVERSION_MAX_AGE = '360' } = process.env;
-
-const MAX_RATE_AGE = parseInt(RATECONVERSION_MAX_AGE, 10);
-
 const ProductPriceRateConversion: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
@@ -47,20 +43,16 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
         )
           return pricingAdapter.calculate();
 
-        const rate = await modules.products.prices.rates.getRate(
-          defaultCurrency,
-          currency,
-          MAX_RATE_AGE,
-        );
+        const rate = await modules.products.prices.rates.getRate(defaultCurrency, currency);
 
         if (rate > 0) {
-          const convertedAmount = productPrice.amount * rate;
+          const convertedAmount = Math.round(productPrice.amount * rate);
           pricingAdapter.resultSheet().resetCalculation(params.calculationSheet);
           pricingAdapter.resultSheet().addItem({
             amount: convertedAmount * quantity,
             isTaxable: productPrice?.isTaxable,
             isNetPrice: productPrice?.isNetPrice,
-            meta: { adapter: ProductPriceRateConversion.key },
+            meta: { adapter: ProductPriceRateConversion.key, rate },
           });
         }
 

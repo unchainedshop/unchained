@@ -5,15 +5,43 @@ import { Context } from '@unchainedshop/types/api';
 
 import { UnchainedCore } from '@unchainedshop/types/core';
 import { OrderStatus } from '@unchainedshop/core-orders';
+import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
 import { CryptopayModule } from './module/configureCryptopayModule';
 
-const { CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay', CRYPTOPAY_SECRET } = process.env;
+const {
+  CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
+  CRYPTOPAY_PRICING_WEBHOOK_PATH = '/pricing/cryptopay',
+  CRYPTOPAY_SECRET,
+  CRYPTOPAY_MAX_RATE_AGE,
+} = process.env;
 
 const logger = createLogger('unchained:core-payment:cryptopay');
 
 export default (app: any) => {
-  useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
+  useMiddlewareWithCurrentContext(app, CRYPTOPAY_PRICING_WEBHOOK_PATH, bodyParser.json());
+  useMiddlewareWithCurrentContext(app, CRYPTOPAY_PRICING_WEBHOOK_PATH, async (request, response) => {
+    const resolvedContext = request.unchainedContext as Context;
+    const { baseCurrency, token, rate, secret, timestamp } = request.body;
+    if (secret !== CRYPTOPAY_SECRET) {
+      response.end(JSON.stringify({ success: false }));
+      return;
+    }
 
+    const timestampDate = new Date(timestamp);
+    const expiresAt = new Date(new Date().getTime() + parseInt(CRYPTOPAY_MAX_RATE_AGE, 10) * 1000);
+
+    const rateData: ProductPriceRate = {
+      baseCurrency,
+      quoteCurrency: token,
+      rate,
+      expiresAt,
+      timestamp: timestampDate,
+    };
+    const success = await resolvedContext.modules.products.prices.rates.updateRate(rateData);
+    response.end(JSON.stringify({ success }));
+  });
+
+  useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, bodyParser.json());
   useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, async (req, res) => {
     const resolvedContext = req.unchainedContext as Context;
     const modules = resolvedContext.modules as UnchainedCore['modules'] & { cryptopay: CryptopayModule };

@@ -38,7 +38,6 @@ import '@unchainedshop/plugins/pricing/order-delivery';
 import '@unchainedshop/plugins/pricing/order-payment';
 import '@unchainedshop/plugins/pricing/product-catalog-price';
 import '@unchainedshop/plugins/pricing/product-price-coinbase-exchange';
-import setupCryptopayPricing from '@unchainedshop/plugins/pricing/product-price-cryptopay';
 import '@unchainedshop/plugins/pricing/product-price-rateconversion';
 import '@unchainedshop/plugins/pricing/product-discount';
 import '@unchainedshop/plugins/pricing/product-swiss-tax';
@@ -60,6 +59,7 @@ import '@unchainedshop/plugins/worker/http-request';
 import '@unchainedshop/plugins/worker/heartbeat';
 import '@unchainedshop/plugins/worker/email';
 import '@unchainedshop/plugins/worker/sms';
+import '@unchainedshop/plugins/worker/update-ecb-rates';
 
 import '@unchainedshop/plugins/files/gridfs/gridfs-adapter';
 import setupGridFSWebhook from '@unchainedshop/plugins/files/gridfs/gridfs-webhook';
@@ -136,7 +136,6 @@ const start = async () => {
 
   setupGridFSWebhook(app);
   setupCryptopayWebhooks(app);
-  setupCryptopayPricing(app);
   setupStripe(app);
   setupPostfinance(app);
   setupDatatrans(app);

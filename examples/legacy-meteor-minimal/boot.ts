@@ -33,7 +33,6 @@ import '@unchainedshop/plugins/lib/pricing/order-delivery';
 import '@unchainedshop/plugins/lib/pricing/order-payment';
 import '@unchainedshop/plugins/lib/pricing/product-catalog-price';
 import '@unchainedshop/plugins/lib/pricing/product-price-coinbase-exchange';
-import setupCryptopayPricing from '@unchainedshop/plugins/lib/pricing/product-price-cryptopay';
 import '@unchainedshop/plugins/lib/pricing/product-price-rateconversion';
 import '@unchainedshop/plugins/lib/pricing/product-discount';
 import '@unchainedshop/plugins/lib/pricing/product-swiss-tax';
@@ -122,7 +121,6 @@ Meteor.startup(async () => {
 
   setupGridFSWebhook(WebApp.connectHandlers);
   setupCryptopay(WebApp.connectHandlers);
-  setupCryptopayPricing(WebApp.connectHandlers);
   setupStripe(WebApp.connectHandlers);
   setupPostfinance(WebApp.connectHandlers);
   setupDatatrans(WebApp.connectHandlers);

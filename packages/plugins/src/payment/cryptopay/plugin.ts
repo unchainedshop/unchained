@@ -204,11 +204,10 @@ const Cryptopay: IPaymentAdapter = {
 
         1. Check that generated crypto addresses are unique and no order payments share the same crypto address, only repeat when derivations completely exhausted.
         2. When derivation path get's close to "exhaustedness" (95%), send a special e-mail alert to tell the user should generate a new xpub.
-        3. To calculate the correct derivation number, use an offset by default
-        4. Do not allow signing a paid order payment
-        5. Extend the middleware to report the highest seen block number so we can calculate confirmations, 
-        6. When an order get's confirmed (after succesful payment after rejectability), add the order amount to a special field in the wallet collection so we can find differences
-        7. Order rejection should trigger an e-mail advising the vendor to actively send back funds
+        3. Do not allow signing a paid order payment
+        4. Extend the middleware to report the highest seen block number so we can calculate confirmations, 
+        5. When an order get's confirmed (after succesful payment after rejectability), add the order amount to a special field in the wallet collection so we can find differences
+        6. Order rejection should trigger an e-mail advising the vendor to actively send back funds
 
 
         To allow paying in ETH or BTC or Tokens for CHF orders, it should work like this:
