@@ -295,10 +295,6 @@ declare module '@unchainedshop/core-enrollments' {
   const EnrollmentDirector: IEnrollmentDirector;
 }
 
-declare module '@unchainedshop/plugins/worker/GenerateOrderWorker' {
-  function configureGenerateOrderAutoscheduling(): void;
-}
-
 declare module '@unchainedshop/core-events' {
   function configureEventsModule(params: ModuleInput<Record<string, never>>): Promise<EventsModule>;
 }

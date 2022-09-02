@@ -10,34 +10,44 @@
   "typesVersions": {
     "*": {
       "delivery/*": [
-        "./lib/delivery/*"
+        "./lib/delivery/*",
+        "./lib/delivery/*/index.d.ts"
       ],
       "enrollments/*": [
-        "./lib/enrollments/*"
+        "./lib/enrollments/*",
+        "./lib/enrollments/*/index.d.ts"
       ],
       "events/*": [
-        "./lib/events/*"
+        "./lib/events/*",
+        "./lib/events/*/index.d.ts"
       ],
       "files/*": [
-        "./lib/files/*"
+        "./lib/files/*",
+        "./lib/files/*/index.d.ts"
       ],
       "filters/*": [
-        "./lib/filters/*"
+        "./lib/filters/*",
+        "./lib/filters/*/index.d.ts"
       ],
       "payment/*": [
-        "./lib/payment/*"
+        "./lib/payment/*",
+        "./lib/payment/*/index.d.ts"
       ],
       "pricing/*": [
-        "./lib/pricing/*"
+        "./lib/pricing/*",
+        "./lib/pricing/*/index.d.ts"
       ],
       "quotations/*": [
-        "./lib/quotations/*"
+        "./lib/quotations/*",
+        "./lib/quotations/*/index.d.ts"
       ],
       "warehousing/*": [
-        "./lib/warehousing/*"
+        "./lib/warehousing/*",
+        "./lib/warehousing/*/index.d.ts"
       ],
       "worker/*": [
-        "./lib/worker/*"
+        "./lib/worker/*",
+        "./lib/worker/*/index.d.ts"
       ]
     }
   },

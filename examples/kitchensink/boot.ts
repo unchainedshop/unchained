@@ -15,6 +15,7 @@ import '@unchainedshop/plugins/payment/invoice';
 import '@unchainedshop/plugins/payment/invoice-prepaid';
 import '@unchainedshop/plugins/payment/paypal-checkout';
 import '@unchainedshop/plugins/payment/worldline-saferpay';
+
 import setupDatatrans from '@unchainedshop/plugins/payment/datatrans-v2';
 import {
   setupCryptopayWebhooks,
