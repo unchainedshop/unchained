@@ -13,14 +13,14 @@ If you want add new collection there is not much configuration steps you need to
 By default if you are running unchained locally the database URI is at 
 
 ```typescript
-mongodb://localhost:4011/meteor
+mongodb://localhost:4011/unchained
 ```
 
 ```typescript
 
 import {MongoClient } from "mongodb"
 
-  const mongoClient = new MongoClient("mongodb://localhost:4011/meteor", {
+  const mongoClient = new MongoClient("mongodb://localhost:4011/unchained", {
     useUnifiedTopology: true,
     ignoreUndefined: true,
   })

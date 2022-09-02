@@ -17,7 +17,8 @@ export default async function searchProducts(
 ) {
   const { modules, userId } = context;
   const forceLiveCollection = false;
-  const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } = query;
+  const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } =
+    query;
 
   log(`query search ${assortmentId} ${JSON.stringify(query)}`, { userId });
 

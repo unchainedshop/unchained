@@ -1,12 +1,12 @@
 import dotenv from 'dotenv-extended';
 
-import setupInMemoryMongoDB from '@shelf/jest-mongodb/setup';
+import setupInMemoryMongoDB from '@shelf/jest-mongodb/lib/setup';
 import { spawn } from 'child_process';
 import { wipeDatabase } from './helpers';
 
 dotenv.load();
 
-const startAndWaitForMeteor = async () => {
+const startAndWaitForApp = async () => {
   return new Promise((resolve, reject) => {
     try {
       global.__SUBPROCESS_UNCHAINED__ = spawn('npm', ['start'], {
@@ -56,7 +56,7 @@ const startAndWaitForMeteor = async () => {
 export default async (globalConfig) => {
   if (!global.__SUBPROCESS_UNCHAINED__) {
     await setupInMemoryMongoDB(globalConfig);
-    await startAndWaitForMeteor(globalConfig);
+    await startAndWaitForApp(globalConfig);
     await wipeDatabase();
   }
 };

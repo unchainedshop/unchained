@@ -1,4 +1,4 @@
-import teardownInMemoryMongoDB from '@shelf/jest-mongodb/teardown';
+import teardownInMemoryMongoDB from '@shelf/jest-mongodb/lib/teardown';
 import { disconnect } from './helpers';
 
 async function cleanup() {

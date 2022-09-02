@@ -65,7 +65,7 @@ const EmailWorkerPlugin: IWorkerAdapter<
   ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.email',
-  label: 'Send a Mail through Meteor Mailer',
+  label: 'Send a Mail through Nodemailer',
   version: '1.0',
 
   type: 'EMAIL',

@@ -43,28 +43,4 @@ describe('Test exports', () => {
     const deletedCount = await module.delete(bookmarkId);
     assert.equal(deletedCount, 1);
   });
-
-  it('Check backwards compatibility', async () => {
-    const Bookmarks = new Mongo.Collection<any>('bookmarks');
-
-    const meteorBookmarkId = Bookmarks.insertOne({
-      userId: 'Legacy-Test-User-1',
-      productId: 'Legacy-Product-22',
-      created: new Date(),
-    });
-
-    assert.ok(meteorBookmarkId);
-    const bookmark = await module.findById(meteorBookmarkId);
-    assert.ok(bookmark);
-    assert.equal(bookmark._id, meteorBookmarkId);
-    assert.equal(bookmark.userId, 'Legacy-Test-User-1');
-    assert.equal(bookmark.productId, 'Legacy-Product-22');
-    assert.isDefined(bookmark.created);
-    assert.isUndefined(bookmark.updated);
-    assert.isUndefined(bookmark.updatedBy);
-    assert.isUndefined(bookmark.createdBy);
-
-    const deletedCount = await module.delete(meteorBookmarkId);
-    assert.equal(deletedCount, 1);
-  });
 });
