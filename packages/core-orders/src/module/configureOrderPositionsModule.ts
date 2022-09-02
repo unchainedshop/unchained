@@ -285,7 +285,7 @@ export const configureOrderPositionsModule = ({
         orderId,
         productId: resolvedProduct._id,
         originalProductId: product._id,
-        configuration: configuration || { $exists: false },
+        configuration: configuration || { $in: [null, undefined] },
         ...scope,
       };
 
