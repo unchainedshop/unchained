@@ -1,13 +1,11 @@
-import { createLogger } from '@unchainedshop/logger';
+import { log } from '@unchainedshop/logger';
 import { Root, Context } from '@unchainedshop/types/api';
 import { EventQuery } from '@unchainedshop/types/events';
 
-const logger = createLogger('unchained:api');
-
 export default async function eventsCount(root: Root, params: EventQuery, { modules, userId }: Context) {
-  logger.info(
-    `query eventsCount  queryString: ${params.queryString}  types: ${params.types}  ${userId}`,
-  );
+  log(`query eventsCount  queryString: ${params.queryString}  types: ${params.types}  ${userId}`, {
+    userId,
+  });
 
   return modules.events.count(params);
 }

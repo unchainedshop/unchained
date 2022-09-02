@@ -7,7 +7,7 @@ import { actions } from './roles';
 
 import { useMiddlewareWithCurrentContext } from './context';
 
-const logger = createLogger('unchained:api');
+const logger = createLogger('unchained:bulk-import');
 
 const { BULK_IMPORT_API_PATH = '/bulk-import', BULK_IMPORT_PAYLOAD_CACHE_DIRECTORY } = process.env;
 
