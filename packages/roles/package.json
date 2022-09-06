@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/roles",
-  "version": "1.2.17",
+  "version": "1.2.21",
   "description": "Roles package for unchained engine",
   "main": "lib/roles-index.js",
   "exports": {
@@ -30,12 +30,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
+    "jest": "^29.0.2",
     "lodash.clone": "4.5.0"
   },
   "devDependencies": {
-    "@types/node": "^16.11.49",
-    "@unchainedshop/types": "^1.2.17",
+    "@types/node": "^16.11.57",
+    "@unchainedshop/types": "^1.2.21",
     "chai": "^4.3.6",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.2"
   }
 }
