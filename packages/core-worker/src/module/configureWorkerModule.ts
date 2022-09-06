@@ -288,6 +288,7 @@ export const configureWorkerModule = async ({
       const query = buildQuerySelector({
         type,
         status: [WorkStatus.NEW],
+        priority,
       });
       try {
         const workId = `${type}:${scheduled.getTime()}`;
@@ -296,13 +297,13 @@ export const configureWorkerModule = async ({
           {
             $set: {
               input,
-              priority,
               worker: null,
               updated: created,
             },
             $setOnInsert: {
               _id: workId,
               type,
+              priority,
               originalWorkId,
               scheduled,
               retries,
