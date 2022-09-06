@@ -42,7 +42,7 @@ export default (app: any) => {
             currency,
           });
           const orderPayment = await modules.orders.payments.findOrderPaymentByContextData({
-            context: { cryptoAddresses: { currency, address } },
+            context: { cryptoAddresses: { $elemMatch: { currency, address } } },
           });
           if (orderPayment) {
             // Try to process order to next status
