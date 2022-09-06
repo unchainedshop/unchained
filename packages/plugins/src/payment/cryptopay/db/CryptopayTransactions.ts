@@ -4,6 +4,7 @@ import { Decimal128 } from 'mongodb';
 export type CryptopayTransaction = {
   _id?: _ID;
   blockHeight: number;
+  mostRecentBlockHeight: number;
   amount: Decimal128;
   currency: string;
   decimals: number;

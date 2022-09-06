@@ -4,6 +4,7 @@ import { CryptopayTransaction, CryptopayTransactionsCollection } from '../db/Cry
 
 export interface CryptopayModule {
   getWalletAddress: (addressId: string) => Promise<CryptopayTransaction>;
+  updateMostRecentBlock: (currency: string, blockHeight: number) => Promise<void>;
   updateWalletAddress: (walletData: {
     addressId: string;
     blockHeight: number;
@@ -19,6 +20,22 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
 
   const getWalletAddress: CryptopayModule['getWalletAddress'] = async (addressId) => {
     return CryptoTransactions.findOne({ _id: addressId });
+  };
+
+  const updateMostRecentBlock: CryptopayModule['updateMostRecentBlock'] = async (
+    currency,
+    blockHeight,
+  ) => {
+    await CryptoTransactions.updateMany(
+      {
+        currency,
+      },
+      {
+        $set: {
+          mostRecentBlockHeight: blockHeight,
+        },
+      },
+    );
   };
 
   const updateWalletAddress: CryptopayModule['updateWalletAddress'] = async ({
@@ -44,6 +61,7 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
         },
         $set: {
           blockHeight,
+          mostRecentBlockHeight: blockHeight,
           updated: new Date(),
         },
       },
@@ -55,6 +73,7 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
 
   return {
     getWalletAddress,
+    updateMostRecentBlock,
     updateWalletAddress,
   };
 };
