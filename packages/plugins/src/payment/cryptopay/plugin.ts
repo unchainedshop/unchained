@@ -158,7 +158,7 @@ const Cryptopay: IPaymentAdapter = {
                 }
                 return {
                   ...walletAddress,
-                  amount: BigInt(walletAddress.amount) * BigInt(currencyConversionRate),
+                  amount: BigInt(walletAddress.amount.toString()) * BigInt(currencyConversionRate),
                   currency,
                 };
               }
@@ -180,7 +180,7 @@ const Cryptopay: IPaymentAdapter = {
 
           // Hack: Downgrade to 8 decimals
           const convertedAmount =
-            BigInt(walletForOrderCurrency.amount) /
+            BigInt(walletForOrderCurrency.amount.toString()) /
             10n ** (BigInt(walletForOrderCurrency.decimals) - 9n); // All crypto native prices denoted with 8 decimals
 
           if (convertedAmount && convertedAmount >= totalAmount) {

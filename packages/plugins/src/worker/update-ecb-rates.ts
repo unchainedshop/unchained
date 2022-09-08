@@ -18,7 +18,9 @@ const getExchangeRates = async () => {
     );
 };
 
-const everySixHours = later.parse.text('every 6 hours');
+// https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
+// CET = UTC + 1
+const everyDayAtFour = later.parse.cron('0 15 * * *');
 
 const UpdateECBRates: IWorkerAdapter<any, any> = {
   ...WorkerAdapter,
@@ -34,7 +36,7 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
     try {
       const data: Array<{ currency: string; rate: string }> = await getExchangeRates();
       const timestamp = new Date();
-      const expiresAt = new Date(new Date().getTime() + 12 * 60 * 60 * 1000);
+      const expiresAt = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
 
       const rates: Array<ProductPriceRate> = data.map((d) => {
         return {
@@ -65,7 +67,7 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
 WorkerDirector.registerAdapter(UpdateECBRates);
 
 WorkerDirector.configureAutoscheduling(UpdateECBRates, {
-  schedule: everySixHours,
+  schedule: everyDayAtFour,
   input: () => {
     /* */
   },

@@ -6,12 +6,10 @@ import { Context } from '@unchainedshop/types/api';
 import { UnchainedCore } from '@unchainedshop/types/core';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
-import { print } from 'graphql';
 import { CryptopayModule } from './module/configureCryptopayModule';
 
 const {
   CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
-  CRYPTOPAY_PRICING_WEBHOOK_PATH = '/pricing/cryptopay',
   CRYPTOPAY_SECRET,
   CRYPTOPAY_MAX_RATE_AGE,
 } = process.env;

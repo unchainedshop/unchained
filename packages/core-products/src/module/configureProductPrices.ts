@@ -273,7 +273,30 @@ export const configureProductPricesModule = ({
       updateRates: async (rates) => {
         const priceRates = await ProductPriceRates(db);
         try {
-          await priceRates.ProductRates.insertMany(rates);
+          if (rates?.length) {
+            const BulkOp = priceRates.ProductRates.initializeUnorderedBulkOp();
+            rates.forEach((rate) => {
+              BulkOp.find({
+                baseCurrency: rate.baseCurrency,
+                quoteCurrency: rate.quoteCurrency,
+                rate: rate.rate,
+                expiresAt: { $gte: rate.timestamp },
+              })
+                .upsert()
+                .updateOne({
+                  $set: {
+                    expiresAt: rate.expiresAt,
+                  },
+                  $setOnInsert: {
+                    baseCurrency: rate.baseCurrency,
+                    quoteCurrency: rate.quoteCurrency,
+                    timestamp: rate.timestamp,
+                    rate: rate.rate,
+                  },
+                });
+            });
+            await BulkOp.execute();
+          }
           return true;
         } catch (e) {
           return false;
