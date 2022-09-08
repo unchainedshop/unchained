@@ -1,5 +1,5 @@
 allow-deny@1.1.1
-babel-compiler@7.9.0
+babel-compiler@7.9.2
 babel-runtime@1.5.1
 base64@1.0.12
 binary-heap@1.0.11
