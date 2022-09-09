@@ -60,6 +60,7 @@ import '@unchainedshop/plugins/worker/heartbeat';
 import '@unchainedshop/plugins/worker/email';
 import '@unchainedshop/plugins/worker/sms';
 import '@unchainedshop/plugins/worker/update-ecb-rates';
+import '@unchainedshop/plugins/worker/update-coinbase-rates';
 
 import '@unchainedshop/plugins/files/gridfs/gridfs-adapter';
 import setupGridFSWebhook from '@unchainedshop/plugins/files/gridfs/gridfs-webhook';
