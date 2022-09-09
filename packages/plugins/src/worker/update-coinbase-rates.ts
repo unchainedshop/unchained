@@ -55,7 +55,7 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
         success: false,
         error: {
           name: 'UPDATE_COINBASE_RATES_FAILED',
-          message: 'Updating ECB Rates failed',
+          message: 'Updating Coinbase Rates failed',
         },
       };
     }

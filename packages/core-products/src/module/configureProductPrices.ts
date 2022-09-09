@@ -294,6 +294,17 @@ export const configureProductPricesModule = ({
                     rate: rate.rate,
                   },
                 });
+
+              // Expire the others that were still valid
+              BulkOp.find({
+                baseCurrency: rate.baseCurrency,
+                quoteCurrency: rate.quoteCurrency,
+                expiresAt: { $gte: rate.timestamp, $lt: rate.expiresAt },
+              }).update({
+                $set: {
+                  expiresAt: rate.timestamp,
+                },
+              });
             });
             await BulkOp.execute();
           }
