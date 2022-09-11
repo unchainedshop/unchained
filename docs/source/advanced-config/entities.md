@@ -360,33 +360,73 @@ Set by Unchained:
 }
 ```
 
-### Entity Type: Review (coming soon)
+## Creating custom handlers
+
+While unchained provider a lot of bulk import handles already and other are being built, you can write your own handler for an entity if the need arises.
+in order to write custom handler you need to create an object that implements [BulkImportHandler](https://docs.unchained.shop/types/types/platform.BulkImportHandler.html) structure. where the parent key represents the entity example `PRODUCT` and each of its fields represent operation name and it's corresponding handler function that implements [BulkImportOperation](https://docs.unchained.shop/types/types/platform.BulkImportOperation.html).
 
 ```
 {
-  "entity": "REVIEW",
-  "operation": "CREATE",
-  "payload": {
-    "_id": null,
-    "specification": {
-        "created": null,
-        "updated": null,
-        "productId": "product"
-        "authorId": "root",
-        "rating": 1,
-        "title": "What the?",
-        "review": "That product just sucks big times",
-        "votes": [
-          {
-            "timestamp": null,
-            "userId": "root",
-            "type": "UPVOTE",
-            "meta": {}
-          }
-        ],
-        "meta": {}
-      }
-    }
+  [entity] : {
+    [operation] : function [handler] {}
   }
 }
+
 ```
+Every bulk import handler function should return [BulkImportOperationResult](https://docs.unchained.shop/types/types/platform.BulkImportOperationResult.html).
+After creating a bulk import handler object the final step is registering this handler on the platform so that it's registered on system boot.
+
+```
+import handlers from 'location/of/bulk-import-handler'
+
+  const unchainedAPI = await startPlatform({
+    ...
+    bulkImporter: {
+      handlers,
+    },
+    ...
+
+```
+
+Now when the engine detects a `BULK_IMPORT` event with the entities defined above along with the operation, it will execute that particular handler and perform what ever is defined in it.
+
+
+example.
+
+Below is an example bulk import handler that will be executed to log import duration from an external API. The handler receives all the locations of downloaded data along with the duration it took to complete.
+
+
+```
+
+import { UnchainedCore } from '@unchainedshop/types/core';
+
+type Duration = {
+    _id: string;
+    type: string;
+    started: Date;
+    finished?: Date;
+    success?: boolean;
+}
+
+const handlers: Record<string, BulkImportHandler> = {
+  SYNC_PROGRESS: {
+      'log-duration': async function reportSyncTime(duration: Duration, options: { logger?: any; }, unchainedApi: UnchainedCore,) {
+                    options.logger.debug('replace all discount groups', duration);
+
+                    await unchainedApi.modules.durationLogger.insertSyncDurationReport(duration);
+
+                    return {
+                      entity: 'SYNC_PROGRESS',
+                      operation: 'log-duration',
+                      success: true,
+                    };
+                  }
+      }
+}
+
+
+
+```
+
+On the above sample core `durationLogger` is a custom module that is implemented for this purpose. if you want to learn more about write custom modules refer to [Configure custom module](./custom-modules)
+
