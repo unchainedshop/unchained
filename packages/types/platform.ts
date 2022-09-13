@@ -2,6 +2,11 @@ import { BulkOperationBase } from 'mongodb';
 import { UnchainedCore, UnchainedCoreOptions } from './core';
 import { WorkerSchedule } from './worker';
 
+export type BulkImportOperationResult = {
+  entity: string;
+  operation: string;
+  success: boolean;
+};
 export type BulkImportOperation = (
   payload: any,
   options: {
@@ -11,7 +16,7 @@ export type BulkImportOperation = (
     logger?: any;
   },
   unchainedAPI: UnchainedCore,
-) => Promise<void>;
+) => Promise<BulkImportOperationResult>;
 
 export type BulkImportHandler = {
   [x: string]: BulkImportOperation;
