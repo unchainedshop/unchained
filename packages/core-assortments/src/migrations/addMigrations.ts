@@ -8,25 +8,32 @@ export default function addMigrations(repository: MigrationRepository<Migration>
     up: async () => {
       const { Assortments, AssortmentProductIdCache } = await AssortmentsCollection(repository.db);
       const assortments = await Assortments.find(
-        {},
+        { _cachedProductIds: { $exists: true } },
         { projection: { _id: true, _cachedProductIds: true } },
       ).toArray();
 
       await Promise.all(
         assortments.map(async (assortment) => {
-          await AssortmentProductIdCache.updateOne(
-            {
-              _id: assortment._id as any,
-            },
-            {
-              // eslint-disable-next-line
-              // @ts-ignore
-              $set: { productIds: assortment._cachedProductIds }, // eslint-disable-line
-            },
-            {
-              upsert: true,
-            },
-          );
+          try {
+            // eslint-disable-next-line
+            // @ts-ignore
+            await AssortmentProductIdCache.updateOne(
+              {
+                _id: assortment._id as any,
+              },
+              {
+                // eslint-disable-next-line
+                  // @ts-ignore
+                  $set: { productIds: assortment._cachedProductIds }, // eslint-disable-line
+              },
+              {
+                upsert: true,
+              },
+            );
+          } catch (e) {
+            console.warn(e);
+            /* */
+          }
         }),
       );
 
