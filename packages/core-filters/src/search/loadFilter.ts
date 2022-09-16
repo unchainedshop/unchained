@@ -31,11 +31,10 @@ const findLoadedOptions = async (
       );
       const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
       if (!filteredProductIds.size) return null;
-      const filteredProductsCount = async () => {
-        return filterActions.aggregateProductIds({
+      const filteredProductsCount = () =>
+        filterActions.aggregateProductIds({
           productIds: [...filteredProductIds],
         }).length;
-      };
 
       return {
         definition: () => ({ filterOption: value, ...filter }),
@@ -142,7 +141,6 @@ export const loadFilter = async (
       // - Fit this filter generally
       // - Are filtered by all other filters
       // - Are not filtered by the currently selected value of this filter
-      console.log(filteredByOtherFiltersSet);
       return findLoadedOptions(
         filter,
         {
