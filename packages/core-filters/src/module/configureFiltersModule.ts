@@ -117,7 +117,7 @@ export const configureFiltersModule = async ({
       }, []);
     },
     {
-      maxAge: 1000,
+      maxAge: 5000,
       prmise: true,
       normalizer(args) {
         // args is arguments object as accessible in memoized function
