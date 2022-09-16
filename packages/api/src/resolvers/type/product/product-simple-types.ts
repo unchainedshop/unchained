@@ -40,6 +40,7 @@ export const SimpleProduct: SimpleProductHelperTypes = {
           );
 
           return {
+            warehousingProvider,
             ...warehousingContext,
             ...dispatch,
           };
@@ -84,6 +85,7 @@ export const SimpleProduct: SimpleProductHelperTypes = {
           );
 
           return {
+            warehousingProvider,
             ...warehousingContext,
             ...stock,
           };
