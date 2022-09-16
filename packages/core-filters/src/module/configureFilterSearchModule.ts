@@ -104,13 +104,13 @@ export const configureFilterSearchModule = ({
           {
             productSelector,
             productIds: totalProductIds,
+            includeDrafts: searchQuery.includeInactive,
           },
           {
             projection: { _id: 1 },
           },
         );
         const relevantProductIds = relevantProducts.map(({ _id }) => _id);
-
         return Promise.all(
           sortedFilters.map(async (filter) => {
             return loadFilter(

@@ -1,7 +1,7 @@
 import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
 import { Filter as DbFilter, Query } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
-
+import memoizee from 'memoizee';
 import {
   Filter,
   FilterQuery,
@@ -52,19 +52,27 @@ export const configureFiltersModule = async ({
   ) => {
     const { modules } = requestContext;
     const director = await FilterDirector.actions({ filter, searchQuery: {} }, requestContext);
-    const selector = await director.transformProductSelector(
-      modules.products.search.buildActiveStatusFilter(),
+    const productSelector = await director.transformProductSelector(
+      modules.products.search.buildActiveDraftStatusFilter(),
       {
         key: filter.key,
         value,
       },
     );
 
-    if (!selector) return [];
-
-    const products = await modules.products.findProducts(selector, {
-      projection: { _id: true },
-    });
+    if (!productSelector) return [];
+    const products = await modules.products.findProducts(
+      {
+        productSelector,
+        includeDrafts: true,
+        sort: [],
+        offset: 0,
+        limit: 0,
+      },
+      {
+        projection: { _id: true },
+      },
+    );
     return products.map(({ _id }) => _id);
   };
 
@@ -90,23 +98,33 @@ export const configureFiltersModule = async ({
     return [allProductIds, productIdsMap];
   };
 
-  const filterProductIds = async (
-    filter: Filter,
-    { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
-    requestContext: Context,
-  ) => {
-    const getProductIds =
-      (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
-      (await buildProductIdMap(filter, requestContext));
+  const filterProductIds = memoizee(
+    async function filterProductIdsRaw(
+      filter: Filter,
+      { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
+      requestContext: Context,
+    ) {
+      const getProductIds =
+        (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
+        (await buildProductIdMap(filter, requestContext));
 
-    const [allProductIds, productIds] = getProductIds;
-    const parse = createFilterValueParser(filter.type);
+      const [allProductIds, productIds] = getProductIds;
+      const parse = createFilterValueParser(filter.type);
 
-    return parse(values, Object.keys(productIds)).reduce((accumulator, value) => {
-      const additionalValues = value === undefined ? allProductIds : productIds[value];
-      return [...accumulator, ...(additionalValues || [])];
-    }, []);
-  };
+      return parse(values, Object.keys(productIds)).reduce((accumulator, value) => {
+        const additionalValues = value === undefined ? allProductIds : productIds[value];
+        return [...accumulator, ...(additionalValues || [])];
+      }, []);
+    },
+    {
+      maxAge: 1000,
+      prmise: true,
+      normalizer(args) {
+        // args is arguments object as accessible in memoized function
+        return `${args[0]._id}-${args[1].values?.toString()}`;
+      },
+    },
+  );
 
   const invalidateProductIdCache = async (filter: Filter, requestContext: Context) => {
     if (!filter) return;
@@ -124,6 +142,7 @@ export const configureFiltersModule = async ({
 
     const filters = await Filters.find(selector || {}).toArray();
     await Promise.all(filters.map(async (filter) => invalidateProductIdCache(filter, requestContext)));
+    filterProductIds.clear();
   };
 
   const filterSearch = configureFilterSearchModule({
@@ -204,6 +223,7 @@ export const configureFiltersModule = async ({
 
       if (!options?.skipInvalidation) {
         await invalidateProductIdCache(filter, requestContext);
+        filterProductIds.clear();
       }
 
       emit('FILTER_CREATE', { filter });
@@ -231,7 +251,11 @@ export const configureFiltersModule = async ({
         userId,
       );
 
-      return Filters.findOne(selector, {});
+      const filter = await Filters.findOne(selector, {});
+      await invalidateProductIdCache(filter, requestContext);
+      filterProductIds.clear();
+
+      return filter;
     },
 
     delete: async (filterId, userId) => {
@@ -241,7 +265,8 @@ export const configureFiltersModule = async ({
       return deletedCount;
     },
 
-    removeFilterOption: async ({ filterId, filterOptionValue }, userId) => {
+    removeFilterOption: async ({ filterId, filterOptionValue }, requestContext) => {
+      const { userId } = requestContext;
       const selector = generateDbFilterById(filterId);
       await Filters.updateOne(selector, {
         $set: {
@@ -253,7 +278,11 @@ export const configureFiltersModule = async ({
         },
       });
 
-      return Filters.findOne(selector, {});
+      const filter = await Filters.findOne(selector, {});
+      await invalidateProductIdCache(filter, requestContext);
+      filterProductIds.clear();
+
+      return filter;
     },
 
     update: async (filterId, doc, requestContext, options, userId) => {
@@ -263,6 +292,7 @@ export const configureFiltersModule = async ({
 
       if (!options?.skipInvalidation) {
         await invalidateProductIdCache(filter, requestContext);
+        filterProductIds.clear();
       }
 
       emit('FILTER_UPDATE', { filter });

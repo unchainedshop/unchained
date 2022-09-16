@@ -120,7 +120,7 @@ export type FiltersModule = {
       filterId: string;
       filterOptionValue?: string;
     },
-    userId?: string,
+    requestContext: Context,
   ) => Promise<Filter>;
 
   /*

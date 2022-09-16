@@ -34,6 +34,7 @@
     "@unchainedshop/logger": "^1.2.21",
     "@unchainedshop/utils": "^1.2.21",
     "locale": "^0.1.0",
+    "memoizee": "^0.4.15",
     "simpl-schema": "^1.12.3"
   },
   "devDependencies": {

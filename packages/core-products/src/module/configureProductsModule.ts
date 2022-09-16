@@ -497,7 +497,7 @@ export const configureProductsModule = async ({
         status: { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] },
       }),
       buildActiveStatusFilter: () => ({
-        status: { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] },
+        status: { $in: [ProductStatus.ACTIVE] },
       }),
       countFilteredProducts: async ({ productIds, productSelector }) => {
         return Products.countDocuments({
