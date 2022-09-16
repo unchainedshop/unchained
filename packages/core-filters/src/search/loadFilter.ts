@@ -91,17 +91,17 @@ export const loadFilter = async (
   const filteredByOtherFiltersSet = await otherFilters
     .filter((otherFilter) => otherFilter.key !== filter.key)
     .reduce(async (productIdSetPromise, otherFilter) => {
+      if (otherFilter.key === filter.key) return productIdSetPromise;
+      if (!filterQuery[otherFilter.key]) return productIdSetPromise;
       const productIdSet = await productIdSetPromise;
-      if (!filterQuery[filter.key]) return productIdSet;
       const otherFilterProductIds = await filterProductIds(
         otherFilter,
         {
-          values: filterQuery[filter.key],
+          values: filterQuery[otherFilter.key],
           forceLiveCollection,
         },
         requestContext,
       );
-
       return intersectSet(productIdSet, new Set(otherFilterProductIds));
     }, Promise.resolve(new Set(examinedProductIdSet)));
 
@@ -142,6 +142,7 @@ export const loadFilter = async (
       // - Fit this filter generally
       // - Are filtered by all other filters
       // - Are not filtered by the currently selected value of this filter
+      console.log(filteredByOtherFiltersSet);
       return findLoadedOptions(
         filter,
         {
