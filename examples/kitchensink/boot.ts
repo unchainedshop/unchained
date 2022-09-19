@@ -37,7 +37,6 @@ import '@unchainedshop/plugins/pricing/order-discount';
 import '@unchainedshop/plugins/pricing/order-delivery';
 import '@unchainedshop/plugins/pricing/order-payment';
 import '@unchainedshop/plugins/pricing/product-catalog-price';
-import '@unchainedshop/plugins/pricing/product-price-coinbase-exchange';
 import '@unchainedshop/plugins/pricing/product-price-rateconversion';
 import '@unchainedshop/plugins/pricing/product-discount';
 import '@unchainedshop/plugins/pricing/product-swiss-tax';
