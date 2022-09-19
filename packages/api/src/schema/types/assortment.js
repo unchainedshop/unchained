@@ -9,7 +9,7 @@ export default [
 
     type AssortmentMedia {
       _id: ID!
-      tags: [String!]
+      tags: [LowerCaseString!]
       file: Media!
       sortKey: Int!
       texts(forceLocale: String): AssortmentMediaTexts
@@ -26,8 +26,8 @@ export default [
       isBase: Boolean
       isRoot: Boolean
       sequence: Int!
-      tags: [String!]
-      media(limit: Int = 10, offset: Int = 0, tags: [String!]): [AssortmentMedia!]!
+      tags: [LowerCaseString!]
+      media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [AssortmentMedia!]!
       texts(forceLocale: String): AssortmentTexts
       productAssignments: [AssortmentProduct!]
       filterAssignments: [AssortmentFilter!]
@@ -66,7 +66,7 @@ export default [
     type AssortmentProduct {
       _id: ID!
       sortKey: Int!
-      tags: [String!]
+      tags: [LowerCaseString!]
       assortment: Assortment!
       product: Product!
     }
@@ -74,7 +74,7 @@ export default [
     type AssortmentFilter {
       _id: ID!
       sortKey: Int!
-      tags: [String!]
+      tags: [LowerCaseString!]
       assortment: Assortment!
       filter: Filter!
     }
@@ -82,7 +82,7 @@ export default [
     type AssortmentLink {
       _id: ID!
       sortKey: Int!
-      tags: [String!]
+      tags: [LowerCaseString!]
       parent: Assortment!
       child: Assortment!
     }

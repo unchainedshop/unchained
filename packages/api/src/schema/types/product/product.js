@@ -32,7 +32,7 @@ export default [
 
     type ProductMedia {
       _id: ID!
-      tags: [String!]
+      tags: [LowerCaseString!]
       file: Media!
       sortKey: Int!
       texts(forceLocale: String): ProductMediaTexts
@@ -57,12 +57,12 @@ export default [
       _id: ID!
       sequence: Int!
       status: ProductStatus!
-      tags: [String!]
+      tags: [LowerCaseString!]
       created: DateTime
       updated: DateTime
       published: DateTime
       texts: ProductTexts
-      media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
+      media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
       reviews(
         limit: Int = 10
         offset: Int = 0

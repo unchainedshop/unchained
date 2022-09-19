@@ -1,5 +1,5 @@
 import { AssortmentFilter, AssortmentsModule } from '@unchainedshop/types/assortments';
-import { Collection, Query } from '@unchainedshop/types/common';
+import { Collection, Document, FindOptions, Query } from '@unchainedshop/types/common';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
 
@@ -21,7 +21,7 @@ export const configureAssortmentFiltersModule = ({
       return AssortmentFilters.findOne(generateDbFilterById(assortmentFilterId), {});
     },
 
-    findFilters: async ({ assortmentId }, options) => {
+    findFilters: async ({ assortmentId }, options: FindOptions<Document>) => {
       const filters = AssortmentFilters.find({ assortmentId }, options);
       return filters.toArray();
     },

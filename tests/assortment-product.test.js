@@ -109,7 +109,7 @@ describe('AssortmentProduct', () => {
           mutation AddAssortmentProduct(
             $assortmentId: ID!
             $productId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentProduct(
               assortmentId: $assortmentId
@@ -148,7 +148,7 @@ describe('AssortmentProduct', () => {
           mutation AddAssortmentProduct(
             $assortmentId: ID!
             $productId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentProduct(
               assortmentId: $assortmentId
@@ -183,7 +183,7 @@ describe('AssortmentProduct', () => {
           mutation AddAssortmentProduct(
             $assortmentId: ID!
             $productId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentProduct(
               assortmentId: $assortmentId
@@ -218,7 +218,7 @@ describe('AssortmentProduct', () => {
           mutation AddAssortmentProduct(
             $assortmentId: ID!
             $productId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentProduct(
               assortmentId: $assortmentId
@@ -244,7 +244,7 @@ describe('AssortmentProduct', () => {
           mutation AddAssortmentProduct(
             $assortmentId: ID!
             $productId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentProduct(
               assortmentId: $assortmentId
@@ -273,7 +273,7 @@ describe('AssortmentProduct', () => {
           mutation AddAssortmentProduct(
             $assortmentId: ID!
             $productId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentProduct(
               assortmentId: $assortmentId

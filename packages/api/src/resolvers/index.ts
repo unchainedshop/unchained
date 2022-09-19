@@ -3,9 +3,11 @@ import { JSONResolver, TimestampResolver, DateTimeResolver, DateResolver } from 
 import Query from './queries';
 import Mutation from './mutations';
 import Types from './type';
+import CustomScalars from './scalars';
 
 export default {
   ...Types,
+  ...CustomScalars,
   Upload: GraphQLUpload,
   JSON: JSONResolver,
   Query,

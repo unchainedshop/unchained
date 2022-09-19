@@ -1,7 +1,15 @@
 import { Db } from 'mongodb';
 import { Context, SortOption } from './api';
 import { Assortment } from './assortments';
-import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
+import {
+  FindOptions,
+  Document,
+  IBaseAdapter,
+  IBaseDirector,
+  Query,
+  TimestampFields,
+  _ID,
+} from './common';
 import { UnchainedCore } from './core';
 import { Product } from './products';
 
@@ -85,6 +93,7 @@ export type FiltersModule = {
       offset?: number;
       sort?: Array<SortOption>;
     },
+    options: FindOptions<Document>,
   ) => Promise<Array<Filter>>;
 
   filterExists: (params: { filterId: string }) => Promise<boolean>;
