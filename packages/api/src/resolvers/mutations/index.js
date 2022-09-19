@@ -36,6 +36,7 @@ import removeProduct from './products/removeProduct';
 import unpublishProduct from './products/unpublishProduct';
 import updateProduct from './products/updateProduct';
 import updateProductTexts from './products/updateProductTexts';
+import updateProductTokenization from './products/updateProductTokenization';
 import updateProductMediaTexts from './products/updateProductMediaTexts';
 import createProductVariation from './products/createProductVariation';
 import createProductBundleItem from './products/createProductBundleItem';
@@ -203,6 +204,7 @@ export default {
   updateProductWarehousing: acl(actions.manageProducts)(updateProductWarehousing),
   updateProductSupply: acl(actions.manageProducts)(updateProductSupply),
   updateProductPlan: acl(actions.manageProducts)(updateProductPlan),
+  updateProductTokenization: acl(actions.manageProducts)(updateProductTokenization),
   removeProductVariation: acl(actions.manageProducts)(removeProductVariation),
   updateProductVariationTexts: acl(actions.manageProducts)(updateProductVariationTexts),
   removeProductVariationOption: acl(actions.manageProducts)(removeProductVariationOption),

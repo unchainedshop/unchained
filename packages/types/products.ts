@@ -29,6 +29,7 @@ export enum ProductType {
   ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
   BundleProduct = 'BUNDLE_PRODUCT',
   PlanProduct = 'PLAN_PRODUCT',
+  TokenizedProduct = 'TOKENIZED_PRODUCT',
 }
 
 export enum ProductContractStandard {
@@ -68,6 +69,13 @@ export interface ProductCommerce {
   salesQuantityPerUnit?: string;
   defaultOrderQuantity?: number;
   pricing: Array<ProductPrice>;
+}
+
+export interface ProductTokenization {
+  contractAddress: string;
+  contractStandard: ProductContractStandard;
+  tokenId: string;
+  supply: number;
 }
 
 export interface ProductPlan {
@@ -120,6 +128,7 @@ export type Product = {
   tags?: Array<string>;
   type: string;
   warehousing?: ProductWarehousing;
+  tokenization?: ProductTokenization;
 } & TimestampFields;
 
 export type ProductText = {

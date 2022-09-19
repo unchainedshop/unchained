@@ -1,16 +1,20 @@
-import { ProductContractStandard, TokenizedProductHelperTypes } from '@unchainedshop/types/products';
+import { TokenizedProductHelperTypes } from '@unchainedshop/types/products';
 import { PlanProduct } from './product-plan-types';
 
 export const TokenizedProduct: TokenizedProductHelperTypes = {
   ...PlanProduct,
-  contractAddress() {
-    return '0x0';
+  contractAddress(product) {
+    return product.tokenization?.contractAddress;
   },
-  contractConfiguration() {
-    return null;
+  contractConfiguration(product) {
+    if (!product.tokenization) return null;
+    return {
+      supply: product.tokenization.supply,
+      tokenId: product.tokenization.tokenId,
+    };
   },
-  contractStandard() {
-    return ProductContractStandard.ERC1155;
+  contractStandard(product) {
+    return product.tokenization?.contractStandard;
   },
 };
 

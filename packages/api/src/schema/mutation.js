@@ -380,6 +380,14 @@ export default [
       updateProductPlan(productId: ID!, plan: UpdateProductPlanInput!): Product
 
       """
+      Modify tokenization part of a product
+      """
+      updateProductTokenization(
+        productId: ID!
+        tokenization: UpdateProductTokenizationInput!
+      ): TokenizedProduct
+
+      """
       Modify warehousing part of a product
       """
       updateProductWarehousing(productId: ID!, warehousing: UpdateProductWarehousingInput!): Product

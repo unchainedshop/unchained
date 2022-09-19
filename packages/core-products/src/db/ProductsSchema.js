@@ -34,6 +34,16 @@ const ProductWarehousingSchema = new SimpleSchema(
   { requiredByDefault: false },
 );
 
+const ProductTokenizationSchema = new SimpleSchema(
+  {
+    contractAddress: String,
+    contractStandard: String,
+    tokenId: String,
+    supply: Number,
+  },
+  { requiredByDefault: true },
+);
+
 const ProductSupplySchema = new SimpleSchema(
   {
     weightInGram: Number,
@@ -106,6 +116,7 @@ export const ProductsSchema = new SimpleSchema(
     },
     'bundleItems.$': ProductBundleItemSchema,
     meta: { type: Object, blackbox: true },
+    tokenization: ProductTokenizationSchema,
     ...Schemas.timestampFields,
   },
   { requiredByDefault: false },
