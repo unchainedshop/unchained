@@ -31,6 +31,11 @@ export enum ProductType {
   PlanProduct = 'PLAN_PRODUCT',
 }
 
+export enum ProductContractStandard {
+  ERC721 = 'ERC721',
+  ERC1155 = 'ERC1155',
+}
+
 export interface ProductConfiguration {
   key: string;
   value: string;
@@ -71,6 +76,11 @@ export interface ProductPlan {
   usageCalculationType?: string;
   trialInterval?: string;
   trialIntervalCount?: number;
+}
+
+export interface ProductContractConfiguration {
+  tokenId: string;
+  supply: number;
 }
 
 export interface ProductAssignment {
@@ -490,6 +500,12 @@ export interface PlanProductHelperTypes extends ProductHelperTypes {
   salesUnit: HelperType<never, string>;
   salesQuantityPerUnit: HelperType<never, string>;
   defaultOrderQuantity: HelperType<never, number>;
+}
+
+export interface TokenizedProductHelperTypes extends PlanProductHelperTypes {
+  contractAddress: HelperType<never, string>;
+  contractStandard: HelperType<never, ProductContractStandard>;
+  contractConfiguration: HelperType<never, ProductContractConfiguration>;
 }
 
 export interface SimpleProductHelperTypes extends PlanProductHelperTypes {

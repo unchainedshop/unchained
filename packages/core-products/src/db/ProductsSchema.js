@@ -6,6 +6,7 @@ export const ProductTypes = {
   ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
   BundleProduct: 'BUNDLE_PRODUCT',
   PlanProduct: 'PLAN_PRODUCT',
+  TokenizedProduct: 'TOKENIZED_PRODUCT',
 };
 
 const ProductCommerceSchema = new SimpleSchema(

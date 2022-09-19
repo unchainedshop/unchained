@@ -56,6 +56,7 @@ import { ProductVariationOption } from './product/product-variation-option-types
 import { Quotation } from './quotation-types';
 import { Shop } from './shop-types';
 import { SimpleProduct } from './product/product-simple-types';
+import { TokenizedProduct } from './product/product-tokenized-types';
 import { Stock } from './stock-types';
 import { User } from './user-types';
 import { WarehousingProvider } from './warehousing-provider-types';
@@ -122,6 +123,7 @@ const types = {
   Quotation,
   Shop,
   SimpleProduct,
+  TokenizedProduct,
   Stock,
   User,
   WarehousingProvider,
