@@ -54,7 +54,8 @@ export const QuotationDirector: IQuotationDirector = {
 
       isManualRequestVerificationRequired: async () => {
         try {
-          return adapter.isManualRequestVerificationRequired();
+          const isRequired = await adapter.isManualRequestVerificationRequired();
+          return isRequired;
         } catch (error) {
           log('QuotationDirector -> Error while checking if is manual request verification required', {
             level: LogLevel.Error,
@@ -66,7 +67,8 @@ export const QuotationDirector: IQuotationDirector = {
 
       isManualProposalRequired: async () => {
         try {
-          return adapter.isManualProposalRequired();
+          const isRequired = await adapter.isManualProposalRequired();
+          return isRequired;
         } catch (error) {
           log('QuotationDirector -> Error while checking if is manual proposal required', {
             level: LogLevel.Error,
@@ -83,10 +85,11 @@ export const QuotationDirector: IQuotationDirector = {
 
       transformItemConfiguration: async ({ quantity, configuration }) => {
         try {
-          return adapter.transformItemConfiguration({
+          const itemConfiguration = await adapter.transformItemConfiguration({
             quantity,
             configuration,
           });
+          return itemConfiguration;
         } catch (error) {
           log('QuotationDirector -> Error while transforming item configuration', {
             level: LogLevel.Error,

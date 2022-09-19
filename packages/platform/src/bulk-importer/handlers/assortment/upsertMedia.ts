@@ -42,7 +42,8 @@ const upsertAsset = async (
 const upsertMediaObject = async (media, unchainedAPI: Context) => {
   const { modules, userId } = unchainedAPI;
   try {
-    return modules.assortments.media.create(media, userId);
+    const assortmentMedia = await modules.assortments.media.create(media, userId);
+    return assortmentMedia;
   } catch (e) {
     const { _id, ...mediaData } = media;
     return modules.assortments.media.update(_id, mediaData);
