@@ -370,7 +370,7 @@ export type ProductsModule = {
 export type RemoveProductService = (params: { productId: string }, context: Context) => Promise<boolean>;
 
 export interface ProductServices {
-  removeProductService: RemoveProductService;
+  removeProduct: RemoveProductService;
 }
 
 /*

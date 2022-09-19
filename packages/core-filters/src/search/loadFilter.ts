@@ -32,7 +32,7 @@ const findLoadedOptions = async (
       const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
       if (!filteredProductIds.size) {
         return null;
-      };
+      }
       const filteredProductsCount = () =>
         filterActions.aggregateProductIds({
           productIds: [...filteredProductIds],

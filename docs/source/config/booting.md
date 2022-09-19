@@ -268,7 +268,7 @@ unchainedApiContext.services.serviceName.[function name]
   - **confirmService(params: [ConfirmService](https://docs.unchained.shop))**:  Used to confirm a payment when received. 
 
 ### 1.3.6 `productServices`
-- **removeProductService(params: [RemoveProductService](https://docs.unchained.shop/types/types/products.RemoveProductService.html))**: Used to delete product. **Note once a product is deleted there is no way reverting the action**.
+- **removeProduct(params: [RemoveProductService](https://docs.unchained.shop/types/types/products.RemoveProductService.html))**: Used to delete product. **Note once a product is deleted there is no way reverting the action**.
 
 ### 1.3.7 `userServices`
   - **getUserCountry(params: [GetUserRoleActionsService](https://docs.unchained.shop/types/types/user.GetUserRoleActionsService.html))**: Returns the specified user country
