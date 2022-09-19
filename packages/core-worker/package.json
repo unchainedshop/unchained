@@ -33,7 +33,7 @@
     "@breejs/later": "^4.1.0",
     "@unchainedshop/logger": "^1.2.26",
     "@unchainedshop/utils": "^1.2.26",
-    "simpl-schema": "^1.12.3"
+    "simpl-schema": "^1.13.1"
   },
   "devDependencies": {
     "@types/node": "^16.11.59",

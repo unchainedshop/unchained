@@ -36,7 +36,7 @@
     "@unchainedshop/utils": "^1.2.26",
     "mime-types": "^2.1.35",
     "minio": "^7.0.32",
-    "simpl-schema": "^1.12.3"
+    "simpl-schema": "^1.13.1"
   },
   "devDependencies": {
     "@types/minio": "^7.0.13",

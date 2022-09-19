@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-filters",
-  "version": "1.2.27",
+  "version": "1.2.28",
   "main": "lib/filters-index.js",
   "exports": {
     ".": "./lib/filters-index.js",
@@ -35,7 +35,7 @@
     "@unchainedshop/utils": "^1.2.26",
     "locale": "^0.1.0",
     "memoizee": "^0.4.15",
-    "simpl-schema": "^1.12.3"
+    "simpl-schema": "^1.13.1"
   },
   "devDependencies": {
     "@types/node": "^16.11.59",

@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@unchainedshop/api": "^1.2.26",
+    "@unchainedshop/api": "^1.2.27",
     "@unchainedshop/client-oauth2": "^4.3.3",
     "@unchainedshop/core-delivery": "^1.2.26",
     "@unchainedshop/core-payment": "^1.2.26",
@@ -69,7 +69,7 @@
   "devDependencies": {
     "@types/node": "^16.11.59",
     "mongodb-memory-server": "^8.9.2",
-    "nodemon": "^2.0.19",
+    "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"

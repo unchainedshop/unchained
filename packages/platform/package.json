@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^1.2.26",
+    "@unchainedshop/api": "^1.2.27",
     "@unchainedshop/core": "^1.2.26",
     "@unchainedshop/events": "^1.2.26",
     "@unchainedshop/file-upload": "^1.2.26",

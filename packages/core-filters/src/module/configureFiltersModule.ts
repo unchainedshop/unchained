@@ -141,7 +141,10 @@ export const configureFiltersModule = async ({
     });
 
     const filters = await Filters.find(selector || {}).toArray();
-    await Promise.all(filters.map(async (filter) => invalidateProductIdCache(filter, requestContext)));
+    await filters.reduce(async (lastPromise, filter) => {
+      await lastPromise;
+      return invalidateProductIdCache(filter, requestContext);
+    }, Promise.resolve(undefined));
     filterProductIds.clear();
   };
 
