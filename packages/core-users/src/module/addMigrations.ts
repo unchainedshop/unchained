@@ -1,5 +1,6 @@
 import { Migration, MigrationRepository } from '@unchainedshop/types/core';
 
+import { convertTagsToLowerCase } from '@unchainedshop/utils';
 import { UsersCollection } from '../db/UsersCollection';
 
 export default function addMigrations(repository: MigrationRepository<Migration>) {
@@ -25,6 +26,15 @@ export default function addMigrations(repository: MigrationRepository<Migration>
           );
         }),
       );
+    },
+  });
+
+  repository?.register({
+    id: 20220920122500,
+    name: 'Convert user tags to lower case for easy search',
+    up: async () => {
+      const Users = await UsersCollection(repository.db);
+      await convertTagsToLowerCase(Users);
     },
   });
 }

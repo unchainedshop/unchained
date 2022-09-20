@@ -1,4 +1,6 @@
 import { Migration, MigrationRepository } from '@unchainedshop/types/core';
+import { convertTagsToLowerCase } from '@unchainedshop/utils';
+import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 
 export default function addMigrations(repository: MigrationRepository<Migration>) {
@@ -43,6 +45,22 @@ export default function addMigrations(repository: MigrationRepository<Migration>
           $unset: { _cachedProductIds: 1 },
         },
       );
+    },
+  });
+  repository?.register({
+    id: 20220920122700,
+    name: 'Convert all tags to lower case to make it easy for search',
+    up: async () => {
+      const { Assortments, AssortmentFilters, AssortmentLinks, AssortmentProducts } =
+        await AssortmentsCollection(repository.db);
+      const { AssortmentMedias } = await AssortmentMediaCollection(repository.db);
+      await Promise.all([
+        convertTagsToLowerCase(Assortments),
+        convertTagsToLowerCase(AssortmentProducts),
+        convertTagsToLowerCase(AssortmentLinks),
+        convertTagsToLowerCase(AssortmentFilters),
+        convertTagsToLowerCase(AssortmentMedias),
+      ]);
     },
   });
 }
