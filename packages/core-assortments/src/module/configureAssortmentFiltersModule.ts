@@ -21,7 +21,7 @@ export const configureAssortmentFiltersModule = ({
       return AssortmentFilters.findOne(generateDbFilterById(assortmentFilterId), {});
     },
 
-    findFilters: async ({ assortmentId }, options: FindOptions<Document>) => {
+    findFilters: async ({ assortmentId }, options?: FindOptions<Document>) => {
       const filters = AssortmentFilters.find({ assortmentId }, options);
       return filters.toArray();
     },

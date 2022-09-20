@@ -93,7 +93,7 @@ export type FiltersModule = {
       offset?: number;
       sort?: Array<SortOption>;
     },
-    options: FindOptions<Document>,
+    options?: FindOptions<Document>,
   ) => Promise<Array<Filter>>;
 
   filterExists: (params: { filterId: string }) => Promise<boolean>;
