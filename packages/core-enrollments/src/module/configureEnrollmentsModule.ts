@@ -418,14 +418,11 @@ export const configureEnrollmentsModule = async ({
           context: payment.context,
         },
         userId: order.userId,
-
-        // TODO: Check with pascal
         meta: order.context,
-
         ...context,
       };
 
-      const enrollments = await Promise.all(
+      await Promise.all(
         items.map(async (item) => {
           const enrollmentData = await EnrollmentDirector.transformOrderItemToEnrollment(
             item,
@@ -436,8 +433,6 @@ export const configureEnrollmentsModule = async ({
           return modules.enrollments.create(enrollmentData, requestContext);
         }),
       );
-
-      return enrollments;
     },
 
     delete: async (enrollmentId, userId) => {

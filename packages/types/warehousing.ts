@@ -4,10 +4,12 @@ import { ModuleMutations } from './core';
 
 import { DeliveryProvider } from './delivery';
 import { Order } from './orders';
+import { OrderPosition } from './orders.positions';
 import { Product } from './products';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',
+  VIRTUAL = 'VIRTUAL',
 }
 
 export type WarehousingConfiguration = Array<{ key: string; value: string }>;
@@ -38,6 +40,7 @@ export interface WarehousingContext {
   referenceDate?: Date;
   order?: Order;
   warehousingProviderId?: string;
+  orderPosition?: OrderPosition;
 }
 
 export type EstimatedDispatch = {
@@ -53,6 +56,7 @@ export type WarehousingAdapterActions = {
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
+  tokenize: () => Promise<void>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
@@ -76,6 +80,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     isActive: () => boolean;
     estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
+    tokenize: () => Promise<void>;
   }>;
 };
 
@@ -123,6 +128,17 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     context: WarehousingContext,
     requestContext: Context,
   ) => Promise<EstimatedStock>;
+
+  tokenizeItems: (
+    order: Order,
+    params: {
+      items: Array<{
+        orderPosition: OrderPosition;
+        product: Product;
+      }>;
+    },
+    requestContext: Context,
+  ) => Promise<void>;
 
   // Mutations
   delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;

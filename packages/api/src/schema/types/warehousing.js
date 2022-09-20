@@ -8,9 +8,13 @@ export default [
 
     enum WarehousingProviderType {
       """
-      Physical
+      Physical warehousing providers resemble stores or facilities that hold a quantity of stocks physically in stock.
       """
       PHYSICAL
+      """
+      Virtual warehousing providers resemble software that control ownership and validity of virtual products (for ex. smart contract bridges)
+      """
+      VIRTUAL
     }
 
     enum WarehousingProviderError {

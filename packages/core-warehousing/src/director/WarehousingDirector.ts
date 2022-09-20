@@ -23,7 +23,7 @@ export const WarehousingDirector: IWarehousingDirector = {
     const Adapter = baseDirector.getAdapter(warehousingProvider.adapterKey);
 
     if (!Adapter) {
-      throw new Error(`Payment Plugin ${warehousingProvider.adapterKey} not available`);
+      throw new Error(`Warehousing Plugin ${warehousingProvider.adapterKey} not available`);
     }
     const context = {
       warehousingProviderId: warehousingProvider._id,
@@ -101,6 +101,14 @@ export const WarehousingDirector: IWarehousingDirector = {
         } catch (error) {
           log(error.message, { level: LogLevel.Error, ...error });
           return {};
+        }
+      },
+
+      tokenize: async () => {
+        try {
+          await adapter.tokenize();
+        } catch (error) {
+          log(error.message, { level: LogLevel.Error, ...error });
         }
       },
     };

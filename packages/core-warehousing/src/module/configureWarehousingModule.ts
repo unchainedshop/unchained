@@ -1,8 +1,10 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
+  WarehousingContext,
   WarehousingModule,
   WarehousingProvider,
   WarehousingProviderQuery,
+  WarehousingProviderType,
 } from '@unchainedshop/types/warehousing';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
@@ -118,6 +120,38 @@ export const configureWarehousingModule = async ({
         requestContext,
       );
       return director.estimatedStock();
+    },
+
+    tokenizeItems: async (order, { items }, requestContext) => {
+      const virtualProviders = await WarehousingProviders.find(
+        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
+      ).toArray();
+
+      await Promise.all(
+        items.map(async ({ orderPosition, product }) => {
+          const warehousingContext: WarehousingContext = {
+            order,
+            orderPosition,
+            product,
+            quantity: orderPosition.quantity,
+            referenceDate: order.ordered,
+          };
+          await virtualProviders.reduce(async (lastPromise, provider) => {
+            const last = await lastPromise;
+            if (last) return last;
+            const currentDirector = await WarehousingDirector.actions(
+              provider,
+              warehousingContext,
+              requestContext,
+            );
+            const isActive = await currentDirector.isActive();
+            if (isActive) {
+              await currentDirector.tokenize();
+            }
+            return true;
+          }, Promise.resolve(false));
+        }),
+      );
     },
 
     isActive: async (warehousingProvider, requestContext) => {

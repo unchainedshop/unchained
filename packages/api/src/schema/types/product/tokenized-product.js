@@ -50,6 +50,7 @@ export default [
       contractAddress: String
       contractStandard: SmartContractStandard
       contractConfiguration: ContractConfiguration
+      ercMetadata(forceLocale: String): JSON
     }
   `,
 ];

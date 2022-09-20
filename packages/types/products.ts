@@ -1,6 +1,8 @@
+import type { Locale } from 'locale';
 import { Context, SortOption } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
+import { UnchainedCore } from './core';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { DeliveryProvider, DeliveryProviderType } from './delivery';
@@ -388,9 +390,14 @@ export type ProductsModule = {
  */
 
 export type RemoveProductService = (params: { productId: string }, context: Context) => Promise<boolean>;
+export type ERCMetadataService = (
+  params: { product: Product; locale: Locale },
+  context: UnchainedCore,
+) => Promise<Record<string, any>>;
 
 export interface ProductServices {
   removeProductService: RemoveProductService;
+  ercMetadata: ERCMetadataService;
 }
 
 /*
@@ -515,6 +522,7 @@ export interface TokenizedProductHelperTypes extends PlanProductHelperTypes {
   contractAddress: HelperType<never, string>;
   contractStandard: HelperType<never, ProductContractStandard>;
   contractConfiguration: HelperType<never, ProductContractConfiguration>;
+  ercMetadata: HelperType<{ forceLocale: string }, Promise<Record<string, any>>>;
 }
 
 export interface SimpleProductHelperTypes extends PlanProductHelperTypes {
