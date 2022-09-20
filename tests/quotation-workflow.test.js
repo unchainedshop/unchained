@@ -53,11 +53,6 @@ describe('cart checkout', () => {
                 key
                 value
               }
-              documents {
-                _id
-                type
-                url
-              }
             }
           }
         `,
@@ -91,7 +86,6 @@ describe('cart checkout', () => {
             value: '10',
           },
         ],
-        documents: [],
       });
     });
 
@@ -167,11 +161,6 @@ describe('cart checkout', () => {
               quotationNumber
               fullfilled
               rejected
-              documents {
-                _id
-                type
-                url
-              }
             }
           }
         `,
@@ -185,7 +174,6 @@ describe('cart checkout', () => {
         isExpired: false,
         fullfilled: null,
         rejected: null,
-        documents: [],
       });
     });
 
@@ -247,11 +235,6 @@ describe('cart checkout', () => {
               quotationNumber
               fullfilled
               rejected
-              documents {
-                _id
-                type
-                url
-              }
             }
           }
         `,
@@ -265,7 +248,6 @@ describe('cart checkout', () => {
         status: 'REJECTED',
         isExpired: true,
         fullfilled: null,
-        documents: [],
       });
     });
 
@@ -330,11 +312,6 @@ describe('cart checkout', () => {
               quotationNumber
               fullfilled
               rejected
-              documents {
-                _id
-                type
-                url
-              }
             }
           }
         `,
@@ -348,7 +325,6 @@ describe('cart checkout', () => {
         isExpired: false,
         fullfilled: null,
         rejected: null,
-        documents: [],
       });
     });
 

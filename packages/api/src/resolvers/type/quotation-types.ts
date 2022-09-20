@@ -11,7 +11,6 @@ type HelperType<P, T> = (quotation: QuotationType, params: P, context: Context) 
 type QuotationHelperTypes = {
   country: HelperType<never, Promise<Country>>;
   currency: HelperType<never, Promise<Currency>>;
-  documents: HelperType<{ type: string }, Promise<Array<File>>>;
   isExpired: HelperType<{ referenceDate: Date }, boolean>;
   status: HelperType<never, string>;
   product: HelperType<never, Promise<Product>>;
@@ -22,21 +21,6 @@ export const Quotation: QuotationHelperTypes = {
   country: async (obj, _, { modules }) => modules.countries.findCountry({ isoCode: obj.countryCode }),
 
   currency: async (obj, _, { modules }) => modules.currencies.findCurrency({ isoCode: obj.currency }),
-
-  documents: (obj, { type }, { modules }) =>
-    modules.files.findFilesByMetaData(
-      {
-        meta: {
-          quotationId: obj._id,
-          type,
-        },
-      },
-      {
-        sort: {
-          'meta.date': -1,
-        },
-      },
-    ),
 
   isExpired: (obj, { referenceDate }, { modules }) =>
     modules.quotations.isExpired(obj, { referenceDate }),

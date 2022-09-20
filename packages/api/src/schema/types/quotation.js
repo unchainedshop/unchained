@@ -57,7 +57,6 @@ export default [
       country: Country
       currency: Currency
       configuration: [ProductConfigurationParameter!]
-      documents(type: QuotationDocumentType = PROPOSAL): [Media!]!
     }
   `,
 ];

@@ -3,8 +3,7 @@ import { Country } from '@unchainedshop/types/countries';
 import { Currency } from '@unchainedshop/types/currencies';
 import { DeliveryProvider } from '@unchainedshop/types/delivery';
 import { Enrollment } from '@unchainedshop/types/enrollments';
-import { File } from '@unchainedshop/types/files';
-import { Order as OrderType, OrderDocumentType } from '@unchainedshop/types/orders';
+import { Order as OrderType } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
@@ -23,7 +22,6 @@ interface OrderHelperTypes {
   country: HelperType<never, Promise<Country>>;
   discounts: HelperType<never, Promise<Array<OrderDiscount>>>;
   delivery: HelperType<never, Promise<OrderDelivery>>;
-  documents: HelperType<{ type: OrderDocumentType }, Promise<Array<File>>>;
   enrollment: HelperType<never, Promise<Enrollment>>;
   payment: HelperType<never, Promise<OrderPayment>>;
   items: HelperType<never, Promise<Array<OrderPosition>>>;
@@ -54,12 +52,6 @@ export const Order: OrderHelperTypes = {
 
   discounts: async (obj, _, { modules }) =>
     modules.orders.discounts.findOrderDiscounts({ orderId: obj._id }),
-
-  documents: async (obj, { type }, { modules }) =>
-    modules.files.findFilesByMetaData(
-      { meta: { orderId: obj._id, type } },
-      { sort: { 'meta.data': -1 } },
-    ),
 
   delivery: async (obj, _, { modules }) =>
     modules.orders.deliveries.findDelivery({

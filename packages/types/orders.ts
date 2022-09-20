@@ -16,15 +16,6 @@ export enum OrderStatus {
   REJECTED = 'REJECTED',
 }
 
-export enum OrderDocumentType {
-  ORDER_CONFIRMATION = 'ORDER_CONFIRMATION',
-  ORDER_REJECTION = 'ORDER_REJECTION',
-  DELIVERY_NOTE = 'DELIVERY_NOTE',
-  INVOICE = 'INVOICE',
-  RECEIPT = 'RECEIPT',
-  OTHER = 'OTHER',
-}
-
 export type Order = {
   _id?: _ID;
   billingAddress?: Address;

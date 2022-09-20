@@ -135,9 +135,6 @@ describe("Order: Management", () => {
                 total {
                   amount
                 }
-                documents {
-                  _id
-                }
                 supportedDeliveryProviders {
                   _id
                 }
@@ -203,9 +200,6 @@ describe("Order: Management", () => {
               }
               total {
                 amount
-              }
-              documents {
-                _id
               }
               supportedDeliveryProviders {
                 _id

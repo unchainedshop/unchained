@@ -337,7 +337,7 @@ export const configureOrderModuleProcessing = ({
         if (order.status !== OrderStatus.CONFIRMED) {
           // we have to stop here shortly to complete the confirmation
           // before auto delivery is started, else we have no chance to create
-          // documents and numbers that are needed for delivery
+          // numbers that are needed for delivery
           order = await updateStatus(
             orderId,
             {
