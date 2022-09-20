@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { AssortmentLink } from '@unchainedshop/types/assortments';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
 const upsert = async (assortmentLink: AssortmentLink, { modules, userId }: Context) => {
   if (
@@ -33,9 +34,11 @@ export default async (
   const { modules, userId } = unchainedAPI;
   const assortmentLinkIds = await Promise.all(
     children.map(async ({ assortmentId: childAssortmentId, ...childrenRest }) => {
+      const tags = convertTagsToLowerCase(childrenRest?.tags);
       const assortmentLink = await upsert(
         {
           ...childrenRest,
+          tags,
           authorId,
           parentAssortmentId,
           childAssortmentId,

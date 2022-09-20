@@ -1,3 +1,5 @@
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
+
 export default (specification) => {
   const {
     variationResolvers: assignments,
@@ -7,11 +9,12 @@ export default (specification) => {
   } = specification;
 
   const { dimensions: supply, ...warehousing } = warehousingEmbeddedSupply || {};
-
+  const tags = convertTagsToLowerCase(productData?.tags);
   const proxy = assignments ? { assignments } : undefined;
 
   return {
     ...productData,
+    tags,
     warehousing,
     supply,
     proxy,

@@ -607,7 +607,11 @@ export default [
       """
       Add a new product to an assortment
       """
-      addAssortmentProduct(assortmentId: ID!, productId: ID!, tags: [LowerCaseString!]): AssortmentProduct!
+      addAssortmentProduct(
+        assortmentId: ID!
+        productId: ID!
+        tags: [LowerCaseString!]
+      ): AssortmentProduct!
 
       """
       Remove a product from an assortment
