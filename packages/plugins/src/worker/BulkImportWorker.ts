@@ -28,6 +28,8 @@ const streamPayloadToBulkImporter = async (
       queue.on('lowWater', () => readStream.resume());
 
       readStream.pipe(jsonStream);
+      readStream.on('error', queue.fail);
+
       return () => {
         jsonStream.removeListener('data', queue.push);
         jsonStream.removeListener('close', queue.stop);

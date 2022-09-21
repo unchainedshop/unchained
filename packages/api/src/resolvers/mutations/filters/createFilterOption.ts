@@ -17,6 +17,5 @@ export default async function createFilterOption(
   if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
   const filter = await modules.filters.createFilterOption(filterId, option, context);
-  await modules.filters.invalidateCache({ _id: filterId }, context);
   return filter;
 }

@@ -4,7 +4,8 @@ import { ProductVariation, ProductVariationText } from '@unchainedshop/types/pro
 const upsert = async (productVariation: ProductVariation, unchainedAPI: Context) => {
   const { modules, userId } = unchainedAPI;
   try {
-    return modules.products.variations.create(productVariation, userId);
+    const newVariation = await modules.products.variations.create(productVariation, userId);
+    return newVariation;
   } catch (e) {
     return modules.products.variations.update(productVariation._id, productVariation);
   }

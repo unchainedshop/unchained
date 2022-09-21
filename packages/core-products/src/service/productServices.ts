@@ -3,6 +3,6 @@ import { removeProductService } from './removeProductService';
 import { ercMetadataService } from './ercMetadataService';
 
 export const productServices: ProductServices = {
-  removeProductService,
+  removeProduct: removeProductService,
   ercMetadata: ercMetadataService,
 };

@@ -8,6 +8,7 @@ export const removeProductService: RemoveProductService = async ({ productId }, 
       await modules.products.unpublish(product, userId);
 
     // falls through
+    case null:
     case ProductStatus.DRAFT:
       await modules.assortments.products.delete(productId);
       await modules.products.delete(productId, userId);

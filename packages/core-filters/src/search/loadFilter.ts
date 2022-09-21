@@ -30,10 +30,14 @@ const findLoadedOptions = async (
         requestContext,
       );
       const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
-      if (!filteredProductIds.size) return null;
-      const filteredProductsCount = filterActions.aggregateProductIds({
-        productIds: [...filteredProductIds],
-      }).length;
+      if (!filteredProductIds.size) {
+        return null;
+      }
+      const filteredProductsCount = () =>
+        filterActions.aggregateProductIds({
+          productIds: [...filteredProductIds],
+        }).length;
+
       return {
         definition: () => ({ filterOption: value, ...filter }),
         filteredProducts: filteredProductsCount,
@@ -88,17 +92,17 @@ export const loadFilter = async (
   const filteredByOtherFiltersSet = await otherFilters
     .filter((otherFilter) => otherFilter.key !== filter.key)
     .reduce(async (productIdSetPromise, otherFilter) => {
+      if (otherFilter.key === filter.key) return productIdSetPromise;
+      if (!filterQuery[otherFilter.key]) return productIdSetPromise;
       const productIdSet = await productIdSetPromise;
-      if (!filterQuery[filter.key]) return productIdSet;
       const otherFilterProductIds = await filterProductIds(
         otherFilter,
         {
-          values: filterQuery[filter.key],
+          values: filterQuery[otherFilter.key],
           forceLiveCollection,
         },
         requestContext,
       );
-
       return intersectSet(productIdSet, new Set(otherFilterProductIds));
     }, Promise.resolve(new Set(examinedProductIdSet)));
 

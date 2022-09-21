@@ -10,7 +10,8 @@ const upsert = async (assortmentFilter: AssortmentFilter, { modules, userId }: C
     throw new Error(`Can't link non-existing filter ${assortmentFilter.filterId}`);
   }
   try {
-    return modules.assortments.filters.create(assortmentFilter, userId);
+    const newAssortmentFilter = await modules.assortments.filters.create(assortmentFilter, userId);
+    return newAssortmentFilter;
   } catch (e) {
     return modules.assortments.filters.update(assortmentFilter._id, assortmentFilter);
   }

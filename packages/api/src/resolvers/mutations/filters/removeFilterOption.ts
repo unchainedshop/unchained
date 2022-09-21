@@ -14,11 +14,13 @@ export default async function removeFilterOption(
 
   if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
-  const filter = await modules.filters.removeFilterOption({
-    filterId,
-    filterOptionValue,
-  });
-  await modules.filters.invalidateCache({ _id: filterId }, context);
+  const filter = await modules.filters.removeFilterOption(
+    {
+      filterId,
+      filterOptionValue,
+    },
+    context,
+  );
 
   return filter;
 }

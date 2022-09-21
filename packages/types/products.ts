@@ -396,7 +396,7 @@ export type ERCMetadataService = (
 ) => Promise<Record<string, any>>;
 
 export interface ProductServices {
-  removeProductService: RemoveProductService;
+  removeProduct: RemoveProductService;
   ercMetadata: ERCMetadataService;
 }
 

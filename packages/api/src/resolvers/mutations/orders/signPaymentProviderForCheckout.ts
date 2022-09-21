@@ -41,7 +41,7 @@ export default async function signPaymentProviderForCheckout(
     });
 
   try {
-    return modules.payment.paymentProviders.sign(
+    const sign = await modules.payment.paymentProviders.sign(
       provider._id,
       {
         orderPayment,
@@ -49,6 +49,7 @@ export default async function signPaymentProviderForCheckout(
       },
       context,
     );
+    return sign;
   } catch (error) {
     throw new OrderPaymentConfigurationError(error);
   }

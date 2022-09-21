@@ -123,7 +123,8 @@ export const configureOrderDiscountsModule = ({
     const discountId = discount._id;
     try {
       const updatedDiscount = await updateDiscount(discountId, { orderId }, requestContext.userId);
-      return reserveDiscount(updatedDiscount, requestContext);
+      const reservedDiscount = await reserveDiscount(updatedDiscount, requestContext);
+      return reservedDiscount;
     } catch (error) {
       // Rollback
       await updateDiscount(discountId, { orderId: discount.orderId }, requestContext.userId);
