@@ -112,10 +112,7 @@ export const configureAssortmentTextsModule = ({
       );
     }
 
-    return AssortmentTexts.findOne(
-      updateResult.upsertedId ? generateDbFilterById(updateResult.upsertedId) : selector,
-      {},
-    );
+    return AssortmentTexts.findOne(selector, {});
   };
 
   return {

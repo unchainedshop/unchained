@@ -47,14 +47,11 @@ export const configureFilterTextsModule = ({
       locale,
     };
 
-    const updateResult = await FilterTexts.updateOne(selector, modifier, {
+    await FilterTexts.updateOne(selector, modifier, {
       upsert: true,
     });
 
-    return FilterTexts.findOne(
-      updateResult.upsertedId ? (generateDbFilterById(updateResult.upsertedId) as any) : selector,
-      {},
-    );
+    return FilterTexts.findOne(selector, {});
   };
 
   return {

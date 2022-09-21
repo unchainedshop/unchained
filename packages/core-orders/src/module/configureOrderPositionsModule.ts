@@ -289,7 +289,7 @@ export const configureOrderPositionsModule = ({
         ...scope,
       };
 
-      const { upsertedId } = await OrderPositions.updateOne(
+      await OrderPositions.updateOne(
         selector,
         {
           $set: {
@@ -315,13 +315,7 @@ export const configureOrderPositionsModule = ({
 
       await updateCalculation(orderId, requestContext);
 
-      const upsertedOrderPosition = await OrderPositions.findOne(
-        upsertedId
-          ? {
-              _id: upsertedId,
-            }
-          : selector,
-      );
+      const upsertedOrderPosition = await OrderPositions.findOne(selector);
 
       emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
 
