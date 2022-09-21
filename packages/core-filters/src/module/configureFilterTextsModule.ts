@@ -2,7 +2,7 @@ import { Collection, Filter } from '@unchainedshop/types/common';
 import { FiltersModule, FilterText } from '@unchainedshop/types/filters';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { findLocalizedText, generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
+import { findLocalizedText, generateDbObjectId } from '@unchainedshop/utils';
 
 const { Locale } = localePkg;
 
