@@ -115,7 +115,7 @@ const Datatrans: IPaymentAdapter = {
       );
     };
 
-    const authorize = async ({ paymentCredentials, extensions }): Promise<string> => {
+    const authorize = async ({ paymentCredentials, ...arbitraryFields }): Promise<string> => {
       const { order, orderPayment } = params.paymentContext;
       const userId = order?.userId || params.context.userId;
       const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
@@ -123,7 +123,7 @@ const Datatrans: IPaymentAdapter = {
       const { currency, amount } = roundedAmountFromOrder(order, params.context);
       const splits = await getMarketplaceSplits();
       const result = await api().authorize({
-        ...extensions,
+        ...arbitraryFields,
         amount,
         currency,
         refno,
@@ -143,11 +143,16 @@ const Datatrans: IPaymentAdapter = {
       return (result as AuthorizeResponseSuccess).transactionId;
     };
 
-    const authorizeAuth = async ({ transactionId, refno, refno2, extensions }): Promise<string> => {
+    const authorizeAuth = async ({
+      transactionId,
+      refno,
+      refno2,
+      ...arbitraryFields
+    }): Promise<string> => {
       const { order } = params.paymentContext;
       const { currency, amount } = roundedAmountFromOrder(order, params.context);
       const result = await api().authorizeAuthenticated({
-        ...extensions,
+        ...arbitraryFields,
         transactionId,
         amount,
         currency,
@@ -243,7 +248,7 @@ const Datatrans: IPaymentAdapter = {
       },
 
       async sign(transactionContext: any = {}) {
-        const { useSecureFields = false, ...additionalInitPayload } = transactionContext || {};
+        const { useSecureFields = false, ...arbitraryFields } = transactionContext || {};
         const { orderPayment, paymentProviderId, order } = params.paymentContext;
 
         const userId = order?.userId || params.context?.userId;
@@ -258,7 +263,7 @@ const Datatrans: IPaymentAdapter = {
 
         if (useSecureFields) {
           const result = await api().secureFields({
-            ...additionalInitPayload,
+            ...arbitraryFields,
             currency: price.currency || 'CHF',
             refno,
             refno2,
@@ -271,7 +276,7 @@ const Datatrans: IPaymentAdapter = {
           return JSON.stringify(result as InitResponseSuccess);
         }
         const result = await api().init({
-          ...additionalInitPayload,
+          ...arbitraryFields,
           currency: price.currency || 'CHF',
           refno,
           refno2,
@@ -311,9 +316,7 @@ const Datatrans: IPaymentAdapter = {
         const { orderPayment, transactionContext } = params.paymentContext;
         const { transactionId } = orderPayment;
 
-        // Remove the transactionId from the transactionContext
-        const extensions = { ...transactionContext };
-        delete extensions.transactionId;
+        const { extensions } = transactionContext || {};
 
         if (!transactionId) {
           return false;
@@ -367,7 +370,7 @@ const Datatrans: IPaymentAdapter = {
         transactionId: rawTransactionId,
         paymentCredentials,
         authorizeAuthenticated,
-        ...extensions
+        ...arbitraryFields
       }) {
         if (!rawTransactionId && !paymentCredentials) {
           logger.warn(
@@ -379,8 +382,8 @@ const Datatrans: IPaymentAdapter = {
         const transactionId =
           rawTransactionId ||
           (await authorize({
+            ...arbitraryFields,
             paymentCredentials,
-            extensions,
           }));
 
         const transaction: StatusResponseSuccess = (await api().status({
@@ -410,10 +413,10 @@ const Datatrans: IPaymentAdapter = {
           if (authorizeAuthenticated) {
             checkIfTransactionAmountValid(transactionId, transaction);
             await authorizeAuth({
+              ...(authorizeAuthenticated || {}),
               transactionId,
               refno: transaction.refno,
               refno2: transaction.refno2,
-              extensions: authorizeAuthenticated,
             });
             status = 'authorized';
           } else {
@@ -455,7 +458,7 @@ const Datatrans: IPaymentAdapter = {
           return {
             transactionId,
             settledTransaction,
-            extensions,
+            arbitraryFields,
             credentials,
           };
         }
