@@ -310,6 +310,11 @@ const Datatrans: IPaymentAdapter = {
         if (!shouldSettleInUnchained()) return false;
         const { orderPayment, transactionContext } = params.paymentContext;
         const { transactionId } = orderPayment;
+
+        // Remove the transactionId from the transactionContext
+        const extensions = { ...transactionContext };
+        delete extensions.transactionId;
+
         if (!transactionId) {
           return false;
         }
@@ -327,7 +332,7 @@ const Datatrans: IPaymentAdapter = {
             transactionId,
             refno: transaction.refno,
             refno2: transaction.refno2,
-            extensions: transactionContext,
+            extensions,
           });
         }
         return true;

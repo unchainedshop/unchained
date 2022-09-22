@@ -1,12 +1,14 @@
 import fs from 'fs';
 import util from 'util';
 import { resolve } from 'path';
-import { log, LogLevel } from '@unchainedshop/logger';
+import { createLogger } from '@unchainedshop/logger';
 import fetch, { Response } from 'node-fetch';
 
 const readFile = util.promisify(fs.readFile);
 
 const { DATATRANS_API_MOCKS_PATH } = process.env;
+
+const logger = createLogger('unchained:datatrans');
 
 export default (
   endpoint: string,
@@ -24,8 +26,7 @@ export default (
           status: json?.error ? 500 : 204,
         } as any;
       } catch (error) {
-        log('DataTrans V2 (makeFetcher) -> Error while trying reading and parsing file', {
-          level: LogLevel.Error,
+        logger.error('Mock: Error while trying reading and parsing file', {
           ...error,
         });
         return {
@@ -39,6 +40,7 @@ export default (
   const token = `${merchantId}:${secret}`;
 
   return async (path: string, body: any): Promise<Response> => {
+    logger.debug(`Fetch ${endpoint}${path}: ${JSON.stringify(body)}`);
     return fetch(`${endpoint}${path}`, {
       method: body ? 'POST' : 'GET',
       body: body ? JSON.stringify(body) : undefined,
