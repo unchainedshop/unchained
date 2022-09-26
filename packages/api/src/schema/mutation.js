@@ -854,6 +854,11 @@ export default [
       prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!
       prepareUserAvatarUpload(mediaName: String!, userId: ID): MediaUploadTicket!
       confirmMediaUpload(mediaUploadTicketId: ID!, size: Int!, type: String!): Media!
+
+      """
+      Tokenize
+      """
+      mintToken(tokenId: String!, quantity: Int, recipientWalletAddress: String!): Work!
     }
   `,
 ];

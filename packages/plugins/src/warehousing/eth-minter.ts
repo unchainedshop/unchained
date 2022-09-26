@@ -20,7 +20,7 @@ const ETHMinter: IWarehousingAdapter = {
     return type === WarehousingProviderType.VIRTUAL;
   },
 
-  actions: (configuration, { product }) => {
+  actions: (configuration, { product, orderPosition }) => {
     return {
       isActive() {
         return product?.type === ProductType.TokenizedProduct;
@@ -46,8 +46,15 @@ const ETHMinter: IWarehousingAdapter = {
         // Upload Image to IPFS
         // Upload Metadata to IPFS
         // Store Metadata in Collection
-
-        console.log('TOKENIZE', product);
+        return [
+          {
+            chainTokenId: product.tokenization.tokenId,
+            contractAddress: product.tokenization.contractAddress,
+            quantity: orderPosition._id,
+            chainId: null,
+            meta: {},
+          },
+        ];
       },
     };
   },

@@ -5,7 +5,7 @@ import { ModuleMutations } from './core';
 import { DeliveryProvider } from './delivery';
 import { Order } from './orders';
 import { OrderPosition } from './orders.positions';
-import { Product } from './products';
+import { Product, ProductTokenization } from './products';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',
@@ -50,13 +50,21 @@ export type EstimatedDispatch = {
 
 export type EstimatedStock = { quantity: number } | null;
 
+export type TokenCreationInstruction = {
+  quantity: number;
+  contractAddress: string;
+  chainId: string;
+  chainTokenId: string;
+  meta: any;
+};
+
 export type WarehousingAdapterActions = {
   configurationError: () => WarehousingError;
   isActive: () => boolean;
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
-  tokenize: () => Promise<void>;
+  tokenize: () => Promise<Array<TokenCreationInstruction>>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
