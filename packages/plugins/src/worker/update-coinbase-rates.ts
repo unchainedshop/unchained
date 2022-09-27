@@ -49,6 +49,9 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
       const success = await modules.products.prices.rates.updateRates(rates);
       return {
         success,
+        result: {
+          ratesUpdated: rates.length,
+        },
       };
     } catch (e) {
       return {
