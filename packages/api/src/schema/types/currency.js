@@ -5,6 +5,7 @@ export default [
       isoCode: String!
       isActive: Boolean
       contractAddress: String
+      decimals: Int
     }
   `,
 ];

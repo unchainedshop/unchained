@@ -20,8 +20,8 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, country, quantity, currency } = params.context;
-        const defaultCurrency = await services.countries.resolveDefaultCurrencyCode(
+        const { product, country, quantity, currency: targetCurrency } = params.context;
+        const fromCurrency = await services.countries.resolveDefaultCurrencyCode(
           {
             isoCode: country,
           },
@@ -30,7 +30,7 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
 
         const productPrice = await modules.products.prices.price(product, {
           country,
-          currency: defaultCurrency,
+          currency: fromCurrency,
           quantity,
         });
 
@@ -39,11 +39,20 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
           !productPrice ||
           !productPrice?.amount ||
           calculation?.length ||
-          defaultCurrency === currency
+          fromCurrency === targetCurrency
         )
           return pricingAdapter.calculate();
 
-        const rate = await modules.products.prices.rates.getRate(defaultCurrency, currency);
+        const fromCurrencyObj = await modules.currencies.findCurrency({
+          isoCode: fromCurrency,
+        });
+        const targetCurrencyObj = await modules.currencies.findCurrency({
+          isoCode: targetCurrency,
+        });
+
+        if (!targetCurrencyObj?.isActive) return pricingAdapter.calculate();
+
+        const rate = await modules.products.prices.rates.getRate(fromCurrencyObj, targetCurrencyObj);
 
         if (rate > 0) {
           const convertedAmount = Math.round(productPrice.amount * rate);

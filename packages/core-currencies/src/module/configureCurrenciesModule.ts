@@ -67,6 +67,7 @@ export const configureCurrenciesModule = async ({
       emit('CURRENCY_CREATE', { currencyId });
       return currencyId;
     },
+
     update: async (_id: string, doc: Partial<Currency>, userId: string) => {
       const currencyId = await mutations.update(
         _id,
@@ -79,6 +80,7 @@ export const configureCurrenciesModule = async ({
       emit('CURRENCY_UPDATE', { currencyId });
       return currencyId;
     },
+
     delete: async (currencyId, userId) => {
       const deletedCount = await mutations.delete(currencyId, userId);
       emit('CURRENCY_REMOVE', { currencyId });

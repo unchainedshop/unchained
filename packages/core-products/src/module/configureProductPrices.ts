@@ -6,6 +6,18 @@ import { getPriceLevels } from './utils/getPriceLevels';
 import { getPriceRange } from './utils/getPriceRange';
 import { ProductPriceRates } from '../db/ProductPriceRates';
 
+const getDecimals = (originDecimals) => {
+  if (originDecimals === null || originDecimals === undefined) {
+    return 2;
+  }
+  if (originDecimals > 2) {
+    // cryptocurrency, always stored in MAX. 9 decimals
+    // WORKAROUND FOR BIGINT PROBLEM!
+    return Math.min(originDecimals, 9);
+  }
+  return originDecimals;
+};
+
 export const configureProductPricesModule = ({
   proxyProducts,
   db,
@@ -238,10 +250,13 @@ export const configureProductPricesModule = ({
         const mostRecentCurrencyRate = await priceRates.findOne(
           {
             $or: [
-              { baseCurrency, quoteCurrency },
               {
-                baseCurrency: quoteCurrency,
-                quoteCurrency: baseCurrency,
+                baseCurrency: baseCurrency.isoCode,
+                quoteCurrency: quoteCurrency.isoCode,
+              },
+              {
+                baseCurrency: quoteCurrency.isoCode,
+                quoteCurrency: baseCurrency.isoCode,
               },
             ],
             timestamp: { $lte: referenceDate },
@@ -252,14 +267,15 @@ export const configureProductPricesModule = ({
         let rate = null;
 
         if (!mostRecentCurrencyRate) return null;
-
-        if (mostRecentCurrencyRate.baseCurrency === baseCurrency) {
+        if (mostRecentCurrencyRate.baseCurrency === baseCurrency.isoCode) {
           rate = mostRecentCurrencyRate.rate;
         } else {
           rate = 1 / mostRecentCurrencyRate.rate;
         }
 
-        return rate;
+        const fromDecimals = getDecimals(baseCurrency.decimals);
+        const targetDecimals = getDecimals(quoteCurrency.decimals);
+        return fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;
       },
       updateRate: async (rate) => {
         const priceRates = await ProductPriceRates(db);

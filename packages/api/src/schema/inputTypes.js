@@ -65,11 +65,13 @@ export default [
     input CreateCurrencyInput {
       isoCode: String!
       contractAddress: String
+      decimals: Int
     }
     input UpdateCurrencyInput {
       isoCode: String!
       isActive: Boolean
       contractAddress: String
+      decimals: Int
     }
 
     input CreateProductInput {
