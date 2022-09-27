@@ -106,9 +106,17 @@ export const WarehousingDirector: IWarehousingDirector = {
 
       tokenize: async () => {
         try {
-          await adapter.tokenize();
+          const tokens = await adapter.tokenize();
+          const { order } = warehousingContext;
+          return tokens.map((token) => {
+            return {
+              userId: order.userId,
+              ...token,
+            };
+          });
         } catch (error) {
           log(error.message, { level: LogLevel.Error, ...error });
+          return [];
         }
       },
     };

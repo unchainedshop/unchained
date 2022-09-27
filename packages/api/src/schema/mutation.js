@@ -858,7 +858,7 @@ export default [
       """
       Tokenize
       """
-      mintToken(tokenId: String!, quantity: Int, recipientWalletAddress: String!): Work!
+      exportToken(tokenId: String!, quantity: Int, recipientWalletAddress: String!): Work!
     }
   `,
 ];

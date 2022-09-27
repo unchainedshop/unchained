@@ -35,6 +35,7 @@ export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 've
 
       tokenize: async () => {
         /* */
+        return [];
       },
     };
   },

@@ -19,8 +19,10 @@ const Store: IWarehousingAdapter = {
     return type === WarehousingProviderType.PHYSICAL;
   },
 
-  actions: () => {
+  actions: (configuration, context) => {
     return {
+      ...WarehousingAdapter.actions(configuration, context),
+
       isActive() {
         return true;
       },

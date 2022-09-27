@@ -50,7 +50,8 @@ export type EstimatedDispatch = {
 
 export type EstimatedStock = { quantity: number } | null;
 
-export type TokenCreationInstruction = {
+export type TokenSurrogate = {
+  userId: string;
   quantity: number;
   contractAddress: string;
   chainId: string;
@@ -64,7 +65,7 @@ export type WarehousingAdapterActions = {
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
-  tokenize: () => Promise<Array<TokenCreationInstruction>>;
+  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId'>>>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
@@ -88,7 +89,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     isActive: () => boolean;
     estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
-    tokenize: () => Promise<void>;
+    tokenize: () => Promise<Array<TokenSurrogate>>;
   }>;
 };
 

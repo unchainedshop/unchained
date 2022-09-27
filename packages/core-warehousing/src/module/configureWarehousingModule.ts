@@ -11,6 +11,7 @@ import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils'
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection';
 import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema';
 import { WarehousingDirector } from '../director/WarehousingDirector';
+import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection';
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',
@@ -35,6 +36,7 @@ export const configureWarehousingModule = async ({
   registerEvents(WAREHOUSING_PROVIDER_EVENTS);
 
   const WarehousingProviders = await WarehousingProvidersCollection(db);
+  const TokenSurrogates = await TokenSurrogateCollection(db);
 
   const mutations = generateDbMutations<WarehousingProvider>(
     WarehousingProviders,
@@ -146,7 +148,8 @@ export const configureWarehousingModule = async ({
             );
             const isActive = await currentDirector.isActive();
             if (isActive) {
-              await currentDirector.tokenize();
+              const tokenSurrogates = await currentDirector.tokenize();
+              await TokenSurrogates.insertMany(tokenSurrogates);
             }
             return true;
           }, Promise.resolve(false));

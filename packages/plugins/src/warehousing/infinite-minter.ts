@@ -9,9 +9,9 @@ import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 const ETHMinter: IWarehousingAdapter = {
   ...WarehousingAdapter,
 
-  key: 'shop.unchained.warehousing.eth-minter',
+  key: 'shop.unchained.warehousing.infinite-minter',
   version: '1.0',
-  label: 'Ethereum Minter',
+  label: 'Infinite Minter',
   orderIndex: 0,
 
   initialConfiguration: [{ key: 'tokenURI', value: '' }],
@@ -20,8 +20,11 @@ const ETHMinter: IWarehousingAdapter = {
     return type === WarehousingProviderType.VIRTUAL;
   },
 
-  actions: (configuration, { product, orderPosition }) => {
+  actions: (configuration, context) => {
+    const { product, orderPosition } = context;
     return {
+      ...WarehousingAdapter.actions(configuration, context),
+
       isActive() {
         return product?.type === ProductType.TokenizedProduct;
       },
@@ -31,15 +34,7 @@ const ETHMinter: IWarehousingAdapter = {
       },
 
       stock: async () => {
-        return 99999;
-      },
-
-      productionTime: async () => {
-        return 0;
-      },
-
-      commissioningTime: async () => {
-        return 0;
+        return product.tokenization.supply;
       },
 
       tokenize: async () => {
@@ -50,7 +45,7 @@ const ETHMinter: IWarehousingAdapter = {
           {
             chainTokenId: product.tokenization.tokenId,
             contractAddress: product.tokenization.contractAddress,
-            quantity: orderPosition._id,
+            quantity: orderPosition.quantity,
             chainId: null,
             meta: {},
           },
