@@ -3,6 +3,7 @@ import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
 import fetch from 'node-fetch';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
+import { systemLocale } from '@unchainedshop/utils';
 
 const getExchangeRates = async (base) => {
   return fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${base}`, {
@@ -23,10 +24,19 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
   type: 'UPDATE_COINBASE_RATES',
 
   doWork: async (input, requestContext) => {
-    const { modules } = requestContext;
+    const { modules, services } = requestContext;
 
     try {
-      const currencyCode = 'USD';
+      const currencyCode = await services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: systemLocale.country,
+        },
+        requestContext,
+      );
+
+      const currencies = await modules.currencies.findCurrencies({ includeInactive: true });
+      const currencyCodes = currencies.map((currency) => currency.isoCode);
+
       const {
         currency: baseCurrency,
         rates: pairs,
@@ -36,15 +46,20 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
       // five minutes
       const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000);
 
-      const rates: Array<ProductPriceRate> = Object.entries(pairs).map(([quoteCurrency, rate]) => {
-        return {
-          baseCurrency,
-          quoteCurrency,
-          rate: parseFloat(rate),
-          timestamp,
-          expiresAt,
-        };
-      });
+      const rates: Array<ProductPriceRate> = Object.entries(pairs)
+        .map(([quoteCurrency, rate]) => {
+          return {
+            baseCurrency,
+            quoteCurrency,
+            rate: parseFloat(rate),
+            timestamp,
+            expiresAt,
+          };
+        })
+        .filter(
+          (rate) =>
+            currencyCodes.includes(rate.quoteCurrency) && rate.quoteCurrency !== rate.baseCurrency,
+        );
 
       const success = await modules.products.prices.rates.updateRates(rates);
       return {

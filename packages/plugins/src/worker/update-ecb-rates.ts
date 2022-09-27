@@ -22,6 +22,8 @@ const getExchangeRates = async () => {
 // CET = UTC + 1
 const everyDayAtFour = later.parse.cron('0 15 * * *');
 
+const baseCurrency = 'EUR';
+
 const UpdateECBRates: IWorkerAdapter<any, any> = {
   ...WorkerAdapter,
 
@@ -38,22 +40,39 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
       const timestamp = new Date();
       const expiresAt = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
 
-      const rates: Array<ProductPriceRate> = data.map((d) => {
+      const currencies = await modules.currencies.findCurrencies({ includeInactive: true });
+      const currencyCodes = currencies.map((currency) => currency.isoCode);
+
+      if (!currencyCodes.includes(baseCurrency))
         return {
-          baseCurrency: 'EUR',
-          quoteCurrency: d.currency,
-          rate: parseFloat(d.rate),
-          timestamp,
-          expiresAt,
+          success: true,
+          result: {
+            ratesUpdated: 0,
+            info: 'EUR not enabled',
+          },
         };
-      });
+
+      const rates: Array<ProductPriceRate> = data
+        .map((d) => {
+          return {
+            baseCurrency,
+            quoteCurrency: d.currency,
+            rate: parseFloat(d.rate),
+            timestamp,
+            expiresAt,
+          };
+        })
+        .filter(
+          (rate) =>
+            currencyCodes.includes(rate.quoteCurrency) && rate.quoteCurrency !== rate.baseCurrency,
+        );
 
       const success = await modules.products.prices.rates.updateRates(rates);
       return {
         success,
         result: {
           ratesUpdated: rates.length,
-        }
+        },
       };
     } catch (e) {
       return {

@@ -265,14 +265,12 @@ export const configureProductPricesModule = ({
           { sort: { timestamp: -1 } },
         );
         let rate = null;
-
         if (!mostRecentCurrencyRate) return null;
         if (mostRecentCurrencyRate.baseCurrency === baseCurrency.isoCode) {
           rate = mostRecentCurrencyRate.rate;
         } else {
           rate = 1 / mostRecentCurrencyRate.rate;
         }
-
         const fromDecimals = getDecimals(baseCurrency.decimals);
         const targetDecimals = getDecimals(quoteCurrency.decimals);
         return fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;
