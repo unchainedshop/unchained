@@ -44,6 +44,8 @@ export default [
 
     type Token {
       _id: ID!
+      user: User
+      walletAddress: String
       product: TokenizedProduct!
       status: TokenExportStatus!
       quantity: Int!
