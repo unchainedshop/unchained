@@ -1,8 +1,11 @@
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
-import { pipeline } from 'stream/promises';
+import { pipeline as rawPipeline } from 'stream';
+import { promisify } from 'util';
 import sign from './sign';
+
+const pipeline = promisify(rawPipeline);
 
 const { ROOT_URL } = process.env;
 

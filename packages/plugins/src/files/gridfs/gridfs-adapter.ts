@@ -2,10 +2,12 @@ import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files';
 import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 import mimeType from 'mime-types';
 import { URL } from 'url';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
+import { Readable, pipeline as rawPipeline } from 'stream';
+import { promisify } from 'util';
 import fetch from 'node-fetch';
 import sign from './sign';
+
+const pipeline = promisify(rawPipeline);
 
 const { UNCHAINED_PUT_URL_EXPIRY, ROOT_URL } = process.env;
 
