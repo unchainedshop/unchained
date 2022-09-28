@@ -61,7 +61,7 @@ import '@unchainedshop/plugins/worker/email';
 import '@unchainedshop/plugins/worker/sms';
 import '@unchainedshop/plugins/worker/update-ecb-rates';
 import '@unchainedshop/plugins/worker/update-coinbase-rates';
-import '@unchainedshop/plugins/worker/export-token';
+import { configureExportToken } from '@unchainedshop/plugins/worker/export-token';
 
 import '@unchainedshop/plugins/files/gridfs/gridfs-adapter';
 import setupGridFSWebhook from '@unchainedshop/plugins/files/gridfs/gridfs-webhook';
@@ -145,6 +145,7 @@ const start = async () => {
   setupAppleIAP(app);
 
   configureGenerateOrderAutoscheduling();
+  configureExportToken(unchainedApi);
 
   await app.listen({ port: process.env.PORT || 3000 });
   console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);

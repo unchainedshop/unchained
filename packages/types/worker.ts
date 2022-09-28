@@ -163,7 +163,6 @@ export type IWorker<P extends { workerId: string }> = {
   external: boolean;
 
   getFloorDate: (date?: Date) => Date;
-  getInternalTypes: () => Array<string>;
 
   actions: (
     params: P,

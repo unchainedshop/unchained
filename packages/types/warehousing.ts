@@ -53,7 +53,7 @@ export type EstimatedStock = { quantity: number } | null;
 export type TokenSurrogate = {
   _id?: _ID;
   userId?: string;
-  lastWalletAddress?: string;
+  walletAddress?: string;
   quantity: number;
   contractAddress: string;
   chainId: string;
@@ -142,6 +142,12 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     context: WarehousingContext,
     requestContext: Context,
   ) => Promise<EstimatedStock>;
+
+  updateTokenOwnership: (input: {
+    tokenId: string;
+    userId: string;
+    walletAddress: string;
+  }) => Promise<void>;
 
   tokenizeItems: (
     order: Order,

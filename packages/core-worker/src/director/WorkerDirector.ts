@@ -22,7 +22,7 @@ export const WorkerDirector: IWorkerDirector = {
     return WorkerDirector.getAdapters()
       .filter((adapter) => {
         if (external === null || external === undefined) return true;
-        return adapter.external === external;
+        return Boolean(adapter.external) === external;
       })
       .map((adapter) => adapter.type);
   },

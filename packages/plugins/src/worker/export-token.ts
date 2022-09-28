@@ -1,5 +1,6 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
+import { WorkerDirector, WorkerAdapter, WorkerEventTypes } from '@unchainedshop/core-worker';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
 export const ExportTokenWorker: IWorkerAdapter<void, void> = {
   ...WorkerAdapter,
@@ -13,6 +14,18 @@ export const ExportTokenWorker: IWorkerAdapter<void, void> = {
   async doWork() {
     throw new Error('Cannot do work for external workers');
   },
+};
+
+export const configureExportToken = (unchainedApi: UnchainedCore) => {
+  WorkerDirector.events.on(WorkerEventTypes.FINISHED, async ({ work }) => {
+    if (work.type === 'EXPORT_TOKEN' && work.success) {
+      await unchainedApi.modules.warehousing.updateTokenOwnership({
+        tokenId: work.input.token._id,
+        userId: null,
+        walletAddress: work.input.recipientWalletAddress,
+      });
+    }
+  });
 };
 
 WorkerDirector.registerAdapter(ExportTokenWorker);

@@ -50,6 +50,7 @@ import '@unchainedshop/plugins/lib/worker/ZombieKillerWorker';
 import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
 import '@unchainedshop/plugins/lib/worker/MessageWorker';
 import '@unchainedshop/plugins/lib/worker/external';
+import { configureExportToken } from '@unchainedshop/plugins/lib/worker/export-token';
 import '@unchainedshop/plugins/lib/worker/http-request';
 import '@unchainedshop/plugins/lib/worker/heartbeat';
 import '@unchainedshop/plugins/lib/worker/email';
@@ -128,4 +129,5 @@ Meteor.startup(async () => {
   setupAppleIAP(WebApp.connectHandlers);
 
   configureGenerateOrderAutoscheduling();
+  configureExportToken(unchainedApi);
 });

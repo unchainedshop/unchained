@@ -26,10 +26,6 @@ export const BaseWorker: IWorker<WorkerParams> = {
     return floored;
   },
 
-  getInternalTypes() {
-    return WorkerDirector.getActivePluginTypes(false);
-  },
-
   actions: ({ workerId, worker }: WorkerParams, requestContext) => {
     const resolvedWorkerId = resolveWorkerId(workerId, worker.type);
     log(`${worker.key} -> Initialized: ${resolvedWorkerId}`);
@@ -45,7 +41,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
       reset: async (referenceDate = new Date()) => {
         await requestContext.modules.worker.markOldWorkAsFailed({
-          types: BaseWorker.getInternalTypes(),
+          types: WorkerDirector.getActivePluginTypes(false),
           worker: workerId,
           referenceDate,
         });
@@ -81,7 +77,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
 
           const work = await requestContext.modules.worker.allocateWork({
-            types: BaseWorker.getInternalTypes(),
+            types: WorkerDirector.getActivePluginTypes(false),
             worker: workerId,
           });
 

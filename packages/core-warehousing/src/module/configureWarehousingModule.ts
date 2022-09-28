@@ -60,7 +60,7 @@ export const configureWarehousingModule = async ({
     },
 
     findTokens: async ({ userId }, options) => {
-      return TokenSurrogates.find({ userId }, options).toArray()
+      return TokenSurrogates.find({ userId }, options).toArray();
     },
 
     findProviders: async (query, options) => {
@@ -130,6 +130,18 @@ export const configureWarehousingModule = async ({
         requestContext,
       );
       return director.estimatedStock();
+    },
+
+    updateTokenOwnership: async ({ tokenId, userId, walletAddress }) => {
+      await TokenSurrogates.updateOne(
+        { _id: tokenId },
+        {
+          $set: {
+            userId,
+            walletAddress,
+          },
+        },
+      );
     },
 
     tokenizeItems: async (order, { items }, requestContext) => {

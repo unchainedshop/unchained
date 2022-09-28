@@ -185,7 +185,7 @@ export default [
       """
       Get token
       """
-      token(tokenId: ID!): Token!
+      token(tokenId: ID!): Token
 
       """
       Returns total number of payment providers, optionally filtered by type
