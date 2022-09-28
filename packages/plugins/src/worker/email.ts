@@ -67,7 +67,6 @@ const EmailWorkerPlugin: IWorkerAdapter<
   key: 'shop.unchained.worker-plugin.email',
   label: 'Send a Mail through Nodemailer',
   version: '1.0',
-
   type: 'EMAIL',
 
   doWork: async ({ from, to, subject, ...rest }) => {

@@ -80,6 +80,7 @@ import removeDeliveryProvider from './delivery/removeDeliveryProvider';
 import createWarehousingProvider from './warehousing/createWarehousingProvider';
 import updateWarehousingProvider from './warehousing/updateWarehousingProvider';
 import removeWarehousingProvider from './warehousing/removeWarehousingProvider';
+import exportToken from './warehousing/exportToken';
 import setPassword from './accounts/setPassword';
 import setRoles from './users/setRoles';
 import setUsername from './accounts/setUsername';
@@ -259,6 +260,7 @@ export default {
   createWarehousingProvider: acl(actions.manageWarehousingProviders)(createWarehousingProvider),
   updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
+  exportToken: acl(actions.updateToken)(exportToken),
 
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),

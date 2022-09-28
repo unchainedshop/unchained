@@ -12,7 +12,7 @@ const roles = {
 
 const allRoles = roles;
 
-const actions = [
+const actions: Record<string, string> = [
   'viewEvent',
   'viewEvents',
   'viewUserRoles',
@@ -21,6 +21,7 @@ const actions = [
   'viewUserPublicInfos',
   'viewUserPrivateInfos',
   'viewUserEnrollments',
+  'viewUserTokens',
   'viewLogs',
   'viewUser',
   'viewUsers',
@@ -57,6 +58,8 @@ const actions = [
   'managePaymentProviders',
   'manageDeliveryProviders',
   'manageWarehousingProviders',
+  'updateToken',
+  'viewToken',
   'manageAssortments',
   'manageFilters',
   'createCart',

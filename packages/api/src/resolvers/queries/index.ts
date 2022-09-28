@@ -61,6 +61,7 @@ import warehousingInterfaces from './warehousing/warehousingInterfaces';
 import warehousingProvider from './warehousing/warehousingProvider';
 import warehousingProviders from './warehousing/warehousingProviders';
 import warehousingProvidersCount from './warehousing/warehousingProvidersCount';
+import token from './warehousing/token';
 import work from './worker/work';
 import workQueue from './worker/workQueue';
 import workQueueCount from './worker/workQueueCount';
@@ -95,6 +96,7 @@ export default {
   warehousingProviders: acl(actions.viewWarehousingProviders)(warehousingProviders),
   warehousingProvider: acl(actions.viewWarehousingProvider)(warehousingProvider),
   warehousingInterfaces: acl(actions.viewWarehousingInterfaces)(warehousingInterfaces),
+  token: acl(actions.viewToken)(token),
   translatedProductTexts: acl(actions.viewTranslations)(translatedProductTexts),
   translatedProductMediaTexts: acl(actions.viewTranslations)(translatedProductMediaTexts),
   translatedProductVariationTexts: acl(actions.viewTranslations)(translatedProductVariationTexts),

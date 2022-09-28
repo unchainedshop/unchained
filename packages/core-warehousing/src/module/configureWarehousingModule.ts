@@ -55,6 +55,14 @@ export const configureWarehousingModule = async ({
       return WarehousingProviders.findOne(generateDbFilterById(warehousingProviderId), options);
     },
 
+    findToken: async ({ tokenId }, options) => {
+      return TokenSurrogates.findOne(generateDbFilterById(tokenId), options);
+    },
+
+    findTokens: async ({ userId }, options) => {
+      return TokenSurrogates.find({ userId }, options).toArray()
+    },
+
     findProviders: async (query, options) => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
       return providers.toArray();

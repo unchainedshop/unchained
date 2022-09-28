@@ -63,6 +63,7 @@ import { WarehousingProvider } from './warehousing-provider-types';
 import { Work } from './work-types';
 import { Event } from './event-types';
 import { Media } from './media-types';
+import { Token } from './token-types';
 
 const types = {
   Assortment,
@@ -124,6 +125,7 @@ const types = {
   Shop,
   SimpleProduct,
   TokenizedProduct,
+  Token,
   Stock,
   User,
   WarehousingProvider,

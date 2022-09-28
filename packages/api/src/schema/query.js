@@ -183,6 +183,11 @@ export default [
       warehousingInterfaces(type: WarehousingProviderType!): [WarehousingInterface!]!
 
       """
+      Get token
+      """
+      token(tokenId: ID!): Token!
+
+      """
       Returns total number of payment providers, optionally filtered by type
       """
       paymentProvidersCount(type: PaymentProviderType): Int!

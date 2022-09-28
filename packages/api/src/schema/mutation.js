@@ -858,7 +858,7 @@ export default [
       """
       Tokenize
       """
-      exportToken(tokenId: String!, quantity: Int, recipientWalletAddress: String!): Work!
+      exportToken(tokenId: String!, quantity: Int! = 1, recipientWalletAddress: String!): Token!
     }
   `,
 ];

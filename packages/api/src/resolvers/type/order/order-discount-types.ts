@@ -6,7 +6,7 @@ import { OrderDiscountDirector } from '@unchainedshop/core-orders';
 
 type HelperType<P, T> = (orderDiscount: OrderDiscountType, params: P, context: Context) => T;
 
-interface OrderDiscountHelperTypes {
+export interface OrderDiscountHelperTypes {
   interface: HelperType<
     never,
     Promise<{

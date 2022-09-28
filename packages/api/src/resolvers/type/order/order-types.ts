@@ -15,7 +15,7 @@ import crypto from 'crypto';
 
 type HelperType<P, T> = (order: OrderType, params: P, context: Context) => T;
 
-interface OrderHelperTypes {
+export interface OrderHelperTypes {
   supportedDeliveryProviders: HelperType<never, Promise<Array<DeliveryProvider>>>;
   supportedPaymentProviders: HelperType<never, Promise<Array<PaymentProvider>>>;
   currency: HelperType<never, Promise<Currency>>;

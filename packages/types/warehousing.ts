@@ -51,11 +51,14 @@ export type EstimatedDispatch = {
 export type EstimatedStock = { quantity: number } | null;
 
 export type TokenSurrogate = {
-  userId: string;
+  _id?: _ID;
+  userId?: string;
+  lastWalletAddress?: string;
   quantity: number;
   contractAddress: string;
   chainId: string;
   chainTokenId: string;
+  productId: string;
   meta: any;
 };
 
@@ -105,6 +108,8 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     query: { warehousingProviderId: string },
     options?: FindOptions,
   ) => Promise<WarehousingProvider>;
+  findToken: (query: { tokenId: string }, options?: FindOptions) => Promise<TokenSurrogate>;
+  findTokens: (query: { userId: string }, options?: FindOptions) => Promise<Array<TokenSurrogate>>;
   findProviders: (
     query: WarehousingProviderQuery,
     options?: FindOptions,

@@ -5,6 +5,7 @@ import {
 } from '@unchainedshop/core-warehousing';
 import { ProductType } from '@unchainedshop/types/products';
 import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
+import { generateDbObjectId } from '@unchainedshop/utils';
 
 const ETHMinter: IWarehousingAdapter = {
   ...WarehousingAdapter,
@@ -42,15 +43,19 @@ const ETHMinter: IWarehousingAdapter = {
         // Upload Metadata to IPFS
         // Store Metadata in Collection
 
-        const chainId = configuration.find(({ key }) => key === 'chainId');
+        const chainId = configuration.find(({ key }) => key === 'chainId')?.value || '0';
+        const { contractAddress, tokenId: chainTokenId } = product.tokenization;
+        const _id = generateDbObjectId();
+        const meta = {};
 
         return [
           {
-            chainTokenId: product.tokenization.tokenId,
-            contractAddress: product.tokenization.contractAddress,
+            _id,
+            chainTokenId,
+            contractAddress,
             quantity: orderPosition.quantity,
-            chainId: chainId?.value || '0',
-            meta: {},
+            chainId,
+            meta,
           },
         ];
       },

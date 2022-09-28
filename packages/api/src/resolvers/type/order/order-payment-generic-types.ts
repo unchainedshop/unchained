@@ -4,7 +4,7 @@ import { PaymentProvider } from '@unchainedshop/types/payments';
 
 type HelperType<P, T> = (orderPayment: OrderPayment, params: P, context: Context) => T;
 
-interface OrderPaymentGenericHelperTypes {
+export interface OrderPaymentGenericHelperTypes {
   discounts: HelperType<never, Promise<Array<OrderPaymentDiscount>>>;
   provider: HelperType<never, Promise<PaymentProvider>>;
   status: HelperType<never, string>;

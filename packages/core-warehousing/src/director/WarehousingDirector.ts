@@ -107,10 +107,11 @@ export const WarehousingDirector: IWarehousingDirector = {
       tokenize: async () => {
         try {
           const tokens = await adapter.tokenize();
-          const { order } = warehousingContext;
+          const { order, orderPosition } = warehousingContext;
           return tokens.map((token) => {
             return {
               userId: order.userId,
+              productId: orderPosition.productId,
               ...token,
             };
           });

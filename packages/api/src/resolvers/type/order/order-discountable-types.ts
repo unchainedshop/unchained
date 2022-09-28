@@ -5,7 +5,7 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing';
 
-const OrderDiscountableType = {
+export const OrderDiscountableType = {
   OrderItemDiscount: 'OrderItemDiscount',
   OrderPaymentDiscount: 'OrderPaymentDiscount',
   OrderDeliveryDiscount: 'OrderDeliveryDiscount',

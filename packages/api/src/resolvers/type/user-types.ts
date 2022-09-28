@@ -13,6 +13,7 @@ import type { Locale } from 'locale';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { checkAction, checkTypeResolver } from '../../acl';
 import { actions } from '../../roles';
+import { TokenSurrogate } from '@unchainedshop/types/warehousing';
 
 type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
 
@@ -41,6 +42,7 @@ export interface UserHelperTypes {
     Array<Order>
   >;
   paymentCredentials: HelperType<any, Array<PaymentCredentials>>;
+  tokens: HelperType<any, Array<TokenSurrogate>>;
   primaryEmail: HelperType<any, Email>;
   profile: HelperType<any, UserProfile>;
   quotations: HelperType<{ sort?: Array<SortOption>; queryString?: string }, Array<Quotation>>;
@@ -130,6 +132,11 @@ export const User: UserHelperTypes = {
     const { modules, countryContext } = context;
     await checkAction(context, viewUserOrders, [user, params]);
     return modules.orders.cart({ countryContext, orderNumber: params.orderNumber }, user);
+  },
+
+  async tokens(user, params, context) {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    return context.modules.warehousing.findTokens({ userId: user._id });
   },
 
   country: async (user, params, context) => {

@@ -35,5 +35,21 @@ export default [
       configurationError: WarehousingProviderError
       isActive: Boolean
     }
+
+    enum TokenExportStatus {
+      CENTRALIZED
+      EXPORTING
+      DECENTRALIZED
+    }
+
+    type Token {
+      _id: ID!
+      product: TokenizedProduct!
+      status: TokenExportStatus!
+      quantity: Int!
+      contractAddress: String
+      chainId: String
+      chainTokenId: String
+    }
   `,
 ];

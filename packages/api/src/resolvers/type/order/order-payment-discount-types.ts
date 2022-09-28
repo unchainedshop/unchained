@@ -10,7 +10,7 @@ type HelperType<P, T> = (
   context: Context,
 ) => T;
 
-interface OrderPaymentDiscountHelperTypes {
+export interface OrderPaymentDiscountHelperTypes {
   _id: HelperType<never, string>;
   orderDiscount: HelperType<never, Promise<OrderDiscount>>;
   total: HelperType<never, OrderPrice>;

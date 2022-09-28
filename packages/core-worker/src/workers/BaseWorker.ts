@@ -19,6 +19,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
   label: 'Base worker. Do not use this directly.',
   version: '1.0',
   type: 'BASE',
+  external: false,
 
   getFloorDate: (date = new Date()) => {
     const floored = new Date(Math.floor(date.getTime() / 1000) * 1000);
@@ -26,7 +27,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
   },
 
   getInternalTypes() {
-    return WorkerDirector.getActivePluginTypes().filter((type) => type !== 'EXTERNAL');
+    return WorkerDirector.getActivePluginTypes(false);
   },
 
   actions: ({ workerId, worker }: WorkerParams, requestContext) => {

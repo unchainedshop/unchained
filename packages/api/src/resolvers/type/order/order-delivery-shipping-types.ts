@@ -5,7 +5,7 @@ import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/types/order
 
 type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;
 
-interface OrderDeliveryShippingHelperTypes {
+export interface OrderDeliveryShippingHelperTypes {
   address: HelperType<Address>;
   discounts: HelperType<Promise<Array<OrderDeliveryDiscount>>>;
   provider: HelperType<Promise<DeliveryProvider>>;
