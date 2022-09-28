@@ -14,7 +14,7 @@ const ETHMinter: IWarehousingAdapter = {
   label: 'Infinite Minter',
   orderIndex: 0,
 
-  initialConfiguration: [{ key: 'tokenURI', value: '' }],
+  initialConfiguration: [{ key: 'chainId', value: '0' }],
 
   typeSupported: (type) => {
     return type === WarehousingProviderType.VIRTUAL;
@@ -41,12 +41,15 @@ const ETHMinter: IWarehousingAdapter = {
         // Upload Image to IPFS
         // Upload Metadata to IPFS
         // Store Metadata in Collection
+
+        const chainId = configuration.find(({ key }) => key === 'chainId');
+
         return [
           {
             chainTokenId: product.tokenization.tokenId,
             contractAddress: product.tokenization.contractAddress,
             quantity: orderPosition.quantity,
-            chainId: null,
+            chainId: chainId?.value || '0',
             meta: {},
           },
         ];
