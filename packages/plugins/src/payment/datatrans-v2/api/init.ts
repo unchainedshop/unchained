@@ -21,9 +21,9 @@ export default async function init({
     ...payload,
     autoSettle: false,
     option: {
-      ...(option || {}),
       createAlias: true,
       returnCustomerCountry: true,
+      ...(option || {}), // allow to overturn the options above
       authenticationOnly: false,
     },
     redirect,

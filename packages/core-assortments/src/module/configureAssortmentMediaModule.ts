@@ -60,7 +60,7 @@ export const configureAssortmentMediaModule = async ({
       locale,
     };
 
-    const updsertResult = await AssortmentMediaTexts.updateOne(
+    await AssortmentMediaTexts.updateOne(
       selector,
       {
         $set: {
@@ -82,10 +82,7 @@ export const configureAssortmentMediaModule = async ({
       },
     );
 
-    return AssortmentMediaTexts.findOne(
-      updsertResult.upsertedId ? generateDbFilterById(updsertResult.upsertedId) : selector,
-      {},
-    );
+    return AssortmentMediaTexts.findOne(selector, {});
   };
 
   return {

@@ -1,8 +1,11 @@
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
+import { pipeline as rawPipeline } from 'stream';
+import { promisify } from 'util';
 import sign from './sign';
-import promisePipe from './promisePipe';
+
+const pipeline = promisify(rawPipeline);
 
 const { ROOT_URL } = process.env;
 
@@ -34,7 +37,8 @@ export default (app) =>
             fileName,
           );
           res.writeHead(200);
-          const { length } = (await promisePipe(req, writeStream)) as any;
+          await pipeline(req, writeStream);
+          const { length } = writeStream;
           await services.files.linkFile({ fileId, size: length }, req.unchainedContext);
           res.end();
           return;
@@ -47,7 +51,7 @@ export default (app) =>
         const fileId = fileName;
         const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
         res.writeHead(200);
-        await promisePipe(readStream, res);
+        await pipeline(readStream, res);
         res.end();
         return;
       }
