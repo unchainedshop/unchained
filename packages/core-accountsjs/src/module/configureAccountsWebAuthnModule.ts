@@ -1,10 +1,11 @@
 import { AccountsSettingsOptions, AccountsWebAuthnModule } from '@unchainedshop/types/accounts';
-import { ModuleInput } from '@unchainedshop/types/common';
+import { ModuleInput } from '@unchainedshop/types/core';
 import {
   Fido2Lib,
   PublicKeyCredentialCreationOptions,
   PublicKeyCredentialRequestOptions,
 } from 'fido2-lib';
+
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection';
 
 const { ROOT_URL, EMAIL_WEBSITE_NAME } = process.env;

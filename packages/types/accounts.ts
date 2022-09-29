@@ -44,9 +44,7 @@ export interface AccountsSettings {
 
 export interface AccountsWebAuthnModule {
   findMDSMetadataForAAGUID: (aaguid: string) => Promise<any>;
-export type LoginWithParams<N, T> = {
-  service: N;
-} & T;
+
   createCredentialCreationOptions: (
     origin: string,
     username: string,
@@ -54,7 +52,6 @@ export type LoginWithParams<N, T> = {
   ) => Promise<any>;
   verifyCredentialCreation: (username: string, credentials: any) => Promise<any>;
 
-export type LoginWithPassword = {
   createCredentialRequestOptions: (
     origin: string,
     username?: string,
@@ -63,7 +60,20 @@ export type LoginWithPassword = {
   verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
 }
 
+export type LoginWithParams<N, T> = {
+  service: N;
+} & T;
+
+export type LoginWithGuestParams = LoginWithParams<'guest', Record<string, never>>;
+
+export type LoginWithPassword = {
+  user: { email: string } | { username: string };
+  password: string;
+  code?: string;
+};
+
 export type LoginWithPasswordParams = LoginWithParams<'password', LoginWithPassword>;
+
 export interface AccountsModule {
   dbManager: any;
 
