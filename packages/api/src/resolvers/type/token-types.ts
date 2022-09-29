@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { Product } from '@unchainedshop/types/products';
+import { User } from '@unchainedshop/types/user';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing';
 import { WorkStatus } from '@unchainedshop/types/worker';
 
@@ -14,6 +15,7 @@ export enum TokenExportStatus {
 export interface TokenHelperTypes {
   product: HelperType<Product>;
   status: HelperType<TokenExportStatus>;
+  user: HelperType<User>;
 }
 
 export const Token: TokenHelperTypes = {
@@ -21,8 +23,13 @@ export const Token: TokenHelperTypes = {
     return modules.products.findProduct({ productId: token.productId });
   },
 
+  user: async (token, _params, { modules }) => {
+    if (!token.userId) return null;
+    return modules.users.findUserById(token.userId);
+  },
+
   status: async (token, _params, { modules }) => {
-    if (token.lastWalletAddress && !token.userId) {
+    if (token.walletAddress && !token.userId) {
       return TokenExportStatus.DECENTRALIZED;
     }
     const workItems = await modules.worker.findWorkQueue({
