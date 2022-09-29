@@ -5,12 +5,11 @@ import {
   PublicKeyCredentialCreationOptions,
   PublicKeyCredentialRequestOptions,
 } from 'fido2-lib';
+import fetch from 'node-fetch';
 
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection';
 
 const { ROOT_URL, EMAIL_WEBSITE_NAME } = process.env;
-
-declare let fetch;
 
 type SerializedOptions<T> = Omit<T, 'challenge' | 'requestId'> & {
   challenge: string;
@@ -51,16 +50,8 @@ export const configureAccountsWebAuthnModule = async ({
   const thisDomain = new URL(ROOT_URL).hostname;
 
   const f2l = new Fido2Lib({
-    // timeout: 42,
     rpId: thisDomain,
     rpName: EMAIL_WEBSITE_NAME,
-    // rpIcon: 'https://example.com/logo.png',
-    // challengeSize: 128,
-    // attestation: 'none',
-    // cryptoParams: [-7, -257],
-    // authenticatorAttachment: 'platform',
-    // authenticatorRequireResidentKey: false,
-    // authenticatorUserVerification: 'discouraged',
   });
 
   return {
