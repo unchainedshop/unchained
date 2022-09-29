@@ -49,6 +49,35 @@ export default [
       countryCode: String
     }
 
+    type WebAuthnMDSv3Metadata {
+      legalHeader: String
+      description: String
+      authenticatorVersion: Int
+      protocolFamily: String
+      schema: Int
+      upv: [JSON!]
+      authenticationAlgorithms: [String!]
+      publicKeyAlgAndEncodings: [String!]
+      attestationTypes: [String!]
+      userVerificationDetails: [JSON!]
+      keyProtection: [String!]
+      matcherProtection: [String!]
+      cryptoStrength: Int
+      attachmentHint: [String!]
+      tcDisplay: [JSON!]
+      attestationRootCertificates: [String!]
+      icon: String
+      authenticatorGetInfo: JSON
+    }
+
+    type WebAuthnCredentials {
+      _id: ID!
+      created: DateTime!
+      aaguid: String!
+      counter: Int!
+      mdsMetadata: WebAuthnMDSv3Metadata
+    }
+
     type User {
       _id: ID!
       email: String @deprecated(reason: "Please use primaryEmail.address instead")
@@ -57,6 +86,7 @@ export default [
       isGuest: Boolean!
       isTwoFactorEnabled: Boolean!
       isInitialPassword: Boolean!
+      webAuthnCredentials: [WebAuthnCredentials!]!
       name: String!
       avatar: Media
       profile: UserProfile

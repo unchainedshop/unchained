@@ -1,0 +1,30 @@
+import { log } from '@unchainedshop/logger';
+import { Context, Root } from '@unchainedshop/types/api';
+import { UserWebAuthnCredentialsNotFoundError } from '../../../errors';
+
+export default async function removeWebAuthnCredentials(
+  root: Root,
+  { credentialsId }: { credentialsId: string },
+  { modules, userId, user }: Context,
+) {
+  log(`mutation removeWebAuthnCredentials ${credentialsId} ${user.username}`, {
+    userId,
+  });
+
+  const foundCredentials = user.services?.webAuthn.find((service) => service.id === credentialsId);
+  if (!foundCredentials) {
+    throw new UserWebAuthnCredentialsNotFoundError({ userId, credentialsId });
+  }
+
+  await modules.users.updateUser(
+    { _id: userId },
+    {
+      $pull: {
+        'services.webAuthn': { id: credentialsId },
+      },
+    },
+    {},
+  );
+
+  return modules.users.findUserById(userId);
+}

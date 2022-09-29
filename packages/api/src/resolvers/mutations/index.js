@@ -1,6 +1,7 @@
 import { actions } from '../../roles';
 import { checkResolver as acl } from '../../acl';
 import loginWithPassword from './accounts/loginWithPassword';
+import loginWithWebAuthn from './accounts/loginWithWebAuthn';
 import impersonate from './accounts/impersonate';
 import loginAsGuest from './accounts/loginAsGuest';
 import logout from './accounts/logout';
@@ -18,6 +19,10 @@ import forgotPassword from './accounts/forgotPassword';
 import resetPassword from './accounts/resetPassword';
 import addEmail from './accounts/addEmail';
 import removeEmail from './accounts/removeEmail';
+import createWebAuthnCredentialCreationOptions from './accounts/createWebAuthnCredentialCreationOptions';
+import createWebAuthnCredentialRequestOptions from './accounts/createWebAuthnCredentialRequestOptions';
+import addWebAuthnCredentials from './accounts/addWebAuthnCredentials';
+import removeWebAuthnCredentials from './accounts/removeWebAuthnCredentials';
 import updateUserAvatar from './users/updateUserAvatar';
 import updateUserProfile from './users/updateUserProfile';
 import setUserTags from './users/setUserTags';
@@ -149,8 +154,13 @@ export default {
   logout,
   logoutAllSessions,
   loginAsGuest,
+  createWebAuthnCredentialCreationOptions,
+  createWebAuthnCredentialRequestOptions,
+  addWebAuthnCredentials: acl(actions.updateUser)(addWebAuthnCredentials),
+  removeWebAuthnCredentials: acl(actions.updateUser)(removeWebAuthnCredentials),
   verifyEmail,
   loginWithPassword,
+  loginWithWebAuthn,
   impersonate: acl(actions.impersonate)(impersonate),
   buildSecretTOTPAuthURL: acl(actions.authTwoFactor)(buildSecretTOTPAuthURL),
   enableTOTP: acl(actions.authTwoFactor)(enableTOTP),

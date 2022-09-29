@@ -39,6 +39,7 @@
     "@unchainedshop/logger": "^1.2.30",
     "@unchainedshop/utils": "^1.2.30",
     "uuid": "^8.3.2"
+    "fido2-lib": "^3.2.5"
   },
   "devDependencies": {
     "@types/node": "^16.11.59",

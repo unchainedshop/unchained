@@ -69,6 +69,11 @@ export const DeliverProviderNotFoundError = createError(
 export const LanguageNotFoundError = createError('LanguageNotFoundError', 'Language not found');
 
 export const UserNotFoundError = createError('UserNotFoundError', 'User not found');
+export const UserWebAuthnCredentialsNotFoundError = createError(
+  'UserWebAuthnCredentialsNotFoundError',
+  'User WebAuth Credentials not found',
+);
+
 export const UserNoCartError = createError('UserNoCartError', 'No open cart available to checkout');
 export const OrderItemNotFoundError = createError('OrderItemNotFoundError', 'Order Item not found');
 export const OrderNotFoundError = createError('OrderNotFoundError', 'Order not found');
