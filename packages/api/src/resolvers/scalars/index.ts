@@ -1,4 +1,4 @@
-import LowerCaseString from './LoweCaseString';
+import LowerCaseString from './LowerCaseString';
 
 export default {
   LowerCaseString,
