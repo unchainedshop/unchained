@@ -27,6 +27,9 @@ export default async function init({
       authenticationOnly: false,
     },
     redirect,
+    webhook: {
+      url: defaultRedirect.postUrl,
+    },
   };
 
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
