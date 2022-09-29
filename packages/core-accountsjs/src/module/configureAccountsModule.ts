@@ -15,7 +15,7 @@ export const configureAccountsModule = async ({
   db,
   options,
 }: ModuleInput<AccountsSettingsOptions>): Promise<AccountsModule> => {
-  const dbManager = createDbManager(db);
+  const dbManager = createDbManager(db) as any;
 
   const accountsServer = new UnchainedAccountsServer(
     {
