@@ -4,7 +4,7 @@ import {
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
 import { ProductType } from '@unchainedshop/types/products';
-import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
+import { IWarehousingAdapter, TokenSurrogate } from '@unchainedshop/types/warehousing';
 import { generateDbObjectId } from '@unchainedshop/utils';
 
 const ETHMinter: IWarehousingAdapter = {
@@ -56,7 +56,7 @@ const ETHMinter: IWarehousingAdapter = {
             quantity: orderPosition.quantity,
             chainId,
             meta,
-          },
+          } as TokenSurrogate,
         ];
       },
     };
