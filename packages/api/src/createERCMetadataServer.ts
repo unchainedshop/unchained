@@ -15,7 +15,7 @@ const { ERC_METADATA_API_PATH = '/erc-metadata' } = process.env;
 const errorHandler = (res) => (e) => {
   logger.error(e.message);
   res.writeHead(503);
-  res.end(JSON.stringify(e));
+  res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
 };
 
 const methodWrongHandler = (res) => () => {

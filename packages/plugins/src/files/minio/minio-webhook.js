@@ -41,7 +41,7 @@ export default (app) => {
     } catch (e) {
       log(e.message, { level: LogLevel.Error });
       res.writeHead(503);
-      res.end(JSON.stringify(e));
+      res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
     }
   });
 };

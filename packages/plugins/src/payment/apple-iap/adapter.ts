@@ -219,7 +219,7 @@ export default (app) => {
       } catch (e) {
         logger.warn(`Apple IAP Webhook: ${e.message}`, e);
         res.writeHead(503);
-        res.end(JSON.stringify(e));
+        res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
         return;
       }
     }

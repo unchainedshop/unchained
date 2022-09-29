@@ -205,7 +205,7 @@ export default (app) => {
       } catch (e) {
         logger.warn(`Bity Webhook: Failed with ${e.message}`);
         res.writeHead(503);
-        res.end(JSON.stringify(e));
+        res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
         return;
       }
     }
@@ -231,7 +231,7 @@ export default (app) => {
       } catch (e) {
         logger.warn(`Bity Webhook: Failed with ${e.message}`);
         res.writeHead(503);
-        res.end(JSON.stringify(e));
+        res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
         return;
       }
     }
