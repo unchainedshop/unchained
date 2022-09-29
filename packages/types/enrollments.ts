@@ -10,10 +10,8 @@ import {
   TimestampFields,
   _ID,
 } from './common';
-import { DeliveryProvider } from './delivery';
 import { Order } from './orders';
 import { OrderPosition } from './orders.positions';
-import { PaymentProvider } from './payments';
 import { Product, ProductPlan } from './products';
 import { WorkerSchedule } from './worker';
 

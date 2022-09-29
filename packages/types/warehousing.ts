@@ -5,7 +5,7 @@ import { ModuleMutations } from './core';
 import { DeliveryProvider } from './delivery';
 import { Order } from './orders';
 import { OrderPosition } from './orders.positions';
-import { Product, ProductTokenization } from './products';
+import { Product } from './products';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',

@@ -4,7 +4,6 @@ import { User } from '@unchainedshop/types/user';
 import { Product } from '@unchainedshop/types/products';
 import { Country } from '@unchainedshop/types/countries';
 import { Currency } from '@unchainedshop/types/currencies';
-import { File } from '@unchainedshop/types/files';
 
 type HelperType<P, T> = (quotation: QuotationType, params: P, context: Context) => T;
 

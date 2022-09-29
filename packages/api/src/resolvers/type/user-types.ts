@@ -11,9 +11,9 @@ import { Quotation } from '@unchainedshop/types/quotations';
 import { Email, User as UserType, UserProfile } from '@unchainedshop/types/user';
 import type { Locale } from 'locale';
 import { log, LogLevel } from '@unchainedshop/logger';
+import { TokenSurrogate } from '@unchainedshop/types/warehousing';
 import { checkAction, checkTypeResolver } from '../../acl';
 import { actions } from '../../roles';
-import { TokenSurrogate } from '@unchainedshop/types/warehousing';
 
 type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
 
