@@ -1,3 +1,25 @@
+# Unchained Engine vNEXT
+
+## Major
+
+- Currencies now have a field `decimals` to define how many decimals are there. This is needed for general currency conversion between cryptocurrencies and Fiat and also helps to display the amount of arbitrary currencies better on frontends.
+- A new product type `TokenizedProduct` has been added added that supports NFT's and other virtual products that have no physical representation. They are converted to tokens through a virtual warehouse once checked-out. 
+- A new warehousing provider type `VIRTUAL` has been added that allows to define warehouses for virtual products. In the plugin implementation one can define what happens when a user buys a tokenized product thus what kind of tokens get emitted. Further, tokens support a concept we call "exportability" which allows to bridge an Off-chain token to an On-chain token.
+- API has been extended to support the new tokenization concept: `User.tokens`, `Mutation.exportToken`, `Query.token`, `Mutation.updateProductTokenization`
+- A new ERC Metadata Server is built into Unchained allowing to generate Ethereum compatible ERC-1155 and ERC-721 metadata JSON files for tokenized products.
+
+## Minor
+
+- The currency conversion plugin now depends on decimals and works across any currency pairs when there is conversion rates stored.
+- Conversion rates are now fetched based on a regular job and not live when needed, this improves performance and stability
+- There can now be more than 1 external job type
+- The Cryptopay Plugin has been refactored from the ground up and various issues have been fixed
+
+## Patch
+
+- Further limited exposure of data and stacktrace in exceptions
+
+
 # Unchained Engine v1.2
 
 Unchained has been converted from Meteor atmosphere packages to ESM npm packages and is now compatible
