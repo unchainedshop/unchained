@@ -66,11 +66,11 @@ export default [
       _id: ID!
       sequence: Int!
       status: ProductStatus!
-      tags: [String!]
+      tags: [LowerCaseString!]
       created: DateTime
       updated: DateTime
       published: DateTime
-      media(limit: Int = 10, offset: Int = 0, tags: [String!]): [ProductMedia!]!
+      media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
       texts(forceLocale: String): ProductTexts
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(

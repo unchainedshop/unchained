@@ -31,7 +31,7 @@ export default [
       If a slug is provided
       """
       productsCount(
-        tags: [String!]
+        tags: [LowerCaseString!]
         slugs: [String!]
         includeDrafts: Boolean = false
         queryString: String
@@ -43,7 +43,7 @@ export default [
       """
       products(
         queryString: String
-        tags: [String!]
+        tags: [LowerCaseString!]
         slugs: [String!]
         limit: Int = 10
         offset: Int = 0
@@ -238,7 +238,7 @@ export default [
       """
       assortments(
         queryString: String
-        tags: [String!]
+        tags: [LowerCaseString!]
         slugs: [String!]
         limit: Int = 10
         offset: Int = 0
@@ -251,7 +251,7 @@ export default [
       Returns total number of assortments that match a given criteria or all if no criteria is given
       """
       assortmentsCount(
-        tags: [String!]
+        tags: [LowerCaseString!]
         slugs: [String!]
         includeInactive: Boolean = false
         includeLeaves: Boolean = false

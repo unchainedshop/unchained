@@ -1,4 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
 import upsertAssortmentContent from './upsertAssortmentContent';
 import upsertAssortmentFilters from './upsertAssortmentFilters';
@@ -12,11 +13,12 @@ export default async function createAssortment(
 ) {
   const { modules, userId } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
-
   if (!specification) throw new Error(`Specification is required when creating new assortment ${_id}`);
 
   if (!specification.content)
     throw new Error(`Assortment content is required when creating new assortment${_id}`);
+
+  specification.tags = convertTagsToLowerCase(specification?.tags);
 
   logger.debug('create assortment object', specification);
   try {

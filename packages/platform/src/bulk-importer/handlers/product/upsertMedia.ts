@@ -1,6 +1,7 @@
 import { Context } from '@unchainedshop/types/api';
 import { File } from '@unchainedshop/types/files';
 import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
 const upsertAsset = async (
   asset: File & { fileName: string; headers?: Record<string, unknown> },
@@ -55,6 +56,7 @@ export default async function upsertMedia({ media, authorId, productId }, unchai
 
   const productMediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
+      const tags = convertTagsToLowerCase(mediaData?.tags);
       const file = await upsertAsset(
         { meta: { ...(asset.meta || {}), productId }, ...asset },
         unchainedAPI,
@@ -65,6 +67,7 @@ export default async function upsertMedia({ media, authorId, productId }, unchai
         {
           authorId,
           ...mediaData,
+          tags,
           productId,
           mediaId: file._id,
         } as ProductMedia,

@@ -1,5 +1,5 @@
 import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
-import { Filter as DbFilter, Query } from '@unchainedshop/types/common';
+import { Document, Filter as DbFilter, FindOptions, Query } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import memoizee from 'memoizee';
 import {
@@ -170,14 +170,18 @@ export const configureFiltersModule = async ({
       return Filters.findOne(generateDbFilterById(filterId), {});
     },
 
-    findFilters: async ({
-      limit,
-      offset,
-      sort,
-      ...query
-    }: FilterQuery & { limit?: number; offset?: number; sort?: Array<SortOption> }) => {
+    findFilters: async (
+      {
+        limit,
+        offset,
+        sort,
+        ...query
+      }: FilterQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
+      options?: FindOptions<Document>,
+    ) => {
       const defaultSortOption = [{ key: 'sequence', value: SortDirection.ASC }];
       const filters = Filters.find(buildFindSelector(query), {
+        ...options,
         skip: offset,
         limit,
         sort: buildSortOptions(sort || defaultSortOption),

@@ -27,6 +27,7 @@ import { configureProductReviewsModule } from './configureProductReviewsModule';
 import { configureProductTextsModule } from './configureProductTextsModule';
 import { configureProductVariationsModule } from './configureProductVariationsModule';
 import { productsSettings } from '../products-settings';
+import addMigrations from '../migrations/addMigrations';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -90,6 +91,7 @@ const buildFindSelector = ({
 export const configureProductsModule = async ({
   db,
   options: productsOptions = {},
+  migrationRepository,
 }: ModuleInput<ProductsSettingsOptions>): Promise<ProductsModule> => {
   registerEvents(PRODUCT_EVENTS);
   await productsSettings.configureSettings(productsOptions);
@@ -97,6 +99,7 @@ export const configureProductsModule = async ({
   const { Products, ProductTexts } = await ProductsCollection(db);
 
   const mutations = generateDbMutations<Product>(Products, ProductsSchema) as ModuleMutations<Product>;
+  addMigrations(migrationRepository);
 
   const deleteProductsPermanently: ProductsModule['deleteProductsPermanently'] = async ({
     productId,

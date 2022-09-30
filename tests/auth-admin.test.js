@@ -326,7 +326,7 @@ describe('Auth for admin users', () => {
       const tags = ['new-tag'];
       const { data: { setUserTags } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation setUserTags($tags: [String]!, $userId: ID!) {
+          mutation setUserTags($tags: [LowerCaseString]!, $userId: ID!) {
             setUserTags(tags: $tags, userId: $userId) {
               _id
               tags
@@ -348,7 +348,7 @@ describe('Auth for admin users', () => {
       const tags = ['new-tag'];
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation setUserTags($tags: [String]!, $userId: ID!) {
+          mutation setUserTags($tags: [LowerCaseString]!, $userId: ID!) {
             setUserTags(tags: $tags, userId: $userId) {
               _id
               tags
@@ -367,7 +367,7 @@ describe('Auth for admin users', () => {
       const tags = ['new-tag'];
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation setUserTags($tags: [String]!, $userId: ID!) {
+          mutation setUserTags($tags: [LowerCaseString]!, $userId: ID!) {
             setUserTags(tags: $tags, userId: $userId) {
               _id
               tags
