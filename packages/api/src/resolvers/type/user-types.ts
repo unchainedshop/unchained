@@ -8,7 +8,7 @@ import { Language } from '@unchainedshop/types/languages';
 import { Order } from '@unchainedshop/types/orders';
 import { PaymentCredentials } from '@unchainedshop/types/payments';
 import { Quotation } from '@unchainedshop/types/quotations';
-import { Email, User as UserType, UserProfile } from '@unchainedshop/types/user';
+import { Email, User as UserType, UserProfile, WebAuthnCredentials } from '@unchainedshop/types/user';
 import type { Locale } from 'locale';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { checkAction, checkTypeResolver } from '../../acl';
@@ -41,6 +41,7 @@ export interface UserHelperTypes {
     Array<Order>
   >;
   paymentCredentials: HelperType<any, Array<PaymentCredentials>>;
+  webAuthnCredentials: HelperType<any, Array<WebAuthnCredentials>>;
   primaryEmail: HelperType<any, Email>;
   profile: HelperType<any, UserProfile>;
   quotations: HelperType<{ sort?: Array<SortOption>; queryString?: string }, Array<Quotation>>;
@@ -179,6 +180,11 @@ export const User: UserHelperTypes = {
         },
       },
     );
+  },
+
+  webAuthnCredentials: async (user, params, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    return user.services.webAuthn || [];
   },
 
   quotations: async (user, params, context) => {

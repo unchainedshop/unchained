@@ -1,3 +1,34 @@
+# Unchained Engine vNEXT
+
+## Major
+- Extended users and accounts for WebAuthn standard
+- Added API mutations for the WebAuthn module: `Mutation.createWebAuthnCredentialCreationOptions`, `Mutation.createWebAuthnCredentialRequestOptions`,`Mutation.loginWithWebAuthn`,`Mutation.addWebAuthnCredentials`,`User.webAuthnCredentials`.
+
+### WebAuthn
+
+You can even register with WebAuthn, login with e registered device or add WebAuthn to an existing user.
+
+Registration Flow:
+```
+Added Mutation.createWebAuthnCredentialCreationOptions(username: String!, extensionOptions: JSON): JSON!
+Mutation.createUser: added new input field webAuthnPublicKeyCredentials
+```
+
+Login Flow:
+```
+Added Mutation.createWebAuthnCredentialRequestOptions(username: String, extensionOptions: JSON): JSON!
+Added Mutation.loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
+```
+
+Device Management:
+```
+Added Mutation.addWebAuthnCredentials(credentials: JSON!): User!
+Added Mutation.removeWebAuthnCredentials(credentialsId: ID!): User!
+Added User.webAuthnCredentials: [WebAuthnCredentials!]!
+```
+
+### WebAuthn
+
 # Unchained Engine v1.2
 
 Unchained has been converted from Meteor atmosphere packages to ESM npm packages and is now compatible

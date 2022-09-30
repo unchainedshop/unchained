@@ -58,6 +58,24 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     },
   };
 
+  accountsServer.services.webAuthn = {
+    async authenticate(params: { webAuthnPublicKeyCredentials: any }) {
+      const username =
+        Buffer.from(params.webAuthnPublicKeyCredentials?.response?.userHandle, 'base64').toString() ||
+        '';
+
+      const user = await unchainedAPI.modules.users.findUser({ username });
+      if (!user) throw new Error('User not found');
+
+      await unchainedAPI.modules.accounts.webAuthn.verifyCredentialRequest(
+        user.services?.webAuthn,
+        user.username,
+        params.webAuthnPublicKeyCredentials,
+      );
+      return user;
+    },
+  };
+
   accountsServer.on('LoginTokenCreated', async (props) => {
     const { userId, connection = {} } = props;
     const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
