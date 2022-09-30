@@ -5,8 +5,8 @@
     "prebuild": "npm run clean && npm run api-docs && npm run type-docs",
     "build": "gatsby build",
     "start": "gatsby serve -H 0.0.0.0 -p 9000",
-    "clean": "rm -Rf public",
-    "api-docs": "dociql && mv public static/api",
+    "clean": "rm -Rf public static/api static/types",
+    "api-docs": "dociql config.yml && mv public static/api",
     "type-docs": "cp -Rf ./node_modules/@unchainedshop/types/lib/docs/ ./static/types"
   },
   "dependencies": {
