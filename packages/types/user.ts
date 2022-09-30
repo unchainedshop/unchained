@@ -37,6 +37,15 @@ export interface Email {
   verified: boolean;
 }
 
+export interface WebAuthnCredentials {
+  id: string;
+  publicKey: string;
+  created: Date;
+  aaguid: string;
+  counter: number;
+  mdsMetadata: any;
+}
+
 export type User = {
   _id?: _ID;
   avatarId?: _ID;

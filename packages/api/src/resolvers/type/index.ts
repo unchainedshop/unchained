@@ -59,6 +59,7 @@ import { SimpleProduct } from './product/product-simple-types';
 import { TokenizedProduct } from './product/product-tokenized-types';
 import { Stock } from './stock-types';
 import { User } from './user-types';
+import { WebAuthnCredentials } from './webauthn-credentials-types';
 import { WarehousingProvider } from './warehousing-provider-types';
 import { Work } from './work-types';
 import { Event } from './event-types';
@@ -128,6 +129,7 @@ const types = {
   Token,
   Stock,
   User,
+  WebAuthnCredentials,
   WarehousingProvider,
   Work,
   Event,

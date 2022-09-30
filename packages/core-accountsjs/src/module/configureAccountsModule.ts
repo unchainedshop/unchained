@@ -9,12 +9,13 @@ import { createDbManager } from '../accounts/dbManager';
 import { evaluateContext } from './utils/evaluateContext';
 import { filterContext } from './utils/filterContext';
 import { hashPassword } from './utils/hashPassword';
+import { configureAccountsWebAuthnModule } from './configureAccountsWebAuthnModule';
 
 export const configureAccountsModule = async ({
   db,
   options,
 }: ModuleInput<AccountsSettingsOptions>): Promise<AccountsModule> => {
-  const dbManager = createDbManager(db);
+  const dbManager = createDbManager(db) as any;
 
   const accountsServer = new UnchainedAccountsServer(
     {
@@ -30,6 +31,8 @@ export const configureAccountsModule = async ({
 
   accountsSettings.configureSettings(options || {}, { accountsPassword, accountsServer });
 
+  const webAuthn = await configureAccountsWebAuthnModule({ db, options });
+
   return {
     dbManager,
 
@@ -38,7 +41,7 @@ export const configureAccountsModule = async ({
     emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
 
     // Mutations
-    createUser: async (userData, { skipMessaging } = {}) => {
+    createUser: async (userData, { skipMessaging, skipPasswordEnrollment } = {}) => {
       const userId = await accountsPassword.createUser(userData);
 
       const autoMessagingEnabled = skipMessaging
@@ -47,7 +50,9 @@ export const configureAccountsModule = async ({
 
       if (autoMessagingEnabled) {
         if (userData.password === undefined) {
-          await accountsPassword.sendEnrollmentEmail(userData.email);
+          if (!skipPasswordEnrollment) {
+            await accountsPassword.sendEnrollmentEmail(userData.email);
+          }
         } else {
           await accountsPassword.sendVerificationEmail(userData.email);
         }
@@ -184,7 +189,7 @@ export const configureAccountsModule = async ({
       try {
         await accountsPassword.changePassword(userId, oldPassword, newPassword);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         log('Error while changing password', {
           level: LogLevel.Error,
           ...error,
@@ -192,7 +197,6 @@ export const configureAccountsModule = async ({
         return false;
       }
     },
-
     sendResetPasswordEmail: async (email) => {
       try {
         await accountsPassword.sendResetPasswordEmail(email);
@@ -240,5 +244,7 @@ export const configureAccountsModule = async ({
       await wait(500);
       return true;
     },
+
+    webAuthn,
   };
 };
