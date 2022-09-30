@@ -44,13 +44,12 @@
     "build": "npm run build --workspaces --if-present"
   },
   "devDependencies": {
-    "@apollo/client": "^3.6.9",
+    "@apollo/client": "^3.6.10",
     "@babel/core": "^7.19.3",
     "@babel/preset-env": "^7.19.3",
     "@shelf/jest-mongodb": "^4.1.0",
     "@types/jest": "^28.1.8",
     "@types/lodash.clone": "^4.5.7",
-    "@types/mocha": "^9.1.1",
     "@types/node": "^16.11.62",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
