@@ -4,6 +4,7 @@ import upsertAssortmentProducts from './upsertAssortmentProducts';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
 import upsertAssortmentFilters from './upsertAssortmentFilters';
 import upsertMedia from './upsertMedia';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
 export default async function updateAssortment(
   payload: any,
@@ -15,6 +16,9 @@ export default async function updateAssortment(
 
   if (specification) {
     logger.debug('update assortment object', specification);
+
+    specification.tags = convertTagsToLowerCase(specification?.tags);
+
     await unchainedAPI.modules.assortments.update(_id, { ...specification, authorId }, userId);
 
     if (specification.content) {

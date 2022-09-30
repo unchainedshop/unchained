@@ -98,7 +98,7 @@ export default [
       primaryEmail: UserEmail
       emails: [UserEmail!]
       roles: [String!]
-      tags: [String!]
+      tags: [LowerCaseString!]
       cart(orderNumber: String): Order
       orders(includeCarts: Boolean = false, sort: [SortOptionInput!], queryString: String): [Order!]!
       quotations(sort: [SortOptionInput!], queryString: String): [Quotation!]!

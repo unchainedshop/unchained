@@ -1,6 +1,26 @@
 import { Migration, MigrationRepository } from '@unchainedshop/types/core';
+import { Collection } from 'mongodb';
 
 import { UsersCollection } from '../db/UsersCollection';
+
+const convertTagsToLowerCase = async (collection: Collection<any>) => {
+  let bulk = collection.initializeUnorderedBulkOp();
+  let count = 0;
+
+  const cursor = await collection.find({ tags: { $regex: '.*[A-Z]' } });
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const doc of cursor) {
+    const transformedTags = doc.tags.map((tag) => tag.toLowerCase());
+    count += 1;
+    bulk.find({ _id: doc._id }).updateOne({ $set: { tags: transformedTags } });
+    if (count % 500 === 0) {
+      bulk.execute();
+      bulk = collection.initializeUnorderedBulkOp();
+      count = 0;
+    }
+  }
+  if (count > 0) bulk.execute();
+};
 
 export default function addMigrations(repository: MigrationRepository<Migration>) {
   repository?.register({
@@ -25,6 +45,15 @@ export default function addMigrations(repository: MigrationRepository<Migration>
           );
         }),
       );
+    },
+  });
+
+  repository?.register({
+    id: 20220920122500,
+    name: 'Convert user tags to lower case for easy search',
+    up: async () => {
+      const Users = await UsersCollection(repository.db);
+      await convertTagsToLowerCase(Users);
     },
   });
 }

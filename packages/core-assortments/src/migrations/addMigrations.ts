@@ -1,5 +1,26 @@
 import { Migration, MigrationRepository } from '@unchainedshop/types/core';
+import { Collection } from 'mongodb';
+import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
+
+const convertTagsToLowerCase = async (collection: Collection<any>) => {
+  let bulk = collection.initializeUnorderedBulkOp();
+  let count = 0;
+
+  const cursor = await collection.find({ tags: { $regex: '.*[A-Z]' } });
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const doc of cursor) {
+    const transformedTags = doc.tags.map((tag) => tag.toLowerCase());
+    count += 1;
+    bulk.find({ _id: doc._id }).updateOne({ $set: { tags: transformedTags } });
+    if (count % 500 === 0) {
+      bulk.execute();
+      bulk = collection.initializeUnorderedBulkOp();
+      count = 0;
+    }
+  }
+  if (count > 0) bulk.execute();
+};
 
 export default function addMigrations(repository: MigrationRepository<Migration>) {
   repository?.register({
@@ -43,6 +64,22 @@ export default function addMigrations(repository: MigrationRepository<Migration>
           $unset: { _cachedProductIds: 1 },
         },
       );
+    },
+  });
+  repository?.register({
+    id: 20220920122700,
+    name: 'Convert all tags to lower case to make it easy for search',
+    up: async () => {
+      const { Assortments, AssortmentFilters, AssortmentLinks, AssortmentProducts } =
+        await AssortmentsCollection(repository.db);
+      const { AssortmentMedias } = await AssortmentMediaCollection(repository.db);
+      await Promise.all([
+        convertTagsToLowerCase(Assortments),
+        convertTagsToLowerCase(AssortmentProducts),
+        convertTagsToLowerCase(AssortmentLinks),
+        convertTagsToLowerCase(AssortmentFilters),
+        convertTagsToLowerCase(AssortmentMedias),
+      ]);
     },
   });
 }

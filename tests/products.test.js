@@ -1020,7 +1020,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1075,7 +1075,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1106,7 +1106,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $queryString: String
             $limit: Int
@@ -1141,7 +1141,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $queryString: String
             $limit: Int
@@ -1176,7 +1176,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1207,7 +1207,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1238,7 +1238,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1273,7 +1273,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query productsCount(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $includeDrafts: Boolean
           ) {
@@ -1296,7 +1296,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query productsCount(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $includeDrafts: Boolean
           ) {
@@ -1321,7 +1321,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query productsCount(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $includeDrafts: Boolean
           ) {
@@ -1346,7 +1346,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           query productsCount(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $includeDrafts: Boolean
           ) {
@@ -1373,7 +1373,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query productsCount(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $includeDrafts: Boolean
           ) {
@@ -1397,7 +1397,7 @@ describe('Products', () => {
       } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query productsCount(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $includeDrafts: Boolean
           ) {
@@ -1422,7 +1422,7 @@ describe('Products', () => {
       } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1451,7 +1451,7 @@ describe('Products', () => {
       } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1482,7 +1482,7 @@ describe('Products', () => {
       } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1513,7 +1513,7 @@ describe('Products', () => {
       } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1542,7 +1542,7 @@ describe('Products', () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1571,7 +1571,7 @@ describe('Products', () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1604,7 +1604,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1633,7 +1633,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1664,7 +1664,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1695,7 +1695,7 @@ describe('Products', () => {
       } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1724,7 +1724,7 @@ describe('Products', () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int
@@ -1753,7 +1753,7 @@ describe('Products', () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           query products(
-            $tags: [String!]
+            $tags: [LowerCaseString!]
             $slugs: [String!]
             $limit: Int
             $offset: Int

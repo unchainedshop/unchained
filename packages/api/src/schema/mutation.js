@@ -331,7 +331,7 @@ export default [
       """
       Set tags of user
       """
-      setUserTags(tags: [String]!, userId: ID!): User
+      setUserTags(tags: [LowerCaseString]!, userId: ID!): User
 
       """
       Update Profile of any user or logged in user if userId is not provided
@@ -636,7 +636,11 @@ export default [
       """
       Add a new product to an assortment
       """
-      addAssortmentProduct(assortmentId: ID!, productId: ID!, tags: [String!]): AssortmentProduct!
+      addAssortmentProduct(
+        assortmentId: ID!
+        productId: ID!
+        tags: [LowerCaseString!]
+      ): AssortmentProduct!
 
       """
       Remove a product from an assortment
@@ -654,7 +658,7 @@ export default [
       addAssortmentLink(
         parentAssortmentId: ID!
         childAssortmentId: ID!
-        tags: [String!]
+        tags: [LowerCaseString!]
       ): AssortmentLink!
 
       """
@@ -670,7 +674,7 @@ export default [
       """
       Add a new filter to an assortment
       """
-      addAssortmentFilter(assortmentId: ID!, filterId: ID!, tags: [String!]): AssortmentFilter!
+      addAssortmentFilter(assortmentId: ID!, filterId: ID!, tags: [LowerCaseString!]): AssortmentFilter!
 
       """
       Remove a product from an assortment

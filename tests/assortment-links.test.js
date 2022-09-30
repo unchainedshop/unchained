@@ -120,7 +120,7 @@ describe('AssortmentLink', () => {
           mutation AddAssortmentLink(
             $parentAssortmentId: ID!
             $childAssortmentId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentLink(
               parentAssortmentId: $parentAssortmentId
@@ -159,7 +159,7 @@ describe('AssortmentLink', () => {
           mutation AddAssortmentLink(
             $parentAssortmentId: ID!
             $childAssortmentId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentLink(
               parentAssortmentId: $parentAssortmentId
@@ -186,7 +186,7 @@ describe('AssortmentLink', () => {
           mutation AddAssortmentLink(
             $parentAssortmentId: ID!
             $childAssortmentId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentLink(
               parentAssortmentId: $parentAssortmentId
@@ -213,7 +213,7 @@ describe('AssortmentLink', () => {
           mutation AddAssortmentLink(
             $parentAssortmentId: ID!
             $childAssortmentId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentLink(
               parentAssortmentId: $parentAssortmentId
@@ -240,7 +240,7 @@ describe('AssortmentLink', () => {
           mutation AddAssortmentLink(
             $parentAssortmentId: ID!
             $childAssortmentId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentLink(
               parentAssortmentId: $parentAssortmentId
@@ -271,7 +271,7 @@ describe('AssortmentLink', () => {
           mutation AddAssortmentLink(
             $parentAssortmentId: ID!
             $childAssortmentId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentLink(
               parentAssortmentId: $parentAssortmentId

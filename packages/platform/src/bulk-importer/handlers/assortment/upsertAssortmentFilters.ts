@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { AssortmentFilter } from '@unchainedshop/types/assortments';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
 const upsert = async (assortmentFilter: AssortmentFilter, { modules, userId }: Context) => {
   if (
@@ -21,9 +22,11 @@ export default async ({ filters, authorId, assortmentId }, unchainedAPI: Context
   const { modules } = unchainedAPI;
   const assortmentFilterIds = await Promise.all(
     filters.map(async (filter: AssortmentFilter) => {
+      const tags = convertTagsToLowerCase(filter?.tags);
       const assortmentFilter = await upsert(
         {
           ...filter,
+          tags,
           authorId,
           assortmentId,
         },

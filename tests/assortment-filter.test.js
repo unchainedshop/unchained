@@ -121,7 +121,7 @@ describe('AssortmentFilter', () => {
           mutation AddAssortmentFilter(
             $assortmentId: ID!
             $filterId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentFilter(
               assortmentId: $assortmentId
@@ -160,7 +160,7 @@ describe('AssortmentFilter', () => {
           mutation AddAssortmentFilter(
             $assortmentId: ID!
             $filterId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentFilter(
               assortmentId: $assortmentId
@@ -188,7 +188,7 @@ describe('AssortmentFilter', () => {
           mutation AddAssortmentFilter(
             $assortmentId: ID!
             $filterId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentFilter(
               assortmentId: $assortmentId
@@ -215,7 +215,7 @@ describe('AssortmentFilter', () => {
           mutation AddAssortmentFilter(
             $assortmentId: ID!
             $filterId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentFilter(
               assortmentId: $assortmentId
@@ -242,7 +242,7 @@ describe('AssortmentFilter', () => {
           mutation AddAssortmentFilter(
             $assortmentId: ID!
             $filterId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentFilter(
               assortmentId: $assortmentId
@@ -274,7 +274,7 @@ describe('AssortmentFilter', () => {
           mutation AddAssortmentFilter(
             $assortmentId: ID!
             $filterId: ID!
-            $tags: [String!]
+            $tags: [LowerCaseString!]
           ) {
             addAssortmentFilter(
               assortmentId: $assortmentId
