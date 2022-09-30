@@ -35,6 +35,7 @@ export default [
       user: User!
       paymentProvider: PaymentProvider!
       token: JSON
+      meta: JSON
       isValid: Boolean!
       isPreferred: Boolean!
     }

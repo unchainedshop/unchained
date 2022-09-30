@@ -4,6 +4,7 @@ This is a major feature release bringing WebAuthn and Virtual Products including
 
 ## GRAPHQL API BREAKING CHANGES
 - Tags are now always LowerCase and use an own scalar
+- Order.documents has been removed because it was never functional
 
 ## Major
 - Extended users and accounts for WebAuthn standard
