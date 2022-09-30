@@ -182,7 +182,8 @@ export const User: UserHelperTypes = {
     );
   },
 
-  webAuthnCredentials: (user) => {
+  webAuthnCredentials: async (user, params, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
     return user.services.webAuthn || [];
   },
 

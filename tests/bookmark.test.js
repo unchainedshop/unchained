@@ -76,7 +76,6 @@ describe('Bookmark', () => {
         `,
         variables: {},
       });
-      console.log(error);
       expect(bookmarks.length).toEqual(2);
     });
 
