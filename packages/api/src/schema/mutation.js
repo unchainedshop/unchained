@@ -14,12 +14,21 @@ export default [
       ): LoginMethodResponse
 
       """
+      Log the user in with a WebAuthn device
+      """
+      loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
+
+      """
       Create a new user.
       """
       createUser(
         username: String
         email: String
         password: HashedPasswordInput
+          @deprecated(
+            reason: "Use plainPassword, there is not a lot of added security by hashing on the client"
+          )
+        webAuthnPublicKeyCredentials: JSON
         plainPassword: String
         profile: UserProfileInput
       ): LoginMethodResponse
@@ -94,6 +103,26 @@ export default [
       Disable the 2nd factor (TOTP)
       """
       disableTOTP(code: String!, userId: ID): User
+
+      """
+      Create WebAuthn PublicKeyCredentialCreationOptions to use for Registering a new WebAuthn Device
+      """
+      createWebAuthnCredentialCreationOptions(username: String!, extensionOptions: JSON): JSON!
+
+      """
+      Register WebAuthn Credentials for current user
+      """
+      addWebAuthnCredentials(credentials: JSON!): User!
+
+      """
+      Remove WebAuthn Credentials for current user
+      """
+      removeWebAuthnCredentials(credentialsId: ID!): User!
+
+      """
+      Create WebAuthn PublicKeyCredentialRequestrOptions to use for WebAuthn Login Flow
+      """
+      createWebAuthnCredentialRequestOptions(username: String, extensionOptions: JSON): JSON!
 
       """
       Creates an alternative cart. If you use this feature, you should use explicit orderId's when using the

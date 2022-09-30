@@ -1,8 +1,11 @@
 import { AccountsServer, ServerHooks } from '@accounts/server';
 import crypto from 'crypto';
 import { randomValueHex } from '@unchainedshop/utils';
+import { User } from '@unchainedshop/types/user';
 
-export class UnchainedAccountsServer extends AccountsServer {
+export class UnchainedAccountsServer extends AccountsServer<
+  User & { id: string; deactivated: boolean }
+> {
   public users;
 
   DEFAULT_LOGIN_EXPIRATION_DAYS = 30;

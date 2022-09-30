@@ -2,6 +2,13 @@ import { User as AccountsUser } from '@accounts/types';
 import { Context } from './api';
 import { User, UserProfile } from './user';
 
+export interface WebAuthnCredentialsCreationRequest {
+  challenge: string;
+  username: string;
+  origin: string;
+  factor: 'first' | 'second' | 'either';
+}
+
 export interface UserData {
   email?: string;
   guest?: boolean;
@@ -9,6 +16,7 @@ export interface UserData {
   lastBillingAddress: User['lastBillingAddress'];
   password: string | null;
   plainPassword?: string;
+  webAuthnPublicKeyCredentials?: any;
   profile?: UserProfile;
   roles?: Array<string>;
   username?: string;
@@ -34,6 +42,24 @@ export interface AccountsSettings {
  * Module
  */
 
+export interface AccountsWebAuthnModule {
+  findMDSMetadataForAAGUID: (aaguid: string) => Promise<any>;
+
+  createCredentialCreationOptions: (
+    origin: string,
+    username: string,
+    extensionOptions?: any,
+  ) => Promise<any>;
+  verifyCredentialCreation: (username: string, credentials: any) => Promise<any>;
+
+  createCredentialRequestOptions: (
+    origin: string,
+    username?: string,
+    extensionOptions?: any,
+  ) => Promise<any>;
+  verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
+}
+
 export type LoginWithParams<N, T> = {
   service: N;
 } & T;
@@ -47,6 +73,7 @@ export type LoginWithPassword = {
 };
 
 export type LoginWithPasswordParams = LoginWithParams<'password', LoginWithPassword>;
+
 export interface AccountsModule {
   dbManager: any;
 
@@ -55,7 +82,10 @@ export interface AccountsModule {
   emit: (event: string, meta: any) => Promise<void>;
 
   // Mutations
-  createUser: (userData: UserData, options: { skipMessaging?: boolean }) => Promise<string>;
+  createUser: (
+    userData: UserData,
+    options: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean },
+  ) => Promise<string>;
 
   // Email
   addEmail: (userId: string, email: string) => Promise<void>;
@@ -127,4 +157,6 @@ export interface AccountsModule {
   buildTOTPSecret: () => string;
   enableTOTP: (userId: string, secret: string, code: string) => Promise<boolean>;
   disableTOTP: (userId: string, code: string) => Promise<boolean>;
+
+  webAuthn: AccountsWebAuthnModule;
 }
