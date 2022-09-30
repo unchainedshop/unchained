@@ -31,6 +31,8 @@ export const all = (role, actions) => {
   role.allow(actions.managePaymentProviders, () => false);
   role.allow(actions.manageDeliveryProviders, () => false);
   role.allow(actions.manageWarehousingProviders, () => false);
+  role.allow(actions.updateToken, () => false);
+  role.allow(actions.viewToken, () => false);
   role.allow(actions.manageAssortments, () => false);
   role.allow(actions.manageFilters, () => false);
   role.allow(actions.manageUsers, () => false);
@@ -49,6 +51,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewLogs, isInLoginMutationResponse);
   role.allow(actions.viewUserRoles, isInLoginMutationResponse);
   role.allow(actions.viewUserOrders, isInLoginMutationResponse);
+  role.allow(actions.viewUserTokens, isInLoginMutationResponse);
   role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
   role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
   role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);

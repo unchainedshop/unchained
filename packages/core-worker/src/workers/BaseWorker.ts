@@ -19,14 +19,11 @@ export const BaseWorker: IWorker<WorkerParams> = {
   label: 'Base worker. Do not use this directly.',
   version: '1.0',
   type: 'BASE',
+  external: false,
 
   getFloorDate: (date = new Date()) => {
     const floored = new Date(Math.floor(date.getTime() / 1000) * 1000);
     return floored;
-  },
-
-  getInternalTypes() {
-    return WorkerDirector.getActivePluginTypes().filter((type) => type !== 'EXTERNAL');
   },
 
   actions: ({ workerId, worker }: WorkerParams, requestContext) => {
@@ -44,7 +41,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
       reset: async (referenceDate = new Date()) => {
         await requestContext.modules.worker.markOldWorkAsFailed({
-          types: BaseWorker.getInternalTypes(),
+          types: WorkerDirector.getActivePluginTypes(false),
           worker: workerId,
           referenceDate,
         });
@@ -80,7 +77,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
 
           const work = await requestContext.modules.worker.allocateWork({
-            types: BaseWorker.getInternalTypes(),
+            types: WorkerDirector.getActivePluginTypes(false),
             worker: workerId,
           });
 

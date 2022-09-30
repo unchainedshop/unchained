@@ -43,7 +43,7 @@ export default (app) => {
       } catch (e) {
         logger.error(`PostFinance Checkout Webhook: Unchained rejected to checkout with message`, e);
         res.writeHead(500);
-        res.end(JSON.stringify(e));
+        res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
       }
     } else {
       logger.error(

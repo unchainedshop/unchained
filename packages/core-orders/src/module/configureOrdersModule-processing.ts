@@ -7,6 +7,7 @@ import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
+import { ProductType } from '@unchainedshop/types/products';
 import { ordersSettings } from '../orders-settings';
 
 const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
@@ -337,7 +338,7 @@ export const configureOrderModuleProcessing = ({
         if (order.status !== OrderStatus.CONFIRMED) {
           // we have to stop here shortly to complete the confirmation
           // before auto delivery is started, else we have no chance to create
-          // documents and numbers that are needed for delivery
+          // numbers that are needed for delivery
           order = await updateStatus(
             orderId,
             {
@@ -356,57 +357,56 @@ export const configureOrderModuleProcessing = ({
             requestContext,
           );
 
-          // Generate enrollments
-          if (!order.originEnrollmentId) {
-            const orderPositions = await modules.orders.positions.findOrderPositions({ orderId });
-
-            const mappedProductOrderPositions = await Promise.all(
-              orderPositions.map(async (orderPosition) => {
-                const product = await modules.products.findProduct({
-                  productId: orderPosition.productId,
-                });
-                return {
-                  orderPosition,
-                  product,
-                };
-              }),
-            );
-
-            const filteredProductOrderPositions = mappedProductOrderPositions.filter(
-              (item) => item.product?.plan,
-            );
-
-            if (filteredProductOrderPositions.length > 0) {
-              await modules.enrollments.createFromCheckout(
-                order,
-                {
-                  items: filteredProductOrderPositions,
-                  context: {
-                    paymentContext,
-                    deliveryContext,
-                  },
-                },
-                requestContext,
-              );
-            }
-          }
-        } else {
-          await modules.orders.deliveries.send(
-            orderDelivery,
-            {
-              order,
-              deliveryContext,
-            },
-            requestContext,
+          const orderPositions = await findOrderPositions(order);
+          const mappedProductOrderPositions = await Promise.all(
+            orderPositions.map(async (orderPosition) => {
+              const product = await modules.products.findProduct({
+                productId: orderPosition.productId,
+              });
+              return {
+                orderPosition,
+                product,
+              };
+            }),
           );
-        }
+          const tokenizedItems = mappedProductOrderPositions.filter(
+            (item) => item.product?.type === ProductType.TokenizedProduct,
+          );
+          if (tokenizedItems.length > 0) {
+            // Give virtual warehouse a chance to instantiate new virtual objects
+            await modules.warehousing.tokenizeItems(
+              order,
+              {
+                items: tokenizedItems,
+              },
+              requestContext,
+            );
+          }
 
-        // Reserve items
-        // If we came here, the checkout succeeded, so we can reserve the items
-        const orderPositions = await findOrderPositions(order);
-        await Promise.all(
-          orderPositions.map(async (orderPosition) => {
-            if (orderPosition.quotationId) {
+          // Enrollments: Generate enrollments for plan products
+          const planItems = mappedProductOrderPositions.filter(
+            (item) => item.product?.type === ProductType.PlanProduct && !order.originEnrollmentId,
+          );
+          if (planItems.length > 0) {
+            await modules.enrollments.createFromCheckout(
+              order,
+              {
+                items: planItems,
+                context: {
+                  paymentContext,
+                  deliveryContext,
+                },
+              },
+              requestContext,
+            );
+          }
+
+          // Quotations: If we came here, the checkout succeeded, so we can fullfill underlying quotations
+          const quotationItems = mappedProductOrderPositions.filter(
+            (item) => item.orderPosition.quotationId,
+          );
+          await Promise.all(
+            quotationItems.map(async ({ orderPosition }) => {
               await modules.quotations.fullfillQuotation(
                 orderPosition.quotationId,
                 {
@@ -415,20 +415,16 @@ export const configureOrderModuleProcessing = ({
                 },
                 requestContext,
               );
-            }
+            }),
+          );
 
-            log(`OrderPosition ${orderPosition._id} -> Reserve ${orderPosition.quantity}`, {
-              orderId,
-            });
-          }),
-        );
+          // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
+          // do live stock stuff
+          // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
+          // ???
+        }
 
         nextStatus = await findNextStatus(nextStatus, order, requestContext);
-
-        // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
-        // do live stock stuff
-        // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
-        // ???
       }
 
       order = await updateStatus(

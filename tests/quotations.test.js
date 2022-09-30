@@ -54,9 +54,6 @@ describe('TranslatedFilterTexts', () => {
                 key
                 value
               }
-              documents {
-                _id
-              }
             }
           }
         `,
@@ -187,9 +184,6 @@ describe('TranslatedFilterTexts', () => {
               configuration {
                 key
                 value
-              }
-              documents {
-                _id
               }
             }
           }

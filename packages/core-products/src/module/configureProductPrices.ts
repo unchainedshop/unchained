@@ -6,6 +6,18 @@ import { getPriceLevels } from './utils/getPriceLevels';
 import { getPriceRange } from './utils/getPriceRange';
 import { ProductPriceRates } from '../db/ProductPriceRates';
 
+const getDecimals = (originDecimals) => {
+  if (originDecimals === null || originDecimals === undefined) {
+    return 2;
+  }
+  if (originDecimals > 2) {
+    // cryptocurrency, always stored in MAX. 9 decimals
+    // WORKAROUND FOR BIGINT PROBLEM!
+    return Math.min(originDecimals, 9);
+  }
+  return originDecimals;
+};
+
 export const configureProductPricesModule = ({
   proxyProducts,
   db,
@@ -233,35 +245,83 @@ export const configureProductPricesModule = ({
     },
 
     rates: {
-      getRate: async (baseCurrency, quoteCurrency, maxAge) => {
+      getRate: async (baseCurrency, quoteCurrency, referenceDate = new Date()) => {
         const priceRates = await (await ProductPriceRates(db)).ProductRates;
-        const currencyRateBase = await priceRates.findOne({ baseCurrency, quoteCurrency });
-        const currencyRateInv = await priceRates.findOne({
-          baseCurrency: quoteCurrency,
-          quoteCurrency: baseCurrency,
-        });
-
+        const mostRecentCurrencyRate = await priceRates.findOne(
+          {
+            $or: [
+              {
+                baseCurrency: baseCurrency.isoCode,
+                quoteCurrency: quoteCurrency.isoCode,
+              },
+              {
+                baseCurrency: quoteCurrency.isoCode,
+                quoteCurrency: baseCurrency.isoCode,
+              },
+            ],
+            timestamp: { $lte: referenceDate },
+            expiresAt: { $gte: referenceDate },
+          },
+          { sort: { timestamp: -1 } },
+        );
         let rate = null;
-        if (
-          currencyRateBase &&
-          (!currencyRateBase.timestamp || currencyRateBase.timestamp >= Date.now() / 1000 - maxAge)
-        ) {
-          rate = currencyRateBase.rate;
-        } else if (
-          currencyRateInv &&
-          (!currencyRateInv.timestamp || currencyRateInv.timestamp >= Date.now() / 1000 - maxAge)
-        ) {
-          rate = 1 / currencyRateInv.rate;
+        if (!mostRecentCurrencyRate) return null;
+        if (mostRecentCurrencyRate.baseCurrency === baseCurrency.isoCode) {
+          rate = mostRecentCurrencyRate.rate;
+        } else {
+          rate = 1 / mostRecentCurrencyRate.rate;
         }
-        return rate;
+        const fromDecimals = getDecimals(baseCurrency.decimals);
+        const targetDecimals = getDecimals(quoteCurrency.decimals);
+        return fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;
       },
       updateRate: async (rate) => {
         const priceRates = await ProductPriceRates(db);
-        const { baseCurrency, quoteCurrency } = rate;
         try {
-          await priceRates.ProductRates.replaceOne({ baseCurrency, quoteCurrency }, rate, {
-            upsert: true,
-          });
+          await priceRates.ProductRates.insertOne(rate);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      updateRates: async (rates) => {
+        const priceRates = await ProductPriceRates(db);
+        try {
+          if (rates?.length) {
+            const BulkOp = priceRates.ProductRates.initializeUnorderedBulkOp();
+            rates.forEach((rate) => {
+              BulkOp.find({
+                baseCurrency: rate.baseCurrency,
+                quoteCurrency: rate.quoteCurrency,
+                rate: rate.rate,
+                expiresAt: { $gte: rate.timestamp },
+              })
+                .upsert()
+                .updateOne({
+                  $set: {
+                    expiresAt: rate.expiresAt,
+                  },
+                  $setOnInsert: {
+                    baseCurrency: rate.baseCurrency,
+                    quoteCurrency: rate.quoteCurrency,
+                    timestamp: rate.timestamp,
+                    rate: rate.rate,
+                  },
+                });
+
+              // Expire the others that were still valid
+              BulkOp.find({
+                baseCurrency: rate.baseCurrency,
+                quoteCurrency: rate.quoteCurrency,
+                expiresAt: { $gte: rate.timestamp, $lt: rate.expiresAt },
+              }).update({
+                $set: {
+                  expiresAt: rate.timestamp,
+                },
+              });
+            });
+            await BulkOp.execute();
+          }
           return true;
         } catch (e) {
           return false;

@@ -143,7 +143,7 @@ export interface EnrollmentMutations {
       };
     },
     requestContext: Context,
-  ) => Promise<Array<Enrollment>>;
+  ) => Promise<void>;
 
   delete: (enrollmentId: string, userId?: string) => Promise<number>;
 

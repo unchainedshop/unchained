@@ -8,9 +8,13 @@ export default [
 
     enum WarehousingProviderType {
       """
-      Physical
+      Physical warehousing providers resemble stores or facilities that hold a quantity of stocks physically in stock.
       """
       PHYSICAL
+      """
+      Virtual warehousing providers resemble software that control ownership and validity of virtual products (for ex. smart contract bridges)
+      """
+      VIRTUAL
     }
 
     enum WarehousingProviderError {
@@ -30,6 +34,24 @@ export default [
       configuration: JSON
       configurationError: WarehousingProviderError
       isActive: Boolean
+    }
+
+    enum TokenExportStatus {
+      CENTRALIZED
+      EXPORTING
+      DECENTRALIZED
+    }
+
+    type Token {
+      _id: ID!
+      user: User
+      walletAddress: String
+      product: TokenizedProduct!
+      status: TokenExportStatus!
+      quantity: Int!
+      contractAddress: String
+      chainId: String
+      chainTokenId: String
     }
   `,
 ];

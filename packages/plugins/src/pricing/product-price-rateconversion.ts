@@ -1,10 +1,6 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 
-const { RATECONVERSION_MAX_AGE = '360' } = process.env;
-
-const MAX_RATE_AGE = parseInt(RATECONVERSION_MAX_AGE, 10);
-
 const ProductPriceRateConversion: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
@@ -24,8 +20,8 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const { product, country, quantity, currency } = params.context;
-        const defaultCurrency = await services.countries.resolveDefaultCurrencyCode(
+        const { product, country, quantity, currency: targetCurrency } = params.context;
+        const fromCurrency = await services.countries.resolveDefaultCurrencyCode(
           {
             isoCode: country,
           },
@@ -34,7 +30,7 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
 
         const productPrice = await modules.products.prices.price(product, {
           country,
-          currency: defaultCurrency,
+          currency: fromCurrency,
           quantity,
         });
 
@@ -43,24 +39,29 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
           !productPrice ||
           !productPrice?.amount ||
           calculation?.length ||
-          defaultCurrency === currency
+          fromCurrency === targetCurrency
         )
           return pricingAdapter.calculate();
 
-        const rate = await modules.products.prices.rates.getRate(
-          defaultCurrency,
-          currency,
-          MAX_RATE_AGE,
-        );
+        const fromCurrencyObj = await modules.currencies.findCurrency({
+          isoCode: fromCurrency,
+        });
+        const targetCurrencyObj = await modules.currencies.findCurrency({
+          isoCode: targetCurrency,
+        });
+
+        if (!targetCurrencyObj?.isActive) return pricingAdapter.calculate();
+
+        const rate = await modules.products.prices.rates.getRate(fromCurrencyObj, targetCurrencyObj);
 
         if (rate > 0) {
-          const convertedAmount = productPrice.amount * rate;
+          const convertedAmount = Math.round(productPrice.amount * rate);
           pricingAdapter.resultSheet().resetCalculation(params.calculationSheet);
           pricingAdapter.resultSheet().addItem({
             amount: convertedAmount * quantity,
             isTaxable: productPrice?.isTaxable,
             isNetPrice: productPrice?.isNetPrice,
-            meta: { adapter: ProductPriceRateConversion.key },
+            meta: { adapter: ProductPriceRateConversion.key, rate },
           });
         }
 

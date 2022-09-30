@@ -58,7 +58,6 @@
           "LogLevel",
           "OrderDeliveryStatus",
           "OrderDiscountTrigger",
-          "OrderDocumentType",
           "OrderPaymentStatus",
           "OrderPricingRowCategory",
           "OrderStatus",

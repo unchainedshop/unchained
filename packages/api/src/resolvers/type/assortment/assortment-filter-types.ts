@@ -4,7 +4,7 @@ import { Filter } from '@unchainedshop/types/filters';
 
 type HelperType<T> = (assortmentFilter: AssortmentFilterType, _: never, context: Context) => T;
 
-type AssortmentFilterHelperTypes = {
+export type AssortmentFilterHelperTypes = {
   assortment: HelperType<Promise<Assortment>>;
   filter: HelperType<Promise<Filter>>;
 };

@@ -23,6 +23,8 @@ export const admin = (role, actions) => {
   role.allow(actions.managePaymentProviders, () => true);
   role.allow(actions.manageDeliveryProviders, () => true);
   role.allow(actions.manageWarehousingProviders, () => true);
+  role.allow(actions.updateToken, () => true);
+  role.allow(actions.viewToken, () => true);
   role.allow(actions.manageUsers, () => true);
   role.allow(actions.updateUser, () => true);
   role.allow(actions.updateUsername, () => true);
@@ -47,6 +49,7 @@ export const admin = (role, actions) => {
   role.allow(actions.viewUserPublicInfos, () => true);
   role.allow(actions.viewUserPrivateInfos, () => true);
   role.allow(actions.viewUserEnrollments, () => true);
+  role.allow(actions.viewUserTokens, () => true);
   role.allow(actions.reviewProduct, () => true);
   role.allow(actions.updateProductReview, () => true);
   role.allow(actions.manageProductReviews, () => true);

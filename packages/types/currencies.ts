@@ -8,6 +8,7 @@ export type Currency = {
   isActive: boolean;
   authorId: string;
   contractAddress?: string;
+  decimals?: number;
 } & TimestampFields;
 
 export type CurrencyQuery = {
@@ -15,6 +16,7 @@ export type CurrencyQuery = {
   contractAddress?: string;
   queryString?: string;
 };
+
 export type CurrenciesModule = ModuleMutations<Currency> & {
   findCurrency: (params: { currencyId?: string; isoCode?: string }) => Promise<Currency>;
   findCurrencies: (

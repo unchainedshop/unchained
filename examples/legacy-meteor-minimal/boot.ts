@@ -33,7 +33,6 @@ import '@unchainedshop/plugins/lib/pricing/order-delivery';
 import '@unchainedshop/plugins/lib/pricing/order-payment';
 import '@unchainedshop/plugins/lib/pricing/product-catalog-price';
 import '@unchainedshop/plugins/lib/pricing/product-price-coinbase-exchange';
-import setupCryptopayPricing from '@unchainedshop/plugins/lib/pricing/product-price-cryptopay';
 import '@unchainedshop/plugins/lib/pricing/product-price-rateconversion';
 import '@unchainedshop/plugins/lib/pricing/product-discount';
 import '@unchainedshop/plugins/lib/pricing/product-swiss-tax';
@@ -51,6 +50,7 @@ import '@unchainedshop/plugins/lib/worker/ZombieKillerWorker';
 import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/lib/worker/GenerateOrderWorker';
 import '@unchainedshop/plugins/lib/worker/MessageWorker';
 import '@unchainedshop/plugins/lib/worker/external';
+import { configureExportToken } from '@unchainedshop/plugins/lib/worker/export-token';
 import '@unchainedshop/plugins/lib/worker/http-request';
 import '@unchainedshop/plugins/lib/worker/heartbeat';
 import '@unchainedshop/plugins/lib/worker/email';
@@ -122,7 +122,6 @@ Meteor.startup(async () => {
 
   setupGridFSWebhook(WebApp.connectHandlers);
   setupCryptopay(WebApp.connectHandlers);
-  setupCryptopayPricing(WebApp.connectHandlers);
   setupStripe(WebApp.connectHandlers);
   setupPostfinance(WebApp.connectHandlers);
   setupDatatrans(WebApp.connectHandlers);
@@ -130,4 +129,5 @@ Meteor.startup(async () => {
   setupAppleIAP(WebApp.connectHandlers);
 
   configureGenerateOrderAutoscheduling();
+  configureExportToken(unchainedApi);
 });

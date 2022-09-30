@@ -61,7 +61,7 @@ export default [
       created: DateTime
       updated: DateTime
       published: DateTime
-      texts: ProductTexts
+      texts(forceLocale: String): ProductTexts
       media(limit: Int = 10, offset: Int = 0, tags: [LowerCaseString!]): [ProductMedia!]!
       reviews(
         limit: Int = 10

@@ -14,7 +14,7 @@ const { BULK_IMPORT_API_PATH = '/bulk-import', BULK_IMPORT_PAYLOAD_CACHE_DIRECTO
 const errorHandler = (res) => (e) => {
   logger.error(e.message);
   res.writeHead(503);
-  res.end(JSON.stringify(e));
+  res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
 };
 
 const methodWrongHandler = (res) => () => {

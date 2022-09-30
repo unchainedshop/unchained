@@ -41,6 +41,7 @@ import removeProduct from './products/removeProduct';
 import unpublishProduct from './products/unpublishProduct';
 import updateProduct from './products/updateProduct';
 import updateProductTexts from './products/updateProductTexts';
+import updateProductTokenization from './products/updateProductTokenization';
 import updateProductMediaTexts from './products/updateProductMediaTexts';
 import createProductVariation from './products/createProductVariation';
 import createProductBundleItem from './products/createProductBundleItem';
@@ -84,6 +85,7 @@ import removeDeliveryProvider from './delivery/removeDeliveryProvider';
 import createWarehousingProvider from './warehousing/createWarehousingProvider';
 import updateWarehousingProvider from './warehousing/updateWarehousingProvider';
 import removeWarehousingProvider from './warehousing/removeWarehousingProvider';
+import exportToken from './warehousing/exportToken';
 import setPassword from './accounts/setPassword';
 import setRoles from './users/setRoles';
 import setUsername from './accounts/setUsername';
@@ -213,6 +215,7 @@ export default {
   updateProductWarehousing: acl(actions.manageProducts)(updateProductWarehousing),
   updateProductSupply: acl(actions.manageProducts)(updateProductSupply),
   updateProductPlan: acl(actions.manageProducts)(updateProductPlan),
+  updateProductTokenization: acl(actions.manageProducts)(updateProductTokenization),
   removeProductVariation: acl(actions.manageProducts)(removeProductVariation),
   updateProductVariationTexts: acl(actions.manageProducts)(updateProductVariationTexts),
   removeProductVariationOption: acl(actions.manageProducts)(removeProductVariationOption),
@@ -267,6 +270,7 @@ export default {
   createWarehousingProvider: acl(actions.manageWarehousingProviders)(createWarehousingProvider),
   updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
+  exportToken: acl(actions.updateToken)(exportToken),
 
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),

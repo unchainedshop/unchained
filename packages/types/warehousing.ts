@@ -4,10 +4,12 @@ import { ModuleMutations } from './core';
 
 import { DeliveryProvider } from './delivery';
 import { Order } from './orders';
+import { OrderPosition } from './orders.positions';
 import { Product } from './products';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',
+  VIRTUAL = 'VIRTUAL',
 }
 
 export type WarehousingConfiguration = Array<{ key: string; value: string }>;
@@ -38,6 +40,7 @@ export interface WarehousingContext {
   referenceDate?: Date;
   order?: Order;
   warehousingProviderId?: string;
+  orderPosition?: OrderPosition;
 }
 
 export type EstimatedDispatch = {
@@ -47,12 +50,25 @@ export type EstimatedDispatch = {
 
 export type EstimatedStock = { quantity: number } | null;
 
+export type TokenSurrogate = {
+  _id?: _ID;
+  userId?: string;
+  walletAddress?: string;
+  quantity: number;
+  contractAddress: string;
+  chainId: string;
+  chainTokenId: string;
+  productId: string;
+  meta: any;
+};
+
 export type WarehousingAdapterActions = {
   configurationError: () => WarehousingError;
   isActive: () => boolean;
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
+  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId'>>>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
@@ -76,6 +92,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     isActive: () => boolean;
     estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
+    tokenize: () => Promise<Array<TokenSurrogate>>;
   }>;
 };
 
@@ -91,6 +108,8 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     query: { warehousingProviderId: string },
     options?: FindOptions,
   ) => Promise<WarehousingProvider>;
+  findToken: (query: { tokenId: string }, options?: FindOptions) => Promise<TokenSurrogate>;
+  findTokens: (query: { userId: string }, options?: FindOptions) => Promise<Array<TokenSurrogate>>;
   findProviders: (
     query: WarehousingProviderQuery,
     options?: FindOptions,
@@ -123,6 +142,23 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     context: WarehousingContext,
     requestContext: Context,
   ) => Promise<EstimatedStock>;
+
+  updateTokenOwnership: (input: {
+    tokenId: string;
+    userId: string;
+    walletAddress: string;
+  }) => Promise<void>;
+
+  tokenizeItems: (
+    order: Order,
+    params: {
+      items: Array<{
+        orderPosition: OrderPosition;
+        product: Product;
+      }>;
+    },
+    requestContext: Context,
+  ) => Promise<void>;
 
   // Mutations
   delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;

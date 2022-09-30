@@ -1,6 +1,8 @@
+import type { Locale } from 'locale';
 import { Context, SortOption } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
+import { UnchainedCore } from './core';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { DeliveryProvider, DeliveryProviderType } from './delivery';
@@ -29,6 +31,12 @@ export enum ProductType {
   ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
   BundleProduct = 'BUNDLE_PRODUCT',
   PlanProduct = 'PLAN_PRODUCT',
+  TokenizedProduct = 'TOKENIZED_PRODUCT',
+}
+
+export enum ProductContractStandard {
+  ERC721 = 'ERC721',
+  ERC1155 = 'ERC1155',
 }
 
 export interface ProductConfiguration {
@@ -65,12 +73,24 @@ export interface ProductCommerce {
   pricing: Array<ProductPrice>;
 }
 
+export interface ProductTokenization {
+  contractAddress: string;
+  contractStandard: ProductContractStandard;
+  tokenId: string;
+  supply: number;
+}
+
 export interface ProductPlan {
   billingInterval?: string;
   billingIntervalCount?: number;
   usageCalculationType?: string;
   trialInterval?: string;
   trialIntervalCount?: number;
+}
+
+export interface ProductContractConfiguration {
+  tokenId: string;
+  supply: number;
 }
 
 export interface ProductAssignment {
@@ -110,6 +130,7 @@ export type Product = {
   tags?: Array<string>;
   type: string;
   warehousing?: ProductWarehousing;
+  tokenization?: ProductTokenization;
 } & TimestampFields;
 
 export type ProductText = {
@@ -249,8 +270,13 @@ export type ProductsModule = {
     ) => Promise<ProductPriceRange>;
 
     rates: {
-      getRate(baseCurrency: string, quoteCurrency: string, maxAge: number): Promise<number | null>;
+      getRate(
+        baseCurrency: Currency,
+        quoteCurrency: Currency,
+        referenceDate?: Date,
+      ): Promise<number | null>;
       updateRate(rate: ProductPriceRate): Promise<boolean>;
+      updateRates(rates: Array<ProductPriceRate>): Promise<boolean>;
     };
   };
 
@@ -368,9 +394,14 @@ export type ProductsModule = {
  */
 
 export type RemoveProductService = (params: { productId: string }, context: Context) => Promise<boolean>;
+export type ERCMetadataService = (
+  params: { product: Product; locale: Locale },
+  context: UnchainedCore,
+) => Promise<Record<string, any>>;
 
 export interface ProductServices {
   removeProduct: RemoveProductService;
+  ercMetadata: ERCMetadataService;
 }
 
 /*
@@ -489,6 +520,13 @@ export interface PlanProductHelperTypes extends ProductHelperTypes {
   salesUnit: HelperType<never, string>;
   salesQuantityPerUnit: HelperType<never, string>;
   defaultOrderQuantity: HelperType<never, number>;
+}
+
+export interface TokenizedProductHelperTypes extends PlanProductHelperTypes {
+  contractAddress: HelperType<never, string>;
+  contractStandard: HelperType<never, ProductContractStandard>;
+  contractConfiguration: HelperType<never, ProductContractConfiguration>;
+  ercMetadata: HelperType<{ forceLocale: string }, Promise<Record<string, any>>>;
 }
 
 export interface SimpleProductHelperTypes extends PlanProductHelperTypes {

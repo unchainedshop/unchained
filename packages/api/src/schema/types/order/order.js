@@ -54,38 +54,6 @@ export default [
       DISCOUNTS
     }
 
-    enum OrderDocumentType {
-      """
-      Order Confirmation
-      """
-      ORDER_CONFIRMATION
-
-      """
-      Order Rejection
-      """
-      ORDER_REJECTION
-
-      """
-      Delivery Note
-      """
-      DELIVERY_NOTE
-
-      """
-      Invoice
-      """
-      INVOICE
-
-      """
-      Receipt
-      """
-      RECEIPT
-
-      """
-      Other
-      """
-      OTHER
-    }
-
     """
     Just an order
     """
@@ -100,7 +68,6 @@ export default [
       currency: Currency
       delivery: OrderDelivery
       discounts: [OrderDiscount!]
-      documents(type: OrderDocumentType = CONFIRMATION): [Media!]!
       enrollment: Enrollment
       fullfilled: DateTime
       items: [OrderItem!]

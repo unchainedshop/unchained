@@ -129,12 +129,13 @@ export type WorkScheduleConfiguration = Omit<Partial<Work>, 'input'> & {
 };
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;
+  external: boolean;
 
   doWork: (input: Input, unchainedAPI: UnchainedCore, workId: string) => Promise<WorkResult<Output>>;
 };
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
-  getActivePluginTypes: () => Array<string>;
+  getActivePluginTypes: (external?: boolean) => Array<string>;
 
   configureAutoscheduling: (
     adapter: IWorkerAdapter<any, any>,
@@ -159,9 +160,9 @@ export type IWorker<P extends { workerId: string }> = {
   label: string;
   version: string;
   type: string;
+  external: boolean;
 
   getFloorDate: (date?: Date) => Date;
-  getInternalTypes: () => Array<string>;
 
   actions: (
     params: P,

@@ -1,7 +1,6 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { WorkerDirector } from '@unchainedshop/core-worker';
+import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
-import { BaseAdapter } from '@unchainedshop/utils';
 
 const logger = createLogger('unchained:platform:zombie-killer');
 
@@ -17,7 +16,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
     deletedFilesCount: number;
   }
 > = {
-  ...BaseAdapter,
+  ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.zombie-killer',
   label: 'Zombie Killer',

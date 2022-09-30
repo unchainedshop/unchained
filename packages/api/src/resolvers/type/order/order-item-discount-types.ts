@@ -6,7 +6,7 @@ import crypto from 'crypto';
 
 type HelperType<P, T> = (orderPositionDiscount: OrderPositionDiscount, params: P, context: Context) => T;
 
-interface OrderItemDiscountHelperTypes {
+export interface OrderItemDiscountHelperTypes {
   _id: HelperType<never, string>;
   orderDiscount: HelperType<never, Promise<OrderDiscount>>;
   total: HelperType<never, OrderPrice>;

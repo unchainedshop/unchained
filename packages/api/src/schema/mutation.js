@@ -409,6 +409,14 @@ export default [
       updateProductPlan(productId: ID!, plan: UpdateProductPlanInput!): Product
 
       """
+      Modify tokenization part of a product
+      """
+      updateProductTokenization(
+        productId: ID!
+        tokenization: UpdateProductTokenizationInput!
+      ): TokenizedProduct
+
+      """
       Modify warehousing part of a product
       """
       updateProductWarehousing(productId: ID!, warehousing: UpdateProductWarehousingInput!): Product
@@ -879,6 +887,11 @@ export default [
       prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!
       prepareUserAvatarUpload(mediaName: String!, userId: ID): MediaUploadTicket!
       confirmMediaUpload(mediaUploadTicketId: ID!, size: Int!, type: String!): Media!
+
+      """
+      Tokenize
+      """
+      exportToken(tokenId: String!, quantity: Int! = 1, recipientWalletAddress: String!): Token!
     }
   `,
 ];

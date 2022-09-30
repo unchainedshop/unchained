@@ -116,7 +116,8 @@ The plugin ensures that when calling the mutation multiple times, the returned a
 If you want to accept payments in a token that follows the ERC20 standard, you have to create a corresponding currency and provide a `contractAddress`, e.g.:
 ```/*graphql*/
 mutation createMATIC {
-  createCurrency(currency: {isoCode: "MATIC", 
+  createCurrency(currency: {isoCode: "MATIC",
+                            decimals: 18, 
                             contractAddress: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0"}) {
     _id
   }

@@ -190,6 +190,16 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return credentials.userId === userId;
   };
 
+  const isOwnedToken = async (
+    obj: any,
+    { tokenId }: { tokenId: string },
+    { modules, userId }: Context,
+  ) => {
+    const token = await modules.warehousing.findToken({ tokenId });
+    if (!token) return true;
+    return token.userId === userId;
+  };
+
   role.allow(actions.viewEvent, false);
   role.allow(actions.viewEvents, false);
   role.allow(actions.viewUser, isMyself);
@@ -198,6 +208,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.viewUserQuotations, isMyself);
   role.allow(actions.viewUserEnrollments, isMyself);
   role.allow(actions.viewUserPrivateInfos, isMyself);
+  role.allow(actions.viewUserTokens, isMyself);
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.authTwoFactor, isMyself);
   role.allow(actions.manageTwoFactor, isMyself);
@@ -223,4 +234,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.voteProductReview, () => true);
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
+  role.allow(actions.updateToken, isOwnedToken);
+  role.allow(actions.viewToken, isOwnedToken);
 };

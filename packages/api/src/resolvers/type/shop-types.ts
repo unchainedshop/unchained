@@ -6,7 +6,7 @@ import { allRoles, actions } from '../../roles';
 
 type HelperType<T> = (root: never, params: never, context: Context) => Promise<T>;
 
-interface ShopHelperTypes {
+export interface ShopHelperTypes {
   _id: () => string;
   country: HelperType<Country>;
   language: HelperType<Language>;

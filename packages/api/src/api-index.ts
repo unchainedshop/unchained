@@ -3,6 +3,7 @@ import { ApolloServer } from 'apollo-server-express';
 import createBulkImportServer from './createBulkImportServer';
 import createGraphQLServer from './createGraphQLServer';
 import { createContextResolver, getCurrentContextResolver, setCurrentContextResolver } from './context';
+import createERCMetadataServer from './createERCMetadataServer';
 
 export * from './context';
 export * as acl from './acl';
@@ -19,6 +20,7 @@ export const startAPIServer = (
 ): {
   apolloGraphQLServer: ApolloServer;
   bulkImportServer: any;
+  ercMetadataServer: any;
 } => {
   const {
     unchainedAPI,
@@ -40,9 +42,11 @@ export const startAPIServer = (
 
   const apolloGraphQLServer = createGraphQLServer(expressApp, apolloServerOptions);
   const bulkImportServer = createBulkImportServer(expressApp);
+  const ercMetadataServer = createERCMetadataServer(expressApp);
 
   return {
     apolloGraphQLServer,
     bulkImportServer,
+    ercMetadataServer,
   };
 };

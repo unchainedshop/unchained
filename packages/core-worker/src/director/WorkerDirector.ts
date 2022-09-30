@@ -18,8 +18,13 @@ export const WorkerDirector: IWorkerDirector = {
 
   events: new EventEmitter(),
 
-  getActivePluginTypes: () => {
-    return WorkerDirector.getAdapters().map((adapter) => adapter.type);
+  getActivePluginTypes: (external) => {
+    return WorkerDirector.getAdapters()
+      .filter((adapter) => {
+        if (external === null || external === undefined) return true;
+        return Boolean(adapter.external) === external;
+      })
+      .map((adapter) => adapter.type);
   },
 
   registerAdapter: (Adapter) => {

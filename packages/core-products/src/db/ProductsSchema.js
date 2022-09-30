@@ -6,6 +6,7 @@ export const ProductTypes = {
   ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
   BundleProduct: 'BUNDLE_PRODUCT',
   PlanProduct: 'PLAN_PRODUCT',
+  TokenizedProduct: 'TOKENIZED_PRODUCT',
 };
 
 const ProductCommerceSchema = new SimpleSchema(
@@ -31,6 +32,16 @@ const ProductWarehousingSchema = new SimpleSchema(
     sku: String,
   },
   { requiredByDefault: false },
+);
+
+const ProductTokenizationSchema = new SimpleSchema(
+  {
+    contractAddress: String,
+    contractStandard: String,
+    tokenId: String,
+    supply: Number,
+  },
+  { requiredByDefault: true },
 );
 
 const ProductSupplySchema = new SimpleSchema(
@@ -105,6 +116,7 @@ export const ProductsSchema = new SimpleSchema(
     },
     'bundleItems.$': ProductBundleItemSchema,
     meta: { type: Object, blackbox: true },
+    tokenization: ProductTokenizationSchema,
     ...Schemas.timestampFields,
   },
   { requiredByDefault: false },

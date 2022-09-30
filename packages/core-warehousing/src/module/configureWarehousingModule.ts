@@ -1,14 +1,17 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
+  WarehousingContext,
   WarehousingModule,
   WarehousingProvider,
   WarehousingProviderQuery,
+  WarehousingProviderType,
 } from '@unchainedshop/types/warehousing';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection';
 import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema';
 import { WarehousingDirector } from '../director/WarehousingDirector';
+import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection';
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',
@@ -33,6 +36,7 @@ export const configureWarehousingModule = async ({
   registerEvents(WAREHOUSING_PROVIDER_EVENTS);
 
   const WarehousingProviders = await WarehousingProvidersCollection(db);
+  const TokenSurrogates = await TokenSurrogateCollection(db);
 
   const mutations = generateDbMutations<WarehousingProvider>(
     WarehousingProviders,
@@ -49,6 +53,14 @@ export const configureWarehousingModule = async ({
 
     findProvider: async ({ warehousingProviderId }, options) => {
       return WarehousingProviders.findOne(generateDbFilterById(warehousingProviderId), options);
+    },
+
+    findToken: async ({ tokenId }, options) => {
+      return TokenSurrogates.findOne(generateDbFilterById(tokenId), options);
+    },
+
+    findTokens: async ({ userId }, options) => {
+      return TokenSurrogates.find({ userId }, options).toArray();
     },
 
     findProviders: async (query, options) => {
@@ -118,6 +130,51 @@ export const configureWarehousingModule = async ({
         requestContext,
       );
       return director.estimatedStock();
+    },
+
+    updateTokenOwnership: async ({ tokenId, userId, walletAddress }) => {
+      await TokenSurrogates.updateOne(
+        { _id: tokenId },
+        {
+          $set: {
+            userId,
+            walletAddress,
+          },
+        },
+      );
+    },
+
+    tokenizeItems: async (order, { items }, requestContext) => {
+      const virtualProviders = await WarehousingProviders.find(
+        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
+      ).toArray();
+
+      await Promise.all(
+        items.map(async ({ orderPosition, product }) => {
+          const warehousingContext: WarehousingContext = {
+            order,
+            orderPosition,
+            product,
+            quantity: orderPosition.quantity,
+            referenceDate: order.ordered,
+          };
+          await virtualProviders.reduce(async (lastPromise, provider) => {
+            const last = await lastPromise;
+            if (last) return last;
+            const currentDirector = await WarehousingDirector.actions(
+              provider,
+              warehousingContext,
+              requestContext,
+            );
+            const isActive = await currentDirector.isActive();
+            if (isActive) {
+              const tokenSurrogates = await currentDirector.tokenize();
+              await TokenSurrogates.insertMany(tokenSurrogates);
+            }
+            return true;
+          }, Promise.resolve(false));
+        }),
+      );
     },
 
     isActive: async (warehousingProvider, requestContext) => {

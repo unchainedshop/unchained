@@ -32,6 +32,11 @@ export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 've
       commissioningTime: async () => {
         return 0;
       },
+
+      tokenize: async () => {
+        /* */
+        return [];
+      },
     };
   },
 

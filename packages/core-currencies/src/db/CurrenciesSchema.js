@@ -7,6 +7,7 @@ export const CurrenciesSchema = new SimpleSchema(
     isActive: Boolean,
     authorId: { type: String, required: true },
     contractAddress: { type: String, required: false },
+    decimals: { type: Number, required: false },
     ...Schemas.timestampFields,
   },
   { requiredByDefault: false },

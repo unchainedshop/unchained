@@ -124,8 +124,10 @@ const GoogleSheets: IWarehousingAdapter = {
     },
   ],
 
-  actions: (_, context) => {
+  actions: (config, context) => {
     return {
+      ...WarehousingAdapter.actions(config, context),
+
       isActive: () => {
         return true;
       },

@@ -33,9 +33,9 @@ export default [
     type PaymentCredentials {
       _id: ID!
       user: User!
-      meta: JSON
       paymentProvider: PaymentProvider!
       token: JSON
+      meta: JSON
       isValid: Boolean!
       isPreferred: Boolean!
     }

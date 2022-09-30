@@ -106,6 +106,7 @@ export default [
       paymentCredentials: [PaymentCredentials!]!
       enrollments(sort: [SortOptionInput!], queryString: String): [Enrollment!]!
       allowedActions: [RoleAction!]!
+      tokens: [Token!]!
     }
   `,
 ];

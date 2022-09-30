@@ -1,7 +1,6 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
-import { WorkerDirector } from '@unchainedshop/core-worker';
+import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger, LogLevel } from '@unchainedshop/logger';
-import { BaseAdapter } from '@unchainedshop/utils';
 import fs from 'fs';
 import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';
@@ -48,7 +47,7 @@ const streamPayloadToBulkImporter = async (
 };
 
 export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
-  ...BaseAdapter,
+  ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.bulk-import',
   label: 'Bulk Import',

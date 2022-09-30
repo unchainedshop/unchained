@@ -10,13 +10,18 @@ import '@unchainedshop/plugins/delivery/pick-mup';
 import '@unchainedshop/plugins/delivery/send-message';
 import '@unchainedshop/plugins/delivery/stores';
 import '@unchainedshop/plugins/warehousing/store';
+import '@unchainedshop/plugins/warehousing/infinite-minter';
 
 import '@unchainedshop/plugins/payment/invoice';
 import '@unchainedshop/plugins/payment/invoice-prepaid';
 import '@unchainedshop/plugins/payment/paypal-checkout';
 import '@unchainedshop/plugins/payment/worldline-saferpay';
+
 import setupDatatrans from '@unchainedshop/plugins/payment/datatrans-v2';
-import setupCryptopay from '@unchainedshop/plugins/payment/cryptopay';
+import {
+  setupCryptopayWebhooks,
+  configureCryptopayModule,
+} from '@unchainedshop/plugins/payment/cryptopay';
 import setupAppleIAP, {
   configureAppleTransactionsModule,
 } from '@unchainedshop/plugins/payment/apple-iap';
@@ -33,8 +38,6 @@ import '@unchainedshop/plugins/pricing/order-discount';
 import '@unchainedshop/plugins/pricing/order-delivery';
 import '@unchainedshop/plugins/pricing/order-payment';
 import '@unchainedshop/plugins/pricing/product-catalog-price';
-import '@unchainedshop/plugins/pricing/product-price-coinbase-exchange';
-import setupCryptopayPricing from '@unchainedshop/plugins/pricing/product-price-cryptopay';
 import '@unchainedshop/plugins/pricing/product-price-rateconversion';
 import '@unchainedshop/plugins/pricing/product-discount';
 import '@unchainedshop/plugins/pricing/product-swiss-tax';
@@ -56,6 +59,9 @@ import '@unchainedshop/plugins/worker/http-request';
 import '@unchainedshop/plugins/worker/heartbeat';
 import '@unchainedshop/plugins/worker/email';
 import '@unchainedshop/plugins/worker/sms';
+import '@unchainedshop/plugins/worker/update-ecb-rates';
+import '@unchainedshop/plugins/worker/update-coinbase-rates';
+import { configureExportToken } from '@unchainedshop/plugins/worker/export-token';
 
 import '@unchainedshop/plugins/files/gridfs/gridfs-adapter';
 import setupGridFSWebhook from '@unchainedshop/plugins/files/gridfs/gridfs-webhook';
@@ -89,6 +95,9 @@ const start = async () => {
       },
       gridfsFileUploads: {
         configure: configureGridFSFileUploadModule,
+      },
+      cryptopay: {
+        configure: configureCryptopayModule,
       },
     },
     options: {
@@ -128,8 +137,7 @@ const start = async () => {
   // until here
 
   setupGridFSWebhook(app);
-  setupCryptopay(app);
-  setupCryptopayPricing(app);
+  setupCryptopayWebhooks(app);
   setupStripe(app);
   setupPostfinance(app);
   setupDatatrans(app);
@@ -137,6 +145,7 @@ const start = async () => {
   setupAppleIAP(app);
 
   configureGenerateOrderAutoscheduling();
+  configureExportToken(unchainedApi);
 
   await app.listen({ port: process.env.PORT || 3000 });
   console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
