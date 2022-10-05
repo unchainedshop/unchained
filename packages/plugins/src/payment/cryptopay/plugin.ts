@@ -27,7 +27,8 @@ enum CryptopayCurrencies { // eslint-disable-line
 type CryptopayAddress = {
   currency: CryptopayCurrencies;
   address: string;
-  currencyConversionRate: number;
+  currencyConversionRate?: number;
+  currencyConversionExpiryDate?: Date;
   derivationPath: string;
 };
 
@@ -57,6 +58,28 @@ const Cryptopay: IPaymentAdapter = {
 
   actions: (params) => {
     const modules = params.context.modules as UnchainedCore['modules'] & { cryptopay: CryptopayModule };
+
+    const setConversionRates = async (currencyCode: string, existingAddresses: any[]) => {
+      const originCurrencyObj = await modules.currencies.findCurrency({ isoCode: currencyCode });
+      const updatedAddresses = await Promise.all(
+        existingAddresses.map(async (addressData) => {
+          const targetCurrencyObj = await modules.currencies.findCurrency({
+            isoCode: addressData.currency,
+          });
+          if (!targetCurrencyObj.isActive) return null;
+          const rateData = await modules.products.prices.rates.getRate(
+            originCurrencyObj,
+            targetCurrencyObj,
+          );
+          return {
+            ...addressData,
+            currencyConversionRate: rateData?.rate,
+            currencyConversionExpiryDate: rateData?.expiresAt,
+          };
+        }),
+      );
+      return updatedAddresses.filter(Boolean);
+    };
 
     const adapterActions = {
       ...PaymentAdapter.actions(params),
@@ -91,14 +114,20 @@ const Cryptopay: IPaymentAdapter = {
       },
 
       sign: async () => {
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment, order } = params.paymentContext;
+
         if (orderPayment?.context?.cryptoAddresses) {
           // Do not derive address a second time for order payment, return existing address
           const existingAddresses = orderPayment.context.cryptoAddresses;
           if (existingAddresses) {
-            return JSON.stringify(existingAddresses);
+            const existingAddressesWithNewExpiration = await setConversionRates(
+              order.currency,
+              existingAddresses,
+            );
+            return JSON.stringify(existingAddressesWithNewExpiration);
           }
         }
+
         const cryptoAddresses: CryptopayAddress[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
           const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
@@ -109,10 +138,10 @@ const Cryptopay: IPaymentAdapter = {
           });
           const derivationPath = getDerivationPath(CryptopayCurrencies.BTC, btcDerivationNumber);
           const child = hardenedMaster.derivePath(derivationPath);
+
           cryptoAddresses.push({
             currency: CryptopayCurrencies.BTC,
             derivationPath,
-            currencyConversionRate: 1,
             address: bitcoin.payments.p2pkh({
               pubkey: child.publicKey,
               network,
@@ -128,20 +157,22 @@ const Cryptopay: IPaymentAdapter = {
           });
           const derivationPath = getDerivationPath(CryptopayCurrencies.ETH, ethDerivationNumber);
           const cleanedForHD = derivationPath.split('/').slice(-2).join('/');
+
           cryptoAddresses.push({
             currency: CryptopayCurrencies.ETH,
             derivationPath,
-            currencyConversionRate: 1,
             address: hardenedMaster.derivePath(cleanedForHD).address,
           });
         }
+
+        const cryptoAddressesWithExpiration = await setConversionRates(order.currency, cryptoAddresses);
         await modules.orders.payments.updateContext(
           orderPayment._id,
-          { ...orderPayment.context, cryptoAddresses },
+          { ...orderPayment.context, cryptoAddresses: cryptoAddressesWithExpiration },
           params.context,
         );
 
-        return JSON.stringify(cryptoAddresses);
+        return JSON.stringify(cryptoAddressesWithExpiration);
       },
 
       charge: async () => {
@@ -211,7 +242,7 @@ const Cryptopay: IPaymentAdapter = {
 
 
         To allow paying in ETH or BTC or Tokens for CHF orders, it should work like this:
-        - When signing, we convert with what we have, if we can convert, fine, if we can't we throw an error at the client. The converted amount will be stored together with a signature of the order total + currency + an expiration date in a special collection
+        - When signing, we convert with what we have, if we can convert, fine, if we can't we throw an error at the client. The found rate id will be stored together with a signature of the order total + currency + an expiration date in a special collection
         - We also return that signed payload to the client so the client can show something like Total: CHF 50.- "Pay 0.0024 BTC in the next 30 minutes" 
         - When a payment occured, the charge function of the plugin picks up. If it can find a valid signed converted amount in the special collection, it will use that information instead of the order total to compare against.
         - When a payment occured to late, the order payment will not be marked as paid and a report will be sent to the vendor that with information about how much to send back.

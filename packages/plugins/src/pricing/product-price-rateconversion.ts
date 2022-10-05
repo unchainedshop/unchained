@@ -48,20 +48,16 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
 
         if (!targetCurrencyObj?.isActive) return pricingAdapter.calculate();
 
-        const rate = await modules.products.prices.rates.getRate(fromCurrencyObj, targetCurrencyObj);
+        const rateData = await modules.products.prices.rates.getRate(fromCurrencyObj, targetCurrencyObj);
 
-        // 1 USD = 0.00075 ETH
-        // 100000 = 100.00 USD
-        // 0.075 ETH in 9 Decimals = 
-
-        if (rate > 0) {
-          const convertedAmount = Math.round(productPrice.amount * rate);
+        if (rateData?.rate > 0) {
+          const convertedAmount = Math.round(productPrice.amount * rateData.rate);
           pricingAdapter.resultSheet().resetCalculation(params.calculationSheet);
           pricingAdapter.resultSheet().addItem({
             amount: convertedAmount * quantity,
             isTaxable: productPrice?.isTaxable,
             isNetPrice: productPrice?.isNetPrice,
-            meta: { adapter: ProductPriceRateConversion.key, rate },
+            meta: { adapter: ProductPriceRateConversion.key, rate: rateData.rate },
           });
         }
 

@@ -273,7 +273,9 @@ export const configureProductPricesModule = ({
         }
         const fromDecimals = getDecimals(baseCurrency.decimals);
         const targetDecimals = getDecimals(quoteCurrency.decimals);
-        return fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;
+        rate = fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;
+
+        return { rate, expiresAt: mostRecentCurrencyRate.expiresAt };
       },
       updateRate: async (rate) => {
         const priceRates = await ProductPriceRates(db);
