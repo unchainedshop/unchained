@@ -54,7 +54,7 @@ export const configureProductPricesModule = ({
       return {
         _id: crypto
           .createHash('sha256')
-          .update([product._id, countryCode, currencyCode].join(''))
+          .update([product._id, normalizedPrice.countryCode, normalizedPrice.currencyCode].join(''))
           .digest('hex'),
         ...normalizedPrice,
       };

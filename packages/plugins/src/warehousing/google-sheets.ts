@@ -11,7 +11,7 @@ import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 
 const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } = process.env;
 
-const ttl = NODE_ENV === 'production' ? 1000 * 60 * 60 : 0; // 1 hour or 1 second
+const ttl = NODE_ENV === 'production' ? 1000 * 60 : 0; // 1 minute or 1 second
 
 const downloadSpreadsheet = async () => {
   if (!GOOGLE_SHEETS_PRIVATE_KEY_DATA || !GOOGLE_SHEETS_ID) return null;

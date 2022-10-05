@@ -5,7 +5,7 @@ import { systemLocale } from './locale-helpers';
 
 const { NODE_ENV } = process.env;
 
-const ttl = NODE_ENV === 'production' ? 1000 * 30 : 0; // 30 seconds or 1 second
+const ttl = NODE_ENV === 'production' ? 1000 * 10 : 0; // 10 seconds or 0 seconds
 
 const textCache = new LRU({ max: 50000, ttl });
 

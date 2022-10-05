@@ -15,36 +15,32 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
 
   actions: (params) => {
     const pricingAdapter = ProductPricingAdapter.actions(params);
-    const { services, modules } = params.context;
+    const { modules } = params.context;
     return {
       ...pricingAdapter,
 
       calculate: async () => {
         const { product, country, quantity, currency: targetCurrency } = params.context;
-        const fromCurrency = await services.countries.resolveDefaultCurrencyCode(
-          {
-            isoCode: country,
-          },
-          params.context,
-        );
+
+        const { calculation = [] } = params.calculationSheet;
+        if (calculation?.length) {
+          // If we already have a price for the product,
+          // we skip this plugin because we don't need to convert
+          return pricingAdapter.calculate();
+        }
 
         const productPrice = await modules.products.prices.price(product, {
           country,
-          currency: fromCurrency,
           quantity,
         });
 
-        const { calculation = [] } = params.calculationSheet;
-        if (
-          !productPrice ||
-          !productPrice?.amount ||
-          calculation?.length ||
-          fromCurrency === targetCurrency
-        )
+        if (!productPrice) {
+          // We were not able to find a price for quantity & country
           return pricingAdapter.calculate();
+        }
 
         const fromCurrencyObj = await modules.currencies.findCurrency({
-          isoCode: fromCurrency,
+          isoCode: productPrice.currencyCode,
         });
         const targetCurrencyObj = await modules.currencies.findCurrency({
           isoCode: targetCurrency,
@@ -53,6 +49,10 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
         if (!targetCurrencyObj?.isActive) return pricingAdapter.calculate();
 
         const rate = await modules.products.prices.rates.getRate(fromCurrencyObj, targetCurrencyObj);
+
+        // 1 USD = 0.00075 ETH
+        // 100000 = 100.00 USD
+        // 0.075 ETH in 9 Decimals = 
 
         if (rate > 0) {
           const convertedAmount = Math.round(productPrice.amount * rate);

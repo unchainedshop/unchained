@@ -77,12 +77,12 @@ const Cryptopay: IPaymentAdapter = {
         // Only support orders that have prices in BTC or ETH for the moment
         if (adapterActions.configurationError() !== null) return false;
         if (!params.paymentContext.order) return true;
-        if (
-          !Object.values(CryptopayCurrencies).includes(
-            params.paymentContext.order.currency as CryptopayCurrencies,
-          )
-        )
-          return false;
+        // if (
+        //   !Object.values(CryptopayCurrencies).includes(
+        //     params.paymentContext.order.currency as CryptopayCurrencies,
+        //   )
+        // )
+        //   return false;
         return true;
       },
 

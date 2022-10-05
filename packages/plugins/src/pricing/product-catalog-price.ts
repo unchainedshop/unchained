@@ -36,6 +36,7 @@ const ProductPrice: IProductPricingAdapter = {
             },
             params.context,
           ));
+
         const price = await modules.products.prices.price(product, { country, currency, quantity });
         if (price) {
           const itemTotal = price.amount * quantity;

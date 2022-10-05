@@ -219,7 +219,7 @@ export type ProductsModule = {
   prices: {
     price: (
       product: Product,
-      params: { country: string; currency: string; quantity?: number },
+      params: { country: string; currency?: string; quantity?: number },
     ) => Promise<ProductPrice>;
 
     userPrice: (
