@@ -9,6 +9,7 @@ import { BundleProduct } from './product/product-bundle-types';
 import { Color } from './color-types';
 import { ConfigurableProduct } from './product/product-configurable-types';
 import { Country } from './country-types';
+import { Currency } from './currency-types';
 import { DeliveryProvider } from './delivery-provider-types';
 import { Dimensions } from './dimensions-types';
 import { Dispatch } from './dispatch-types';
@@ -78,6 +79,7 @@ const types = {
   Color,
   ConfigurableProduct,
   Country,
+  Currency,
   DeliveryProvider,
   Dimensions,
   Dispatch,
