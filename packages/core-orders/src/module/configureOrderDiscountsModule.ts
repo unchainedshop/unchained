@@ -46,7 +46,7 @@ export const configureOrderDiscountsModule = ({
     const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
     if (!Adapter) return null;
     const adapter = Adapter.actions({
-      context: { order, orderDiscount, ...requestContext },
+      context: { order, orderDiscount, code: orderDiscount.code, ...requestContext },
     });
     return adapter;
   };
@@ -87,7 +87,13 @@ export const configureOrderDiscountsModule = ({
   };
 
   const updateDiscount: OrderDiscountsModule['update'] = async (orderDiscountId, doc, userId) => {
-    await mutations.update(orderDiscountId, doc, userId);
+    await mutations.update(
+      orderDiscountId,
+      {
+        $set: doc,
+      },
+      userId,
+    );
 
     const selector = buildFindByIdSelector(orderDiscountId);
     const discount = await OrderDiscounts.findOne(selector, {});
@@ -110,7 +116,10 @@ export const configureOrderDiscountsModule = ({
     );
   };
 
-  const grabDiscount = async ({ code, orderId }: OrderDiscount, requestContext: Context) => {
+  const grabDiscount = async (
+    { code, orderId }: { code: string; orderId: string },
+    requestContext: Context,
+  ) => {
     log(`OrderDiscounts -> Try to grab ${code}`, { orderId });
 
     const existingDiscount = await OrderDiscounts.findOne({ code, orderId });
@@ -179,19 +188,14 @@ export const configureOrderDiscountsModule = ({
     },
 
     // Mutations
-    createManualOrderDiscount: async (doc, requestContext) => {
-      const { code, orderId } = doc;
+    createManualOrderDiscount: async ({ order, code }, requestContext) => {
       // Try to grab single-usage-discount
       if (!code) throw new Error(OrderDiscountErrorCode.CODE_NOT_VALID);
 
-      const fetchedDiscount = await grabDiscount(doc, requestContext);
+      const fetchedDiscount = await grabDiscount({ code, orderId: order._id }, requestContext);
       if (fetchedDiscount) return fetchedDiscount;
 
-      const order = await requestContext.modules.orders.findOrder({ orderId });
-      const director = await OrderDiscountDirector.actions(
-        { order, orderDiscount: doc },
-        requestContext,
-      );
+      const director = await OrderDiscountDirector.actions({ order, code }, requestContext);
       const discountKey = await director.resolveDiscountKeyFromStaticCode({
         code,
       });
@@ -199,7 +203,8 @@ export const configureOrderDiscountsModule = ({
       if (discountKey) {
         const newDiscount = await createDiscount(
           {
-            ...doc,
+            orderId: order._id,
+            code,
             discountKey,
           },
           requestContext.userId,
@@ -213,7 +218,7 @@ export const configureOrderDiscountsModule = ({
           },
         );
 
-        await updateCalculation(orderId, requestContext);
+        await updateCalculation(order._id, requestContext);
 
         emit('ORDER_ADD_DISCOUNT', { discount: reserveDiscount });
 

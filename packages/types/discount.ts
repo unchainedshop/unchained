@@ -14,6 +14,7 @@ export interface DiscountConfiguration {
 }
 
 export interface DiscountContext {
+  code?: string;
   orderDiscount?: OrderDiscount;
   order?: Order;
   orderDelivery?: OrderDelivery;
