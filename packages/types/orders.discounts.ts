@@ -1,6 +1,7 @@
 import { Context } from './api';
 import { FindOptions, TimestampFields, _ID } from './common';
 import { DiscountAdapterActions, DiscountConfiguration, DiscountContext } from './discount';
+import { Order } from './orders';
 import { OrderPrice } from './orders.pricing';
 import { IPricingSheet, PricingCalculation } from './pricing';
 
@@ -39,7 +40,10 @@ export type OrderDiscountsModule = {
   ) => Promise<DiscountConfiguration>;
 
   // Mutations
-  createManualOrderDiscount: (doc: OrderDiscount, requestContext: Context) => Promise<OrderDiscount>;
+  createManualOrderDiscount: (
+    params: { code: string; order: Order },
+    requestContext: Context,
+  ) => Promise<OrderDiscount>;
 
   create: (doc: OrderDiscount, userId?: string) => Promise<OrderDiscount>;
   update: (orderDiscountId: string, doc: OrderDiscount, userId?: string) => Promise<OrderDiscount>;
