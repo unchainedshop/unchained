@@ -45,7 +45,7 @@ export const configureOrderDiscountsModule = ({
     });
     const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
     if (!Adapter) return null;
-    const adapter = Adapter.actions({
+    const adapter = await Adapter.actions({
       context: { order, orderDiscount, code: orderDiscount.code, ...requestContext },
     });
     return adapter;
@@ -210,19 +210,15 @@ export const configureOrderDiscountsModule = ({
           requestContext.userId,
         );
 
-        const reservedDiscount = await reserveDiscount(newDiscount, requestContext).catch(
-          async (error) => {
-            // Rollback
-            await deleteDiscount(newDiscount._id, requestContext);
-            throw error;
-          },
-        );
-
-        await updateCalculation(order._id, requestContext);
-
-        emit('ORDER_ADD_DISCOUNT', { discount: reserveDiscount });
-
-        return reservedDiscount;
+        try {
+          const reservedDiscount = await reserveDiscount(newDiscount, requestContext);
+          await updateCalculation(order._id, requestContext);
+          emit('ORDER_ADD_DISCOUNT', { discount: reserveDiscount });
+          return reservedDiscount;
+        } catch (error) {
+          await deleteDiscount(newDiscount._id, requestContext);
+          throw error;
+        }
       }
 
       throw new Error(OrderDiscountErrorCode.CODE_NOT_VALID);
