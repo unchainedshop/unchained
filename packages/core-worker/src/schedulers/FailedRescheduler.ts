@@ -23,7 +23,9 @@ export const FailedRescheduler: IScheduler = {
         log(
           `${FailedRescheduler.key} -> Reschedule failed work ${work._id} ${
             work.type
-          } for ${scheduled} (in ${Math.round(workDelayMs / 1000)}). Remaining retries: ${work.retries}`,
+          } for ${scheduled.toISOString()} (in ${Math.round(workDelayMs / 1000)}). Remaining retries: ${
+            work.retries
+          }`,
         );
 
         requestContext.modules.worker.addWork(

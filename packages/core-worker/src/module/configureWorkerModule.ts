@@ -229,9 +229,14 @@ export const configureWorkerModule = async ({
         userId,
       );
 
-      log(`WorkerDirector -> Work added ${workId} (${type} / ${scheduled || created} / ${retries})`, {
-        userId,
-      });
+      log(
+        `WorkerDirector -> Work added ${workId} (${type} / ${new Date(
+          scheduled || created,
+        ).toISOString()} / ${retries})`,
+        {
+          userId,
+        },
+      );
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
@@ -318,7 +323,11 @@ export const configureWorkerModule = async ({
         ) as Promise<ModifyResult<Work>>);
 
         if (!result.lastErrorObject.updatedExisting) {
-          log(`WorkerDirector -> Work added again (ensure) ${type} ${scheduled} ${retries}`);
+          log(
+            `WorkerDirector -> Work added again (ensure) ${type} ${new Date(
+              scheduled,
+            ).toISOString()} ${retries}`,
+          );
 
           WorkerDirector.events.emit(WorkerEventTypes.ADDED, {
             work: result.value,
