@@ -31,7 +31,7 @@ export default (app: any) => {
 
         if (wallet) {
           const { address, blockHeight, amount, contract, decimals, currency } = wallet;
-          await modules.cryptopay.updateWalletAddress({
+          const { orderPaymentId } = await modules.cryptopay.updateWalletAddress({
             addressId: address,
             blockHeight,
             amount,
@@ -39,9 +39,12 @@ export default (app: any) => {
             decimals,
             currency,
           });
-          const orderPayment = await modules.orders.payments.findOrderPaymentByContextData({
-            context: { cryptoAddresses: { $elemMatch: { currency, address } } },
-          });
+          const orderPayment =
+            orderPaymentId &&
+            (await modules.orders.payments.findOrderPayment({
+              orderPaymentId,
+            }));
+
           if (orderPayment) {
             // Try to process order to next status
             const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });

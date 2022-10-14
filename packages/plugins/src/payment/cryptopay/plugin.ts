@@ -194,8 +194,6 @@ const Cryptopay: IPaymentAdapter = {
           orderPayment._id,
         );
 
-        console.log(foundWalletsWithBalances);
-
         // const addresses: CryptopayAddress[] =
         //   params.paymentContext.orderPayment.context.cryptoAddresses || [];
         // const foundWalletsWithBalances = (
