@@ -9,6 +9,7 @@ export type CryptopayTransaction = {
   currency: string;
   decimals: number;
   contract: string;
+  orderPaymentId?: string;
 } & TimestampFields;
 
 export const CryptopayTransactionsCollection = (db: Db) => {

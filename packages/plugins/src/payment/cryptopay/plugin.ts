@@ -81,6 +81,19 @@ const Cryptopay: IPaymentAdapter = {
       return updatedAddresses.filter(Boolean);
     };
 
+    const mapAddresses = async (orderPaymentId: string, cryptoAddresses: CryptopayAddress[]) => {
+      return Promise.all(
+        cryptoAddresses.map(async ({ address, currency }) =>
+          modules.cryptopay.mapOrderPaymentToWalletAddress({
+            addressId: address,
+            contract: null,
+            currency,
+            orderPaymentId,
+          }),
+        ),
+      );
+    };
+
     const adapterActions = {
       ...PaymentAdapter.actions(params),
 
@@ -166,13 +179,7 @@ const Cryptopay: IPaymentAdapter = {
         }
 
         const cryptoAddressesWithExpiration = await setConversionRates(order.currency, cryptoAddresses);
-        // THIS TRIGGERS RECALCULATION WHICH IS WRONG!
-        await modules.orders.payments.updateContext(
-          orderPayment._id,
-          { ...orderPayment.context, cryptoAddresses: cryptoAddressesWithExpiration },
-          params.context,
-        );
-
+        await mapAddresses(orderPayment._id, cryptoAddresses);
         return JSON.stringify(cryptoAddressesWithExpiration);
       },
 

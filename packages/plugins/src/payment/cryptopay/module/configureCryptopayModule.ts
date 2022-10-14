@@ -13,6 +13,12 @@ export interface CryptopayModule {
     currency: string;
     decimals: number;
   }) => Promise<CryptopayTransaction>;
+  mapOrderPaymentToWalletAddress: (walletData: {
+    addressId: string;
+    contract: string;
+    currency: string;
+    orderPaymentId: string;
+  }) => Promise<CryptopayTransaction>;
 }
 
 export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule => {
@@ -38,6 +44,38 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
     );
   };
 
+  const mapOrderPaymentToWalletAddress: CryptopayModule['mapOrderPaymentToWalletAddress'] = async ({
+    addressId,
+    contract,
+    currency,
+    orderPaymentId,
+  }) => {
+    await CryptoTransactions.updateOne(
+      {
+        _id: addressId,
+      },
+      {
+        $setOnInsert: {
+          _id: addressId,
+          contract,
+          currency,
+          decimals: null,
+          mostRecentBlockHeight: 0,
+          blockHeight: 0,
+          amount: Decimal128.fromString('0'),
+          created: new Date(),
+        },
+        $set: {
+          orderPaymentId,
+          updated: new Date(),
+        },
+      },
+      { upsert: true },
+    );
+
+    return CryptoTransactions.findOne({ _id: addressId });
+  };
+
   const updateWalletAddress: CryptopayModule['updateWalletAddress'] = async ({
     addressId,
     blockHeight,
@@ -53,12 +91,12 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
       {
         $setOnInsert: {
           _id: addressId,
-          contract,
           currency,
-          decimals,
+          contract,
           created: new Date(),
         },
         $set: {
+          decimals,
           blockHeight,
           mostRecentBlockHeight: blockHeight,
           amount: Decimal128.fromString(amount),
@@ -75,5 +113,6 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
     getWalletAddress,
     updateMostRecentBlock,
     updateWalletAddress,
+    mapOrderPaymentToWalletAddress,
   };
 };
