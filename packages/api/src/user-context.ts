@@ -1,6 +1,7 @@
 import { UnchainedUserContext } from '@unchainedshop/types/api';
 import { UnchainedCore } from '@unchainedshop/types/core';
-import { IncomingMessage } from 'http';
+import { IncomingMessage, OutgoingMessage } from 'http';
+import cookie from 'cookie';
 
 function isString(input) {
   return typeof input === 'string' && Object.prototype.toString.call(input) === '[object String]';
@@ -8,16 +9,28 @@ function isString(input) {
 
 export const getUserContext = async (
   req: IncomingMessage & { cookies?: any },
+  res: OutgoingMessage,
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
-  let loginToken = req.headers['meteor-login-token'];
-  if (req.cookies?.meteor_login_token) {
-    loginToken = req.cookies.meteor_login_token;
+  const cookieName = process.env.UNCHAINED_COOKIE_NAME || 'unchained_token';
+  const domain = process.env.UNCHAINED_COOKIE_DOMAIN;
+
+  let loginToken = req.cookies?.[cookieName];
+
+  function setLoginToken(token: string, expires: Date) {
+    if (!domain) return;
+    const authCookie = cookie.serialize(cookieName, token || null, {
+      domain,
+      httpOnly: true,
+      expires: token ? expires : undefined,
+      maxAge: token ? undefined : -1,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+    res.setHeader('Set-Cookie', authCookie);
   }
-  if (req.cookies?.token) {
-    loginToken = req.cookies.token;
-  }
+
   if (req.headers.authorization) {
     const [type, token] = req.headers.authorization.split(' ');
     if (type === 'Bearer') {
@@ -54,11 +67,12 @@ export const getUserContext = async (
           user: currentUser,
           userId: currentUser._id,
           loginToken: loginToken as string,
+          setLoginToken,
         };
       }
     }
-    return { loginToken: loginToken as string };
+    return { loginToken: loginToken as string, setLoginToken };
   }
 
-  return {};
+  return { setLoginToken };
 };

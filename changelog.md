@@ -7,6 +7,7 @@ This is a major feature release bringing WebAuthn and Virtual Products including
 - Order.documents has been removed because it was never functional
 
 ## Major
+- Support out of the box server-side cookies for login and logout tokens when env `UNCHAINED_COOKIE_DOMAIN` is set. The cookie's name which by default is `unchained_token` can be overwritten by using env `UNCHAINED_COOKIE_NAME`. Unchained will still look for cookies even if the domain is not set but in that case the client has to take care of storing and sending the token.
 - Extended users and accounts for WebAuthn standard
 - Added API mutations for the WebAuthn module: `Mutation.createWebAuthnCredentialCreationOptions`, `Mutation.createWebAuthnCredentialRequestOptions`,`Mutation.loginWithWebAuthn`,`Mutation.addWebAuthnCredentials`,`User.webAuthnCredentials`.
 - A new product type `TokenizedProduct` has been added added that supports NFT's and other virtual products that have no physical representation. They are converted to tokens through a virtual warehouse once checked-out. 

@@ -166,6 +166,7 @@ const Cryptopay: IPaymentAdapter = {
         }
 
         const cryptoAddressesWithExpiration = await setConversionRates(order.currency, cryptoAddresses);
+        // THIS TRIGGERS RECALCULATION WHICH IS WRONG!
         await modules.orders.payments.updateContext(
           orderPayment._id,
           { ...orderPayment.context, cryptoAddresses: cryptoAddressesWithExpiration },

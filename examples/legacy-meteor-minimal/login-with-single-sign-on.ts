@@ -6,7 +6,10 @@ const { ROOT_URL, NODE_ENV, UNCHAINED_CLOUD_ENDPOINT } = process.env;
 
 const loginWithSingleSignOn = async (remoteToken, unchainedAPI: Context) => {
   try {
-    const thisDomain = new URL(ROOT_URL).hostname;
+    const domain =
+      process.env.UNCHAINED_COOKIE_DOMAIN ||
+      new URL(ROOT_URL).hostname ||
+      'localhost';
     const result = await fetch(UNCHAINED_CLOUD_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -27,8 +30,8 @@ const loginWithSingleSignOn = async (remoteToken, unchainedAPI: Context) => {
     }
 
     if (
-      thisDomain === 'localhost' ||
-      thisDomain === json?.data?.controlConsumeSingleSignOnToken?.domain
+      domain === 'localhost' ||
+      domain === json?.data?.controlConsumeSingleSignOnToken?.domain
     ) {
       // create sso user if not exist and login
       const ssoUserId =
@@ -51,14 +54,18 @@ const loginWithSingleSignOn = async (remoteToken, unchainedAPI: Context) => {
           unchainedAPI,
         );
       const expires = new Date(tokenExpires || new Date().getTime() + 100000);
-      const authCookie = cookie.serialize('token', token, {
-        domain: thisDomain || 'localhost',
-        httpOnly: true,
-        expires,
-        path: '/',
-        sameSite: 'strict',
-        secure: NODE_ENV === 'production',
-      });
+      const authCookie = cookie.serialize(
+        process.env.UNCHAINED_COOKIE_NAME,
+        token,
+        {
+          domain,
+          httpOnly: true,
+          expires,
+          path: '/',
+          sameSite: 'strict',
+          secure: NODE_ENV === 'production',
+        },
+      );
 
       return authCookie;
     }
