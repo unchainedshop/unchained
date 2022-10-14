@@ -1,12 +1,13 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
-
+import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
 import {
   InvalidIdError,
   OrderPaymentConfigurationError,
   OrderPaymentNotFoundError,
   OrderPaymentTypeError,
+  OrderWrongPaymentStatusError,
 } from '../../../errors';
 
 export default async function signPaymentProviderForCheckout(
@@ -39,6 +40,12 @@ export default async function signPaymentProviderForCheckout(
       received: providerType,
       required: PaymentProviderType.GENERIC,
     });
+
+  if (modules.orders.payments.normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
+    throw new OrderWrongPaymentStatusError({
+      status: orderPayment.status,
+    });
+  }
 
   try {
     const sign = await modules.payment.paymentProviders.sign(

@@ -29,7 +29,6 @@ type CryptopayAddress = {
   address: string;
   currencyConversionRate?: number;
   currencyConversionExpiryDate?: Date;
-  derivationPath: string;
 };
 
 const getDerivationPath = (currency: CryptopayCurrencies, index: number): string => {
@@ -81,7 +80,10 @@ const Cryptopay: IPaymentAdapter = {
       return updatedAddresses.filter(Boolean);
     };
 
-    const mapAddresses = async (orderPaymentId: string, cryptoAddresses: CryptopayAddress[]) => {
+    const updateTransactionsWithOrderPaymentId = async (
+      orderPaymentId: string,
+      cryptoAddresses: CryptopayAddress[],
+    ) => {
       return Promise.all(
         cryptoAddresses.map(async ({ address, currency }) =>
           modules.cryptopay.mapOrderPaymentToWalletAddress({
@@ -129,16 +131,22 @@ const Cryptopay: IPaymentAdapter = {
       sign: async () => {
         const { orderPayment, order } = params.paymentContext;
 
-        if (orderPayment?.context?.cryptoAddresses) {
-          // Do not derive address a second time for order payment, return existing address
-          const existingAddresses = orderPayment.context.cryptoAddresses;
-          if (existingAddresses) {
-            const existingAddressesWithNewExpiration = await setConversionRates(
-              order.currency,
-              existingAddresses,
-            );
-            return JSON.stringify(existingAddressesWithNewExpiration);
-          }
+        const existingAddresses = await modules.cryptopay.getWalletAddressesByOrderPaymentId(
+          orderPayment._id,
+        );
+        if (existingAddresses.length) {
+          // Do not derive addresses a second time for order payment, return existing addresses
+          const existingAddressesWithNewExpiration = await setConversionRates(
+            order.currency,
+            existingAddresses.map(
+              ({ _id, currency }) =>
+                ({
+                  address: _id,
+                  currency,
+                } as CryptopayAddress),
+            ),
+          );
+          return JSON.stringify(existingAddressesWithNewExpiration);
         }
 
         const cryptoAddresses: CryptopayAddress[] = [];
@@ -151,10 +159,8 @@ const Cryptopay: IPaymentAdapter = {
           });
           const derivationPath = getDerivationPath(CryptopayCurrencies.BTC, btcDerivationNumber);
           const child = hardenedMaster.derivePath(derivationPath);
-
           cryptoAddresses.push({
             currency: CryptopayCurrencies.BTC,
-            derivationPath,
             address: bitcoin.payments.p2pkh({
               pubkey: child.publicKey,
               network,
@@ -170,41 +176,46 @@ const Cryptopay: IPaymentAdapter = {
           });
           const derivationPath = getDerivationPath(CryptopayCurrencies.ETH, ethDerivationNumber);
           const cleanedForHD = derivationPath.split('/').slice(-2).join('/');
-
           cryptoAddresses.push({
             currency: CryptopayCurrencies.ETH,
-            derivationPath,
             address: hardenedMaster.derivePath(cleanedForHD).address,
           });
         }
 
         const cryptoAddressesWithExpiration = await setConversionRates(order.currency, cryptoAddresses);
-        await mapAddresses(orderPayment._id, cryptoAddresses);
+        await updateTransactionsWithOrderPaymentId(orderPayment._id, cryptoAddresses);
         return JSON.stringify(cryptoAddressesWithExpiration);
       },
 
       charge: async () => {
-        const addresses: CryptopayAddress[] =
-          params.paymentContext.orderPayment.context.cryptoAddresses || [];
-        const { order } = params.paymentContext;
-        const foundWalletsWithBalances = (
-          await Promise.all(
-            addresses.map(async ({ address, currency, currencyConversionRate }) => {
-              const walletAddress = await modules.cryptopay.getWalletAddress(address);
-              if (walletAddress) {
-                if (walletAddress.currency === currency) {
-                  return walletAddress;
-                }
-                return {
-                  ...walletAddress,
-                  amount: BigInt(walletAddress.amount.toString()) * BigInt(currencyConversionRate),
-                  currency,
-                };
-              }
-              return null;
-            }),
-          )
-        ).filter(Boolean);
+        const { order, orderPayment } = params.paymentContext;
+
+        const foundWalletsWithBalances = await modules.cryptopay.getWalletAddressesByOrderPaymentId(
+          orderPayment._id,
+        );
+
+        console.log(foundWalletsWithBalances);
+
+        // const addresses: CryptopayAddress[] =
+        //   params.paymentContext.orderPayment.context.cryptoAddresses || [];
+        // const foundWalletsWithBalances = (
+        //   await Promise.all(
+        //     addresses.map(async ({ address, currency, currencyConversionRate }) => {
+        //       const walletAddress = await modules.cryptopay.getWalletAddress(address);
+        //       if (walletAddress) {
+        //         if (walletAddress.currency === currency) {
+        //           return walletAddress;
+        //         }
+        //         return {
+        //           ...walletAddress,
+        //           amount: BigInt(walletAddress.amount.toString()) * BigInt(currencyConversionRate),
+        //           currency,
+        //         };
+        //       }
+        //       return null;
+        //     }),
+        //   )
+        // ).filter(Boolean);
 
         const walletForOrderCurrency = foundWalletsWithBalances.find(
           (wallet) => wallet.currency === order.currency,
@@ -235,7 +246,7 @@ const Cryptopay: IPaymentAdapter = {
         logger.info(
           `Cryptopay Plugin: No confirmed payments found for currency ${
             order.currency
-          } and addresses ${JSON.stringify(addresses)}`,
+          } and addresses ${JSON.stringify(foundWalletsWithBalances)}`,
         );
 
         /*
@@ -243,11 +254,9 @@ const Cryptopay: IPaymentAdapter = {
 
         1. Check that generated crypto addresses are unique and no order payments share the same crypto address, only repeat when derivations completely exhausted.
         2. When derivation path get's close to "exhaustedness" (95%), send a special e-mail alert to tell the user should generate a new xpub.
-        3. Do not allow signing a paid order payment
-        4. Extend the middleware to report the highest seen block number so we can calculate confirmations, 
-        5. When an order get's confirmed (after succesful payment after rejectability), add the order amount to a special field in the wallet collection so we can find differences
-        6. Order rejection should trigger an e-mail advising the vendor to actively send back funds
-
+        3. Extend the middleware to report the highest seen block number so we can calculate confirmations, 
+        4. When an order get's confirmed (after succesful payment after rejectability), add the order amount to a special field in the wallet collection so we can find differences
+        5. Order rejection should trigger an e-mail advising the vendor to actively send back funds
 
         To allow paying in ETH or BTC or Tokens for CHF orders, it should work like this:
         - When signing, we convert with what we have, if we can convert, fine, if we can't we throw an error at the client. The found rate id will be stored together with a signature of the order total + currency + an expiration date in a special collection
