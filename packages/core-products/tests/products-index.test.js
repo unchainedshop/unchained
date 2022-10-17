@@ -1,12 +1,11 @@
 import { assert } from 'chai';
 import { initDb } from '@unchainedshop/mongodb';
 import { configureProductsModule } from '@unchainedshop/core-products';
-import { ProductsModule } from '@unchainedshop/types/products';
 
-describe('Test exports', () => {
-  let module: ProductsModule;
+describe.skip('Test exports', () => {
+  let module;
 
-  before(async () => {
+  beforeAll(async () => {
     const db = await initDb();
     module = await configureProductsModule({ db }).catch((error) => {
       console.error(error);

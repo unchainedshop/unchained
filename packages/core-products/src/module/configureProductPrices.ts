@@ -1,12 +1,13 @@
 import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/types/products';
 import crypto from 'crypto';
-import { IProductPricingSheet } from '@unchainedshop/types/products.pricing';
+import { IProductPricingSheet, ProductPriceRate } from '@unchainedshop/types/products.pricing';
+import { Currency } from '@unchainedshop/types/currencies';
 import { ProductPricingDirector } from '../director/ProductPricingDirector';
 import { getPriceLevels } from './utils/getPriceLevels';
 import { getPriceRange } from './utils/getPriceRange';
 import { ProductPriceRates } from '../db/ProductPriceRates';
 
-const getDecimals = (originDecimals) => {
+export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {
     return 2;
   }
@@ -16,6 +17,23 @@ const getDecimals = (originDecimals) => {
     return Math.min(originDecimals, 9);
   }
   return originDecimals;
+};
+
+export const normalizeRate = (
+  baseCurrency: Currency,
+  quoteCurrency: Currency,
+  rateRecord: ProductPriceRate,
+) => {
+  let rate = null;
+  if (rateRecord.quoteCurrency === quoteCurrency.isoCode) {
+    rate = rateRecord.rate;
+  } else {
+    rate = 1 / rateRecord.rate;
+  }
+  const fromDecimals = getDecimals(baseCurrency.decimals);
+  const targetDecimals = getDecimals(quoteCurrency.decimals);
+  rate = fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;
+  return rate;
 };
 
 export const configureProductPricesModule = ({
@@ -264,17 +282,10 @@ export const configureProductPricesModule = ({
           },
           { sort: { timestamp: -1 } },
         );
-        let rate = null;
-        if (!mostRecentCurrencyRate) return null;
-        if (mostRecentCurrencyRate.baseCurrency === baseCurrency.isoCode) {
-          rate = mostRecentCurrencyRate.rate;
-        } else {
-          rate = 1 / mostRecentCurrencyRate.rate;
-        }
-        const fromDecimals = getDecimals(baseCurrency.decimals);
-        const targetDecimals = getDecimals(quoteCurrency.decimals);
-        rate = fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;
 
+        if (!mostRecentCurrencyRate) return null;
+        const rate = normalizeRate(baseCurrency, quoteCurrency, mostRecentCurrencyRate);
+        // quoteCurrencyAmount = baseCurrencyAmount * rate
         return { rate, expiresAt: mostRecentCurrencyRate.expiresAt };
       },
       updateRate: async (rate) => {
