@@ -5,7 +5,7 @@ description: Configure the product conversion rates
 
 Unchained has a generic currency conversion system that allows you to easily integrate new feeds for the currency rates.
 
-To insert a new rate (e.g., in a plugin or job that regularly gets new rates from an external source), `modules.products.prices.rates.updateRate(productPriceRate, maxAge)` is used.
+To insert a new rate (e.g., in a plugin or job that regularly gets new rates from an external source), `modules.products.prices.rates.updateRates(productPriceRates)` is used.
 `productPriceRate.timestamp` is the UNIX timestamp when the rate was produced. It is considered when retrieving rates because only those with the user-specified maximum age are returned. When it is set to `null`, the rate is always returned for the given `base` / `quote` pair, no matter the maximum age that the user specifies.
 
 With `modules.products.prices.rates.getRate(baseCurrency, quoteCurrency, referenceDate)`, you can retrieve the rate for a given currency pair that is not older than `referenceDate`.

@@ -20,6 +20,7 @@ export interface CryptopayModule {
     currency: string;
     orderPaymentId: string;
   }) => Promise<CryptopayTransaction>;
+  getNextDerivationNumber: (currency: string) => Promise<number>
 }
 
 export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule => {
@@ -77,6 +78,10 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
     return CryptoTransactions.findOne({ _id: addressId });
   };
 
+  const getNextDerivationNumber: CryptopayModule['getNextDerivationNumber'] = async (currency) => {
+    return (await CryptoTransactions.countDocuments({ currency })) + 1;
+  };
+
   const getWalletAddressesByOrderPaymentId: CryptopayModule['getWalletAddressesByOrderPaymentId'] =
     async (orderPaymentId) => {
       return CryptoTransactions.find({
@@ -122,6 +127,7 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
     updateMostRecentBlock,
     updateWalletAddress,
     mapOrderPaymentToWalletAddress,
+    getNextDerivationNumber,
     getWalletAddressesByOrderPaymentId,
   };
 };

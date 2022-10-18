@@ -285,29 +285,48 @@ export const configureProductPricesModule = ({
 
         if (!mostRecentCurrencyRate) return null;
         const rate = normalizeRate(baseCurrency, quoteCurrency, mostRecentCurrencyRate);
-        // quoteCurrencyAmount = baseCurrencyAmount * rate
         return { rate, expiresAt: mostRecentCurrencyRate.expiresAt };
       },
-      updateRate: async (rate) => {
-        const priceRates = await ProductPriceRates(db);
-        try {
-          await priceRates.ProductRates.insertOne(rate);
-          return true;
-        } catch (e) {
-          return false;
-        }
+      getRateRange: async (baseCurrency, quoteCurrency, referenceDate = new Date()) => {
+        const priceRates = await (await ProductPriceRates(db)).ProductRates;
+        const rates = await priceRates
+          .find({
+            $or: [
+              {
+                baseCurrency: baseCurrency.isoCode,
+                quoteCurrency: quoteCurrency.isoCode,
+              },
+              {
+                baseCurrency: quoteCurrency.isoCode,
+                quoteCurrency: baseCurrency.isoCode,
+              },
+            ],
+            timestamp: { $lte: referenceDate },
+            expiresAt: { $gte: referenceDate },
+          })
+          .toArray();
+        return rates.reduce((acc, rate) => {
+          const curRate = normalizeRate(baseCurrency, quoteCurrency, rate);
+          const lastMinRate = acc.min || curRate;
+          const lastMaxRate = acc.max || curRate;
+          return {
+            min: Math.min(curRate, lastMinRate),
+            max: Math.max(curRate, lastMaxRate),
+          };
+        }, {} as { min: number; max: number });
       },
       updateRates: async (rates) => {
         const priceRates = await ProductPriceRates(db);
         try {
           if (rates?.length) {
-            const BulkOp = priceRates.ProductRates.initializeUnorderedBulkOp();
+            const BulkOp = priceRates.ProductRates.initializeOrderedBulkOp();
             rates.forEach((rate) => {
               BulkOp.find({
                 baseCurrency: rate.baseCurrency,
                 quoteCurrency: rate.quoteCurrency,
                 rate: rate.rate,
                 expiresAt: { $gte: rate.timestamp },
+                archived: false,
               })
                 .upsert()
                 .updateOne({
@@ -322,14 +341,14 @@ export const configureProductPricesModule = ({
                   },
                 });
 
-              // Expire the others that were still valid
+              // Archive the others that were still valid
               BulkOp.find({
                 baseCurrency: rate.baseCurrency,
                 quoteCurrency: rate.quoteCurrency,
                 expiresAt: { $gte: rate.timestamp, $lt: rate.expiresAt },
               }).update({
                 $set: {
-                  expiresAt: rate.timestamp,
+                  archived: true,
                 },
               });
             });

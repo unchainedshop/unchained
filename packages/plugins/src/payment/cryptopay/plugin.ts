@@ -154,9 +154,9 @@ const Cryptopay: IPaymentAdapter = {
           const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
           const bip32 = BIP32Factory(ecc);
           const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
-          const btcDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
-            context: { 'cryptoAddresses.currency': CryptopayCurrencies.BTC },
-          });
+          const btcDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
+            CryptopayCurrencies.BTC,
+          );
           const derivationPath = getDerivationPath(CryptopayCurrencies.BTC, btcDerivationNumber);
           const child = hardenedMaster.derivePath(derivationPath);
           cryptoAddresses.push({
@@ -171,9 +171,9 @@ const Cryptopay: IPaymentAdapter = {
           // we neuter for security reasons, it's still quite complicated for most ethereum clients to show an appropriate
           // xpub, that's why
           const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB).neuter();
-          const ethDerivationNumber = await modules.orders.payments.countOrderPaymentsByContextData({
-            context: { 'cryptoAddresses.currency': CryptopayCurrencies.ETH },
-          });
+          const ethDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
+            CryptopayCurrencies.ETH,
+          );
           const derivationPath = getDerivationPath(CryptopayCurrencies.ETH, ethDerivationNumber);
           const cleanedForHD = derivationPath.split('/').slice(-2).join('/');
           cryptoAddresses.push({
@@ -194,50 +194,60 @@ const Cryptopay: IPaymentAdapter = {
           orderPayment._id,
         );
 
-        // const addresses: CryptopayAddress[] =
-        //   params.paymentContext.orderPayment.context.cryptoAddresses || [];
-        // const foundWalletsWithBalances = (
-        //   await Promise.all(
-        //     addresses.map(async ({ address, currency, currencyConversionRate }) => {
-        //       const walletAddress = await modules.cryptopay.getWalletAddress(address);
-        //       if (walletAddress) {
-        //         if (walletAddress.currency === currency) {
-        //           return walletAddress;
-        //         }
-        //         return {
-        //           ...walletAddress,
-        //           amount: BigInt(walletAddress.amount.toString()) * BigInt(currencyConversionRate),
-        //           currency,
-        //         };
-        //       }
-        //       return null;
-        //     }),
-        //   )
-        // ).filter(Boolean);
-
-        const walletForOrderCurrency = foundWalletsWithBalances.find(
-          (wallet) => wallet.currency === order.currency,
+        const walletForOrderPayment = foundWalletsWithBalances.find(
+          (wallet) => BigInt(wallet.amount.toString()) > 0n,
         );
 
-        if (walletForOrderCurrency) {
-          const pricing = OrderPricingSheet({
-            calculation: order.calculation,
-            currency: order.currency,
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currency: order.currency,
+        });
+        const totalAmount = BigInt(pricing?.total({ useNetPrice: false }).amount);
+
+        if (walletForOrderPayment.currency !== order.currency) {
+          const baseCurrency = await modules.currencies.findCurrency({
+            isoCode: walletForOrderPayment.currency,
           });
-          const totalAmount = BigInt(pricing?.total({ useNetPrice: false }).amount);
+          const quoteCurrency = await modules.currencies.findCurrency({ isoCode: order.currency });
 
-          // Hack: Downgrade to 8 decimals
+          const { max } = await modules.products.prices.rates.getRateRange(
+            baseCurrency,
+            quoteCurrency,
+            order.confirmed || new Date(),
+          );
+
           const convertedAmount =
-            BigInt(walletForOrderCurrency.amount.toString()) /
-            10n ** (BigInt(walletForOrderCurrency.decimals) - 9n); // All crypto native prices denoted with 8 decimals
+            BigInt(walletForOrderPayment.amount.toString()) /
+            10n ** (BigInt(walletForOrderPayment.decimals) - 9n);
 
-          if (convertedAmount && convertedAmount >= totalAmount) {
+          // Add a Promille 🍻
+          // const minAmount = parseFloat(convertedAmount.toString()) * min * 0.999;
+          const maxAmount = parseFloat(convertedAmount.toString()) * max * 1.001;
+
+          if (maxAmount && maxAmount >= totalAmount) {
+            // Enough sent
             return {
-              transactionId: walletForOrderCurrency._id,
+              transactionId: walletForOrderPayment._id,
             };
           }
           logger.info(
-            `Cryptopay Plugin: Wallet ${walletForOrderCurrency._id} balance too low (yet): ${convertedAmount} < ${totalAmount}`,
+            `Cryptopay Plugin: Wallet ${walletForOrderPayment._id} balance too low (yet): ${maxAmount} < ${totalAmount}`,
+          );
+        }
+
+        if (walletForOrderPayment) {
+          // Hack: Downgrade to 8 decimals
+          const convertedAmount =
+            BigInt(walletForOrderPayment.amount.toString()) /
+            10n ** (BigInt(walletForOrderPayment.decimals) - 9n); // All crypto native prices denoted with 8 decimals
+
+          if (convertedAmount && convertedAmount >= totalAmount) {
+            return {
+              transactionId: walletForOrderPayment._id,
+            };
+          }
+          logger.info(
+            `Cryptopay Plugin: Wallet ${walletForOrderPayment._id} balance too low (yet): ${convertedAmount} < ${totalAmount}`,
           );
         }
 
@@ -253,8 +263,7 @@ const Cryptopay: IPaymentAdapter = {
         1. Check that generated crypto addresses are unique and no order payments share the same crypto address, only repeat when derivations completely exhausted.
         2. When derivation path get's close to "exhaustedness" (95%), send a special e-mail alert to tell the user should generate a new xpub.
         3. Extend the middleware to report the highest seen block number so we can calculate confirmations, 
-        4. When an order get's confirmed (after succesful payment after rejectability), add the order amount to a special field in the wallet collection so we can find differences
-        5. Order rejection should trigger an e-mail advising the vendor to actively send back funds
+        4. Order rejection should trigger an e-mail advising the vendor to actively send back funds
 
         To allow paying in ETH or BTC or Tokens for CHF orders, it should work like this:
         - When signing, we convert with what we have, if we can convert, fine, if we can't we throw an error at the client. The found rate id will be stored together with a signature of the order total + currency + an expiration date in a special collection

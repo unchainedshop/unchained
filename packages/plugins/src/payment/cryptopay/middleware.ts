@@ -72,7 +72,7 @@ export default (app: any) => {
             timestamp: timestampDate,
           };
           console.log('update rate', price, rateData);
-          await resolvedContext.modules.products.prices.rates.updateRate(rateData);
+          await resolvedContext.modules.products.prices.rates.updateRates([rateData]);
         }
 
         if (ping) {

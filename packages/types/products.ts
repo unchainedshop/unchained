@@ -275,7 +275,11 @@ export type ProductsModule = {
         quoteCurrency: Currency,
         referenceDate?: Date,
       ): Promise<{ rate: number; expiresAt: Date } | null>;
-      updateRate(rate: ProductPriceRate): Promise<boolean>;
+      getRateRange(
+        baseCurrency: Currency,
+        quoteCurrency: Currency,
+        referenceDate?: Date,
+      ): Promise<{ min: number; max: number } | null>;
       updateRates(rates: Array<ProductPriceRate>): Promise<boolean>;
     };
   };
