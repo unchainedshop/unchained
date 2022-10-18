@@ -33,6 +33,7 @@ export interface DeliveryPricingAdapterContext extends BasePricingAdapterContext
   country?: string;
   currency?: string;
   provider: DeliveryProvider;
+  providerContext?: any;
   order: Order;
   orderDelivery: OrderDelivery;
   user: User;
@@ -44,10 +45,10 @@ export type DeliveryPricingContext =
       country?: string;
       currency?: string;
       provider: DeliveryProvider;
+      providerContext?: any;
       order: Order;
       orderDelivery: OrderDelivery;
       user: User;
-      providerContext?: any;
     }
   | { item: OrderDelivery };
 

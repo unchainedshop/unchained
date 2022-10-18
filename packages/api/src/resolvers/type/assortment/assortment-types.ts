@@ -68,11 +68,10 @@ export const Assortment: AssortmentHelperTypes = {
     const assortmentIds = assortmentChildrenIds.map(({ childAssortmentId }) => childAssortmentId);
 
     const selector: Query = {
-      _id: { $in: assortmentIds },
+      assortmentIds,
+      includeInactive,
+      includeLeaves: true,
     };
-    if (!includeInactive) {
-      selector.isActive = true;
-    }
 
     return modules.assortments.count(selector);
   },

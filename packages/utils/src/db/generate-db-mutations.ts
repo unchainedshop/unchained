@@ -31,7 +31,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
 
   return {
     create: async (doc, userId) => {
-      const values = schema.clean(doc);
+      const values: any = schema.clean(doc);
       values.created = new Date();
       values.createdBy = userId;
       schema.validate(values);
@@ -49,7 +49,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
           let modifier: Update<T>;
 
           if ((doc as Update<T>)?.$set) {
-            const values = schema.clean(doc, { isModifier: true });
+            const values: any = schema.clean(doc as any, { isModifier: true });
             modifier = {
               ...values,
               $set: {
@@ -59,7 +59,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
               },
             };
           } else {
-            const values = schema.clean(doc);
+            const values: any = schema.clean(doc as any);
             modifier = {
               $set: {
                 ...values,

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/plugins",
-  "version": "1.2.35",
+  "version": "1.2.40",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {
@@ -10,44 +10,34 @@
   "typesVersions": {
     "*": {
       "delivery/*": [
-        "./lib/delivery/*",
-        "./lib/delivery/*/index.d.ts"
+        "./lib/delivery/*"
       ],
       "enrollments/*": [
-        "./lib/enrollments/*",
-        "./lib/enrollments/*/index.d.ts"
+        "./lib/enrollments/*"
       ],
       "events/*": [
-        "./lib/events/*",
-        "./lib/events/*/index.d.ts"
+        "./lib/events/*"
       ],
       "files/*": [
-        "./lib/files/*",
-        "./lib/files/*/index.d.ts"
+        "./lib/files/*"
       ],
       "filters/*": [
-        "./lib/filters/*",
-        "./lib/filters/*/index.d.ts"
+        "./lib/filters/*"
       ],
       "payment/*": [
-        "./lib/payment/*",
-        "./lib/payment/*/index.d.ts"
+        "./lib/payment/*"
       ],
       "pricing/*": [
-        "./lib/pricing/*",
-        "./lib/pricing/*/index.d.ts"
+        "./lib/pricing/*"
       ],
       "quotations/*": [
-        "./lib/quotations/*",
-        "./lib/quotations/*/index.d.ts"
+        "./lib/quotations/*"
       ],
       "warehousing/*": [
-        "./lib/warehousing/*",
-        "./lib/warehousing/*/index.d.ts"
+        "./lib/warehousing/*"
       ],
       "worker/*": [
-        "./lib/worker/*",
-        "./lib/worker/*/index.d.ts"
+        "./lib/worker/*"
       ]
     }
   },
@@ -74,28 +64,28 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
-    "@types/node": "^16.11.62",
-    "@unchainedshop/api": "^1.2.30",
+    "@types/node": "^16.11.66",
+    "@unchainedshop/api": "^1.2.40",
     "@unchainedshop/client-oauth2": "^4.3.3",
-    "@unchainedshop/core-delivery": "^1.2.30",
-    "@unchainedshop/core-enrollments": "^1.2.30",
-    "@unchainedshop/core-filters": "^1.2.30",
-    "@unchainedshop/core-messaging": "^1.2.30",
-    "@unchainedshop/core-orders": "^1.2.30",
-    "@unchainedshop/core-payment": "^1.2.30",
-    "@unchainedshop/core-products": "^1.2.30",
-    "@unchainedshop/core-quotations": "^1.2.30",
-    "@unchainedshop/core-warehousing": "^1.2.30",
-    "@unchainedshop/core-worker": "^1.2.30",
-    "@unchainedshop/events": "^1.2.30",
-    "@unchainedshop/file-upload": "^1.2.30",
-    "@unchainedshop/logger": "^1.2.30",
-    "@unchainedshop/types": "^1.2.30",
-    "@unchainedshop/utils": "^1.2.30",
+    "@unchainedshop/core-delivery": "^1.2.40",
+    "@unchainedshop/core-enrollments": "^1.2.40",
+    "@unchainedshop/core-filters": "^1.2.40",
+    "@unchainedshop/core-messaging": "^1.2.40",
+    "@unchainedshop/core-orders": "^1.2.40",
+    "@unchainedshop/core-payment": "^1.2.40",
+    "@unchainedshop/core-products": "^1.2.40",
+    "@unchainedshop/core-quotations": "^1.2.40",
+    "@unchainedshop/core-warehousing": "^1.2.40",
+    "@unchainedshop/core-worker": "^1.2.40",
+    "@unchainedshop/events": "^1.2.40",
+    "@unchainedshop/file-upload": "^1.2.40",
+    "@unchainedshop/logger": "^1.2.40",
+    "@unchainedshop/types": "^1.2.40",
+    "@unchainedshop/utils": "^1.2.40",
     "bluebird": "^3.7.2",
     "body-parser": "^1.20.0",
     "event-iterator": "^2.0.0",
-    "jest": "^29.0.2",
+    "jest": "^29.2.0",
     "JSONStream": "^1.3.5",
     "minio": "^7.0.32",
     "mongodb": "^4.10.0",
@@ -108,9 +98,6 @@
     "typescript": "^4.8.4",
     "xml-js": "^1.6.11",
     "xml2js": "0.4.23"
-  },
-  "dependencies": {
-    "@types/jest": "^29.1.0"
   },
   "peerDependencies": {
     "node-fetch": "^2.6.7"
