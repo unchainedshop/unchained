@@ -70,8 +70,9 @@ export const Assortment: AssortmentHelperTypes = {
     const selector: Query = {
       assortmentIds,
       includeInactive,
+      includeLeaves: true,
     };
-    
+
     return modules.assortments.count(selector);
   },
 
