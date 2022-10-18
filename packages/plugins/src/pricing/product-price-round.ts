@@ -1,5 +1,5 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
-import { ProductPricingAdapter } from '@unchainedshop/core-products';
+import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 
 const roundToNext = (value, precision) =>
   value % precision === precision / 2
@@ -76,3 +76,5 @@ export const ProductPriceRound: IProductPricingAdapter & {
     };
   },
 };
+
+ProductPricingDirector.registerAdapter(ProductPriceRound);

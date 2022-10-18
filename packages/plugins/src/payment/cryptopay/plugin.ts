@@ -210,7 +210,7 @@ const Cryptopay: IPaymentAdapter = {
           });
           const quoteCurrency = await modules.currencies.findCurrency({ isoCode: order.currency });
 
-          const { max } = await modules.products.prices.rates.getRateRange(
+          const { /* min, */ max } = await modules.products.prices.rates.getRateRange(
             baseCurrency,
             quoteCurrency,
             order.confirmed || new Date(),
