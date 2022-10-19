@@ -44,6 +44,10 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
       accounts.push(token.walletAddress);
     });
 
+    if (!tokens?.length) {
+      return { success: true, result: {} };
+    }
+
     const forked = await modules.worker.addWork(
       {
         type: 'UPDATE_TOKEN_OWNERSHIP',
