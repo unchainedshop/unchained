@@ -1,10 +1,7 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 
-const roundToNext = (value, precision) =>
-  value % precision === precision / 2
-    ? value + precision / 2
-    : value + (precision - (value % precision));
+const roundToNext = (value, precision) => Math.ceil(value / precision) * precision;
 
 // String is referencing to a currency
 interface PriceRoundSettings {
