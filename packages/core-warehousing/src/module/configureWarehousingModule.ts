@@ -64,10 +64,10 @@ export const configureWarehousingModule = async ({
     },
 
     findTokensForUser: async (user, options) => {
-      const addresses = user.services?.web3?.flatMap((service) => {
-        return service.verified ? [service.address] : [];
-      });
-
+      const addresses =
+        user.services?.web3?.flatMap((service) => {
+          return service.verified ? [service.address] : [];
+        }) || [];
       const selector = {
         $or: [
           {
