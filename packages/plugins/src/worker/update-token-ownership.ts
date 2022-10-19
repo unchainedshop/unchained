@@ -31,7 +31,7 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
   async doWork(input, requestContext) {
     const { modules } = requestContext;
 
-    const tokens = await modules.warehousing.findTokensByUserId(null);
+    const tokens = await modules.warehousing.findTokens({});
     const users = await modules.users.findUsers({ includeGuests: true });
     const accounts = users.flatMap((user) => {
       return user?.services?.web3?.flatMap((service) => {

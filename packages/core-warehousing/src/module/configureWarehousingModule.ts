@@ -59,8 +59,28 @@ export const configureWarehousingModule = async ({
       return TokenSurrogates.findOne(generateDbFilterById(tokenId), options);
     },
 
-    findTokensByUserId: async (userId, options) => {
-      return TokenSurrogates.find({ userId }, options).toArray();
+    findTokens: async (selector, options) => {
+      return TokenSurrogates.find(selector, options).toArray();
+    },
+
+    findTokensForUser: async (user, options) => {
+      const addresses = user.services?.web3?.flatMap((service) => {
+        return service.verified ? [service.address] : [];
+      });
+
+      const selector = {
+        $or: [
+          {
+            walletAddress: { $in: addresses },
+          },
+          {
+            userId: user._id,
+          },
+        ],
+      };
+
+      const userTokens = await TokenSurrogates.find(selector, options).toArray();
+      return userTokens;
     },
 
     findProviders: async (query, options) => {

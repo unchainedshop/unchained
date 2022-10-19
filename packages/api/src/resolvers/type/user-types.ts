@@ -144,7 +144,7 @@ export const User: UserHelperTypes = {
 
   async tokens(user, params, context) {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.modules.warehousing.findTokensByUserId(user._id);
+    return context.modules.warehousing.findTokensForUser(user);
   },
 
   country: async (user, params, context) => {

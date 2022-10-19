@@ -6,6 +6,7 @@ import { DeliveryProvider } from './delivery';
 import { Order } from './orders';
 import { OrderPosition } from './orders.positions';
 import { Product } from './products';
+import { User } from './user';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',
@@ -109,7 +110,8 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     options?: FindOptions,
   ) => Promise<WarehousingProvider>;
   findToken: (query: { tokenId: string }, options?: FindOptions) => Promise<TokenSurrogate>;
-  findTokensByUserId: (userId: string, options?: FindOptions) => Promise<Array<TokenSurrogate>>;
+  findTokensForUser: (user: User, options?: FindOptions) => Promise<Array<TokenSurrogate>>;
+  findTokens: (query: any, options?: FindOptions) => Promise<Array<TokenSurrogate>>;
   findProviders: (
     query: WarehousingProviderQuery,
     options?: FindOptions,
