@@ -71,7 +71,7 @@ export const configureWarehousingModule = async ({
       const selector = {
         $or: [
           {
-            walletAddress: { $in: addresses },
+            walletAddress: { $in: addresses || [] },
           },
           {
             userId: user._id,
