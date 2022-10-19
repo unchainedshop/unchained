@@ -19,6 +19,14 @@ export default [
       loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
 
       """
+      Log the user in with a Web3 Browser Extension
+      """
+      loginWithWeb3(address: String!, signedMessage: JSON!): LoginMethodResponse
+      addWeb3Address(address: String!): User
+      removeWeb3Address(address: String!): User
+
+
+      """
       Create a new user.
       """
       createUser(
