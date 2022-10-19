@@ -74,6 +74,21 @@ export const UserWebAuthnCredentialsNotFoundError = createError(
   'User WebAuth Credentials not found',
 );
 
+export const UserWeb3AddressNotFoundError = createError(
+  'UserWeb3AddressNotFoundError',
+  'Web3 Account not found for User',
+);
+
+export const UserWeb3InvalidAddressError = createError(
+  'UserWeb3InvalidAddressError',
+  'Invalid address provided',
+);
+
+export const UserWeb3AddressSignatureError = createError(
+  'UserWeb3AddressSignatureError',
+  'Signature does not match web3 account / is invalid',
+);
+
 export const UserNoCartError = createError('UserNoCartError', 'No open cart available to checkout');
 export const OrderItemNotFoundError = createError('OrderItemNotFoundError', 'Order Item not found');
 export const OrderNotFoundError = createError('OrderNotFoundError', 'Order not found');

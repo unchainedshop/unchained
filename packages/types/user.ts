@@ -46,6 +46,12 @@ export interface WebAuthnCredentials {
   mdsMetadata: any;
 }
 
+export interface Web3Address {
+  address: string;
+  nonce?: number;
+  verified: boolean;
+}
+
 export type User = {
   _id?: _ID;
   avatarId?: _ID;

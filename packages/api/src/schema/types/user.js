@@ -78,6 +78,12 @@ export default [
       mdsMetadata: WebAuthnMDSv3Metadata
     }
 
+    type Web3Address {
+      address: String!
+      nonce: Int
+      verified: Boolean!
+    }
+
     type User {
       _id: ID!
       email: String @deprecated(reason: "Please use primaryEmail.address instead")
@@ -87,6 +93,7 @@ export default [
       isTwoFactorEnabled: Boolean!
       isInitialPassword: Boolean!
       webAuthnCredentials: [WebAuthnCredentials!]!
+      web3Addresses: [Web3Address!]!
       name: String!
       avatar: Media
       profile: UserProfile

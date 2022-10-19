@@ -8,7 +8,13 @@ import { Language } from '@unchainedshop/types/languages';
 import { Order } from '@unchainedshop/types/orders';
 import { PaymentCredentials } from '@unchainedshop/types/payments';
 import { Quotation } from '@unchainedshop/types/quotations';
-import { Email, User as UserType, UserProfile, WebAuthnCredentials } from '@unchainedshop/types/user';
+import {
+  Email,
+  User as UserType,
+  UserProfile,
+  Web3Address,
+  WebAuthnCredentials,
+} from '@unchainedshop/types/user';
 import type { Locale } from 'locale';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing';
@@ -44,6 +50,7 @@ export interface UserHelperTypes {
   paymentCredentials: HelperType<any, Array<PaymentCredentials>>;
   tokens: HelperType<any, Array<TokenSurrogate>>;
   webAuthnCredentials: HelperType<any, Array<WebAuthnCredentials>>;
+  web3Addresses: HelperType<any, Array<Web3Address>>;
   primaryEmail: HelperType<any, Email>;
   profile: HelperType<any, UserProfile>;
   quotations: HelperType<{ sort?: Array<SortOption>; queryString?: string }, Array<Quotation>>;
@@ -192,6 +199,11 @@ export const User: UserHelperTypes = {
   webAuthnCredentials: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return user.services.webAuthn || [];
+  },
+
+  web3Addresses: async (user, params, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    return user.services.web3 || [];
   },
 
   quotations: async (user, params, context) => {

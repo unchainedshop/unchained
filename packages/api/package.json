@@ -35,6 +35,7 @@
     "graphql": "^15.x"
   },
   "dependencies": {
+    "@metamask/eth-sig-util": "^5.0.0",
     "@unchainedshop/core": "^2.0.0-beta1",
     "@unchainedshop/events": "^2.0.0-beta1",
     "@unchainedshop/logger": "^2.0.0-beta1",

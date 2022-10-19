@@ -11,7 +11,7 @@ export default async function removeWebAuthnCredentials(
     userId,
   });
 
-  const foundCredentials = user.services?.webAuthn.find((service) => service.id === credentialsId);
+  const foundCredentials = user.services?.webAuthn?.find((service) => service.id === credentialsId);
   if (!foundCredentials) {
     throw new UserWebAuthnCredentialsNotFoundError({ userId, credentialsId });
   }

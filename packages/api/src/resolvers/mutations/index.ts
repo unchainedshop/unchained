@@ -23,6 +23,9 @@ import createWebAuthnCredentialCreationOptions from './accounts/createWebAuthnCr
 import createWebAuthnCredentialRequestOptions from './accounts/createWebAuthnCredentialRequestOptions';
 import addWebAuthnCredentials from './accounts/addWebAuthnCredentials';
 import removeWebAuthnCredentials from './accounts/removeWebAuthnCredentials';
+import addWeb3Address from './accounts/addWeb3Address';
+import removeWeb3Address from './accounts/removeWeb3Address';
+import verifyWeb3Address from './accounts/verifyWeb3Address';
 import updateUserAvatar from './users/updateUserAvatar';
 import updateUserProfile from './users/updateUserProfile';
 import setUserTags from './users/setUserTags';
@@ -160,6 +163,9 @@ export default {
   createWebAuthnCredentialRequestOptions,
   addWebAuthnCredentials: acl(actions.updateUser)(addWebAuthnCredentials),
   removeWebAuthnCredentials: acl(actions.updateUser)(removeWebAuthnCredentials),
+  addWeb3Address: acl(actions.updateUser)(addWeb3Address),
+  removeWeb3Address: acl(actions.updateUser)(removeWeb3Address),
+  verifyWeb3Address: acl(actions.updateUser)(verifyWeb3Address),
   verifyEmail,
   loginWithPassword,
   loginWithWebAuthn,
