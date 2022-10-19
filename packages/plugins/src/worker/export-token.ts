@@ -28,4 +28,6 @@ export const configureExportToken = (unchainedApi: UnchainedCore) => {
   });
 };
 
+export default configureExportToken;
+
 WorkerDirector.registerAdapter(ExportTokenWorker);

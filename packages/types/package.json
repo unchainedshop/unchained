@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "2.0.0-beta1",
+  "version": "2.0.0-beta2",
   "description": "Types for unchained core packages",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@accounts/types": "^0.33.2",
     "@types/locale": "^0.1.1",
-    "@types/node": "^16.11.66",
+    "@types/node": "^16.11.68",
     "apollo-server-express": "^2.26.0",
     "mongodb": "^4.10.0",
     "simpl-schema": "^3.0.1",

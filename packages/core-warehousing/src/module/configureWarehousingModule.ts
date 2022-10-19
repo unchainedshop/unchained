@@ -59,7 +59,7 @@ export const configureWarehousingModule = async ({
       return TokenSurrogates.findOne(generateDbFilterById(tokenId), options);
     },
 
-    findTokens: async ({ userId }, options) => {
+    findTokensByUserId: async (userId, options) => {
       return TokenSurrogates.find({ userId }, options).toArray();
     },
 
