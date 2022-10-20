@@ -193,11 +193,16 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isOwnedToken = async (
     obj: any,
     { tokenId }: { tokenId: string },
-    { modules, userId }: Context,
+    { modules, userId, user }: Context,
   ) => {
     const token = await modules.warehousing.findToken({ tokenId });
     if (!token) return true;
-    return token.userId === userId;
+    return (
+      token.userId === userId ||
+      user?.services?.web3?.some((service) => {
+        return service.address === token.walletAddress && service.verified;
+      })
+    );
   };
 
   role.allow(actions.viewEvent, false);
