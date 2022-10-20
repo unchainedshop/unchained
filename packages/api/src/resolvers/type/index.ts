@@ -66,6 +66,7 @@ import { Work } from './work-types';
 import { Event } from './event-types';
 import { Media } from './media-types';
 import { Token } from './token-types';
+import { Web3Address } from './web3-address';
 
 const types = {
   Assortment,
@@ -136,6 +137,7 @@ const types = {
   Work,
   Event,
   Media,
+  Web3Address,
 };
 
 export default types;

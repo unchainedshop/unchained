@@ -19,15 +19,17 @@ export default async function exportToken(
 
   const token = await modules.warehousing.findToken({ tokenId });
 
-  await modules.worker.addWork({
-    type: 'EXPORT_TOKEN',
-    retries: 5,
-    input: {
-      token,
-      quantity,
-      recipientWalletAddress,
-    },
-  });
+  if (token) {
+    await modules.worker.addWork({
+      type: 'EXPORT_TOKEN',
+      retries: 5,
+      input: {
+        token,
+        quantity,
+        recipientWalletAddress,
+      },
+    });
+  }
 
   return modules.warehousing.findToken({ tokenId });
 }
