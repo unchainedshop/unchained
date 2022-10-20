@@ -6,7 +6,7 @@ const StrictQualFilter: IFilterAdapter = {
 
   key: 'shop.unchained.filters.strict-qual',
   label: 'Simple Strict Equal DB Filter',
-  version: '0.1',
+  version: '1.0.0',
   orderIndex: 0,
 
   actions: (params) => {

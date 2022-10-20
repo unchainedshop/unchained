@@ -51,7 +51,7 @@ const OrderDiscount: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-discount',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Apply Discounts on Total Order Value',
   orderIndex: 90,
 

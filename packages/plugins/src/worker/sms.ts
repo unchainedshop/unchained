@@ -19,7 +19,7 @@ const SmsWorkerPlugin: IWorkerAdapter<
 
   key: 'shop.unchained.worker-plugin.sms',
   label: 'Send a SMS through Twilio',
-  version: '1.0',
+  version: '1.0.0',
 
   type: 'SMS',
 

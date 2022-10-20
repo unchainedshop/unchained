@@ -20,7 +20,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
 
   key: 'shop.unchained.worker-plugin.zombie-killer',
   label: 'Zombie Killer',
-  version: '1.0',
+  version: '1.0.0',
   type: 'ZOMBIE_KILLER',
 
   doWork: async (_, unchainedAPI) => {

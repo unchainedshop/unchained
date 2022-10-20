@@ -5,8 +5,8 @@ const InvoicePrepaid: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.invoice-prepaid',
-  label: 'Invoice Prepaid (manually)',
-  version: '1.0',
+  label: 'Invoice pre-paid',
+  version: '1.0.0',
 
   initialConfiguration: [],
 

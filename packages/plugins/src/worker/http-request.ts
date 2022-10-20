@@ -26,7 +26,7 @@ const HttpRequestWorkerPlugin: IWorkerAdapter<
 
   key: 'shop.unchained.worker-plugin.http-request',
   label: 'Request a resource via http request. 200 = success',
-  version: '1.0',
+  version: '1.0.0',
   type: 'HTTP_REQUEST',
 
   async doWork({ url, data = {}, headers, method = 'POST' } = { method: 'POST' }) {

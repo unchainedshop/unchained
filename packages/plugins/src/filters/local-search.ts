@@ -9,7 +9,7 @@ const LocalSearch: IFilterAdapter = {
 
   key: 'shop.unchained.filters.local-search',
   label: 'Simple Fulltext search with MongoDB',
-  version: '0.1',
+  version: '1.0.0',
   orderIndex: 1,
 
   actions: (params) => {

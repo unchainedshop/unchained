@@ -39,7 +39,7 @@ const Datatrans: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.datatrans',
-  label: 'Datatrans (https://docs.datatrans.ch)',
+  label: 'Datatrans',
   version: '2.0.0',
 
   initialConfiguration: [

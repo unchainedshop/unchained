@@ -51,7 +51,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
 
   key: 'shop.unchained.worker-plugin.bulk-import',
   label: 'Bulk Import',
-  version: '1.0',
+  version: '1.0.0',
   type: 'BULK_IMPORT',
 
   doWork: async (rawPayload, unchainedAPI) => {

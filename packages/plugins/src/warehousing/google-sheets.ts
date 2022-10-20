@@ -109,8 +109,8 @@ const GoogleSheets: IWarehousingAdapter = {
   ...WarehousingAdapter,
 
   key: 'shop.unchained.warehousing.google-sheets',
-  version: '1.0',
   label: 'Google Sheets',
+  version: '1.0.0',
   orderIndex: 0,
 
   typeSupported: (type) => {

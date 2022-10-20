@@ -32,7 +32,7 @@ export const ProductPriceRound: IProductPricingAdapter & {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.price-round',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Round product price to the next precision number',
   orderIndex: 2,
 

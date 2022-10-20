@@ -10,7 +10,7 @@ export const UpdateTokenOwnership: IWorkerAdapter<void, void> = {
 
   key: 'shop.unchained.worker-plugin.update-token-ownership',
   label: 'External worker to update ownership of provided tokens',
-  version: '1.0',
+  version: '1.0.0',
   type: 'UPDATE_TOKEN_OWNERSHIP',
   external: true,
 
@@ -24,7 +24,7 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
 
   key: 'shop.unchained.worker-plugin.refresh-tokens',
   label: 'Worker to refresh tokens for accounts',
-  version: '1.0',
+  version: '1.0.0',
   type: 'REFRESH_TOKENS',
   external: false,
 

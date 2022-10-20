@@ -153,7 +153,7 @@ const Stripe: IPaymentAdapter = {
 
   key: 'shop.unchained.payment.stripe',
   label: 'Stripe',
-  version: '2.0',
+  version: '2.0.0',
 
   typeSupported(type) {
     return type === 'GENERIC';

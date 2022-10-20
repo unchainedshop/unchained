@@ -109,7 +109,7 @@ const getExpiryDate = () => new Date(new Date().getTime() + PUT_URL_EXPIRY);
 export const MinioAdapter: IFileAdapter = {
   key: 'shop.unchained.file-upload-plugin.minio',
   label: 'Uploads files into an S3 bucket using minio',
-  version: '1.0',
+  version: '1.0.0',
 
   ...FileAdapter,
 

@@ -5,8 +5,8 @@ const HalfPriceManual: IDiscountAdapter = {
   ...OrderDiscountAdapter,
 
   key: 'shop.unchained.discount.half-price-manual',
-  label: 'Half Price',
-  version: '1.0',
+  label: 'Half Price Manual',
+  version: '1.0.0',
   orderIndex: 2,
 
   // return true if a discount is allowed to get added manually by a user

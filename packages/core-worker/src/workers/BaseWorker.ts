@@ -17,7 +17,7 @@ interface WorkerParams {
 export const BaseWorker: IWorker<WorkerParams> = {
   key: 'shop.unchained.worker.base',
   label: 'Base worker. Do not use this directly.',
-  version: '1.0',
+  version: '1.0.0',
   type: 'BASE',
   external: false,
 

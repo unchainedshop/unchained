@@ -23,7 +23,7 @@ import {
 const ShopPickUp: IDeliveryAdapter = {
   key: 'ch.shop.delivery.pickup',
   label: 'Pickup at Clerk',
-  version: '1.0',
+  version: '1.0.0',
   orderIndex: 1
   initialConfiguration: (DeliveryConfiguration = []),
 
@@ -124,8 +124,8 @@ import { Discount } from '@unchainedshop/types/discount';
 
 export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
   key: 'ch.shop.delivery.pickup-fee',
-  version: '1.0',
-  label: 'shop Delivery',
+  version: '1.0.0',
+  label: 'Pickup Fee',
   orderIndex: 10,
 
   isActivatedFor: ({ provider }: DeliveryPricingAdapterContext) => {

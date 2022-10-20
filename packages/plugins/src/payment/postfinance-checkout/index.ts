@@ -47,7 +47,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
 
   key: 'shop.unchained.payment.postfinance-checkout',
   label: 'Postfinance Checkout',
-  version: '1.0',
+  version: '1.0.0',
 
   typeSupported(type) {
     return type === 'GENERIC';

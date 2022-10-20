@@ -5,7 +5,7 @@ const ManualOffering: IQuotationAdapter = {
   ...QuotationAdapter,
 
   key: 'shop.unchained.quotations.manual',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Manual Offerings',
   orderIndex: 0,
 

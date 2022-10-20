@@ -5,8 +5,8 @@ export const PaymentFreePrice: IPaymentPricingAdapter = {
   ...PaymentPricingAdapter,
 
   key: 'shop.unchained.pricing.payment-free',
-  version: '1.0',
   label: 'Free Payment',
+  version: '1.0.0',
   orderIndex: 0,
 
   isActivatedFor: () => {

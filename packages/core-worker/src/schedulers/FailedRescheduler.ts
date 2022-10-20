@@ -6,7 +6,7 @@ import { WorkerEventTypes } from '../director/WorkerEventTypes';
 export const FailedRescheduler: IScheduler = {
   key: 'shop.unchained.scheduler.failed',
   label: 'Reschedule failed works',
-  version: '1.0',
+  version: '1.0.0',
 
   actions: (requestContext) => {
     const handleFinishedWork = ({ work, userId }: { work: Work; userId: string }) => {

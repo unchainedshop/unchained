@@ -28,7 +28,7 @@ export const IntervalWorker: IWorker<WorkerParams> = {
 
   key: 'shop.unchained.worker.cron',
   label: 'Allocates work on fixed intervals with native node setInterval',
-  version: '1.0',
+  version: '1.0.0',
   type: 'CRON',
 
   actions: ({ workerId, batchCount = 0, schedule = defaultSchedule }, requestContext: Context) => {

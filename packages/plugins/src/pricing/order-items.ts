@@ -5,7 +5,7 @@ const OrderItems: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-items',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Add Total Value Of Goods to Order',
   orderIndex: 0,
 

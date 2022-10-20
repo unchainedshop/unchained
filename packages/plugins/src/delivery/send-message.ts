@@ -5,8 +5,8 @@ const SendMessage: IDeliveryAdapter = {
   ...DeliveryAdapter,
 
   key: 'shop.unchained.delivery.send-message',
-  label: 'Forward Delivery via Messaging',
-  version: '1.0',
+  label: 'Forward via Messaging',
+  version: '1.0.0',
 
   initialConfiguration: [
     { key: 'from', value: '' },

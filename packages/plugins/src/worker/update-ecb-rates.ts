@@ -29,7 +29,7 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
 
   key: 'shop.unchained.worker.update-ecb-rates',
   label: 'Update ECB Rates',
-  version: '1.0',
+  version: '1.0.0',
   type: 'UPDATE_ECB_RATES',
 
   doWork: async (input, requestContext) => {

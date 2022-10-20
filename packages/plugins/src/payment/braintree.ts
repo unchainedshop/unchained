@@ -11,7 +11,7 @@ const BraintreeDirect: IPaymentAdapter = {
 
   key: 'shop.unchained.braintree-direct',
   label: 'Braintree Direct',
-  version: '1.0',
+  version: '1.0.0',
 
   initialConfiguration: [
     {

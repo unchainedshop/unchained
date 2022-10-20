@@ -14,7 +14,7 @@ const LicensedEnrollments: IEnrollmentAdapter = {
   ...EnrollmentAdapter,
 
   key: 'shop.unchained.enrollments.licensed',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Simple Licensed Enrollments',
 
   isActivatedFor: (productPlan) => {

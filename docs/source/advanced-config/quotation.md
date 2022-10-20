@@ -20,7 +20,7 @@ import { QuotationError } from '@unchainedshop/core-quotations';
 export const ManualOffering: IQuotationAdapter = {
   key: 'shop.unchained.quotations.manual',
   label: 'Manual quotation'
-  version: '1.0',
+  version: '1.0.0',
   orderIndex: 1,
 
   isActivatedFor: (quotationContext: QuotationContext, requestContext: Context): boolean => {

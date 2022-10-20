@@ -233,7 +233,7 @@ const AppleIAP: IPaymentAdapter = {
 
   key: 'shop.unchained.apple-iap',
   label: 'Apple In-App-Purchase',
-  version: '1.0',
+  version: '1.0.0',
   initialConfiguration: [],
 
   typeSupported: (type) => {

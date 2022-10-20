@@ -56,7 +56,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,
 
   key: 'shop.unchained.pricing.delivery-swiss-tax',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Apply Swiss Tax on Delivery Fees',
   orderIndex: 20,
 

@@ -5,7 +5,7 @@ const ProductPrice: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.product-price',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Add Gross Price to Product',
   orderIndex: 0,
 

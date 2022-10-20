@@ -5,7 +5,11 @@
   "types": "lib/plugins-index.d.ts",
   "exports": {
     ".": "./lib/plugins-index.js",
-    "./*": "./lib/*"
+    "./*": "./lib/*",
+    "./worker/BulkImportWorker": "./lib/worker/bulk-import",
+    "./worker/ZombieKillerWorker": "./lib/worker/zombie-killer",
+    "./worker/GenerateOrderWorker": "./lib/worker/enrollment-order-generator",
+    "./worker/MessageWorker": "./lib/worker/message"
   },
   "typesVersions": {
     "*": {
@@ -38,6 +42,9 @@
       ],
       "worker/*": [
         "./lib/worker/*"
+      ],
+      "worker/GenerateOrderWorker": [
+        "./lib/worker/enrollment-order-generator"
       ]
     }
   },

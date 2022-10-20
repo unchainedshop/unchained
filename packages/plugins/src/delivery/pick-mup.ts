@@ -55,8 +55,8 @@ const PickMup: IDeliveryAdapter = {
   ...DeliveryAdapter,
 
   key: 'shop.unchained.pick-mup',
-  label: 'Migros Pick M Up',
-  version: '1.0',
+  label: 'Migros PickMUp',
+  version: '1.0.0',
 
   initialConfiguration: [
     {

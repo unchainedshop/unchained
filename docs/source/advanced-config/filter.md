@@ -21,7 +21,7 @@ import { Context } from '@unchainedshop/types/api';
 const ShopAttributeFilter: IFilterAdapter = {
   key: 'ch.shop.filter',
   label: 'Filters products by metadata attributes',
-  version: '0.1',
+  version: '1.0.0',
   orderIndex: 10,
 
   actions: (params: FilterContext & Context): FilterAdapterActions => {
@@ -159,7 +159,7 @@ const ShopAttributeFilter: IFilterAdapter = {
   ...FilterAdapter,
   key: 'ch.shop.filter',
   label: 'Filters products by metadata attributes',
-  version: '0.1',
+  version: '1.0.0',
   orderIndex: 10,
 
   actions: (params: FilterContext & Context): FilterAdapterActions => {

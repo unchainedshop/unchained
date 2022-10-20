@@ -5,8 +5,8 @@ const PickMup: IDeliveryAdapter = {
   ...DeliveryAdapter,
 
   key: 'shop.unchained.stores',
-  label: 'Manual Pickup',
-  version: '1.0',
+  label: 'Pre-configured Stores',
+  version: '1.0.0',
 
   typeSupported: (type) => {
     return type === DeliveryProviderType.PICKUP;

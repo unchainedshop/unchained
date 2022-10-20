@@ -5,7 +5,7 @@ const ProductPriceRateConversion: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.rate-conversion',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Generic rate conversion plugin that converts between rates if entry in DB exists.',
   orderIndex: 1,
 

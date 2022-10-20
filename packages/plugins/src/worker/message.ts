@@ -14,7 +14,7 @@ export const MessageWorker: IWorkerAdapter<
 
   key: 'shop.unchained.worker-plugin.message',
   label: 'Send Message by combining payload with a template and start concrete jobs',
-  version: '1.0',
+  version: '1.0.0',
   type: 'MESSAGE',
 
   doWork: async ({ template, ...payload }, requestContext, workId) => {

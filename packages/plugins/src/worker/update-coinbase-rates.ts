@@ -20,7 +20,7 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
 
   key: 'shop.unchained.worker.update-coinbase-rates',
   label: 'Update Coinbase Rates',
-  version: '1.0',
+  version: '1.0.0',
   type: 'UPDATE_COINBASE_RATES',
 
   doWork: async (input, requestContext) => {

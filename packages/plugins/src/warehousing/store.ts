@@ -9,8 +9,8 @@ const Store: IWarehousingAdapter = {
   ...WarehousingAdapter,
 
   key: 'shop.unchained.warehousing.store',
-  version: '1.0',
   label: 'Store',
+  version: '1.0.0',
   orderIndex: 0,
 
   initialConfiguration: [{ key: 'name', value: 'Flagship Store' }],

@@ -5,7 +5,7 @@ const OrderDelivery: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-delivery',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Add Delivery Fees to Order',
   orderIndex: 10,
 

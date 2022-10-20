@@ -26,7 +26,7 @@ import { Discount } from '@unchainedshop/types/discount';
 export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
   key: 'shop-order-service-pricing',
   label: 'Default service charge price',
-  version: '1.0',
+  version: '1.0.0',
   orderIndex: 1,
 
   isActivatedFor: (context: OrderPricingAdapterContext) => {
@@ -101,8 +101,8 @@ const ShopDiscount: IDiscountAdapter = {
   ...OrderDiscountAdapter,
 
   key: 'ch.shop.discount.ShopDiscount',
-  label: 'early bird',
-  version: '1.0',
+  label: 'Early Bird',
+  version: '1.0.0',
   orderIndex: 1,
 
   // return true if a discount is allowed to get added manually by a user

@@ -10,7 +10,6 @@ import '@unchainedshop/plugins/delivery/pick-mup';
 import '@unchainedshop/plugins/delivery/send-message';
 import '@unchainedshop/plugins/delivery/stores';
 import '@unchainedshop/plugins/warehousing/store';
-import '@unchainedshop/plugins/warehousing/infinite-minter';
 
 import '@unchainedshop/plugins/payment/invoice';
 import '@unchainedshop/plugins/payment/invoice-prepaid';

@@ -29,7 +29,7 @@ const TRANSACTION_FEE = 29;
 
 export const ShopCommission: IPaymentPricingAdapter = {
   key: 'Shop.pricing.commission',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Shop Fee',
   orderIndex: 2,
 
@@ -136,7 +136,7 @@ import { Context } from '@unchainedshop/types/api';
 const ShopPayment: IPaymentAdapter = {
   key: 'ch.Shop.payment',
   label: 'Shop Payment',
-  version: '1.0',
+  version: '1.0.0',
 
   initialConfiguration: PaymentConfiguration =  [],
 

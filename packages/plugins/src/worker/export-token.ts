@@ -7,7 +7,7 @@ export const ExportTokenWorker: IWorkerAdapter<void, void> = {
 
   key: 'shop.unchained.worker-plugin.export-token',
   label: 'External worker to hold the state of the minting/export process of tokens',
-  version: '1.0',
+  version: '1.0.0',
   type: 'EXPORT_TOKEN',
   external: true,
 

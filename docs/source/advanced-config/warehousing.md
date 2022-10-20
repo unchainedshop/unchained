@@ -26,7 +26,7 @@ import { Context } from '@unchainedshop/types/api';
 
 const Store: IWarehousingAdapter = {
   key: 'shop.unchained.warehousing.store',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Store',
   orderIndex: 0,
   initialConfiguration = [{ key: 'name', value: 'Flagship Store' }],

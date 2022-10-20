@@ -27,8 +27,8 @@ const PaypalCheckout: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'com.paypal.checkout',
-  label: 'Paypal (Checkout / Native)',
-  version: '1.0',
+  label: 'Paypal',
+  version: '1.0.0',
 
   initialConfiguration: [],
 

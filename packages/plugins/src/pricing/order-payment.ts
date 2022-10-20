@@ -5,7 +5,7 @@ const OrderPayment: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-payment',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Add Payment Fees to Order',
   orderIndex: 20,
 

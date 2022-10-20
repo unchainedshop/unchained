@@ -83,7 +83,7 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
 
   key: 'shop.unchained.worker-plugin.generate-enrollment-orders',
   label: 'Generates new Orders from Enrollments',
-  version: '1.0',
+  version: '1.0.0',
   type: 'ENROLLMENT_ORDER_GENERATOR',
 
   doWork: async (input, requestContext) => {

@@ -49,7 +49,7 @@ const Cryptopay: IPaymentAdapter = {
 
   key: 'shop.unchained.payment.cryptopay',
   label: 'Cryptopay',
-  version: '1.1',
+  version: '1.0.0',
 
   typeSupported(type) {
     return type === 'GENERIC';

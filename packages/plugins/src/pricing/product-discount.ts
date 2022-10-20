@@ -13,7 +13,7 @@ const ProductDiscount: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.product-discount',
-  version: '1.0',
+  version: '1.0.0',
   label: 'Apply Discounts on Product Price',
   orderIndex: 10,
 
