@@ -3,8 +3,8 @@ export default [
     input UpdateProductTokenizationInput {
       contractAddress: String!
       contractStandard: SmartContractStandard!
-      tokenId: String!
-      supply: Int!
+      tokenId: String
+      supply: Int
     }
 
     enum SmartContractStandard {
@@ -13,8 +13,8 @@ export default [
     }
 
     type ContractConfiguration {
-      tokenId: String!
-      supply: Int!
+      tokenId: String
+      supply: Int
     }
 
     """

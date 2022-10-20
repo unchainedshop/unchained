@@ -89,8 +89,8 @@ export interface ProductPlan {
 }
 
 export interface ProductContractConfiguration {
-  tokenId: string;
-  supply: number;
+  tokenId?: string;
+  supply?: number;
 }
 
 export interface ProductAssignment {
