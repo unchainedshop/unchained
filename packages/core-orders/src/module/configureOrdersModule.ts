@@ -263,7 +263,7 @@ export const configureOrdersModule = async ({
 
     let orderPositions = (await findOrderPositions(order)) as OrderPosition[];
     orderPositions = await Promise.all(
-      orderPositions.map((orderPosition) =>
+      orderPositions.map(async (orderPosition) =>
         modules.orders.positions.updateCalculation(orderPosition, requestContext),
       ),
     );
@@ -278,7 +278,7 @@ export const configureOrdersModule = async ({
     }
 
     orderPositions = await Promise.all(
-      orderPositions.map((orderPosition) =>
+      orderPositions.map(async (orderPosition) =>
         modules.orders.positions.updateScheduling(
           { order, orderDelivery, orderPosition },
           requestContext,

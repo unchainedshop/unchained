@@ -15,6 +15,5 @@ export default async function emptyCart(
   if (!cart) return null;
 
   await modules.orders.positions.removePositions({ orderId: cart._id }, context);
-
-  return cart;
+  return modules.orders.findOrder({ orderId: cart._id });
 }
