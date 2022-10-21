@@ -119,7 +119,7 @@ export const configureOrderPositionsModule = ({
         orderPosition,
       });
 
-      return orderPosition;
+      return { ...orderPosition, calculation: [] };
     },
 
     removePositions: async ({ orderId }, requestContext) => {
