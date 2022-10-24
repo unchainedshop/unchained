@@ -68,7 +68,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/node": "^16.11.68",
+    "@types/node": "^16.18.0",
     "mongodb-memory-server": "^8.9.3",
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1",

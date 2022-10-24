@@ -9,8 +9,12 @@ async function cleanup() {
 
 export default async function teardown(globalConfig) {
   if (!globalConfig.watch && !globalConfig.watchAll) {
-    await disconnect();
-    await cleanup();
+    try {
+      await disconnect();
+      await cleanup();
+    } catch (e) {
+      /* */
+    }
   }
 }
 
