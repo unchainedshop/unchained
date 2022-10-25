@@ -34,6 +34,10 @@ export default async function createAssortment(
     );
   }
 
+  if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
+    throw new Error(`Can't create assortment ${_id}, fields missing?`);
+  }
+
   logger.debug('create localized content for assortment', specification.content);
   await upsertAssortmentContent(
     {
@@ -44,7 +48,7 @@ export default async function createAssortment(
     unchainedAPI,
   );
 
-  logger.debug('create product products', products);
+  logger.debug('create assortment products', products);
   await upsertAssortmentProducts(
     {
       products: products || [],
@@ -54,7 +58,7 @@ export default async function createAssortment(
     unchainedAPI,
   );
 
-  logger.debug('create assortment children', products);
+  logger.debug('create assortment children', children);
   await upsertAssortmentChildren(
     {
       children: children || [],
@@ -64,7 +68,7 @@ export default async function createAssortment(
     unchainedAPI,
   );
 
-  logger.debug('create assortment filters', products);
+  logger.debug('create assortment filters', filters);
   await upsertAssortmentFilters(
     {
       filters: filters || [],

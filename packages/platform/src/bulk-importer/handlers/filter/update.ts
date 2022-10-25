@@ -10,34 +10,35 @@ export default async function updateFilter(
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;
 
-  if (!specification) throw new Error('Specification is required when creating a new filter');
+  if (!(await modules.filters.filterExists({ filterId: _id }))) {
+    throw new Error(`Can't update non-existing filter ${_id}`);
+  }
 
-  logger.debug('update filter object', specification);
   const { content, options, ...filterData } = specification;
-  const filter = await modules.filters.update(
-    _id,
-    {
-      ...filterData,
-      options: options?.map((option) => option.value) || [],
-      authorId,
-    },
-    unchainedAPI,
-    { skipInvalidation: true },
-    unchainedAPI.userId,
-  );
 
-  if (content || options) {
-    if (!filter) throw new Error(`Can't update non-existing filter ${_id}`);
+  if (specification) {
+    logger.debug('update filter object', specification);
+    await modules.filters.update(
+      _id,
+      {
+        ...filterData,
+        options: options?.map((option) => option.value) || [],
+        authorId,
+      },
+      unchainedAPI,
+      { skipInvalidation: true },
+      unchainedAPI.userId,
+    );
   }
 
   if (content) {
     logger.debug('replace localized content for filter', content);
-    await upsertFilterContent({ content, filter, authorId }, unchainedAPI);
+    await upsertFilterContent({ content, filterId: _id, authorId }, unchainedAPI);
   }
 
   if (options) {
     logger.debug('replace localized content for filter options', content);
-    await upsertFilterOptionContent({ options, filter }, unchainedAPI);
+    await upsertFilterOptionContent({ options, filterId: _id }, unchainedAPI);
   }
 
   return {

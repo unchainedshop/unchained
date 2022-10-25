@@ -361,7 +361,7 @@ export const configureProductsModule = async ({
 
       const productId = await mutations.update(_id, updateDoc, userId);
 
-      emit('PRODUCT_UPDATE', { productId, ...doc });
+      emit('PRODUCT_UPDATE', { productId, ...updateDoc });
 
       return productId;
     },

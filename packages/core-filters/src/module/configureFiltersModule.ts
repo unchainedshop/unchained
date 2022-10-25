@@ -288,19 +288,18 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    update: async (filterId, doc, requestContext, options, userId) => {
-      await mutations.update(filterId, doc, userId);
+    update: async (_id, doc, requestContext, options, userId) => {
+      const filterId = await mutations.update(_id, doc, userId);
 
-      const filter = await Filters.findOne(generateDbFilterById(filterId), {});
-
-      if (!options?.skipInvalidation) {
+      if (filterId && !options?.skipInvalidation) {
+        const filter = await Filters.findOne(generateDbFilterById(filterId), {});
         await invalidateProductIdCache(filter, requestContext);
         filterProductIds.clear();
       }
 
-      emit('FILTER_UPDATE', { filter });
+      emit('FILTER_UPDATE', { filterId, ...doc });
 
-      return filter;
+      return filterId;
     },
 
     // Sub entities

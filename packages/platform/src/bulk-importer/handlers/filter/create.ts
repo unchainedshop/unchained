@@ -17,9 +17,8 @@ export default async function createFilter(
   if (!content) throw new Error(`Localizable content is required when creating new filter${_id}`);
 
   logger.debug('create filter object', specification);
-  let filter;
   try {
-    filter = await unchainedAPI.modules.filters.create(
+    await unchainedAPI.modules.filters.create(
       {
         ...filterData,
         _id,
@@ -34,7 +33,7 @@ export default async function createFilter(
     if (!createShouldUpsertIfIDExists) throw e;
 
     logger.debug('entity already exists, falling back to update', specification);
-    filter = await modules.filters.update(
+    await modules.filters.update(
       _id,
       {
         ...filterData,
@@ -47,11 +46,15 @@ export default async function createFilter(
     );
   }
 
+  if (!(await modules.filters.filterExists({ filterId: _id }))) {
+    throw new Error(`Can't upsert filter ${_id}`);
+  }
+
   logger.debug('create localized content for filter', content);
-  await upsertFilterContent({ content, filter, authorId }, unchainedAPI);
+  await upsertFilterContent({ content, filterId: _id, authorId }, unchainedAPI);
 
   logger.debug('create localized content for filter options', content);
-  await upsertFilterOptionContent({ options, filter }, unchainedAPI);
+  await upsertFilterOptionContent({ options, filterId: _id }, unchainedAPI);
 
   return {
     entity: 'FILTER',
