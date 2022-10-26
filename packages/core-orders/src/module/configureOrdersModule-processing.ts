@@ -90,23 +90,21 @@ export const configureOrderModuleProcessing = ({
   const isAutoConfirmationEnabled = async (order: Order, requestContext: Context) => {
     const { modules } = requestContext;
 
+    if (order.status === OrderStatus.FULLFILLED || order.status === OrderStatus.CONFIRMED) {
+      return false;
+    }
+
     const orderPayment = await findOrderPayment(order);
     let isBlockingOrderConfirmation =
       orderPayment &&
       (await modules.orders.payments.isBlockingOrderConfirmation(orderPayment, requestContext));
-
     if (isBlockingOrderConfirmation) return false;
 
     const orderDelivery = await findOrderDelivery(order);
     isBlockingOrderConfirmation =
       orderDelivery &&
       (await modules.orders.deliveries.isBlockingOrderConfirmation(orderDelivery, requestContext));
-
     if (isBlockingOrderConfirmation) return false;
-
-    if (order.status === OrderStatus.FULLFILLED || order.status === OrderStatus.CONFIRMED) {
-      return false;
-    }
 
     return true;
   };
