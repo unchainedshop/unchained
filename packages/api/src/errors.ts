@@ -192,3 +192,8 @@ export const ProviderConfigurationInvalid = createError(
   'ProviderConfigurationInvalid',
   'Provider Configuration invalid (check if the Adapter Key exists)',
 );
+
+export const TokenWrongStatusError = createError(
+  'TokenWrongStatusError',
+  'The current status of the token does not allow this operation',
+);

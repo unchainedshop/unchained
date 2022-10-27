@@ -1,20 +1,22 @@
 import { Context } from '@unchainedshop/types/api';
 import { Product } from '@unchainedshop/types/products';
 import { User } from '@unchainedshop/types/user';
-import { TokenSurrogate } from '@unchainedshop/types/warehousing';
+import { TokenStatus, TokenSurrogate } from '@unchainedshop/types/warehousing';
 import { WorkStatus } from '@unchainedshop/types/worker';
+import localePkg from 'locale';
+
+const { Locale } = localePkg;
 
 type HelperType<T> = (root: TokenSurrogate, params: never, context: Context) => Promise<T>;
 
-export enum TokenExportStatus {
-  CENTRALIZED = 'CENTRALIZED',
-  EXPORTING = 'EXPORTING',
-  DECENTRALIZED = 'DECENTRALIZED',
-}
-
 export interface TokenHelperTypes {
   product: HelperType<Product>;
-  status: HelperType<TokenExportStatus>;
+  status: HelperType<TokenStatus>;
+  ercMetadata: (
+    root: TokenSurrogate,
+    params: { forceLocale?: string },
+    context: Context,
+  ) => Promise<any>;
   user: HelperType<User>;
 }
 
@@ -30,14 +32,28 @@ export const Token: TokenHelperTypes = {
 
   status: async (token, _params, { modules }) => {
     if (token.walletAddress && !token.userId) {
-      return TokenExportStatus.DECENTRALIZED;
+      return TokenStatus.DECENTRALIZED;
     }
     const workItems = await modules.worker.findWorkQueue({
       types: ['EXPORT_TOKEN'],
       status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
     });
-    if (workItems.find((item) => item.input?.token?._id === token._id))
-      return TokenExportStatus.EXPORTING;
-    return TokenExportStatus.CENTRALIZED;
+    if (workItems.find((item) => item.input?.token?._id === token._id)) return TokenStatus.EXPORTING;
+    return TokenStatus.CENTRALIZED;
+  },
+
+  ercMetadata: async (token, { forceLocale }, context) => {
+    const { modules } = context;
+    const product = await modules.products.findProduct({ productId: token.productId });
+    const ercMetadata = await modules.warehousing.tokenMetadata(
+      token,
+      {
+        product,
+        referenceDate: new Date(),
+      },
+      { ...context, localeContext: new Locale(forceLocale) },
+    );
+
+    return ercMetadata;
   },
 };

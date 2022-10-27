@@ -1,8 +1,6 @@
 import { TokenizedProductHelperTypes } from '@unchainedshop/types/products';
-import localePkg from 'locale';
+import { WarehousingContext } from '@unchainedshop/types/warehousing';
 import { PlanProduct } from './product-plan-types';
-
-const { Locale } = localePkg;
 
 export const TokenizedProduct: TokenizedProductHelperTypes = {
   ...PlanProduct,
@@ -23,9 +21,47 @@ export const TokenizedProduct: TokenizedProductHelperTypes = {
     return product.tokenization?.contractStandard;
   },
 
-  async ercMetadata(product, { forceLocale }, context) {
-    const locale = forceLocale ? new Locale(forceLocale) : context.localeContext;
-    return context.services.products.ercMetadata({ product, locale }, context);
+  simulatedStocks: async (obj, params, requestContext) => {
+    const { modules } = requestContext;
+    const { referenceDate } = params;
+
+    const deliveryProviders = await modules.delivery.findProviders({});
+
+    return deliveryProviders.reduce(async (oldResult, deliveryProvider) => {
+      const result = await oldResult;
+
+      const warehousingProviders = await modules.warehousing.findSupported(
+        {
+          product: obj,
+          deliveryProvider,
+        },
+        requestContext,
+      );
+
+      const mappedWarehousingProviders = await Promise.all(
+        warehousingProviders.map(async (warehousingProvider) => {
+          const warehousingContext: WarehousingContext = {
+            deliveryProvider,
+            product: obj,
+            referenceDate,
+          };
+
+          const stock = await modules.warehousing.estimatedStock(
+            warehousingProvider,
+            warehousingContext,
+            requestContext,
+          );
+
+          return {
+            warehousingProvider,
+            ...warehousingContext,
+            ...stock,
+          };
+        }),
+      );
+
+      return result.concat(result, mappedWarehousingProviders);
+    }, Promise.resolve([]));
   },
 };
 

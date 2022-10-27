@@ -52,6 +52,7 @@ export default [
       contractAddress: String
       chainId: String
       chainTokenId: String
+      ercMetadata(forceLocale: String): JSON
     }
   `,
 ];

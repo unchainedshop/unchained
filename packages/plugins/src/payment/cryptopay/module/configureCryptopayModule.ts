@@ -20,7 +20,7 @@ export interface CryptopayModule {
     currency: string;
     orderPaymentId: string;
   }) => Promise<CryptopayTransaction>;
-  getNextDerivationNumber: (currency: string) => Promise<number>
+  getNextDerivationNumber: (currency: string) => Promise<number>;
 }
 
 export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule => {

@@ -34,9 +34,28 @@ export enum WarehousingError {
   WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
 }
 
+export type TokenSurrogate = {
+  _id?: _ID;
+  userId?: string;
+  walletAddress?: string;
+  quantity: number;
+  contractAddress: string;
+  chainId: string;
+  chainTokenId: string;
+  productId: string;
+  meta: any;
+};
+
+export enum TokenStatus {
+  CENTRALIZED = 'CENTRALIZED',
+  EXPORTING = 'EXPORTING',
+  DECENTRALIZED = 'DECENTRALIZED',
+}
+
 export interface WarehousingContext {
   deliveryProvider?: DeliveryProvider;
   product?: Product;
+  token?: TokenSurrogate;
   quantity?: number;
   referenceDate?: Date;
   order?: Order;
@@ -51,25 +70,14 @@ export type EstimatedDispatch = {
 
 export type EstimatedStock = { quantity: number } | null;
 
-export type TokenSurrogate = {
-  _id?: _ID;
-  userId?: string;
-  walletAddress?: string;
-  quantity: number;
-  contractAddress: string;
-  chainId: string;
-  chainTokenId: string;
-  productId: string;
-  meta: any;
-};
-
 export type WarehousingAdapterActions = {
   configurationError: () => WarehousingError;
   isActive: () => boolean;
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
-  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId'>>>;
+  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId' | 'productId'>>>;
+  tokenMetadata: (referenceDate: Date) => Promise<any>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
@@ -94,6 +102,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     estimatedStock: () => Promise<EstimatedStock>;
     estimatedDispatch: () => Promise<EstimatedDispatch>;
     tokenize: () => Promise<Array<TokenSurrogate>>;
+    tokenMetadata: () => Promise<any>;
   }>;
 };
 
@@ -161,6 +170,12 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     },
     requestContext: Context,
   ) => Promise<void>;
+
+  tokenMetadata: (
+    token: TokenSurrogate,
+    params: { product: Product; referenceDate: Date },
+    requestContext: Context,
+  ) => Promise<any>;
 
   // Mutations
   delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;

@@ -1,5 +1,6 @@
 import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
 import { log, LogLevel } from '@unchainedshop/logger';
+
 import { WarehousingError } from './WarehousingError';
 
 export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 'version'> = {
@@ -13,30 +14,19 @@ export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 've
 
   actions: () => {
     return {
-      configurationError() {
-        return WarehousingError.NOT_IMPLEMENTED;
-      },
+      configurationError: () => WarehousingError.NOT_IMPLEMENTED,
 
-      isActive() {
-        return false;
-      },
+      isActive: () => false,
 
-      stock: async () => {
-        return 0;
-      },
+      stock: async () => 0,
 
-      productionTime: async () => {
-        return 0;
-      },
+      productionTime: async () => 0,
 
-      commissioningTime: async () => {
-        return 0;
-      },
+      commissioningTime: async () => 0,
 
-      tokenize: async () => {
-        /* */
-        return [];
-      },
+      tokenize: async () => [],
+
+      tokenMetadata: async () => ({}),
     };
   },
 

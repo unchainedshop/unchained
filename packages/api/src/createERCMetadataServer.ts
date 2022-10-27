@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { Context } from '@unchainedshop/types/api';
 import { systemLocale } from '@unchainedshop/utils';
 import { IncomingMessage } from 'http';
 import localePkg from 'locale';
@@ -24,10 +24,7 @@ const methodWrongHandler = (res) => () => {
   res.end();
 };
 
-const ercMetadataMiddleware = async (
-  req: IncomingMessage & { unchainedContext?: UnchainedCore },
-  res,
-) => {
+const ercMetadataMiddleware = async (req: IncomingMessage & { unchainedContext?: Context }, res) => {
   try {
     if (req.method !== 'GET') {
       methodWrongHandler(res)();
@@ -41,20 +38,36 @@ const ercMetadataMiddleware = async (
 
     if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');
 
-    const locale = parsedPath.dir === '/' ? systemLocale.language : parsedPath.name;
-    const tokenId = parsedPath.dir === '/' ? parsedPath.name : parsedPath.dir.substring(1);
+    const [, productIdOrContractAddress, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
 
-    const [product] = await resolvedContext.modules.products.findProducts({
-      productSelector: { 'tokenization.tokenId': tokenId },
+    const locale = tokenFileName ? localeOrTokenFilename : systemLocale.language;
+    const chainTokenId = parsedPath.name;
+
+    const productByProductId = await resolvedContext.modules.products.findProduct({
+      productId: productIdOrContractAddress,
     });
 
-    const ercMetadata = await resolvedContext.services.products.ercMetadata(
+    const selector: any = {
+      chainTokenId,
+      contractAddress: productByProductId?.tokenization?.contractAddress || productIdOrContractAddress,
+    };
+    const [token] = await resolvedContext.modules.warehousing.findTokens(selector);
+
+    const product =
+      productByProductId ||
+      (await resolvedContext.modules.products.findProduct({
+        productId: token?.productId,
+      }));
+
+    const ercMetadata = await resolvedContext.modules.warehousing.tokenMetadata(
+      token,
       {
         product,
-        locale: new Locale(locale),
+        referenceDate: new Date(),
       },
-      resolvedContext,
+      { ...resolvedContext, localeContext: new Locale(locale) },
     );
+
     const body = JSON.stringify(ercMetadata);
     res.writeHead(200, {
       'Content-Length': Buffer.byteLength(body),

@@ -34,6 +34,7 @@ export default [
       leveledCatalogPrices(currency: String): [PriceLevel!]!
       simulatedPrice(currency: String, useNetPrice: Boolean = false, quantity: Int = 1): Price
       simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
+      simulatedStocks(referenceDate: Timestamp): [Stock!]
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID
@@ -50,7 +51,6 @@ export default [
       contractAddress: String
       contractStandard: SmartContractStandard
       contractConfiguration: ContractConfiguration
-      ercMetadata(forceLocale: String): JSON
     }
   `,
 ];
