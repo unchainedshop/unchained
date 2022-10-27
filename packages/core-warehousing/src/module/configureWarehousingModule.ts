@@ -205,7 +205,7 @@ export const configureWarehousingModule = async ({
       const warehousingContext: WarehousingContext = {
         product,
         token,
-        quantity: token.quantity,
+        quantity: token?.quantity || 1,
         referenceDate,
       };
       return virtualProviders.reduce(async (lastPromise, provider) => {

@@ -133,7 +133,7 @@ const ETHMinter: IWarehousingAdapter = {
             : undefined;
 
           return {
-            name: `${text.title} #${token.chainTokenId}`,
+            name: `${text.title}${token?.chainTokenId ? ` #${token?.chainTokenId}` : ''}`,
             description: text.description,
             image: url,
             properties: product.meta,
