@@ -197,7 +197,7 @@ export const configureWarehousingModule = async ({
       );
     },
 
-    tokenMetadata: async (token, { product, referenceDate }, requestContext) => {
+    tokenMetadata: async (chainTokenId, { token, product, referenceDate }, requestContext) => {
       const virtualProviders = await WarehousingProviders.find(
         buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
       ).toArray();
@@ -218,7 +218,7 @@ export const configureWarehousingModule = async ({
         );
         const isActive = await currentDirector.isActive();
         if (isActive) {
-          return currentDirector.tokenMetadata();
+          return currentDirector.tokenMetadata(chainTokenId);
         }
         return null;
       }, Promise.resolve(null));

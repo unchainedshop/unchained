@@ -98,7 +98,7 @@ const ETHMinter: IWarehousingAdapter = {
         ];
       },
 
-      tokenMetadata: async () => {
+      tokenMetadata: async (chainTokenId) => {
         // if ERC721 -> tokenUri
         // if ERC1155 -> uri
         // -> use the contract to get the correct metadata uri from tokenId
@@ -122,6 +122,8 @@ const ETHMinter: IWarehousingAdapter = {
           locale: localeContext.normalized,
         });
 
+        const name = `${text.title} #${chainTokenId}`;
+
         if (product.tokenization.contractStandard === ProductContractStandard.ERC1155) {
           const isDefaultLanguageActive = localeContext.language === systemLocale.language;
           const localization = isDefaultLanguageActive
@@ -133,7 +135,7 @@ const ETHMinter: IWarehousingAdapter = {
             : undefined;
 
           return {
-            name: `${text.title}${token?.chainTokenId ? ` #${token?.chainTokenId}` : ''}`,
+            name,
             description: text.description,
             image: url,
             properties: product.meta,
@@ -141,7 +143,7 @@ const ETHMinter: IWarehousingAdapter = {
           };
         }
         return {
-          name: text.title,
+          name,
           description: text.description,
           image: url,
         };

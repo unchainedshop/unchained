@@ -104,10 +104,10 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
-      tokenMetadata: async () => {
+      tokenMetadata: async (chainTokenId) => {
         try {
           const referenceDate = getReferenceDate(context);
-          const tokenMetadata = await adapter.tokenMetadata(referenceDate);
+          const tokenMetadata = await adapter.tokenMetadata(chainTokenId, referenceDate);
           return tokenMetadata;
         } catch (error) {
           log(error.message, { level: LogLevel.Error, ...error });

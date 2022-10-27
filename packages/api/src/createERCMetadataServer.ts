@@ -38,30 +38,24 @@ const ercMetadataMiddleware = async (req: IncomingMessage & { unchainedContext?:
 
     if (parsedPath.ext !== '.json') throw new Error('Invalid ERC Metadata URI');
 
-    const [, productIdOrContractAddress, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
+    const [, productId, localeOrTokenFilename, tokenFileName] = url.pathname.split('/');
 
     const locale = tokenFileName ? localeOrTokenFilename : systemLocale.language;
     const chainTokenId = parsedPath.name;
 
-    const productByProductId = await resolvedContext.modules.products.findProduct({
-      productId: productIdOrContractAddress,
+    const product = await resolvedContext.modules.products.findProduct({
+      productId,
     });
 
-    const selector: any = {
+    const [token] = await resolvedContext.modules.warehousing.findTokens({
       chainTokenId,
-      contractAddress: productByProductId?.tokenization?.contractAddress || productIdOrContractAddress,
-    };
-    const [token] = await resolvedContext.modules.warehousing.findTokens(selector);
-
-    const product =
-      productByProductId ||
-      (await resolvedContext.modules.products.findProduct({
-        productId: token?.productId,
-      }));
+      contractAddress: product?.tokenization?.contractAddress,
+    });
 
     const ercMetadata = await resolvedContext.modules.warehousing.tokenMetadata(
-      token,
+      chainTokenId,
       {
+        token,
         product,
         referenceDate: new Date(),
       },

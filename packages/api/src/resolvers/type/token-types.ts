@@ -46,8 +46,9 @@ export const Token: TokenHelperTypes = {
     const { modules } = context;
     const product = await modules.products.findProduct({ productId: token.productId });
     const ercMetadata = await modules.warehousing.tokenMetadata(
-      token,
+      token.chainTokenId,
       {
+        token,
         product,
         referenceDate: new Date(),
       },
