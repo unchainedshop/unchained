@@ -76,6 +76,7 @@ export interface ProductTokenization {
   contractStandard: ProductContractStandard;
   tokenId: string;
   supply: number;
+  ercMetadataProperties?: Record<string, any>;
 }
 
 export interface ProductPlan {
@@ -89,6 +90,7 @@ export interface ProductPlan {
 export interface ProductContractConfiguration {
   tokenId?: string;
   supply?: number;
+  ercMetadataProperties?: Record<string, any>;
 }
 
 export interface ProductAssignment {

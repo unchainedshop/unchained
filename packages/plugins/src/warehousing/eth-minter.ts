@@ -25,6 +25,22 @@ const ETHMinter: IWarehousingAdapter = {
 
   actions: (configuration, context) => {
     const { product, orderPosition, token, modules, localeContext } = context;
+
+    const getTokensCreated = async () => {
+      const existingTokens = await modules.warehousing.findTokens(
+        product.tokenization.contractStandard === 'ERC721'
+          ? { contractAddress: product.tokenization.contractAddress }
+          : {
+              contractAddress: product.tokenization.contractAddress,
+              chainTokenId: product.tokenization.tokenId,
+            },
+      );
+      const tokensCreated = existingTokens.reduce((acc, curToken) => {
+        return acc + curToken.quantity;
+      }, 0);
+      return tokensCreated;
+    };
+
     return {
       ...WarehousingAdapter.actions(configuration, context),
 
@@ -37,18 +53,7 @@ const ETHMinter: IWarehousingAdapter = {
       },
 
       stock: async () => {
-        const existingTokens = await modules.warehousing.findTokens(
-          product.tokenization.contractStandard === 'ERC721'
-            ? { contractAddress: product.tokenization.contractAddress }
-            : {
-                contractAddress: product.tokenization.contractAddress,
-                chainTokenId: product.tokenization.tokenId,
-              },
-        );
-        const tokensCreated = existingTokens.reduce((acc, curToken) => {
-          return acc + curToken.quantity;
-        }, 0);
-
+        const tokensCreated = await getTokensCreated();
         return product?.tokenization?.supply ? product.tokenization.supply - tokensCreated : 0;
       },
 
@@ -61,18 +66,7 @@ const ETHMinter: IWarehousingAdapter = {
         const { contractAddress, contractStandard, tokenId } = product?.tokenization || {};
         const _id = generateDbObjectId();
         const meta = { contractStandard };
-
-        const existingTokens = await modules.warehousing.findTokens(
-          product.tokenization.contractStandard === 'ERC721'
-            ? { contractAddress: product.tokenization.contractAddress }
-            : {
-                contractAddress: product.tokenization.contractAddress,
-                chainTokenId: product.tokenization.tokenId,
-              },
-        );
-        const tokensCreated = existingTokens.reduce((acc, curToken) => {
-          return acc + curToken.quantity;
-        }, 0);
+        const tokensCreated = await getTokensCreated();
 
         if (contractStandard === 'ERC721') {
           // ERC721 is non-fungible, thus every _id unique!
@@ -99,12 +93,8 @@ const ETHMinter: IWarehousingAdapter = {
       },
 
       tokenMetadata: async (chainTokenId) => {
-        // if ERC721 -> tokenUri
-        // if ERC1155 -> uri
-        // -> use the contract to get the correct metadata uri from tokenId
-
-        // depending on the ERC, build the correct metadata json schema
-        // https://eips.ethereum.org/EIPS/eip-1155
+        // Metadata standards supported
+        // https://eips.ethereum.org/EIPS/eip-1155 (backward compatible with 721)
         // https://eips.ethereum.org/EIPS/eip-721
 
         const allLanguages = await modules.languages.findLanguages({
@@ -124,28 +114,22 @@ const ETHMinter: IWarehousingAdapter = {
 
         const name = `${text.title} #${chainTokenId}`;
 
-        if (product.tokenization.contractStandard === ProductContractStandard.ERC1155) {
-          const isDefaultLanguageActive = localeContext.language === systemLocale.language;
-          const localization = isDefaultLanguageActive
-            ? {
-                uri: `${process.env.ROOT_URL}/erc-metadata/${product._id}/{locale}/${product.tokenization.tokenId}.json`,
-                default: systemLocale.language,
-                locales: allLanguages.map((lang) => lang.isoCode),
-              }
-            : undefined;
+        const isDefaultLanguageActive = localeContext.language === systemLocale.language;
+        const localization = isDefaultLanguageActive
+          ? {
+              uri: `${process.env.ROOT_URL}/erc-metadata/${product._id}/{locale}/${product.tokenization.tokenId}.json`,
+              default: systemLocale.language,
+              locales: allLanguages.map((lang) => lang.isoCode),
+            }
+          : undefined;
 
-          return {
-            name,
-            description: text.description,
-            image: url,
-            properties: product.meta,
-            localization,
-          };
-        }
         return {
           name,
           description: text.description,
           image: url,
+          properties: product.tokenization.ercMetadataProperties,
+          localization,
+          ...(token?.meta || {}),
         };
       },
     };

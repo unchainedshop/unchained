@@ -5,6 +5,7 @@ export default [
       contractStandard: SmartContractStandard!
       tokenId: String
       supply: Int
+      ercMetadataProperties: JSON
     }
 
     enum SmartContractStandard {
@@ -15,6 +16,7 @@ export default [
     type ContractConfiguration {
       tokenId: String
       supply: Int
+      ercMetadataProperties: JSON
     }
 
     """

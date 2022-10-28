@@ -14,6 +14,7 @@ export const TokenizedProduct: TokenizedProductHelperTypes = {
     return {
       supply: product.tokenization.supply,
       tokenId: product.tokenization.tokenId,
+      ercMetadataProperties: product.tokenization.ercMetadataProperties,
     };
   },
 
