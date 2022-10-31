@@ -11,6 +11,7 @@ const buildIndexes = <T>(
         await collection.createIndex(index, options);
         return false;
       } catch (e: any) {
+        console.error(e);
         return e as Error;
       }
     }),
@@ -24,19 +25,23 @@ export const buildDbIndexes = async <T extends Document>(
   const buildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);
 
   if (buildErrors.length) {
-    const dropError = await collection.dropIndexes().catch((e) => e);
+    // try {
+    //   const dropError = await collection.dropIndexes();
+    // } catch (e) {
+    //   /* */
+    // }
 
-    if (!dropError) {
-      const rebuildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);
+    // if (!dropError) {
+    const rebuildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);
 
-      if (rebuildErrors.length) {
-        log(`Error building some indexes for ${collection.collectionName}`, {
-          level: LogLevel.Error,
-          ...rebuildErrors,
-        });
-        success = false;
-      }
+    if (rebuildErrors.length) {
+      log(`Error building some indexes for ${collection.collectionName}`, {
+        level: LogLevel.Error,
+        ...rebuildErrors,
+      });
+      success = false;
     }
+    // }
   }
 
   return success;

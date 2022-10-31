@@ -36,7 +36,7 @@ export const WarehousingDirector: IWarehousingDirector = {
       try {
         const { quantity } = context;
         const referenceDate = getReferenceDate(context);
-        const stock = (await adapter.stock(referenceDate).catch(() => 0)) || 0;
+        const stock = await adapter.stock(referenceDate);
         const notInStockQuantity = Math.max(quantity - stock, 0);
         const productionTime = await adapter.productionTime(notInStockQuantity);
         const commissioningTime = await adapter.commissioningTime(quantity);

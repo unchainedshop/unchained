@@ -150,17 +150,21 @@ export const configureAccountsModule = async ({
     },
 
     logout: async ({ token }, { loginToken, userId }) => {
-      const logoutError = await accountsServer
-        .logout({
+      try {
+        await accountsServer.logout({
           token: token || accountsServer.hashLoginToken(loginToken),
           userId,
-        })
-        .catch((error) => error);
-
-      return {
-        success: !logoutError,
-        error: logoutError,
-      };
+        });
+        return {
+          success: true,
+          error: null,
+        };
+      } catch (error) {
+        return {
+          success: false,
+          error,
+        };
+      }
     },
 
     // User management

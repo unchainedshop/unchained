@@ -52,7 +52,11 @@ export const WorkerDirector: IWorkerDirector = {
       log(`WorkderDirector: No registered adapter for type: ${type}`);
     }
 
-    const output = await adapter.doWork(input, requestContext, workId).catch((error) => {
+    try {
+      const output = await adapter.doWork(input, requestContext, workId);
+      WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });
+      return output;
+    } catch (error) {
       // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
       log('DO not use this as flow control.', { level: LogLevel.Verbose });
 
@@ -65,10 +69,6 @@ export const WorkerDirector: IWorkerDirector = {
       });
 
       return errorOutput;
-    });
-
-    WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });
-
-    return output;
+    }
   },
 };
