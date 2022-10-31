@@ -1,10 +1,18 @@
 import { Collection, Indexes, Document } from '@unchainedshop/types/common';
 import { log, LogLevel } from '@unchainedshop/logger';
 
-const buildIndexes = <T>(collection: Collection<T>, indexes: Indexes<T>): Promise<Array<void | Error>> =>
+const buildIndexes = <T>(
+  collection: Collection<T>,
+  indexes: Indexes<T>,
+): Promise<Array<false | Error>> =>
   Promise.all(
     indexes.map(async ({ index, options }) => {
-      await collection.createIndex(index, options).catch((error) => error as Error);
+      try {
+        await collection.createIndex(index, options);
+        return false;
+      } catch (e: any) {
+        return e as Error;
+      }
     }),
   );
 
@@ -22,7 +30,7 @@ export const buildDbIndexes = async <T extends Document>(
       const rebuildErrors = (await buildIndexes<T>(collection, indexes)).filter(Boolean);
 
       if (rebuildErrors.length) {
-        log('Error building indexes', {
+        log(`Error building some indexes for ${collection.collectionName}`, {
           level: LogLevel.Error,
           ...rebuildErrors,
         });

@@ -8,6 +8,10 @@ export default async function createProduct(payload: any, { logger, authorId }, 
   const { modules, userId } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
 
+  if (!(await modules.products.productExists({ productId: _id }))) {
+    throw new Error(`Can't update non-existing product ${_id}`);
+  }
+
   if (specification) {
     const productData = transformSpecificationToProductStructure(specification);
     logger.debug('update product object', productData);
@@ -30,12 +34,6 @@ export default async function createProduct(payload: any, { logger, authorId }, 
         },
         unchainedAPI,
       );
-    }
-  }
-
-  if (variations || media) {
-    if (!(await modules.products.productExists({ productId: _id }))) {
-      throw new Error(`Can't update non-existing product ${_id}`);
     }
   }
 

@@ -41,6 +41,10 @@ export default async function createProduct(
     );
   }
 
+  if (!(await modules.products.productExists({ productId: _id }))) {
+    throw new Error(`Can't create product ${_id}, fields missing?`);
+  }
+
   logger.debug('create localized content for product', specification.content);
   await upsertProductContent(
     {

@@ -14,13 +14,16 @@ export default async function updateAssortment(
   const { modules, userId } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
 
+  if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
+    throw new Error(`Can't update non-existing assortment ${_id}`);
+  }
+
   if (specification) {
     logger.debug('update assortment object', specification);
 
     specification.tags = convertTagsToLowerCase(specification?.tags);
 
     await unchainedAPI.modules.assortments.update(_id, { ...specification, authorId }, userId);
-
     if (specification.content) {
       logger.debug('replace localized content for assortment', specification.content);
       await upsertAssortmentContent(
@@ -31,12 +34,6 @@ export default async function updateAssortment(
         },
         unchainedAPI,
       );
-    }
-  }
-
-  if (products || children || filters || media) {
-    if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
-      throw new Error(`Can't update non-existing assortment ${_id}`);
     }
   }
 
