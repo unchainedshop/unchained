@@ -34,6 +34,7 @@ export interface UnchainedLoaders {
   loaders: {
     productLoader: any;
     productTextLoader: any;
+    filterLoader: any;
     filterTextLoader: any;
     assortmentTextLoader: any;
     assortmentLoader: any;

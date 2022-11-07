@@ -18,8 +18,10 @@ export const AssortmentFilter: AssortmentFilterHelperTypes = {
     return assortment;
   },
 
-  filter: (obj, _, { modules }) =>
-    modules.filters.findFilter({
+  filter: async (obj, _, { loaders }) => {
+    const filter = await loaders.filterLoader.load({
       filterId: obj.filterId,
-    }),
+    });
+    return filter;
+  },
 };

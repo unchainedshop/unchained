@@ -22,9 +22,12 @@ import { filtersSettings } from '../filters-settings';
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
-const buildFindSelector = ({ includeInactive = false, queryString = '' }: FilterQuery) => {
+const buildFindSelector = ({ includeInactive = false, queryString = '', filterIds }: FilterQuery) => {
   const selector: Query = {};
   if (!includeInactive) selector.isActive = true;
+  if (filterIds) {
+    selector._id = { $in: filterIds };
+  }
   if (queryString) selector.$text = { $search: queryString };
   return selector;
 };

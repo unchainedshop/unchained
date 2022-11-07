@@ -4,7 +4,7 @@ import { IncomingMessage } from 'http';
 import { systemLocale } from '@unchainedshop/utils';
 import localePkg from 'locale';
 import { Assortment, AssortmentText } from '@unchainedshop/types/assortments';
-import { FilterText } from '@unchainedshop/types/filters';
+import { Filter, FilterText } from '@unchainedshop/types/filters';
 import { Product, ProductText } from '@unchainedshop/types/products';
 import { UnchainedCore } from '@unchainedshop/types/core';
 import { ProductStatus } from '@unchainedshop/core-products';
@@ -67,6 +67,21 @@ export default async (
         });
       },
     ),
+
+    filterLoader: new DataLoader<{ filterId: string }, Filter>(async (queries) => {
+      const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
+
+      const filters = await unchainedAPI.modules.filters.findFilters({
+        filterIds,
+      });
+
+      return queries.map(({ filterId }) => {
+        return filters.find((product) => {
+          if (product._id !== filterId) return false;
+          return true;
+        });
+      });
+    }),
 
     filterTextLoader: new DataLoader<
       { filterId: string; filterOptionValue?: string; locale: string },
