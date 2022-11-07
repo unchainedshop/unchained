@@ -11,9 +11,11 @@ export const ProductVariationAssignment: ProductVariationAssignmentHelperTypes =
       product,
     }));
   },
-  product: async ({ assignment }, _, { modules }) => {
-    return modules.products.findProduct({
+  product: async ({ assignment }, _, { loaders }) => {
+    const product = await loaders.productLoader.load({
       productId: assignment.productId,
+      includeDrafts: true,
     });
+    return product;
   },
 };

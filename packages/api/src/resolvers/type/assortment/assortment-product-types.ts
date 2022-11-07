@@ -13,13 +13,19 @@ type AssortmentProductHelperTypes = {
 };
 
 export const AssortmentProduct: AssortmentProductHelperTypes = {
-  assortment: (obj, _, { modules }) =>
-    modules.assortments.findAssortment({
+  assortment: async (obj, _, { loaders }) => {
+    const assortment = await loaders.assortmentLoader.load({
       assortmentId: obj.assortmentId,
-    }),
+      includeInactive: true,
+    });
+    return assortment;
+  },
 
-  product: (obj, _, { modules }) =>
-    modules.products.findProduct({
+  product: async (obj, _, { loaders }) => {
+    const product = await loaders.productLoader.load({
       productId: obj.productId,
-    }),
+      includeDrafts: true,
+    });
+    return product;
+  },
 };

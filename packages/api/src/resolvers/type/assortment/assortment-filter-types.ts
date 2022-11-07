@@ -10,10 +10,13 @@ type AssortmentFilterHelperTypes = {
 };
 
 export const AssortmentFilter: AssortmentFilterHelperTypes = {
-  assortment: (obj, _, { modules }) =>
-    modules.assortments.findAssortment({
+  assortment: async (obj, _, { loaders }) => {
+    const assortment = await loaders.assortmentLoader.load({
       assortmentId: obj.assortmentId,
-    }),
+      includeInactive: true,
+    });
+    return assortment;
+  },
 
   filter: (obj, _, { modules }) =>
     modules.filters.findFilter({

@@ -3,10 +3,11 @@ import DataLoader from 'dataloader';
 import { IncomingMessage } from 'http';
 import { systemLocale } from '@unchainedshop/utils';
 import localePkg from 'locale';
-import { AssortmentText } from '@unchainedshop/types/assortments';
+import { Assortment, AssortmentText } from '@unchainedshop/types/assortments';
 import { FilterText } from '@unchainedshop/types/filters';
-import { ProductText } from '@unchainedshop/types/products';
+import { Product, ProductText } from '@unchainedshop/types/products';
 import { UnchainedCore } from '@unchainedshop/types/core';
+import { ProductStatus } from '@unchainedshop/core-products';
 
 const { Locale } = localePkg;
 
@@ -15,6 +16,28 @@ export default async (
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLoaders['loaders']> => {
   return {
+    assortmentLoader: new DataLoader<{ assortmentId: string; includeInactive: boolean }, Assortment>(
+      async (queries) => {
+        const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+
+        const assortments = await unchainedAPI.modules.assortments.findAssortments({
+          assortmentIds,
+          includeInactive: true,
+          includeLeaves: true,
+        });
+
+        return queries.map(({ assortmentId, includeInactive }) => {
+          return assortments.find((assortment) => {
+            if (assortment._id !== assortmentId) return false;
+            if (!includeInactive) {
+              return assortment.isActive === true;
+            }
+            return true;
+          });
+        });
+      },
+    ),
+
     assortmentTextLoader: new DataLoader<{ assortmentId: string; locale: string }, AssortmentText>(
       async (queries) => {
         const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
@@ -77,6 +100,27 @@ export default async (
         return filterText || filterTexts[0];
       });
     }),
+
+    productLoader: new DataLoader<{ productId: string; includeDrafts: boolean }, Product>(
+      async (queries) => {
+        const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
+
+        const products = await unchainedAPI.modules.products.findProducts({
+          productIds,
+          includeDrafts: true,
+        });
+
+        return queries.map(({ productId, includeDrafts }) => {
+          return products.find((product) => {
+            if (product._id !== productId) return false;
+            if (!includeDrafts) {
+              return product.status === ProductStatus.ACTIVE;
+            }
+            return true;
+          });
+        });
+      },
+    ),
 
     productTextLoader: new DataLoader<{ productId: string; locale: string }, ProductText>(
       async (queries) => {

@@ -41,10 +41,13 @@ export const Quotation: QuotationHelperTypes = {
   isExpired: (obj, { referenceDate }, { modules }) =>
     modules.quotations.isExpired(obj, { referenceDate }),
 
-  product: (obj, _, { modules }) =>
-    modules.products.findProduct({
+  product: async (obj, _, { loaders }) => {
+    const product = await loaders.productLoader.load({
       productId: obj.productId,
-    }),
+      includeDrafts: true,
+    });
+    return product;
+  },
 
   status: (obj, _, { modules }) => modules.quotations.normalizedStatus(obj),
 

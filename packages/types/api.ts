@@ -32,9 +32,11 @@ export interface UnchainedLocaleContext {
 
 export interface UnchainedLoaders {
   loaders: {
+    productLoader: any;
     productTextLoader: any;
     filterTextLoader: any;
     assortmentTextLoader: any;
+    assortmentLoader: any;
   };
 }
 

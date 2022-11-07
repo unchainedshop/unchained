@@ -9,7 +9,11 @@ type EnrollmentPlanHelperTypes = {
 };
 
 export const EnrollmentPlan: EnrollmentPlanHelperTypes = {
-  product: async (plan, _, { modules }) => {
-    return modules.products.findProduct({ productId: plan.productId });
+  product: async (plan, _, { loaders }) => {
+    const product = await loaders.productLoader.load({
+      productId: plan.productId,
+      includeDrafts: true,
+    });
+    return product;
   },
 };
