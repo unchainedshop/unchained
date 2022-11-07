@@ -9,13 +9,19 @@ export type AssortmentLinkHelperTypes = {
 };
 
 export const AssortmentLink: AssortmentLinkHelperTypes = {
-  child: (obj, _, { modules }) =>
-    modules.assortments.findAssortment({
+  child: async (obj, _, { loaders }) => {
+    const assortment = await loaders.assortmentLoader.load({
       assortmentId: obj.childAssortmentId,
-    }),
+      includeInactive: true,
+    });
+    return assortment;
+  },
 
-  parent: (obj, _, { modules }) =>
-    modules.assortments.findAssortment({
+  parent: async (obj, _, { loaders }) => {
+    const assortment = await loaders.assortmentLoader.load({
       assortmentId: obj.parentAssortmentId,
-    }),
+      includeInactive: true,
+    });
+    return assortment;
+  },
 };

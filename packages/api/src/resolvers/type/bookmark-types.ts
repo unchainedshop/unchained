@@ -11,9 +11,14 @@ export interface BookmarkHelperTypes {
 }
 
 export const Bookmark: BookmarkHelperTypes = {
-  product: async (obj, _, { modules }) => {
-    return modules.products.findProduct({ productId: obj.productId });
+  product: async (obj, _, { loaders }) => {
+    const product = await loaders.productLoader.load({
+      productId: obj.productId,
+      includeDrafts: true,
+    });
+    return product;
   },
+
   user: async (obj, _, { modules }) => {
     return modules.users.findUserById(obj.userId);
   },

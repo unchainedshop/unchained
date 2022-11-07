@@ -57,7 +57,7 @@ export const OrderItem: OrderItemHelperTypes = {
     return [];
   },
 
-  dispatches: async (obj, _, { modules }) => {
+  dispatches: async (obj, _, { modules, loaders }) => {
     const scheduling = obj.scheduling || [];
     const order = await modules.orders.findOrder({ orderId: obj.orderId });
     const { countryCode, userId } = order;
@@ -68,8 +68,9 @@ export const OrderItem: OrderItemHelperTypes = {
     const deliveryProvider = await modules.delivery.findProvider({
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
-    const product = await modules.products.findProduct({
+    const product = await loaders.productLoader.load({
       productId: obj.productId,
+      includeDrafts: true,
     });
 
     return Promise.all(
@@ -99,14 +100,20 @@ export const OrderItem: OrderItemHelperTypes = {
     return modules.orders.findOrder({ orderId: obj.orderId });
   },
 
-  originalProduct: async (obj, _, { modules }) => {
-    return modules.products.findProduct({
+  originalProduct: async (obj, _, { loaders }) => {
+    const product = await loaders.productLoader.load({
       productId: obj.originalProductId,
+      includeDrafts: true,
     });
+    return product;
   },
 
-  product: async (obj, _, { modules }) => {
-    return modules.products.findProduct({ productId: obj.productId });
+  product: async (obj, _, { loaders }) => {
+    const product = await loaders.productLoader.load({
+      productId: obj.productId,
+      includeDrafts: true,
+    });
+    return product;
   },
 
   quotation: async (obj, _, { modules }) => {

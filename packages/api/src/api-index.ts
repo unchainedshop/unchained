@@ -13,7 +13,7 @@ export * as roles from './roles';
 
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
-const UNCHAINED_API_VERSION = '1.2.0'; // eslint-disable-line
+const UNCHAINED_API_VERSION = '1.2.44'; // eslint-disable-line
 
 export const startAPIServer = (
   options: UnchainedServerOptions,

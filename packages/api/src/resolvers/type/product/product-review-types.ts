@@ -20,8 +20,12 @@ export const ProductReview: ProductReviewHelperTypes = {
     return modules.users.findUserById(obj.authorId);
   },
 
-  product: async (obj, _, { modules }) => {
-    return modules.products.findProduct({ productId: obj.productId });
+  product: async (review, _, { loaders }) => {
+    const product = await loaders.productLoader.load({
+      productId: review.productId,
+      includeDrafts: true,
+    });
+    return product;
   },
 
   ownVotes: async (obj, _, { modules, userId }) => {

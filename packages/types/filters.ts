@@ -52,6 +52,7 @@ export type FilterProductIdCacheRecord = {
 export type SearchFilterQuery = Array<{ key: string; value?: string }>;
 
 export type FilterQuery = {
+  filterIds?: Array<string>;
   queryString?: string;
   includeInactive?: boolean;
 };
