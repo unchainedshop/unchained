@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-messaging",
-  "version": "1.2.43",
+  "version": "1.2.44",
   "main": "lib/messaging-index.js",
   "exports": {
     ".": "./lib/messaging-index.js",
@@ -30,13 +30,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^1.2.43",
+    "@unchainedshop/logger": "^1.2.44",
     "mjml": "^4.13.0",
     "mustache": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "^16.18.3",
-    "@unchainedshop/types": "^1.2.43",
+    "@unchainedshop/types": "^1.2.44",
     "jest": "^29.2.2",
     "locale": "^0.1.0",
     "ts-jest": "^29.0.3",
