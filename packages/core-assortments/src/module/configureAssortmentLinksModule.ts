@@ -118,12 +118,7 @@ export const configureAssortmentLinksModule = ({
 
       const assortmentLink = await AssortmentLinks.findOne(selector, {});
       if (!options.skipInvalidation) {
-        await invalidateCache(
-          { assortmentIds: [assortmentLink.childAssortmentId] },
-          {
-            skipUpstreamTraversal: false,
-          },
-        );
+        await invalidateCache({ assortmentIds: [assortmentLink.childAssortmentId] });
       }
       return assortmentLink;
     },
@@ -140,12 +135,9 @@ export const configureAssortmentLinksModule = ({
       });
 
       if (!options.skipInvalidation) {
-        await invalidateCache(
-          {
-            assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
-          },
-          { skipUpstreamTraversal: false },
-        );
+        await invalidateCache({
+          assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
+        });
       }
 
       return assortmentLink;
@@ -162,15 +154,12 @@ export const configureAssortmentLinksModule = ({
       });
 
       if (!options.skipInvalidation && assortmentLinks.length) {
-        await invalidateCache(
-          {
-            assortmentIds: assortmentLinks.flatMap((link) => [
-              link.childAssortmentId,
-              link.parentAssortmentId,
-            ]),
-          },
-          { skipUpstreamTraversal: false },
-        );
+        await invalidateCache({
+          assortmentIds: assortmentLinks.flatMap((link) => [
+            link.childAssortmentId,
+            link.parentAssortmentId,
+          ]),
+        });
       }
 
       return assortmentLinks;
@@ -196,12 +185,7 @@ export const configureAssortmentLinksModule = ({
       }).toArray();
 
       if (!options.skipInvalidation && assortmentLinks.length) {
-        await invalidateCache(
-          { assortmentIds: assortmentLinks.map((link) => link.childAssortmentId) },
-          {
-            skipUpstreamTraversal: false,
-          },
-        );
+        await invalidateCache({ assortmentIds: assortmentLinks.map((link) => link.childAssortmentId) });
       }
 
       emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks });
