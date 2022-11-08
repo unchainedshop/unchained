@@ -184,7 +184,7 @@ export const configureAssortmentsModule = async ({
 
     let updateCount = await assortmentsSettings.setCachedProductIds(assortment._id, productIds);
 
-    if (cacheOptions.skipUpstreamTraversal) return updateCount;
+    if (cacheOptions.skipUpstreamTraversal || updateCount === 0) return updateCount;
 
     const linkedAssortments = await findLinkedAssortments(assortment);
 
@@ -207,7 +207,7 @@ export const configureAssortmentsModule = async ({
   };
 
   const invalidateCache: AssortmentsModule['invalidateCache'] = async (selector, options) => {
-    log('Assortments: Start invalidating assortment caches', {
+    log('Invalidating productId cache for assortments', {
       level: LogLevel.Verbose,
     });
 
@@ -215,13 +215,14 @@ export const configureAssortmentsModule = async ({
       buildFindSelector({ includeInactive: true, includeLeaves: true, ...selector }),
     ).toArray();
 
-    await Promise.all(
-      assortments.map(async (assortment) => {
-        await invalidateProductIdCache(assortment, {
-          skipUpstreamTraversal: options?.skipUpstreamTraversal ?? true,
-        });
-      }),
-    );
+    // Process serially to reduce load
+    await assortments.reduce(async (acc, assortment) => {
+      await acc;
+      const invalidatedAssortments = await invalidateProductIdCache(assortment, options);
+      log(`Invalidated productId cache for ${invalidatedAssortments} assortments`, {
+        level: LogLevel.Debug,
+      });
+    }, Promise.resolve());
   };
 
   /*
@@ -362,8 +363,7 @@ export const configureAssortmentsModule = async ({
       emit('ASSORTMENT_UPDATE', { assortmentId });
 
       if (!options?.skipInvalidation) {
-        const assortment = await Assortments.findOne({ _id: assortmentId });
-        await invalidateProductIdCache(assortment, { skipUpstreamTraversal: false });
+        invalidateCache({ assortmentIds: [assortmentId] });
       }
       return assortmentId;
     },
@@ -387,7 +387,7 @@ export const configureAssortmentsModule = async ({
 
       if (deletedResult.deletedCount === 1 && !options?.skipInvalidation) {
         // Invalidate all assortments
-        await invalidateCache({});
+        await invalidateCache({}, { skipUpstreamTraversal: true });
       }
 
       emit('ASSORTMENT_REMOVE', { assortmentId });

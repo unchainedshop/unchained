@@ -115,10 +115,7 @@ export const configureAssortmentProductsModule = ({
       emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
       if (!options.skipInvalidation) {
-        await invalidateCache(
-          { assortmentIds: [assortmentProduct.assortmentId] },
-          { skipUpstreamTraversal: false },
-        );
+        await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
 
       return assortmentProduct;
@@ -140,12 +137,7 @@ export const configureAssortmentProductsModule = ({
       });
 
       if (!options.skipInvalidation) {
-        await invalidateCache(
-          { assortmentIds: [assortmentProduct.assortmentId] },
-          {
-            skipUpstreamTraversal: false,
-          },
-        );
+        await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
 
       return [assortmentProduct];
@@ -164,12 +156,9 @@ export const configureAssortmentProductsModule = ({
       });
 
       if (!options.skipInvalidation && assortmentProducts.length) {
-        await invalidateCache(
-          { assortmentIds: assortmentProducts.map((product) => product.assortmentId) },
-          {
-            skipUpstreamTraversal: false,
-          },
-        );
+        await invalidateCache({
+          assortmentIds: assortmentProducts.map((product) => product.assortmentId),
+        });
       }
 
       return assortmentProducts;
@@ -189,12 +178,7 @@ export const configureAssortmentProductsModule = ({
 
       const assortmentProduct = await AssortmentProducts.findOne(selector, {});
       if (!options.skipInvalidation) {
-        await invalidateCache(
-          { assortmentIds: [assortmentProduct.assortmentId] },
-          {
-            skipUpstreamTraversal: false,
-          },
-        );
+        await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
       return assortmentProduct;
     },
@@ -218,12 +202,9 @@ export const configureAssortmentProductsModule = ({
       }).toArray();
 
       if (!options.skipInvalidation && assortmentProducts.length) {
-        await invalidateCache(
-          { assortmentIds: assortmentProducts.map((product) => product.assortmentId) },
-          {
-            skipUpstreamTraversal: false,
-          },
-        );
+        await invalidateCache({
+          assortmentIds: assortmentProducts.map((product) => product.assortmentId),
+        });
       }
 
       emit('ASSORTMENT_REORDER_PRODUCTS', { assortmentProducts });
