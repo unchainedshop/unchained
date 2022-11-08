@@ -12,7 +12,7 @@ export default async function products(
   { modules, userId }: Context,
 ) {
   log(
-    `query products: ${params.limit} ${params.offset} ${
+    `query products: ${params.limit || 0} ${params.offset || 0} ${
       params.includeDrafts ? 'includeDrafts' : ''
     } ${params.slugs?.join(',')}`,
     { userId },

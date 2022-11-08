@@ -7,7 +7,7 @@ export default async function product(
   { productId, slug }: { productId?: string; slug?: string },
   { modules, userId }: Context,
 ) {
-  log(`query product ${productId} ${slug}`, { userId });
+  log(`query product ${productId || slug}`, { userId });
 
   if (!productId === !slug) throw new InvalidIdError({ productId, slug });
 
