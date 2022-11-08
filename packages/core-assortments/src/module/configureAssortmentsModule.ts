@@ -207,7 +207,7 @@ export const configureAssortmentsModule = async ({
   };
 
   const invalidateCache: AssortmentsModule['invalidateCache'] = async (selector, options) => {
-    log('Assortments: Start invalidating assortment productId caches', {
+    log('Invalidating productId cache for assortments', {
       level: LogLevel.Verbose,
     });
 
@@ -219,7 +219,9 @@ export const configureAssortmentsModule = async ({
     await assortments.reduce(async (acc, assortment) => {
       await acc;
       const invalidatedAssortments = await invalidateProductIdCache(assortment, options);
-      log(`Invalidated ${invalidatedAssortments}`, { level: LogLevel.Debug });
+      log(`Invalidated productId cache for ${invalidatedAssortments} assortments`, {
+        level: LogLevel.Debug,
+      });
     }, Promise.resolve());
   };
 
