@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "1.2.44",
+  "version": "1.2.45",
   "description": "Types for unchained core packages",
   "repository": {
     "type": "git",
