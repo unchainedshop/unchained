@@ -57,6 +57,7 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { assortmentId: 1 } },
     { index: { productId: 1 } },
     { index: { tags: 1 } },
+    { index: { assortmentId: 1, sortKey: 1 } },
   ]);
 
   // AssortmentLinks indices
@@ -64,6 +65,8 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { parentAssortmentId: 1 } },
     { index: { childAssortmentId: 1 } },
     { index: { tags: 1 } },
+    { index: { parentAssortmentId: 1, sortKey: 1 } },
+    { index: { childAssortmentId: 1, parentAssortmentId: 1, sortKey: 1 } },
   ]);
 
   // AssortmentFilter indices
@@ -71,6 +74,7 @@ export const AssortmentsCollection = async (db: Db) => {
     { index: { assortmentId: 1 } },
     { index: { filterId: 1 } },
     { index: { tags: 1 } },
+    { index: { assortmentId: 1, sortKey: 1 } },
   ]);
 
   return {

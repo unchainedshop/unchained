@@ -32,7 +32,7 @@ const removeConfidentialServiceHashes = (rawUser: User): User => {
 
 const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
   const selector: Query = { ...rest };
-  if (!includeGuests) selector.guest = { $ne: true };
+  if (!includeGuests) selector.guest = { $ne: true }; // TODO: Slow IDXSCAN in common query
   if (queryString) {
     selector.$text = { $search: queryString };
   }

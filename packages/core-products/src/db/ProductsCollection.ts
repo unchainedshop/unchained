@@ -12,6 +12,7 @@ export const ProductsCollection = async (db: Db) => {
     { index: { slugs: 1 } },
     { index: { status: 1 } },
     { index: { tags: 1 } },
+    { index: { 'warehousing.sku': 1 } },
     {
       index: { 'warehousing.sku': 'text', slugs: 'text' },
       options: {

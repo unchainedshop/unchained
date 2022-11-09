@@ -216,7 +216,7 @@ export const configureProductsModule = async ({
 
     productExists: async ({ productId, slug }) => {
       const selector: Query = productId ? generateDbFilterById(productId) : { slugs: slug };
-      selector.status = { $ne: ProductStatus.DELETED };
+      selector.status = { $ne: ProductStatus.DELETED }; // TODO: Slow IDXSCAN in common query
 
       const productCount = await Products.countDocuments(selector, { limit: 1 });
 

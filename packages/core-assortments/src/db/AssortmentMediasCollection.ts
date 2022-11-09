@@ -10,6 +10,7 @@ export const AssortmentMediaCollection = async (db: Db) => {
   await buildDbIndexes(AssortmentMedias, [
     { index: { mediaId: 1 } },
     { index: { assortmentId: 1 } },
+    { index: { sortKey: 1 } },
     { index: { tags: 1 } },
   ]);
 
