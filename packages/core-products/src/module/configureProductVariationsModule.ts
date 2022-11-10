@@ -253,9 +253,7 @@ export const configureProductVariationsModule = async ({
         const parsedLocale = new Locale(locale);
 
         const selector: Query = { productVariationId };
-        if (productVariationOptionValue > '') {
-          selector.productVariationOptionValue = productVariationOptionValue;
-        }
+        selector.productVariationOptionValue = productVariationOptionValue ?? { $eq: null };
         const text = await findLocalizedText<ProductVariationText>(
           ProductVariationTexts,
           selector,

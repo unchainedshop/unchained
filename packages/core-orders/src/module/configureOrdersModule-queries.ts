@@ -13,7 +13,7 @@ const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQ
   if (status) {
     selector.status = status;
   } else if (!includeCarts) {
-    selector.status = { $ne: null };
+    selector.status = { $ne: null }; // TODO: Slow performance! IDXSCAN in common query!
   }
 
   if (queryString) {

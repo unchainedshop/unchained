@@ -51,21 +51,17 @@ export const configureAssortmentProductsModule = ({
 
     findProductSiblings: async ({ assortmentIds, productId }) => {
       const selector = {
-        $and: [
-          {
-            productId: { $ne: productId },
-          },
-          {
-            assortmentId: { $in: assortmentIds },
-          },
-        ],
+        assortmentId: { $in: assortmentIds },
       };
 
-      return AssortmentProducts.find(selector, {
+      const assortmentProducts = await AssortmentProducts.find(selector, {
+        sort: { sortKey: 1 },
         projection: { productId: 1 },
-      })
-        .map((product) => product.productId)
-        .toArray();
+      }).toArray();
+
+      return assortmentProducts
+        .filter((product) => product.productId !== productId)
+        .map((product) => product.productId);
     },
 
     // Mutations
