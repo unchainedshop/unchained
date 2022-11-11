@@ -1,7 +1,7 @@
 import './load_env';
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import http from 'http';
+import http from 'http2';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 
 import { startPlatform } from '@unchainedshop/platform';

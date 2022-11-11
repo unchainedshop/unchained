@@ -1,5 +1,5 @@
 import { UnchainedServerOptions } from '@unchainedshop/types/api';
-import { ApolloServer } from 'apollo-server-express';
+import type { ApolloServer } from '@apollo/server';
 import fs from 'fs';
 import path from 'path';
 import createBulkImportServer from './createBulkImportServer';

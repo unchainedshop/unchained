@@ -41,7 +41,6 @@
     "@unchainedshop/platform": "^1.2.48",
     "@unchainedshop/plugins": "^1.2.48",
     "@unchainedshop/types": "^1.2.48",
-    "apollo-server-express": "^2.26.1",
     "bcrypt": "^5.1.0",
     "bip32": "^3.1.0",
     "bitcoinjs-lib": "^6.0.2",
