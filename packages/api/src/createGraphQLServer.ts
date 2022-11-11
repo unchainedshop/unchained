@@ -1,7 +1,7 @@
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { GraphQLError } from 'graphql';
-import { processRequest } from 'graphql-upload';
+import { graphqlUploadExpress } from 'graphql-upload';
 import { log, LogLevel } from '@unchainedshop/logger';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -10,15 +10,6 @@ import resolvers from './resolvers';
 import { getCurrentContextResolver } from './context';
 
 const { APOLLO_ENGINE_KEY } = process.env;
-
-const handleUploads = (options) => async (req, res, next) => {
-  const contentType = req.headers['content-type'];
-  const isUpload = contentType && contentType.startsWith('multipart/form-data');
-  if (isUpload) {
-    req.body = await processRequest(req, res, options);
-  }
-  next();
-};
 
 const logGraphQLServerError = (error) => {
   try {
@@ -51,6 +42,7 @@ export default async (expressApp, options) => {
   const context = getCurrentContextResolver();
 
   const server = new ApolloServer({
+    // csrfPrevention: true,
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
     formatError: (error) => {
@@ -108,7 +100,8 @@ export default async (expressApp, options) => {
             credentials: true,
           },
     ),
-    bodyParser.json({ limit: '5mb' }),
+    bodyParser.json(),
+    graphqlUploadExpress(),
     expressMiddleware(server, {
       context,
     }),
