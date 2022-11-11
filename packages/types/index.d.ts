@@ -475,5 +475,5 @@ declare module '@unchainedshop/platform' {
 
   function startPlatform(options: PlatformOptions): Promise<Context>;
   function withAccessToken(fn?: (context: Context) => any): any;
-  function setAccessToken(unchainedAPI: Context, username: string, secret: string): Promise<void>;
+  function setAccessToken(unchainedAPI: UnchainedCore, username: string, secret: string): Promise<void>;
 }

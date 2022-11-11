@@ -28,7 +28,7 @@ const ETHMinter: IWarehousingAdapter = {
 
     const getTokensCreated = async () => {
       const existingTokens = await modules.warehousing.findTokens(
-        product.tokenization.contractStandard === 'ERC721'
+        product.tokenization.contractStandard === ProductContractStandard.ERC721
           ? { contractAddress: product.tokenization.contractAddress }
           : {
               contractAddress: product.tokenization.contractAddress,

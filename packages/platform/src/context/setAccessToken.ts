@@ -1,6 +1,6 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
-export default async (unchainedAPI: Context, username: string, secret: string) => {
+export default async (unchainedAPI: UnchainedCore, username: string, secret: string) => {
   await unchainedAPI.modules.users.updateUser(
     { username },
     {

@@ -6,7 +6,7 @@ import { Context } from '@unchainedshop/types/api';
 import { UnchainedCore } from '@unchainedshop/types/core';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
-import { CryptopayModule } from './module/configureCryptopayModule';
+import type { CryptopayModule } from './module/configureCryptopayModule';
 
 const {
   CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
