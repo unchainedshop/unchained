@@ -42,7 +42,6 @@ export default async (expressApp, options) => {
   const context = getCurrentContextResolver();
 
   const server = new ApolloServer({
-    // csrfPrevention: true,
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
     formatError: (error) => {
