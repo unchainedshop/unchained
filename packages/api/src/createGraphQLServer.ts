@@ -1,6 +1,10 @@
-import { ApolloServer, ApolloError } from 'apollo-server-express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { GraphQLError } from 'graphql';
 import { processRequest } from 'graphql-upload';
 import { log, LogLevel } from '@unchainedshop/logger';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 import { getCurrentContextResolver } from './context';
@@ -35,7 +39,7 @@ const logGraphQLServerError = (error) => {
   } catch (e) {} // eslint-disable-line
 };
 
-export default (expressApp, options) => {
+export default async (expressApp, options) => {
   const {
     corsOrigins = null, // no cookie handling
     typeDefs: additionalTypeDefs = [],
@@ -45,11 +49,10 @@ export default (expressApp, options) => {
   } = options || {};
 
   const context = getCurrentContextResolver();
+
   const server = new ApolloServer({
     typeDefs: [...typeDefs, ...additionalTypeDefs],
     resolvers: [resolvers, ...additionalResolvers],
-    context,
-    uploads: false,
     formatError: (error) => {
       logGraphQLServerError(error);
       const {
@@ -57,24 +60,28 @@ export default (expressApp, options) => {
         path,
         extensions: { exception, code, ...extensions }, // eslint-disable-line
       } = error;
-      const apolloError = new ApolloError(message, code as string, {
-        code,
-        ...extensions,
+      const apolloError = new GraphQLError(message, {
+        extensions: {
+          code,
+          ...extensions,
+        },
       });
       // eslint-disable-next-line
       // @ts-ignore
       apolloError.path = path;
       return apolloError;
     },
-    engine: APOLLO_ENGINE_KEY
+    apollo: APOLLO_ENGINE_KEY
       ? {
-          apiKey: APOLLO_ENGINE_KEY,
+          key: APOLLO_ENGINE_KEY,
           privateVariables: ['email', 'plainPassword', 'oldPlainPassword', 'newPlainPassword'],
           ...engine,
         }
       : undefined,
     ...apolloServerOptions,
   });
+
+  await server.start();
 
   const originFn =
     corsOrigins && Array.isArray(corsOrigins)
@@ -91,25 +98,24 @@ export default (expressApp, options) => {
         }
       : corsOrigins;
 
-  // server.start().then(() => {
-  //
-  // });
+  expressApp.use(
+    '/graphql',
+    cors(
+      !originFn
+        ? undefined
+        : {
+            origin: originFn,
+            credentials: true,
+          },
+    ),
+    bodyParser.json({ limit: '5mb' }),
+    expressMiddleware(server, {
+      context,
+    }),
+  );
 
-  const middleware = server.getMiddleware({
-    path: '/graphql',
-    cors: !originFn
-      ? undefined
-      : {
-          origin: originFn,
-          credentials: true,
-        },
-    bodyParserConfig: {
-      limit: '5mb',
-    },
-  });
-
-  expressApp.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
-  expressApp.use(middleware);
+  // expressApp.use(handleUploads({ maxFileSize: 10000000, maxFiles: 10 }));
+  // expressApp.use(middleware);
 
   return server;
 };

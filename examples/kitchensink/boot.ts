@@ -1,6 +1,8 @@
 import './load_env';
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import http from 'http';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 
 import { startPlatform } from '@unchainedshop/platform';
 import { defaultModules, useDefaultMiddlewares } from '@unchainedshop/plugins';
@@ -11,12 +13,15 @@ import seed from './seed';
 
 const start = async () => {
   const app = express();
+  const httpServer = http.createServer(app);
+
   app.use(cookieParser());
 
   const unchainedApi = await startPlatform({
     expressApp: app,
     introspection: true,
     modules: defaultModules,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     options: {
       accounts: {
         password: {
@@ -54,7 +59,7 @@ const start = async () => {
 
   useDefaultMiddlewares(unchainedApi, app);
 
-  await app.listen({ port: process.env.PORT || 3000 });
+  await httpServer.listen({ port: process.env.PORT || 3000 });
   console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
 };
 
