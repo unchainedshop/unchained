@@ -73,6 +73,7 @@ export default async (
 
       const filters = await unchainedAPI.modules.filters.findFilters({
         filterIds,
+        includeInactive: true,
       });
 
       return queries.map(({ filterId }) => {
