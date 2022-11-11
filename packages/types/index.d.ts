@@ -1,4 +1,4 @@
-import { IncomingMessage, OutgoingMessage } from 'http';
+import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
 import { Context } from './api';
