@@ -1,4 +1,2 @@
-import setupAppleIAP from './adapter';
-
-export default setupAppleIAP;
-export { configureAppleTransactionsModule } from './module/configureAppleTransactionsModule';
+export * from './adapter';
+export * from './module/configureAppleTransactionsModule';

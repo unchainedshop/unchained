@@ -33,20 +33,19 @@ export const createContextResolver =
     };
   };
 
-export const useMiddlewareWithCurrentContext = (expressApp, path, middleware) => {
-  expressApp.use(
-    path,
-    async function middlewareWithContext(
-      req: IncomingMessage & { unchainedContext?: UnchainedCore },
-      res: OutgoingMessage,
-      next,
-    ) {
-      try {
-        req.unchainedContext = await context({ req, res });
-        await middleware(req, res, next);
-      } catch (error) {
-        next(error);
-      }
-    },
-  );
+export const useMiddlewareWithCurrentContext = (expressApp, path, ...middleware) => {
+  const addContext = async function middlewareWithContext(
+    req: IncomingMessage & { unchainedContext?: UnchainedCore },
+    res: OutgoingMessage,
+    next,
+  ) {
+    try {
+      req.unchainedContext = await context({ req, res });
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  expressApp.use(path, addContext, ...middleware);
 };

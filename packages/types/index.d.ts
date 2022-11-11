@@ -444,15 +444,6 @@ type APIRoles = {
 declare module '@unchainedshop/api' {
   function hashPassword(password: string): string;
 
-  function useMiddlewareWithCurrentContext(
-    expressApp: any,
-    path: string,
-    fn: (
-      req: IncomingMessage & { unchainedContext: UnchainedCore },
-      res: OutgoingMessage,
-    ) => Promise<any>,
-  ): void;
-
   const acl: any;
   const errors: any;
   const roles: APIRoles;

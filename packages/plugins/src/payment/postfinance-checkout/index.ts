@@ -19,12 +19,11 @@ import {
   voidTransaction,
 } from './api';
 import { orderIsPaid } from './utils';
-import setupPostfinance from './middleware';
 import { CompletionModes, IntegrationModes, SignResponse } from './types';
 
-const { PostFinanceCheckout } = pf;
+export * from './middleware';
 
-export default setupPostfinance;
+const { PostFinanceCheckout } = pf;
 
 const {
   PFCHECKOUT_SPACE_ID,
