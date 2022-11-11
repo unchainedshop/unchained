@@ -6,12 +6,14 @@ import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
 import Minio from 'minio';
+import AssumeRoleProvider from 'minio/dist/main/AssumeRoleProvider';
 import { Readable } from 'stream';
 import { URL } from 'url';
 
 const {
   MINIO_ACCESS_KEY,
   MINIO_REGION,
+  MINIO_STS_ENDPOINT,
   MINIO_SECRET_KEY,
   MINIO_ENDPOINT,
   MINIO_BUCKET_NAME,
@@ -46,12 +48,15 @@ export async function connectToMinio() {
     // eslint-disable-next-line
     // @ts-ignore
     if (NODE_ENV === 'development') minioClient?.traceOn(process.stdout);
-
-    // if (credentialsProvider) {
-    //   await minioClient.setCredentialsProvider(credentialsProvider);
-    // }
-
-    client = minioClient;
+    if (MINIO_STS_ENDPOINT) {
+      const ap = new AssumeRoleProvider({
+        stsEndpoint: MINIO_STS_ENDPOINT,
+      });
+      // eslint-disable-next-line
+      // @ts-ignore
+      await minioClient.setCredentialsProvider(ap);
+    }
+    return minioClient;
   } catch (error) {
     log(`Exception while creating Minio client: ${error.message}`, {
       level: LogLevel.Error,
@@ -68,7 +73,7 @@ const getMimeType = (extension) => {
   return mimeType.lookup(extension);
 };
 
-connectToMinio().then((c) => {
+connectToMinio().then(function setClient(c) {
   client = c;
 });
 
@@ -109,7 +114,7 @@ const getExpiryDate = () => new Date(new Date().getTime() + PUT_URL_EXPIRY);
 export const MinioAdapter: IFileAdapter = {
   key: 'shop.unchained.file-upload-plugin.minio',
   label: 'Uploads files into an S3 bucket using minio',
-  version: '1.0',
+  version: '1.1.0',
 
   ...FileAdapter,
 
