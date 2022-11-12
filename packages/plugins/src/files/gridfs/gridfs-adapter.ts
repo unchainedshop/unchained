@@ -5,6 +5,7 @@ import mimeType from 'mime-types';
 import { URL } from 'url';
 import { Readable, pipeline as rawPipeline } from 'stream';
 import { promisify } from 'util';
+import { ReadableStream } from 'node:stream/web';
 import sign from './sign';
 
 const pipeline = promisify(rawPipeline);
@@ -98,7 +99,7 @@ export const GridFSAdapter: IFileAdapter = {
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
     const response = await fetch(href, { headers });
     if (!response.ok) throw new Error(`Unexpected response for ${href}: ${response.statusText}`);
-    await pipeline(response.body, writeStream);
+    await pipeline(response.body as ReadableStream, writeStream);
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${_id}`;
 
