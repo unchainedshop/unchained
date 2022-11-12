@@ -1,10 +1,10 @@
+/// <reference lib="dom" />
 import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files';
 import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 import mimeType from 'mime-types';
 import { URL } from 'url';
 import { Readable, pipeline as rawPipeline } from 'stream';
 import { promisify } from 'util';
-import fetch from 'node-fetch';
 import sign from './sign';
 
 const pipeline = promisify(rawPipeline);

@@ -1,8 +1,8 @@
+/// <reference lib="dom" />
 import { IWorkerAdapter } from '@unchainedshop/types/worker';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
 import xmlJs from 'xml-js';
-import fetch from 'node-fetch';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
 
 const getExchangeRates = async () => {

@@ -1,3 +1,4 @@
+/// <reference lib="dom" />
 import { AccountsSettingsOptions, AccountsWebAuthnModule } from '@unchainedshop/types/accounts';
 import { ModuleInput } from '@unchainedshop/types/core';
 import {
@@ -5,7 +6,6 @@ import {
   PublicKeyCredentialCreationOptions,
   PublicKeyCredentialRequestOptions,
 } from 'fido2-lib';
-import fetch from 'node-fetch';
 
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection';
 

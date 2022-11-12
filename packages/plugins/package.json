@@ -71,7 +71,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
-    "@types/node": "^16.18.3",
+    "@types/node": "^18.11.9",
     "@unchainedshop/api": "^2.0.0-beta6",
     "@unchainedshop/client-oauth2": "^4.3.3",
     "@unchainedshop/core-delivery": "^2.0.0-beta6",
@@ -105,8 +105,5 @@
     "typescript": "^4.8.4",
     "xml-js": "^1.6.11",
     "xml2js": "0.4.23"
-  },
-  "peerDependencies": {
-    "node-fetch": "^2.6.7"
   }
 }

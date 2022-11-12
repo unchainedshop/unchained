@@ -1,5 +1,4 @@
-import fetch from 'node-fetch';
-
+/// <reference lib="dom" />
 export class SaferpayConnection {
   private baseUrl: string;
 
