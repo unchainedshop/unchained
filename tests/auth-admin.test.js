@@ -1,14 +1,13 @@
-import FormData from 'form-data';
+import { readFileSync } from 'node:fs';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-  uploadFormData,
 } from './helpers';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 import { intervalUntilTimeout } from './lib/wait';
+import { Blob, File } from 'formdata-node';
 
-const fs = require('fs');
 const crypto = require('crypto');
 const path = require('path');
 
@@ -206,15 +205,14 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.updateUserAvatar', () => {
     it('update the avatar of a foreign user', async () => {
-      const avatar = fs.createReadStream(
-        path.resolve(__dirname, `./assets/image.jpg`),
-      );
-
-      const body = new FormData();
-      body.append(
-        'operations',
-        JSON.stringify({
-          query: `
+      const avatarBuffer = readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
+      const avatar = new Blob(avatarBuffer);
+      
+      const {
+        errors,
+        data,
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
           mutation updateUserAvatar($userId: ID, $avatar: Upload!) {
             updateUserAvatar(userId: $userId, avatar: $avatar) {
               _id
@@ -225,23 +223,19 @@ describe('Auth for admin users', () => {
             }
           }
         `,
-          variables: {
-            userId: User._id,
-            avatar: null,
-          },
-        }),
-      );
+        variables: {
+          userId: User._id,
+          avatar,
+        },
+      });
 
-      body.append('map', JSON.stringify({ 1: ['variables.avatar'] }));
-      body.append('1', avatar);
-      const {
-        data: { updateUserAvatar },
-      } = await uploadFormData({ token: ADMIN_TOKEN, body });
+      console.log(data, errors);
+      const { updateUserAvatar } = data;
 
       expect(updateUserAvatar).toMatchObject({
         _id: User._id,
         avatar: {
-          name: 'image.jpg',
+          name: 'blob',
         },
       });
       const hash = crypto.createHash('sha256');

@@ -65,7 +65,6 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "form-data": "^4.0.0",
     "graphql": "^16.6.0",
     "jest": "^29.3.1",
     "mongodb": "^4.11.0",
@@ -76,6 +75,7 @@
     "workspaces-run": "^1.0.1"
   },
   "dependencies": {
+    "formdata-node": "^4.4.1",
     "graphql-upload": "^16.0.2"
   }
 }

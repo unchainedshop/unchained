@@ -1,7 +1,7 @@
 import { MongoClient, Collection } from 'mongodb';
 import { execute, toPromise, gql } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
-import FormData from 'form-data';
+import { FormData, File } from 'formdata-node';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
@@ -87,7 +87,11 @@ export const createAnonymousGraphqlFetch = () => {
   const link = createUploadLink({
     uri,
     fetch,
+    File,
     FormData,
+    headers: {
+      'apollo-require-preflight': true,
+    },
   });
   return convertLinkToFetch(link);
 };
@@ -97,6 +101,7 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const link = createUploadLink({
     uri,
     fetch,
+    File,
     FormData,
     includeExtensions: true,
     headers: {
@@ -112,6 +117,7 @@ export const uploadFormData = async ({ token = '', body }) => {
     ? {
         headers: {
           authorization: token,
+          'apollo-require-preflight': true,
         },
       }
     : {};
