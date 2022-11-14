@@ -1,7 +1,7 @@
 import { MongoClient, Collection } from 'mongodb';
 import { execute, toPromise, gql } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
-import FormData from 'form-data';
+import { FormData } from 'formdata-node';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
@@ -88,6 +88,10 @@ export const createAnonymousGraphqlFetch = () => {
     uri,
     fetch,
     FormData,
+    includeExtensions: true,
+    headers: {
+      'apollo-require-preflight': true,
+    },
   });
   return convertLinkToFetch(link);
 };
@@ -105,23 +109,6 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
     },
   });
   return convertLinkToFetch(link);
-};
-
-export const uploadFormData = async ({ token = '', body }) => {
-  const options = token
-    ? {
-        headers: {
-          authorization: token,
-        },
-      }
-    : {};
-  return fetch('http://localhost:4010/graphql', {
-    ...options,
-    method: 'POST',
-    body,
-  })
-    .then((response) => response.json())
-    .catch((e) => console.warn(e)); // eslint-disable-line
 };
 
 export const putFile = async (file, url) => {

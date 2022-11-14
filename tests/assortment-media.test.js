@@ -1,22 +1,21 @@
-import FormData from "form-data";
+import { readFileSync } from 'node:fs';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-  uploadFormData,
   putFile,
 } from "./helpers";
 import { ADMIN_TOKEN, USER_TOKEN } from "./seeds/users";
 import { PngAssortmentMedia, SimpleAssortment } from "./seeds/assortments";
 
 let graphqlFetch;
+let userGraphqlFetch;
 const fs = require("fs");
 const crypto = require('crypto');
 const path = require("path");
 
-const assortmentMediaFile = fs.createReadStream(
-  path.resolve(__dirname, `./assets/image.jpg`)
-);
+const assortmentMediaFileBuffer = readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
+const assortmentMediaFile = new Blob(assortmentMediaFileBuffer, { type: "image/jpeg" });
 
 const assortmentMediaFile2 = fs.createReadStream(
   path.resolve(__dirname, `./assets/image.jpg`)
@@ -30,15 +29,15 @@ describe("AssortmentMedia", () => {
   beforeAll(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    userGraphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
   });
 
   describe("Mutation.addAssortmentMedia for admin user should", () => {
     it("upload assortment media correctly", async () => {
-      const body = new FormData();
-      body.append(
-        "operations",
-        JSON.stringify({
-          query: `
+      const {
+        data: { addAssortmentMedia },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
             addAssortmentMedia(assortmentId: $assortmentId, media: $media){
               _id
@@ -53,76 +52,58 @@ describe("AssortmentMedia", () => {
             }
           }
         `,
-          variables: {
-            assortmentId: SimpleAssortment[0]._id,
-            media: null,
-          },
-        })
-      );
+        variables: {
+          assortmentId: SimpleAssortment[0]._id,
+          media: assortmentMediaFile,
+        },
+      });
 
-      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
-      body.append("1", assortmentMediaFile);
-      const {
-        data: { addAssortmentMedia },
-      } = await uploadFormData({ token: ADMIN_TOKEN, body });
       expect(addAssortmentMedia?.file).toMatchObject({
-        name: 'image.jpg',
+        name: 'blob',
         type: 'image/jpeg',
       });
       const hash = crypto.createHash('sha256');
-      const download = (await fetch(addAssortmentMedia.file.url)).body;
-      download.on('data', chunk => hash.update(chunk));
-      download.on('end', () => expect(hash.digest('hex')).toBe('f0d184ed4614ccfad07d2193d20c15dd6df9e3a5136cd62afdab2545cae6a0a2'));
+      const download = await (await fetch(addAssortmentMedia.file.url)).text();
+      hash.update(download);
+      expect(hash.digest('hex')).toBe('c60b924c5ea542c64e791e9e371571c4fe39f57e0cb2d76e16703414b24f9412')
     }, 20000);
 
     it("return AssortmentNotFoundError when passed non existing assortment ID", async () => {
-      const body = new FormData();
-      body.append(
-        "operations",
-        JSON.stringify({
-          query: `
+      const {
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
             addAssortmentMedia(assortmentId: $assortmentId, media: $media){
               _id
             }
           }
         `,
-          variables: {
-            assortmentId: "non-existing-id",
-            media: null,
-          },
-        })
-      );
-
-      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
-      body.append("1", assortmentMediaFile);
-      const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
+        variables: {
+          assortmentId: "non-existing-id",
+          media: assortmentMediaFile,
+        },
+      });
 
       expect(errors[0]?.extensions?.code).toEqual("AssortmentNotFoundError");
     });
 
     it("return InvalidIdError when passed Invalid assortment ID", async () => {
-      const body = new FormData();
-      body.append(
-        "operations",
-        JSON.stringify({
-          query: `
+      const {
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
             addAssortmentMedia(assortmentId: $assortmentId, media: $media){
               _id
             }
           }
         `,
-          variables: {
-            assortmentId: "",
-            media: null,
-          },
-        })
-      );
-
-      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
-      body.append("1", assortmentMediaFile);
-      const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
+        variables: {
+          assortmentId: "",
+          media: assortmentMediaFile,
+        },
+      });
 
       expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
     });
@@ -130,55 +111,45 @@ describe("AssortmentMedia", () => {
 
   describe("Mutation.addAssortmentMedia for normal user should", () => {
     it("return NoPermissionError", async () => {
-      const body = new FormData();
-      body.append(
-        "operations",
-        JSON.stringify({
-          query: `
+      const {
+        errors,
+      } = await userGraphqlFetch({
+        query: /* GraphQL */ `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
             addAssortmentMedia(assortmentId: $assortmentId, media: $media){
               _id
             }
           }
         `,
-          variables: {
-            assortmentId: SimpleAssortment[0]._id,
-            media: null,
-          },
-        })
-      );
+        variables: {
+          assortmentId: SimpleAssortment[0]._id,
+          media: assortmentMediaFile,
+        },
+      });
 
-      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
-      body.append("1", assortmentMediaFile);
-      const { errors } = await uploadFormData({ token: USER_TOKEN, body });
+
       expect(errors[0]?.extensions?.code).toEqual("NoPermissionError");
     });
   });
 
   describe("Mutation.addAssortmentMedia for anonymous user should", () => {
     it("return NoPermissionError", async () => {
-      const body = new FormData();
-      body.append(
-        "operations",
-        JSON.stringify({
-          query: `
+      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+
+      const {
+        errors,
+      } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
           mutation addAssortmentMedia($assortmentId: ID!, $media: Upload!){
             addAssortmentMedia(assortmentId: $assortmentId, media: $media){
               _id
             }
           }
         `,
-          variables: {
-            assortmentId: SimpleAssortment[0]._id,
-            media: null,
-          },
-        })
-      );
-
-      body.append("map", JSON.stringify({ 1: ["variables.media"] }));
-      body.append("1", assortmentMediaFile);
-      const { errors } = await uploadFormData({
-        body,
+        variables: {
+          assortmentId: SimpleAssortment[0]._id,
+          media: assortmentMediaFile,
+        },
       });
 
       expect(errors[0]?.extensions?.code).toEqual("NoPermissionError");
@@ -265,9 +236,9 @@ describe("AssortmentMedia", () => {
       });
       expect(assortment.media[2].file.name).toBe('test-media');
       const hash = crypto.createHash('sha256');
-      const download = (await fetch(assortment.media[2].file.url)).body;
-      download.on('data', chunk => hash.update(chunk));
-      download.on('end', () => expect(hash.digest('hex')).toBe('f0d184ed4614ccfad07d2193d20c15dd6df9e3a5136cd62afdab2545cae6a0a2'));
+      const download = await (await fetch(assortment.media[2].file.url)).text();
+      hash.update(download);
+      expect(hash.digest('hex')).toBe('9f577129bae6b0fef97013c4224cc7f3e2efd9b232fe4cd9c3c79a33950e4b9c')
     }, 20000);
 
     it("link uploaded media file with assortment media successfully", async () => {
