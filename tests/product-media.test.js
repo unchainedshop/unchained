@@ -4,6 +4,7 @@ import {
   createAnonymousGraphqlFetch,
   putFile,
 } from './helpers';
+import { readFileSync } from 'node:fs';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
 import { JpegProductMedia, SimpleProduct } from './seeds/products';
 
@@ -11,9 +12,9 @@ let graphqlFetch;
 const fs = require('fs');
 const path = require('path');
 
-const productMediaFile = fs.createReadStream(
-  path.resolve(__dirname, `./assets/image.jpg`),
-);
+const productMediaBuffer = readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
+const productMediaFile = new Blob(productMediaBuffer, { type: "image/jpeg" });
+
 const productMediaFile2 = fs.createReadStream(
   path.resolve(__dirname, `./assets/image.jpg`)
 );
@@ -29,11 +30,10 @@ describe('ProductsVariation', () => {
 
   describe('Mutation.addProductMedia for admin user should', () => {
     it('upload product media correctly', async () => {
-      const body = new FormData();
-      body.append(
-        'operations',
-        JSON.stringify({
-          query: `
+      const {
+        data: { addProductMedia },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
           mutation addProductMedia($productId: ID!, $media: Upload!){
             addProductMedia(productId: $productId, media: $media){
               _id
@@ -48,73 +48,54 @@ describe('ProductsVariation', () => {
             }
           }
         `,
-          variables: {
-            productId: SimpleProduct._id,
-            media: null,
-          },
-        }),
-      );
-
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', productMediaFile);
-      const {
-        data: { addProductMedia },
-      } = await uploadFormData({ token: ADMIN_TOKEN, body });
+        variables: {
+          productId: SimpleProduct._id,
+          media: productMediaFile,
+        },
+      });
 
       expect(addProductMedia?.file).toMatchObject({
-        name: 'image.jpg',
+        name: 'blob',
         type: 'image/jpeg',
       });
     }, 10000);
 
     it('return ProductNotFoundError when passed non existing product ID', async () => {
-      const body = new FormData();
-      body.append(
-        'operations',
-        JSON.stringify({
-          query: `
+      const {
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
           mutation addProductMedia($productId: ID!, $media: Upload!){
             addProductMedia(productId: $productId, media: $media){
               _id
             }
           }
         `,
-          variables: {
-            productId: 'non-existing-id',
-            media: null,
-          },
-        }),
-      );
-
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', productMediaFile);
-      const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
+        variables: {
+          productId: 'non-existing-id',
+          media: productMediaFile,
+        },
+      });
 
       expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
     });
 
     it('return InvalidIdError when passed Invalid product ID', async () => {
-      const body = new FormData();
-      body.append(
-        'operations',
-        JSON.stringify({
-          query: `
+      const {
+        errors,
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
           mutation addProductMedia($productId: ID!, $media: Upload!){
             addProductMedia(productId: $productId, media: $media){
               _id
             }
           }
         `,
-          variables: {
-            productId: '',
-            media: null,
-          },
-        }),
-      );
-
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', productMediaFile);
-      const { errors } = await uploadFormData({ token: ADMIN_TOKEN, body });
+        variables: {
+          productId: '',
+          media: productMediaFile,
+        },
+      });
 
       expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
@@ -246,27 +227,23 @@ describe('ProductsVariation', () => {
 
   describe('Mutation.addProductMedia for normal user should', () => {
     it('return NoPermissionError', async () => {
-      const body = new FormData();
-      body.append(
-        'operations',
-        JSON.stringify({
-          query: `
+      const userGraphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+
+      const {
+        errors,
+      } = await userGraphqlFetch({
+        query: /* GraphQL */ `
           mutation addProductMedia($productId: ID!, $media: Upload!){
             addProductMedia(productId: $productId, media: $media){
               _id
             }
           }
         `,
-          variables: {
-            productId: SimpleProduct._id,
-            media: null,
-          },
-        }),
-      );
-
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', productMediaFile);
-      const { errors } = await uploadFormData({ token: USER_TOKEN, body });
+        variables: {
+          productId: SimpleProduct._id,
+          media: productMediaFile,
+        },
+      });
 
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
@@ -274,28 +251,22 @@ describe('ProductsVariation', () => {
 
   describe('Mutation.addProductMedia for anonymous user should', () => {
     it('return NoPermissionError', async () => {
-      const body = new FormData();
-      body.append(
-        'operations',
-        JSON.stringify({
-          query: `
+      const anonymousGraphqlFetch = createAnonymousGraphqlFetch();
+
+      const {
+        errors,
+      } = await anonymousGraphqlFetch({
+        query: /* GraphQL */ `
           mutation addProductMedia($productId: ID!, $media: Upload!){
             addProductMedia(productId: $productId, media: $media){
               _id
             }
           }
         `,
-          variables: {
-            productId: SimpleProduct._id,
-            media: null,
-          },
-        }),
-      );
-
-      body.append('map', JSON.stringify({ 1: ['variables.media'] }));
-      body.append('1', productMediaFile);
-      const { errors } = await uploadFormData({
-        body,
+        variables: {
+          productId: SimpleProduct._id,
+          media: productMediaFile,
+        },
       });
 
       expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
