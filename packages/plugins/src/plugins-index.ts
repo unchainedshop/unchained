@@ -1,3 +1,6 @@
+import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
+import bodyParser from 'body-parser';
+
 // Delivery
 import './delivery/post';
 import './delivery/pick-mup';
@@ -9,12 +12,11 @@ import './payment/invoice';
 import './payment/invoice-prepaid';
 import './payment/paypal-checkout';
 import './payment/worldline-saferpay';
-import setupDatatrans from './payment/datatrans-v2';
-import { setupCryptopayWebhooks, configureCryptopayModule } from './payment/cryptopay';
-import setupAppleIAP, { configureAppleTransactionsModule } from './payment/apple-iap';
-import setupBity, { configureBityModule } from './payment/bity';
-import setupStripe from './payment/stripe';
-import setupPostfinance from './payment/postfinance-checkout';
+import { datatransHandler } from './payment/datatrans-v2';
+import { configureCryptopayModule, cryptopayHandler } from './payment/cryptopay';
+import { appleIAPHandler, configureAppleTransactionsModule } from './payment/apple-iap';
+import { stripeHandler } from './payment/stripe';
+import { postfinanceCheckoutHandler } from './payment/postfinance-checkout';
 
 // Warehousing
 import './warehousing/store';
@@ -65,16 +67,23 @@ import { configureUpdateTokenOwnership } from './worker/update-token-ownership';
 
 // Asset Management
 import './files/gridfs/gridfs-adapter';
-import setupGridFSWebhook from './files/gridfs/gridfs-webhook';
+import { gridfsHandler } from './files/gridfs/gridfs-webhook';
 import { configureGridFSFileUploadModule } from './files/gridfs';
 
+const {
+  CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
+  STRIPE_WEBHOOK_PATH = '/payment/stripe',
+  PFCHECKOUT_WEBHOOK_PATH = '/payment/postfinance-checkout',
+  DATATRANS_WEBHOOK_PATH = '/payment/datatrans/webhook',
+  APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap',
+  // MINIO_PUT_SERVER_PATH = '/minio',
+  GRIDFS_PUT_SERVER_PATH = '/gridfs',
+} = process.env;
+
 // import './files/minio/minio-adapter';
-// import setupMinio from './files/minio/minio-webhook';
+// import { minioHandler } from './files/minio/minio-webhook';
 
 export const defaultModules = {
-  bity: {
-    configure: configureBityModule,
-  },
   appleTransactions: {
     configure: configureAppleTransactionsModule,
   },
@@ -87,13 +96,50 @@ export const defaultModules = {
 };
 
 export const useDefaultMiddlewares = (unchainedApi, app) => {
-  setupGridFSWebhook(app);
-  setupCryptopayWebhooks(app);
-  setupStripe(app);
-  setupPostfinance(app);
-  setupDatatrans(app);
-  setupBity(app);
-  setupAppleIAP(app);
+  useMiddlewareWithCurrentContext(app, GRIDFS_PUT_SERVER_PATH, gridfsHandler);
+
+  useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, bodyParser.json(), cryptopayHandler);
+
+  useMiddlewareWithCurrentContext(
+    app,
+    STRIPE_WEBHOOK_PATH,
+    bodyParser.raw({ type: 'application/json' }),
+    stripeHandler,
+  );
+
+  useMiddlewareWithCurrentContext(
+    app,
+    PFCHECKOUT_WEBHOOK_PATH,
+    bodyParser.json(),
+    postfinanceCheckoutHandler,
+  );
+
+  useMiddlewareWithCurrentContext(
+    app,
+    DATATRANS_WEBHOOK_PATH,
+    bodyParser.text({
+      type: 'application/json',
+    }),
+    datatransHandler,
+  );
+
+  useMiddlewareWithCurrentContext(
+    app,
+    APPLE_IAP_WEBHOOK_PATH,
+    bodyParser.json({
+      strict: false,
+    }),
+    appleIAPHandler,
+  );
+
+  // useMiddlewareWithCurrentContext(
+  //   app,
+  //   MINIO_PUT_SERVER_PATH,
+  //   bodyParser.json({
+  //     strict: false,
+  //   }),
+  //   minioHandler
+  // );
 
   configureExportToken(unchainedApi);
   configureUpdateTokenOwnership(unchainedApi);

@@ -78,7 +78,6 @@ Next, we will add a new file to the project and name it `engine/sausage.js`:
 
 ```js
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-pricing'
-import fetch from 'node-fetch'
 
 const PRODUCT_TAG_SAUSAGE = 'sausage'
 const SAUSAGE_THRESHOLD_CELSIUS = 20

@@ -1,5 +1,5 @@
 import { UnchainedServerOptions } from '@unchainedshop/types/api';
-import { ApolloServer } from 'apollo-server-express';
+import type { ApolloServer } from '@apollo/server';
 import fs from 'fs';
 import path from 'path';
 import createBulkImportServer from './createBulkImportServer';
@@ -32,13 +32,13 @@ const packageJson = loadJSON('../package.json');
 
 const UNCHAINED_API_VERSION = process.env.UNCHAINED_API_VERSION || packageJson?.version || '1.2.x';
 
-export const startAPIServer = (
+export const startAPIServer = async (
   options: UnchainedServerOptions,
-): {
+): Promise<{
   apolloGraphQLServer: ApolloServer;
   bulkImportServer: any;
   ercMetadataServer: any;
-} => {
+}> => {
   const {
     unchainedAPI,
     roles,
@@ -57,7 +57,7 @@ export const startAPIServer = (
       : contextResolver,
   );
 
-  const apolloGraphQLServer = createGraphQLServer(expressApp, apolloServerOptions);
+  const apolloGraphQLServer = await createGraphQLServer(expressApp, apolloServerOptions);
   const bulkImportServer = createBulkImportServer(expressApp);
   const ercMetadataServer = createERCMetadataServer(expressApp);
 

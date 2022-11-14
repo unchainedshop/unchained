@@ -1,8 +1,6 @@
+/// <reference lib="dom" />
 import { Context } from '@unchainedshop/types/api';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
-import bodyParser from 'body-parser';
-import fetch from 'node-fetch';
-import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
@@ -10,11 +8,7 @@ import { AppleTransactionsModule } from './module/configureAppleTransactionsModu
 
 const logger = createLogger('unchained:core-payment:iap');
 
-const {
-  APPLE_IAP_SHARED_SECRET,
-  APPLE_IAP_ENVIRONMENT = 'sandbox',
-  APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap',
-} = process.env;
+const { APPLE_IAP_SHARED_SECRET, APPLE_IAP_ENVIRONMENT = 'sandbox' } = process.env;
 
 // https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store
 const environments = {
@@ -88,144 +82,134 @@ const fixPeriods = async (
   );
 };
 
-export default (app) => {
-  useMiddlewareWithCurrentContext(
-    app,
-    APPLE_IAP_WEBHOOK_PATH,
-    bodyParser.json({
-      strict: false,
-    }),
-  );
+export const appleIAPHandler = async (req, res) => {
+  if (req.method === 'POST') {
+    try {
+      const resolvedContext = req.unchainedContext as Context;
+      const { modules, services } = resolvedContext;
+      const responseBody = req.body || {};
+      if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
+        throw new Error('shared secret not valid');
+      }
 
-  useMiddlewareWithCurrentContext(app, APPLE_IAP_WEBHOOK_PATH, async (req, res) => {
-    if (req.method === 'POST') {
-      try {
-        const resolvedContext = req.unchainedContext as Context;
-        const { modules, services } = resolvedContext;
-        const responseBody = req.body || {};
-        if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
-          throw new Error('shared secret not valid');
-        }
+      const transactions = responseBody?.unified_receipt?.latest_receipt_info; // eslint-disable-line
+      const latestTransaction = transactions[0];
 
-        const transactions = responseBody?.unified_receipt?.latest_receipt_info; // eslint-disable-line
-        const latestTransaction = transactions[0];
+      if (responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY) {
+        // Find the cart to checkout
+        const orderPayment = await modules.orders.payments.findOrderPaymentByContextData({
+          context: {
+            'meta.transactionIdentifier': latestTransaction.transaction_id,
+          },
+        });
 
-        if (responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY) {
-          // Find the cart to checkout
-          const orderPayment = await modules.orders.payments.findOrderPaymentByContextData({
-            context: {
-              'meta.transactionIdentifier': latestTransaction.transaction_id,
-            },
-          });
+        if (!orderPayment) throw new Error('Could not find any matching order payment');
+        const order = await modules.orders.findOrder({
+          orderId: orderPayment.orderId,
+        });
 
-          if (!orderPayment) throw new Error('Could not find any matching order payment');
-          const order = await modules.orders.findOrder({
-            orderId: orderPayment.orderId,
-          });
-
-          if (modules.orders.isCart(order)) {
-            // checkout if is cart, else just ignore because the cart is already checked out
-            // through submission of the receipt with GraphQL
-            const checkedOut = await modules.orders.checkout(
-              order._id,
-              {
-                paymentContext: {
-                  receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-                },
-              },
-              resolvedContext,
-            );
-            const orderId = checkedOut._id;
-            const enrollment = await modules.enrollments.findEnrollment({
-              orderId,
-            });
-            await fixPeriods(
-              {
-                transactionId: latestTransaction.original_transaction_id,
-                transactions,
-                enrollmentId: enrollment._id,
-                orderId,
-              },
-              resolvedContext,
-            );
-
-            logger.info(`Apple IAP Webhook: Confirmed checkout for order ${checkedOut.orderNumber}`, {
-              orderId: checkedOut._id,
-            });
-          }
-        } else {
-          // Just store payment credentials, use the enrollments paymentProvider reference and
-          // let the job do the rest
-          const originalOrderPayment = await modules.orders.payments.findOrderPaymentByContextData({
-            context: {
-              'meta.transactionIdentifier': latestTransaction.original_transaction_id,
-            },
-          });
-          if (!originalOrderPayment) throw new Error('Could not find any matching order payment');
-          const originalOrder = await modules.orders.findOrder({
-            orderId: originalOrderPayment.orderId,
-          });
-          const enrollment = await modules.enrollments.findEnrollment({
-            orderId: originalOrder._id,
-          });
-
-          await services.payment.registerPaymentCredentials(
-            enrollment.payment.paymentProviderId,
+        if (modules.orders.isCart(order)) {
+          // checkout if is cart, else just ignore because the cart is already checked out
+          // through submission of the receipt with GraphQL
+          const checkedOut = await modules.orders.checkout(
+            order._id,
             {
-              transactionContext: {
+              paymentContext: {
                 receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
               },
             },
             resolvedContext,
           );
-
+          const orderId = checkedOut._id;
+          const enrollment = await modules.enrollments.findEnrollment({
+            orderId,
+          });
           await fixPeriods(
             {
               transactionId: latestTransaction.original_transaction_id,
               transactions,
               enrollmentId: enrollment._id,
-              orderId: originalOrder._id,
+              orderId,
             },
             resolvedContext,
           );
 
-          logger.info(
-            `Apple IAP Webhook: Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`,
-          );
+          logger.info(`Apple IAP Webhook: Confirmed checkout for order ${checkedOut.orderNumber}`, {
+            orderId: checkedOut._id,
+          });
+        }
+      } else {
+        // Just store payment credentials, use the enrollments paymentProvider reference and
+        // let the job do the rest
+        const originalOrderPayment = await modules.orders.payments.findOrderPaymentByContextData({
+          context: {
+            'meta.transactionIdentifier': latestTransaction.original_transaction_id,
+          },
+        });
+        if (!originalOrderPayment) throw new Error('Could not find any matching order payment');
+        const originalOrder = await modules.orders.findOrder({
+          orderId: originalOrderPayment.orderId,
+        });
+        const enrollment = await modules.enrollments.findEnrollment({
+          orderId: originalOrder._id,
+        });
 
-          if (responseBody.notification_type === AppleNotificationTypes.DID_RECOVER) {
-            if (
-              enrollment.status !== EnrollmentStatus.TERMINATED &&
-              responseBody.auto_renew_status === 'false'
-            ) {
-              await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
-            }
-          }
+        await services.payment.registerPaymentCredentials(
+          enrollment.payment.paymentProviderId,
+          {
+            transactionContext: {
+              receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
+            },
+          },
+          resolvedContext,
+        );
 
-          if (responseBody.notification_type === AppleNotificationTypes.DID_CHANGE_RENEWAL_STATUS) {
-            if (
-              enrollment.status !== EnrollmentStatus.TERMINATED &&
-              responseBody.auto_renew_status === 'false'
-            ) {
-              await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
-            }
+        await fixPeriods(
+          {
+            transactionId: latestTransaction.original_transaction_id,
+            transactions,
+            enrollmentId: enrollment._id,
+            orderId: originalOrder._id,
+          },
+          resolvedContext,
+        );
+
+        logger.info(
+          `Apple IAP Webhook: Processed notification for ${latestTransaction.original_transaction_id} and type ${responseBody.notification_type}`,
+        );
+
+        if (responseBody.notification_type === AppleNotificationTypes.DID_RECOVER) {
+          if (
+            enrollment.status !== EnrollmentStatus.TERMINATED &&
+            responseBody.auto_renew_status === 'false'
+          ) {
+            await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
           }
-          logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
         }
 
-        res.writeHead(200);
-        res.end();
-        return;
-      } catch (e) {
-        logger.warn(`Apple IAP Webhook: ${e.message}`, e);
-        res.writeHead(503);
-        res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
-        return;
+        if (responseBody.notification_type === AppleNotificationTypes.DID_CHANGE_RENEWAL_STATUS) {
+          if (
+            enrollment.status !== EnrollmentStatus.TERMINATED &&
+            responseBody.auto_renew_status === 'false'
+          ) {
+            await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
+          }
+        }
+        logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
       }
+
+      res.writeHead(200);
+      res.end();
+      return;
+    } catch (e) {
+      logger.warn(`Apple IAP Webhook: ${e.message}`, e);
+      res.writeHead(503);
+      res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
+      return;
     }
-    res.writeHead(404);
-    res.end();
-  });
+  }
+  res.writeHead(404);
+  res.end();
 };
 
 const AppleIAP: IPaymentAdapter = {

@@ -97,7 +97,7 @@ export const startPlatform = async ({
   ];
 
   // Start the graphQL server
-  startAPIServer({
+  await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
     typeDefs: [...generatedTypeDefs, ...typeDefs],

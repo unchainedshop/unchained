@@ -1,4 +1,4 @@
-import { IncomingMessage, OutgoingMessage } from 'http';
+import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
 import { Context } from './api';
@@ -443,15 +443,6 @@ type APIRoles = {
 
 declare module '@unchainedshop/api' {
   function hashPassword(password: string): string;
-
-  function useMiddlewareWithCurrentContext(
-    expressApp: any,
-    path: string,
-    fn: (
-      req: IncomingMessage & { unchainedContext: UnchainedCore },
-      res: OutgoingMessage,
-    ) => Promise<any>,
-  ): void;
 
   const acl: any;
   const errors: any;

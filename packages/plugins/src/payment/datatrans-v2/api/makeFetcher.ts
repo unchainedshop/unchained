@@ -1,8 +1,8 @@
+/// <reference lib="dom" />
 import fs from 'fs';
 import util from 'util';
 import { resolve } from 'path';
 import { createLogger } from '@unchainedshop/logger';
-import fetch, { Response } from 'node-fetch';
 
 const readFile = util.promisify(fs.readFile);
 

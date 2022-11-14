@@ -17,9 +17,6 @@ import setupCryptopay from '@unchainedshop/plugins/lib/payment/cryptopay';
 import setupAppleIAP, {
   configureAppleTransactionsModule,
 } from '@unchainedshop/plugins/lib/payment/apple-iap';
-import setupBity, {
-  configureBityModule,
-} from '@unchainedshop/plugins/lib/payment/bity';
 import setupStripe from '@unchainedshop/plugins/lib/payment/stripe';
 import setupPostfinance from '@unchainedshop/plugins/lib/payment/postfinance-checkout';
 
@@ -75,9 +72,6 @@ Meteor.startup(async () => {
     playground: true,
     tracing: true,
     modules: {
-      bity: {
-        configure: configureBityModule,
-      },
       appleTransactions: {
         configure: configureAppleTransactionsModule,
       },
@@ -125,7 +119,6 @@ Meteor.startup(async () => {
   setupStripe(WebApp.connectHandlers);
   setupPostfinance(WebApp.connectHandlers);
   setupDatatrans(WebApp.connectHandlers);
-  setupBity(WebApp.connectHandlers);
   setupAppleIAP(WebApp.connectHandlers);
 
   configureGenerateOrderAutoscheduling();

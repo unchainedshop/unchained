@@ -1,9 +1,14 @@
-import { ApolloError } from 'apollo-server-express';
+import { GraphQLError } from 'graphql';
 
 export const createError = (code: string, message: string): any =>
-  class extends ApolloError {
+  class extends GraphQLError {
     constructor({ message: explicitMessage, ...data }) {
-      super(explicitMessage || message, code, data);
+      super(explicitMessage || message, {
+        extensions: {
+          code,
+          ...data,
+        },
+      });
     }
   };
 

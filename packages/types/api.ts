@@ -1,5 +1,5 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
-import { GraphQLOptions } from 'apollo-server-express';
+import { ApolloServerOptions } from '@apollo/server';
 import type { Locale } from 'locale';
 import { User } from './user';
 import { UnchainedCore } from './core';
@@ -75,6 +75,6 @@ export type UnchainedServerOptions = {
   introspection: boolean;
   playground: boolean;
 } & Omit<
-  GraphQLOptions<any, any>,
+  ApolloServerOptions<Context>,
   'context' | 'uploads' | 'formatError' | 'typeDefs' | 'resolvers' | 'cors' | 'schema' | 'schemaHash'
 >;

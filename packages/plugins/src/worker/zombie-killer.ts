@@ -32,7 +32,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
       // Remove unreferenced product media objects
       const products = await modules.products.findProducts({}, findId);
       const deletedProductMediaCount = await modules.products.media.deleteMediaFiles({
-        excludedProdcutIds: products.map(mapId),
+        excludedProductIds: products.map(mapId),
       });
 
       // Remove unreferenced assortment media objects

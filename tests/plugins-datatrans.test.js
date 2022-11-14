@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
 import { USER_TOKEN, User } from './seeds/users';
 import { SimplePaymentProvider } from './seeds/payments';

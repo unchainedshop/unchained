@@ -1,10 +1,11 @@
 const {
   ROOT_URL,
-  DATATRANS_WEBHOOK_PATH,
-  DATATRANS_SUCCESS_PATH,
-  DATATRANS_ERROR_PATH,
-  DATATRANS_CANCEL_PATH,
-  DATATRANS_RETURN_PATH,
+  EMAIL_WEBSITE_URL,
+  DATATRANS_WEBHOOK_PATH = '/payment/datatrans/webhook',
+  DATATRANS_SUCCESS_PATH = '/datatrans/success',
+  DATATRANS_ERROR_PATH = '/datatrans/error',
+  DATATRANS_CANCEL_PATH = '/datatrans/cancel',
+  DATATRANS_RETURN_PATH = '/datatrans/return',
 } = process.env;
 
 type Paths = {
@@ -15,10 +16,10 @@ type Paths = {
   returnUrl: string;
 };
 
-export default (relative = false): Paths => ({
-  postUrl: `${relative ? '' : ROOT_URL}${DATATRANS_WEBHOOK_PATH || '/payment/datatrans/webhook'}`,
-  successUrl: `${relative ? '' : ROOT_URL}${DATATRANS_SUCCESS_PATH || '/payment/datatrans/success'}`,
-  cancelUrl: `${relative ? '' : ROOT_URL}${DATATRANS_CANCEL_PATH || '/payment/datatrans/cancel'}`,
-  errorUrl: `${relative ? '' : ROOT_URL}${DATATRANS_ERROR_PATH || '/payment/datatrans/error'}`,
-  returnUrl: `${relative ? '' : ROOT_URL}${DATATRANS_RETURN_PATH || '/payment/datatrans/return'}`,
+export default (): Paths => ({
+  postUrl: `${ROOT_URL}${DATATRANS_WEBHOOK_PATH}`,
+  successUrl: `${EMAIL_WEBSITE_URL}${DATATRANS_SUCCESS_PATH}`,
+  cancelUrl: `${EMAIL_WEBSITE_URL}${DATATRANS_CANCEL_PATH}`,
+  errorUrl: `${EMAIL_WEBSITE_URL}${DATATRANS_ERROR_PATH}`,
+  returnUrl: `${EMAIL_WEBSITE_URL}${DATATRANS_RETURN_PATH}`,
 });

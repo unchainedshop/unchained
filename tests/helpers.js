@@ -1,7 +1,6 @@
 import { MongoClient, Collection } from 'mongodb';
 import { execute, toPromise, gql } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
-import fetch from 'node-fetch';
 import FormData from 'form-data';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
@@ -99,8 +98,10 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
     uri,
     fetch,
     FormData,
+    includeExtensions: true,
     headers: {
       authorization: token,
+      'apollo-require-preflight': true,
     },
   });
   return convertLinkToFetch(link);

@@ -5,7 +5,6 @@ import {
   createAnonymousGraphqlFetch,
   uploadFormData,
 } from './helpers';
-import fetch from 'node-fetch';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 import { intervalUntilTimeout } from './lib/wait';
 
