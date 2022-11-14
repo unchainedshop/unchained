@@ -60,7 +60,7 @@
     "open": "^8.4.0",
     "postfinancecheckout": "^3.1.2",
     "serve-static": "^1.15.0",
-    "stripe": "^8.222.0",
+    "stripe": "^10.17.0",
     "tiny-secp256k1": "^2.2.1",
     "twilio": "^3.83.2",
     "uuid": "^9.0.0"
