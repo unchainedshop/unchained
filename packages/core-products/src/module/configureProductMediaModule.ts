@@ -152,11 +152,11 @@ export const configureProductMediaModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteMediaFiles: async ({ productId, excludedProdcutIds, excludedProductMediaIds }) => {
+    deleteMediaFiles: async ({ productId, excludedProductIds, excludedProductMediaIds }) => {
       const selector: Query = productId ? { productId } : {};
 
-      if (!productId && excludedProdcutIds) {
-        selector.productId = { $nin: excludedProdcutIds };
+      if (!productId && excludedProductIds) {
+        selector.productId = { $nin: excludedProductIds };
       }
 
       if (excludedProductMediaIds) {
