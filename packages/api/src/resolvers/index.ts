@@ -1,4 +1,4 @@
-import { GraphQLUpload } from 'graphql-upload';
+import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 import { JSONResolver, TimestampResolver, DateTimeResolver, DateResolver } from 'graphql-scalars';
 import Query from './queries';
 import Mutation from './mutations';
