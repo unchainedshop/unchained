@@ -6,7 +6,6 @@ import {
 } from './helpers';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 import { intervalUntilTimeout } from './lib/wait';
-import { Blob, File } from 'formdata-node';
 
 const crypto = require('crypto');
 const path = require('path');
@@ -206,7 +205,7 @@ describe('Auth for admin users', () => {
   describe('Mutation.updateUserAvatar', () => {
     it('update the avatar of a foreign user', async () => {
       const avatarBuffer = readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
-      const avatar = new Blob(avatarBuffer);
+      const avatar = new Blob(avatarBuffer, { type: "image/jpeg" });
       
       const {
         errors,
@@ -239,9 +238,9 @@ describe('Auth for admin users', () => {
         },
       });
       const hash = crypto.createHash('sha256');
-      const download = (await fetch(updateUserAvatar.avatar.url)).body;
-      download.on('data', chunk => hash.update(chunk));
-      download.on('end', () => expect(hash.digest('hex')).toBe('f0d184ed4614ccfad07d2193d20c15dd6df9e3a5136cd62afdab2545cae6a0a2'));
+      const download = await (await fetch(updateUserAvatar.avatar.url)).text();
+      hash.update(download)
+      expect(hash.digest('hex')).toBe('c60b924c5ea542c64e791e9e371571c4fe39f57e0cb2d76e16703414b24f9412')
     }, 99999);
   });
 

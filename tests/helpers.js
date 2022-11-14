@@ -1,7 +1,7 @@
 import { MongoClient, Collection } from 'mongodb';
 import { execute, toPromise, gql } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
-import { FormData, File } from 'formdata-node';
+import { FormData } from 'formdata-node';
 import seedLocaleData from './seeds/locale-data';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users';
 import seedProducts from './seeds/products';
@@ -87,8 +87,8 @@ export const createAnonymousGraphqlFetch = () => {
   const link = createUploadLink({
     uri,
     fetch,
-    File,
     FormData,
+    includeExtensions: true,
     headers: {
       'apollo-require-preflight': true,
     },
@@ -101,7 +101,6 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const link = createUploadLink({
     uri,
     fetch,
-    File,
     FormData,
     includeExtensions: true,
     headers: {
@@ -110,24 +109,6 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
     },
   });
   return convertLinkToFetch(link);
-};
-
-export const uploadFormData = async ({ token = '', body }) => {
-  const options = token
-    ? {
-        headers: {
-          authorization: token,
-          'apollo-require-preflight': true,
-        },
-      }
-    : {};
-  return fetch('http://localhost:4010/graphql', {
-    ...options,
-    method: 'POST',
-    body,
-  })
-    .then((response) => response.json())
-    .catch((e) => console.warn(e)); // eslint-disable-line
 };
 
 export const putFile = async (file, url) => {

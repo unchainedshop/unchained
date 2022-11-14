@@ -1,9 +1,7 @@
-import {FormData} from "formdata-node";
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-  uploadFormData,
   putFile,
 } from './helpers';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
