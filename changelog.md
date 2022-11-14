@@ -5,6 +5,7 @@ This is a major feature release bringing WebAuthn and Virtual Products including
 ## GRAPHQL API BREAKING CHANGES
 - Tags are now always LowerCase and use an own scalar
 - Order.documents has been removed because it was never functional
+- Completely breaks Meteor support for now because Node.js 16+ required, checkout the Kitchensink example for an ESM, non-meteor node app that uses Unchained Engine.
 
 ## Major
 - Support out of the box server-side cookies for login and logout tokens when env `UNCHAINED_COOKIE_DOMAIN` is set. The cookie's name which by default is `unchained_token` can be overwritten by using env `UNCHAINED_COOKIE_NAME`. Unchained will still look for cookies even if the domain is not set but in that case the client has to take care of storing and sending the token.

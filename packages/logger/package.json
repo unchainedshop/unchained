@@ -35,7 +35,7 @@
     "winston-transport": "^4.5.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.2",
+    "@types/jest": "^29.2.3",
     "@types/node": "^18.11.9",
     "@types/winston": "^2.4.4",
     "@unchainedshop/types": "^2.0.0-beta7",
