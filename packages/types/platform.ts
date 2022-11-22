@@ -45,7 +45,6 @@ export enum MessageTypes {
 }
 
 export type PlatformOptions = {
-  expressApp: any;
   typeDefs?: Array<string>;
   resolvers?: any;
   schema?: any;
@@ -64,5 +63,4 @@ export type PlatformOptions = {
   playground?: boolean;
   tracing?: boolean;
   cacheControl?: any;
-  corsOrigins?: any;
 };

@@ -44,7 +44,6 @@
     "@unchainedshop/types": "^2.0.0-beta7",
     "bip32": "^3.1.0",
     "bitcoinjs-lib": "^6.0.2",
-    "body-parser": "^1.20.0",
     "cookie": "^0.5.0",
     "cookie-parser": "^1.4.6",
     "data-uri-to-buffer": "^4.0.0",

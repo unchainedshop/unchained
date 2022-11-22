@@ -44,7 +44,6 @@
     "bcrypt": "^5.1.0",
     "bip32": "^3.1.0",
     "bitcoinjs-lib": "^6.0.2",
-    "body-parser": "^1.20.1",
     "cookie": "^0.5.0",
     "dotenv-extended": "^2.9.0",
     "ethers": "^5.7.2",

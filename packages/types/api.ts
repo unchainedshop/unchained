@@ -61,7 +61,6 @@ export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => P
 
 export type UnchainedServerOptions = {
   unchainedAPI: UnchainedCore;
-  expressApp: any;
   roles?: any;
   typeDefs: Array<string>;
   resolvers: Record<string, any>;
@@ -71,7 +70,6 @@ export type UnchainedServerOptions = {
   plugins?: any[];
   cache: any;
   cacheControl?: any;
-  corsOrigins: any;
   introspection: boolean;
   playground: boolean;
 } & Omit<

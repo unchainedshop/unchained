@@ -55,7 +55,6 @@ These options are available:
   - `resolvers`: Object (GraphQL Resolvers that get merged with the default API)
   - [`options: ModuleOptions`](#11-options):  Configuration options used to change the default behavior of built in module.
   - `rolesOptions: [IRoleOptionConfig](https://docs.unchained.shop/types/interfaces/roles.IRoleOptionConfig.html)`: Used to manage built in and custom user privileges
-  - `expressApp`: Node instance to use
   - `bulkImporter`: bulkImporterOptions
   - `workQueueOptions`
   - `context`

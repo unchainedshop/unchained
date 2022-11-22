@@ -2,10 +2,8 @@ import { UnchainedServerOptions } from '@unchainedshop/types/api';
 import type { ApolloServer } from '@apollo/server';
 import fs from 'fs';
 import path from 'path';
-import createBulkImportServer from './createBulkImportServer';
 import createGraphQLServer from './createGraphQLServer';
-import { createContextResolver, getCurrentContextResolver, setCurrentContextResolver } from './context';
-import createERCMetadataServer from './createERCMetadataServer';
+import { createContextResolver, setCurrentContextResolver, getCurrentContextResolver } from './context';
 
 export * from './context';
 export * as acl from './acl';
@@ -32,20 +30,8 @@ const packageJson = loadJSON('../package.json');
 
 const UNCHAINED_API_VERSION = process.env.UNCHAINED_API_VERSION || packageJson?.version || '1.2.x';
 
-export const startAPIServer = async (
-  options: UnchainedServerOptions,
-): Promise<{
-  apolloGraphQLServer: ApolloServer;
-  bulkImportServer: any;
-  ercMetadataServer: any;
-}> => {
-  const {
-    unchainedAPI,
-    roles,
-    expressApp,
-    context: customContext,
-    ...apolloServerOptions
-  } = options || {};
+export const startAPIServer = async (options: UnchainedServerOptions): Promise<ApolloServer> => {
+  const { unchainedAPI, roles, context: customContext, ...apolloServerOptions } = options || {};
 
   const contextResolver = createContextResolver(unchainedAPI, roles, UNCHAINED_API_VERSION);
 
@@ -57,13 +43,5 @@ export const startAPIServer = async (
       : contextResolver,
   );
 
-  const apolloGraphQLServer = await createGraphQLServer(expressApp, apolloServerOptions);
-  const bulkImportServer = createBulkImportServer(expressApp);
-  const ercMetadataServer = createERCMetadataServer(expressApp);
-
-  return {
-    apolloGraphQLServer,
-    bulkImportServer,
-    ercMetadataServer,
-  };
+  return createGraphQLServer(apolloServerOptions);
 };

@@ -3,12 +3,10 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import http from 'http';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-
-import { startPlatform } from '@unchainedshop/platform';
-import { defaultModules, useDefaultMiddlewares } from '@unchainedshop/plugins';
+import { startPlatform, connectPlatformToExpress4 } from '@unchainedshop/platform';
+import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
 import serveStatic from 'serve-static';
 
-import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
 
 const start = async () => {
@@ -17,8 +15,7 @@ const start = async () => {
 
   app.use(cookieParser());
 
-  const unchainedApi = await startPlatform({
-    expressApp: app,
+  const engine = await startPlatform({
     introspection: true,
     modules: defaultModules,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
@@ -46,18 +43,12 @@ const start = async () => {
     },
   });
 
-  await seed(unchainedApi);
+  await seed(engine.unchainedAPI);
 
-  // The following lines will activate SSO from Unchained Cloud to your instance,
-  // if you want to further secure your app and close this rabbit hole,
-  // remove the following lines
-  const singleSignOn = loginWithSingleSignOn(unchainedApi);
-  app.use('/', singleSignOn);
-  app.use('/.well-known/unchained/cloud-sso', singleSignOn);
+  connectPlatformToExpress4(app, engine);
+  connectDefaultPluginsToExpress4(app, engine);
+
   app.use(serveStatic('static', { index: ['index.html'] }));
-  // until here
-
-  useDefaultMiddlewares(unchainedApi, app);
 
   await httpServer.listen({ port: process.env.PORT || 3000 });
   console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);

@@ -1,5 +1,5 @@
-import { useMiddlewareWithCurrentContext } from '@unchainedshop/api';
-import bodyParser from 'body-parser';
+import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express';
+import express from 'express';
 
 // Delivery
 import './delivery/post';
@@ -69,6 +69,7 @@ import { configureUpdateTokenOwnership } from './worker/update-token-ownership';
 import './files/gridfs/gridfs-adapter';
 import { gridfsHandler } from './files/gridfs/gridfs-webhook';
 import { configureGridFSFileUploadModule } from './files/gridfs';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
 const {
   CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
@@ -95,29 +96,32 @@ export const defaultModules = {
   },
 };
 
-export const useDefaultMiddlewares = (unchainedApi, app) => {
+export const connectDefaultPluginsToExpress4 = (
+  app,
+  { unchainedAPI }: { unchainedAPI: UnchainedCore },
+) => {
   useMiddlewareWithCurrentContext(app, GRIDFS_PUT_SERVER_PATH, gridfsHandler);
 
-  useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, bodyParser.json(), cryptopayHandler);
+  useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, express.json(), cryptopayHandler);
 
   useMiddlewareWithCurrentContext(
     app,
     STRIPE_WEBHOOK_PATH,
-    bodyParser.raw({ type: 'application/json' }),
+    express.raw({ type: 'application/json' }),
     stripeHandler,
   );
 
   useMiddlewareWithCurrentContext(
     app,
     PFCHECKOUT_WEBHOOK_PATH,
-    bodyParser.json(),
+    express.json(),
     postfinanceCheckoutHandler,
   );
 
   useMiddlewareWithCurrentContext(
     app,
     DATATRANS_WEBHOOK_PATH,
-    bodyParser.text({
+    express.text({
       type: 'application/json',
     }),
     datatransHandler,
@@ -126,7 +130,7 @@ export const useDefaultMiddlewares = (unchainedApi, app) => {
   useMiddlewareWithCurrentContext(
     app,
     APPLE_IAP_WEBHOOK_PATH,
-    bodyParser.json({
+    express.json({
       strict: false,
     }),
     appleIAPHandler,
@@ -135,13 +139,13 @@ export const useDefaultMiddlewares = (unchainedApi, app) => {
   // useMiddlewareWithCurrentContext(
   //   app,
   //   MINIO_PUT_SERVER_PATH,
-  //   bodyParser.json({
+  //   express.json({
   //     strict: false,
   //   }),
   //   minioHandler
   // );
 
-  configureExportToken(unchainedApi);
-  configureUpdateTokenOwnership(unchainedApi);
+  configureExportToken(unchainedAPI);
+  configureUpdateTokenOwnership(unchainedAPI);
   configureGenerateOrderAutoscheduling();
 };

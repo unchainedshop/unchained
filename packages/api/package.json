@@ -34,6 +34,9 @@
     "cookie": "^0.5.0",
     "graphql": "^16.6.0"
   },
+  "optionalDependencies": {
+    "express": "^4.18.2"
+  },
   "dependencies": {
     "@metamask/eth-sig-util": "^5.0.2",
     "@unchainedshop/core": "^2.0.0-beta7",
@@ -54,6 +57,7 @@
     "@types/locale": "^0.1.1",
     "@types/node": "^18.11.9",
     "@unchainedshop/types": "^2.0.0-beta7",
+    "express": "^4.18.2",
     "graphql": "^16.6.0",
     "jest": "^29.3.1",
     "ts-jest": "^29.0.3",

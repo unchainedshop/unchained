@@ -1,6 +1,5 @@
 import { UnchainedContextResolver } from '@unchainedshop/types/api';
 import { UnchainedCore } from '@unchainedshop/types/core';
-import { IncomingMessage, OutgoingMessage } from 'http';
 import instantiateLoaders from './loaders';
 import { getLocaleContext } from './locale-context';
 import { getUserContext } from './user-context';
@@ -32,20 +31,3 @@ export const createContextResolver =
       version,
     };
   };
-
-export const useMiddlewareWithCurrentContext = (expressApp, path, ...middleware) => {
-  const addContext = async function middlewareWithContext(
-    req: IncomingMessage & { unchainedContext?: UnchainedCore },
-    res: OutgoingMessage,
-    next,
-  ) {
-    try {
-      req.unchainedContext = await context({ req, res });
-      next();
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  expressApp.use(path, addContext, ...middleware);
-};

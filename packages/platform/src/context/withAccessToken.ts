@@ -1,10 +1,11 @@
 import { createLogger } from '@unchainedshop/logger';
+import { Context } from '@unchainedshop/types/api';
 
 const logger = createLogger('unchained:platform');
 
 const contextIdentity = (params) => params;
 
-export default (fn = contextIdentity) => {
+export default (fn: (context: Context) => any = contextIdentity): any => {
   return async (params, unchainedContextFn) => {
     const unchainedContext = await unchainedContextFn(params);
     const newContext = {

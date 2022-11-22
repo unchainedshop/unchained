@@ -62,12 +62,10 @@ import { configureGridFSFileUploadModule } from '@unchainedshop/plugins/lib/file
 
 import '@unchainedshop/plugins/lib/events/node-event-emitter';
 
-import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
 
 Meteor.startup(async () => {
   const unchainedApi = await startPlatform({
-    expressApp: WebApp.connectHandlers,
     introspection: true,
     playground: true,
     tracing: true,
@@ -105,14 +103,6 @@ Meteor.startup(async () => {
   });
 
   seed(unchainedApi);
-
-  // The following lines will activate SSO from Unchained Cloud to your instance,
-  // if you want to further secure your app and close this rabbit hole,
-  // remove the following lines
-  const singleSignOn = loginWithSingleSignOn(unchainedApi);
-  WebApp.connectHandlers.use('/', singleSignOn);
-  WebApp.connectHandlers.use('/.well-known/unchained/cloud-sso', singleSignOn);
-  // until here
 
   setupGridFSWebhook(WebApp.connectHandlers);
   setupCryptopay(WebApp.connectHandlers);

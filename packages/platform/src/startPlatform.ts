@@ -3,6 +3,8 @@ import { startAPIServer, roles } from '@unchainedshop/api';
 import { initCore } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
+import { Context, UnchainedAPI } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
 import { runMigrations } from './migrations/runMigrations';
 import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
@@ -35,7 +37,7 @@ const checkWorkQueueEnabled = (options: SetupWorkqueueOptions) => {
   return !UNCHAINED_DISABLE_WORKER;
 };
 
-export const queueWorkers = [];
+export const queueWorkers: Array<any> = [];
 
 export const startPlatform = async ({
   modules = {},
@@ -44,7 +46,6 @@ export const startPlatform = async ({
   resolvers = [],
   options = {},
   rolesOptions = {},
-  expressApp,
   bulkImporter: bulkImporterOptions,
   schema,
   plugins,
@@ -55,8 +56,10 @@ export const startPlatform = async ({
   playground,
   tracing,
   cacheControl,
-  corsOrigins,
-}: PlatformOptions) => {
+}: PlatformOptions): Promise<{
+  unchainedAPI: UnchainedCore;
+  apolloGraphQLServer: any;
+}> => {
   exitOnMissingEnvironmentVariables();
 
   // Configure database
@@ -97,20 +100,18 @@ export const startPlatform = async ({
   ];
 
   // Start the graphQL server
-  await startAPIServer({
+  const apolloGraphQLServer = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
     typeDefs: [...generatedTypeDefs, ...typeDefs],
     resolvers,
     schema,
     plugins,
-    expressApp,
     cache,
     context,
     introspection,
     playground,
     tracing,
-    corsOrigins,
     cacheControl,
   });
 
@@ -126,5 +127,5 @@ export const startPlatform = async ({
     setImmediate(() => unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI));
   }
 
-  return unchainedAPI;
+  return { unchainedAPI, apolloGraphQLServer };
 };

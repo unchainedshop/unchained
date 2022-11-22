@@ -460,11 +460,3 @@ declare module '@unchainedshop/roles' {
   function isFunction(func: () => any): boolean;
   function has(obj: { [key: string]: any }, key: string): boolean;
 }
-declare module '@unchainedshop/platform' {
-  const MessageTypes: typeof MessageTypesType;
-  const queueWorkers: Array<any>;
-
-  function startPlatform(options: PlatformOptions): Promise<Context>;
-  function withAccessToken(fn?: (context: Context) => any): any;
-  function setAccessToken(unchainedAPI: UnchainedCore, username: string, secret: string): Promise<void>;
-}
