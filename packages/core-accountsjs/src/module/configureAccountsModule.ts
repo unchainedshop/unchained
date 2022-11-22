@@ -169,26 +169,14 @@ export const configureAccountsModule = async ({
 
     // User management
     setUsername: (_id, username) => dbManager.setUsername(_id, username),
-    setPassword: async (userId, { newPassword: newHashedPassword, newPlainPassword }) => {
-      const newPassword =
-        newHashedPassword ||
-        (newPlainPassword && hashPassword(newPlainPassword)) ||
-        uuidv4().split('-').pop();
-
+    setPassword: async (userId, { newPlainPassword }) => {
+      const newPassword = newPlainPassword ? hashPassword(newPlainPassword) : uuidv4().split('-').pop();
       await accountsPassword.setPassword(userId, newPassword);
     },
 
-    changePassword: async (
-      userId,
-      {
-        newPassword: newHashedPassword,
-        newPlainPassword,
-        oldPassword: oldHashedPassword,
-        oldPlainPassword,
-      },
-    ) => {
-      const newPassword = newHashedPassword || hashPassword(newPlainPassword);
-      const oldPassword = oldHashedPassword || hashPassword(oldPlainPassword);
+    changePassword: async (userId, { newPlainPassword, oldPlainPassword }) => {
+      const newPassword = hashPassword(newPlainPassword);
+      const oldPassword = hashPassword(oldPlainPassword);
 
       try {
         await accountsPassword.changePassword(userId, oldPassword, newPassword);
@@ -215,12 +203,10 @@ export const configureAccountsModule = async ({
       }
     },
 
-    resetPassword: async ({ newPassword: newHashedPassword, newPlainPassword, token }, context) => {
+    resetPassword: async ({ newPlainPassword, token }, context) => {
       const user = await dbManager.findUserByResetPasswordToken(token);
-
-      const newPassword = newHashedPassword || hashPassword(newPlainPassword);
+      const newPassword = hashPassword(newPlainPassword);
       await accountsPassword.resetPassword(token, newPassword, context);
-
       return user;
     },
 

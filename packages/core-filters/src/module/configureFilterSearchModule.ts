@@ -48,15 +48,14 @@ export const configureFilterSearchModule = ({
         filterActions,
       )(assortmentIds);
 
-      const totalAssormentCount = async () =>
+      const assortmentsCount = async () =>
         modules.assortments.count({
           assortmentSelector,
           assortmentIds: totalAssortmentIds,
         });
 
       return {
-        totalAssortments: totalAssormentCount,
-        assortmentsCount: totalAssormentCount,
+        assortmentsCount,
         assortments: async ({ offset, limit }) =>
           modules.assortments.search.findFilteredAssortments({
             limit,
@@ -133,9 +132,7 @@ export const configureFilterSearchModule = ({
         // Restricted to an empty array of products
         // will always lead to an empty result
         return {
-          totalProducts: async () => 0,
           productsCount: async () => 0,
-          filteredProducts: async () => 0,
           filteredProductsCount: async () => 0,
           products: async () => [] as Array<Product>,
           filters: findFilters,
@@ -158,20 +155,10 @@ export const configureFilterSearchModule = ({
       });
 
       return {
-        totalProducts: async () =>
-          modules.products.search.countFilteredProducts({
-            productSelector,
-            productIds: aggregatedTotalProductIds,
-          }),
         productsCount: async () =>
           modules.products.search.countFilteredProducts({
             productSelector,
             productIds: aggregatedTotalProductIds,
-          }),
-        filteredProducts: async () =>
-          modules.products.search.countFilteredProducts({
-            productSelector,
-            productIds: aggregatedFilteredProductIds,
           }),
         filteredProductsCount: async () =>
           modules.products.search.countFilteredProducts({

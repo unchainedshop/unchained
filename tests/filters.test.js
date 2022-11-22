@@ -569,10 +569,8 @@ describe('Filters', () => {
               includeInactive: true
               ignoreChildAssortments: false
             ) {
-              totalProducts
               productsCount
               filters {
-                filteredProducts
                 filteredProductsCount
                 definition {
                   _id
@@ -580,7 +578,6 @@ describe('Filters', () => {
                 }
                 options {
                   isSelected
-                  filteredProducts
                   filteredProductsCount
                   definition {
                     _id
@@ -598,7 +595,6 @@ describe('Filters', () => {
       });
 
       expect(searchProducts).toMatchObject({
-        totalProducts: 1,
         productsCount: 1,
         filters: [
           {
@@ -607,7 +603,6 @@ describe('Filters', () => {
             },
           },
           {
-            filteredProducts: 1,
             filteredProductsCount: 1,
             definition: {
               key: 'warehousing.baseUnit',

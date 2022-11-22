@@ -47,16 +47,13 @@ export default [
     }
 
     type LoadedFilterOption @cacheControl(maxAge: 180) {
-      filteredProducts: Int! @deprecated(reason: "Renamed, use the filteredProductsCount field")
       filteredProductsCount: Int!
       definition: FilterOption!
       isSelected: Boolean
     }
 
     type LoadedFilter @cacheControl(maxAge: 180) {
-      examinedProducts: Int! @deprecated(reason: "Renamed, use the productsCount field")
       productsCount: Int!
-      filteredProducts: Int! @deprecated(reason: "Renamed, use the filteredProductsCount field")
       filteredProductsCount: Int!
       definition: Filter!
       isSelected: Boolean

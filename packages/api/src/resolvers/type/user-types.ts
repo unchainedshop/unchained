@@ -29,10 +29,8 @@ export interface UserHelperTypes {
   bookmarks: HelperType<any, Array<Bookmark>>;
   cart: HelperType<{ orderNumber?: string }, Order>;
   country: HelperType<{ localeContext: Locale }, Country>;
-  email: HelperType<any, string>;
   emails: HelperType<any, Array<string>>;
   enrollments: HelperType<{ sort?: Array<SortOption>; queryString?: string }, Array<Enrollment>>;
-  isEmailVerified: HelperType<any, boolean>;
   isGuest: HelperType<any, boolean>;
   isInitialPassword: HelperType<any, boolean>;
   isTwoFactorEnabled: HelperType<any, boolean>;
@@ -97,18 +95,6 @@ export const User: UserHelperTypes = {
     return getPrimaryEmail(user);
   },
 
-  email: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return getPrimaryEmail(user)?.address;
-  },
-
-  isEmailVerified: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
-    log('user.isEmailVerified is deprecated, please use user.primaryEmail.verified', {
-      level: LogLevel.Warning,
-    });
-    return !!getPrimaryEmail(user)?.verified;
-  },
   isInitialPassword: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     const { password: { initial } = { initial: undefined } } = user.services || {};

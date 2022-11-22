@@ -8,12 +8,12 @@ export default async function createUser(root: Root, params: UserData, context: 
 
   log('mutation createUser', { email: params.email, username: params.username, userId });
 
-  if (!params.password && !params.plainPassword && !params.webAuthnPublicKeyCredentials) {
+  if (!params.plainPassword && !params.webAuthnPublicKeyCredentials) {
     throw new Error('Password or Public Key is required');
   }
 
   const mappedUser = { ...params };
-  if (!mappedUser.password && mappedUser.plainPassword) {
+  if (mappedUser.plainPassword) {
     mappedUser.password = hashPassword(mappedUser.plainPassword);
   }
   delete mappedUser.plainPassword;

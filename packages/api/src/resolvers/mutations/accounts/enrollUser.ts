@@ -10,7 +10,7 @@ export default async function enrollUser(root: Root, params: UserData, context: 
 
   const mappedUserData = params;
   mappedUserData.initialPassword = true;
-  if (!mappedUserData.password && mappedUserData.plainPassword) {
+  if (mappedUserData.plainPassword) {
     mappedUserData.password = hashPassword(mappedUserData.plainPassword);
   }
   delete mappedUserData.plainPassword;

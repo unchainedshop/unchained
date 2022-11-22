@@ -3,7 +3,6 @@ title: 'Delivery'
 description: Configure the Delivery Module
 ---
 
-- sortProviders: with default `undefined`, this key is deprecated please use `filterSupportedProviders`
 - filterSupportedProviders: with default filter based on creation date or the developer can provide custom function to filter the providers
 - determineDefaultProvider: with default the first provider selected from the list of providers
 

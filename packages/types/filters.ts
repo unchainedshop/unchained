@@ -68,16 +68,12 @@ export type SearchQuery = Query & {
 };
 
 export type SearchProducts = {
-  totalProducts: () => Promise<number>; // @deprecated: Reason: "Renamed, use the productsCount field"
   productsCount: () => Promise<number>;
-  filteredProducts: () => Promise<number>; // @deprecated: Reason: "Renamed, use the filteredProductsCount field"
   filteredProductsCount: () => Promise<number>;
-  // filters: () => Array<LoadedFilter>;
   products: (params: { limit: number; offset: number }) => Promise<Array<Product>>;
 };
 
 export type SearchAssortments = {
-  totalAssortments: () => Promise<number>; // @deprecated: Reason: "Renamed, use the assortmentsCount field"
   assortmentsCount: () => Promise<number>;
   assortments: (params: { limit: number; offset: number }) => Promise<Array<Assortment>>;
 };

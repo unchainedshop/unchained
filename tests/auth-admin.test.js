@@ -433,15 +433,15 @@ describe('Auth for admin users', () => {
         displayName: 'Admin3',
       };
       const email = 'admin3@unchained.local';
-      const password = null;
+      const plainPassword = null;
       const { data: { enrollUser } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation enrollUser(
             $email: String!
-            $password: HashedPasswordInput
+            $plainPassword: String
             $profile: UserProfileInput!
           ) {
-            enrollUser(email: $email, password: $password, profile: $profile) {
+            enrollUser(email: $email, plainPassword: $plainPassword, profile: $profile) {
               _id
               isInitialPassword
               primaryEmail {
@@ -453,7 +453,7 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           email,
-          password,
+          plainPassword,
           profile,
         },
       });

@@ -40,7 +40,6 @@ const findLoadedOptions = async (
 
       return {
         definition: () => ({ filterOption: value, ...filter }),
-        filteredProducts: filteredProductsCount,
         filteredProductsCount,
         isSelected: () => {
           if (!values) return false;
@@ -122,7 +121,7 @@ export const loadFilter = async (
     new Set(filterProductIdsForValues),
   );
 
-  const examinedProductsCount = filterActions.aggregateProductIds({
+  const productsCount = filterActions.aggregateProductIds({
     productIds: [...examinedProductIdSet],
   }).length;
 
@@ -132,9 +131,7 @@ export const loadFilter = async (
 
   return {
     definition: filter,
-    examinedProducts: examinedProductsCount,
-    productsCount: examinedProductsCount,
-    filteredProducts: filteredProductsCount,
+    productsCount,
     filteredProductsCount,
     isSelected: Object.prototype.hasOwnProperty.call(filterQuery, filter.key),
     options: async () => {

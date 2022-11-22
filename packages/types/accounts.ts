@@ -134,21 +134,18 @@ export interface AccountsModule {
   setPassword: (
     userId: string,
     params: {
-      newPassword?: string;
       newPlainPassword?: string;
     },
   ) => Promise<void>;
   changePassword: (
     userId: string,
     params: {
-      newPassword?: string;
       newPlainPassword?: string;
-      oldPassword?: string;
       oldPlainPassword?: string;
     },
   ) => Promise<boolean>;
   resetPassword: (
-    params: { newPassword?: string; newPlainPassword?: string; token: string },
+    params: { newPlainPassword?: string; token: string },
     context: Context,
   ) => Promise<AccountsUser>;
   sendResetPasswordEmail: (email: string) => Promise<boolean>;

@@ -1,20 +1,5 @@
 export default [
   /* GraphQL */ `
-    """
-    A hashed password
-    """
-    input HashedPasswordInput {
-      """
-      The hashed password
-      """
-      digest: String!
-
-      """
-      Algorithm used to hash the password
-      """
-      algorithm: String!
-    }
-
     input SortOptionInput {
       key: String!
       value: SortDirection!

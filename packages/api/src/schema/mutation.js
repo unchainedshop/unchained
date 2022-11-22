@@ -8,7 +8,6 @@ export default [
       loginWithPassword(
         username: String
         email: String
-        password: HashedPasswordInput
         plainPassword: String
         totpCode: String
       ): LoginMethodResponse
@@ -31,10 +30,6 @@ export default [
       createUser(
         username: String
         email: String
-        password: HashedPasswordInput
-          @deprecated(
-            reason: "Use plainPassword, there is not a lot of added security by hashing on the client"
-          )
         webAuthnPublicKeyCredentials: JSON
         plainPassword: String
         profile: UserProfileInput
@@ -50,12 +45,7 @@ export default [
       """
       Change the current user's password. Must be logged in.
       """
-      changePassword(
-        oldPassword: HashedPasswordInput
-        oldPlainPassword: String
-        newPassword: HashedPasswordInput
-        newPlainPassword: String
-      ): SuccessResponse
+      changePassword(oldPlainPassword: String, newPlainPassword: String): SuccessResponse
 
       """
       Request a forgot password email.
@@ -65,11 +55,7 @@ export default [
       """
       Reset the password for a user using a token received in email. Logs the user in afterwards.
       """
-      resetPassword(
-        newPlainPassword: String
-        newPassword: HashedPasswordInput
-        token: String!
-      ): LoginMethodResponse
+      resetPassword(newPlainPassword: String, token: String!): LoginMethodResponse
 
       """
       Log the user out.
@@ -348,12 +334,7 @@ export default [
       """
       Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)
       """
-      enrollUser(
-        profile: UserProfileInput!
-        email: String!
-        password: HashedPasswordInput
-        plainPassword: String
-      ): User
+      enrollUser(profile: UserProfileInput!, email: String!, plainPassword: String): User
 
       """
       Forcefully trigger an enrollment email for already added users by e-mail
@@ -368,7 +349,7 @@ export default [
       """
       Set a new password for a specific user
       """
-      setPassword(newPassword: HashedPasswordInput, newPlainPassword: String, userId: ID!): User
+      setPassword(newPlainPassword: String, userId: ID!): User
 
       """
       Set roles of a user

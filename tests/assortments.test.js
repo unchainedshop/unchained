@@ -85,19 +85,17 @@ describe('Assortments', () => {
                 _id
               }
               searchProducts {
-                totalProducts
-                filteredProducts
+                productsCount
+                filteredProductsCount
                 filters {
-                  examinedProducts
                   productsCount
-                  filteredProducts
                   filteredProductsCount
                   definition {
                     _id
                   }
                   isSelected
                   options {
-                    filteredProducts
+                    filteredProductsCount
                     definition {
                       _id
                     }
@@ -364,19 +362,17 @@ describe('Assortments', () => {
                 _id
               }
               searchProducts {
-                totalProducts
-                filteredProducts
+                productsCount
+                filteredProductsCount
                 filters {
-                  examinedProducts
                   productsCount
-                  filteredProducts
                   filteredProductsCount
                   definition {
                     _id
                   }
                   isSelected
                   options {
-                    filteredProducts
+                    filteredProductsCount
                     definition {
                       _id
                     }
@@ -482,7 +478,7 @@ describe('Assortments', () => {
               queryString: $queryString
               includeInactive: true
             ) {
-              totalAssortments
+              assortmentsCount
               assortments {
                 _id
                 isActive
@@ -500,7 +496,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(searchAssortments.totalAssortments).toEqual(1);
+      expect(searchAssortments.assortmentsCount).toEqual(1);
       expect(searchAssortments.assortments[0].texts).toMatchObject({
         _id: "german",
         title: "simple assortment de",
@@ -523,7 +519,7 @@ describe('Assortments', () => {
               queryString: $queryString
               includeInactive: true
             ) {
-              totalAssortments
+              assortmentsCount
               assortments {
                 _id
                 isActive
@@ -622,7 +618,7 @@ describe('Assortments', () => {
                 _id
               }
               searchProducts {
-                totalProducts
+                productsCount
               }
             }
           }
@@ -723,7 +719,7 @@ describe('Assortments', () => {
                 _id
               }
               searchProducts {
-                totalProducts
+                productsCount
               }
             }
           }
@@ -880,7 +876,7 @@ describe('Assortments', () => {
                 _id
               }
               searchProducts {
-                totalProducts
+                productsCount
               }
             }
           }
@@ -992,7 +988,7 @@ describe('Assortments', () => {
                 _id
               }
               searchProducts {
-                totalProducts
+                productsCount
               }
             }
           }

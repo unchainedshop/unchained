@@ -47,10 +47,8 @@ query Assortment($assortmentId: ID) {
             assortment(assortmentId: $assortmentId) {
               ...
               searchProducts {
-                totalProducts
                 filteredProducts
                 filters {
-                  examinedProducts
                   filteredProducts
                   definition {
                     _id

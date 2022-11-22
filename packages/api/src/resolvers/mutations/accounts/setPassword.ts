@@ -4,7 +4,7 @@ import { UserNotFoundError, InvalidIdError } from '../../../errors';
 
 export default async function setPassword(
   root: Root,
-  params: { newPassword: string; newPlainPassword: string; userId: string },
+  params: { newPlainPassword: string; userId: string },
   { modules, userId }: Context,
 ) {
   const normalizedUserId = params.userId || userId;
@@ -12,7 +12,7 @@ export default async function setPassword(
   log(`mutation setPassword ${normalizedUserId}`, { userId });
 
   if (!normalizedUserId) throw new InvalidIdError({ userId: normalizedUserId });
-  if (!params.newPassword && !params.newPlainPassword) {
+  if (!params.newPlainPassword) {
     throw new Error('Password is required');
   }
   if (!(await modules.users.userExists({ userId: normalizedUserId })))

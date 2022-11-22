@@ -7,24 +7,23 @@ export default async function loginWithPassword(
   params: {
     username?: string;
     email?: string;
-    password?: string;
     plainPassword?: string;
     totpCode?: string;
   },
   context: Context,
 ) {
   const { modules } = context;
-  const { username, email, password: hashedPassword, plainPassword, totpCode } = params;
+  const { username, email, plainPassword, totpCode } = params;
 
   log('mutation loginWithPassword', { username, email });
 
-  if (!hashedPassword && !plainPassword) {
+  if (!plainPassword) {
     throw new Error('Password is required');
   }
 
   const mappedUserLoginParams = {
     user: email ? { email } : { username },
-    password: hashedPassword || hashPassword(plainPassword),
+    password: hashPassword(plainPassword),
     code: totpCode,
   };
 

@@ -9,9 +9,6 @@ type HelperType<P, T> = (assortmentPathLink: AssortmentPathLinkType, params: P, 
 
 export interface AssortmentPathLinkHelperTypes {
   link: HelperType<never, Promise<AssortmentLinkType>>;
-
-  assortmentSlug: HelperType<{ forceLocale?: string }, Promise<string>>;
-
   assortmentTexts: HelperType<{ forceLocale?: string }, Promise<AssortmentText>>;
 }
 
@@ -21,14 +18,6 @@ export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
       parentAssortmentId: assortmentId,
       childAssortmentId,
     });
-  },
-
-  assortmentSlug: async ({ assortmentId }, params, { loaders, localeContext }) => {
-    const text = await loaders.assortmentTextLoader.load({
-      assortmentId,
-      locale: params.forceLocale || localeContext.normalized,
-    });
-    return text.slug;
   },
 
   assortmentTexts: async ({ assortmentId }, params, { loaders, localeContext }) => {

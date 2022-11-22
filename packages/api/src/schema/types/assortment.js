@@ -58,7 +58,6 @@ export default [
     """
     type AssortmentPathLink @cacheControl(maxAge: 180) {
       assortmentId: ID!
-      assortmentSlug: String! @deprecated(reason: "Please use assortmentTexts")
       assortmentTexts(forceLocale: String): AssortmentTexts!
       link: AssortmentLink
     }
