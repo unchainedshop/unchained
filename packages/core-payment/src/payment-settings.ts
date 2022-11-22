@@ -4,9 +4,6 @@ import {
   FilterProviders,
   DetermineDefaultProvider,
 } from '@unchainedshop/types/payments';
-import { createLogger } from '@unchainedshop/logger';
-
-const logger = createLogger('unchained:core-payment');
 
 const sortByCreationDate = (left: PaymentProvider, right: PaymentProvider) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();

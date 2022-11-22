@@ -35,7 +35,7 @@ export default [
         slugs: [String!]
         includeDrafts: Boolean = false
         queryString: String
-      ): Int!
+      ): Int! @cacheControl(maxAge: 180)
 
       """
       Simple list of published products filtered either by tags or explicit slugs
@@ -60,16 +60,18 @@ export default [
       List products specified prices
       """
       productCatalogPrices(productId: ID!): [ProductCatalogPrice!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Localization: Meta data for product
       """
-      translatedProductTexts(productId: ID!): [ProductTexts!]!
+      translatedProductTexts(productId: ID!): [ProductTexts!]! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Localization: Media title/subtitle of a media that is attached to a product
       """
       translatedProductMediaTexts(productMediaId: ID!): [ProductMediaTexts!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Localization: Variations and Variation Options
@@ -77,12 +79,13 @@ export default [
       translatedProductVariationTexts(
         productVariationId: ID!
         productVariationOptionValue: String
-      ): [ProductVariationTexts!]!
+      ): [ProductVariationTexts!]! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Returns total number languages
       """
       languagesCount(includeInactive: Boolean = false, queryString: String): Int!
+        @cacheControl(maxAge: 180)
 
       """
       Get all languages
@@ -115,6 +118,7 @@ export default [
       Returns total number of countries
       """
       countriesCount(includeInactive: Boolean = false, queryString: String): Int!
+        @cacheControl(maxAge: 180)
 
       """
       Get a specific country by ID
@@ -125,6 +129,7 @@ export default [
       Returns total number of currencies
       """
       currenciesCount(includeInactive: Boolean = false, queryString: String): Int!
+        @cacheControl(maxAge: 180)
 
       """
       Get all currencies
@@ -145,42 +150,49 @@ export default [
       """
       Returns total number of delivery providers, optionally filtered by type
       """
-      deliveryProvidersCount(type: DeliveryProviderType): Int!
+      deliveryProvidersCount(type: DeliveryProviderType): Int! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get all delivery providers, optionally filtered by type
       """
       deliveryProviders(type: DeliveryProviderType): [DeliveryProvider!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get a specific delivery provider by ID
       """
       deliveryProvider(deliveryProviderId: ID!): DeliveryProvider
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get all delivery interfaces filtered by type
       """
       deliveryInterfaces(type: DeliveryProviderType!): [DeliveryInterface!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Returns total number of delivery providers, optionally filtered by type
       """
       warehousingProvidersCount(type: WarehousingProviderType): Int!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get all warehousing providers, optionally filtered by type
       """
       warehousingProviders(type: WarehousingProviderType): [WarehousingProvider!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get a specific warehousing provider by ID
       """
       warehousingProvider(warehousingProviderId: ID!): WarehousingProvider
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get all warehousing interfaces filtered by type
       """
       warehousingInterfaces(type: WarehousingProviderType!): [WarehousingInterface!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get token
@@ -190,22 +202,24 @@ export default [
       """
       Returns total number of payment providers, optionally filtered by type
       """
-      paymentProvidersCount(type: PaymentProviderType): Int!
+      paymentProvidersCount(type: PaymentProviderType): Int! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get all payment providers, optionally filtered by type
       """
       paymentProviders(type: PaymentProviderType): [PaymentProvider!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get a specific payment provider by ID
       """
-      paymentProvider(paymentProviderId: ID!): PaymentProvider
+      paymentProvider(paymentProviderId: ID!): PaymentProvider @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get all payment interfaces filtered by type
       """
       paymentInterfaces(type: PaymentProviderType!): [PaymentInterface!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Returns total number of orders
@@ -256,7 +270,7 @@ export default [
         includeInactive: Boolean = false
         includeLeaves: Boolean = false
         queryString: String
-      ): Int!
+      ): Int! @cacheControl(maxAge: 180)
 
       """
       Get a specific assortment by ID
@@ -267,21 +281,25 @@ export default [
       Localization: Meta data for assortments
       """
       translatedAssortmentTexts(assortmentId: ID!): [AssortmentTexts!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Localization: Media title/subtitle of a media that is attached to a assortment
       """
       translatedAssortmentMediaTexts(assortmentMediaId: ID!): [AssortmentMediaTexts!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Localization: Filters and Filter Options
       """
       translatedFilterTexts(filterId: ID!, filterOptionValue: String): [FilterTexts!]!
+        @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Returns total number of filters
       """
       filtersCount(includeInactive: Boolean = false, queryString: String): Int!
+        @cacheControl(maxAge: 180)
 
       """
       Get all filters
@@ -302,7 +320,7 @@ export default [
       """
       Returns total number of product reviews
       """
-      productReviewsCount(queryString: String): Int!
+      productReviewsCount(queryString: String): Int! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get all product reviews
@@ -312,12 +330,12 @@ export default [
         offset: Int = 0
         sort: [SortOptionInput!]
         queryString: String
-      ): [ProductReview!]!
+      ): [ProductReview!]! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Get a specific product review by ID
       """
-      productReview(productReviewId: ID!): ProductReview!
+      productReview(productReviewId: ID!): ProductReview! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Returns total number of quotations

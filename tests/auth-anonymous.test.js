@@ -91,7 +91,9 @@ describe("Auth for anonymous users", () => {
               user {
                 _id
                 username
-                email
+                primaryEmail {
+                  address
+                }
                 profile {
                   birthday
                   displayName
@@ -118,7 +120,9 @@ describe("Auth for anonymous users", () => {
       expect(createUser).toMatchObject({
         user: {
           username: "newuser",
-          email: "newuser@unchained.local",
+          primaryEmail: {
+            address: "newuser@unchained.local",
+          },
           profile: {
             displayName: "New User",
             birthday,

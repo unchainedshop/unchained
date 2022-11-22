@@ -228,7 +228,6 @@ describe('Auth for admin users', () => {
         },
       });
 
-      console.log(data, errors);
       const { updateUserAvatar } = data;
 
       expect(updateUserAvatar).toMatchObject({

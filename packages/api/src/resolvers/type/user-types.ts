@@ -16,7 +16,6 @@ import {
   WebAuthnCredentials,
 } from '@unchainedshop/types/user';
 import type { Locale } from 'locale';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing';
 import { checkAction, checkTypeResolver } from '../../acl';
 import { actions } from '../../roles';
