@@ -6,7 +6,16 @@
     ".": "./lib/api-index.js",
     "./*": "./lib/*"
   },
-  "types": "lib/api-index.d.ts",
+  "typesVersions": {
+    "*": {
+      "express": [
+        "./lib/express/index.d.ts"
+      ],
+      "express/*": [
+        "./lib/express/*"
+      ]
+    }
+  },
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",

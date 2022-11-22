@@ -1,6 +1,8 @@
-import { connect as connectPlatformToExpress4 } from '@unchainedshop/api/express';
+import { express } from '@unchainedshop/api';
 
 export * from './startPlatform';
 export * from './context';
+
+const connectPlatformToExpress4 = express.connect;
 
 export { connectPlatformToExpress4 };

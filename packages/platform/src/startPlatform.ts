@@ -3,7 +3,6 @@ import { startAPIServer, roles } from '@unchainedshop/api';
 import { initCore } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import { Context, UnchainedAPI } from '@unchainedshop/types/api';
 import { UnchainedCore } from '@unchainedshop/types/core';
 import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
 import { runMigrations } from './migrations/runMigrations';

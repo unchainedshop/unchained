@@ -8,6 +8,7 @@ import { createContextResolver, setCurrentContextResolver, getCurrentContextReso
 export * from './context';
 export * as acl from './acl';
 export * as errors from './errors';
+export * as express from './express';
 export { hashPassword } from './hashPassword';
 export * as roles from './roles';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
