@@ -13,7 +13,7 @@ export default [
       METERED
     }
 
-    type ProductPlanConfiguration {
+    type ProductPlanConfiguration @cacheControl(maxAge: 180) {
       usageCalculationType: ProductPlanUsageCalculationType!
       billingInterval: ProductPlanConfigurationInterval!
       billingIntervalCount: Int
@@ -32,7 +32,7 @@ export default [
     """
     Plan (Virtual Product that somebody can enroll to)
     """
-    type PlanProduct implements Product {
+    type PlanProduct implements Product @cacheControl(maxAge: 180) {
       _id: ID!
       sequence: Int!
       status: ProductStatus!
@@ -45,7 +45,8 @@ export default [
       catalogPrice(quantity: Int = 1, currency: String): Price
       leveledCatalogPrices(currency: String): [PriceLevel!]!
       simulatedPrice(currency: String, useNetPrice: Boolean = false, quantity: Int = 1): Price
-      simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
+        @cacheControl(scope: PRIVATE)
+      simulatedDiscounts(quantity: Int = 1): [ProductDiscount!] @cacheControl(scope: PRIVATE)
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID

@@ -1,6 +1,6 @@
 export default [
   /* GraphQL */ `
-    type WarehousingInterface {
+    type WarehousingInterface @cacheControl(maxAge: 180) {
       _id: ID!
       label: String
       version: String
@@ -24,7 +24,7 @@ export default [
       WRONG_CREDENTIALS
     }
 
-    type WarehousingProvider {
+    type WarehousingProvider @cacheControl(maxAge: 60) {
       _id: ID!
       created: DateTime
       updated: DateTime
@@ -42,7 +42,7 @@ export default [
       DECENTRALIZED
     }
 
-    type Token {
+    type Token @cacheControl(maxAge: 0, scope: PRIVATE) {
       _id: ID!
       user: User
       walletAddress: String

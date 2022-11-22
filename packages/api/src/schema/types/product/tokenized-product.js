@@ -13,7 +13,7 @@ export default [
       ERC721
     }
 
-    type ContractConfiguration {
+    type ContractConfiguration @cacheControl(maxAge: 180) {
       tokenId: String
       supply: Int
       ercMetadataProperties: JSON
@@ -35,8 +35,9 @@ export default [
       catalogPrice(quantity: Int = 1, currency: String): Price
       leveledCatalogPrices(currency: String): [PriceLevel!]!
       simulatedPrice(currency: String, useNetPrice: Boolean = false, quantity: Int = 1): Price
-      simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
-      simulatedStocks(referenceDate: Timestamp): [Stock!]
+        @cacheControl(scope: PRIVATE, maxAge: 10)
+      simulatedDiscounts(quantity: Int = 1): [ProductDiscount!] @cacheControl(scope: PRIVATE, maxAge: 10)
+      simulatedStocks(referenceDate: Timestamp): [Stock!] @cacheControl(scope: PRIVATE, maxAge: 10)
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID

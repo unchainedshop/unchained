@@ -1,6 +1,6 @@
 export default [
   /* GraphQL */ `
-    type Media {
+    type Media @cacheControl(maxAge: 180) {
       _id: ID!
       name: String!
       type: String!

@@ -12,20 +12,20 @@ export default [
       TEXT
     }
 
-    type ProductVariationTexts {
+    type ProductVariationTexts @cacheControl(maxAge: 180) {
       _id: ID!
       locale: String
       title: String
       subtitle: String
     }
 
-    type ProductVariationOption {
+    type ProductVariationOption @cacheControl(maxAge: 180) {
       _id: ID!
       texts(forceLocale: String): ProductVariationTexts
       value: String
     }
 
-    type ProductVariation {
+    type ProductVariation @cacheControl(maxAge: 180) {
       _id: ID!
       texts(forceLocale: String): ProductVariationTexts
       type: ProductVariationType
@@ -36,7 +36,7 @@ export default [
     """
     Key Value Combination
     """
-    type ProductVariationAssignmentVector {
+    type ProductVariationAssignmentVector @cacheControl(maxAge: 180) {
       _id: ID!
       variation: ProductVariation
       option: ProductVariationOption
@@ -45,7 +45,7 @@ export default [
     """
     Key Value Combination to Product Assignment
     """
-    type ProductVariationAssignment {
+    type ProductVariationAssignment @cacheControl(maxAge: 180) {
       _id: ID!
 
       """
@@ -62,7 +62,7 @@ export default [
     """
     Configurable Product (Proxy)
     """
-    type ConfigurableProduct implements Product {
+    type ConfigurableProduct implements Product @cacheControl(maxAge: 180) {
       _id: ID!
       sequence: Int!
       status: ProductStatus!
@@ -97,7 +97,7 @@ export default [
         includeInactive: Boolean = false
         currency: String
         useNetPrice: Boolean = false
-      ): PriceRange
+      ): PriceRange @cacheControl(scope: PRIVATE)
 
       """
       Reduced list of possible products by key/value combinations

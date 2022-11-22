@@ -17,20 +17,20 @@ export default [
       DELETED
     }
 
-    type ProductDiscount {
+    type ProductDiscount @cacheControl(maxAge: 0) {
       _id: ID!
       interface: DiscountInterface
       total: Price!
     }
 
-    type ProductMediaTexts {
+    type ProductMediaTexts @cacheControl(maxAge: 180) {
       _id: ID!
       locale: String
       title: String
       subtitle: String
     }
 
-    type ProductMedia {
+    type ProductMedia @cacheControl(maxAge: 180) {
       _id: ID!
       tags: [LowerCaseString!]
       file: Media!
@@ -38,7 +38,7 @@ export default [
       texts(forceLocale: String): ProductMediaTexts
     }
 
-    type ProductTexts {
+    type ProductTexts @cacheControl(maxAge: 180) {
       _id: ID!
       locale: String
       slug: String
@@ -53,7 +53,7 @@ export default [
     """
     Abstract Product
     """
-    interface Product {
+    interface Product @cacheControl(maxAge: 180) {
       _id: ID!
       sequence: Int!
       status: ProductStatus!
@@ -81,12 +81,12 @@ export default [
     """
     Directed assortment to product paths (breadcrumbs)
     """
-    type ProductAssortmentPath {
+    type ProductAssortmentPath @cacheControl(maxAge: 180) {
       assortmentProduct: AssortmentProduct!
       links: [AssortmentPathLink!]!
     }
 
-    type ProductReview {
+    type ProductReview @cacheControl(maxAge: 60) {
       _id: ID!
       created: DateTime
       updated: DateTime
@@ -97,10 +97,10 @@ export default [
       title: String
       review: String
       voteCount(type: ProductReviewVoteType): Int
-      ownVotes: [ProductReviewVote!]!
+      ownVotes: [ProductReviewVote!]! @cacheControl(scope: PRIVATE, maxAge: 60)
     }
 
-    type ProductReviewVote {
+    type ProductReviewVote @cacheControl(maxAge: 60) {
       _id: ID!
       timestamp: Timestamp!
       type: ProductReviewVoteType!
@@ -117,13 +117,13 @@ export default [
       value: String!
     }
 
-    type PriceLevel {
+    type PriceLevel @cacheControl(maxAge: 60) {
       minQuantity: Int!
       maxQuantity: Int
       price: Price!
     }
 
-    type ProductCatalogPrice {
+    type ProductCatalogPrice @cacheControl(maxAge: 60) {
       _id: ID!
       isTaxable: Boolean!
       isNetPrice: Boolean!

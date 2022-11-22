@@ -1,6 +1,6 @@
 export default [
   /* GraphQL */ `
-    type Color {
+    type Color @cacheControl(maxAge: 180) {
       name: String
       hex: String
       red: Int

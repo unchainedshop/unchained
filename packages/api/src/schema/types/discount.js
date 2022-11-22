@@ -1,6 +1,6 @@
 export default [
   /* GraphQL */ `
-    type DiscountInterface {
+    type DiscountInterface @cacheControl(maxAge: 180) {
       _id: ID!
       label: String
       version: String

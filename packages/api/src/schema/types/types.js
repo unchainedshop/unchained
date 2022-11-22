@@ -1,6 +1,6 @@
 export default [
   /* GraphQL */ `
-    type SuccessResponse {
+    type SuccessResponse @cacheControl(maxAge: 0, scope: PRIVATE) {
       success: Boolean
     }
 

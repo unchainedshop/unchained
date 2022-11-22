@@ -12,7 +12,7 @@ export default [
       MILLIMETERS
     }
 
-    type Dimensions {
+    type Dimensions @cacheControl(maxAge: 180) {
       weight(unit: MassUnit = KILOGRAM): Float
       length(unit: LengthUnit = METERS): Float
       width(unit: LengthUnit = METERS): Float

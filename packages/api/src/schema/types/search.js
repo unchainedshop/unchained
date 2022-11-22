@@ -7,7 +7,7 @@ export default [
     """
     Search result
     """
-    type SearchResult {
+    type SearchResult @cacheControl(maxAge: 180) {
       totalProducts: Int! @deprecated(reason: "Renamed, use the productsCount field")
       productsCount: Int!
       filteredProducts: Int! @deprecated(reason: "Renamed, use the filteredProductsCount field")
@@ -19,7 +19,7 @@ export default [
     """
     Search result
     """
-    type ProductSearchResult {
+    type ProductSearchResult @cacheControl(maxAge: 180) {
       totalProducts: Int! @deprecated(reason: "Renamed, use the productsCount field")
       productsCount: Int!
       filteredProducts: Int! @deprecated(reason: "Renamed, use the filteredProductsCount field")
@@ -28,7 +28,7 @@ export default [
       products(limit: Int = 10, offset: Int = 0): [Product!]!
     }
 
-    type AssortmentSearchResult {
+    type AssortmentSearchResult @cacheControl(maxAge: 180) {
       totalAssortments: Int! @deprecated(reason: "Renamed, use the assortmentsCount field")
       assortmentsCount: Int!
       assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!

@@ -1,6 +1,6 @@
 export default [
   /* GraphQL */ `
-    type PaymentInterface {
+    type PaymentInterface @cacheControl(maxAge: 180) {
       _id: ID!
       label: String
       version: String
@@ -30,7 +30,7 @@ export default [
       WRONG_CREDENTIALS
     }
 
-    type PaymentCredentials {
+    type PaymentCredentials @cacheControl(maxAge: 0, scope: PRIVATE) {
       _id: ID!
       user: User!
       paymentProvider: PaymentProvider!
@@ -40,7 +40,7 @@ export default [
       isPreferred: Boolean!
     }
 
-    type PaymentProvider {
+    type PaymentProvider @cacheControl(maxAge: 60) {
       _id: ID!
       created: DateTime
       updated: DateTime

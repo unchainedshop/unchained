@@ -3,7 +3,7 @@ export default [
     """
     A Bundle product consists of multiple configured products
     """
-    type BundleProduct implements Product {
+    type BundleProduct implements Product @cacheControl(maxAge: 180) {
       _id: ID!
       sequence: Int!
       status: ProductStatus!
@@ -20,7 +20,6 @@ export default [
         sort: [SortOptionInput!]
         queryString: String
       ): [ProductReview!]!
-
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID
@@ -30,7 +29,7 @@ export default [
       ): [Product!]!
     }
 
-    type ProductBundleItem {
+    type ProductBundleItem @cacheControl(maxAge: 180) {
       product: Product!
       quantity: Int!
       configuration: [ProductConfigurationParameter!]

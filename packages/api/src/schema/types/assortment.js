@@ -1,13 +1,13 @@
 export default [
   /* GraphQL */ `
-    type AssortmentMediaTexts {
+    type AssortmentMediaTexts @cacheControl(maxAge: 180) {
       _id: ID!
       locale: String
       title: String
       subtitle: String
     }
 
-    type AssortmentMedia {
+    type AssortmentMedia @cacheControl(maxAge: 180) {
       _id: ID!
       tags: [LowerCaseString!]
       file: Media!
@@ -18,7 +18,7 @@ export default [
     """
     Assortment
     """
-    type Assortment {
+    type Assortment @cacheControl(maxAge: 180) {
       _id: ID!
       created: DateTime
       updated: DateTime
@@ -47,7 +47,7 @@ export default [
     """
     Directed assortment to product paths (breadcrumbs)
     """
-    type AssortmentPath {
+    type AssortmentPath @cacheControl(maxAge: 180) {
       links: [AssortmentPathLink!]!
     }
 
@@ -56,14 +56,14 @@ export default [
     assortmentId and assortmentTexts are there for convenience
     to short-circuit breadcrumb lookups
     """
-    type AssortmentPathLink {
+    type AssortmentPathLink @cacheControl(maxAge: 180) {
       assortmentId: ID!
       assortmentSlug: String! @deprecated(reason: "Please use assortmentTexts")
       assortmentTexts(forceLocale: String): AssortmentTexts!
       link: AssortmentLink
     }
 
-    type AssortmentProduct {
+    type AssortmentProduct @cacheControl(maxAge: 180) {
       _id: ID!
       sortKey: Int!
       tags: [LowerCaseString!]
@@ -71,7 +71,7 @@ export default [
       product: Product!
     }
 
-    type AssortmentFilter {
+    type AssortmentFilter @cacheControl(maxAge: 180) {
       _id: ID!
       sortKey: Int!
       tags: [LowerCaseString!]
@@ -79,7 +79,7 @@ export default [
       filter: Filter!
     }
 
-    type AssortmentLink {
+    type AssortmentLink @cacheControl(maxAge: 180) {
       _id: ID!
       sortKey: Int!
       tags: [LowerCaseString!]
@@ -87,7 +87,7 @@ export default [
       child: Assortment!
     }
 
-    type AssortmentTexts {
+    type AssortmentTexts @cacheControl(maxAge: 180) {
       _id: ID!
       locale: String
       slug: String

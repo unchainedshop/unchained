@@ -1,6 +1,6 @@
 export default [
   /* GraphQL */ `
-    type DeliveryInterface {
+    type DeliveryInterface @cacheControl(maxAge: 180) {
       _id: ID!
       label: String
       version: String
@@ -25,7 +25,7 @@ export default [
       WRONG_CREDENTIALS
     }
 
-    type DeliveryProvider {
+    type DeliveryProvider @cacheControl(maxAge: 60) {
       _id: ID!
       created: DateTime
       updated: DateTime
@@ -36,6 +36,7 @@ export default [
       configurationError: DeliveryProviderError
       isActive: Boolean
       simulatedPrice(currency: String, useNetPrice: Boolean = false, orderId: ID, context: JSON): Price
+        @cacheControl(scope: PRIVATE, maxAge: 10)
     }
   `,
 ];

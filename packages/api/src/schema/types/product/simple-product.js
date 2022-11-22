@@ -3,7 +3,7 @@ export default [
     """
     Simple Product
     """
-    type SimpleProduct implements Product {
+    type SimpleProduct implements Product @cacheControl(maxAge: 180) {
       _id: ID!
       sequence: Int!
       status: ProductStatus!
@@ -16,16 +16,17 @@ export default [
       catalogPrice(quantity: Int = 1, currency: String): Price
       leveledCatalogPrices(currency: String): [PriceLevel!]!
       simulatedPrice(currency: String, useNetPrice: Boolean = false, quantity: Int = 1): Price
-      simulatedDiscounts(quantity: Int = 1): [ProductDiscount!]
+        @cacheControl(scope: PRIVATE, maxAge: 10)
+      simulatedDiscounts(quantity: Int = 1): [ProductDiscount!] @cacheControl(scope: PRIVATE, maxAge: 10)
       simulatedDispatches(
         deliveryProviderType: DeliveryProviderType = SHIPPING
         referenceDate: Timestamp
         quantity: Int = 1
-      ): [Dispatch!]
+      ): [Dispatch!] @cacheControl(scope: PRIVATE, maxAge: 10)
       simulatedStocks(
         deliveryProviderType: DeliveryProviderType = SHIPPING
         referenceDate: Timestamp
-      ): [Stock!]
+      ): [Stock!] @cacheControl(scope: PRIVATE, maxAge: 10)
       assortmentPaths: [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID

@@ -5,7 +5,7 @@ export default [
     """
     Type returned when the user logs in
     """
-    type LoginMethodResponse {
+    type LoginMethodResponse @cacheControl(maxAge: 0, scope: PRIVATE) {
       """
       Id of the user logged in user
       """

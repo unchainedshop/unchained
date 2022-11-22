@@ -22,20 +22,20 @@ export default [
       RANGE
     }
 
-    type FilterTexts {
+    type FilterTexts @cacheControl(maxAge: 180) {
       _id: ID!
       locale: String
       title: String
       subtitle: String
     }
 
-    type FilterOption {
+    type FilterOption @cacheControl(maxAge: 180) {
       _id: ID!
       texts(forceLocale: String): FilterTexts
       value: String
     }
 
-    type Filter {
+    type Filter @cacheControl(maxAge: 180) {
       _id: ID!
       updated: DateTime
       created: DateTime
@@ -46,14 +46,14 @@ export default [
       options: [FilterOption!]
     }
 
-    type LoadedFilterOption {
+    type LoadedFilterOption @cacheControl(maxAge: 180) {
       filteredProducts: Int! @deprecated(reason: "Renamed, use the filteredProductsCount field")
       filteredProductsCount: Int!
       definition: FilterOption!
       isSelected: Boolean
     }
 
-    type LoadedFilter {
+    type LoadedFilter @cacheControl(maxAge: 180) {
       examinedProducts: Int! @deprecated(reason: "Renamed, use the productsCount field")
       productsCount: Int!
       filteredProducts: Int! @deprecated(reason: "Renamed, use the filteredProductsCount field")

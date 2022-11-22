@@ -1,6 +1,6 @@
 export default [
   /* GraphQL */ `
-    type Price {
+    type Price @cacheControl(maxAge: 60) {
       _id: ID!
       isTaxable: Boolean!
       isNetPrice: Boolean!
@@ -8,7 +8,7 @@ export default [
       currency: String!
     }
 
-    type PriceRange {
+    type PriceRange @cacheControl(maxAge: 60) {
       _id: ID!
       minPrice: Price!
       maxPrice: Price!
