@@ -1,6 +1,8 @@
 # Unchained Engine vNEXT
 
-This is a major feature release bringing WebAuthn and Virtual Products including NFT/Token Minting to Unchained Engine.
+This is a major feature release bringing WebAuthn and Virtual Products including NFT/Token Minting to Unchained Engine. It's also the first version of Unchained Engine that can be extended to run on other Node.js frameworks than Express.
+
+Unchained Engine 2.0 requires Node 16+ now and uses native fetch, this also breaks Meteor compatibility for the moment. The legacy example will be pinned to v1 for the moment.
 
 ## GRAPHQL API BREAKING CHANGES
 - Tags are now always LowerCase and use an own scalar
@@ -8,8 +10,11 @@ This is a major feature release bringing WebAuthn and Virtual Products including
 - Completely breaks Meteor support for now because Node.js 16+ required, checkout the Kitchensink example for an ESM, non-meteor node app that uses Unchained Engine.
 
 ## Major
+- Unchained now uses Apollo Server 4.
+- We have dropped `expressApp` and instead now export a new function `connectPlatformToExpress4`. That Express implementation can be looked up here and is still the default: https://github.com/unchainedshop/unchained/tree/master/packages/api/src/express. The new structure and internals allows somebody to wire the engine with a serverless/lambda environment or any other Node.js based framework.
+- `@unchainedshop/plugins` now has a default export and an Express middleware setup function. Using those functions is dramatically simplifying batteries-included setups.  Checkout the kitchensink example's boot.ts which is now less than 60 lines of code. 
 - Support out of the box server-side cookies for login and logout tokens when env `UNCHAINED_COOKIE_DOMAIN` is set. The cookie's name which by default is `unchained_token` can be overwritten by using env `UNCHAINED_COOKIE_NAME`. Unchained will still look for cookies even if the domain is not set but in that case the client has to take care of storing and sending the token.
-- Extended users and accounts for WebAuthn standard
+- Extended users and accounts for WebAuthn standard.
 - Added API mutations for the WebAuthn module: `Mutation.createWebAuthnCredentialCreationOptions`, `Mutation.createWebAuthnCredentialRequestOptions`,`Mutation.loginWithWebAuthn`,`Mutation.addWebAuthnCredentials`,`User.webAuthnCredentials`.
 - A new product type `TokenizedProduct` has been added added that supports NFT's and other virtual products that have no physical representation. They are converted to tokens through a virtual warehouse once checked-out. 
 - A new warehousing provider type `VIRTUAL` has been added that allows to define warehouses for virtual products. In the plugin implementation one can define what happens when a user buys a tokenized product thus what kind of tokens get emitted. Further, tokens support a concept we call "exportability" which allows to bridge an Off-chain token to an On-chain token.
@@ -25,7 +30,7 @@ This is a major feature release bringing WebAuthn and Virtual Products including
 
 ## Patch
 - Further limited exposure of data and stacktrace in exceptions
-
+- Fix file upload tests
 
 ### Introduction to WebAuthn
 
