@@ -1,4 +1,5 @@
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import express from 'express';
 
 // Delivery
@@ -69,7 +70,6 @@ import { configureUpdateTokenOwnership } from './worker/update-token-ownership';
 import './files/gridfs/gridfs-adapter';
 import { gridfsHandler } from './files/gridfs/gridfs-webhook';
 import { configureGridFSFileUploadModule } from './files/gridfs';
-import { UnchainedCore } from '@unchainedshop/types/core';
 
 const {
   CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',

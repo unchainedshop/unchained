@@ -3,7 +3,6 @@ import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
 import { Context } from './api';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
-import { MessageTypes as MessageTypesType, PlatformOptions } from './platform';
 
 import { BookmarkServices, BookmarksModule } from './bookmarks';
 import { Db, IBaseAdapter, IBaseDirector, Locale, Locales, TimestampFields } from './common';
@@ -131,7 +130,7 @@ import {
   WorkerSchedule,
   WorkStatus as WorkerStatusType,
 } from './worker';
-import { UnchainedCore, UnchainedCoreOptions, ModuleInput } from './core';
+import { UnchainedCoreOptions, ModuleInput } from './core';
 
 declare module '@unchainedshop/utils' {
   function resolveBestSupported(language: string, locales: Locales): Locale;
