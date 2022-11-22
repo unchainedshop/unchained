@@ -2,6 +2,7 @@ import './load_env';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import http from 'http';
+import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { startPlatform, connectPlatformToExpress4 } from '@unchainedshop/platform';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
@@ -18,7 +19,14 @@ const start = async () => {
   const engine = await startPlatform({
     introspection: true,
     modules: defaultModules,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [
+      responseCachePlugin({
+        sessionId: (requestContext) => {
+          return (requestContext.contextValue as any).userId;
+        },
+      }),
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+    ],
     options: {
       accounts: {
         password: {
