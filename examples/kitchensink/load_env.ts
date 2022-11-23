@@ -9,9 +9,6 @@ dotenv.load({
   includeProcessEnv: true,
 });
 
-// eslint-disable-next-line
-console.log('Docker Helper: Load _FILE env into env at App Startup');
-
 // Load _FILE env's
 Object.entries(process.env)
   .filter(([key]) => key.substr(-5) === '_FILE')
