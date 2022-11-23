@@ -1,43 +1,6 @@
 import { Context } from '@unchainedshop/types/api';
 import { AssortmentMediaText } from '@unchainedshop/types/assortments.media';
-import { File } from '@unchainedshop/types/files';
-
-const upsertAsset = async (
-  asset: File & { fileName: string; headers?: Record<string, unknown> },
-  unchainedAPI: Context,
-) => {
-  const { modules, services, userId } = unchainedAPI;
-  const { _id, fileName, url, meta, headers, ...assetData } = asset;
-  const fileId = _id;
-
-  try {
-    if (_id && (await modules.files.findFile({ fileId }))) throw new Error('Media already exists');
-
-    const assetObject = await services.files.uploadFileFromURL(
-      {
-        directoryName: 'assortment-media',
-        fileInput: {
-          fileLink: url,
-          fileName,
-          headers,
-        },
-        meta: { ...meta, fileId },
-        userId,
-      },
-      unchainedAPI,
-    );
-
-    if (!assetObject) throw new Error('Media not created');
-    return assetObject;
-  } catch (e) {
-    if (fileId) {
-      await modules.files.update(fileId, { meta: { ...meta, fileId }, ...assetData }, userId);
-      const file = await modules.files.findFile({ fileId });
-      return file;
-    }
-    return null;
-  }
-};
+import upsertAsset from '../../upsertAsset';
 
 const upsertMediaObject = async (media, unchainedAPI: Context) => {
   const { modules, userId } = unchainedAPI;
@@ -55,6 +18,7 @@ export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) 
   const mediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
       const file = await upsertAsset(
+        'assortment-media',
         { meta: { ...(asset.meta || {}), assortmentId }, ...asset },
         unchainedAPI,
       );
