@@ -1,4 +1,3 @@
-import { Query } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { File, FilesModule, FilesSettingsOptions } from '@unchainedshop/types/files';
 import { emit, registerEvents } from '@unchainedshop/events';

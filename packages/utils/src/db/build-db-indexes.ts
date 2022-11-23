@@ -11,7 +11,7 @@ const buildIndexes = <T>(
         await collection.createIndex(index, options);
         return false;
       } catch (e: any) {
-        console.error(e);
+        log(e, { level: LogLevel.Error });
         return e as Error;
       }
     }),

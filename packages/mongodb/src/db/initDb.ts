@@ -11,7 +11,6 @@ export const startDb = async () => {
   } catch (e) {
     //
   }
-  console.log(`Local MongoDB Server Data: ${`${process.cwd()}/.db`}`);
   mongod = await MongoMemoryServer.create({
     instance: {
       dbPath: `${process.cwd()}/.db`,

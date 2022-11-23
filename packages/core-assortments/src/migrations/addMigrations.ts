@@ -52,7 +52,7 @@ export default function addMigrations(repository: MigrationRepository<Migration>
               },
             );
           } catch (e) {
-            console.warn(e);
+            // console.warn(e);
             /* */
           }
         }),
