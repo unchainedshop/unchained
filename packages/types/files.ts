@@ -29,14 +29,7 @@ export type FilesModule = ModuleMutations<File> & {
 
   getUrl: (file: File, params: Record<string, any>) => string | null;
 
-  findFilesByMetaData: (
-    params: {
-      meta: Record<string, any>;
-    },
-    options?: FindOptions,
-  ) => Promise<Array<File>>;
-
-  findFiles: (selector: any) => Promise<Array<File>>;
+  findFiles: (selector: any, options?: FindOptions) => Promise<Array<File>>;
 
   deleteMany: (fileIds: Array<_ID>) => Promise<void>;
 };

@@ -48,33 +48,12 @@ export const configureFilesModule = async ({
       return Files.findOne(generateDbFilterById(fileId), options);
     },
 
-    findFiles: async (selector) => {
-      return Files.find(selector).toArray();
+    findFiles: async (selector, options) => {
+      return Files.find(selector, options).toArray();
     },
 
     deleteMany: async (fileIds) => {
       await Files.deleteMany({ _id: { $in: fileIds } });
-    },
-
-    findFilesByMetaData: async ({ meta }, options) => {
-      const metaKeys = Object.keys(meta);
-
-      if (metaKeys.length === 0) return [];
-
-      const selector: Query = metaKeys.reduce(
-        (currentSelector, key) =>
-          meta[key] !== undefined
-            ? {
-                ...currentSelector,
-                [`meta.${key}`]: meta[key],
-              }
-            : currentSelector,
-        {},
-      );
-
-      const files = Files.find(selector, options);
-
-      return files.toArray();
     },
 
     create: async (doc: File, userId: string) => {

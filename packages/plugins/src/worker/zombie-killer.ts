@@ -4,8 +4,6 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:platform:zombie-killer');
 
-const findId = { projection: { _id: 1 } };
-const findFileId = { projection: { mediaId: 1 } };
 const mapId = (a: any) => a._id;
 
 export const ZombieKillerWorker: IWorkerAdapter<
@@ -29,42 +27,47 @@ export const ZombieKillerWorker: IWorkerAdapter<
     try {
       const error = false;
 
-      // Remove unreferenced product media objects
-      const products = await modules.products.findProducts({}, findId);
-      const deletedProductMediaCount = await modules.products.media.deleteMediaFiles({
-        excludedProductIds: products.map(mapId),
-      });
-
       // Remove unreferenced assortment media objects
-      const assortments = await modules.assortments.findAssortments({}, findId);
+      const assortments = await modules.assortments.findAssortments(
+        { includeInactive: true, includeLeaves: true },
+        { projection: { _id: 1 } },
+      );
       const deletedAssortmentMediaCount = await modules.assortments.media.deleteMediaFiles({
         excludedAssortmentIds: assortments.map(mapId),
       });
 
+      // Remove unreferenced product media objects
+      const products = await modules.products.findProducts(
+        { includeDrafts: true },
+        { projection: { _id: 1 } },
+      );
+      const deletedProductMediaCount = await modules.products.media.deleteMediaFiles({
+        excludedProductIds: products.map(mapId),
+      });
+
       // Remove unreferenced files
-      const fileIdsToRemove = [];
-      const productMedia = await modules.products.media.findProductMedias({}, findFileId);
-      const assortmentMedia = await modules.assortments.media.findAssortmentMedias({}, findFileId);
+      const productMedia = await modules.products.media.findProductMedias(
+        {},
+        { projection: { mediaId: 1 } },
+      );
+      const assortmentMedia = await modules.assortments.media.findAssortmentMedias(
+        {},
+        { projection: { mediaId: 1 } },
+      );
 
-      const filesWithProductId = await modules.files.findFilesByMetaData({
-        meta: {
-          productId: { $exists: true },
-        },
-      });
-      const filesWithAssortmentId = await modules.files.findFilesByMetaData({
-        meta: {
-          assortmentId: { $exists: true },
-        },
+      const allFileIdsLinked = [...productMedia, ...assortmentMedia].map((l) => l?.mediaId);
+      const allFileIdsRelevant = (
+        await modules.files.findFiles(
+          { path: { $in: ['product-media', 'assortment-media'] } },
+          { projection: { _id: 1 } },
+        )
+      ).map(mapId);
+
+      const fileIdsToRemove = allFileIdsRelevant.filter((fileId) => {
+        return !allFileIdsLinked.includes(fileId);
       });
 
-      filesWithProductId
-        .concat(filesWithAssortmentId)
-        .filter((file) => {
-          const fileInProductMedia = productMedia.some((media) => media.mediaId === file._id);
-          const fileInAssortmentMedia = assortmentMedia.some((media) => media.mediaId === file._id);
-          return !fileInProductMedia && !fileInAssortmentMedia;
-        })
-        .forEach((m) => fileIdsToRemove.push(m._id));
+      logger.verbose(`File Id's to remove: ${fileIdsToRemove.join(', ')}`);
 
       const deletedFilesCount =
         fileIdsToRemove.length > 0
