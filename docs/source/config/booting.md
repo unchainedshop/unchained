@@ -36,7 +36,6 @@ await unchainedApi.modules.accounts.createUser(
     email: 'admin@unchained.local',
     guest: false,
     initialPassword: 'true',
-    lastBillingAddress: {},
     password: hashPassword('admin'),
     profile: { address: {} },
     roles: ['admin'],

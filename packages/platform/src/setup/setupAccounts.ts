@@ -50,7 +50,6 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           profile: {},
           password: null,
           initialPassword: true,
-          lastBillingAddress: {},
         },
         {},
       );

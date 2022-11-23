@@ -30,7 +30,6 @@ export default async (unchainedApi: UnchainedAPI) => {
         email: 'admin@unchained.local',
         guest: false,
         initialPassword: seedPassword ? true : undefined,
-        lastBillingAddress: {},
         password: seedPassword ? hashPassword(seedPassword) : undefined,
         profile: { address: {} },
         roles: ['admin'],

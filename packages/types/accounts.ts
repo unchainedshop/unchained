@@ -13,7 +13,7 @@ export interface UserData {
   email?: string;
   guest?: boolean;
   initialPassword?: boolean;
-  lastBillingAddress: User['lastBillingAddress'];
+  lastBillingAddress?: User['lastBillingAddress'];
   password: string | null;
   plainPassword?: string;
   webAuthnPublicKeyCredentials?: any;
