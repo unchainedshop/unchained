@@ -19,8 +19,8 @@ export const resolveQuotationStatusTemplate: TemplateResolver = async (
   const quotation = await modules.quotations.findQuotation({ quotationId });
   const user = await modules.users.findUserById(quotation.userId);
   const attachments = (
-    await modules.files.findFilesByMetaData(
-      { meta: { quotationId: quotation._id, type: 'PROPOSAL ' } },
+    await modules.files.findFiles(
+      { 'meta.quotationId': quotation._id, 'meta.type': 'PROPOSAL' },
       { sort: { 'meta.date': -1 } },
     )
   )

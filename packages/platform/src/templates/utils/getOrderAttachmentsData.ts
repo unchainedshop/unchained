@@ -6,13 +6,10 @@ export const getOrderAttachmentsData = async (
   params: { fileType: string },
   { modules }: Context,
 ) => {
-  const orderId = order._id;
   const attachments = [];
 
-  const orderFiles = await modules.files.findFilesByMetaData(
-    {
-      meta: { orderId: order._id, type: params.fileType },
-    },
+  const orderFiles = await modules.files.findFiles(
+    { 'meta.orderId': order._id, 'meta.type': params.fileType },
     { limit: 1 },
   );
   attachments.concat(orderFiles);
@@ -23,18 +20,14 @@ export const getOrderAttachmentsData = async (
     { limit: 1 },
   );
   if (modules.orders.payments.isBlockingOrderFullfillment(payment)) {
-    const invoices = await modules.files.findFilesByMetaData(
-      {
-        meta: { orderId, type: 'INVOICE' },
-      },
+    const invoices = await modules.files.findFiles(
+      { 'meta.orderId': order._id, 'meta.type': 'INVOICE' },
       { limit: 1 },
     );
     attachments.concat(invoices);
   } else {
-    const receipts = await modules.files.findFilesByMetaData(
-      {
-        meta: { orderId, type: 'RECEIPT' },
-      },
+    const receipts = await modules.files.findFiles(
+      { 'meta.orderId': order._id, 'meta.type': 'RECEIPT' },
       { limit: 1 },
     );
     attachments.concat(receipts);
