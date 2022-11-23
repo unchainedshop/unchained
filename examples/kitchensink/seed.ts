@@ -28,7 +28,6 @@ export default async (unchainedApi) => {
         guest: false,
         initialPassword: seedPassword ? true : undefined,
         password: seedPassword ? hashPassword(seedPassword) : undefined,
-        profile: { address: {} },
         roles: ['admin'],
         username: 'admin',
       },

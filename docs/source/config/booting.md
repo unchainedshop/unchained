@@ -37,7 +37,6 @@ await unchainedApi.modules.accounts.createUser(
     guest: false,
     initialPassword: 'true',
     password: hashPassword('admin'),
-    profile: { address: {} },
     roles: ['admin'],
     username: 'admin',
   },

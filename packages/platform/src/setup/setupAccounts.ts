@@ -47,7 +47,6 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         {
           email: params.email || `${guestname}@unchained.local`,
           guest: true,
-          profile: {},
           password: null,
           initialPassword: true,
         },

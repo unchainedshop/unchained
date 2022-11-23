@@ -38,7 +38,6 @@ const loginWithSingleSignOn = async (remoteToken, context: Context) => {
           username: 'sso',
           roles: ['admin'],
           email: 'sso@unchained.local',
-          profile: { address: {} },
           password: null,
           guest: false,
         },

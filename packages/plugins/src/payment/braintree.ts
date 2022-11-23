@@ -112,7 +112,7 @@ const BraintreeDirect: IPaymentAdapter = {
         // @ts-ignore
         const braintree = (await import('braintree')).default; // eslint-disable-line
         const gateway = getGateway(braintree);
-        const address = order.billingAddress || {};
+        const address = order.billingAddress;
         const pricing = modules.orders.pricingSheet(order);
         const rounded = Math.round(pricing.total({ useNetPrice: false }).amount / 10 || 0) * 10;
         const saleRequest = {
@@ -120,17 +120,19 @@ const BraintreeDirect: IPaymentAdapter = {
           merchantAccountId: order.currency,
           paymentMethodNonce: paypalPaymentMethodNonce,
           orderId: order.orderNumber || order._id,
-          shipping: {
-            firstName: address.firstName,
-            lastName: address.lastName,
-            company: address.company,
-            streetAddress: address.addressLine,
-            extendedAddress: address.addressLine2,
-            locality: address.city,
-            region: address.regionCode,
-            postalCode: address.postalCode,
-            countryCodeAlpha2: address.countryCode,
-          },
+          shipping: address
+            ? {
+                firstName: address.firstName,
+                lastName: address.lastName,
+                company: address.company,
+                streetAddress: address.addressLine,
+                extendedAddress: address.addressLine2,
+                locality: address.city,
+                region: address.regionCode,
+                postalCode: address.postalCode,
+                countryCodeAlpha2: address.countryCode,
+              }
+            : undefined,
           options: {
             submitForSettlement: true,
           },

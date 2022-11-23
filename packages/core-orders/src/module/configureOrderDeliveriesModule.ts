@@ -154,7 +154,7 @@ export const configureOrderDeliveriesModule = ({
 
       const deliveryProviderId = deliveryProvider._id;
 
-      const address = orderDelivery.context?.address || order || order.billingAddress || {};
+      const address = orderDelivery.context?.address || order || order.billingAddress;
 
       const arbitraryResponseData = await requestContext.modules.delivery.send(
         deliveryProviderId,
@@ -164,7 +164,7 @@ export const configureOrderDeliveriesModule = ({
           transactionContext: {
             ...(deliveryContext || {}),
             ...(orderDelivery.context || {}),
-            address,
+            ...(address || {}),
           },
         },
         requestContext,

@@ -45,7 +45,7 @@ const errorReported: TemplateResolver = async (
         subject: emailSubject || 'Error occurred',
         text: modules.messaging.renderToText(ERROR_EMAIL_TEMPLATE,
           {
-            userName: `${user.profile.address.firstName} ${user.profile.address.lastName}`
+            userName: `${user.profile?.address?.firstName} ${user.profile?.address?.lastName}`
             error,
             resolverName,
           }
