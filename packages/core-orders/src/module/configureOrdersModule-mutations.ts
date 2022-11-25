@@ -60,13 +60,13 @@ export const configureOrderModuleMutations = ({
 
       const order = await Orders.findOne(generateDbFilterById(orderId), {});
 
-      emit('ORDER_CREATE', { order });
+      await emit('ORDER_CREATE', { order });
       return order;
     },
 
     delete: async (orderId, userId) => {
       const deletedCount = await mutations.delete(orderId, userId);
-      emit('ORDER_REMOVE', { orderId });
+      await emit('ORDER_REMOVE', { orderId });
       return deletedCount;
     },
 
@@ -123,7 +123,7 @@ export const configureOrderModuleMutations = ({
 
       const order = await updateCalculation(orderId, requestContext);
 
-      emit('ORDER_SET_DELIVERY_PROVIDER', {
+      await emit('ORDER_SET_DELIVERY_PROVIDER', {
         order,
         deliveryProviderId,
       });
@@ -161,7 +161,7 @@ export const configureOrderModuleMutations = ({
 
       const order = await updateCalculation(orderId, requestContext);
 
-      emit('ORDER_SET_PAYMENT_PROVIDER', {
+      await emit('ORDER_SET_PAYMENT_PROVIDER', {
         order,
         paymentProviderId,
       });
@@ -182,7 +182,7 @@ export const configureOrderModuleMutations = ({
       });
 
       const order = await updateCalculation(orderId, requestContext);
-      emit('ORDER_UPDATE', { order, field: 'billing' });
+      await emit('ORDER_UPDATE', { order, field: 'billing' });
       return order;
     },
 
@@ -199,7 +199,7 @@ export const configureOrderModuleMutations = ({
       });
 
       const order = await updateCalculation(orderId, requestContext);
-      emit('ORDER_UPDATE', { order, field: 'contact' });
+      await emit('ORDER_UPDATE', { order, field: 'contact' });
       return order;
     },
 
@@ -221,7 +221,7 @@ export const configureOrderModuleMutations = ({
 
       if (result.modifiedCount) {
         const order = await updateCalculation(orderId, requestContext);
-        emit('ORDER_UPDATE', { order, field: 'context' });
+        await emit('ORDER_UPDATE', { order, field: 'context' });
         return true;
       }
       return false;

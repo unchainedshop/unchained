@@ -91,10 +91,6 @@ export default (expressApp, options) => {
         }
       : corsOrigins;
 
-  // server.start().then(() => {
-  //
-  // });
-
   const middleware = server.getMiddleware({
     path: '/graphql',
     cors: !originFn

@@ -19,6 +19,6 @@ describe('Initialisation', () => {
     assert.isFunction(registerEvents);
 
     registerEvents(['TEST_EVENT'])
-    emit('TEST_EVENT')
+    await emit('TEST_EVENT')
   });
 })

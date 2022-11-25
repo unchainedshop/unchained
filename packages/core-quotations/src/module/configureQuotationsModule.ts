@@ -139,7 +139,7 @@ export const configureQuotationsModule = async ({
 
     const updatedQuotation = await Quotations.findOne(selector, {});
 
-    emit('QUOTATION_UPDATE', { quotation, field: 'status' });
+    await emit('QUOTATION_UPDATE', { quotation, field: 'status' });
 
     return updatedQuotation;
   };
@@ -225,7 +225,7 @@ export const configureQuotationsModule = async ({
       const selector = generateDbFilterById(quotationId);
       const quotation = await Quotations.findOne(selector, {});
 
-      emit('QUOTATION_UPDATE', { quotation, fields: fieldKeys });
+      await emit('QUOTATION_UPDATE', { quotation, fields: fieldKeys });
 
       return quotation;
     };
@@ -375,7 +375,7 @@ export const configureQuotationsModule = async ({
 
       quotation = await sendStatusToCustomer(quotation, requestContext);
 
-      emit('QUOTATION_REQUEST_CREATE', { quotation });
+      await emit('QUOTATION_REQUEST_CREATE', { quotation });
 
       return quotation;
     },

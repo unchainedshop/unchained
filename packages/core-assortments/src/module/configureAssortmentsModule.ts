@@ -354,13 +354,13 @@ export const configureAssortmentsModule = async ({
       }
 
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId));
-      emit('ASSORTMENT_CREATE', { assortment });
+      await emit('ASSORTMENT_CREATE', { assortment });
       return assortmentId;
     },
 
     update: async (_id, doc, userId, options) => {
       const assortmentId = await mutations.update(_id, doc, userId);
-      emit('ASSORTMENT_UPDATE', { assortmentId });
+      await emit('ASSORTMENT_UPDATE', { assortmentId });
 
       if (!options?.skipInvalidation) {
         invalidateCache({ assortmentIds: [assortmentId] });
@@ -388,7 +388,7 @@ export const configureAssortmentsModule = async ({
         await invalidateCache({}, { skipUpstreamTraversal: true });
       }
 
-      emit('ASSORTMENT_REMOVE', { assortmentId });
+      await emit('ASSORTMENT_REMOVE', { assortmentId });
 
       return deletedResult.deletedCount;
     },
@@ -413,7 +413,7 @@ export const configureAssortmentsModule = async ({
           updatedBy: userId,
         },
       });
-      emit('ASSORTMENT_SET_BASE', { assortmentId });
+      await emit('ASSORTMENT_SET_BASE', { assortmentId });
     },
 
     search: {

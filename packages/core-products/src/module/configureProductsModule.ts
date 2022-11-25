@@ -134,7 +134,7 @@ export const configureProductsModule = async ({
           published: new Date(),
         },
       });
-      emit('PRODUCT_PUBLISH', { product });
+      await emit('PRODUCT_PUBLISH', { product });
 
       return true;
     }
@@ -153,7 +153,7 @@ export const configureProductsModule = async ({
         },
       });
 
-      emit('PRODUCT_UNPUBLISH', { product });
+      await emit('PRODUCT_UNPUBLISH', { product });
 
       return true;
     }
@@ -351,7 +351,7 @@ export const configureProductsModule = async ({
         }
       }
 
-      emit('PRODUCT_CREATE', { product });
+      await emit('PRODUCT_CREATE', { product });
 
       return product;
     },
@@ -364,7 +364,7 @@ export const configureProductsModule = async ({
 
       const productId = await mutations.update(_id, updateDoc, userId);
 
-      emit('PRODUCT_UPDATE', { productId, ...updateDoc });
+      await emit('PRODUCT_UPDATE', { productId, ...updateDoc });
 
       return productId;
     },
@@ -384,7 +384,7 @@ export const configureProductsModule = async ({
         },
       });
 
-      emit('PRODUCT_REMOVE', { productId });
+      await emit('PRODUCT_REMOVE', { productId });
 
       return updatedResult.modifiedCount;
     },
@@ -419,7 +419,7 @@ export const configureProductsModule = async ({
 
         await Products.updateOne(generateDbFilterById(proxyId), modifier);
 
-        emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
+        await emit('PRODUCT_ADD_ASSIGNMENT', { productId, proxyId });
 
         return proxyId;
       },
@@ -442,7 +442,7 @@ export const configureProductsModule = async ({
         };
         await Products.updateOne(generateDbFilterById(productId), modifier);
 
-        emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
+        await emit('PRODUCT_REMOVE_ASSIGNMENT', { productId });
 
         return vectors.length;
       },
@@ -460,7 +460,7 @@ export const configureProductsModule = async ({
           },
         });
 
-        emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
+        await emit('PRODUCT_CREATE_BUNDLE_ITEM', { productId });
 
         return productId;
       },
@@ -482,7 +482,7 @@ export const configureProductsModule = async ({
           });
         }
 
-        emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
+        await emit('PRODUCT_REMOVE_BUNDLE_ITEM', {
           productId,
           item: removedItem,
         });

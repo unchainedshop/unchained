@@ -114,13 +114,14 @@ export const uploadFormData = async ({ token = '', body }) => {
         },
       }
     : {};
-  return fetch('http://localhost:4010/graphql', {
+
+  const response = await fetch('http://localhost:4010/graphql', {
     ...options,
     method: 'POST',
     body,
-  })
-    .then((response) => response.json())
-    .catch((e) => console.warn(e)); // eslint-disable-line
+  });
+  const json = await response.json();
+  return json;
 };
 
 export const putFile = async (file, url) => {

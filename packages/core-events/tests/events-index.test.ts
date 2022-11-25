@@ -20,7 +20,7 @@ describe('Test exports', () => {
   it('Test event history adapter', async () => {
     assert.ok(getEmitHistoryAdapter());
 
-    emit('TEST EVENT', { orderId: 'Order1234' });
+    await emit('TEST EVENT', { orderId: 'Order1234' });
 
     const events = await module.findEvents({
       limit: 10,

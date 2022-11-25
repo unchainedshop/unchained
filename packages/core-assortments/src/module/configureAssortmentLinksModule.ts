@@ -95,7 +95,7 @@ export const configureAssortmentLinksModule = ({
 
       const assortmentLink = await AssortmentLinks.findOne(selector, {});
 
-      emit('ASSORTMENT_ADD_LINK', { assortmentLink });
+      await emit('ASSORTMENT_ADD_LINK', { assortmentLink });
 
       if (!options.skipInvalidation) {
         await invalidateCache({ assortmentIds: [parentAssortmentId] });
@@ -130,7 +130,7 @@ export const configureAssortmentLinksModule = ({
 
       await AssortmentLinks.deleteOne(selector);
 
-      emit('ASSORTMENT_REMOVE_LINK', {
+      await emit('ASSORTMENT_REMOVE_LINK', {
         assortmentLinkId: assortmentLink._id,
       });
 
@@ -153,11 +153,13 @@ export const configureAssortmentLinksModule = ({
       }).toArray();
 
       const deletionResult = await AssortmentLinks.deleteMany(selector);
-      assortmentLinks.forEach((assortmentLink) => {
-        emit('ASSORTMENT_REMOVE_LINK', {
-          assortmentLinkId: assortmentLink._id,
-        });
-      });
+      await Promise.all(
+        assortmentLinks.map(async (assortmentLink) =>
+          emit('ASSORTMENT_REMOVE_LINK', {
+            assortmentLinkId: assortmentLink._id,
+          }),
+        ),
+      );
 
       if (!options.skipInvalidation && assortmentLinks.length) {
         await invalidateCache({
@@ -194,7 +196,7 @@ export const configureAssortmentLinksModule = ({
         await invalidateCache({ assortmentIds: assortmentLinks.map((link) => link.childAssortmentId) });
       }
 
-      emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks });
+      await emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks });
 
       return assortmentLinks;
     },

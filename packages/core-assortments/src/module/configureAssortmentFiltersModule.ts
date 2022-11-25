@@ -81,7 +81,7 @@ export const configureAssortmentFiltersModule = ({
 
       const assortmentFilter = await AssortmentFilters.findOne(selector, {});
 
-      emit('ASSORTMENT_ADD_FILTER', { assortmentFilter });
+      await emit('ASSORTMENT_ADD_FILTER', { assortmentFilter });
 
       return assortmentFilter;
     },
@@ -95,7 +95,7 @@ export const configureAssortmentFiltersModule = ({
 
       await AssortmentFilters.deleteOne(selector);
 
-      emit('ASSORTMENT_REMOVE_FILTER', {
+      await emit('ASSORTMENT_REMOVE_FILTER', {
         assortmentFilterId: assortmentFilter._id,
       });
 
@@ -109,11 +109,13 @@ export const configureAssortmentFiltersModule = ({
 
       const deletionResult = await AssortmentFilters.deleteMany(selector);
 
-      assortmentFilters.forEach((assortmentFilter) => {
-        emit('ASSORTMENT_REMOVE_FILTER', {
-          assortmentFilterId: assortmentFilter._id,
-        });
-      });
+      await Promise.all(
+        assortmentFilters.map(async (assortmentFilter) =>
+          emit('ASSORTMENT_REMOVE_FILTER', {
+            assortmentFilterId: assortmentFilter._id,
+          }),
+        ),
+      );
 
       return deletionResult.deletedCount;
     },
@@ -145,7 +147,7 @@ export const configureAssortmentFiltersModule = ({
         _id: { $in: changedAssortmentFilterIds },
       }).toArray();
 
-      emit('ASSORTMENT_REORDER_FILTERS', { assortmentFilters });
+      await emit('ASSORTMENT_REORDER_FILTERS', { assortmentFilters });
 
       return assortmentFilters;
     },

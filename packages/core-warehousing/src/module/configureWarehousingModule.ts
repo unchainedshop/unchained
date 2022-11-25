@@ -138,7 +138,7 @@ export const configureWarehousingModule = async ({
       const warehousingProvider = await WarehousingProviders.findOne(
         generateDbFilterById(warehousingProviderId),
       );
-      emit('WAREHOUSING_PROVIDER_CREATE', { warehousingProvider });
+      await emit('WAREHOUSING_PROVIDER_CREATE', { warehousingProvider });
       return warehousingProviderId;
     },
 
@@ -148,7 +148,7 @@ export const configureWarehousingModule = async ({
 
       if (!warehousingProvider) return null;
 
-      emit('WAREHOUSING_PROVIDER_UPDATE', { warehousingProvider });
+      await emit('WAREHOUSING_PROVIDER_UPDATE', { warehousingProvider });
       return warehousingProviderId;
     },
 
@@ -159,7 +159,7 @@ export const configureWarehousingModule = async ({
         {},
       );
 
-      emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
+      await emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
 
       return warehousingProvider;
     },

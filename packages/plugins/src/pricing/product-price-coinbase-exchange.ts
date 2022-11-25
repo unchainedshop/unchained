@@ -9,11 +9,12 @@ const SUPPORTED_CURRENCIES = ['BTC', 'ETH', 'XRP', 'USDT', 'BCH', 'BSV', 'LTC', 
 const cache = new Cache(CACHE_PERIOD);
 
 const getFiatexchangeRateForCrypto = async (base, target) => {
-  const { data } = await cache.get(`${base}-${target}`, () =>
-    fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${base}`, {
+  const { data } = await cache.get(`${base}-${target}`, async () => {
+    const res = await fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${base}`, {
       method: 'GET',
-    }).then((res) => res.json()),
-  );
+    });
+    return res.json();
+  });
   return data?.rates?.[target];
 };
 

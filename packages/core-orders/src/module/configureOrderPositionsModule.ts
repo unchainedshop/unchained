@@ -115,7 +115,7 @@ export const configureOrderPositionsModule = ({
 
       await updateCalculation(orderPosition.orderId, requestContext);
 
-      emit('ORDER_REMOVE_CART_ITEM', {
+      await emit('ORDER_REMOVE_CART_ITEM', {
         orderPosition,
       });
 
@@ -129,7 +129,7 @@ export const configureOrderPositionsModule = ({
 
       await updateCalculation(orderId, requestContext);
 
-      emit('ORDER_EMPTY_CART', { orderId, count: result.deletedCount });
+      await emit('ORDER_EMPTY_CART', { orderId, count: result.deletedCount });
 
       return result.deletedCount;
     },
@@ -177,7 +177,7 @@ export const configureOrderPositionsModule = ({
 
       const updatedOrderPosition = await OrderPositions.findOne(selector, {});
 
-      emit('ORDER_UPDATE_CART_ITEM', {
+      await emit('ORDER_UPDATE_CART_ITEM', {
         orderPosition: updatedOrderPosition,
       });
 
@@ -317,7 +317,7 @@ export const configureOrderPositionsModule = ({
 
       const upsertedOrderPosition = await OrderPositions.findOne(selector);
 
-      emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
+      await emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
 
       return upsertedOrderPosition;
     },

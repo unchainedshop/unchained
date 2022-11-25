@@ -27,10 +27,11 @@ export class SaferpayConnection {
   }
 
   public async post(uri: string, data: object): Promise<any> {
-    return fetch(this.buildUrl(uri), {
+    const res = await fetch(this.buildUrl(uri), {
       method: 'POST',
       body: JSON.stringify(data),
       headers: this.getHeaders(),
-    }).then((res: any) => res.json());
+    });
+    return res.json();
   }
 }

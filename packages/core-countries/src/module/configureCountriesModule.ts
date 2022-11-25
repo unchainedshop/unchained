@@ -80,17 +80,17 @@ export const configureCountriesModule = async ({
         },
         userId,
       );
-      emit('COUNTRY_CREATE', { countryId });
+      await emit('COUNTRY_CREATE', { countryId });
       return countryId;
     },
     update: async (_id: string, doc: Partial<Country>, userId: string) => {
       const countryId = await mutations.update(_id, { $set: doc }, userId);
-      emit('COUNTRY_UPDATE', { countryId });
+      await emit('COUNTRY_UPDATE', { countryId });
       return countryId;
     },
     delete: async (countryId, userId) => {
       const deletedCount = await mutations.delete(countryId, userId);
-      emit('COUNTRY_REMOVE', { countryId });
+      await emit('COUNTRY_REMOVE', { countryId });
       return deletedCount;
     },
 

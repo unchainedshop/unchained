@@ -139,7 +139,7 @@ export const configureUsersModule = async ({
       });
 
       const user = await Users.findOne(selector, {});
-      emit('USER_ADD_ROLES', {
+      await emit('USER_ADD_ROLES', {
         user: removeConfidentialServiceHashes(user),
       });
 
@@ -160,7 +160,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
-      emit('USER_UPDATE_AVATAR', {
+      await emit('USER_UPDATE_AVATAR', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
@@ -188,7 +188,7 @@ export const configureUsersModule = async ({
       await mutations.update(userId, modifier, userId);
       const user = await Users.findOne(userFilter, {});
 
-      emit('USER_UPDATE_HEARTBEAT', {
+      await emit('USER_UPDATE_HEARTBEAT', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
@@ -231,7 +231,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
-      emit('USER_UPDATE_PROFILE', {
+      await emit('USER_UPDATE_PROFILE', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
@@ -264,7 +264,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
       const updatedUser = await Users.findOne(userFilter, {});
-      emit('USER_UPDATE_BILLING_ADDRESS', {
+      await emit('USER_UPDATE_BILLING_ADDRESS', {
         user: removeConfidentialServiceHashes(user),
       });
       return updatedUser;
@@ -294,7 +294,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
       const updatedUser = await Users.findOne(userFilter, {});
-      emit('USER_UPDATE_LAST_CONTACT', {
+      await emit('USER_UPDATE_LAST_CONTACT', {
         user: removeConfidentialServiceHashes(user),
       });
       return updatedUser;
@@ -312,7 +312,7 @@ export const configureUsersModule = async ({
       };
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
-      emit('USER_UPDATE_ROLE', {
+      await emit('USER_UPDATE_ROLE', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
@@ -330,7 +330,7 @@ export const configureUsersModule = async ({
 
       await mutations.update(_id, modifier, userId);
       const user = await Users.findOne(userFilter, {});
-      emit('USER_UPDATE_TAGS', {
+      await emit('USER_UPDATE_TAGS', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
@@ -338,7 +338,7 @@ export const configureUsersModule = async ({
     updateUser: async (query, modifier, options) => {
       await Users.updateOne(query, modifier, options);
       const user = await Users.findOne(query);
-      emit('USER_UPDATE', {
+      await emit('USER_UPDATE', {
         user: removeConfidentialServiceHashes(user),
       });
     },

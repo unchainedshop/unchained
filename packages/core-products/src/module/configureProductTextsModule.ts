@@ -153,7 +153,7 @@ export const configureProductTextsModule = ({
           )
         : [];
 
-      emit('PRODUCT_UPDATE_TEXTS', {
+      await emit('PRODUCT_UPDATE_TEXTS', {
         productId,
         productTexts,
       });

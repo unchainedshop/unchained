@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
 import { emit } from '@unchainedshop/events';
 
-export default (root, { path, referrer }, { userId }) => {
+export default async (root, { path, referrer }, { userId }) => {
   log(`mutation pageView ${path} ${referrer}`, { userId });
 
-  emit('PAGE_VIEW', {
+  await emit('PAGE_VIEW', {
     path,
     referrer,
   });

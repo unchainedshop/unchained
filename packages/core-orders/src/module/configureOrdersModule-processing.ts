@@ -139,14 +139,14 @@ export const configureOrderModuleProcessing = ({
   ): Promise<OrderStatus> => {
     if (status === null) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
-        emit('ORDER_CHECKOUT', { order });
+        await emit('ORDER_CHECKOUT', { order });
         return OrderStatus.PENDING;
       }
     }
 
     if (status === OrderStatus.PENDING) {
       if (await isAutoConfirmationEnabled(order, requestContext)) {
-        emit('ORDER_CONFIRMED', { order });
+        await emit('ORDER_CONFIRMED', { order });
         return OrderStatus.CONFIRMED;
       }
     }
@@ -154,7 +154,7 @@ export const configureOrderModuleProcessing = ({
     if (status === OrderStatus.CONFIRMED) {
       const isFullfilled = await isAutoFullfillmentEnabled(order, requestContext);
       if (isFullfilled) {
-        emit('ORDER_FULLFILLED', { order });
+        await emit('ORDER_FULLFILLED', { order });
         return OrderStatus.FULLFILLED;
       }
     }

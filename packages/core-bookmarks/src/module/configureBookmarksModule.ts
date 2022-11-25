@@ -75,17 +75,17 @@ export const configureBookmarksModule = async ({
 
     create: async (doc: Bookmark, userId: string) => {
       const bookmarkId = await mutations.create(doc, userId);
-      emit('BOOKMARK_CREATE', { bookmarkId });
+      await emit('BOOKMARK_CREATE', { bookmarkId });
       return bookmarkId;
     },
     update: async (_id: string, doc: Bookmark, userId: string) => {
       const bookmarkId = await mutations.update(_id, doc, userId);
-      emit('BOOKMARK_UPDATE', { bookmarkId });
+      await emit('BOOKMARK_UPDATE', { bookmarkId });
       return bookmarkId;
     },
     delete: async (bookmarkId, userId) => {
       const deletedCount = await mutations.delete(bookmarkId, userId);
-      emit('BOOKMARK_REMOVE', { bookmarkId });
+      await emit('BOOKMARK_REMOVE', { bookmarkId });
       return deletedCount;
     },
   };
