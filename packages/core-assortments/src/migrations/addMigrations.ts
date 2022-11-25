@@ -1,6 +1,6 @@
 import { Migration, MigrationRepository } from '@unchainedshop/types/core';
 import { Collection } from 'mongodb';
-import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
+import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection';
 import { AssortmentsCollection } from '../db/AssortmentsCollection';
 
 const convertTagsToLowerCase = async (collection: Collection<any>) => {
@@ -72,13 +72,13 @@ export default function addMigrations(repository: MigrationRepository<Migration>
     up: async () => {
       const { Assortments, AssortmentFilters, AssortmentLinks, AssortmentProducts } =
         await AssortmentsCollection(repository.db);
-      const { AssortmentMedias } = await AssortmentMediaCollection(repository.db);
+      const { AssortmentMedia } = await AssortmentMediaCollection(repository.db);
       await Promise.all([
         convertTagsToLowerCase(Assortments),
         convertTagsToLowerCase(AssortmentProducts),
         convertTagsToLowerCase(AssortmentLinks),
         convertTagsToLowerCase(AssortmentFilters),
-        convertTagsToLowerCase(AssortmentMedias),
+        convertTagsToLowerCase(AssortmentMedia),
       ]);
     },
   });
