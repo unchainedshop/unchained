@@ -1,4 +1,4 @@
-import { Context, SortOption } from './api';
+import { Context, SortOption, UnchainedAPI } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
 import { Country } from './countries';
@@ -367,7 +367,10 @@ export type ProductsModule = {
  * Services
  */
 
-export type RemoveProductService = (params: { productId: string }, context: Context) => Promise<boolean>;
+export type RemoveProductService = (
+  params: { productId: string; userId?: string },
+  context: UnchainedAPI,
+) => Promise<boolean>;
 
 export interface ProductServices {
   removeProduct: RemoveProductService;

@@ -1,16 +1,15 @@
 import { RemoveProductService } from '@unchainedshop/types/products';
 import { ProductStatus } from '../db/ProductStatus';
 
-export const removeProductService: RemoveProductService = async ({ productId }, { modules, userId }) => {
+export const removeProductService: RemoveProductService = async ({ productId, userId }, { modules }) => {
   const product = await modules.products.findProduct({ productId });
   switch (product.status) {
     case ProductStatus.ACTIVE:
       await modules.products.unpublish(product, userId);
-
     // falls through
     case null:
     case ProductStatus.DRAFT:
-      await modules.assortments.products.delete(productId);
+      await modules.assortments.products.delete(productId, {}, userId);
       await modules.products.delete(productId, userId);
       break;
     default:
