@@ -76,6 +76,7 @@ export default async function mongodbCache(db: Db) {
         ),
       );
       const allCacheRecords = cacheIds.concat([baseCacheId]).filter(Boolean);
+      // TODO: CHECK!
       // await FilterProductIdCache.deleteMany({ filterId, _id: { $nin: allCacheRecords } });
       return allCacheRecords.length;
     },

@@ -204,21 +204,21 @@ export const configurePaymentProvidersModule = (
         generateDbFilterById(paymentProviderId),
         {},
       );
-      emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
+      await emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
       return paymentProvider;
     },
 
     update: async (_id: string, doc: PaymentProvider, userId: string) => {
       await mutations.update(_id, doc, userId);
       const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
-      emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
+      await emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
       return paymentProvider;
     },
 
     delete: async (_id, userId) => {
       await mutations.delete(_id, userId);
       const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
-      emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
+      await emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
       return paymentProvider;
     },
 

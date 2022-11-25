@@ -31,7 +31,7 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Contex
 };
 
 export default async ({ products, authorId, assortmentId }, unchainedAPI: Context) => {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const assortmentProductIds = await Promise.all(
     products.map(async (product: AssortmentProduct) => {
       const tags = convertTagsToLowerCase(product?.tags);
@@ -54,6 +54,5 @@ export default async ({ products, authorId, assortmentId }, unchainedAPI: Contex
       assortmentId,
     },
     { skipInvalidation: true },
-    userId,
   );
 };

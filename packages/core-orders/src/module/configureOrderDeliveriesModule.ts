@@ -142,7 +142,7 @@ export const configureOrderDeliveriesModule = ({
         },
         userId,
       );
-      emit('ORDER_DELIVER', { orderDelivery: updatedOrderDelivery });
+      await emit('ORDER_DELIVER', { orderDelivery: updatedOrderDelivery });
     },
 
     send: async (orderDelivery, { order, deliveryContext }, requestContext) => {
@@ -205,7 +205,7 @@ export const configureOrderDeliveriesModule = ({
 
       if (result.modifiedCount) {
         await updateCalculation(orderId, requestContext);
-        emit('ORDER_UPDATE_DELIVERY', {
+        await emit('ORDER_UPDATE_DELIVERY', {
           orderDelivery: {
             ...orderDelivery,
             context: { ...(orderDelivery.context || {}), ...context },

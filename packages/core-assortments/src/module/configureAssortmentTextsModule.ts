@@ -158,7 +158,7 @@ export const configureAssortmentTextsModule = ({
           )
         : [];
 
-      emit('ASSORTMENT_UPDATE_TEXTS', {
+      await emit('ASSORTMENT_UPDATE_TEXTS', {
         assortmentId,
         assortmentTexts,
       });

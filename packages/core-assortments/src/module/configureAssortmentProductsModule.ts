@@ -108,7 +108,7 @@ export const configureAssortmentProductsModule = ({
 
       const assortmentProduct = await AssortmentProducts.findOne(selector, {});
 
-      emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
+      await emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
       if (!options.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
@@ -128,7 +128,7 @@ export const configureAssortmentProductsModule = ({
 
       await AssortmentProducts.deleteOne(selector);
 
-      emit('ASSORTMENT_REMOVE_PRODUCT', {
+      await emit('ASSORTMENT_REMOVE_PRODUCT', {
         assortmentProductId: assortmentProduct._id,
       });
 
@@ -144,12 +144,14 @@ export const configureAssortmentProductsModule = ({
         projection: { _id: 1, assortmentId: 1 },
       }).toArray();
 
-      await AssortmentProducts.deleteMany(selector);
-      assortmentProducts.forEach((assortmentProduct) => {
-        emit('ASSORTMENT_REMOVE_PRODUCT', {
-          assortmentProductId: assortmentProduct._id,
-        });
-      });
+      const deletionResult = await AssortmentProducts.deleteMany(selector);
+      await Promise.all(
+        assortmentProducts.map(async (assortmentProduct) =>
+          emit('ASSORTMENT_REMOVE_PRODUCT', {
+            assortmentProductId: assortmentProduct._id,
+          }),
+        ),
+      );
 
       if (!options.skipInvalidation && assortmentProducts.length) {
         await invalidateCache({
@@ -157,7 +159,7 @@ export const configureAssortmentProductsModule = ({
         });
       }
 
-      return assortmentProducts;
+      return deletionResult.deletedCount;
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
@@ -203,7 +205,7 @@ export const configureAssortmentProductsModule = ({
         });
       }
 
-      emit('ASSORTMENT_REORDER_PRODUCTS', { assortmentProducts });
+      await emit('ASSORTMENT_REORDER_PRODUCTS', { assortmentProducts });
 
       return assortmentProducts;
     },

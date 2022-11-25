@@ -1,11 +1,11 @@
 import { Context } from '@unchainedshop/types/api';
 
 export default async function removeProduct(payload: any, { logger }, unchainedAPI: Context) {
-  const { services } = unchainedAPI;
+  const { services, userId } = unchainedAPI;
   const { _id } = payload;
-  logger.debug('remove product');
+  logger.debug(`remove product ${_id}`);
 
-  await services.products.removeProduct({ productId: _id }, unchainedAPI);
+  await services.products.removeProduct({ productId: _id, userId }, unchainedAPI);
 
   return {
     entity: 'PRODUCT',

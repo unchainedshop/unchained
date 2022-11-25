@@ -274,7 +274,7 @@ export const configureOrderPaymentsModule = ({
         },
         userId,
       );
-      emit('ORDER_PAY', { orderPayment });
+      await emit('ORDER_PAY', { orderPayment });
     },
 
     updateContext: async (orderPaymentId, context, requestContext) => {
@@ -298,7 +298,7 @@ export const configureOrderPaymentsModule = ({
 
       if (result.modifiedCount) {
         await updateCalculation(orderId, requestContext);
-        emit('ORDER_UPDATE_PAYMENT', {
+        await emit('ORDER_UPDATE_PAYMENT', {
           orderPayment: {
             ...orderPayment,
             context: { ...(orderPayment.context || {}), ...context },

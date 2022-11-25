@@ -16,7 +16,7 @@ export default async function removeAssortmentLink(
 
   if (!assortmentLink) throw new AssortmentLinkNotFoundError({ assortmentLinkId });
 
-  await modules.assortments.links.delete(assortmentLinkId, { skipInvalidation: false }, userId);
+  await modules.assortments.links.delete(assortmentLinkId, { skipInvalidation: false });
 
   return assortmentLink;
 }

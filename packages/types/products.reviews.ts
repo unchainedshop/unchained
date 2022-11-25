@@ -1,5 +1,5 @@
 import { SortOption } from './api';
-import { TimestampFields, _ID } from './common';
+import { Filter, TimestampFields, _ID } from './common';
 
 export enum ProductReviewVoteType {
   UPVOTE = 'UPVOTE',
@@ -52,6 +52,8 @@ export type ProductReviewsModule = {
   create: (doc: ProductReview, userId?: string) => Promise<ProductReview>;
 
   delete: (productPreviewId: string, userId?: string) => Promise<number>;
+
+  deleteMany: (selector: Filter<ProductReview>) => Promise<number>;
 
   update: (productReviewId: string, doc: ProductReview, userId?: string) => Promise<ProductReview>;
 

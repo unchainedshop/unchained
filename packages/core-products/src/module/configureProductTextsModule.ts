@@ -153,7 +153,7 @@ export const configureProductTextsModule = ({
           )
         : [];
 
-      emit('PRODUCT_UPDATE_TEXTS', {
+      await emit('PRODUCT_UPDATE_TEXTS', {
         productId,
         productTexts,
       });
@@ -164,7 +164,7 @@ export const configureProductTextsModule = ({
     upsertLocalizedText,
     makeSlug,
 
-    deleteMany: async (productId) => {
+    deleteMany: async ({ productId }) => {
       const deletedResult = await ProductTexts.deleteMany({ productId });
 
       return deletedResult.deletedCount;

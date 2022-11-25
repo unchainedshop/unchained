@@ -81,7 +81,7 @@ export const configureOrderDiscountsModule = ({
       await updateCalculation(discount.orderId, requestContext);
     } else {
       await OrderDiscounts.deleteOne(selector);
-      emit('ORDER_REMOVE_DISCOUNT', { discount });
+      await emit('ORDER_REMOVE_DISCOUNT', { discount });
     }
     return discount;
   };
@@ -97,7 +97,7 @@ export const configureOrderDiscountsModule = ({
 
     const selector = buildFindByIdSelector(orderDiscountId);
     const discount = await OrderDiscounts.findOne(selector, {});
-    emit('ORDER_UPDATE_DISCOUNT', { discount });
+    await emit('ORDER_UPDATE_DISCOUNT', { discount });
     return discount;
   };
 
@@ -213,7 +213,7 @@ export const configureOrderDiscountsModule = ({
         try {
           const reservedDiscount = await reserveDiscount(newDiscount, requestContext);
           await updateCalculation(order._id, requestContext);
-          emit('ORDER_ADD_DISCOUNT', { discount: reserveDiscount });
+          await emit('ORDER_ADD_DISCOUNT', { discount: reserveDiscount });
           return reservedDiscount;
         } catch (error) {
           await deleteDiscount(newDiscount._id, requestContext);
@@ -228,7 +228,7 @@ export const configureOrderDiscountsModule = ({
       const discount = await createDiscount(doc, userId);
 
       if (discount.trigger === OrderDiscountTrigger.USER) {
-        emit('ORDER_CREATE_DISCOUNT', { discount });
+        await emit('ORDER_CREATE_DISCOUNT', { discount });
       }
 
       return discount;
@@ -241,7 +241,7 @@ export const configureOrderDiscountsModule = ({
 
       const selector = buildFindByIdSelector(orderDiscountId);
       const discount = await OrderDiscounts.findOne(selector, {});
-      emit('ORDER_UPDATE_DISCOUNT', { discount });
+      await emit('ORDER_UPDATE_DISCOUNT', { discount });
       return discount;
     },
   };

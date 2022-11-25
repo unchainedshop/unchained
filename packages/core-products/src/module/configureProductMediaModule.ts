@@ -133,7 +133,7 @@ export const configureProductMediaModule = async ({
 
       const productMedia = await ProductMedias.findOne(generateDbFilterById(productMediaId), {});
 
-      emit('PRODUCT_ADD_MEDIA', {
+      await emit('PRODUCT_ADD_MEDIA', {
         productMedia,
       });
 
@@ -143,9 +143,11 @@ export const configureProductMediaModule = async ({
     delete: async (productMediaId) => {
       const selector = generateDbFilterById(productMediaId);
 
+      await ProductMediaTexts.deleteMany({ productMediaId });
+
       const deletedResult = await ProductMedias.deleteOne(selector);
 
-      emit('PRODUCT_REMOVE_MEDIA', {
+      await emit('PRODUCT_REMOVE_MEDIA', {
         productMediaId,
       });
 
@@ -167,13 +169,17 @@ export const configureProductMediaModule = async ({
         .map((m) => m._id)
         .toArray();
 
+      await ProductMediaTexts.deleteMany({ productMediaId: { $in: ids } });
+
       const deletedResult = await ProductMedias.deleteMany(selector);
 
-      ids.forEach((assortmentMediaId) => {
-        emit('PRODUCT_REMOVE_MEDIA', {
-          assortmentMediaId,
-        });
-      });
+      await Promise.all(
+        ids.map(async (assortmentMediaId) =>
+          emit('PRODUCT_REMOVE_MEDIA', {
+            assortmentMediaId,
+          }),
+        ),
+      );
 
       return deletedResult.deletedCount;
     },
@@ -205,7 +211,7 @@ export const configureProductMediaModule = async ({
         _id: { $in: changedProductMediaIds },
       }).toArray();
 
-      emit('PRODUCT_REORDER_MEDIA', { productMedias });
+      await emit('PRODUCT_REORDER_MEDIA', { productMedias });
 
       return productMedias;
     },
@@ -240,7 +246,7 @@ export const configureProductMediaModule = async ({
           ),
         );
 
-        emit('PRODUCT_UPDATE_MEDIA_TEXT', {
+        await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
           productMediaId,
           mediaTexts,
         });

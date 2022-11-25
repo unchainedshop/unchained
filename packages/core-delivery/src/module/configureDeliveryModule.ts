@@ -178,21 +178,21 @@ export const configureDeliveryModule = async ({
         generateDbFilterById(deliveryProviderId),
         {},
       );
-      emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
+      await emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
       return deliveryProvider;
     },
 
     update: async (_id: string, doc: DeliveryProvider, userId: string) => {
       await mutations.update(_id, doc, userId);
       const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id), {});
-      emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
+      await emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
       return deliveryProvider;
     },
 
     delete: async (_id, userId) => {
       await mutations.delete(_id, userId);
       const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id), {});
-      emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
+      await emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
       return deliveryProvider;
     },
 

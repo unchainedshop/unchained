@@ -76,7 +76,7 @@ export const configureLanguagesModule = async ({
         },
         userId,
       );
-      emit('LANGUAGE_CREATE', { languageId });
+      await emit('LANGUAGE_CREATE', { languageId });
       return languageId;
     },
     update: async (languageId, doc, userId) => {
@@ -88,12 +88,12 @@ export const configureLanguagesModule = async ({
         },
         userId,
       );
-      emit('LANGUAGE_UPDATE', { languageId });
+      await emit('LANGUAGE_UPDATE', { languageId });
       return languageId;
     },
     delete: async (languageId, userId) => {
       const deletedCount = await mutations.delete(languageId, userId);
-      emit('LANGUAGE_REMOVE', { languageId });
+      await emit('LANGUAGE_REMOVE', { languageId });
       return deletedCount;
     },
     deletePermanently: mutations.deletePermanently,

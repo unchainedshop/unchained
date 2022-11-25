@@ -127,7 +127,7 @@ export const configureEnrollmentsModule = async ({
 
     const updatedEnrollment = await Enrollments.findOne(selector, {});
 
-    emit('ENROLLMENT_UPDATE', { enrollment, field: 'status' });
+    await emit('ENROLLMENT_UPDATE', { enrollment, field: 'status' });
 
     return updatedEnrollment;
   };
@@ -219,7 +219,7 @@ export const configureEnrollmentsModule = async ({
 
       const enrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId), {});
 
-      emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
+      await emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
 
       return enrollment;
     };
@@ -331,7 +331,7 @@ export const configureEnrollmentsModule = async ({
       });
       const enrollment = await Enrollments.findOne(selector, {});
 
-      emit('ENROLLMENT_ADD_PERIOD', { enrollment });
+      await emit('ENROLLMENT_ADD_PERIOD', { enrollment });
 
       return enrollment;
     },
@@ -387,7 +387,7 @@ export const configureEnrollmentsModule = async ({
         requestContext,
       );
 
-      emit('ENROLLMENT_CREATE', { enrollment });
+      await emit('ENROLLMENT_CREATE', { enrollment });
 
       return enrollment;
     },
@@ -437,7 +437,7 @@ export const configureEnrollmentsModule = async ({
 
     delete: async (enrollmentId, userId) => {
       const deletedCount = await mutations.delete(enrollmentId, userId);
-      emit('ORDER_REMOVE', { enrollmentId });
+      await emit('ORDER_REMOVE', { enrollmentId });
       return deletedCount;
     },
 
@@ -484,7 +484,7 @@ export const configureEnrollmentsModule = async ({
       const selector = generateDbFilterById(enrollmentId);
       const enrollment = await Enrollments.findOne(selector, {});
 
-      emit('ENROLLMENT_UPDATE', { enrollment, field: 'plan' });
+      await emit('ENROLLMENT_UPDATE', { enrollment, field: 'plan' });
 
       const reason = 'updated_plan';
       const initializedEnrollment = await initializeEnrollment(enrollment, { reason }, requestContext);

@@ -95,7 +95,7 @@ export const configureAssortmentLinksModule = ({
 
       const assortmentLink = await AssortmentLinks.findOne(selector, {});
 
-      emit('ASSORTMENT_ADD_LINK', { assortmentLink });
+      await emit('ASSORTMENT_ADD_LINK', { assortmentLink });
 
       if (!options.skipInvalidation) {
         await invalidateCache({ assortmentIds: [parentAssortmentId] });
@@ -130,7 +130,7 @@ export const configureAssortmentLinksModule = ({
 
       await AssortmentLinks.deleteOne(selector);
 
-      emit('ASSORTMENT_REMOVE_LINK', {
+      await emit('ASSORTMENT_REMOVE_LINK', {
         assortmentLinkId: assortmentLink._id,
       });
 
@@ -144,14 +144,22 @@ export const configureAssortmentLinksModule = ({
     },
 
     deleteMany: async (selector, options) => {
-      const assortmentLinks = await AssortmentLinks.find(selector, {}).toArray();
+      const assortmentLinks = await AssortmentLinks.find(selector, {
+        projection: {
+          _id: 1,
+          childAssortmentId: 1,
+          parentAssortmentId: 1,
+        },
+      }).toArray();
 
-      await AssortmentLinks.deleteMany(selector);
-      assortmentLinks.forEach((assortmentLink) => {
-        emit('ASSORTMENT_REMOVE_LINK', {
-          assortmentLinkId: assortmentLink._id,
-        });
-      });
+      const deletionResult = await AssortmentLinks.deleteMany(selector);
+      await Promise.all(
+        assortmentLinks.map(async (assortmentLink) =>
+          emit('ASSORTMENT_REMOVE_LINK', {
+            assortmentLinkId: assortmentLink._id,
+          }),
+        ),
+      );
 
       if (!options.skipInvalidation && assortmentLinks.length) {
         await invalidateCache({
@@ -162,7 +170,7 @@ export const configureAssortmentLinksModule = ({
         });
       }
 
-      return assortmentLinks;
+      return deletionResult.deletedCount;
     },
 
     updateManualOrder: async ({ sortKeys }, options, userId) => {
@@ -188,7 +196,7 @@ export const configureAssortmentLinksModule = ({
         await invalidateCache({ assortmentIds: assortmentLinks.map((link) => link.childAssortmentId) });
       }
 
-      emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks });
+      await emit('ASSORTMENT_REORDER_LINKS', { assortmentLinks });
 
       return assortmentLinks;
     },

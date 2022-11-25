@@ -52,22 +52,23 @@ export const configureFilesModule = async ({
     },
 
     deleteMany: async (fileIds) => {
-      await Files.deleteMany({ _id: { $in: fileIds } });
+      const deletionResult = await Files.deleteMany({ _id: { $in: fileIds } });
+      return deletionResult.deletedCount;
     },
 
     create: async (doc: File, userId: string) => {
       const fileId = await mutations.create(doc, userId);
-      emit('FILE_CREATE', { fileId });
+      await emit('FILE_CREATE', { fileId });
       return fileId;
     },
     update: async (_id: string, doc: File, userId: string) => {
       const fileId = await mutations.update(_id, { $set: doc }, userId);
-      emit('FILE_UPDATE', { fileId });
+      await emit('FILE_UPDATE', { fileId });
       return fileId;
     },
     delete: async (fileId: string, userId: string) => {
       const deletedCount = await mutations.delete(fileId, userId);
-      emit('FILE_REMOVE', { fileId });
+      await emit('FILE_REMOVE', { fileId });
       return deletedCount;
     },
     deletePermanently: mutations.deletePermanently,

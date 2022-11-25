@@ -115,7 +115,7 @@ export const configureProductReviewsModule = async ({
 
       const productReview = await ProductReviews.findOne(generateDbFilterById(productReviewId), {});
 
-      emit('PRODUCT_REVIEW_CREATE', {
+      await emit('PRODUCT_REVIEW_CREATE', {
         productReview,
       });
 
@@ -125,11 +125,29 @@ export const configureProductReviewsModule = async ({
     delete: async (productReviewId, userId) => {
       const deletedCount = await mutations.delete(productReviewId, userId);
 
-      emit('PRODUCT_REMOVE_REVIEW', {
+      await emit('PRODUCT_REMOVE_REVIEW', {
         productReviewId,
       });
 
       return deletedCount;
+    },
+
+    deleteMany: async (selector) => {
+      const productReviews = await ProductReviews.find(selector, {
+        projection: { _id: 1 },
+      }).toArray();
+
+      const deletionResult = await ProductReviews.deleteMany(selector);
+
+      await Promise.all(
+        productReviews.map(async (assortmentFilter) =>
+          emit('PRODUCT_REMOVE_REVIEW', {
+            assortmentFilterId: assortmentFilter._id,
+          }),
+        ),
+      );
+
+      return deletionResult.deletedCount;
     },
 
     update: async (productReviewId, doc, userId) => {
@@ -142,7 +160,7 @@ export const configureProductReviewsModule = async ({
         {},
       );
 
-      emit('PRODUCT_UPDATE_REVIEW', { productReview });
+      await emit('PRODUCT_UPDATE_REVIEW', { productReview });
 
       return productReview;
     },
@@ -192,7 +210,7 @@ export const configureProductReviewsModule = async ({
 
           const updatedProductReview = await ProductReviews.findOne(selector, {});
 
-          emit('PRODUCT_REVIEW_ADD_VOTE', {
+          await emit('PRODUCT_REVIEW_ADD_VOTE', {
             productReview: updatedProductReview,
           });
 
@@ -216,7 +234,7 @@ export const configureProductReviewsModule = async ({
 
         const productReview = await ProductReviews.findOne(selector, {});
 
-        emit('PRODUCT_REMOVE_REVIEW_VOTE', {
+        await emit('PRODUCT_REMOVE_REVIEW_VOTE', {
           productReviewId,
           userId,
           type,

@@ -31,7 +31,7 @@ export default async (
   { children, authorId, assortmentId: parentAssortmentId },
   unchainedAPI: Context,
 ) => {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const assortmentLinkIds = await Promise.all(
     children.map(async ({ assortmentId: childAssortmentId, ...childrenRest }) => {
       const tags = convertTagsToLowerCase(childrenRest?.tags);
@@ -54,6 +54,5 @@ export default async (
       parentAssortmentId,
     },
     { skipInvalidation: true },
-    userId,
   );
 };

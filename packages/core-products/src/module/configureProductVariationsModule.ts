@@ -146,7 +146,7 @@ export const configureProductVariationsModule = async ({
         userId,
       );
 
-      emit('PRODUCT_CREATE_VARIATION', {
+      await emit('PRODUCT_CREATE_VARIATION', {
         productVariation,
       });
 
@@ -158,7 +158,7 @@ export const configureProductVariationsModule = async ({
 
       const deletedResult = await ProductVariations.deleteOne(selector);
 
-      emit('PRODUCT_REMOVE_VARIATION', {
+      await emit('PRODUCT_REMOVE_VARIATION', {
         productVariationId,
       });
 
@@ -168,7 +168,7 @@ export const configureProductVariationsModule = async ({
     deleteVariations: async ({ productId, excludedProductVariationIds }) => {
       const selector: Query = {
         productId,
-        _id: { $nin: excludedProductVariationIds },
+        _id: { $nin: excludedProductVariationIds || [] },
       };
       const deletedResult = await ProductVariations.deleteMany(selector);
       return deletedResult.deletedCount;
@@ -210,7 +210,7 @@ export const configureProductVariationsModule = async ({
         {},
       );
 
-      emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation, value });
+      await emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation, value });
 
       return productVariation;
     },
@@ -226,7 +226,7 @@ export const configureProductVariationsModule = async ({
         },
       });
 
-      emit('PRODUCT_REMOVE_VARIATION_OPTION', {
+      await emit('PRODUCT_REMOVE_VARIATION_OPTION', {
         productVariationId,
         productVariationOptionValue,
       });
@@ -279,7 +279,7 @@ export const configureProductVariationsModule = async ({
           ),
         );
 
-        emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
+        await emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
           productVariationId,
           productVariationOptionValue,
           productVariationTexts,

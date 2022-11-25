@@ -82,7 +82,7 @@ export const configureFilterTextsModule = ({
         texts.map(({ locale, ...text }) => upsertLocalizedText(params, locale, text, userId)),
       );
 
-      emit('FILTER_UPDATE_TEXTS', {
+      await emit('FILTER_UPDATE_TEXTS', {
         filterId: params.filterId,
         filterOptionValue: params.filterOptionValue || null,
         filterTexts,

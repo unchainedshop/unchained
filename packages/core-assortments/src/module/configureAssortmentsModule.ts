@@ -240,11 +240,11 @@ export const configureAssortmentsModule = async ({
     AssortmentProducts,
     invalidateCache,
   });
-
   const assortmentTexts = configureAssortmentTextsModule({
     Assortments,
     AssortmentTexts,
   });
+  const assortmentMedia = await configureAssortmentMediaModule({ db });
 
   /*
    * Assortment Module
@@ -354,13 +354,13 @@ export const configureAssortmentsModule = async ({
       }
 
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId));
-      emit('ASSORTMENT_CREATE', { assortment });
+      await emit('ASSORTMENT_CREATE', { assortment });
       return assortmentId;
     },
 
     update: async (_id, doc, userId, options) => {
       const assortmentId = await mutations.update(_id, doc, userId);
-      emit('ASSORTMENT_UPDATE', { assortmentId });
+      await emit('ASSORTMENT_UPDATE', { assortmentId });
 
       if (!options?.skipInvalidation) {
         invalidateCache({ assortmentIds: [assortmentId] });
@@ -368,20 +368,18 @@ export const configureAssortmentsModule = async ({
       return assortmentId;
     },
 
-    delete: async (assortmentId, options, userId) => {
+    delete: async (assortmentId, options) => {
       await assortmentLinks.deleteMany(
         {
           $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
         },
         { skipInvalidation: true },
-        userId,
       );
 
-      await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true }, userId);
-
-      await assortmentFilters.deleteMany({ assortmentId }, userId);
-
-      await assortmentTexts.deleteMany({ assortmentId }, userId);
+      await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true });
+      await assortmentFilters.deleteMany({ assortmentId });
+      await assortmentTexts.deleteMany({ assortmentId });
+      await assortmentMedia.deleteMediaFiles({ assortmentId });
 
       const deletedResult = await Assortments.deleteOne(generateDbFilterById(assortmentId));
 
@@ -390,7 +388,7 @@ export const configureAssortmentsModule = async ({
         await invalidateCache({}, { skipUpstreamTraversal: true });
       }
 
-      emit('ASSORTMENT_REMOVE', { assortmentId });
+      await emit('ASSORTMENT_REMOVE', { assortmentId });
 
       return deletedResult.deletedCount;
     },
@@ -415,7 +413,7 @@ export const configureAssortmentsModule = async ({
           updatedBy: userId,
         },
       });
-      emit('ASSORTMENT_SET_BASE', { assortmentId });
+      await emit('ASSORTMENT_SET_BASE', { assortmentId });
     },
 
     search: {
@@ -431,7 +429,7 @@ export const configureAssortmentsModule = async ({
     },
 
     // Sub entities
-    media: await configureAssortmentMediaModule({ db }),
+    media: assortmentMedia,
     filters: assortmentFilters,
     links: assortmentLinks,
     products: assortmentProducts,

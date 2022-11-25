@@ -51,27 +51,27 @@ describe('Test exports', () => {
     setEmitAdapter(TestEventEmitter);
   });
 
-  it('Check emit global page event', () => {
+  it('Check emit global page event', async () => {
     assert.isFunction(emit);
 
-    emit('PAGE_VIEW');
+    await emit('PAGE_VIEW');
   });
 
-  it('Check emit event', () => {
+  it('Check emit event', async () => {
     assert.isFunction(registerEvents);
 
     registerEvents(['TEST_EVENT', 'TEST_EVENT_2']);
-    emit('TEST_EVENT');
+    await emit('TEST_EVENT');
   });
 
-  it('Check emit non-existing event', (done) => {
-    emit('I_AM_NOT_REGISTERED_EVENT').then(() => {
-      assert(false, 'Non-existing event should not be emittable')
-      done()
-    }).catch(error => {
-      assert.equal(error.message, 'Event with I_AM_NOT_REGISTERED_EVENT is not registered')
-      done()
-    });
+  it('Check emit non-existing event', async () => {
+    try {
+      await emit('I_AM_NOT_REGISTERED_EVENT');
+    } catch (e) {
+      assert.equal(e.message, 'Event with I_AM_NOT_REGISTERED_EVENT is not registered')
+      return;
+    }
+    assert(false, 'Non-existing event should not be emittable')
   });
 
   

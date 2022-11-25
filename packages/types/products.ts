@@ -1,4 +1,4 @@
-import { Context, SortOption } from './api';
+import { Context, SortOption, UnchainedAPI } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
 import { Country } from './countries';
@@ -299,10 +299,7 @@ export type ProductsModule = {
   ) => Promise<Product>;
 
   delete: (productId: string, userId?: string) => Promise<number>;
-  deleteProductsPermanently: (params: {
-    productId?: string;
-    excludedProductIds?: Array<_ID>;
-  }) => Promise<number>;
+  deleteProductPermanently: (params: { productId: string }) => Promise<number>;
 
   update: (productId: string, doc: Update<Product>, userId: string) => Promise<string>;
 
@@ -389,7 +386,7 @@ export type ProductsModule = {
 
     makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;
 
-    deleteMany: (productId: string, userId?: string) => Promise<number>;
+    deleteMany: ({ productId }: { productId: string }) => Promise<number>;
   };
 };
 
@@ -397,7 +394,10 @@ export type ProductsModule = {
  * Services
  */
 
-export type RemoveProductService = (params: { productId: string }, context: Context) => Promise<boolean>;
+export type RemoveProductService = (
+  params: { productId: string; userId?: string },
+  context: UnchainedAPI,
+) => Promise<boolean>;
 
 export interface ProductServices {
   removeProduct: RemoveProductService;

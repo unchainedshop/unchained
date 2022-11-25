@@ -64,7 +64,7 @@ export const configureCurrenciesModule = async ({
         { ...doc, isoCode: doc.isoCode.toUpperCase(), isActive: true },
         userId,
       );
-      emit('CURRENCY_CREATE', { currencyId });
+      await emit('CURRENCY_CREATE', { currencyId });
       return currencyId;
     },
 
@@ -77,13 +77,13 @@ export const configureCurrenciesModule = async ({
         },
         userId,
       );
-      emit('CURRENCY_UPDATE', { currencyId });
+      await emit('CURRENCY_UPDATE', { currencyId });
       return currencyId;
     },
 
     delete: async (currencyId, userId) => {
       const deletedCount = await mutations.delete(currencyId, userId);
-      emit('CURRENCY_REMOVE', { currencyId });
+      await emit('CURRENCY_REMOVE', { currencyId });
       return deletedCount;
     },
 

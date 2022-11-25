@@ -15,8 +15,8 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { AssortmentMediaCollection } from '../db/AssortmentMediasCollection';
-import { AssortmentMediasSchema } from '../db/AssortmentMediasSchema';
+import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection';
+import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema';
 
 const { Locale } = localePkg;
 
@@ -42,11 +42,11 @@ export const configureAssortmentMediaModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<AssortmentMediaModule> => {
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
 
-  const { AssortmentMedias, AssortmentMediaTexts } = await AssortmentMediaCollection(db);
+  const { AssortmentMedia, AssortmentMediaTexts } = await AssortmentMediaCollection(db);
 
   const mutations = generateDbMutations<AssortmentMedia>(
-    AssortmentMedias,
-    AssortmentMediasSchema,
+    AssortmentMedia,
+    AssortmentMediaSchema,
   ) as ModuleMutations<AssortmentMedia>;
 
   const upsertLocalizedText: AssortmentMediaModule['texts']['upsertLocalizedText'] = async (
@@ -88,7 +88,7 @@ export const configureAssortmentMediaModule = async ({
   return {
     // Queries
     findAssortmentMedia: async ({ assortmentMediaId }) => {
-      return AssortmentMedias.findOne(generateDbFilterById(assortmentMediaId), {});
+      return AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
     },
 
     findAssortmentMedias: async ({ assortmentId, tags, offset, limit }, options) => {
@@ -97,7 +97,7 @@ export const configureAssortmentMediaModule = async ({
         selector.tags = { $all: tags };
       }
 
-      const mediaList = AssortmentMedias.find(selector, {
+      const mediaList = AssortmentMedia.find(selector, {
         skip: offset,
         limit,
         sort: { sortKey: 1 },
@@ -113,7 +113,7 @@ export const configureAssortmentMediaModule = async ({
 
       if (!sortKey) {
         // Get next sort key
-        const lastAssortmentMedia = (await AssortmentMedias.findOne(
+        const lastAssortmentMedia = (await AssortmentMedia.findOne(
           {
             assortmentId: doc.assortmentId,
           },
@@ -134,12 +134,9 @@ export const configureAssortmentMediaModule = async ({
         userId,
       );
 
-      const assortmentMedia = await AssortmentMedias.findOne(
-        generateDbFilterById(assortmentMediaId),
-        {},
-      );
+      const assortmentMedia = await AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
 
-      emit('ASSORTMENT_ADD_MEDIA', {
+      await emit('ASSORTMENT_ADD_MEDIA', {
         assortmentMedia,
       });
 
@@ -149,9 +146,11 @@ export const configureAssortmentMediaModule = async ({
     delete: async (assortmentMediaId) => {
       const selector = generateDbFilterById(assortmentMediaId);
 
-      const deletedResult = await AssortmentMedias.deleteOne(selector);
+      await AssortmentMediaTexts.deleteMany({ assortmentMediaId });
 
-      emit('ASSORTMENT_REMOVE_MEDIA', {
+      const deletedResult = await AssortmentMedia.deleteOne(selector);
+
+      await emit('ASSORTMENT_REMOVE_MEDIA', {
         assortmentMediaId,
       });
 
@@ -169,17 +168,21 @@ export const configureAssortmentMediaModule = async ({
         selector._id = { $nin: excludedAssortmentMediaIds };
       }
 
-      const ids = await AssortmentMedias.find(selector, { projection: { _id: true } })
+      const ids = await AssortmentMedia.find(selector, { projection: { _id: true } })
         .map((m) => m._id)
         .toArray();
 
-      const deletedResult = await AssortmentMedias.deleteMany(selector);
+      await AssortmentMediaTexts.deleteMany({ assortmentMediaId: { $in: ids } });
 
-      ids.forEach((assortmentMediaId) => {
-        emit('ASSORTMENT_REMOVE_MEDIA', {
-          assortmentMediaId,
-        });
-      });
+      const deletedResult = await AssortmentMedia.deleteMany(selector);
+
+      await Promise.all(
+        ids.map(async (assortmentMediaId) =>
+          emit('ASSORTMENT_REMOVE_MEDIA', {
+            assortmentMediaId,
+          }),
+        ),
+      );
 
       return deletedResult.deletedCount;
     },
@@ -188,14 +191,14 @@ export const configureAssortmentMediaModule = async ({
     update: async (assortmentMediaId, doc) => {
       const selector = generateDbFilterById(assortmentMediaId);
       const modifier = { $set: doc };
-      await AssortmentMedias.updateOne(selector, modifier);
-      return AssortmentMedias.findOne(selector, {});
+      await AssortmentMedia.updateOne(selector, modifier);
+      return AssortmentMedia.findOne(selector, {});
     },
 
     updateManualOrder: async ({ sortKeys }, userId) => {
       const changedAssortmentMediaIds = await Promise.all(
         sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
-          await AssortmentMedias.updateOne(generateDbFilterById(assortmentMediaId), {
+          await AssortmentMedia.updateOne(generateDbFilterById(assortmentMediaId), {
             $set: {
               sortKey: sortKey + 1,
               updated: new Date(),
@@ -207,11 +210,11 @@ export const configureAssortmentMediaModule = async ({
         }),
       );
 
-      const assortmentMedias = await AssortmentMedias.find({
+      const assortmentMedias = await AssortmentMedia.find({
         _id: { $in: changedAssortmentMediaIds },
       }).toArray();
 
-      emit('ASSORTMENT_REORDER_MEDIA', { assortmentMedias });
+      await emit('ASSORTMENT_REORDER_MEDIA', { assortmentMedias });
 
       return assortmentMedias;
     },
@@ -246,7 +249,7 @@ export const configureAssortmentMediaModule = async ({
           ),
         );
 
-        emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
+        await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
           assortmentMediaId,
           mediaTexts,
         });
