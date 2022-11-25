@@ -149,6 +149,8 @@ export const configureAssortmentMediaModule = async ({
     delete: async (assortmentMediaId) => {
       const selector = generateDbFilterById(assortmentMediaId);
 
+      await AssortmentMediaTexts.deleteMany({ assortmentMediaId });
+
       const deletedResult = await AssortmentMedias.deleteOne(selector);
 
       emit('ASSORTMENT_REMOVE_MEDIA', {
@@ -172,6 +174,8 @@ export const configureAssortmentMediaModule = async ({
       const ids = await AssortmentMedias.find(selector, { projection: { _id: true } })
         .map((m) => m._id)
         .toArray();
+
+      await AssortmentMediaTexts.deleteMany({ assortmentMediaId: { $in: ids } });
 
       const deletedResult = await AssortmentMedias.deleteMany(selector);
 
