@@ -53,7 +53,8 @@ export const configureFilesModule = async ({
     },
 
     deleteMany: async (fileIds) => {
-      await Files.deleteMany({ _id: { $in: fileIds } });
+      const deletionResult = await Files.deleteMany({ _id: { $in: fileIds } });
+      return deletionResult.deletedCount;
     },
 
     findFilesByMetaData: async ({ meta }, options) => {

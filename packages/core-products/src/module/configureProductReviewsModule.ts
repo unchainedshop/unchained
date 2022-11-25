@@ -132,6 +132,22 @@ export const configureProductReviewsModule = async ({
       return deletedCount;
     },
 
+    deleteMany: async (selector) => {
+      const productReviews = await ProductReviews.find(selector, {
+        projection: { _id: 1 },
+      }).toArray();
+
+      const deletionResult = await ProductReviews.deleteMany(selector);
+
+      productReviews.forEach((assortmentFilter) => {
+        emit('PRODUCT_REMOVE_REVIEW', {
+          assortmentFilterId: assortmentFilter._id,
+        });
+      });
+
+      return deletionResult.deletedCount;
+    },
+
     update: async (productReviewId, doc, userId) => {
       await mutations.update(productReviewId, doc, userId);
 

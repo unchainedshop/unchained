@@ -38,7 +38,7 @@ export type FilesModule = ModuleMutations<File> & {
 
   findFiles: (selector: any) => Promise<Array<File>>;
 
-  deleteMany: (fileIds: Array<_ID>) => Promise<void>;
+  deleteMany: (fileIds: Array<_ID>) => Promise<number>;
 };
 
 /*

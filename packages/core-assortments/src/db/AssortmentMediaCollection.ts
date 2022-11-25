@@ -3,11 +3,11 @@ import { Db } from '@unchainedshop/types/common';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const AssortmentMediaCollection = async (db: Db) => {
-  const AssortmentMedias = db.collection<AssortmentMedia>('assortment_media');
+  const AssortmentMedia = db.collection<AssortmentMedia>('assortment_media');
   const AssortmentMediaTexts = db.collection<AssortmentMediaText>('assortment_media_texts');
 
   // Assortment Indexes
-  await buildDbIndexes(AssortmentMedias, [
+  await buildDbIndexes(AssortmentMedia, [
     { index: { mediaId: 1 } },
     { index: { assortmentId: 1 } },
     { index: { sortKey: 1 } },
@@ -21,7 +21,7 @@ export const AssortmentMediaCollection = async (db: Db) => {
   ]);
 
   return {
-    AssortmentMedias,
+    AssortmentMedia,
     AssortmentMediaTexts,
   };
 };

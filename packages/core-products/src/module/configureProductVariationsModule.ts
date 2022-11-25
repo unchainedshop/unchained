@@ -168,7 +168,7 @@ export const configureProductVariationsModule = async ({
     deleteVariations: async ({ productId, excludedProductVariationIds }) => {
       const selector: Query = {
         productId,
-        _id: { $nin: excludedProductVariationIds },
+        _id: { $nin: excludedProductVariationIds || [] },
       };
       const deletedResult = await ProductVariations.deleteMany(selector);
       return deletedResult.deletedCount;

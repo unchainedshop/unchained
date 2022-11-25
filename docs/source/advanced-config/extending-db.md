@@ -69,7 +69,7 @@ Below are all of the built in collections  schema definitions and import locatio
 | Schema                           | Import location                                                   |
 | :--------------------------------------- | :---------------------------------------------------------- |
 | **AssortmentsSchema**, **AssortmentLinksSchema**, **AssortmentTextsSchema**, **AssortmentProductsSchema** , **AssortmentFiltersSchema**  | `@unchainedshop/core-assortments/src/db/AssortmentsSchema` |
-| **AssortmentMediasSchema**, **AssortmentMediaTextsSchema** | `@unchainedshop/core-assortments/src/db/AssortmentMediasSchema` |
+| **AssortmentMediaSchema**, **AssortmentMediaTextsSchema** | `@unchainedshop/core-assortments/src/db/AssortmentMediaSchema` |
 | **BookmarkSchema** | `@unchainedshop/core-bookmarks/src/db/BookmarkSchema` |
 | **CountriesSchema** | `@unchainedshop/core-countries/src/db/CountriesSchema` |
 | **CurrenciesSchema** | `@unchainedshop/core-currencies/src/db/CurrenciesSchema` |

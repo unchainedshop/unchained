@@ -269,10 +269,7 @@ export type ProductsModule = {
   ) => Promise<Product>;
 
   delete: (productId: string, userId?: string) => Promise<number>;
-  deleteProductsPermanently: (params: {
-    productId?: string;
-    excludedProductIds?: Array<_ID>;
-  }) => Promise<number>;
+  deleteProductPermanently: (params: { productId: string }) => Promise<number>;
 
   update: (productId: string, doc: Update<Product>, userId: string) => Promise<string>;
 
@@ -359,7 +356,7 @@ export type ProductsModule = {
 
     makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;
 
-    deleteMany: (productId: string, userId?: string) => Promise<number>;
+    deleteMany: ({ productId }: { productId: string }) => Promise<number>;
   };
 };
 

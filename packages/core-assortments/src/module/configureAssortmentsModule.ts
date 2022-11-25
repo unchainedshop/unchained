@@ -240,11 +240,11 @@ export const configureAssortmentsModule = async ({
     AssortmentProducts,
     invalidateCache,
   });
-
   const assortmentTexts = configureAssortmentTextsModule({
     Assortments,
     AssortmentTexts,
   });
+  const assortmentMedia = await configureAssortmentMediaModule({ db });
 
   /*
    * Assortment Module
@@ -368,20 +368,18 @@ export const configureAssortmentsModule = async ({
       return assortmentId;
     },
 
-    delete: async (assortmentId, options, userId) => {
+    delete: async (assortmentId, options) => {
       await assortmentLinks.deleteMany(
         {
           $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
         },
         { skipInvalidation: true },
-        userId,
       );
 
-      await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true }, userId);
-
-      await assortmentFilters.deleteMany({ assortmentId }, userId);
-
-      await assortmentTexts.deleteMany({ assortmentId }, userId);
+      await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true });
+      await assortmentFilters.deleteMany({ assortmentId });
+      await assortmentTexts.deleteMany({ assortmentId });
+      await assortmentMedia.deleteMediaFiles({ assortmentId });
 
       const deletedResult = await Assortments.deleteOne(generateDbFilterById(assortmentId));
 
@@ -431,7 +429,7 @@ export const configureAssortmentsModule = async ({
     },
 
     // Sub entities
-    media: await configureAssortmentMediaModule({ db }),
+    media: assortmentMedia,
     filters: assortmentFilters,
     links: assortmentLinks,
     products: assortmentProducts,

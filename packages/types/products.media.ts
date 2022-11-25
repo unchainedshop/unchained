@@ -41,7 +41,7 @@ export type ProductMediaModule = {
   delete: (productMediaId: string, userId?: string) => Promise<number>;
   deleteMediaFiles: (params: {
     productId?: string;
-    excludedProdcutIds?: Array<_ID>;
+    excludedProductIds?: Array<_ID>;
     excludedProductMediaIds?: Array<_ID>;
   }) => Promise<number>;
 

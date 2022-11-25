@@ -107,7 +107,7 @@ export const configureAssortmentFiltersModule = ({
         projection: { _id: 1 },
       }).toArray();
 
-      await AssortmentFilters.deleteMany(selector);
+      const deletionResult = await AssortmentFilters.deleteMany(selector);
 
       assortmentFilters.forEach((assortmentFilter) => {
         emit('ASSORTMENT_REMOVE_FILTER', {
@@ -115,7 +115,7 @@ export const configureAssortmentFiltersModule = ({
         });
       });
 
-      return assortmentFilters;
+      return deletionResult.deletedCount;
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package

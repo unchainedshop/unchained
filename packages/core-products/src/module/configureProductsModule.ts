@@ -98,13 +98,26 @@ export const configureProductsModule = async ({
 
   const mutations = generateDbMutations<Product>(Products, ProductsSchema) as ModuleMutations<Product>;
 
-  const deleteProductsPermanently: ProductsModule['deleteProductsPermanently'] = async ({
-    productId,
-    excludedProductIds,
-  }) => {
-    const selector: Query = productId
-      ? generateDbFilterById(productId, { status: ProductStatus.DELETED })
-      : { _id: { $nin: excludedProductIds } };
+  /*
+   * Product sub entities
+   */
+
+  const productTexts = configureProductTextsModule({
+    Products,
+    ProductTexts,
+  });
+
+  const productMedia = await configureProductMediaModule({ db });
+  const productReviews = await configureProductReviewsModule({ db });
+  const productVariations = await configureProductVariationsModule({ db });
+
+  const deleteProductPermanently: ProductsModule['deleteProductPermanently'] = async ({ productId }) => {
+    const selector: Query = generateDbFilterById(productId, { status: ProductStatus.DELETED });
+
+    await productMedia.deleteMediaFiles({ productId });
+    await productTexts.deleteMany({ productId });
+    await productReviews.deleteMany({ productId });
+    await productVariations.deleteVariations({ productId });
 
     const deletedResult = await Products.deleteOne(selector);
 
@@ -173,15 +186,6 @@ export const configureProductsModule = async ({
     };
     return Products.find(selector).toArray();
   };
-
-  /*
-   * Product sub entities
-   */
-
-  const productTexts = configureProductTextsModule({
-    Products,
-    ProductTexts,
-  });
 
   /*
    * Product
@@ -319,10 +323,9 @@ export const configureProductsModule = async ({
       if (productData._id) {
         // Remove deleted product by _id before creating a new one.
         // TODO: Fix
-        // productTexts.removeMany(productData._id);
         // productReviews.removeMany(productData._id);
 
-        await deleteProductsPermanently({
+        await deleteProductPermanently({
           productId: productData._id as string,
         });
       }
@@ -386,7 +389,7 @@ export const configureProductsModule = async ({
       return updatedResult.modifiedCount;
     },
 
-    deleteProductsPermanently,
+    deleteProductPermanently,
 
     publish: publishProduct,
     unpublish: unpublishProduct,
@@ -488,9 +491,9 @@ export const configureProductsModule = async ({
       },
     },
 
-    media: await configureProductMediaModule({ db }),
-    reviews: await configureProductReviewsModule({ db }),
-    variations: await configureProductVariationsModule({ db }),
+    media: productMedia,
+    reviews: productReviews,
+    variations: productVariations,
 
     search: {
       buildActiveDraftStatusFilter: () => ({

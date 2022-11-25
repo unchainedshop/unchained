@@ -315,7 +315,7 @@ export const ProductVariations = [
 ];
 
 export const ProxySimpleProduct1 = {
-  _id: 'proxy-simple-prodcut-1',
+  _id: 'proxy-simple-product-1',
   created: new Date('2021-02-24T14:03:28.905Z'),
   type: 'SIMPLE_PRODUCT',
   status: 'ACTIVE',

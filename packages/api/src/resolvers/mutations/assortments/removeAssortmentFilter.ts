@@ -18,7 +18,7 @@ export default async function removeAssortmentFilter(
 
   if (!assortmentFilter) throw new AssortmentFilterNotFoundError({ assortmentFilterId });
 
-  await modules.assortments.filters.delete(assortmentFilterId, userId);
+  await modules.assortments.filters.delete(assortmentFilterId);
 
   return assortmentFilter;
 }

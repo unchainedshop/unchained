@@ -356,7 +356,7 @@ describe('Products', () => {
           productId: SimpleProductDraft._id,
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual('ProductWrongStatusError');
+      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
     });
 
     it('return not found error when passed non-existing product id', async () => {

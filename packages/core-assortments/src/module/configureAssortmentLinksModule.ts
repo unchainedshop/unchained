@@ -144,9 +144,15 @@ export const configureAssortmentLinksModule = ({
     },
 
     deleteMany: async (selector, options) => {
-      const assortmentLinks = await AssortmentLinks.find(selector, {}).toArray();
+      const assortmentLinks = await AssortmentLinks.find(selector, {
+        projection: {
+          _id: 1,
+          childAssortmentId: 1,
+          parentAssortmentId: 1,
+        },
+      }).toArray();
 
-      await AssortmentLinks.deleteMany(selector);
+      const deletionResult = await AssortmentLinks.deleteMany(selector);
       assortmentLinks.forEach((assortmentLink) => {
         emit('ASSORTMENT_REMOVE_LINK', {
           assortmentLinkId: assortmentLink._id,
@@ -162,7 +168,7 @@ export const configureAssortmentLinksModule = ({
         });
       }
 
-      return assortmentLinks;
+      return deletionResult.deletedCount;
     },
 
     updateManualOrder: async ({ sortKeys }, options, userId) => {

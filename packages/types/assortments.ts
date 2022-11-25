@@ -117,11 +117,7 @@ export type AssortmentsModule = {
     options?: { skipInvalidation?: boolean },
   ) => Promise<string>;
 
-  delete: (
-    assortmentId: string,
-    options?: { skipInvalidation?: boolean },
-    userId?: string,
-  ) => Promise<number>;
+  delete: (assortmentId: string, options?: { skipInvalidation?: boolean }) => Promise<number>;
 
   invalidateCache: (params: AssortmentQuery, options?: { skipUpstreamTraversal: boolean }) => void;
 
@@ -153,8 +149,8 @@ export type AssortmentsModule = {
     // Mutations
     create: (doc: AssortmentFilter, userId?: string) => Promise<AssortmentFilter>;
 
-    delete: (assortmentFilterId: string, userId?: string) => Promise<Array<{ _id: _ID }>>;
-    deleteMany: (selector: Filter<AssortmentFilter>, userId?: string) => Promise<Array<{ _id: _ID }>>;
+    delete: (assortmentFilterId: string) => Promise<Array<{ _id: _ID }>>;
+    deleteMany: (selector: Filter<AssortmentFilter>) => Promise<number>;
 
     update: (assortmentFilterId: string, doc: AssortmentFilter) => Promise<AssortmentFilter>;
 
@@ -201,14 +197,12 @@ export type AssortmentsModule = {
     delete: (
       assortmentLinkId: string,
       options?: { skipInvalidation?: boolean },
-      userId?: string,
     ) => Promise<AssortmentLink>;
 
     deleteMany: (
       selector: Filter<AssortmentLink>,
       options?: { skipInvalidation?: boolean },
-      userId?: string,
-    ) => Promise<Array<AssortmentLink>>;
+    ) => Promise<number>;
 
     update: (
       assortmentLinkId: string,
@@ -262,14 +256,12 @@ export type AssortmentsModule = {
     delete: (
       assortmentProductId: string,
       options?: { skipInvalidation?: boolean },
-      userId?: string,
     ) => Promise<Array<{ _id: _ID; assortmentId: string }>>;
 
     deleteMany: (
       selector: Filter<AssortmentProduct>,
       options?: { skipInvalidation?: boolean },
-      userId?: string,
-    ) => Promise<Array<{ _id: _ID; assortmentId: string }>>;
+    ) => Promise<number>;
 
     update: (
       assortmentProductId: string,
@@ -331,7 +323,7 @@ export type AssortmentsModule = {
 
     makeSlug: (data: { slug?: string; title: string; assortmentId: string }) => Promise<string>;
 
-    deleteMany: ({ assortmentId }: { assortmentId: string }, userId?: string) => Promise<number>;
+    deleteMany: ({ assortmentId }: { assortmentId: string }) => Promise<number>;
   };
 };
 

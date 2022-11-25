@@ -164,7 +164,7 @@ export const configureProductTextsModule = ({
     upsertLocalizedText,
     makeSlug,
 
-    deleteMany: async (productId) => {
+    deleteMany: async ({ productId }) => {
       const deletedResult = await ProductTexts.deleteMany({ productId });
 
       return deletedResult.deletedCount;

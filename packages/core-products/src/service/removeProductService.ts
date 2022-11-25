@@ -10,7 +10,7 @@ export const removeProductService: RemoveProductService = async ({ productId, us
     case null:
     case ProductStatus.DRAFT:
       await modules.bookmarks.deleteByProductId(productId);
-      await modules.assortments.products.delete(productId, {}, userId);
+      await modules.assortments.products.delete(productId, {});
       await modules.products.delete(productId, userId);
       break;
     default:

@@ -1,7 +1,7 @@
 import { Schemas } from '@unchainedshop/utils';
 import SimpleSchema from 'simpl-schema';
 
-export const AssortmentMediasSchema = new SimpleSchema(
+export const AssortmentMediaSchema = new SimpleSchema(
   {
     mediaId: { type: String, required: true },
     assortmentId: { type: String, required: true },
