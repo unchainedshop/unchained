@@ -9,6 +9,7 @@ export const removeProductService: RemoveProductService = async ({ productId, us
     // falls through
     case null:
     case ProductStatus.DRAFT:
+      await modules.bookmarks.deleteByProductId(productId);
       await modules.assortments.products.delete(productId, {}, userId);
       await modules.products.delete(productId, userId);
       break;
