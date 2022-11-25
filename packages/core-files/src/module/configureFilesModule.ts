@@ -36,7 +36,7 @@ export const configureFilesModule = async ({
           // else try to fix by using ROOT_URL env
           const finalURL = new URL(transformedURLString, process.env.ROOT_URL);
           return finalURL.href;
-        } catch (err) {
+        } catch (e2) {
           // else return the transformed string because it's not an URL
           return transformedURLString;
         }
