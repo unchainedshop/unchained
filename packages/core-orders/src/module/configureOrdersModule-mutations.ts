@@ -220,8 +220,8 @@ export const configureOrderModuleMutations = ({
       });
 
       if (result.modifiedCount) {
-        const order = await updateCalculation(orderId, requestContext);
-        await emit('ORDER_UPDATE', { order, field: 'context' });
+        const updatedOrder = await updateCalculation(orderId, requestContext);
+        await emit('ORDER_UPDATE', { order: updatedOrder, field: 'context' });
         return true;
       }
       return false;

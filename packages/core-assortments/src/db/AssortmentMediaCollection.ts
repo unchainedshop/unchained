@@ -1,9 +1,12 @@
-import { AssortmentMedia, AssortmentMediaText } from '@unchainedshop/types/assortments.media';
+import {
+  AssortmentMedia as AssortmentMediaType,
+  AssortmentMediaText,
+} from '@unchainedshop/types/assortments.media';
 import { Db } from '@unchainedshop/types/common';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const AssortmentMediaCollection = async (db: Db) => {
-  const AssortmentMedia = db.collection<AssortmentMedia>('assortment_media');
+  const AssortmentMedia = db.collection<AssortmentMediaType>('assortment_media');
   const AssortmentMediaTexts = db.collection<AssortmentMediaText>('assortment_media_texts');
 
   // Assortment Indexes

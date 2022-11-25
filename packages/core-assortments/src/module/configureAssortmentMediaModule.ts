@@ -1,5 +1,5 @@
 import {
-  AssortmentMedia,
+  AssortmentMedia as AssortmentMediaType,
   AssortmentMediaModule,
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media';
@@ -44,10 +44,10 @@ export const configureAssortmentMediaModule = async ({
 
   const { AssortmentMedia, AssortmentMediaTexts } = await AssortmentMediaCollection(db);
 
-  const mutations = generateDbMutations<AssortmentMedia>(
+  const mutations = generateDbMutations<AssortmentMediaType>(
     AssortmentMedia,
     AssortmentMediaSchema,
-  ) as ModuleMutations<AssortmentMedia>;
+  ) as ModuleMutations<AssortmentMediaType>;
 
   const upsertLocalizedText: AssortmentMediaModule['texts']['upsertLocalizedText'] = async (
     assortmentMediaId,
@@ -108,7 +108,7 @@ export const configureAssortmentMediaModule = async ({
     },
 
     // Mutations
-    create: async (doc: AssortmentMedia, userId) => {
+    create: async (doc: AssortmentMediaType, userId) => {
       let { sortKey } = doc;
 
       if (!sortKey) {
