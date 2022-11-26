@@ -2,6 +2,11 @@ import { UserData } from '@unchainedshop/types/accounts';
 import { Context, Root } from '@unchainedshop/types/api';
 import { log } from '@unchainedshop/logger';
 import { hashPassword } from '../../../hashPassword';
+import {
+  EmailAlreadyExistsError,
+  UsernameAlreadyExistsError,
+  UsernameOrEmailRequiredError,
+} from '../../../errors';
 
 export default async function createUser(root: Root, params: UserData, context: Context) {
   const { modules, userId } = context;
@@ -25,10 +30,19 @@ export default async function createUser(root: Root, params: UserData, context: 
       params.username,
       params.webAuthnPublicKeyCredentials,
     ));
-
-  const newUserId = await modules.accounts.createUser(mappedUser, {
-    skipPasswordEnrollment: !!webAuthnService,
-  });
+  let newUserId;
+  try {
+    newUserId = await modules.accounts.createUser(mappedUser, {
+      skipPasswordEnrollment: !!webAuthnService,
+    });
+  } catch (e) {
+    if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({ email: params?.email });
+    else if (e.code === 'UsernameAlreadyExists')
+      throw new UsernameAlreadyExistsError({ username: params?.username });
+    else if (e.code === 'UsernameOrEmailRequired')
+      throw new UsernameOrEmailRequiredError({ username: params?.username });
+    else throw e;
+  }
 
   if (newUserId && webAuthnService) {
     await modules.users.updateUser(

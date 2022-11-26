@@ -207,3 +207,18 @@ export const CyclicAssortmentLinkNotSupportedError = createError(
   'CyclicAssortmentLinkNotSupported',
   'Cyclic assortment link detected, make sure child assortment is not assigned as a parent on the assortment graph',
 );
+
+export const EmailAlreadyExistsError = createError(
+  'EmailAlreadyExists',
+  'Email already exist in the database',
+);
+
+export const UsernameAlreadyExistsError = createError(
+  'UsernameAlreadyExists',
+  'Username already exist in the database',
+);
+
+export const UsernameOrEmailRequiredError = createError(
+  'UsernameOrEmailRequired​',
+  'Will throw if no username or email is provided.',
+);
