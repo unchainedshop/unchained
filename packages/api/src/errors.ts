@@ -234,6 +234,23 @@ export const TwoFactorAlreadySetError = createError('TwoFactorAlreadySet', '2FA 
 
 export const TwoFactorNotSetError = createError('TwoFactorNotSet', '2FA not set for user');
 
-export const IncorrectPasswordError = createError('IncorrectPassword', 'Incorrect password provided');
+export const IncorrectPasswordError = createError('IncorrectPassword', 'Incorrect credential provided');
 
-export const InvalidCredentialsError = createError('InvalidCredentials', 'Incorrect password provided');
+export const InvalidCredentialsError = createError(
+  'InvalidCredentials',
+  'Incorrect credential provided',
+);
+
+export const InvalidResetTokenError = createError('InvalidResetTokenError', 'Token validation failed');
+
+export const NoEmailSetError = createError('NoEmailSet', 'User has no email set');
+
+export const ResetPasswordLinkExpiredError = createError(
+  'ResetPasswordLinkExpired',
+  'Token does not exist or is expired',
+);
+
+export const ResetPasswordLinkUnknownAddressError = createError(
+  'ResetPasswordLinkUnknownAddress',
+  'Valid token but no email address found for the entry',
+);

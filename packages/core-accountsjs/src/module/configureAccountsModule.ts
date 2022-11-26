@@ -1,5 +1,5 @@
 import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
-import { log, LogLevel } from '@unchainedshop/logger';
+
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleInput } from '@unchainedshop/types/core';
 import { accountsSettings } from '../accounts-settings';
@@ -182,17 +182,8 @@ export const configureAccountsModule = async ({
       return true;
     },
     sendResetPasswordEmail: async (email) => {
-      try {
-        await accountsPassword.sendResetPasswordEmail(email);
-        return true;
-      } catch (error) {
-        log('Error while sending reset password', {
-          level: LogLevel.Error,
-          ...error,
-          email,
-        });
-        return false;
-      }
+      await accountsPassword.sendResetPasswordEmail(email);
+      return true;
     },
 
     resetPassword: async ({ newPlainPassword, token }, context) => {
