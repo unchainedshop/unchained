@@ -219,6 +219,15 @@ export const UsernameAlreadyExistsError = createError(
 );
 
 export const UsernameOrEmailRequiredError = createError(
-  'UsernameOrEmailRequired​',
-  'Will throw if no username or email is provided.',
+  'UsernameOrEmailRequired',
+  'No username or email is provided.',
 );
+
+export const TwoFactorCodeDidNotMatchError = createError(
+  'TwoFactorCodeDidNotMatch',
+  "2FA code didn't match",
+);
+
+export const TwoFactorAlreadySetError = createError('TwoFactorAlreadySet', '2FA already set for user');
+
+export const TwoFactorNotSetError = createError('TwoFactorNotSet', '2FA not set for user');
