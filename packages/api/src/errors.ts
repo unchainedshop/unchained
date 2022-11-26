@@ -228,6 +228,12 @@ export const TwoFactorCodeDidNotMatchError = createError(
   "2FA code didn't match",
 );
 
+export const TwoFactorCodeRequiredError = createError('TwoFactorCodeRequired', '2FA code required');
+
 export const TwoFactorAlreadySetError = createError('TwoFactorAlreadySet', '2FA already set for user');
 
 export const TwoFactorNotSetError = createError('TwoFactorNotSet', '2FA not set for user');
+
+export const IncorrectPasswordError = createError('IncorrectPassword', 'Incorrect password provided');
+
+export const InvalidCredentialsError = createError('InvalidCredentials', 'Incorrect password provided');

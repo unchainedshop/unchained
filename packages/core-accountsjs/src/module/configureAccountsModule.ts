@@ -178,16 +178,8 @@ export const configureAccountsModule = async ({
       const newPassword = hashPassword(newPlainPassword);
       const oldPassword = hashPassword(oldPlainPassword);
 
-      try {
-        await accountsPassword.changePassword(userId, oldPassword, newPassword);
-        return true;
-      } catch (error: any) {
-        log('Error while changing password', {
-          level: LogLevel.Error,
-          ...error,
-        });
-        return false;
-      }
+      await accountsPassword.changePassword(userId, oldPassword, newPassword);
+      return true;
     },
     sendResetPasswordEmail: async (email) => {
       try {
