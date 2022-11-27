@@ -119,7 +119,7 @@ export type FiltersModule = {
     userId?: string,
   ) => Promise<string>;
 
-  delete: (filterId: string, userId?: string) => Promise<number>;
+  delete: (filterId: string) => Promise<number>;
 
   removeFilterOption: (
     params: {
@@ -174,7 +174,7 @@ export type FiltersModule = {
       userId?: string,
     ) => Promise<FilterText>;
 
-    deleteMany: (filterId: string, userId?: string) => Promise<number>;
+    deleteMany: (params: { filterId?: string; excludedFilterIds?: string[] }) => Promise<number>;
   };
 };
 

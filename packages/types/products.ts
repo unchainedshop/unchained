@@ -386,7 +386,12 @@ export type ProductsModule = {
 
     makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;
 
-    deleteMany: ({ productId }: { productId: string }) => Promise<number>;
+    deleteMany: ({
+      productId,
+    }: {
+      productId?: string;
+      excludedProductIds?: string[];
+    }) => Promise<number>;
   };
 };
 

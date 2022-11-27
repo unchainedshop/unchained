@@ -1,4 +1,4 @@
-import { Collection } from '@unchainedshop/types/common';
+import { Collection, Filter, FindOptions } from '@unchainedshop/types/common';
 import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -164,9 +164,14 @@ export const configureProductTextsModule = ({
     upsertLocalizedText,
     makeSlug,
 
-    deleteMany: async ({ productId }) => {
-      const deletedResult = await ProductTexts.deleteMany({ productId });
-
+    deleteMany: async ({ productId, excludedProductIds }) => {
+      const selector: Filter<ProductText> = {};
+      if (productId) {
+        selector.productId = productId;
+      } else if (excludedProductIds) {
+        selector.productId = { $nin: excludedProductIds };
+      }
+      const deletedResult = await ProductTexts.deleteMany(selector);
       return deletedResult.deletedCount;
     },
   };

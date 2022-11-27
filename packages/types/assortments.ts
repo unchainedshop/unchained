@@ -323,7 +323,12 @@ export type AssortmentsModule = {
 
     makeSlug: (data: { slug?: string; title: string; assortmentId: string }) => Promise<string>;
 
-    deleteMany: ({ assortmentId }: { assortmentId: string }) => Promise<number>;
+    deleteMany: ({
+      assortmentId,
+    }: {
+      assortmentId?: string;
+      excludedAssortmentIds?: string[];
+    }) => Promise<number>;
   };
 };
 

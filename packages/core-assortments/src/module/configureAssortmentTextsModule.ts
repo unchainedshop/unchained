@@ -1,5 +1,5 @@
 import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments';
-import { Collection } from '@unchainedshop/types/common';
+import { Collection, Filter } from '@unchainedshop/types/common';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -169,8 +169,14 @@ export const configureAssortmentTextsModule = ({
     upsertLocalizedText,
     makeSlug,
 
-    deleteMany: async ({ assortmentId }) => {
-      const deletedResult = await AssortmentTexts.deleteMany({ assortmentId });
+    deleteMany: async ({ assortmentId, excludedAssortmentIds }) => {
+      const selector: Filter<AssortmentText> = {};
+      if (assortmentId) {
+        selector.assortmentId = assortmentId;
+      } else if (excludedAssortmentIds) {
+        selector.assortmentId = { $nin: excludedAssortmentIds };
+      }
+      const deletedResult = await AssortmentTexts.deleteMany(selector);
 
       return deletedResult.deletedCount;
     },

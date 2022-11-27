@@ -93,9 +93,14 @@ export const configureFilterTextsModule = ({
 
     upsertLocalizedText,
 
-    deleteMany: async (filterId) => {
-      const deletedResult = await FilterTexts.deleteMany({ filterId });
-
+    deleteMany: async ({ filterId, excludedFilterIds }) => {
+      const selector: Filter<FilterText> = {};
+      if (filterId) {
+        selector.filterId = filterId;
+      } else if (excludedFilterIds) {
+        selector.filterId = { $nin: excludedFilterIds };
+      }
+      const deletedResult = await FilterTexts.deleteMany(selector);
       return deletedResult.deletedCount;
     },
   };

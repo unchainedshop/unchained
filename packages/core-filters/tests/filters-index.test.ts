@@ -73,7 +73,6 @@ describe('Test exports', () => {
 
     const deletedCount = await context.modules.filters.delete(
       filterId,
-      context as Context
     );
     assert.equal(deletedCount, 1);
     filterId = null;

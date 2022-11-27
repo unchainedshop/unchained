@@ -268,9 +268,9 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    delete: async (filterId, userId) => {
-      await filterTexts.deleteMany(filterId, userId);
-      const deletedCount = await mutations.delete(filterId, userId);
+    delete: async (filterId) => {
+      await filterTexts.deleteMany({ filterId });
+      const deletedCount = await mutations.delete(filterId);
       await emit('FILTER_REMOVE', { filterId });
       return deletedCount;
     },

@@ -4,8 +4,6 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:platform:zombie-killer');
 
-const mapId = (a: any) => a._id;
-
 export const ZombieKillerWorker: IWorkerAdapter<
   never,
   {
@@ -27,22 +25,40 @@ export const ZombieKillerWorker: IWorkerAdapter<
     try {
       const error = false;
 
-      // Remove unreferenced assortment media objects
+      // Remove unreferenced filter entities
+      const filters = await modules.filters.findFilters(
+        { includeInactive: true },
+        { projection: { _id: 1 } },
+      );
+      const filterIds = filters.map((a) => a._id);
+      const deletedFilterTextsCount = await modules.filters.texts.deleteMany({
+        excludedFilterIds: filterIds,
+      });
+
+      // Remove unreferenced assortment entities
       const assortments = await modules.assortments.findAssortments(
         { includeInactive: true, includeLeaves: true },
         { projection: { _id: 1 } },
       );
+      const assortmentIds = assortments.map((a) => a._id);
+      const deletedAssortmentTextsCount = await modules.assortments.texts.deleteMany({
+        excludedAssortmentIds: assortmentIds,
+      });
       const deletedAssortmentMediaCount = await modules.assortments.media.deleteMediaFiles({
-        excludedAssortmentIds: assortments.map(mapId),
+        excludedAssortmentIds: assortmentIds,
       });
 
-      // Remove unreferenced product media objects
+      // Remove unreferenced product entities
       const products = await modules.products.findProducts(
         { includeDrafts: true },
         { projection: { _id: 1 } },
       );
+      const productIds = products.map((a) => a._id);
+      const deletedProductTextsCount = await modules.products.texts.deleteMany({
+        excludedProductIds: productIds,
+      });
       const deletedProductMediaCount = await modules.products.media.deleteMediaFiles({
-        excludedProductIds: products.map(mapId),
+        excludedProductIds: productIds,
       });
 
       // Remove unreferenced files
@@ -55,13 +71,16 @@ export const ZombieKillerWorker: IWorkerAdapter<
         { projection: { mediaId: 1 } },
       );
 
+      // modules.products.media.texts.deleteMany();
+      // modules.assortments.media.texts.deleteMany();
+
       const allFileIdsLinked = [...productMedia, ...assortmentMedia].map((l) => l?.mediaId);
       const allFileIdsRelevant = (
         await modules.files.findFiles(
           { path: { $in: ['product-media', 'assortment-media'] } },
           { projection: { _id: 1 } },
         )
-      ).map(mapId);
+      ).map((a) => a._id);
 
       const fileIdsToRemove = allFileIdsRelevant.filter((fileId) => {
         return !allFileIdsLinked.includes(fileId);
@@ -81,8 +100,11 @@ export const ZombieKillerWorker: IWorkerAdapter<
 
       // Return delete count
       const result = {
+        deletedFilterTextsCount,
         deletedProductMediaCount,
+        deletedProductTextsCount,
         deletedAssortmentMediaCount,
+        deletedAssortmentTextsCount,
         deletedFilesCount,
       };
 
