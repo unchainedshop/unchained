@@ -2,6 +2,8 @@ import { AssortmentLink, AssortmentsModule } from '@unchainedshop/types/assortme
 import { Collection } from '@unchainedshop/types/common';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
+import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths';
+import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',
@@ -70,6 +72,16 @@ export const configureAssortmentLinksModule = ({
         created: new Date(),
         createdBy: userId,
       };
+
+      const assortmentLinksPath = await walkUpFromAssortment({
+        resolveAssortmentLink: resolveAssortmentLinkFromDatabase(AssortmentLinks),
+        assortmentId: parentAssortmentId,
+      });
+      assortmentLinksPath
+        .flatMap(({ links }) => links)
+        .forEach(({ parentIds }) => {
+          if (parentIds.includes(childAssortmentId)) throw Error('CyclicGraphNotSupported');
+        });
 
       if (!sortKey) {
         // Get next sort key

@@ -1,7 +1,11 @@
 import { Context, Root } from '@unchainedshop/types/api';
 import { AssortmentLink } from '@unchainedshop/types/assortments';
 import { log } from '@unchainedshop/logger';
-import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
+import {
+  AssortmentNotFoundError,
+  CyclicAssortmentLinkNotSupportedError,
+  InvalidIdError,
+} from '../../../errors';
 
 export default async function addAssortmentLink(
   root: Root,
@@ -29,17 +33,23 @@ export default async function addAssortmentLink(
     throw new AssortmentNotFoundError({
       assortmentId: childAssortmentId,
     });
-
-  return modules.assortments.links.create(
-    {
-      parentAssortmentId,
-      childAssortmentId,
-      authorId: userId,
-      ...assortmentLink,
-    },
-    {
-      skipInvalidation: false,
-    },
-    userId,
-  );
+  try {
+    const result = await modules.assortments.links.create(
+      {
+        parentAssortmentId,
+        childAssortmentId,
+        authorId: userId,
+        ...assortmentLink,
+      },
+      {
+        skipInvalidation: false,
+      },
+      userId,
+    );
+    return result;
+  } catch (e) {
+    if (e?.message === 'CyclicGraphNotSupported')
+      throw new CyclicAssortmentLinkNotSupportedError({ parentAssortmentId, childAssortmentId });
+    throw e;
+  }
 }
