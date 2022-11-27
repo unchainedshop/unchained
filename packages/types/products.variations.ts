@@ -60,10 +60,7 @@ export type ProductVariationsModule = {
   ) => Promise<ProductVariation>;
 
   delete: (productVariationId: string, userId?: string) => Promise<number>;
-  deleteVariations: (params: {
-    productId: string;
-    excludedProductVariationIds?: Array<_ID>;
-  }) => Promise<number>;
+  deleteVariations: (params: { productId?: string; excludedProductIds?: Array<_ID> }) => Promise<number>;
 
   update: (productMediaId: string, doc: ProductVariation) => Promise<ProductVariation>;
 

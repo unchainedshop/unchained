@@ -3,7 +3,7 @@ import {
   ProductVariationsModule,
   ProductVariationText,
 } from '@unchainedshop/types/products.variations';
-import { Query } from '@unchainedshop/types/common';
+import { Filter, Query } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -156,6 +156,8 @@ export const configureProductVariationsModule = async ({
     delete: async (productVariationId) => {
       const selector = generateDbFilterById(productVariationId);
 
+      await ProductVariationTexts.deleteMany({ productVariationId });
+
       const deletedResult = await ProductVariations.deleteOne(selector);
 
       await emit('PRODUCT_REMOVE_VARIATION', {
@@ -165,11 +167,19 @@ export const configureProductVariationsModule = async ({
       return deletedResult.deletedCount;
     },
 
-    deleteVariations: async ({ productId, excludedProductVariationIds }) => {
-      const selector: Query = {
-        productId,
-        _id: { $nin: excludedProductVariationIds || [] },
-      };
+    deleteVariations: async ({ productId, excludedProductIds }) => {
+      const selector: Filter<ProductVariation> = {};
+      if (productId) {
+        selector.productId = productId;
+      } else if (excludedProductIds) {
+        selector.productId = { $nin: excludedProductIds };
+      }
+
+      const ids = await ProductVariations.find(selector, { projection: { _id: true } })
+        .map((m) => m._id)
+        .toArray();
+      await ProductVariationTexts.deleteMany({ productVariationId: { $in: ids } });
+
       const deletedResult = await ProductVariations.deleteMany(selector);
       return deletedResult.deletedCount;
     },

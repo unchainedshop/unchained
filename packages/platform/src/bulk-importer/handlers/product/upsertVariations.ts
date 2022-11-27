@@ -17,7 +17,7 @@ export default async function upsertVariations(
 ) {
   const { modules, userId } = unchainedAPI;
 
-  const productVariationObjects = await Promise.all(
+  const upsertedProductVariationIds = await Promise.all(
     variations.map(async ({ content, options, ...variationsRest }) => {
       const variation = await upsert(
         {
@@ -68,11 +68,17 @@ export default async function upsertVariations(
           },
         ),
       );
-      return variation;
+      return variation._id;
     }),
   );
-  await modules.products.variations.deleteVariations({
+  const allVariations = await modules.products.variations.findProductVariations({
     productId,
-    excludedProductVariationIds: productVariationObjects.map((obj) => obj._id),
   });
+  await Promise.all(
+    allVariations.map(async (variation) => {
+      if (!upsertedProductVariationIds.includes(variation._id)) {
+        await modules.products.variations.delete(variation._id);
+      }
+    }),
+  );
 }

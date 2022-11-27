@@ -57,6 +57,9 @@ export const ZombieKillerWorker: IWorkerAdapter<
       const deletedProductTextsCount = await modules.products.texts.deleteMany({
         excludedProductIds: productIds,
       });
+      const deletedProductVariationsCount = await modules.products.variations.deleteVariations({
+        excludedProductIds: productIds,
+      });
       const deletedProductMediaCount = await modules.products.media.deleteMediaFiles({
         excludedProductIds: productIds,
       });
@@ -70,9 +73,6 @@ export const ZombieKillerWorker: IWorkerAdapter<
         {},
         { projection: { mediaId: 1 } },
       );
-
-      // modules.products.media.texts.deleteMany();
-      // modules.assortments.media.texts.deleteMany();
 
       const allFileIdsLinked = [...productMedia, ...assortmentMedia].map((l) => l?.mediaId);
       const allFileIdsRelevant = (
@@ -103,6 +103,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
         deletedFilterTextsCount,
         deletedProductMediaCount,
         deletedProductTextsCount,
+        deletedProductVariationsCount,
         deletedAssortmentMediaCount,
         deletedAssortmentTextsCount,
         deletedFilesCount,
