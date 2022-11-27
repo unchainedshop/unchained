@@ -23,7 +23,7 @@ export default async function changePassword(
     success = await modules.accounts.changePassword(userId, params);
   } catch (e) {
     success = false;
-    if (e.code === 'IncorrectPassword​') throw new IncorrectPasswordError({});
+    if (e.code === 'IncorrectPassword') throw new IncorrectPasswordError({});
     else if (e.code === 'InvalidCredentials') throw new InvalidCredentialsError({});
     else throw e;
   }

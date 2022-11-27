@@ -254,3 +254,13 @@ export const ResetPasswordLinkUnknownAddressError = createError(
   'ResetPasswordLinkUnknownAddress',
   'Valid token but no email address found for the entry',
 );
+
+export const AuthenticationFailedError = createError(
+  'AuthenticationFailed',
+  'Failed to authenticate the user',
+);
+
+export const UserDeactivatedError = createError(
+  'UserDeactivatedError',
+  'User is deactivated, so not allowed to login',
+);

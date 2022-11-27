@@ -6,6 +6,7 @@ import {
   EmailAlreadyExistsError,
   UsernameAlreadyExistsError,
   UsernameOrEmailRequiredError,
+  UserNotFoundError,
 } from '../../../errors';
 
 export default async function enrollUser(root: Root, params: UserData, context: Context) {
@@ -31,9 +32,11 @@ export default async function enrollUser(root: Root, params: UserData, context: 
   } catch (e) {
     if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({ email: params?.email });
     else if (e.code === 'UsernameAlreadyExists')
-      throw new UsernameAlreadyExistsError({ username: params?.username });
+      throw new UsernameAlreadyExistsError({ username: params?.username, email: params.email });
     else if (e.code === 'UsernameOrEmailRequired')
-      throw new UsernameOrEmailRequiredError({ username: params?.username });
+      throw new UsernameOrEmailRequiredError({ username: params?.username, email: params.email });
+    else if (e.code === 'UserNotFound')
+      throw new UserNotFoundError({ username: params?.username, email: params.email });
     else throw e;
   }
 }
