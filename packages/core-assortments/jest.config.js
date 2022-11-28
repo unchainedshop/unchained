@@ -1,5 +1,14 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 export default {
-  preset: 'ts-jest',
+  preset: '@shelf/jest-mongodb',
+  transform: {
+    '^.+\\.ts?$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
+  },
   testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
 };

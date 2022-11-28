@@ -6,7 +6,7 @@ import { AssortmentsModule } from '@unchainedshop/types/assortments';
 describe('Test exports', () => {
   let module: AssortmentsModule;
 
-  before(async () => {
+  beforeEach(async () => {
     const db = await initDb();
     module = await configureAssortmentsModule({ db });
   });
@@ -23,15 +23,16 @@ describe('Test exports', () => {
         title: 'Test',
         locale: 'de',
       },
-    );
+      'Test-User-1'
+    );    
 
-    assert.ok(assortmentId);
 
     const assortment = await module.findAssortment({ assortmentId });
-
     assert.ok(assortment);
 
     const deletedCount = await module.delete(assortmentId);
     assert.equal(deletedCount, 1);
   });
+
+
 });
