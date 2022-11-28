@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import {
+  AuthOperationFailedError,
   InvalidResetTokenError,
   NoEmailSetError,
   ResetPasswordLinkExpiredError,
@@ -30,6 +31,6 @@ export default async function resetPassword(
     if (e.code === 'ResetPasswordLinkUnknownAddress​')
       throw new ResetPasswordLinkUnknownAddressError({});
     if (e.code === 'NoEmailSet') throw new NoEmailSetError({});
-    throw e;
+    throw new AuthOperationFailedError({});
   }
 }

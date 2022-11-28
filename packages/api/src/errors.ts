@@ -264,3 +264,8 @@ export const UserDeactivatedError = createError(
   'UserDeactivatedError',
   'User is deactivated, so not allowed to login',
 );
+
+export const AuthOperationFailedError = createError(
+  'AuthOperationFailed',
+  'Operation failed, please make sure you have provided all required parameters',
+);

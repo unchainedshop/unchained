@@ -3,10 +3,10 @@ import { Context, Root } from '@unchainedshop/types/api';
 import { log } from '@unchainedshop/logger';
 import { hashPassword } from '../../../hashPassword';
 import {
+  AuthOperationFailedError,
   EmailAlreadyExistsError,
   UsernameAlreadyExistsError,
   UsernameOrEmailRequiredError,
-  UserNotFoundError,
 } from '../../../errors';
 
 export default async function createUser(root: Root, params: UserData, context: Context) {
@@ -42,9 +42,7 @@ export default async function createUser(root: Root, params: UserData, context: 
       throw new UsernameAlreadyExistsError({ username: params?.username });
     else if (e.code === 'UsernameOrEmailRequired')
       throw new UsernameOrEmailRequiredError({ username: params?.username });
-    else if (e.code === 'UserNotFound')
-      throw new UserNotFoundError({ username: params?.username, email: params.email });
-    else throw e;
+    else throw new AuthOperationFailedError({ username: params?.username, email: params.email });
   }
 
   if (newUserId && webAuthnService) {

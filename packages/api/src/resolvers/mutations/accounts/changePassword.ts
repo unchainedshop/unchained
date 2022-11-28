@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { IncorrectPasswordError, InvalidCredentialsError } from '../../../errors';
+import { AuthOperationFailedError, InvalidCredentialsError } from '../../../errors';
 
 export default async function changePassword(
   root: Root,
@@ -23,9 +23,8 @@ export default async function changePassword(
     success = await modules.accounts.changePassword(userId, params);
   } catch (e) {
     success = false;
-    if (e.code === 'IncorrectPassword') throw new IncorrectPasswordError({});
-    else if (e.code === 'InvalidCredentials') throw new InvalidCredentialsError({});
-    else throw e;
+    if (e.code === 'InvalidCredentials') throw new InvalidCredentialsError({});
+    else throw new AuthOperationFailedError({});
   }
 
   return { success };

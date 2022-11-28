@@ -2,6 +2,7 @@ import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
 import {
   AuthenticationFailedError,
+  AuthOperationFailedError,
   InvalidCredentialsError,
   TwoFactorCodeDidNotMatchError,
   TwoFactorCodeRequiredError,
@@ -41,12 +42,13 @@ export default async function loginWithPassword(
     );
     return result;
   } catch (e) {
-    if (e.code === 'AuthenticationFailed') throw new AuthenticationFailedError({});
-    else if (e.code === 'UserDeactivated') throw new UserDeactivatedError({});
-    else if (e.code === 'InvalidCredentials') throw new InvalidCredentialsError({});
-    else if (e?.message?.includes('2FA code required')) throw new TwoFactorCodeRequiredError({});
+    if (e.code === 'AuthenticationFailed') throw new AuthenticationFailedError({ username, email });
+    else if (e.code === 'UserDeactivated') throw new UserDeactivatedError({ username, email });
+    else if (e.code === 'InvalidCredentials') throw new InvalidCredentialsError({ username, email });
+    else if (e?.message?.includes('2FA code required'))
+      throw new TwoFactorCodeRequiredError({ username, email });
     else if (e?.message?.includes("2FA code didn't match"))
-      throw new TwoFactorCodeDidNotMatchError({ submittedCode: params.totpCode });
-    else throw e;
+      throw new TwoFactorCodeDidNotMatchError({ submittedCode: params.totpCode, username, email });
+    else throw new AuthOperationFailedError({ submittedCode: params.totpCode, username, email });
   }
 }

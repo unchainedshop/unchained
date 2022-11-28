@@ -3,10 +3,10 @@ import { Context, Root } from '@unchainedshop/types/api';
 import { UserData } from '@unchainedshop/types/accounts';
 import { hashPassword } from '../../../hashPassword';
 import {
+  AuthOperationFailedError,
   EmailAlreadyExistsError,
   UsernameAlreadyExistsError,
   UsernameOrEmailRequiredError,
-  UserNotFoundError,
 } from '../../../errors';
 
 export default async function enrollUser(root: Root, params: UserData, context: Context) {
@@ -35,8 +35,6 @@ export default async function enrollUser(root: Root, params: UserData, context: 
       throw new UsernameAlreadyExistsError({ username: params?.username, email: params.email });
     else if (e.code === 'UsernameOrEmailRequired')
       throw new UsernameOrEmailRequiredError({ username: params?.username, email: params.email });
-    else if (e.code === 'UserNotFound')
-      throw new UserNotFoundError({ username: params?.username, email: params.email });
-    else throw e;
+    else throw new AuthOperationFailedError({ username: params?.username, email: params.email });
   }
 }
