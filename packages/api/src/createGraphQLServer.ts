@@ -1,27 +1,29 @@
 import { ApolloServer } from '@apollo/server';
-import { GraphQLError } from 'graphql';
 import { log, LogLevel } from '@unchainedshop/logger';
+import { GraphQLFormattedError } from 'graphql';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
-const logGraphQLServerError = (error) => {
+const logGraphQLServerError = (error: GraphQLFormattedError) => {
   try {
     const {
       message,
-      extensions: {
-        exception: { stacktrace, ...parameters },
-        ...extensions
-      },
+      extensions: { stacktrace, ...parameters },
       ...rest
     } = error;
-    log(`${message} ${extensions && extensions.code}`, {
+    log(`${message} ${parameters && parameters.code}`, {
       level: LogLevel.Error,
-      ...extensions,
+      ...parameters,
       ...rest,
     });
-    console.error(stacktrace, parameters); // eslint-disable-line
+    if (stacktrace) {
+      const nativeError = new Error(message);
+      nativeError.stack = (stacktrace as string[]).join('\n');
+      nativeError.name = parameters.code as string;
+      log(nativeError, { level: LogLevel.Debug });
+    }
   } catch (e) {} // eslint-disable-line
 };
 
@@ -38,21 +40,7 @@ export default async (options) => {
     resolvers: [resolvers, ...additionalResolvers],
     formatError: (error) => {
       logGraphQLServerError(error);
-      const {
-        message,
-        path,
-        extensions: { exception, code, ...extensions }, // eslint-disable-line
-      } = error;
-      const apolloError = new GraphQLError(message, {
-        extensions: {
-          code,
-          ...extensions,
-        },
-      });
-      // eslint-disable-next-line
-      // @ts-ignore
-      apolloError.path = path;
-      return apolloError;
+      return error;
     },
     apollo: APOLLO_ENGINE_KEY
       ? {
