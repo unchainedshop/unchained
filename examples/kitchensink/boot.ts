@@ -2,7 +2,7 @@ import './load_env';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import http from 'http';
-// import responseCachePlugin from '@apollo/server-plugin-response-cache';
+import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { startPlatform, connectPlatformToExpress4 } from '@unchainedshop/platform';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
@@ -20,13 +20,16 @@ const start = async () => {
     introspection: true,
     modules: defaultModules,
     plugins: [
-      // Take care, if you activate the response cache plugin
-      // a lot of queries will return stalled data when using the admin ui
-      // responseCachePlugin({
-      //   sessionId: (requestContext) => {
-      //     return (requestContext.contextValue as any).userId;
-      //   },
-      // }),
+      responseCachePlugin({
+        sessionId(requestContext) {
+          return (requestContext.contextValue as any).userId || null;
+        },
+        async shouldReadFromCache(requestContext) {
+          const bustCache = (requestContext.contextValue as any).req.headers['x-unchained-bust-cache'];
+          if (bustCache === 'true') return false;
+          return true;
+        },
+      }),
       ApolloServerPluginDrainHttpServer({ httpServer }),
     ],
     options: {
