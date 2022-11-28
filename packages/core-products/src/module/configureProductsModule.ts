@@ -15,6 +15,9 @@ import {
   buildSortOptions,
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
+
+import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
+
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
@@ -111,6 +114,8 @@ export const configureProductsModule = async ({
   });
 
   const productMedia = await configureProductMediaModule({ db });
+  const enrollmentModule = await configureEnrollmentsModule({ db });
+
   const productReviews = await configureProductReviewsModule({ db });
   const productVariations = await configureProductVariationsModule({ db });
 
@@ -385,6 +390,12 @@ export const configureProductsModule = async ({
         )
       )
         throw new Error('ProductLinkedToActiveBundleError');
+
+      const hasActiveEnrollment = await enrollmentModule.enrollmentExistsForProduct({
+        productId,
+      });
+
+      if (hasActiveEnrollment) throw new Error('ProductLinkedToEnrollmentError');
 
       if (product.status !== InternalProductStatus.DRAFT) {
         throw new Error(`Invalid status', ${product.status}`);

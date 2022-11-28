@@ -277,3 +277,8 @@ export const ProductLinkedToActiveBundleError = createError(
   'ProductLinkedToActiveBundle',
   'Product is part of a active/draft bundle item, remove it from any active/draft bundle item before deleting',
 );
+
+export const ProductLinkedToEnrollmentError = createError(
+  'ProductLinkedToEnrollment',
+  'Product is part of a active/paused subscription item, remove it from any active/paused subscription item before deleting',
+);

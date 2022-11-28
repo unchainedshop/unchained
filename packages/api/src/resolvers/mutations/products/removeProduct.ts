@@ -5,6 +5,7 @@ import {
   InvalidIdError,
   ProductLinkedToActiveVariationError,
   ProductLinkedToActiveBundleError,
+  ProductLinkedToEnrollmentError,
 } from '../../../errors';
 
 export default async function removeProduct(
@@ -26,6 +27,8 @@ export default async function removeProduct(
       throw new ProductLinkedToActiveVariationError({ productId });
     if (e?.message === 'ProductLinkedToActiveVariationError')
       throw new ProductLinkedToActiveBundleError({ productId });
+    if (e?.message === 'ProductLinkedToEnrollmentError')
+      throw new ProductLinkedToEnrollmentError({ productId });
     throw e;
   }
   return modules.products.findProduct({ productId });
