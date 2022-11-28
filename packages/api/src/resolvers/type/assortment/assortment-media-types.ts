@@ -13,11 +13,13 @@ export interface AssortmentMediaHelperTypes {
 }
 
 export const AssortmentMedia: AssortmentMediaHelperTypes = {
+  // TODO: Loader for assortment media texts!
   texts: (obj, { forceLocale }, { modules, localeContext }) =>
     modules.assortments.media.texts.findLocalizedMediaText({
       assortmentMediaId: obj._id,
       locale: forceLocale || localeContext.normalized,
     }),
 
+  // TODO: Loader for files!
   file: (obj, _, { modules }) => modules.files.findFile({ fileId: obj.mediaId }),
 };

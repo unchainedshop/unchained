@@ -1,6 +1,7 @@
 import { ProductMediaHelperTypes } from '@unchainedshop/types/products.media';
 
 export const ProductMedia: ProductMediaHelperTypes = {
+  // TODO: Loader for product media texts!
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {
     return modules.products.media.texts.findLocalizedMediaText({
       productMediaId: obj._id,
@@ -9,6 +10,7 @@ export const ProductMedia: ProductMediaHelperTypes = {
   },
 
   file: async (obj, _, { modules }) => {
+    // TODO: Loader
     return modules.files.findFile({ fileId: obj.mediaId });
   },
 };
