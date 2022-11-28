@@ -1,6 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors';
+import {
+  ProductNotFoundError,
+  InvalidIdError,
+  ProductLinkedToActiveVariationError,
+  ProductLinkedToActiveBundleError,
+} from '../../../errors';
 
 export default async function removeProduct(
   root: Root,
@@ -14,8 +19,14 @@ export default async function removeProduct(
 
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
-
-  await services.products.removeProduct({ productId }, context);
-
+  try {
+    await services.products.removeProduct({ productId, userId: context.userId }, context);
+  } catch (e) {
+    if (e?.message === 'ProductLinkedToActiveVariationError')
+      throw new ProductLinkedToActiveVariationError({ productId });
+    if (e?.message === 'ProductLinkedToActiveVariationError')
+      throw new ProductLinkedToActiveBundleError({ productId });
+    throw e;
+  }
   return modules.products.findProduct({ productId });
 }

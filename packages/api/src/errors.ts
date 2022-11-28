@@ -267,3 +267,13 @@ export const AuthOperationFailedError = createError(
   'AuthOperationFailed',
   'Operation failed, please make sure you have provided all required parameters',
 );
+
+export const ProductLinkedToActiveVariationError = createError(
+  'ProductLinkedToActiveVariation',
+  'Product is part of a active variation, remove it from any active/draft variation before deleting',
+);
+
+export const ProductLinkedToActiveBundleError = createError(
+  'ProductLinkedToActiveBundle',
+  'Product is part of a active/draft bundle item, remove it from any active/draft bundle item before deleting',
+);
