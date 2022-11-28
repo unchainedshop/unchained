@@ -29,6 +29,9 @@ export default async function removeProduct(
       throw new ProductLinkedToActiveBundleError({ productId });
     if (e?.message === 'ProductLinkedToEnrollmentError')
       throw new ProductLinkedToEnrollmentError({ productId });
+    if (e?.message === 'ProductLinkedToQuotationError')
+      throw new ProductLinkedToEnrollmentError({ productId });
+
     throw e;
   }
   return modules.products.findProduct({ productId });

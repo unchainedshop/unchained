@@ -17,6 +17,7 @@ import {
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
 
 import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
+import { configureQuotationsModule } from '@unchainedshop/core-quotations';
 
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';
@@ -115,6 +116,7 @@ export const configureProductsModule = async ({
 
   const productMedia = await configureProductMediaModule({ db });
   const enrollmentModule = await configureEnrollmentsModule({ db });
+  const quotationsModule = await configureQuotationsModule({ db });
 
   const productReviews = await configureProductReviewsModule({ db });
   const productVariations = await configureProductVariationsModule({ db });
@@ -396,6 +398,12 @@ export const configureProductsModule = async ({
       });
 
       if (hasActiveEnrollment) throw new Error('ProductLinkedToEnrollmentError');
+
+      const hasActiveQuotations = await quotationsModule.quotationExistsForProduct({
+        productId,
+      });
+
+      if (hasActiveQuotations) throw new Error('ProductLinkedToQuotationError');
 
       if (product.status !== InternalProductStatus.DRAFT) {
         throw new Error(`Invalid status', ${product.status}`);

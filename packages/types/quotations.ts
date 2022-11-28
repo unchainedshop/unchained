@@ -68,6 +68,7 @@ export interface QuotationQueries {
     options?: FindOptions,
   ) => Promise<Array<Quotation>>;
   count: (query: QuotationQuery) => Promise<number>;
+  quotationExistsForProduct: (param: { productId: string }) => Promise<boolean>;
 }
 
 // Transformations

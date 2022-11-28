@@ -280,5 +280,10 @@ export const ProductLinkedToActiveBundleError = createError(
 
 export const ProductLinkedToEnrollmentError = createError(
   'ProductLinkedToEnrollment',
-  'Product is part of a active/paused subscription item, remove it from any active/paused subscription item before deleting',
+  'Product is part of a active/paused subscriptions item, remove it from any active/paused subscriptions item before deleting',
+);
+
+export const ProductLinkedToQuotationError = createError(
+  'ProductLinkedToQuotation',
+  'Product is part of a requested/proposed quotations item, remove it from any requested/proposed quotations item before deleting',
 );
