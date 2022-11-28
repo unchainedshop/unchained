@@ -1,6 +1,10 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { AuthenticationFailedError, UserDeactivatedError } from '../../../errors';
+import {
+  AuthenticationFailedError,
+  AuthOperationFailedError,
+  UserDeactivatedError,
+} from '../../../errors';
 
 export default async function loginWithWebAuthn(
   root: Root,
@@ -18,6 +22,6 @@ export default async function loginWithWebAuthn(
   } catch (e) {
     if (e.code === 'AuthenticationFailed') throw new AuthenticationFailedError({});
     else if (e.code === 'UserDeactivated') throw new UserDeactivatedError({});
-    else throw e;
+    else throw new AuthOperationFailedError({});
   }
 }
