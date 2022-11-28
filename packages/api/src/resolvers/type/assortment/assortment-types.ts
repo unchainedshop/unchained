@@ -62,10 +62,11 @@ export const Assortment: AssortmentHelperTypes = {
   },
 
   childrenCount: async (assortment, { includeInactive = false }, { modules }) => {
-    const assortmentChildrenIds = await modules.assortments.links.findLinks({
+    // TODO: Loader
+    const assortmentChildLinks = await modules.assortments.links.findLinks({
       parentAssortmentId: assortment._id,
     });
-    const assortmentIds = assortmentChildrenIds.map(({ childAssortmentId }) => childAssortmentId);
+    const assortmentIds = assortmentChildLinks.map(({ childAssortmentId }) => childAssortmentId);
 
     const selector: Query = {
       assortmentIds,
@@ -77,6 +78,7 @@ export const Assortment: AssortmentHelperTypes = {
   },
 
   filterAssignments: async (obj, _, { modules }) => {
+    // TODO: Loader & move default sort to module
     return modules.assortments.filters.findFilters(
       {
         assortmentId: obj._id,
@@ -87,7 +89,8 @@ export const Assortment: AssortmentHelperTypes = {
     );
   },
 
-  linkedAssortments: async (obj, _, { modules }) => {
+  async linkedAssortments(obj, _, { modules }) {
+    // TODO: Loader
     return modules.assortments.links.findLinks({
       assortmentId: obj._id,
     });
@@ -100,7 +103,8 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
-  productAssignments: async (obj, _, { modules }) => {
+  async productAssignments(obj, _, { modules }) {
+    // TODO: Loader & move default sort to core module
     return modules.assortments.products.findProducts(
       {
         assortmentId: obj._id,
@@ -124,6 +128,7 @@ export const Assortment: AssortmentHelperTypes = {
       assortmentId: obj._id,
       ignoreChildAssortments: query.ignoreChildAssortments,
     });
+
     const filterIds = await context.modules.assortments.filters.findFilterIds({
       assortmentId: obj._id,
     });
