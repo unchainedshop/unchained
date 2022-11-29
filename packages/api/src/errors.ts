@@ -207,3 +207,63 @@ export const CyclicAssortmentLinkNotSupportedError = createError(
   'CyclicAssortmentLinkNotSupported',
   'Cyclic assortment link detected, make sure child assortment is not assigned as a parent on the assortment graph',
 );
+
+export const EmailAlreadyExistsError = createError(
+  'EmailAlreadyExists',
+  'Email already exist in the database',
+);
+
+export const UsernameAlreadyExistsError = createError(
+  'UsernameAlreadyExists',
+  'Username already exist in the database',
+);
+
+export const UsernameOrEmailRequiredError = createError(
+  'UsernameOrEmailRequired',
+  'No username or email is provided.',
+);
+
+export const TwoFactorCodeDidNotMatchError = createError(
+  'TwoFactorCodeDidNotMatch',
+  "2FA code didn't match",
+);
+
+export const TwoFactorCodeRequiredError = createError('TwoFactorCodeRequired', '2FA code required');
+
+export const TwoFactorAlreadySetError = createError('TwoFactorAlreadySet', '2FA already set for user');
+
+export const TwoFactorNotSetError = createError('TwoFactorNotSet', '2FA not set for user');
+
+export const InvalidCredentialsError = createError(
+  'InvalidCredentials',
+  'Incorrect credential provided',
+);
+
+export const InvalidResetTokenError = createError('InvalidResetTokenError', 'Token validation failed');
+
+export const NoEmailSetError = createError('NoEmailSet', 'User has no email set');
+
+export const ResetPasswordLinkExpiredError = createError(
+  'ResetPasswordLinkExpired',
+  'Token does not exist or is expired',
+);
+
+export const ResetPasswordLinkUnknownAddressError = createError(
+  'ResetPasswordLinkUnknownAddress',
+  'Valid token but no email address found for the entry',
+);
+
+export const AuthenticationFailedError = createError(
+  'AuthenticationFailed',
+  'Failed to authenticate the user',
+);
+
+export const UserDeactivatedError = createError(
+  'UserDeactivatedError',
+  'User is deactivated, so not allowed to login',
+);
+
+export const AuthOperationFailedError = createError(
+  'AuthOperationFailed',
+  'Operation failed, please make sure you have provided all required parameters',
+);

@@ -1,5 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
+import { AuthOperationFailedError, UserNotFoundError } from '../../../errors';
 
 export default async function forgotPassword(
   root: Root,
@@ -8,7 +9,13 @@ export default async function forgotPassword(
 ) {
   log('mutation forgotPassword', { email, userId });
 
-  const success = await modules.accounts.sendResetPasswordEmail(email);
+  let success = false;
+  try {
+    success = await modules.accounts.sendResetPasswordEmail(email);
+  } catch (e) {
+    if (e.code === 'UserNotFound') throw new UserNotFoundError({ email });
+    else throw new AuthOperationFailedError({ email });
+  }
 
   return { success };
 }

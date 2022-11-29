@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { UserNotFoundError } from '../../../errors';
+import { TwoFactorCodeDidNotMatchError, TwoFactorNotSetError, UserNotFoundError } from '../../../errors';
 
 export default async function disableTOTP(
   root: Root,
@@ -15,8 +15,18 @@ export default async function disableTOTP(
 
   const user = await modules.users.findUserById(normalizedUserId);
   if (!user) throw new UserNotFoundError({ userId: normalizedUserId });
-
-  await modules.accounts.disableTOTP(normalizedUserId, params.code);
+  try {
+    await modules.accounts.disableTOTP(normalizedUserId, params.code);
+  } catch (e) {
+    if (e?.message?.includes("2FA code didn't match"))
+      throw new TwoFactorCodeDidNotMatchError({
+        submittedCode: params.code,
+        userId: params?.userId || userId,
+      });
+    else if (e?.message?.includes('2FA not set'))
+      throw new TwoFactorNotSetError({ userId: params?.userId || userId });
+    else throw e;
+  }
 
   return user;
 }

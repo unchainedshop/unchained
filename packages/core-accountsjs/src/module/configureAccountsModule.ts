@@ -1,5 +1,5 @@
 import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
-import { log, LogLevel } from '@unchainedshop/logger';
+
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleInput } from '@unchainedshop/types/core';
 import { accountsSettings } from '../accounts-settings';
@@ -178,29 +178,12 @@ export const configureAccountsModule = async ({
       const newPassword = hashPassword(newPlainPassword);
       const oldPassword = hashPassword(oldPlainPassword);
 
-      try {
-        await accountsPassword.changePassword(userId, oldPassword, newPassword);
-        return true;
-      } catch (error: any) {
-        log('Error while changing password', {
-          level: LogLevel.Error,
-          ...error,
-        });
-        return false;
-      }
+      await accountsPassword.changePassword(userId, oldPassword, newPassword);
+      return true;
     },
     sendResetPasswordEmail: async (email) => {
-      try {
-        await accountsPassword.sendResetPasswordEmail(email);
-        return true;
-      } catch (error) {
-        log('Error while sending reset password', {
-          level: LogLevel.Error,
-          ...error,
-          email,
-        });
-        return false;
-      }
+      await accountsPassword.sendResetPasswordEmail(email);
+      return true;
     },
 
     resetPassword: async ({ newPlainPassword, token }, context) => {
