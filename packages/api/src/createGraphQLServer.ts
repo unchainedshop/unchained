@@ -18,11 +18,12 @@ const logGraphQLServerError = (error: GraphQLFormattedError) => {
       ...parameters,
       ...rest,
     });
-    if (stacktrace) {
+    if (stacktrace && process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
       const nativeError = new Error(message);
       nativeError.stack = (stacktrace as string[]).join('\n');
       nativeError.name = parameters.code as string;
-      log(nativeError, { level: LogLevel.Debug });
+      // eslint-disable-next-line
+      console.error(nativeError);
     }
   } catch (e) {} // eslint-disable-line
 };
