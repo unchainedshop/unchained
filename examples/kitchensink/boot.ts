@@ -21,11 +21,11 @@ const start = async () => {
     modules: defaultModules,
     plugins: [
       responseCachePlugin({
-        sessionId(requestContext) {
-          return (requestContext.contextValue as any).userId || null;
+        sessionId(ctx) {
+          return (ctx.contextValue as any).userId || null;
         },
-        async shouldReadFromCache(requestContext) {
-          const bustCache = (requestContext.contextValue as any).req.headers['x-unchained-bust-cache'];
+        async shouldReadFromCache(ctx) {
+          const bustCache = (ctx.contextValue as any).req.headers['x-unchained-bust-cache'];
           if (bustCache === 'true') return false;
           return true;
         },

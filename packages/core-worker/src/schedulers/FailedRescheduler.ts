@@ -8,7 +8,7 @@ export const FailedRescheduler: IScheduler = {
   label: 'Reschedule failed works',
   version: '1.0.0',
 
-  actions: (requestContext) => {
+  actions: (unchainedAPI) => {
     const handleFinishedWork = ({ work }: { work: Work }) => {
       if (!work.success && work.retries > 0) {
         const now = new Date();
@@ -28,7 +28,7 @@ export const FailedRescheduler: IScheduler = {
           }`,
         );
 
-        requestContext.modules.worker.addWork({
+        unchainedAPI.modules.worker.addWork({
           type: work.type,
           input: work.input,
           priority: work.priority,

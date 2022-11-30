@@ -1,9 +1,9 @@
-import { Context } from '@unchainedshop/types/api';
 import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 import upsertAsset from '../../upsertAsset';
 
-const upsertProductMedia = async (productMedia: ProductMedia, { modules }: Context) => {
+const upsertProductMedia = async (productMedia: ProductMedia, { modules }: UnchainedCore) => {
   try {
     const productMediaObj = await modules.products.media.create(productMedia);
     return productMediaObj;
@@ -14,7 +14,7 @@ const upsertProductMedia = async (productMedia: ProductMedia, { modules }: Conte
   }
 };
 
-export default async function upsertMedia({ media, productId }, unchainedAPI: Context) {
+export default async function upsertMedia({ media, productId }, unchainedAPI: UnchainedCore) {
   const { modules } = unchainedAPI;
 
   const productMediaObjects = await Promise.all(

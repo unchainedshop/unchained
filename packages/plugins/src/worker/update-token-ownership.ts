@@ -28,8 +28,8 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
   type: 'REFRESH_TOKENS',
   external: false,
 
-  async doWork(input, requestContext) {
-    const { modules } = requestContext;
+  async doWork(input, unchainedAPI) {
+    const { modules } = unchainedAPI;
 
     const tokens = await modules.warehousing.findTokens({});
     const users = await modules.users.findUsers({ includeGuests: true });

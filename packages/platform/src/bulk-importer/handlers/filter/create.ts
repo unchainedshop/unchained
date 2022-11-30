@@ -1,11 +1,11 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import upsertFilterContent from './upsertFilterContent';
 import upsertFilterOptionContent from './upsertFilterOptionContent';
 
 export default async function createFilter(
   payload: any,
   { logger, createShouldUpsertIfIDExists },
-  unchainedAPI: Context,
+  unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;
@@ -26,7 +26,6 @@ export default async function createFilter(
       },
       unchainedAPI,
       { skipInvalidation: true },
-      unchainedAPI.userId,
     );
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
@@ -40,7 +39,6 @@ export default async function createFilter(
       },
       unchainedAPI,
       { skipInvalidation: true },
-      unchainedAPI.userId,
     );
   }
 

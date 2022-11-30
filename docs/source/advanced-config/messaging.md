@@ -19,7 +19,6 @@ Bellow is an example of a simple error notification email message configuration 
 
 ```typescript
 
-import { Context } from "@unchainedshop/types/api";
 import { TemplateResolver } from "@unchainedshop/types/messaging";
 
 
@@ -29,7 +28,7 @@ const ERROR_EMAIL_TEMPLATE = `
 
 const errorReported: TemplateResolver = async (
   { userId, emailSubject, error, resolverName },
-  context: Context
+  context
 ) => {
   const { modules } = context;
   const user = await modules.users.findUserById(userId);  

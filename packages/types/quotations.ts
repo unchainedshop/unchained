@@ -135,9 +135,9 @@ export interface QuotationAdapterActions {
   isManualProposalRequired: () => Promise<boolean>;
   isManualRequestVerificationRequired: () => Promise<boolean>;
   quote: () => Promise<QuotationProposal>;
-  rejectRequest: (requestContext?: any) => Promise<boolean>;
-  submitRequest: (requestContext?: any) => Promise<boolean>;
-  verifyRequest: (requestContext?: any) => Promise<boolean>;
+  rejectRequest: (unchainedAPI?: any) => Promise<boolean>;
+  submitRequest: (unchainedAPI?: any) => Promise<boolean>;
+  verifyRequest: (unchainedAPI?: any) => Promise<boolean>;
 
   transformItemConfiguration: (
     params: QuotationItemConfiguration,

@@ -6,7 +6,13 @@ export default async function logoutAllSessions(root: Root, _: any, context: Con
 
   log('mutation logoutAllSessions', { userId });
 
-  const loggedOut = await modules.accounts.logout({}, context);
+  const loggedOut = await modules.accounts.logout(
+    {
+      loginToken: context.loginToken,
+      userId: context.userId,
+    },
+    context,
+  );
 
   if (loggedOut.error) {
     log('Error while logging out', {

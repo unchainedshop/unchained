@@ -13,5 +13,8 @@ export default async function createCart(
   const order = await modules.orders.findOrder({ orderNumber });
   if (order) throw new OrderNumberAlreadyExistsError({ orderNumber });
 
-  return services.orders.createUserCart({ user, orderNumber }, context);
+  return services.orders.createUserCart(
+    { user, orderNumber, countryCode: context.countryContext },
+    context,
+  );
 }

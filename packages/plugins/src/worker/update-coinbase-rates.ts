@@ -23,15 +23,15 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
   version: '1.0.0',
   type: 'UPDATE_COINBASE_RATES',
 
-  doWork: async (input, requestContext) => {
-    const { modules, services } = requestContext;
+  doWork: async (input, unchainedAPI) => {
+    const { modules, services } = unchainedAPI;
 
     try {
       const currencyCode = await services.countries.resolveDefaultCurrencyCode(
         {
           isoCode: systemLocale.country,
         },
-        requestContext,
+        unchainedAPI,
       );
 
       const currencies = await modules.currencies.findCurrencies({ includeInactive: true });

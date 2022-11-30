@@ -149,7 +149,7 @@ export const configureAccountsModule = async ({
       };
     },
 
-    logout: async ({ token }, { loginToken, userId }) => {
+    logout: async ({ token, loginToken, userId }) => {
       try {
         await accountsServer.logout({
           token: token || accountsServer.hashLoginToken(loginToken),

@@ -1,5 +1,4 @@
-import { UnchainedAPI } from '@unchainedshop/types/api';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import {
   DeliveryContext,
   DeliveryModule,
@@ -50,7 +49,7 @@ export const configureDeliveryModule = async ({
   const getDeliveryAdapter = async (
     deliveryProviderId: string,
     deliveryContext: DeliveryContext,
-    unchainedAPI: UnchainedAPI,
+    unchainedAPI: UnchainedCore,
   ) => {
     const provider = await DeliveryProviders.findOne(generateDbFilterById(deliveryProviderId), {});
 

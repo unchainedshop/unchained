@@ -1,6 +1,6 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
-export default async function removeFilter(payload: any, { logger }, unchainedAPI: Context) {
+export default async function removeFilter(payload: any, { logger }, unchainedAPI: UnchainedCore) {
   const { modules } = unchainedAPI;
   const { _id } = payload;
   logger.debug('remove filter');

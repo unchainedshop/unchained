@@ -1,12 +1,11 @@
 import localePkg from 'locale';
 import { Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, Schemas, systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';
 
@@ -38,7 +37,7 @@ const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) =
   return selector;
 };
 
-FileDirector.registerFileUploadCallback('user-avatars', async (file, context: Context) => {
+FileDirector.registerFileUploadCallback('user-avatars', async (file, context: UnchainedCore) => {
   const { services } = context;
 
   return services.users.updateUserAvatarAfterUpload({ file }, context);

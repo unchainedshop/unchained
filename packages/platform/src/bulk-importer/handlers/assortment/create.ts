@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
 import upsertAssortmentContent from './upsertAssortmentContent';
@@ -9,7 +9,7 @@ import upsertMedia from './upsertMedia';
 export default async function createAssortment(
   payload: any,
   { logger, createShouldUpsertIfIDExists },
-  unchainedAPI: Context,
+  unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;

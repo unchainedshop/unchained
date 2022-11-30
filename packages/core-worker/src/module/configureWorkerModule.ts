@@ -328,8 +328,8 @@ export const configureWorkerModule = async ({
       }
     },
 
-    doWork: (work, requestContext) => {
-      return WorkerDirector.doWork(work, requestContext);
+    doWork: (work, unchainedAPI) => {
+      return WorkerDirector.doWork(work, unchainedAPI);
     },
 
     finishWork,

@@ -23,7 +23,7 @@ export const ManualOffering: IQuotationAdapter = {
   version: '1.0.0',
   orderIndex: 1,
 
-  isActivatedFor: (quotationContext: QuotationContext, requestContext: Context): boolean => {
+  isActivatedFor: (quotationContext: QuotationContext, unchainedAPI: UnchainedCore): boolean => {
     return false;
   },
 
@@ -47,15 +47,15 @@ export const ManualOffering: IQuotationAdapter = {
         };
       },
 
-      rejectRequest: async (requestContext?: any): Promise<boolean> => {
+      rejectRequest: async (unchainedAPI?: any): Promise<boolean> => {
         return true;
       },
 
-      submitRequest: async (requestContext?: any): Promise<boolean> => {
+      submitRequest: async (unchainedAPI?: any): Promise<boolean> => {
         return true;
       },
 
-      verifyRequest: async (requestContext?: any): Promise<boolean> => {
+      verifyRequest: async (unchainedAPI?: any): Promise<boolean> => {
         return true;
       },
 
@@ -73,7 +73,7 @@ export const ManualOffering: IQuotationAdapter = {
 ```
 
 
-- **isActivatedFor: (quotationContext: [QuotationContext](https://docs.unchained.shop/types/types/quotations.QuotationContext.html), requestContext: [Context](https://docs.unchained.shop/types/types/api.Context.html))**: Determines for which type of quotation request an adapter is active for. it can be based on the actual quotation in question or any condition you can think of.
+- **isActivatedFor: (quotationContext: [QuotationContext](https://docs.unchained.shop/types/types/quotations.QuotationContext.html), unchainedAPI: [UnchainedCore](https://docs.unchained.shop/types/interfaces/core.UnchainedCore.html))**: Determines for which type of quotation request an adapter is active for. it can be based on the actual quotation in question or any condition you can think of.
 - **configurationError: [QuotationError](https://docs.unchained.shop/types/enums/quotations.QuotationError.html)**: Returns any error that occurred while initializing the adapter. it can be missing environment variable or and other missing required values.
 - **isManualRequestVerificationRequired**: defines if a quotation should be considered valid and ready for quote automatically or should be verified by someone manually.
 - **isManualProposalRequired** Define if a user can respond to quotation request manually or not.

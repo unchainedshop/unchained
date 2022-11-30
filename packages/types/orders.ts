@@ -1,4 +1,4 @@
-import { Context, SortOption } from './api';
+import { SortOption } from './api';
 import { Address, Configuration, Contact, FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { UnchainedCore } from './core';
 import { OrderDeliveriesModule } from './orders.deliveries';
@@ -199,7 +199,7 @@ export type CreateUserCartService = (
     orderNumber?: string;
     countryCode?: string;
   },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Order>;
 
 export interface OrderServices {
@@ -223,6 +223,6 @@ export interface OrdersSettingsOptions {
   orderNumberHashFn?: (order: Order, index: number) => string;
   validateOrderPosition?: (
     validationParams: OrderSettingsOrderPositionValidation,
-    context: Context,
+    context: UnchainedCore,
   ) => Promise<void>;
 }

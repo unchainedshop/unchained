@@ -1,6 +1,6 @@
 import { Collection } from '@unchainedshop/types/common';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { Filter } from '@unchainedshop/types/filters';
-import { Context } from 'vm';
 import { intersectSet } from '../utils/intersectSet';
 import { FilterProductIds, SearchConfiguration } from './search';
 
@@ -8,7 +8,7 @@ export const productFacetedSearch = (
   Filters: Collection<Filter>,
   filterProductIds: FilterProductIds,
   searchConfiguration: SearchConfiguration,
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => {
   const { query, filterSelector, forceLiveCollection } = searchConfiguration;
 
@@ -29,7 +29,7 @@ export const productFacetedSearch = (
             values: query.filterQuery[filter.key],
             forceLiveCollection,
           },
-          requestContext,
+          unchainedAPI,
         );
 
         return intersectSet(productIdSet, new Set(filterOptionProductIds));

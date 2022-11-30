@@ -10,8 +10,8 @@ export const BaseDiscountDirector = (directorName: string): IDiscountDirector =>
   return {
     ...baseDirector,
 
-    actions: async (discountContext, requestContext) => {
-      const context = { ...discountContext, ...requestContext };
+    actions: async (discountContext, unchainedAPI) => {
+      const context = { ...discountContext, ...unchainedAPI };
 
       return {
         resolveDiscountKeyFromStaticCode: async (options) => {

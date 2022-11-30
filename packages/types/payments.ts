@@ -314,8 +314,10 @@ export interface PaymentSettings {
  * API Types
  */
 
+export type HelperType<P, T> = (credentials: PaymentCredentials, params: P, context: Context) => T;
+
 export interface PaymentCredentialsHelperTypes {
-  user(credentials: PaymentCredentials, _: never, context: Context): Promise<User>;
-  paymentProvider(credentials: PaymentCredentials, _: never, context: Context): Promise<PaymentProvider>;
-  isValid(credentials: PaymentCredentials, _: never, context: Context): Promise<boolean>;
+  user: HelperType<never, Promise<User>>;
+  paymentProvider: HelperType<never, Promise<PaymentProvider>>;
+  isValid: HelperType<never, Promise<boolean>>;
 }

@@ -125,16 +125,16 @@ export const configureOrderPaymentsModule = ({
       }));
     },
 
-    isBlockingOrderConfirmation: async (orderPayment, requestContext) => {
+    isBlockingOrderConfirmation: async (orderPayment, unchainedAPI) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
 
-      const provider = await requestContext.modules.payment.paymentProviders.findProvider({
+      const provider = await unchainedAPI.modules.payment.paymentProviders.findProvider({
         paymentProviderId: orderPayment.paymentProviderId,
       });
 
-      const isPayLaterAllowed = await requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
+      const isPayLaterAllowed = await unchainedAPI.modules.payment.paymentProviders.isPayLaterAllowed(
         provider,
-        requestContext,
+        unchainedAPI,
       );
 
       return !isPayLaterAllowed;
@@ -167,8 +167,8 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    confirm: async (orderPayment, { transactionContext }, requestContext) => {
-      const { services } = requestContext;
+    confirm: async (orderPayment, { transactionContext }, unchainedAPI) => {
+      const { services } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
         return orderPayment;
@@ -176,7 +176,7 @@ export const configureOrderPaymentsModule = ({
 
       const arbitraryResponseData = await services.payment.confirm(
         buildPaymentProviderActionsContext(orderPayment, transactionContext),
-        requestContext,
+        unchainedAPI,
       );
 
       if (arbitraryResponseData) {
@@ -189,8 +189,8 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    cancel: async (orderPayment, { transactionContext }, requestContext) => {
-      const { services } = requestContext;
+    cancel: async (orderPayment, { transactionContext }, unchainedAPI) => {
+      const { services } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
         return orderPayment;
@@ -198,7 +198,7 @@ export const configureOrderPaymentsModule = ({
 
       const arbitraryResponseData = await services.payment.cancel(
         buildPaymentProviderActionsContext(orderPayment, transactionContext),
-        requestContext,
+        unchainedAPI,
       );
 
       if (arbitraryResponseData) {
@@ -211,8 +211,8 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    charge: async (orderPayment, { transactionContext }, requestContext) => {
-      const { services } = requestContext;
+    charge: async (orderPayment, { transactionContext }, unchainedAPI) => {
+      const { services } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
         return orderPayment;
@@ -220,7 +220,7 @@ export const configureOrderPaymentsModule = ({
 
       const arbitraryResponseData = await services.payment.charge(
         buildPaymentProviderActionsContext(orderPayment, transactionContext),
-        requestContext,
+        unchainedAPI,
       );
 
       if (arbitraryResponseData) {
@@ -261,7 +261,7 @@ export const configureOrderPaymentsModule = ({
       await emit('ORDER_PAY', { orderPayment });
     },
 
-    updateContext: async (orderPaymentId, context, requestContext) => {
+    updateContext: async (orderPaymentId, context, unchainedAPI) => {
       if (!context) return false;
 
       const selector = buildFindByIdSelector(orderPaymentId);
@@ -280,7 +280,7 @@ export const configureOrderPaymentsModule = ({
       });
 
       if (result.modifiedCount) {
-        await updateCalculation(orderId, requestContext);
+        await updateCalculation(orderId, unchainedAPI);
         await emit('ORDER_UPDATE_PAYMENT', {
           orderPayment: {
             ...orderPayment,

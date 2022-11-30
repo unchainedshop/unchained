@@ -1,10 +1,10 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { File } from '@unchainedshop/types/files';
 
 const upsertAsset = async (
   directoryName: string,
   asset: File & { fileName: string; headers?: Record<string, unknown> },
-  unchainedAPI: Context,
+  unchainedAPI: UnchainedCore,
 ) => {
   const { modules, services } = unchainedAPI;
   const { _id: fileId, fileName, url, meta, headers, ...assetData } = asset;

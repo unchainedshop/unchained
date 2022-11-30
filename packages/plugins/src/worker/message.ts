@@ -2,7 +2,6 @@ import { IWorkerAdapter, Work } from '@unchainedshop/types/worker';
 import { MessagingDirector } from '@unchainedshop/core-messaging';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
-import { Context } from '@unchainedshop/types/api';
 
 export const messagingLogger = createLogger('unchained:core-messaging');
 
@@ -17,7 +16,7 @@ export const MessageWorker: IWorkerAdapter<
   version: '1.0.0',
   type: 'MESSAGE',
 
-  doWork: async ({ template, ...payload }, requestContext, workId) => {
+  doWork: async ({ template, ...payload }, unchainedAPI, workId) => {
     try {
       const templateResolver = MessagingDirector.getTemplate(template);
 
@@ -26,13 +25,13 @@ export const MessageWorker: IWorkerAdapter<
           template,
           ...payload,
         },
-        requestContext as Context, // TODO: Type Refactor
+        unchainedAPI,
       );
 
       if (workConfigurations.length > 0) {
         const forked = await Promise.all(
           workConfigurations.map(async (workConfiguration: any) => {
-            const work = await requestContext.modules.worker.addWork({
+            const work = await unchainedAPI.modules.worker.addWork({
               ...workConfiguration,
               originalWorkId: workId,
             });

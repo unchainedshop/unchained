@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import upsertVariations from './upsertVariations';
 import upsertMedia from './upsertMedia';
 import upsertProductContent from './upsertProductContent';
@@ -7,7 +7,7 @@ import transformSpecificationToProductStructure from './transformSpecificationTo
 export default async function createProduct(
   payload: any,
   { logger, createShouldUpsertIfIDExists },
-  unchainedAPI: Context,
+  unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
   const { specification, media, variations, _id } = payload;

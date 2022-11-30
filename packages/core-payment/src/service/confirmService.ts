@@ -2,9 +2,9 @@ import { ConfirmService } from '@unchainedshop/types/payments';
 
 export const confirmService: ConfirmService = async (
   { paymentContext, paymentProviderId },
-  requestContext,
+  unchainedAPI,
 ) => {
-  const { modules } = requestContext;
+  const { modules } = unchainedAPI;
 
   const normalizedContext = {
     ...paymentContext,
@@ -14,7 +14,7 @@ export const confirmService: ConfirmService = async (
   const result = await modules.payment.paymentProviders.confirm(
     paymentProviderId,
     normalizedContext,
-    requestContext,
+    unchainedAPI,
   );
 
   if (!result) return false;

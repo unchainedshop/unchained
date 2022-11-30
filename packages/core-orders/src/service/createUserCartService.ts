@@ -2,24 +2,22 @@ import { CreateUserCartService } from '@unchainedshop/types/orders';
 
 export const createUserCartService: CreateUserCartService = async (
   { user, orderNumber, countryCode },
-  requestContext,
+  unchainedAPI,
 ) => {
-  const { countryContext, modules, services } = requestContext;
-
-  const normalizedCountryCode = countryCode || countryContext;
+  const { modules, services } = unchainedAPI;
 
   const currency = await services.countries.resolveDefaultCurrencyCode(
     {
-      isoCode: normalizedCountryCode,
+      isoCode: countryCode,
     },
-    requestContext,
+    unchainedAPI,
   );
 
   const order = await modules.orders.create({
     userId: user._id,
     orderNumber,
     currency,
-    countryCode: normalizedCountryCode,
+    countryCode,
     billingAddress: user.lastBillingAddress || user.profile?.address,
     contact:
       user.lastContact ||
@@ -31,6 +29,6 @@ export const createUserCartService: CreateUserCartService = async (
         : {}),
   });
 
-  await modules.orders.initProviders(order, requestContext);
+  await modules.orders.initProviders(order, unchainedAPI);
   return order;
 };

@@ -14,7 +14,7 @@ const findLoadedOptions = async (
   },
   filterProductIds: FilterProductIds,
   filterActions: FilterAdapterActions,
-  requestContext: UnchainedCore,
+  unchainedAPI: UnchainedCore,
 ) => {
   const { values, forceLiveCollection, productIdSet } = params;
 
@@ -27,7 +27,7 @@ const findLoadedOptions = async (
           values: [value],
           forceLiveCollection,
         },
-        requestContext,
+        unchainedAPI,
       );
       const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
       if (!filteredProductIds.size) {
@@ -63,7 +63,7 @@ export const loadFilter = async (
   },
   filterProductIds: FilterProductIds,
   filterActions: FilterAdapterActions,
-  requestContext: UnchainedCore,
+  unchainedAPI: UnchainedCore,
 ) => {
   const { allProductIds, filterQuery, forceLiveCollection, otherFilters } = params;
 
@@ -78,7 +78,7 @@ export const loadFilter = async (
       values: [undefined],
       forceLiveCollection,
     },
-    requestContext,
+    unchainedAPI,
   );
 
   const examinedProductIdSet = intersectSet(new Set(allProductIds), new Set(filteredProductIds));
@@ -100,7 +100,7 @@ export const loadFilter = async (
           values: filterQuery[otherFilter.key],
           forceLiveCollection,
         },
-        requestContext,
+        unchainedAPI,
       );
       return intersectSet(productIdSet, new Set(otherFilterProductIds));
     }, Promise.resolve(new Set(examinedProductIdSet)));
@@ -112,7 +112,7 @@ export const loadFilter = async (
           values,
           forceLiveCollection,
         },
-        requestContext,
+        unchainedAPI,
       )
     : filteredProductIds;
 
@@ -149,7 +149,7 @@ export const loadFilter = async (
         },
         filterProductIds,
         filterActions,
-        requestContext,
+        unchainedAPI,
       );
     },
   };

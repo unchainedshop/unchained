@@ -88,14 +88,14 @@ export const configureOrderDeliveriesModule = ({
       }));
     },
 
-    isBlockingOrderConfirmation: async (orderDelivery, requestContext) => {
-      const provider = await requestContext.modules.delivery.findProvider({
+    isBlockingOrderConfirmation: async (orderDelivery, unchainedAPI) => {
+      const provider = await unchainedAPI.modules.delivery.findProvider({
         deliveryProviderId: orderDelivery.deliveryProviderId,
       });
 
-      const isAutoReleaseAllowed = await requestContext.modules.delivery.isAutoReleaseAllowed(
+      const isAutoReleaseAllowed = await unchainedAPI.modules.delivery.isAutoReleaseAllowed(
         provider,
-        requestContext,
+        unchainedAPI,
       );
 
       return !isAutoReleaseAllowed;
@@ -141,10 +141,10 @@ export const configureOrderDeliveriesModule = ({
       await emit('ORDER_DELIVER', { orderDelivery: updatedOrderDelivery });
     },
 
-    send: async (orderDelivery, { order, deliveryContext }, requestContext) => {
+    send: async (orderDelivery, { order, deliveryContext }, unchainedAPI) => {
       if (normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN) return orderDelivery;
 
-      const deliveryProvider = await requestContext.modules.delivery.findProvider({
+      const deliveryProvider = await unchainedAPI.modules.delivery.findProvider({
         deliveryProviderId: orderDelivery.deliveryProviderId,
       });
 
@@ -152,7 +152,7 @@ export const configureOrderDeliveriesModule = ({
 
       const address = orderDelivery.context?.address || order || order.billingAddress;
 
-      const arbitraryResponseData = await requestContext.modules.delivery.send(
+      const arbitraryResponseData = await unchainedAPI.modules.delivery.send(
         deliveryProviderId,
         {
           order,
@@ -163,7 +163,7 @@ export const configureOrderDeliveriesModule = ({
             ...(address || {}),
           },
         },
-        requestContext,
+        unchainedAPI,
       );
 
       if (arbitraryResponseData) {
@@ -176,7 +176,7 @@ export const configureOrderDeliveriesModule = ({
       return orderDelivery;
     },
 
-    updateContext: async (orderDeliveryId, context, requestContext) => {
+    updateContext: async (orderDeliveryId, context, unchainedAPI) => {
       if (!context) return false;
 
       const selector = buildFindByIdSelector(orderDeliveryId);
@@ -195,7 +195,7 @@ export const configureOrderDeliveriesModule = ({
       });
 
       if (result.modifiedCount) {
-        await updateCalculation(orderId, requestContext);
+        await updateCalculation(orderId, unchainedAPI);
         await emit('ORDER_UPDATE_DELIVERY', {
           orderDelivery: {
             ...orderDelivery,
@@ -210,16 +210,16 @@ export const configureOrderDeliveriesModule = ({
 
     updateStatus,
 
-    updateCalculation: async (orderDelivery, requestContext) => {
+    updateCalculation: async (orderDelivery, unchainedAPI) => {
       log(`OrderDelivery ${orderDelivery._id} -> Update Calculation`, {
         orderId: orderDelivery.orderId,
       });
 
-      const calculation = await requestContext.modules.delivery.calculate(
+      const calculation = await unchainedAPI.modules.delivery.calculate(
         {
           item: orderDelivery,
         },
-        requestContext,
+        unchainedAPI,
       );
 
       const selector = buildFindByIdSelector(orderDelivery._id);

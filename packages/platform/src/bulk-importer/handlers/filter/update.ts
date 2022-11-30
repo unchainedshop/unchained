@@ -1,11 +1,11 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import upsertFilterContent from './upsertFilterContent';
 import upsertFilterOptionContent from './upsertFilterOptionContent';
 
 export default async function updateFilter(
   payload: any,
   { logger }: { logger: any },
-  unchainedAPI: Context,
+  unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;
@@ -26,7 +26,6 @@ export default async function updateFilter(
       },
       unchainedAPI,
       { skipInvalidation: true },
-      unchainedAPI.userId,
     );
   }
 

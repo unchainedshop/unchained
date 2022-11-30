@@ -1,7 +1,7 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations';
 
-const upsert = async (productVariation: ProductVariation, unchainedAPI: Context) => {
+const upsert = async (productVariation: ProductVariation, unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;
   try {
     const newVariation = await modules.products.variations.create(productVariation);
@@ -11,7 +11,7 @@ const upsert = async (productVariation: ProductVariation, unchainedAPI: Context)
   }
 };
 
-export default async function upsertVariations({ variations, productId }, unchainedAPI: Context) {
+export default async function upsertVariations({ variations, productId }, unchainedAPI: UnchainedCore) {
   const { modules } = unchainedAPI;
 
   const upsertedProductVariationIds = await Promise.all(

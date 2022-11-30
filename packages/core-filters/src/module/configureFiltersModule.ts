@@ -1,6 +1,6 @@
-import { Context, SortDirection, SortOption, UnchainedAPI } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { Document, Filter as DbFilter, FindOptions, Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import memoizee from 'memoizee';
 import {
   Filter,
@@ -11,7 +11,6 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import localePkg from 'locale';
 import { FilterType } from '../db/FilterType';
 import { FilterDirector } from '../director/FilterDirector';
 import { FiltersCollection } from '../db/FiltersCollection';
@@ -20,8 +19,6 @@ import { configureFilterSearchModule } from './configureFilterSearchModule';
 import { configureFilterTextsModule } from './configureFilterTextsModule';
 import createFilterValueParser from '../filter-value-parsers';
 import { filtersSettings } from '../filters-settings';
-
-const { Locale } = localePkg;
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
@@ -54,10 +51,10 @@ export const configureFiltersModule = async ({
   const findProductIds = async (
     filter: Filter,
     { value }: { value?: boolean | string },
-    requestContext: UnchainedAPI,
+    unchainedAPI: UnchainedCore,
   ) => {
-    const { modules } = requestContext;
-    const director = await FilterDirector.actions({ filter, searchQuery: {} }, requestContext);
+    const { modules } = unchainedAPI;
+    const director = await FilterDirector.actions({ filter, searchQuery: {} }, unchainedAPI);
     const productSelector = await director.transformProductSelector(
       modules.products.search.buildActiveDraftStatusFilter(),
       {
@@ -84,20 +81,20 @@ export const configureFiltersModule = async ({
 
   const buildProductIdMap = async (
     filter: Filter,
-    requestContext: UnchainedAPI,
+    unchainedAPI: UnchainedCore,
   ): Promise<[Array<string>, Record<string, Array<string>>]> => {
-    const allProductIds = await findProductIds(filter, {}, requestContext);
+    const allProductIds = await findProductIds(filter, {}, unchainedAPI);
     const productIdsMap =
       filter.type === FilterType.SWITCH
         ? {
-            true: await findProductIds(filter, { value: true }, requestContext),
-            false: await findProductIds(filter, { value: false }, requestContext),
+            true: await findProductIds(filter, { value: true }, unchainedAPI),
+            false: await findProductIds(filter, { value: false }, unchainedAPI),
           }
         : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
             const accumulator = await accumulatorPromise;
             return {
               ...accumulator,
-              [option]: await findProductIds(filter, { value: option }, requestContext),
+              [option]: await findProductIds(filter, { value: option }, unchainedAPI),
             };
           }, Promise.resolve({}));
 
@@ -108,11 +105,11 @@ export const configureFiltersModule = async ({
     async function filterProductIdsRaw(
       filter: Filter,
       { values, forceLiveCollection }: { values: Array<string>; forceLiveCollection?: boolean },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) {
       const getProductIds =
         (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
-        (await buildProductIdMap(filter, requestContext));
+        (await buildProductIdMap(filter, unchainedAPI));
 
       const [allProductIds, productIds] = getProductIds;
       const parse = createFilterValueParser(filter.type);
@@ -132,16 +129,16 @@ export const configureFiltersModule = async ({
     },
   );
 
-  const invalidateProductIdCache = async (filter: Filter, requestContext: UnchainedAPI) => {
+  const invalidateProductIdCache = async (filter: Filter, unchainedAPI: UnchainedCore) => {
     if (!filter) return;
 
     log(`Filters: Rebuilding ${filter.key}`, { level: LogLevel.Verbose });
 
-    const [productIds, productIdMap] = await buildProductIdMap(filter, requestContext);
+    const [productIds, productIdMap] = await buildProductIdMap(filter, unchainedAPI);
     await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
   };
 
-  const invalidateCache = async (selector: DbFilter<Filter>, requestContext: UnchainedAPI) => {
+  const invalidateCache = async (selector: DbFilter<Filter>, unchainedAPI: UnchainedCore) => {
     log('Filters: Start invalidating filter caches', {
       level: LogLevel.Verbose,
     });
@@ -149,7 +146,7 @@ export const configureFiltersModule = async ({
     const filters = await Filters.find(selector || {}).toArray();
     await filters.reduce(async (lastPromise, filter) => {
       await lastPromise;
-      return invalidateProductIdCache(filter, requestContext);
+      return invalidateProductIdCache(filter, unchainedAPI);
     }, Promise.resolve(undefined));
     filterProductIds.clear();
   };
@@ -210,11 +207,7 @@ export const configureFiltersModule = async ({
     invalidateCache,
 
     // Mutations
-    create: async (
-      { locale, title, type, isActive = false, ...filterData },
-      requestContext,
-      options,
-    ) => {
+    create: async ({ locale, title, type, isActive = false, ...filterData }, unchainedAPI, options) => {
       const filterId = await mutations.create({
         isActive,
         created: new Date(),
@@ -229,7 +222,7 @@ export const configureFiltersModule = async ({
       }
 
       if (!options?.skipInvalidation) {
-        await invalidateProductIdCache(filter, requestContext);
+        await invalidateProductIdCache(filter, unchainedAPI);
         filterProductIds.clear();
       }
 
@@ -238,7 +231,7 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    createFilterOption: async (filterId, { value, title, locale }, requestContext) => {
+    createFilterOption: async (filterId, { value, title, locale }, unchainedAPI) => {
       const selector = generateDbFilterById(filterId);
       await Filters.updateOne(selector, {
         $set: {
@@ -252,7 +245,7 @@ export const configureFiltersModule = async ({
       await filterTexts.upsertLocalizedText({ filterId, filterOptionValue: value }, locale, { title });
 
       const filter = await Filters.findOne(selector, {});
-      await invalidateProductIdCache(filter, requestContext);
+      await invalidateProductIdCache(filter, unchainedAPI);
       filterProductIds.clear();
 
       return filter;
@@ -265,7 +258,7 @@ export const configureFiltersModule = async ({
       return deletedCount;
     },
 
-    removeFilterOption: async ({ filterId, filterOptionValue }, requestContext) => {
+    removeFilterOption: async ({ filterId, filterOptionValue }, unchainedAPI) => {
       const selector = generateDbFilterById(filterId);
       await Filters.updateOne(selector, {
         $set: {
@@ -277,18 +270,18 @@ export const configureFiltersModule = async ({
       });
 
       const filter = await Filters.findOne(selector, {});
-      await invalidateProductIdCache(filter, requestContext);
+      await invalidateProductIdCache(filter, unchainedAPI);
       filterProductIds.clear();
 
       return filter;
     },
 
-    update: async (_id, doc, requestContext, options) => {
+    update: async (_id, doc, unchainedAPI, options) => {
       const filterId = await mutations.update(_id, doc);
 
       if (filterId && !options?.skipInvalidation) {
         const filter = await Filters.findOne(generateDbFilterById(filterId), {});
-        await invalidateProductIdCache(filter, requestContext);
+        await invalidateProductIdCache(filter, unchainedAPI);
         filterProductIds.clear();
       }
 

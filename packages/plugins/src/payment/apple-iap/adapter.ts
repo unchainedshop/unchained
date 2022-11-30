@@ -4,6 +4,7 @@ import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { AppleTransactionsModule } from './module/configureAppleTransactionsModule';
 
 const logger = createLogger('unchained:core-payment:iap');
@@ -43,7 +44,7 @@ const AppleNotificationTypes = {
 
 const fixPeriods = async (
   { transactionId, enrollmentId, orderId, transactions },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => {
   const relevantTransactions = transactions.filter(
     // eslint-disable-next-line
@@ -65,11 +66,11 @@ const fixPeriods = async (
       return left.end.getTime() - right.end.getTime();
     });
 
-  await requestContext.modules.enrollments.removeEnrollmentPeriodByOrderId(enrollmentId, orderId);
+  await unchainedAPI.modules.enrollments.removeEnrollmentPeriodByOrderId(enrollmentId, orderId);
 
   return Promise.all(
     adjustedEnrollmentPeriods.map((period) =>
-      requestContext.modules.enrollments.addEnrollmentPeriod(enrollmentId, period),
+      unchainedAPI.modules.enrollments.addEnrollmentPeriod(enrollmentId, period),
     ),
   );
 };

@@ -2,10 +2,10 @@ import { Query } from '@unchainedshop/types/common';
 import { RemoveFilesService } from '@unchainedshop/types/files';
 import { getFileAdapter } from '../utils/getFileAdapter';
 
-export const removeFilesService: RemoveFilesService = async ({ fileIds }, requestContext) => {
+export const removeFilesService: RemoveFilesService = async ({ fileIds }, unchainedAPI) => {
   const {
     modules: { files },
-  } = requestContext;
+  } = unchainedAPI;
 
   if (fileIds && typeof fileIds !== 'string' && !Array.isArray(fileIds))
     throw Error('Media id/s to be removed not provided as a string or array');
@@ -19,7 +19,7 @@ export const removeFilesService: RemoveFilesService = async ({ fileIds }, reques
   const fileObjects = await files.findFiles(selector);
 
   try {
-    await fileUploadAdapter.removeFiles(fileObjects, requestContext);
+    await fileUploadAdapter.removeFiles(fileObjects, unchainedAPI);
   } catch (e) {
     console.warn(e); // eslint-disable-line
   }

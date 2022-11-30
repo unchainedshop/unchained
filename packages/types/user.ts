@@ -1,5 +1,5 @@
 import { Filter } from 'mongodb';
-import { Context, SortOption } from './api';
+import { SortOption } from './api';
 import {
   Address,
   Contact,
@@ -11,6 +11,7 @@ import {
   UpdateOptions,
   _ID,
 } from './common';
+import { UnchainedCore } from './core';
 import { Country } from './countries';
 import { File } from './files';
 import { Language } from './languages';
@@ -122,18 +123,15 @@ export type UsersModule = {
 
 export type UpdateUserAvatarAfterUploadService = (
   params: { file: File },
-  context: Context,
+  context: UnchainedCore,
 ) => Promise<void>;
 
-export type GetUserLanguageService = (user: User, context: Context) => Promise<Language>;
+export type GetUserLanguageService = (user: User, context: UnchainedCore) => Promise<Language>;
 
-export type GetUserRoleActionsService = (user: User, context: Context) => Promise<Array<string>>;
-
-export type GetUserCountryService = (user: User, context: Context) => Promise<Country>;
+export type GetUserCountryService = (user: User, context: UnchainedCore) => Promise<Country>;
 
 export interface UserServices {
   getUserCountry: GetUserCountryService;
   getUserLanguage: GetUserLanguageService;
-  getUserRoleActions: GetUserRoleActionsService;
   updateUserAvatarAfterUpload: UpdateUserAvatarAfterUploadService;
 }

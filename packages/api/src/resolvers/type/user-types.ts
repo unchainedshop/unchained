@@ -17,6 +17,7 @@ import {
 } from '@unchainedshop/types/user';
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing';
+import { Roles, permissions } from '@unchainedshop/roles';
 import { checkAction, checkTypeResolver } from '../../acl';
 import { actions } from '../../roles';
 
@@ -151,7 +152,9 @@ export const User: UserHelperTypes = {
 
   allowedActions: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.services.users.getUserRoleActions(user, context);
+
+    const userRoles = Roles.getUserRoles(user?._id, user.roles, true);
+    return permissions(userRoles, context.roles) as Promise<string[]>;
   },
 
   orders: async (user, params, context) => {

@@ -2,9 +2,9 @@ import { ChargeService } from '@unchainedshop/types/payments';
 
 export const chargeService: ChargeService = async (
   { paymentContext, paymentProviderId },
-  requestContext,
+  unchainedAPI,
 ) => {
-  const { modules } = requestContext;
+  const { modules } = unchainedAPI;
 
   const paymentCredentials =
     paymentContext.transactionContext?.paymentCredentials ||
@@ -26,7 +26,7 @@ export const chargeService: ChargeService = async (
   const result = await modules.payment.paymentProviders.charge(
     paymentProviderId,
     normalizedContext,
-    requestContext,
+    unchainedAPI,
   );
 
   if (!result) return false;

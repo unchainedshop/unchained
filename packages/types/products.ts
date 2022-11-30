@@ -1,4 +1,4 @@
-import { Context, SortOption, UnchainedAPI } from './api';
+import { Context, SortOption } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
 import { UnchainedCore } from './core';
@@ -396,8 +396,8 @@ export type ProductsModule = {
  */
 
 export type RemoveProductService = (
-  params: { productId: string; userId?: string },
-  context: UnchainedAPI,
+  params: { productId: string },
+  context: UnchainedCore,
 ) => Promise<boolean>;
 
 export interface ProductServices {

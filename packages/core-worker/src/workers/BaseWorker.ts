@@ -26,7 +26,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
     return floored;
   },
 
-  actions: ({ workerId, worker }: WorkerParams, requestContext) => {
+  actions: ({ workerId, worker }: WorkerParams, unchainedAPI) => {
     const resolvedWorkerId = resolveWorkerId(workerId, worker.type);
     log(`${worker.key} -> Initialized: ${resolvedWorkerId}`);
 
@@ -40,7 +40,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
       },
 
       reset: async (referenceDate = new Date()) => {
-        await requestContext.modules.worker.markOldWorkAsFailed({
+        await unchainedAPI.modules.worker.markOldWorkAsFailed({
           types: WorkerDirector.getActivePluginTypes(false),
           worker: workerId,
           referenceDate,
@@ -55,7 +55,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
             fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
             const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
             nextDate.setMilliseconds(0);
-            return requestContext.modules.worker.ensureOneWork({
+            return unchainedAPI.modules.worker.ensureOneWork({
               type,
               input: input(),
               scheduled: nextDate,
@@ -76,7 +76,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
         const processRecursively = async (recursionCounter = 0) => {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
 
-          const work = await requestContext.modules.worker.allocateWork({
+          const work = await unchainedAPI.modules.worker.allocateWork({
             types: WorkerDirector.getActivePluginTypes(false),
             worker: workerId,
           });
@@ -84,9 +84,9 @@ export const BaseWorker: IWorker<WorkerParams> = {
           let doneWork: Work | null = null;
 
           if (work) {
-            const output = await requestContext.modules.worker.doWork(work, requestContext);
+            const output = await unchainedAPI.modules.worker.doWork(work, unchainedAPI);
 
-            doneWork = await requestContext.modules.worker.finishWork(work._id, {
+            doneWork = await unchainedAPI.modules.worker.finishWork(work._id, {
               ...output,
               finished: work.finished || new Date(),
               started: work.started,

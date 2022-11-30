@@ -1,8 +1,8 @@
-import { Context } from '@unchainedshop/types/api';
 import { AssortmentFilter } from '@unchainedshop/types/assortments';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
-const upsert = async (assortmentFilter: AssortmentFilter, { modules }: Context) => {
+const upsert = async (assortmentFilter: AssortmentFilter, { modules }: UnchainedCore) => {
   if (
     !(await modules.filters.filterExists({
       filterId: assortmentFilter.filterId,
@@ -18,7 +18,7 @@ const upsert = async (assortmentFilter: AssortmentFilter, { modules }: Context) 
   }
 };
 
-export default async ({ filters, assortmentId }, unchainedAPI: Context) => {
+export default async ({ filters, assortmentId }, unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;
   const assortmentFilterIds = await Promise.all(
     filters.map(async (filter: AssortmentFilter) => {

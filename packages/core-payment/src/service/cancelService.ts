@@ -2,9 +2,9 @@ import { CancelService } from '@unchainedshop/types/payments';
 
 export const cancelService: CancelService = async (
   { paymentContext, paymentProviderId },
-  requestContext,
+  unchainedAPI,
 ) => {
-  const { modules } = requestContext;
+  const { modules } = unchainedAPI;
 
   const normalizedContext = {
     ...paymentContext,
@@ -14,7 +14,7 @@ export const cancelService: CancelService = async (
   const result = await modules.payment.paymentProviders.cancel(
     paymentProviderId,
     normalizedContext,
-    requestContext,
+    unchainedAPI,
   );
 
   if (!result) return false;

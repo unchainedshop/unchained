@@ -12,10 +12,10 @@ const baseDirector = BaseDirector<IQuotationAdapter>('QuotationDirector', {
   adapterSortKey: 'orderIndex',
 });
 
-const findAppropriateAdapters = (quotationContext: QuotationContext, requestContext: UnchainedCore) =>
+const findAppropriateAdapters = (quotationContext: QuotationContext, unchainedAPI: UnchainedCore) =>
   baseDirector.getAdapters({
     adapterFilter: (Adapter: IQuotationAdapter) => {
-      const activated = Adapter.isActivatedFor(quotationContext, requestContext);
+      const activated = Adapter.isActivatedFor(quotationContext, unchainedAPI);
       if (!activated) {
         log(`Quotation Director -> ${Adapter.key} (${Adapter.version}) skipped`, {
           level: LogLevel.Warning,
@@ -28,10 +28,10 @@ const findAppropriateAdapters = (quotationContext: QuotationContext, requestCont
 export const QuotationDirector: IQuotationDirector = {
   ...baseDirector,
 
-  actions: async (quotationContext, requestContext) => {
-    const context = { ...quotationContext, ...requestContext };
+  actions: async (quotationContext, unchainedAPI) => {
+    const context = { ...quotationContext, ...unchainedAPI };
 
-    const Adapter = findAppropriateAdapters(quotationContext, requestContext)?.shift();
+    const Adapter = findAppropriateAdapters(quotationContext, unchainedAPI)?.shift();
 
     if (!Adapter) {
       throw new Error('No suitable quotation plugin available for this context');

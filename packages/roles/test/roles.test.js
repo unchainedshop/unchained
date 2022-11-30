@@ -9,8 +9,8 @@ import {
 } from '@jest/globals';
 import { setupDatabase } from '../../tests/helpers';
 import { User } from '../../tests/seeds/users';
-import { isFunction, has } from './helpers';
-import { Role, Roles } from './index';
+import {  } from '../src/helpers';
+import { Role, Roles, isFunction, has } from '../src/roles-index';
 
 describe('Roles', () => {
   beforeAll(async () => {

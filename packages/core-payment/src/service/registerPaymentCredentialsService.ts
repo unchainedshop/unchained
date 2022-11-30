@@ -3,13 +3,13 @@ import { RegisterPaymentCredentialsService } from '@unchainedshop/types/payments
 export const registerPaymentCredentialsService: RegisterPaymentCredentialsService = async (
   paymentProviderId,
   paymentContext,
-  requestContext,
+  unchainedAPI,
 ) => {
-  const { modules } = requestContext;
+  const { modules } = unchainedAPI;
   const registration = await modules.payment.paymentProviders.register(
     paymentProviderId,
     paymentContext,
-    requestContext,
+    unchainedAPI,
   );
 
   if (!registration) return null;

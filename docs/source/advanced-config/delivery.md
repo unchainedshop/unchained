@@ -31,7 +31,7 @@ const ShopPickUp: IDeliveryAdapter = {
     return type === DeliveryProviderType.PICKUP;
   },
 
-  actions: (config: DeliveryConfiguration, context: DeliveryAdapterContext, requestContext: Context,): DeliveryAdapterActions => {
+  actions: (config: DeliveryConfiguration, context: DeliveryAdapterContext, unchainedAPI: UnchainedCore): DeliveryAdapterActions => {
     return {
       isAutoReleaseAllowed(): boolean {
         return false;

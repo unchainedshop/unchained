@@ -18,14 +18,14 @@ const baseDirector = BasePricingDirector<
 export const ProductPricingDirector: IProductPricingDirector = {
   ...baseDirector,
 
-  async buildPricingContext({ item: orderPosition, ...context }, requestContext) {
-    const { modules } = requestContext;
+  async buildPricingContext({ item: orderPosition, ...context }, unchainedAPI) {
+    const { modules } = unchainedAPI;
 
     if (!orderPosition) {
       return {
         discounts: [],
         ...context,
-        ...requestContext,
+        ...unchainedAPI,
       } as ProductPricingAdapterContext;
     }
 
@@ -45,7 +45,7 @@ export const ProductPricingDirector: IProductPricingDirector = {
       country: order.countryCode,
       currency: order.currency,
       ...context,
-      ...requestContext,
+      ...unchainedAPI,
       discounts,
       order,
       product,
@@ -55,8 +55,8 @@ export const ProductPricingDirector: IProductPricingDirector = {
     };
   },
 
-  async actions(pricingContext, requestContext) {
-    const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
+  async actions(pricingContext, unchainedAPI) {
+    const actions = await baseDirector.actions(pricingContext, unchainedAPI, this.buildPricingContext);
     return {
       ...actions,
       calculationSheet() {

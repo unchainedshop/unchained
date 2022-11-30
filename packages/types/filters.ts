@@ -100,7 +100,6 @@ export type FiltersModule = {
     doc: Filter & { title: string; locale: string },
     unchainedAPI: UnchainedCore,
     options?: { skipInvalidation?: boolean },
-    userId?: string,
   ) => Promise<Filter>;
 
   createFilterOption: (
@@ -114,7 +113,6 @@ export type FiltersModule = {
     doc: Filter,
     unchainedAPI: UnchainedCore,
     options?: { skipInvalidation?: boolean },
-    userId?: string,
   ) => Promise<string>;
 
   delete: (filterId: string) => Promise<number>;

@@ -27,16 +27,13 @@ const findAppropriateAdapters = (productPlan?: ProductPlan) =>
 export const EnrollmentDirector: IEnrollmentDirector = {
   ...baseDirector,
 
-  transformOrderItemToEnrollment: async ({ orderPosition, product }, doc, requestContext) => {
+  transformOrderItemToEnrollment: async ({ orderPosition, product }, doc, unchainedAPI) => {
     const Adapter = findAppropriateAdapters(product.plan)?.[0];
     if (!Adapter) {
       throw new Error('No suitable enrollment plugin available for this item');
     }
 
-    const enrollmentPlan = await Adapter.transformOrderItemToEnrollmentPlan(
-      orderPosition,
-      requestContext,
-    );
+    const enrollmentPlan = await Adapter.transformOrderItemToEnrollmentPlan(orderPosition, unchainedAPI);
 
     const enrollmentData: EnrollmentData = {
       ...doc,
@@ -47,8 +44,8 @@ export const EnrollmentDirector: IEnrollmentDirector = {
     return enrollmentData;
   },
 
-  actions: async (enrollmentContext, requestContext) => {
-    const context = { ...enrollmentContext, ...requestContext };
+  actions: async (enrollmentContext, unchainedAPI) => {
+    const context = { ...enrollmentContext, ...unchainedAPI };
 
     // Resolve adapter
     const product = await context.modules.products.findProduct({

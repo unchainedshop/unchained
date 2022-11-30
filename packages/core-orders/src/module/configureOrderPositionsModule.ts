@@ -44,11 +44,11 @@ export const configureOrderPositionsModule = ({
     },
 
     // Transformations
-    discounts: (orderPosition, { order, orderDiscount }, requestContext) => {
-      const pricingSheet = requestContext.modules.orders.positions.pricingSheet(
+    discounts: (orderPosition, { order, orderDiscount }, unchainedAPI) => {
+      const pricingSheet = unchainedAPI.modules.orders.positions.pricingSheet(
         orderPosition,
         order.currency,
-        requestContext,
+        unchainedAPI,
       );
 
       return pricingSheet.discountPrices(orderDiscount._id).map((discount) => ({
@@ -70,7 +70,7 @@ export const configureOrderPositionsModule = ({
     create: async (
       { configuration, context, quantity, quotationId },
       { order, product, originalProduct },
-      requestContext,
+      unchainedAPI,
     ) => {
       const orderId = order._id;
       const productId = product._id;
@@ -95,12 +95,12 @@ export const configureOrderPositionsModule = ({
         scheduling: [],
       });
 
-      await updateCalculation(orderId, requestContext);
+      await updateCalculation(orderId, unchainedAPI);
 
       return OrderPositions.findOne(buildFindByIdSelector(positionId));
     },
 
-    delete: async (orderPositionId, requestContext) => {
+    delete: async (orderPositionId, unchainedAPI) => {
       const selector = buildFindByIdSelector(orderPositionId);
       const orderPosition = await OrderPositions.findOne(selector, {});
 
@@ -110,7 +110,7 @@ export const configureOrderPositionsModule = ({
 
       await OrderPositions.deleteOne(selector);
 
-      await updateCalculation(orderPosition.orderId, requestContext);
+      await updateCalculation(orderPosition.orderId, unchainedAPI);
 
       await emit('ORDER_REMOVE_CART_ITEM', {
         orderPosition,
@@ -119,12 +119,12 @@ export const configureOrderPositionsModule = ({
       return { ...orderPosition, calculation: [] };
     },
 
-    removePositions: async ({ orderId }, requestContext) => {
+    removePositions: async ({ orderId }, unchainedAPI) => {
       log('Remove Positions', { orderId });
 
       const result = await OrderPositions.deleteMany({ orderId });
 
-      await updateCalculation(orderId, requestContext);
+      await updateCalculation(orderId, unchainedAPI);
 
       await emit('ORDER_EMPTY_CART', { orderId, count: result.deletedCount });
 
@@ -134,7 +134,7 @@ export const configureOrderPositionsModule = ({
     updateProductItem: async (
       { quantity, configuration },
       { order, product, orderPosition },
-      requestContext,
+      unchainedAPI,
     ) => {
       const selector = buildFindByIdSelector(orderPosition._id, order._id);
       const modifier: any = {
@@ -148,10 +148,10 @@ export const configureOrderPositionsModule = ({
       }
 
       if (configuration !== null) {
-        const resolvedProduct = await requestContext.modules.products.resolveOrderableProduct(
+        const resolvedProduct = await unchainedAPI.modules.products.resolveOrderableProduct(
           product,
           { configuration },
-          requestContext,
+          unchainedAPI,
         );
         modifier.$set.productId = resolvedProduct._id;
         modifier.$set.configuration = configuration;
@@ -164,12 +164,12 @@ export const configureOrderPositionsModule = ({
           configuration,
           quantityDiff: quantity - orderPosition.quantity,
         },
-        requestContext,
+        unchainedAPI,
       );
 
       await OrderPositions.updateOne(selector, modifier);
 
-      await updateCalculation(order._id, requestContext);
+      await updateCalculation(order._id, unchainedAPI);
 
       const updatedOrderPosition = await OrderPositions.findOne(selector, {});
 
@@ -180,8 +180,8 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
-    updateScheduling: async ({ order, orderDelivery, orderPosition }, requestContext) => {
-      const { modules } = requestContext;
+    updateScheduling: async ({ order, orderDelivery, orderPosition }, unchainedAPI) => {
+      const { modules } = unchainedAPI;
       // scheduling (store in db for auditing)
       const product = await modules.products.findProduct({
         productId: orderPosition.productId,
@@ -200,7 +200,7 @@ export const configureOrderPositionsModule = ({
               product,
               deliveryProvider,
             },
-            requestContext,
+            unchainedAPI,
           )
         ).map(async (warehousingProvider) => {
           const context = {
@@ -215,10 +215,10 @@ export const configureOrderPositionsModule = ({
             referenceDate: order.ordered,
             quantity: orderPosition.quantity,
           };
-          const dispatch = await requestContext.modules.warehousing.estimatedDispatch(
+          const dispatch = await unchainedAPI.modules.warehousing.estimatedDispatch(
             warehousingProvider,
             context,
-            requestContext,
+            unchainedAPI,
           );
 
           return {
@@ -253,8 +253,8 @@ export const configureOrderPositionsModule = ({
       return OrderPositions.findOne(selector, {});
     },
 
-    addProductItem: async (orderPosition: OrderPosition, { order, product }, requestContext) => {
-      const { modules } = requestContext;
+    addProductItem: async (orderPosition: OrderPosition, { order, product }, unchainedAPI) => {
+      const { modules } = unchainedAPI;
       const { configuration, orderId: positionOrderId, quantity, ...scope } = orderPosition;
       const orderId = order._id || positionOrderId;
 
@@ -262,7 +262,7 @@ export const configureOrderPositionsModule = ({
       const resolvedProduct = await modules.products.resolveOrderableProduct(
         product,
         { configuration },
-        requestContext,
+        unchainedAPI,
       );
 
       // Validate add to cart mutation
@@ -273,7 +273,7 @@ export const configureOrderPositionsModule = ({
           configuration,
           quantityDiff: quantity,
         },
-        requestContext,
+        unchainedAPI,
       );
 
       // Search for existing position
@@ -307,7 +307,7 @@ export const configureOrderPositionsModule = ({
         { upsert: true },
       );
 
-      await updateCalculation(orderId, requestContext);
+      await updateCalculation(orderId, unchainedAPI);
 
       const upsertedOrderPosition = await OrderPositions.findOne(selector);
 

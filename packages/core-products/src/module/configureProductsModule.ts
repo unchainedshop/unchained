@@ -276,8 +276,8 @@ export const configureProductsModule = async ({
 
     proxyProducts,
 
-    resolveOrderableProduct: async (product, { configuration }, requestContext) => {
-      const { modules } = requestContext;
+    resolveOrderableProduct: async (product, { configuration }, unchainedAPI) => {
+      const { modules } = unchainedAPI;
       const productId = product._id as string;
 
       if (product.type === ProductTypes.ConfigurableProduct) {
@@ -309,8 +309,8 @@ export const configureProductsModule = async ({
     prices: configureProductPricesModule({ proxyProducts, db }),
 
     // Product adapter
-    calculate: async (pricingContext, requestContext) => {
-      const director = await ProductPricingDirector.actions(pricingContext, requestContext);
+    calculate: async (pricingContext, unchainedAPI) => {
+      const director = await ProductPricingDirector.actions(pricingContext, unchainedAPI);
 
       return director.calculate();
     },

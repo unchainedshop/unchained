@@ -44,7 +44,7 @@ export const WorkerDirector: IWorkerDirector = {
   },
   getAutoSchedules: () => Array.from(AutoScheduleMap),
 
-  doWork: async ({ type, input, _id: workId }, requestContext) => {
+  doWork: async ({ type, input, _id: workId }, unchainedAPI) => {
     const adapter = WorkerDirector.getAdapter(type);
 
     if (!adapter) {
@@ -52,7 +52,7 @@ export const WorkerDirector: IWorkerDirector = {
     }
 
     try {
-      const output = await adapter.doWork(input, requestContext, workId);
+      const output = await adapter.doWork(input, unchainedAPI, workId);
       WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });
       return output;
     } catch (error) {

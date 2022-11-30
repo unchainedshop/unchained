@@ -8,8 +8,8 @@ export const configureOrderModuleTransformations = ({
   Orders: Collection<Order>;
 }): OrderTransformations => {
   return {
-    discounted: async (order, orderDiscount, requestContext) => {
-      const { modules } = requestContext;
+    discounted: async (order, orderDiscount, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
       // Delivery discounts
       const orderDelivery = await modules.orders.deliveries.findDelivery({
@@ -18,7 +18,7 @@ export const configureOrderModuleTransformations = ({
       const orderDeliveryDiscounts = modules.orders.deliveries.discounts(
         orderDelivery,
         { order, orderDiscount },
-        requestContext,
+        unchainedAPI,
       );
 
       // Payment discounts
@@ -28,7 +28,7 @@ export const configureOrderModuleTransformations = ({
       const orderPaymentDiscounts = modules.orders.payments.discounts(
         orderPayment,
         { order, orderDiscount },
-        requestContext,
+        unchainedAPI,
       );
 
       // Position discounts
@@ -36,7 +36,7 @@ export const configureOrderModuleTransformations = ({
         orderId: order._id,
       });
       const orderPositionDiscounts = orderPositions.flatMap((orderPosition) =>
-        modules.orders.positions.discounts(orderPosition, { order, orderDiscount }, requestContext),
+        modules.orders.positions.discounts(orderPosition, { order, orderDiscount }, unchainedAPI),
       );
 
       // order discounts
@@ -60,8 +60,8 @@ export const configureOrderModuleTransformations = ({
       return discounted;
     },
 
-    discountTotal: async (order, orderDiscount, requestContext) => {
-      const { modules } = requestContext;
+    discountTotal: async (order, orderDiscount, unchainedAPI) => {
+      const { modules } = unchainedAPI;
       const orderDiscountId = orderDiscount._id;
 
       // Delivery discounts
@@ -71,7 +71,7 @@ export const configureOrderModuleTransformations = ({
       const orderDeliveryDiscountSum =
         orderDelivery &&
         modules.orders.deliveries
-          .pricingSheet(orderDelivery, order.currency, requestContext)
+          .pricingSheet(orderDelivery, order.currency, unchainedAPI)
           .discountSum(orderDiscountId);
 
       // Payment discounts
@@ -81,7 +81,7 @@ export const configureOrderModuleTransformations = ({
       const orderPaymentDiscountSum =
         orderPayment &&
         modules.orders.payments
-          .pricingSheet(orderPayment, order.currency, requestContext)
+          .pricingSheet(orderPayment, order.currency, unchainedAPI)
           .discountSum(orderDiscountId);
 
       // Position discounts
@@ -90,7 +90,7 @@ export const configureOrderModuleTransformations = ({
       });
       const orderPositionDiscounts = orderPositions.map((orderPosition) =>
         modules.orders.positions
-          .pricingSheet(orderPosition, order.currency, requestContext)
+          .pricingSheet(orderPosition, order.currency, unchainedAPI)
           .discountSum(orderDiscountId),
       );
 

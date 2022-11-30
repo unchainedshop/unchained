@@ -1,8 +1,8 @@
-import { Context } from '@unchainedshop/types/api';
 import { AssortmentLink } from '@unchainedshop/types/assortments';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
-const upsert = async (assortmentLink: AssortmentLink, { modules }: Context) => {
+const upsert = async (assortmentLink: AssortmentLink, { modules }: UnchainedCore) => {
   if (
     !(await modules.assortments.assortmentExists({
       assortmentId: assortmentLink.childAssortmentId,
@@ -22,7 +22,7 @@ const upsert = async (assortmentLink: AssortmentLink, { modules }: Context) => {
   }
 };
 
-export default async ({ children, assortmentId: parentAssortmentId }, unchainedAPI: Context) => {
+export default async ({ children, assortmentId: parentAssortmentId }, unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;
   const assortmentLinkIds = await Promise.all(
     children.map(async ({ assortmentId: childAssortmentId, ...childrenRest }) => {
