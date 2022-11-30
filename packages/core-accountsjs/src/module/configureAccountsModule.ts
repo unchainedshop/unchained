@@ -80,6 +80,8 @@ export const configureAccountsModule = async ({
 
     // Autentication
     createLoginToken: async (userId, rawContext) => {
+      // TODO: rawContext does not contain user and locale date anymore
+      // following the type but the code still depends on it
       const context = evaluateContext(filterContext(rawContext));
 
       const { user: tokenUser, token: loginToken } = await accountsServer.loginWithUser(userId);
@@ -98,6 +100,8 @@ export const configureAccountsModule = async ({
     },
 
     createImpersonationToken: async (userId, rawContext) => {
+      // TODO: rawContext does not contain user and locale date anymore
+      // following the type but the code still depends on it
       const context = evaluateContext(filterContext(rawContext));
 
       const { user: tokenUser, token: loginToken } = await accountsServer.loginWithUser(userId);
@@ -121,6 +125,8 @@ export const configureAccountsModule = async ({
     createHashLoginToken: (loginToken) => accountsServer.hashLoginToken(loginToken),
 
     loginWithService: async (params, rawContext) => {
+      // TODO: rawContext does not contain user and locale date anymore
+      // following the type but the code still depends on it
       const context = evaluateContext(filterContext(rawContext));
 
       // eslint-disable-next-line

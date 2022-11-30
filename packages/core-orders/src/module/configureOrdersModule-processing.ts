@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { Collection } from '@unchainedshop/types/common';
 import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
@@ -259,7 +258,7 @@ export const configureOrderModuleProcessing = ({
           user,
           countryCode,
         },
-        unchainedAPI as Context,
+        unchainedAPI,
       );
     },
 

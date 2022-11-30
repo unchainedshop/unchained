@@ -6,7 +6,6 @@ import {
 } from '@unchainedshop/core-filters';
 import { configureProductsModule } from '@unchainedshop/core-products';
 import { FiltersModule } from '@unchainedshop/types/filters';
-import { Context } from '@unchainedshop/types/api';
 import { ProductsModule } from '@unchainedshop/types/products';
 
 describe('Test exports', () => {
@@ -57,7 +56,7 @@ describe('Test exports', () => {
         title: 'My Test Filter',
         locale: 'en',
       },
-      context as Context,
+      context,
       { skipInvalidation: true },
       'Test-User-1'
     );

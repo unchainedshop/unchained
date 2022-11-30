@@ -3,7 +3,6 @@ import { initDb } from '@unchainedshop/mongodb';
 import { configureUsersModule } from '@unchainedshop/core-users';
 import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
 import { EnrollmentsModule } from '@unchainedshop/types/enrollments';
-import { Context } from '@unchainedshop/types/api';
 import { User, UsersModule } from '@unchainedshop/types/user';
 
 describe('Test exports', () => {
@@ -70,7 +69,7 @@ describe('Test exports', () => {
           context: {},
         },
       },
-      context as Context
+      context
     );
 
     assert.ok(enrollment);

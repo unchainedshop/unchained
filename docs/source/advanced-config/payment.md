@@ -146,7 +146,7 @@ const ShopPayment: IPaymentAdapter = {
   actions: (params): IPaymentActions => {
     const { context, paymentContext } = params;
     const { order } = paymentContext;
-    const { modules } = context as Context;
+    const { modules } = context;
 
     return {
 
