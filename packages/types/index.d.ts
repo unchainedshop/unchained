@@ -112,7 +112,6 @@ import {
   QuotationsSettingsOptions,
   QuotationStatus as QuotationStatusType,
 } from './quotations';
-import { RolesInterface, RoleInterfaceFactory } from './roles';
 import { UserServices, UsersModule } from './user';
 import {
   IWarehousingAdapter,
