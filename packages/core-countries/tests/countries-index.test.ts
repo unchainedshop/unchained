@@ -23,7 +23,6 @@ describe('Test exports', () => {
   it('Mutate country', async () => {
     const countryId = await module.create(
       {
-        authorId: 'Test-User-1',
         isoCode: 'CHF',
       },
       'Test-User-1'

@@ -18,7 +18,7 @@ const upsert = async (assortmentFilter: AssortmentFilter, { modules }: Context) 
   }
 };
 
-export default async ({ filters, authorId, assortmentId }, unchainedAPI: Context) => {
+export default async ({ filters, assortmentId }, unchainedAPI: Context) => {
   const { modules } = unchainedAPI;
   const assortmentFilterIds = await Promise.all(
     filters.map(async (filter: AssortmentFilter) => {
@@ -27,7 +27,6 @@ export default async ({ filters, authorId, assortmentId }, unchainedAPI: Context
         {
           ...filter,
           tags,
-          authorId,
           assortmentId,
         },
         unchainedAPI,

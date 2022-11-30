@@ -1,5 +1,4 @@
 import localePkg from 'locale';
-import type { Locale as LocaleType } from 'locale';
 import { Query } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';

@@ -43,7 +43,7 @@ export const configureProductVariationsModule = async ({
     productVariationOptionValue = null,
     locale,
     ...text
-  }: Omit<ProductVariationText, 'authorId'>) => {
+  }: ProductVariationText) => {
     const selector = {
       productVariationId,
       productVariationOptionValue: productVariationOptionValue || {
@@ -117,12 +117,10 @@ export const configureProductVariationsModule = async ({
       type,
       locale,
       title,
-      authorId,
       ...doc
     }: ProductVariation & { title: string; locale: string }) => {
       const productVariationId = await mutations.create({
         type: ProductVariationType[type],
-        authorId,
         ...doc,
       });
 

@@ -18,7 +18,6 @@ export type WarehousingProvider = {
   _id?: _ID;
   type: WarehousingProviderType;
   adapterKey: string;
-  authorId: string;
   configuration: WarehousingConfiguration;
 } & TimestampFields;
 

@@ -7,14 +7,12 @@ export type AssortmentMedia = {
   sortKey: number;
   tags: Array<string>;
   meta?: any;
-  authorId: string;
 } & TimestampFields;
 
 export type AssortmentMediaText = {
   _id?: _ID;
   assortmentMediaId: string;
   locale?: string;
-  authorId: string;
   title?: string;
   subtitle?: string;
 } & TimestampFields;
@@ -64,13 +62,13 @@ export type AssortmentMediaModule = {
     // Mutations
     updateMediaTexts: (
       assortmentMediaId: string,
-      texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId' | 'authorId'>>,
+      texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId'>>,
     ) => Promise<Array<AssortmentMediaText>>;
 
     upsertLocalizedText: (
       assortmentId: string,
       locale: string,
-      text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale' | 'authorId'>,
+      text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale'>,
     ) => Promise<AssortmentMediaText>;
   };
 };

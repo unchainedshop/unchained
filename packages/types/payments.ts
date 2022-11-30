@@ -1,4 +1,4 @@
-import { Context, UnchainedAPI } from './api';
+import { Context } from './api';
 import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core';
 import { Order } from './orders';
@@ -25,7 +25,6 @@ export type PaymentProvider = {
   _id?: _ID;
   type: PaymentProviderType;
   adapterKey: string;
-  authorId: string;
   configuration: PaymentConfiguration;
 } & TimestampFields;
 

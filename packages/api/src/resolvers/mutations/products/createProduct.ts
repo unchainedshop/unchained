@@ -11,7 +11,6 @@ export default async function createProduct(
 
   return modules.products.create({
     ...product,
-    authorId: userId,
     locale: localeContext.language,
   });
 }

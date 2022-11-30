@@ -50,7 +50,6 @@ describe('Test exports', () => {
   it('Insert filter', async () => {
     const newFilter = await context.modules.filters.create(
       {
-        authorId: 'Test-User-1',
         isActive: true,
         key: 'Test',
         options: [],

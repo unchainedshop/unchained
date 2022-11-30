@@ -4,7 +4,7 @@ import upsertFilterOptionContent from './upsertFilterOptionContent';
 
 export default async function createFilter(
   payload: any,
-  { logger, authorId, createShouldUpsertIfIDExists },
+  { logger, createShouldUpsertIfIDExists },
   unchainedAPI: Context,
 ) {
   const { modules } = unchainedAPI;
@@ -23,7 +23,6 @@ export default async function createFilter(
         ...filterData,
         _id,
         options: options?.map((option) => option.value) || [],
-        authorId,
       },
       unchainedAPI,
       { skipInvalidation: true },
@@ -38,7 +37,6 @@ export default async function createFilter(
       {
         ...filterData,
         options: options?.map((option) => option.value) || [],
-        authorId,
       },
       unchainedAPI,
       { skipInvalidation: true },

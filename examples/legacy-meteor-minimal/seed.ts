@@ -44,9 +44,7 @@ export default async (unchainedApi: UnchainedAPI) => {
             {
               isoCode: code,
               isActive: true,
-              authorId: adminId,
             },
-            adminId,
           );
           const language = await modules.languages.findLanguage({ languageId });
           return language.isoCode;
@@ -61,9 +59,7 @@ export default async (unchainedApi: UnchainedAPI) => {
             {
               isoCode: code,
               isActive: true,
-              authorId: adminId,
             },
-            adminId,
           );
           const currency = await modules.currencies.findCurrency({
             currencyId,
@@ -80,10 +76,8 @@ export default async (unchainedApi: UnchainedAPI) => {
             {
               isoCode: code,
               isActive: true,
-              authorId: adminId,
               defaultCurrencyId: currencies[key]._id,
             },
-            adminId,
           );
           const country = await modules.countries.findCountry({ countryId });
           return country.isoCode;
@@ -106,9 +100,7 @@ export default async (unchainedApi: UnchainedAPI) => {
           },
         ],
         created: new Date(),
-        authorId: adminId,
       },
-      adminId,
     );
 
     const paymentProvider = await modules.payment.paymentProviders.create(
@@ -117,9 +109,7 @@ export default async (unchainedApi: UnchainedAPI) => {
         type: PaymentProviderType.INVOICE,
         configuration: [],
         created: new Date(),
-        authorId: adminId,
       },
-      adminId,
     );
 
     logger.log(`

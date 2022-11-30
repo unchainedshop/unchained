@@ -6,7 +6,6 @@ export type Country = {
   _id?: _ID;
   isoCode: string;
   isActive?: boolean;
-  authorId: string;
   defaultCurrencyId?: string;
 } & TimestampFields;
 

@@ -11,17 +11,13 @@ const upsert = async (productVariation: ProductVariation, unchainedAPI: Context)
   }
 };
 
-export default async function upsertVariations(
-  { variations, authorId, productId },
-  unchainedAPI: Context,
-) {
-  const { modules, userId } = unchainedAPI;
+export default async function upsertVariations({ variations, productId }, unchainedAPI: Context) {
+  const { modules } = unchainedAPI;
 
   const upsertedProductVariationIds = await Promise.all(
     variations.map(async ({ content, options, ...variationsRest }) => {
       const variation = await upsert(
         {
-          authorId,
           ...variationsRest,
           options: options.map((option) => option.value),
           productId,

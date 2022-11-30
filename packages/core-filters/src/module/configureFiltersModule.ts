@@ -208,7 +208,7 @@ export const configureFiltersModule = async ({
 
     // Mutations
     create: async (
-      { locale, title, type, isActive = false, authorId, ...filterData },
+      { locale, title, type, isActive = false, ...filterData },
       requestContext,
       options,
     ) => {
@@ -216,7 +216,6 @@ export const configureFiltersModule = async ({
         isActive,
         created: new Date(),
         type: FilterType[type],
-        authorId,
         ...filterData,
       });
 

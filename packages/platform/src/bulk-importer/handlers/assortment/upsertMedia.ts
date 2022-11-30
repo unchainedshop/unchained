@@ -13,7 +13,7 @@ const upsertMediaObject = async (media, unchainedAPI: Context) => {
   }
 };
 
-export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) => {
+export default async ({ media, assortmentId }, unchainedAPI: Context) => {
   const { modules } = unchainedAPI;
   const mediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
@@ -26,7 +26,6 @@ export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) 
 
       const mediaObject = await upsertMediaObject(
         {
-          authorId,
           ...mediaData,
           assortmentId,
           mediaId: file._id,

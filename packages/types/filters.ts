@@ -22,7 +22,6 @@ export enum FilterType {
 
 export type Filter = {
   _id?: _ID;
-  authorId: string;
   isActive?: boolean;
   key: string;
   meta?: any;
@@ -35,7 +34,6 @@ export type FilterOption = Filter & {
 };
 
 export type FilterText = {
-  authorId: string;
   filterId: string;
   filterOptionValue?: string;
   locale?: string;
@@ -163,13 +161,13 @@ export type FiltersModule = {
     // Mutations
     updateTexts: (
       query: { filterId: string; filterOptionValue?: string },
-      texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue' | 'authorId'>>,
+      texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue'>>,
     ) => Promise<Array<FilterText>>;
 
     upsertLocalizedText: (
       params: { filterId: string; filterOptionValue?: string },
       locale: string,
-      text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale' | 'authorId'>,
+      text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale'>,
     ) => Promise<FilterText>;
 
     deleteMany: (params: { filterId?: string; excludedFilterIds?: string[] }) => Promise<number>;

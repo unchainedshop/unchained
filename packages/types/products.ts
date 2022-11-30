@@ -1,6 +1,7 @@
 import { Context, SortOption, UnchainedAPI } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
+import { UnchainedCore } from './core';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { DeliveryProvider, DeliveryProviderType } from './delivery';
@@ -116,7 +117,6 @@ export interface ProductWarehousing {
 
 export type Product = {
   _id?: _ID;
-  authorId: string;
   bundleItems: Array<ProductBundleItem>;
   commerce?: ProductCommerce;
   meta?: any;
@@ -136,7 +136,6 @@ export type Product = {
 export type ProductText = {
   _id?: _ID;
   productId: string;
-  authorId: string;
   description?: string;
   locale: string;
   slug?: string;
@@ -288,7 +287,7 @@ export type ProductsModule = {
 
   calculate: (
     pricingContext: ProductPricingContext & { item: OrderPosition },
-    requestContext: UnchainedAPI,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations
@@ -370,13 +369,13 @@ export type ProductsModule = {
     // Mutations
     updateTexts: (
       productId: string,
-      texts: Array<Omit<ProductText, 'productId' | 'authorId'>>,
+      texts: Array<Omit<ProductText, 'productId'>>,
     ) => Promise<Array<ProductText>>;
 
     upsertLocalizedText: (
       productId: string,
       locale: string,
-      text: Omit<ProductText, 'productId' | 'locale' | 'authorId'>,
+      text: Omit<ProductText, 'productId' | 'locale'>,
     ) => Promise<ProductText>;
 
     makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;

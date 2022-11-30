@@ -23,7 +23,6 @@ describe('Test exports', () => {
   it('Mutate language', async () => {
     const languageId = await module.create(
       {
-        authorId: 'Test-User-1',
         isoCode: 'CHF',
       },
       'Test-User-1'

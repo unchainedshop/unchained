@@ -14,7 +14,7 @@ const upsertProductMedia = async (productMedia: ProductMedia, { modules }: Conte
   }
 };
 
-export default async function upsertMedia({ media, authorId, productId }, unchainedAPI: Context) {
+export default async function upsertMedia({ media, productId }, unchainedAPI: Context) {
   const { modules } = unchainedAPI;
 
   const productMediaObjects = await Promise.all(
@@ -29,7 +29,6 @@ export default async function upsertMedia({ media, authorId, productId }, unchai
       const fileId = file._id;
       const productMedia = await upsertProductMedia(
         {
-          authorId,
           ...mediaData,
           tags,
           productId,

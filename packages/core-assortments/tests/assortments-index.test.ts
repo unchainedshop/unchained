@@ -14,7 +14,6 @@ describe('Test exports', () => {
   it('Insert assortment', async () => {
     const assortmentId = await module.create(
       {
-        authorId: 'Test-User-1',
         isActive: true,
         isBase: true,
         isRoot: true,
@@ -24,7 +23,6 @@ describe('Test exports', () => {
         title: 'Test',
         locale: 'de',
       },
-      'Test-User-1'
     );
 
     assert.ok(assortmentId);

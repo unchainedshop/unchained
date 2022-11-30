@@ -33,7 +33,6 @@ export default async function F(
     });
 
   return modules.products.variations.create({
-    authorId: userId,
     locale: localeContext.language,
     options: [],
     productId,

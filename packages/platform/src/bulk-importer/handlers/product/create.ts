@@ -6,7 +6,7 @@ import transformSpecificationToProductStructure from './transformSpecificationTo
 
 export default async function createProduct(
   payload: any,
-  { logger, authorId, createShouldUpsertIfIDExists },
+  { logger, createShouldUpsertIfIDExists },
   unchainedAPI: Context,
 ) {
   const { modules } = unchainedAPI;
@@ -22,7 +22,6 @@ export default async function createProduct(
     await modules.products.create({
       ...productData,
       _id,
-      authorId,
     });
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
@@ -30,7 +29,6 @@ export default async function createProduct(
     logger.debug('entity already exists, falling back to update', specification);
     await modules.products.update(_id, {
       ...productData,
-      authorId,
     });
   }
 
@@ -52,13 +50,12 @@ export default async function createProduct(
     {
       variations: variations || [],
       productId: _id,
-      authorId,
     },
     unchainedAPI,
   );
 
   logger.debug('create product media', media);
-  await upsertMedia({ media: media || [], productId: _id, authorId }, unchainedAPI);
+  await upsertMedia({ media: media || [], productId: _id }, unchainedAPI);
 
   return {
     entity: 'PRODUCT',

@@ -4,7 +4,7 @@ import upsertMedia from './upsertMedia';
 import upsertProductContent from './upsertProductContent';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
 
-export default async function createProduct(payload: any, { logger, authorId }, unchainedAPI: Context) {
+export default async function createProduct(payload: any, { logger }, unchainedAPI: Context) {
   const { modules } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
 
@@ -17,7 +17,6 @@ export default async function createProduct(payload: any, { logger, authorId }, 
     logger.debug('update product object', productData);
     await modules.products.update(_id, {
       ...productData,
-      authorId,
     });
 
     if (specification.content) {
@@ -38,7 +37,6 @@ export default async function createProduct(payload: any, { logger, authorId }, 
       {
         variations: variations || [],
         productId: _id,
-        authorId,
       },
       unchainedAPI,
     );
@@ -46,7 +44,7 @@ export default async function createProduct(payload: any, { logger, authorId }, 
 
   if (media) {
     logger.debug('replace product media', media);
-    await upsertMedia({ media, productId: _id, authorId }, unchainedAPI);
+    await upsertMedia({ media, productId: _id }, unchainedAPI);
   }
 
   return {

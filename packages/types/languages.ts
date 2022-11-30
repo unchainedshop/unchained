@@ -6,7 +6,6 @@ export type Language = {
   _id?: _ID;
   isoCode: string;
   isActive?: boolean;
-  authorId: string;
 } & TimestampFields;
 
 export type LanguageQuery = {

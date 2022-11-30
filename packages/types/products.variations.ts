@@ -9,7 +9,6 @@ export enum ProductVariationType {
 
 export type ProductVariation = {
   _id?: _ID;
-  authorId: string;
   key?: string;
   options: Array<string>;
   productId: string;
@@ -18,7 +17,6 @@ export type ProductVariation = {
 
 export type ProductVariationText = {
   _id?: _ID;
-  authorId: string;
   locale: string;
   productVariationId: string;
   productVariationOptionValue?: string;
@@ -90,9 +88,7 @@ export type ProductVariationsModule = {
     // Mutations
     updateVariationTexts: (
       productVariationId: string,
-      texts: Array<
-        Omit<ProductVariationText, 'authorId' | 'productVariationId' | 'productVariationOptionValue'>
-      >,
+      texts: Array<Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>>,
       productVariationOptionValue?: string,
     ) => Promise<Array<ProductVariationText>>;
 
@@ -102,10 +98,7 @@ export type ProductVariationsModule = {
         productVariationOptionValue?: string;
       },
       locale: string,
-      text: Omit<
-        ProductVariationText,
-        'authorId' | 'locale' | 'productVariationId' | 'productVariationOptionValue'
-      >,
+      text: Omit<ProductVariationText, 'locale' | 'productVariationId' | 'productVariationOptionValue'>,
     ) => Promise<ProductVariationText>;
   };
 };

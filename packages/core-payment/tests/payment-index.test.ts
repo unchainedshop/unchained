@@ -23,7 +23,6 @@ describe('Test exports', () => {
   it('Mutate currency', async () => {
     const currencyId = await module.create(
       {
-        authorId: 'Test-User-1',
         isoCode: 'CHF',
       },
       'Test-User-1'

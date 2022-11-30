@@ -6,11 +6,7 @@ import upsertAssortmentFilters from './upsertAssortmentFilters';
 import upsertMedia from './upsertMedia';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
-export default async function updateAssortment(
-  payload: any,
-  { logger, authorId },
-  unchainedAPI: Context,
-) {
+export default async function updateAssortment(payload: any, { logger }, unchainedAPI: Context) {
   const { modules } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
 
@@ -23,7 +19,7 @@ export default async function updateAssortment(
 
     specification.tags = convertTagsToLowerCase(specification?.tags);
 
-    await unchainedAPI.modules.assortments.update(_id, { ...specification, authorId });
+    await unchainedAPI.modules.assortments.update(_id, { ...specification });
     if (specification.content) {
       logger.debug('replace localized content for assortment', specification.content);
       await upsertAssortmentContent(
@@ -42,7 +38,6 @@ export default async function updateAssortment(
       {
         products: products || [],
         assortmentId: _id,
-        authorId,
       },
       unchainedAPI,
     );
@@ -54,7 +49,6 @@ export default async function updateAssortment(
       {
         children: children || [],
         assortmentId: _id,
-        authorId,
       },
       unchainedAPI,
     );
@@ -66,14 +60,13 @@ export default async function updateAssortment(
       {
         filters: filters || [],
         assortmentId: _id,
-        authorId,
       },
       unchainedAPI,
     );
   }
   if (media) {
     logger.debug('update assortment media', media);
-    await upsertMedia({ media: media || [], assortmentId: _id, authorId }, unchainedAPI);
+    await upsertMedia({ media: media || [], assortmentId: _id }, unchainedAPI);
   }
 
   return {

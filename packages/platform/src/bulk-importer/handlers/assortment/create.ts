@@ -8,7 +8,7 @@ import upsertMedia from './upsertMedia';
 
 export default async function createAssortment(
   payload: any,
-  { logger, authorId, createShouldUpsertIfIDExists },
+  { logger, createShouldUpsertIfIDExists },
   unchainedAPI: Context,
 ) {
   const { modules } = unchainedAPI;
@@ -22,13 +22,12 @@ export default async function createAssortment(
 
   logger.debug('create assortment object', specification);
   try {
-    await modules.assortments.create({ ...specification, _id, authorId });
+    await modules.assortments.create({ ...specification, _id });
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
     logger.debug('entity already exists, falling back to update', specification);
     await modules.assortments.update(_id, {
       ...specification,
-      authorId,
     });
   }
 
@@ -50,7 +49,6 @@ export default async function createAssortment(
     {
       products: products || [],
       assortmentId: _id,
-      authorId,
     },
     unchainedAPI,
   );
@@ -60,7 +58,6 @@ export default async function createAssortment(
     {
       children: children || [],
       assortmentId: _id,
-      authorId,
     },
     unchainedAPI,
   );
@@ -70,13 +67,12 @@ export default async function createAssortment(
     {
       filters: filters || [],
       assortmentId: _id,
-      authorId,
     },
     unchainedAPI,
   );
 
   logger.debug('create assortment media', media);
-  await upsertMedia({ media: media || [], assortmentId: _id, authorId }, unchainedAPI);
+  await upsertMedia({ media: media || [], assortmentId: _id }, unchainedAPI);
 
   return {
     entity: 'ASSORTMENT',

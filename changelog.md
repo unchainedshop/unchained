@@ -8,6 +8,7 @@ Unchained Engine 2.0 requires Node 16+ now and uses native fetch, this also brea
 - Tags are now always LowerCase and use an own scalar
 - Order.documents has been removed because it was never functional
 - Completely breaks Meteor support for now because Node.js 16+ required, checkout the Kitchensink example for an ESM, non-meteor node app that uses Unchained Engine.
+- The fields createdBy, updatedBy, deletedBy and author got removed completely from the database and the whole API surface, reasoning behind is that the value most of the time did not represent who actually did what. It just did not deliver on what it promised. The only place where authorId is still used is in product reviews where users can add reviews and are actual authors of text.
 
 ## Major
 - Unchained now uses Apollo Server 4.

@@ -12,7 +12,6 @@ export default async function createDeliveryProvider(
 
   const provider = await modules.delivery.create({
     ...deliveryProvider,
-    authorId: userId,
   });
 
   if (!provider) throw new ProviderConfigurationInvalid(deliveryProvider);

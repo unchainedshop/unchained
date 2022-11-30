@@ -323,7 +323,6 @@ export const configureAssortmentsModule = async ({
 
     // Mutations
     create: async ({
-      authorId,
       isActive = true,
       isBase = false,
       isRoot = false,
@@ -339,7 +338,6 @@ export const configureAssortmentsModule = async ({
         isActive,
         isRoot,
         meta,
-        authorId,
         ...rest,
       });
 

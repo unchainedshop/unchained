@@ -15,7 +15,7 @@ export default async function addAssortmentMedia(root: Root, { media, assortment
     {
       directoryName: 'assortment-media',
       rawFile: media,
-      meta: { authorId: userId },
+      meta: {},
     },
     context,
   );

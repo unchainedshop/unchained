@@ -12,7 +12,6 @@ export default async (
 
   const provider = await modules.payment.paymentProviders.create({
     ...paymentProvider,
-    authorId: userId,
   });
 
   if (!provider) throw new ProviderConfigurationInvalid(paymentProvider);

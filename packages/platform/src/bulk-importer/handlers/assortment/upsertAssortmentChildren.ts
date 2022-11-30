@@ -22,10 +22,7 @@ const upsert = async (assortmentLink: AssortmentLink, { modules }: Context) => {
   }
 };
 
-export default async (
-  { children, authorId, assortmentId: parentAssortmentId },
-  unchainedAPI: Context,
-) => {
+export default async ({ children, assortmentId: parentAssortmentId }, unchainedAPI: Context) => {
   const { modules } = unchainedAPI;
   const assortmentLinkIds = await Promise.all(
     children.map(async ({ assortmentId: childAssortmentId, ...childrenRest }) => {
@@ -34,7 +31,6 @@ export default async (
         {
           ...childrenRest,
           tags,
-          authorId,
           parentAssortmentId,
           childAssortmentId,
         } as AssortmentLink,

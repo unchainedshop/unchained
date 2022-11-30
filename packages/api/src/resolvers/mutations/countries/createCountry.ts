@@ -11,7 +11,6 @@ export default async function createCountry(
 
   const countryId = await modules.countries.create({
     ...country,
-    authorId: userId,
   });
 
   return modules.countries.findCountry({ countryId });

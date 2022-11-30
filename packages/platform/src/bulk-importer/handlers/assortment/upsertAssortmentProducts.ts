@@ -23,7 +23,7 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Contex
   }
 };
 
-export default async ({ products, authorId, assortmentId }, unchainedAPI: Context) => {
+export default async ({ products, assortmentId }, unchainedAPI: Context) => {
   const { modules } = unchainedAPI;
   const assortmentProductIds = await Promise.all(
     products.map(async (product: AssortmentProduct) => {
@@ -31,7 +31,6 @@ export default async ({ products, authorId, assortmentId }, unchainedAPI: Contex
       const assortmentProduct = await upsert(
         {
           ...product,
-          authorId,
           tags,
           assortmentId,
         },

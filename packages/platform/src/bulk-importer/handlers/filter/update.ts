@@ -4,7 +4,7 @@ import upsertFilterOptionContent from './upsertFilterOptionContent';
 
 export default async function updateFilter(
   payload: any,
-  { authorId, logger }: { authorId: string; logger: any },
+  { logger }: { logger: any },
   unchainedAPI: Context,
 ) {
   const { modules } = unchainedAPI;
@@ -23,7 +23,6 @@ export default async function updateFilter(
       {
         ...filterData,
         options: options?.map((option) => option.value) || [],
-        authorId,
       },
       unchainedAPI,
       { skipInvalidation: true },

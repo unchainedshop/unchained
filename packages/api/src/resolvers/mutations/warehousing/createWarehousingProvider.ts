@@ -12,7 +12,6 @@ export default async function createWarehousingProvider(
 
   const warehousingProviderId = await modules.warehousing.create({
     ...params.warehousingProvider,
-    authorId: userId,
   });
 
   if (!warehousingProviderId) throw new ProviderConfigurationInvalid(params.warehousingProvider);

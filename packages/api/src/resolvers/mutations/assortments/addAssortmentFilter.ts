@@ -23,7 +23,6 @@ export default async function addAssortmentFilter(
   return modules.assortments.filters.create({
     assortmentId,
     filterId,
-    authorId: userId,
     ...assortmentFilter,
   });
 }

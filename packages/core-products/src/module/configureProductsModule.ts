@@ -317,7 +317,7 @@ export const configureProductsModule = async ({
 
     // Mutations
     create: async (
-      { locale, title, type, sequence, authorId, ...productData },
+      { locale, title, type, sequence, ...productData },
       userId,
       { autopublish = false } = {},
     ) => {
@@ -331,7 +331,6 @@ export const configureProductsModule = async ({
         type: ProductTypes[type],
         status: InternalProductStatus.DRAFT,
         sequence: sequence ?? (await Products.countDocuments({})) + 10,
-        authorId,
         ...productData,
       });
 

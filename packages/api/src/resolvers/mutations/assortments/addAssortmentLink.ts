@@ -38,7 +38,6 @@ export default async function addAssortmentLink(
       {
         parentAssortmentId,
         childAssortmentId,
-        authorId: userId,
         ...assortmentLink,
       },
       {

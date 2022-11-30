@@ -5,7 +5,6 @@ import { Filter, FindOptions, Query, TimestampFields, Tree, _ID } from './common
 
 export type Assortment = {
   _id?: _ID;
-  authorId: string;
   isActive: boolean;
   isBase: boolean;
   isRoot: boolean;
@@ -18,7 +17,6 @@ export type Assortment = {
 export type AssortmentFilter = {
   _id?: _ID;
   assortmentId: string;
-  authorId: string;
   filterId: string;
   meta?: any;
   sortKey: number;
@@ -27,7 +25,6 @@ export type AssortmentFilter = {
 
 export type AssortmentLink = {
   _id?: _ID;
-  authorId: string;
   childAssortmentId: string;
   meta?: any;
   parentAssortmentId: string;
@@ -38,7 +35,6 @@ export type AssortmentLink = {
 export type AssortmentProduct = {
   _id?: _ID;
   assortmentId: string;
-  authorId: string;
   meta?: any;
   productId: string;
   sortKey: number;
@@ -53,7 +49,6 @@ export type AssortmentProductIdCacheRecord = {
 export type AssortmentText = {
   _id?: _ID;
   assortmentId: string;
-  authorId: string;
   description?: string;
   locale: string;
   slug?: string;
@@ -297,13 +292,13 @@ export type AssortmentsModule = {
     // Mutations
     updateTexts: (
       assortmentId: string,
-      texts: Array<Omit<AssortmentText, 'assortmentId' | 'authorId'>>,
+      texts: Array<Omit<AssortmentText, 'assortmentId'>>,
     ) => Promise<Array<AssortmentText>>;
 
     upsertLocalizedText: (
       assortmentId: string,
       locale: string,
-      text: Omit<AssortmentText, 'assortmentId' | 'authorId' | 'locale'>,
+      text: Omit<AssortmentText, 'assortmentId' | 'locale'>,
     ) => Promise<AssortmentText>;
 
     makeSlug: (data: { slug?: string; title: string; assortmentId: string }) => Promise<string>;

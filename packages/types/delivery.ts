@@ -28,7 +28,6 @@ export type DeliveryProvider = {
   _id?: _ID;
   type: DeliveryProviderType;
   adapterKey: string;
-  authorId: string;
   configuration: DeliveryConfiguration;
 } & TimestampFields;
 

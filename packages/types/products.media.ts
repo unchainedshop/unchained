@@ -9,14 +9,12 @@ export type ProductMedia = {
   sortKey: number;
   tags: Array<string>;
   meta?: any;
-  authorId: string;
 } & TimestampFields;
 
 export type ProductMediaText = {
   _id?: _ID;
   productMediaId: string;
   locale?: string;
-  authorId: string;
   title?: string;
   subtitle?: string;
 } & TimestampFields;
@@ -65,13 +63,13 @@ export type ProductMediaModule = {
     // Mutations
     updateMediaTexts: (
       productMediaId: string,
-      texts: Array<Omit<ProductMediaText, 'productMediaId' | 'authorId'>>,
+      texts: Array<Omit<ProductMediaText, 'productMediaId'>>,
     ) => Promise<Array<ProductMediaText>>;
 
     upsertLocalizedText: (
       productMediaId: string,
       locale: string,
-      text: Omit<ProductMediaText, 'productMediaId' | 'locale' | 'authorId'>,
+      text: Omit<ProductMediaText, 'productMediaId' | 'locale'>,
     ) => Promise<ProductMediaText>;
   };
 };
