@@ -73,6 +73,8 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
   accountsServer.on('LoginTokenCreated', async (props) => {
     const { userId, connection = {} } = props;
+
+    // TODO: Doubt that there is countryContext etc. here?
     const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
       connection;
 

@@ -181,9 +181,7 @@ export const configureProductVariationsModule = async ({
       return ProductVariations.findOne(selector, {});
     },
 
-    addVariationOption: async (productVariationId, { inputData, localeContext }) => {
-      const { value, title } = inputData;
-
+    addVariationOption: async (productVariationId, { value, title, locale }) => {
       await ProductVariations.updateOne(generateDbFilterById(productVariationId), {
         $set: {
           updated: new Date(),
@@ -194,7 +192,7 @@ export const configureProductVariationsModule = async ({
       });
 
       await upsertLocalizedText({
-        locale: localeContext.language,
+        locale,
         productVariationId,
         productVariationOptionValue: value,
         title,

@@ -506,17 +506,6 @@ export interface PlanProductHelperTypes extends ProductHelperTypes {
     Promise<ProductPrice>
   >;
 
-  simulatedDiscounts: HelperType<
-    { quantity?: number },
-    Promise<
-      Array<{
-        _id: string;
-        interface: any;
-        total: ProductPrice;
-      }>
-    >
-  >;
-
   salesUnit: HelperType<never, string>;
   salesQuantityPerUnit: HelperType<never, string>;
   defaultOrderQuantity: HelperType<never, number>;

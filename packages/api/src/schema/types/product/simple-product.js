@@ -17,7 +17,6 @@ export default [
       leveledCatalogPrices(currency: String): [PriceLevel!]!
       simulatedPrice(currency: String, useNetPrice: Boolean = false, quantity: Int = 1): Price
         @cacheControl(scope: PRIVATE, maxAge: 10)
-      simulatedDiscounts(quantity: Int = 1): [ProductDiscount!] @cacheControl(scope: PRIVATE, maxAge: 10)
       simulatedDispatches(
         deliveryProviderType: DeliveryProviderType = SHIPPING
         referenceDate: Timestamp

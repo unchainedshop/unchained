@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { Locale, TimestampFields, _ID } from './common';
+import { TimestampFields, _ID } from './common';
 import { Product, ProductAssignment, ProductConfiguration } from './products';
 
 export enum ProductVariationType {
@@ -61,10 +61,7 @@ export type ProductVariationsModule = {
 
   addVariationOption: (
     productVariationId: string,
-    data: {
-      inputData: { value: string; title: string };
-      localeContext: Locale;
-    },
+    data: { value: string; title: string; locale: string },
   ) => Promise<ProductVariation>;
 
   removeVariationOption: (

@@ -24,7 +24,7 @@ export default async function createProductVariationOption(
   if (!variation) throw new ProductVariationNotFoundError({ productVariationId });
 
   return modules.products.variations.addVariationOption(productVariationId, {
-    inputData,
-    localeContext,
+    ...inputData,
+    locale: localeContext.language,
   });
 }
