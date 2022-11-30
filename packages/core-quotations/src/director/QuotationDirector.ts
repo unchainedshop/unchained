@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { LogLevel, log } from '@unchainedshop/logger';
 import {
   IQuotationAdapter,
@@ -6,13 +5,14 @@ import {
   QuotationContext,
 } from '@unchainedshop/types/quotations';
 import { BaseDirector } from '@unchainedshop/utils';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { QuotationError } from './QuotationError';
 
 const baseDirector = BaseDirector<IQuotationAdapter>('QuotationDirector', {
   adapterSortKey: 'orderIndex',
 });
 
-const findAppropriateAdapters = (quotationContext: QuotationContext, requestContext: Context) =>
+const findAppropriateAdapters = (quotationContext: QuotationContext, requestContext: UnchainedCore) =>
   baseDirector.getAdapters({
     adapterFilter: (Adapter: IQuotationAdapter) => {
       const activated = Adapter.isActivatedFor(quotationContext, requestContext);

@@ -1,10 +1,10 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { Order } from '@unchainedshop/types/orders';
 
 export const getOrderAttachmentsData = async (
   order: Order,
   params: { fileType: string },
-  { modules }: Context,
+  { modules }: UnchainedCore,
 ) => {
   const attachments = [];
 

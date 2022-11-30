@@ -4,11 +4,10 @@ export const cancelService: CancelService = async (
   { paymentContext, paymentProviderId },
   requestContext,
 ) => {
-  const { modules, userId } = requestContext;
+  const { modules } = requestContext;
 
   const normalizedContext = {
     ...paymentContext,
-    userId,
     paymentProviderId,
   };
 

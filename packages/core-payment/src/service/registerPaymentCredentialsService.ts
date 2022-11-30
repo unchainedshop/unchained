@@ -5,7 +5,7 @@ export const registerPaymentCredentialsService: RegisterPaymentCredentialsServic
   paymentContext,
   requestContext,
 ) => {
-  const { modules, userId } = requestContext;
+  const { modules } = requestContext;
   const registration = await modules.payment.paymentProviders.register(
     paymentProviderId,
     paymentContext,
@@ -15,14 +15,14 @@ export const registerPaymentCredentialsService: RegisterPaymentCredentialsServic
   if (!registration) return null;
 
   const paymentCredentialsId = await modules.payment.paymentCredentials.upsertCredentials({
-    userId,
+    userId: paymentContext.userId,
     paymentProviderId,
     ...registration,
   });
 
   return modules.payment.paymentCredentials.findPaymentCredential({
     paymentCredentialsId,
-    userId,
+    userId: paymentContext.userId,
     paymentProviderId,
   });
 };

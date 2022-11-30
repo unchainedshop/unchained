@@ -1,4 +1,4 @@
-import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
+import { Context, SortDirection, SortOption, UnchainedAPI } from '@unchainedshop/types/api';
 import { Document, Filter as DbFilter, FindOptions, Query } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import memoizee from 'memoizee';
@@ -11,6 +11,7 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import localePkg from 'locale';
 import { FilterType } from '../db/FilterType';
 import { FilterDirector } from '../director/FilterDirector';
 import { FiltersCollection } from '../db/FiltersCollection';
@@ -19,6 +20,8 @@ import { configureFilterSearchModule } from './configureFilterSearchModule';
 import { configureFilterTextsModule } from './configureFilterTextsModule';
 import createFilterValueParser from '../filter-value-parsers';
 import { filtersSettings } from '../filters-settings';
+
+const { Locale } = localePkg;
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
@@ -51,7 +54,7 @@ export const configureFiltersModule = async ({
   const findProductIds = async (
     filter: Filter,
     { value }: { value?: boolean | string },
-    requestContext: Context,
+    requestContext: UnchainedAPI,
   ) => {
     const { modules } = requestContext;
     const director = await FilterDirector.actions({ filter, searchQuery: {} }, requestContext);
@@ -81,7 +84,7 @@ export const configureFiltersModule = async ({
 
   const buildProductIdMap = async (
     filter: Filter,
-    requestContext: Context,
+    requestContext: UnchainedAPI,
   ): Promise<[Array<string>, Record<string, Array<string>>]> => {
     const allProductIds = await findProductIds(filter, {}, requestContext);
     const productIdsMap =
@@ -129,7 +132,7 @@ export const configureFiltersModule = async ({
     },
   );
 
-  const invalidateProductIdCache = async (filter: Filter, requestContext: Context) => {
+  const invalidateProductIdCache = async (filter: Filter, requestContext: UnchainedAPI) => {
     if (!filter) return;
 
     log(`Filters: Rebuilding ${filter.key}`, { level: LogLevel.Verbose });
@@ -138,7 +141,7 @@ export const configureFiltersModule = async ({
     await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
   };
 
-  const invalidateCache = async (selector: DbFilter<Filter>, requestContext: Context) => {
+  const invalidateCache = async (selector: DbFilter<Filter>, requestContext: UnchainedAPI) => {
     log('Filters: Start invalidating filter caches', {
       level: LogLevel.Verbose,
     });
@@ -235,8 +238,7 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    createFilterOption: async (filterId, { value, title }, requestContext) => {
-      const { localeContext } = requestContext;
+    createFilterOption: async (filterId, { value, title, locale }, requestContext) => {
       const selector = generateDbFilterById(filterId);
       await Filters.updateOne(selector, {
         $set: {
@@ -247,11 +249,7 @@ export const configureFiltersModule = async ({
         },
       });
 
-      await filterTexts.upsertLocalizedText(
-        { filterId, filterOptionValue: value },
-        localeContext.language,
-        { title },
-      );
+      await filterTexts.upsertLocalizedText({ filterId, filterOptionValue: value }, locale, { title });
 
       const filter = await Filters.findOne(selector, {});
       await invalidateProductIdCache(filter, requestContext);

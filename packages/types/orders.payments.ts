@@ -1,4 +1,3 @@
-import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { UnchainedCore } from './core';
 import { Order } from './orders';
@@ -51,15 +50,18 @@ export type OrderPaymentsModule = {
   discounts: (
     orderPayment: OrderPayment,
     params: { order: Order; orderDiscount: OrderDiscount },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Array<OrderPricingDiscount>;
-  isBlockingOrderConfirmation: (orderPayment: OrderPayment, requestContext: Context) => Promise<boolean>;
+  isBlockingOrderConfirmation: (
+    orderPayment: OrderPayment,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderPayment: OrderPayment) => boolean;
   normalizedStatus: (orderPayment: OrderPayment) => string;
   pricingSheet: (
     orderPayment: OrderPayment,
     currency: string,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => IPaymentPricingSheet;
 
   // Mutations
@@ -68,26 +70,26 @@ export type OrderPaymentsModule = {
   cancel: (
     orderPayment: OrderPayment,
     paymentContext: any,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPayment>;
 
   confirm: (
     orderPayment: OrderPayment,
     paymentContext: any,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPayment>;
 
   charge: (
     orderPayment: OrderPayment,
     paymentContext: any,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPayment>;
 
   logEvent: (orderPaymentId: string, event: any) => Promise<boolean>;
 
   markAsPaid: (payment: OrderPayment, meta: any) => Promise<void>;
 
-  updateContext: (orderPaymentId: string, context: any, requestContext: Context) => Promise<boolean>;
+  updateContext: (orderPaymentId: string, context: any, unchainedAPI: UnchainedCore) => Promise<boolean>;
 
   updateStatus: (
     orderPaymentId: string,

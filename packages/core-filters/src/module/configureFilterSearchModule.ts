@@ -25,9 +25,9 @@ export const configureFilterSearchModule = ({
   filterProductIds: FilterProductIds;
 }): FiltersModule['search'] => {
   return {
-    searchAssortments: async (searchQuery, { forceLiveCollection }, requestContext) => {
-      const { modules } = requestContext;
-      const filterActions = await FilterDirector.actions({ searchQuery }, requestContext);
+    searchAssortments: async (searchQuery, { forceLiveCollection }, unchainedAPI) => {
+      const { modules } = unchainedAPI;
+      const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);
 
       const query = cleanQuery(searchQuery);
       const filterSelector = await resolveFilterSelector(searchQuery, filterActions);
@@ -67,13 +67,13 @@ export const configureFilterSearchModule = ({
       };
     },
 
-    searchProducts: async (searchQuery, { forceLiveCollection }, requestContext) => {
-      const { modules } = requestContext;
-      const filterActions = await FilterDirector.actions({ searchQuery }, requestContext);
+    searchProducts: async (searchQuery, { forceLiveCollection }, unchainedAPI) => {
+      const { modules } = unchainedAPI;
+      const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);
 
       const query = cleanQuery(searchQuery);
       const filterSelector = await resolveFilterSelector(searchQuery, filterActions);
-      const productSelector = await resolveProductSelector(searchQuery, filterActions, requestContext);
+      const productSelector = await resolveProductSelector(searchQuery, filterActions, unchainedAPI);
       const sortStage = await resolveSortStage(searchQuery, filterActions);
 
       const searchConfiguration: SearchProductConfiguration = {
@@ -122,7 +122,7 @@ export const configureFilterSearchModule = ({
               },
               filterProductIds,
               filterActions,
-              requestContext,
+              unchainedAPI,
             );
           }),
         );
@@ -143,7 +143,7 @@ export const configureFilterSearchModule = ({
         Filters,
         filterProductIds,
         searchConfiguration,
-        requestContext,
+        unchainedAPI,
       )(totalProductIds);
 
       const aggregatedTotalProductIds = filterActions.aggregateProductIds({

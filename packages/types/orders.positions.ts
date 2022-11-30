@@ -1,4 +1,3 @@
-import { Context } from './api';
 import { Configuration, FindOptions, TimestampFields, _ID } from './common';
 import { UnchainedCore } from './core';
 import { Order } from './orders';
@@ -30,25 +29,25 @@ export type OrderPositionsModule = {
   discounts: (
     orderPosition: OrderPosition,
     params: { order: Order; orderDiscount: OrderDiscount },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Array<OrderPricingDiscount>;
 
   pricingSheet: (
     orderPosition: OrderPosition,
     currency: string,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => IProductPricingSheet;
 
   // Mutations
   create: (
     doc: Partial<OrderPosition>,
     params: { order: Order; product: Product; originalProduct?: Product },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPosition>;
 
-  delete: (orderPositionId: string, requestContext: Context) => Promise<OrderPosition>;
+  delete: (orderPositionId: string, unchainedAPI: UnchainedCore) => Promise<OrderPosition>;
 
-  removePositions: ({ orderId }: { orderId: string }, requestContext: Context) => Promise<number>;
+  removePositions: ({ orderId }: { orderId: string }, unchainedAPI: UnchainedCore) => Promise<number>;
 
   updateProductItem: (
     doc: {
@@ -57,7 +56,7 @@ export type OrderPositionsModule = {
       quantity?: number;
     },
     params: { order: Order; product: Product; orderPosition: OrderPosition },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPosition>;
 
   updateScheduling: (
@@ -85,7 +84,7 @@ export type OrderPositionsModule = {
       quotationId?: string;
     },
     params: { order: Order; product: Product },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPosition>;
 };
 

@@ -16,6 +16,10 @@ export default async function createFilterOption(
 
   if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
-  const filter = await modules.filters.createFilterOption(filterId, option, context);
+  const filter = await modules.filters.createFilterOption(
+    filterId,
+    { ...option, locale: context.localeContext.language },
+    context,
+  );
   return filter;
 }

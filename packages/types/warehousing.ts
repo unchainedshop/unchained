@@ -131,26 +131,26 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
 
   findSupported: (
     warehousingContext: WarehousingContext,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Array<WarehousingProvider>>;
   findInterface: (query: WarehousingProvider) => WarehousingInterface;
   findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
   configurationError: (
     provider: WarehousingProvider,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => Promise<WarehousingError>;
-  isActive: (provider: WarehousingProvider, requestContext: UnchainedCore) => Promise<boolean>;
+  isActive: (provider: WarehousingProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
 
   estimatedDispatch: (
     provider: WarehousingProvider,
     context: WarehousingContext,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => Promise<EstimatedDispatch>;
 
   estimatedStock: (
     provider: WarehousingProvider,
     context: WarehousingContext,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => Promise<EstimatedStock>;
 
   updateTokenOwnership: (input: {
@@ -167,13 +167,13 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
         product: Product;
       }>;
     },
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => Promise<void>;
 
   tokenMetadata: (
     chainTokenId: string,
     params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Locale },
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => Promise<any>;
 
   // Mutations

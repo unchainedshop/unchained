@@ -1,4 +1,4 @@
-import { Context, SortOption } from './api';
+import { SortOption } from './api';
 import {
   Configuration,
   FindOptions,
@@ -8,6 +8,7 @@ import {
   TimestampFields,
   _ID,
 } from './common';
+import { UnchainedCore } from './core';
 
 export enum QuotationStatus {
   REQUESTED = 'REQUESTED',
@@ -82,18 +83,18 @@ export interface QuotationTransformations {
 export type QuotationContextParams = (
   quotation: Quotation,
   params: { quotationContext?: any },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Quotation>;
 
 export interface QuotationProcessing {
-  fullfillQuotation: (quotationId: string, info: any, requestContext: Context) => Promise<Quotation>;
+  fullfillQuotation: (quotationId: string, info: any, unchainedAPI: UnchainedCore) => Promise<Quotation>;
   proposeQuotation: QuotationContextParams;
   rejectQuotation: QuotationContextParams;
   verifyQuotation: QuotationContextParams;
   transformItemConfiguration: (
     quotation: Quotation,
     configuration: QuotationItemConfiguration,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<QuotationItemConfiguration>;
 }
 
@@ -106,7 +107,7 @@ export interface QuotationData {
 }
 
 export interface QuotationMutations {
-  create: (doc: QuotationData, requestContext: Context) => Promise<Quotation>;
+  create: (doc: QuotationData, unchainedAPI: UnchainedCore) => Promise<Quotation>;
 
   updateContext: (quotationId: string, context: any) => Promise<Quotation>;
 
@@ -145,14 +146,14 @@ export interface QuotationAdapterActions {
 
 export type IQuotationAdapter = IBaseAdapter & {
   orderIndex: number;
-  isActivatedFor: (quotationContext: QuotationContext, requestContext: Context) => boolean;
-  actions: (params: QuotationContext & Context) => QuotationAdapterActions;
+  isActivatedFor: (quotationContext: QuotationContext, unchainedAPI: UnchainedCore) => boolean;
+  actions: (params: QuotationContext & UnchainedCore) => QuotationAdapterActions;
 };
 
 export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
   actions: (
     quotationContext: QuotationContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<QuotationAdapterActions>;
 };
 

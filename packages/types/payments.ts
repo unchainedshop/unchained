@@ -100,7 +100,7 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   actions: (
     paymentProvider: PaymentProvider,
     paymentContext: PaymentContext,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => Promise<IPaymentActions>;
 };
 
@@ -138,12 +138,12 @@ export type PaymentModule = {
     // Payment adapter
     findSupported: (
       query: { order: Order },
-      requestContext: UnchainedCore,
+      unchainedAPI: UnchainedCore,
     ) => Promise<Array<PaymentProvider>>;
     determineDefault: (
       paymentProviders: Array<PaymentProvider>,
       params: { order: Order; paymentCredentials?: Array<PaymentCredentials> },
-      requestContext: UnchainedCore,
+      unchainedAPI: UnchainedCore,
     ) => Promise<PaymentProvider>;
 
     findInterface: (query: PaymentProvider) => PaymentInterface;
@@ -156,12 +156,15 @@ export type PaymentModule = {
 
     configurationError: (
       paymentProvider: PaymentProvider,
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<PaymentError>;
 
-    isActive: (paymentProvider: PaymentProvider, requestContext: Context) => Promise<boolean>;
+    isActive: (paymentProvider: PaymentProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
 
-    isPayLaterAllowed: (paymentProvider: PaymentProvider, requestContext: Context) => Promise<boolean>;
+    isPayLaterAllowed: (
+      paymentProvider: PaymentProvider,
+      unchainedAPI: UnchainedCore,
+    ) => Promise<boolean>;
 
     calculate: (
       pricingContext: PaymentPricingContext,
@@ -171,32 +174,32 @@ export type PaymentModule = {
     charge: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<PaymentChargeActionResult | false>;
     register: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<any>;
     sign: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<string>;
     validate: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<boolean>;
     cancel: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<boolean>;
     confirm: (
       paymentProviderId: string,
       paymentContext: PaymentContext,
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<boolean>;
   };
 
@@ -243,7 +246,7 @@ export type ChargeService = (
     paymentContext: PaymentContext;
     paymentProviderId: string;
   },
-  context: Context,
+  context: UnchainedCore,
 ) => Promise<ChargeResult | false>;
 
 export type CancelService = (
@@ -251,7 +254,7 @@ export type CancelService = (
     paymentContext: PaymentContext;
     paymentProviderId: string;
   },
-  context: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<any>;
 
 export type ConfirmService = (
@@ -259,13 +262,13 @@ export type ConfirmService = (
     paymentContext: PaymentContext;
     paymentProviderId: string;
   },
-  context: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<any>;
 
 export type RegisterPaymentCredentialsService = (
   paymentProviderId: string,
   paymentContext: PaymentContext,
-  context: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<PaymentCredentials | null>;
 
 export interface PaymentServices {

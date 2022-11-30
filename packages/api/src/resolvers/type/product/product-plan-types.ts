@@ -37,7 +37,7 @@ export const PlanProduct: PlanProductHelperTypes = {
       ));
     return modules.products.prices.userPrice(
       obj,
-      { quantity, currency, country: countryContext, useNetPrice },
+      { quantity, userId: requestContext.userId, currency, country: countryContext, useNetPrice },
       requestContext,
     );
   },

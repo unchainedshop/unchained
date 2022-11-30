@@ -212,7 +212,7 @@ export type ProductsModule = {
   resolveOrderableProduct: (
     product: Product,
     params: { configuration?: Array<ProductConfiguration> },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Product>;
 
   prices: {
@@ -224,13 +224,14 @@ export type ProductsModule = {
     userPrice: (
       prodct: Product,
       params: {
+        userId: string;
         country: string;
         currency: string;
         quantity?: number;
         useNetPrice?: boolean;
         configuration?: Array<ProductConfiguration>;
       },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<ProductPrice>;
 
     catalogPrices: (prodct: Product) => Array<ProductPrice>;
@@ -258,6 +259,7 @@ export type ProductsModule = {
     simulatedPriceRange: (
       prodct: Product,
       params: {
+        userId: string;
         country: string;
         currency: string;
         includeInactive?: boolean;
@@ -265,7 +267,7 @@ export type ProductsModule = {
         useNetPrice?: boolean;
         vectors: Array<ProductConfiguration>;
       },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<ProductPriceRange>;
 
     rates: {

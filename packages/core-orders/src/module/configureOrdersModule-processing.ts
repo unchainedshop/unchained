@@ -8,6 +8,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
 import { ProductType } from '@unchainedshop/types/products';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { ordersSettings } from '../orders-settings';
 
 const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
@@ -48,7 +49,7 @@ export const configureOrderModuleProcessing = ({
     return errors;
   };
 
-  const itemValidationErrors = async (order: Order, { modules }: Context) => {
+  const itemValidationErrors = async (order: Order, { modules }: UnchainedCore) => {
     // Check if items are valid
     const orderPositions = await findOrderPositions(order);
     if (orderPositions.length === 0) {
@@ -87,7 +88,7 @@ export const configureOrderModuleProcessing = ({
     return validationErrors.flatMap((f) => f);
   };
 
-  const isAutoConfirmationEnabled = async (order: Order, requestContext: Context) => {
+  const isAutoConfirmationEnabled = async (order: Order, requestContext: UnchainedCore) => {
     const { modules } = requestContext;
 
     if (order.status === OrderStatus.FULLFILLED || order.status === OrderStatus.CONFIRMED) {
@@ -109,7 +110,7 @@ export const configureOrderModuleProcessing = ({
     return true;
   };
 
-  const isAutoFullfillmentEnabled = async (order: Order, requestContext: Context) => {
+  const isAutoFullfillmentEnabled = async (order: Order, requestContext: UnchainedCore) => {
     const { modules } = requestContext;
 
     const orderPayment = await findOrderPayment(order);
@@ -134,7 +135,7 @@ export const configureOrderModuleProcessing = ({
   const findNextStatus = async (
     status: OrderStatus | null,
     order: Order,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ): Promise<OrderStatus> => {
     if (status === null) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
@@ -163,7 +164,7 @@ export const configureOrderModuleProcessing = ({
 
   return {
     checkout: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
-      const { modules, localeContext, userId } = requestContext;
+      const { modules } = requestContext;
 
       await modules.orders.updateContext(orderId, orderContext, requestContext);
       let order = await modules.orders.findOrder({ orderId });
@@ -190,12 +191,12 @@ export const configureOrderModuleProcessing = ({
       );
 
       // After checkout, store last checkout information on user
-      await modules.users.updateLastBillingAddress(order.userId, order.billingAddress, userId);
-      await modules.users.updateLastContact(order.userId, order.contact, userId);
+      await modules.users.updateLastBillingAddress(order.userId, order.billingAddress);
+      await modules.users.updateLastContact(order.userId, order.contact);
 
       // Then ensure new cart is created before we return from checkout
       const user = await modules.users.findUserById(order.userId);
-      const locale = localeContext || modules.users.userLocale(user);
+      const locale = modules.users.userLocale(user);
       await modules.orders.ensureCartForUser(
         {
           user,
@@ -440,9 +441,9 @@ export const configureOrderModuleProcessing = ({
       return order;
     },
 
-    sendOrderConfirmationToCustomer: async (order, params, { modules, localeContext }) => {
+    sendOrderConfirmationToCustomer: async (order, params, { modules }) => {
       const user = await modules.users.findUserById(order.userId);
-      const locale = localeContext || modules.users.userLocale(user);
+      const locale = modules.users.userLocale(user);
 
       await modules.worker.addWork({
         type: 'MESSAGE',
@@ -458,9 +459,9 @@ export const configureOrderModuleProcessing = ({
       return order;
     },
 
-    sendOrderRejectionToCustomer: async (order, params, { modules, localeContext }) => {
+    sendOrderRejectionToCustomer: async (order, params, { modules }) => {
       const user = await modules.users.findUserById(order.userId);
-      const locale = localeContext || modules.users.userLocale(user);
+      const locale = modules.users.userLocale(user);
 
       await modules.worker.addWork({
         type: 'MESSAGE',

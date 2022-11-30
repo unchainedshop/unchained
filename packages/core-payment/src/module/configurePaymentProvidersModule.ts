@@ -1,6 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
 import { Collection } from '@unchainedshop/types/common';
-import { ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import {
   PaymentContext,
   PaymentModule,
@@ -44,7 +43,7 @@ export const configurePaymentProvidersModule = (
   const getPaymentAdapter = async (
     paymentProviderId: string,
     paymentContext: PaymentContext,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => {
     const provider = await PaymentProviders.findOne(generateDbFilterById(paymentProviderId), {});
 

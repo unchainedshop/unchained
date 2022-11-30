@@ -228,11 +228,9 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    updateLastBillingAddress: async (_id, lastBillingAddress, userId) => {
+    updateLastBillingAddress: async (_id, lastBillingAddress) => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
-
-      log('Store Last Billing Address', { userId });
 
       const modifier = {
         $set: {
@@ -260,12 +258,9 @@ export const configureUsersModule = async ({
       return updatedUser;
     },
 
-    updateLastContact: async (_id, lastContact, userId) => {
+    updateLastContact: async (_id, lastContact) => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
-
-      log('Store Last Contact', { userId });
-
       const profile = user.profile || {};
       const isGuest = !!user.guest;
 

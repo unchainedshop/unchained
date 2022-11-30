@@ -80,7 +80,7 @@ export const configureOrderPositionsModule = ({
         `Create ${quantity}x Position with Product ${productId} ${
           quotationId ? ` (${quotationId})` : ''
         }`,
-        { orderId, productId, originalProductId, userId: requestContext.userId },
+        { orderId, productId, originalProductId },
       );
 
       const positionId = await mutations.create({

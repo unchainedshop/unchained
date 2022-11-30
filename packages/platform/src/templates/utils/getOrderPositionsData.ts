@@ -1,11 +1,11 @@
-import { Context } from '@unchainedshop/types/api';
 import { Locale } from '@unchainedshop/types/common';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { Order } from '@unchainedshop/types/orders';
 
 export const getOrderPositionsData = async (
   order: Order,
   params: { locale?: Locale },
-  context: Context,
+  context: UnchainedCore,
 ) => {
   const { modules } = context;
   const orderPositions = await modules.orders.positions.findOrderPositions({

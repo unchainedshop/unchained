@@ -1,5 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
 import { Filter, FilterAdapterActions } from '@unchainedshop/types/filters';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { FilterType } from '../db/FilterType';
 import { intersectSet } from '../utils/intersectSet';
 import { FilterProductIds } from './search';
@@ -14,7 +14,7 @@ const findLoadedOptions = async (
   },
   filterProductIds: FilterProductIds,
   filterActions: FilterAdapterActions,
-  requestContext: Context,
+  requestContext: UnchainedCore,
 ) => {
   const { values, forceLiveCollection, productIdSet } = params;
 
@@ -63,7 +63,7 @@ export const loadFilter = async (
   },
   filterProductIds: FilterProductIds,
   filterActions: FilterAdapterActions,
-  requestContext: Context,
+  requestContext: UnchainedCore,
 ) => {
   const { allProductIds, filterQuery, forceLiveCollection, otherFilters } = params;
 

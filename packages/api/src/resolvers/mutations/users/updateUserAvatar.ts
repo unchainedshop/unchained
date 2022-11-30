@@ -35,5 +35,5 @@ export default async function updateUserAvatar(
     );
   }
 
-  return modules.users.updateAvatar(normalizedUserId, file._id, userId);
+  return modules.users.updateAvatar(normalizedUserId, file._id);
 }

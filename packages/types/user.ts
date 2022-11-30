@@ -100,19 +100,19 @@ export type UsersModule = {
   // Mutations
   addRoles: (userId: string, roles: Array<string>) => Promise<number>;
 
-  updateAvatar: (_id: string, fileId: string, userId: string) => Promise<User>;
+  updateAvatar: (_id: string, fileId: string) => Promise<User>;
   updateGuest: (user: User, guest: boolean) => Promise<void>;
   updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
   updateInitialPassword: (user: User, initialPassword: boolean) => Promise<void>;
-  updateLastBillingAddress: (_id: string, lastAddress: Address, userId: string) => Promise<User>;
-  updateLastContact: (_id: string, lastContact: Contact, userId: string) => Promise<User>;
+  updateLastBillingAddress: (_id: string, lastAddress: Address) => Promise<User>;
+  updateLastContact: (_id: string, lastContact: Contact) => Promise<User>;
   updateProfile: (
     _id: string,
     { profile, meta }: { profile?: UserProfile; meta?: any },
     userId: string,
   ) => Promise<User>;
-  updateRoles: (_id: string, roles: Array<string>, userId: string) => Promise<User>;
-  updateTags: (_id: string, tags: Array<string>, userId: string) => Promise<User>;
+  updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
+  updateTags: (_id: string, tags: Array<string>) => Promise<User>;
   updateUser: (selector: Query, modifier: Update<User>, options: UpdateOptions) => Promise<void>;
 };
 
@@ -125,19 +125,11 @@ export type UpdateUserAvatarAfterUploadService = (
   context: Context,
 ) => Promise<void>;
 
-export type GetUserLanguageService = (
-  user: User,
-  params: { localeContext?: Locale },
-  context: Context,
-) => Promise<Language>;
+export type GetUserLanguageService = (user: User, context: Context) => Promise<Language>;
 
 export type GetUserRoleActionsService = (user: User, context: Context) => Promise<Array<string>>;
 
-export type GetUserCountryService = (
-  user: User,
-  params: { localeContext?: Locale },
-  context: Context,
-) => Promise<Country>;
+export type GetUserCountryService = (user: User, context: Context) => Promise<Country>;
 
 export interface UserServices {
   getUserCountry: GetUserCountryService;

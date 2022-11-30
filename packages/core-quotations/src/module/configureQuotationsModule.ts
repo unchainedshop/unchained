@@ -1,6 +1,6 @@
-import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { Update } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import {
   Quotation,
   QuotationQuery,
@@ -67,7 +67,7 @@ export const configureQuotationsModule = async ({
 
   const findNextStatus = async (
     quotation: Quotation,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ): Promise<QuotationStatus> => {
     let status = quotation.status as QuotationStatus;
     const director = await QuotationDirector.actions({ quotation }, requestContext);
@@ -142,7 +142,7 @@ export const configureQuotationsModule = async ({
   const processQuotation = async (
     initialQuotation: Quotation,
     params: { quotationContext?: any },
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => {
     const { modules } = requestContext;
 
@@ -178,11 +178,11 @@ export const configureQuotationsModule = async ({
     return updateStatus(quotation._id, { status: nextStatus, info: 'quotation processed' });
   };
 
-  const sendStatusToCustomer = async (quotation: Quotation, requestContext: Context) => {
+  const sendStatusToCustomer = async (quotation: Quotation, requestContext: UnchainedCore) => {
     const { modules } = requestContext;
 
     const user = await modules.users.findUserById(quotation.userId);
-    const locale = requestContext.localeContext || modules.users.userLocale(user);
+    const locale = modules.users.userLocale(user);
 
     await modules.worker.addWork({
       type: 'MESSAGE',
@@ -317,9 +317,7 @@ export const configureQuotationsModule = async ({
 
     // Mutations
     create: async ({ countryCode, ...quotationData }, requestContext) => {
-      const { services, userId } = requestContext;
-
-      log('Create Quotation', { userId });
+      const { services } = requestContext;
 
       const currency = await services.countries.resolveDefaultCurrencyCode(
         {

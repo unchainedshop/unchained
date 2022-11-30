@@ -1,4 +1,3 @@
-import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { UnchainedCore } from './core';
 import { IDeliveryPricingSheet } from './delivery.pricing';
@@ -31,18 +30,18 @@ export type OrderDeliveriesModule = {
   discounts: (
     orderDelivery: OrderDelivery,
     params: { order: Order; orderDiscount: OrderDiscount },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Array<OrderPricingDiscount>;
   isBlockingOrderConfirmation: (
     orderDelivery: OrderDelivery,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
   normalizedStatus: (orderDelivery: OrderDelivery) => string;
   pricingSheet: (
     orderDelivery: OrderDelivery,
     currency: string,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => IDeliveryPricingSheet;
 
   // Mutations
@@ -54,10 +53,14 @@ export type OrderDeliveriesModule = {
   send: (
     orderDelivery: OrderDelivery,
     params: { order: Order; deliveryContext?: any },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderDelivery>;
 
-  updateContext: (orderDeliveryId: string, context: any, requestContext: Context) => Promise<boolean>;
+  updateContext: (
+    orderDeliveryId: string,
+    context: any,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
 
   updateStatus: (
     orderDeliveryId: string,

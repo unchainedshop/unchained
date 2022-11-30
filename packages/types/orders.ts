@@ -56,7 +56,11 @@ export type OrderTransactionContext = {
   orderContext?: any;
   nextStatus?: OrderStatus;
 };
-export type OrderContextParams<P> = (order: Order, params: P, requestContext: Context) => Promise<Order>;
+export type OrderContextParams<P> = (
+  order: Order,
+  params: P,
+  unchainedAPI: UnchainedCore,
+) => Promise<Order>;
 
 export interface OrderQueries {
   findOrder: (
@@ -81,12 +85,12 @@ export interface OrderTransformations {
   discounted: (
     order: Order,
     orderDiscount: OrderDiscount,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Array<OrderPricingDiscount>>;
   discountTotal: (
     order: Order,
     orderDiscount: OrderDiscount,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPrice>;
 
   isCart: (order: Order) => boolean;
@@ -98,10 +102,18 @@ export interface OrderProcessing {
   checkout: (
     orderId: string,
     params: OrderTransactionContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  confirm: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
-  reject: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
+  confirm: (
+    orderId: string,
+    params: OrderTransactionContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Order>;
+  reject: (
+    orderId: string,
+    params: OrderTransactionContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Order>;
   ensureCartForUser: (
     params: { user: User; countryCode?: string },
     unchainedAPI: UnchainedCore,
@@ -143,14 +155,14 @@ export interface OrderMutations {
   updateBillingAddress: (
     orderId: string,
     billingAddress: Address,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  updateContact: (orderId: string, contact: Contact, requestContext: Context) => Promise<Order>;
-  updateContext: (orderId: string, context: any, requestContext: Context) => Promise<boolean>;
+  updateContact: (orderId: string, contact: Contact, unchainedAPI: UnchainedCore) => Promise<Order>;
+  updateContext: (orderId: string, context: any, unchainedAPI: UnchainedCore) => Promise<boolean>;
   updateStatus: (
     orderId: string,
     params: { status: OrderStatus; info?: string },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
 
   updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;

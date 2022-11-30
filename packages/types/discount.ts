@@ -46,7 +46,7 @@ export type IDiscountAdapter = IBaseAdapter & {
 export type IDiscountDirector = IBaseDirector<IDiscountAdapter> & {
   actions: (
     discountContext: DiscountContext,
-    requestContext: UnchainedCore,
+    unchainedAPI: UnchainedCore,
   ) => Promise<{
     resolveDiscountKeyFromStaticCode: (params: { code: string }) => Promise<string | null>;
     findSystemDiscounts: () => Promise<Array<string>>;

@@ -134,7 +134,7 @@ export const User: UserHelperTypes = {
 
   country: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.services.users.getUserCountry(user, params, context);
+    return context.services.users.getUserCountry(user, context);
   },
 
   enrollments: async (user, params, context) => {
@@ -146,7 +146,7 @@ export const User: UserHelperTypes = {
 
   language: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.services.users.getUserLanguage(user, params, context);
+    return context.services.users.getUserLanguage(user, context);
   },
 
   allowedActions: async (user, params, context) => {

@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { Context, SortOption } from './api';
+import { SortOption } from './api';
 import { Assortment } from './assortments';
 import {
   FindOptions,
@@ -98,21 +98,21 @@ export type FiltersModule = {
   // Mutations
   create: (
     doc: Filter & { title: string; locale: string },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
     options?: { skipInvalidation?: boolean },
     userId?: string,
   ) => Promise<Filter>;
 
   createFilterOption: (
     filterId: string,
-    option: { value: string; title: string },
-    requestContext: Context,
+    option: { value: string; title: string; locale: string },
+    unchainedAPI: UnchainedCore,
   ) => Promise<Filter>;
 
   update: (
     filterId: string,
     doc: Filter,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
     options?: { skipInvalidation?: boolean },
     userId?: string,
   ) => Promise<string>;
@@ -124,7 +124,7 @@ export type FiltersModule = {
       filterId: string;
       filterOptionValue?: string;
     },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Filter>;
 
   /*
@@ -134,13 +134,13 @@ export type FiltersModule = {
     searchProducts: (
       searchQuery: SearchQuery,
       params: { forceLiveCollection?: boolean },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<SearchProducts>;
 
     searchAssortments: (
       searchQuery: SearchQuery,
       params: { forceLiveCollection?: boolean },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<SearchAssortments>;
   };
 
@@ -219,11 +219,11 @@ export interface FilterAdapterActions {
 export type IFilterAdapter = IBaseAdapter & {
   orderIndex: number;
 
-  actions: (params: FilterContext & Context) => FilterAdapterActions;
+  actions: (params: FilterContext & UnchainedCore) => FilterAdapterActions;
 };
 
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
-  actions: (filterContext: FilterContext, requestContext: Context) => Promise<FilterAdapterActions>;
+  actions: (filterContext: FilterContext, unchainedAPI: UnchainedCore) => Promise<FilterAdapterActions>;
 };
 
 /* Settings */

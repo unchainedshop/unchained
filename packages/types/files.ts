@@ -95,18 +95,18 @@ export interface IFileAdapter extends IBaseAdapter {
   createSignedURL: (
     directoryName: string,
     fileName: string,
-    unchainedContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<(UploadFileData & { putURL: string }) | null>;
   removeFiles: (files: Array<File>, unchainedContext: UnchainedCore) => Promise<void>;
   uploadFileFromStream: (
     directoryName: string,
     rawFile: any,
-    unchainedContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<UploadFileData | null>;
   uploadFileFromURL: (
     directoryName: string,
     fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown> },
-    unchainedContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<UploadFileData | null>;
 }
 
