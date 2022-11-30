@@ -11,7 +11,7 @@ export default async function createAssortment(
   { logger, authorId, createShouldUpsertIfIDExists },
   unchainedAPI: Context,
 ) {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
   if (!specification) throw new Error(`Specification is required when creating new assortment ${_id}`);
 
@@ -22,18 +22,14 @@ export default async function createAssortment(
 
   logger.debug('create assortment object', specification);
   try {
-    await modules.assortments.create({ ...specification, _id, authorId }, userId);
+    await modules.assortments.create({ ...specification, _id, authorId });
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
     logger.debug('entity already exists, falling back to update', specification);
-    await modules.assortments.update(
-      _id,
-      {
-        ...specification,
-        authorId,
-      },
-      userId,
-    );
+    await modules.assortments.update(_id, {
+      ...specification,
+      authorId,
+    });
   }
 
   if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
@@ -45,7 +41,6 @@ export default async function createAssortment(
     {
       content: specification.content,
       assortmentId: _id,
-      authorId,
     },
     unchainedAPI,
   );

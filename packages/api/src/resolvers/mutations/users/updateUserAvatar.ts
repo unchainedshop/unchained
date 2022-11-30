@@ -22,7 +22,6 @@ export default async function updateUserAvatar(
       directoryName: 'user-avatars',
       rawFile: params.avatar,
       meta: { userId: normalizedUserId },
-      userId,
     },
     context,
   );

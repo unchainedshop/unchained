@@ -102,13 +102,13 @@ export const configurePaymentProvidersModule = (
         }));
     },
 
-    findSupported: async (paymentContext, requestContext) => {
+    findSupported: async (paymentContext, unchainedAPI) => {
       const allProviders = await PaymentProviders.find({ deleted: null }).toArray();
       const providers: PaymentProvider[] = await asyncFilter(
         allProviders,
         async (provider: PaymentProvider) => {
           try {
-            const director = await PaymentDirector.actions(provider, paymentContext, requestContext);
+            const director = await PaymentDirector.actions(provider, paymentContext, unchainedAPI);
             return director.isActive();
           } catch {
             return false;
@@ -121,17 +121,17 @@ export const configurePaymentProvidersModule = (
           providers,
           order: paymentContext.order,
         },
-        requestContext,
+        unchainedAPI,
       );
     },
 
-    determineDefault: async (paymentProviders, deliveryContext, requestContext) => {
+    determineDefault: async (paymentProviders, deliveryContext, unchainedAPI) => {
       return paymentSettings.determineDefaultProvider(
         {
           providers: paymentProviders,
           ...deliveryContext,
         },
-        requestContext,
+        unchainedAPI,
       );
     },
 
@@ -188,17 +188,14 @@ export const configurePaymentProvidersModule = (
     },
 
     // Mutations
-    create: async (doc, userId) => {
+    create: async (doc) => {
       const Adapter = PaymentDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
-      const paymentProviderId = await mutations.create(
-        {
-          configuration: Adapter.initialConfiguration,
-          ...doc,
-        },
-        userId,
-      );
+      const paymentProviderId = await mutations.create({
+        configuration: Adapter.initialConfiguration,
+        ...doc,
+      });
 
       const paymentProvider = await PaymentProviders.findOne(
         generateDbFilterById(paymentProviderId),
@@ -208,23 +205,23 @@ export const configurePaymentProvidersModule = (
       return paymentProvider;
     },
 
-    update: async (_id: string, doc: PaymentProvider, userId: string) => {
-      await mutations.update(_id, doc, userId);
+    update: async (_id: string, doc: PaymentProvider) => {
+      await mutations.update(_id, doc);
       const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
       await emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
       return paymentProvider;
     },
 
-    delete: async (_id, userId) => {
-      await mutations.delete(_id, userId);
+    delete: async (_id) => {
+      await mutations.delete(_id);
       const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
       await emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
       return paymentProvider;
     },
 
-    deletePermanently: async (_id, userId) => {
+    deletePermanently: async (_id) => {
       const deliveryProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
-      await mutations.deletePermanently(_id, userId);
+      await mutations.deletePermanently(_id);
       return deliveryProvider;
     },
   };

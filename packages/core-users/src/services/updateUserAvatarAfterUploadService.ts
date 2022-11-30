@@ -17,5 +17,5 @@ export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadServ
     );
   }
 
-  await modules.users.updateAvatar(userId, file._id, currentUserId || file.updatedBy || file.createdBy);
+  await modules.users.updateAvatar(userId, file._id, currentUserId);
 };

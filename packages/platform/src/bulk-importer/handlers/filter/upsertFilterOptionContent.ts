@@ -5,16 +5,13 @@ export default async function upsertFilterOptionContent({ options, filterId }, u
   return Promise.all(
     (options || []).map(async ({ content: optionContent, value: optionValue }) => {
       await Promise.all(
-        Object.entries(optionContent).map(
-          async ([locale, { authorId, ...localizedData }]: [string, FilterText]) => {
-            return unchainedAPI.modules.filters.texts.upsertLocalizedText(
-              { filterId, filterOptionValue: optionValue },
-              locale,
-              localizedData,
-              authorId || unchainedAPI.userId,
-            );
-          },
-        ),
+        Object.entries(optionContent).map(async ([locale, localizedData]: [string, FilterText]) => {
+          return unchainedAPI.modules.filters.texts.upsertLocalizedText(
+            { filterId, filterOptionValue: optionValue },
+            locale,
+            localizedData,
+          );
+        }),
       );
     }),
   );

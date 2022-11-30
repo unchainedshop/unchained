@@ -44,7 +44,6 @@ export default async function addAssortmentLink(
       {
         skipInvalidation: false,
       },
-      userId,
     );
     return result;
   } catch (e) {

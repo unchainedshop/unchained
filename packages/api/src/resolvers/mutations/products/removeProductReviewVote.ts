@@ -19,5 +19,5 @@ export default async function removeProductReviewVote(
   });
   if (!productReview) throw new ProductReviewNotFoundError({ productReviewId });
 
-  return modules.products.reviews.votes.removeVote(productReviewId, { type, userId }, userId);
+  return modules.products.reviews.votes.removeVote(productReviewId, { type, userId });
 }

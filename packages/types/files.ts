@@ -44,12 +44,12 @@ export type LinkFileService = (
 ) => Promise<File>;
 
 export type CreateSignedURLService = (
-  params: { directoryName: string; fileName: string; meta?: any; userId?: string },
+  params: { directoryName: string; fileName: string; meta?: any },
   context: Context,
 ) => Promise<SignedFileUpload>;
 
 export type UploadFileFromStreamService = (
-  params: { directoryName: string; rawFile: any; meta?: any; userId?: string },
+  params: { directoryName: string; rawFile: any; meta?: any },
   context: Context,
 ) => Promise<File>;
 
@@ -63,7 +63,6 @@ export type UploadFileFromURLService = (
     directoryName: string;
     fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown> };
     meta?: any;
-    userId?: string;
   },
   context: Context,
 ) => Promise<File>;

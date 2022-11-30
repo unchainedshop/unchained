@@ -108,18 +108,13 @@ export interface QuotationData {
 export interface QuotationMutations {
   create: (doc: QuotationData, requestContext: Context) => Promise<Quotation>;
 
-  updateContext: (quotationId: string, context: any, userId?: string) => Promise<Quotation>;
+  updateContext: (quotationId: string, context: any) => Promise<Quotation>;
 
-  updateProposal: (
-    quotationId: string,
-    proposal: QuotationProposal,
-    userId?: string,
-  ) => Promise<Quotation>;
+  updateProposal: (quotationId: string, proposal: QuotationProposal) => Promise<Quotation>;
 
   updateStatus: (
     quotationId: string,
     params: { status: QuotationStatus; info?: string },
-    userId?: string,
   ) => Promise<Quotation>;
 }
 

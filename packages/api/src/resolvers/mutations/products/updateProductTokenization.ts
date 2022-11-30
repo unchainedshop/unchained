@@ -22,7 +22,7 @@ export default async function updateProductTokenization(
       required: ProductTypes.TokenizedProduct,
     });
 
-  await modules.products.update(productId, { tokenization }, userId);
+  await modules.products.update(productId, { tokenization });
 
   return modules.products.findProduct({ productId });
 }

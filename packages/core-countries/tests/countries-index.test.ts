@@ -38,8 +38,6 @@ describe('Test exports', () => {
     assert.equal(country.userId, 'Test-User-1');
     assert.isDefined(country.created);
     assert.isUndefined(country.updated);
-    assert.isUndefined(country.updatedBy);
-    assert.equal(country.createdBy, 'Test-User-1');
 
     const deletedCount = await module.delete(countryId);
     assert.equal(deletedCount, 1);

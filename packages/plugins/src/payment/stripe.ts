@@ -42,7 +42,7 @@ export const stripeHandler = async (request, response) => {
       const paymentIntent = event.data.object;
       const orderPaymentId = paymentIntent.metadata?.orderPaymentId;
 
-      await modules.orders.payments.logEvent(orderPaymentId, event, resolvedContext.userId);
+      await modules.orders.payments.logEvent(orderPaymentId, event);
 
       const orderPayment = await modules.orders.payments.findOrderPayment({
         orderPaymentId,
@@ -197,11 +197,9 @@ const Stripe: IPaymentAdapter = {
 
       sign: async (transactionContext = {}) => {
         // eslint-disable-line
-        const { orderPayment, paymentProviderId } = params.paymentContext;
-        const { userId } = params.context;
+        const { orderPayment, order, paymentProviderId } = params.paymentContext;
 
         if (orderPayment) {
-          const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
           const pricing = await modules.orders.pricingSheet(order);
           const paymentIntent = await createOrderPaymentIntent(
             { order, orderPayment, pricing },
@@ -210,6 +208,7 @@ const Stripe: IPaymentAdapter = {
           return paymentIntent.client_secret;
         }
 
+        const userId = order?.userId || params.paymentContext?.userId;
         const user = await modules.users.findUserById(userId);
         const email = modules.users.primaryEmail(user)?.address;
         const name = user.profile.displayName || user.username || email;

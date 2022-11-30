@@ -83,20 +83,17 @@ export const configureOrderPositionsModule = ({
         { orderId, productId, originalProductId, userId: requestContext.userId },
       );
 
-      const positionId = await mutations.create(
-        {
-          orderId,
-          productId,
-          originalProductId,
-          quotationId,
-          quantity,
-          configuration,
-          context,
-          calculation: [],
-          scheduling: [],
-        },
-        requestContext.userId,
-      );
+      const positionId = await mutations.create({
+        orderId,
+        productId,
+        originalProductId,
+        quotationId,
+        quantity,
+        configuration,
+        context,
+        calculation: [],
+        scheduling: [],
+      });
 
       await updateCalculation(orderId, requestContext);
 
@@ -143,7 +140,6 @@ export const configureOrderPositionsModule = ({
       const modifier: any = {
         $set: {
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       };
 
@@ -239,14 +235,14 @@ export const configureOrderPositionsModule = ({
       return OrderPositions.findOne(generateDbFilterById(orderPosition._id), {});
     },
 
-    updateCalculation: async (orderPosition, requestContext) => {
+    updateCalculation: async (orderPosition, unchainedAPI) => {
       log(`OrderPosition ${orderPosition._id} -> Update Calculation`, {
         orderId: orderPosition.orderId,
       });
 
-      const calculation = await requestContext.modules.products.calculate(
+      const calculation = await unchainedAPI.modules.products.calculate(
         { item: orderPosition, configuration: orderPosition.configuration },
-        requestContext,
+        unchainedAPI,
       );
       const selector = buildFindByIdSelector(orderPosition._id);
 
@@ -294,13 +290,11 @@ export const configureOrderPositionsModule = ({
         {
           $set: {
             updated: new Date(),
-            updatedBy: requestContext.userId,
           },
           $inc: { quantity },
           $setOnInsert: {
             _id: generateDbObjectId(),
             created: new Date(),
-            createdBy: requestContext.userId,
             calculation: [],
             scheduling: [],
             orderId,

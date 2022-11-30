@@ -9,7 +9,7 @@ export const FailedRescheduler: IScheduler = {
   version: '1.0.0',
 
   actions: (requestContext) => {
-    const handleFinishedWork = ({ work, userId }: { work: Work; userId: string }) => {
+    const handleFinishedWork = ({ work }: { work: Work }) => {
       if (!work.success && work.retries > 0) {
         const now = new Date();
         const workDelayMs = work.scheduled.getTime() - work.created.getTime();
@@ -28,17 +28,14 @@ export const FailedRescheduler: IScheduler = {
           }`,
         );
 
-        requestContext.modules.worker.addWork(
-          {
-            type: work.type,
-            input: work.input,
-            priority: work.priority,
-            originalWorkId: work.originalWorkId || work._id,
-            retries: work.retries - 1,
-            scheduled,
-          },
-          userId,
-        );
+        requestContext.modules.worker.addWork({
+          type: work.type,
+          input: work.input,
+          priority: work.priority,
+          originalWorkId: work.originalWorkId || work._id,
+          retries: work.retries - 1,
+          scheduled,
+        });
       }
     };
 

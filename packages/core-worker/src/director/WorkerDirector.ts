@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { IWorkerAdapter, IWorkerDirector, WorkScheduleConfiguration } from '@unchainedshop/types/worker';
 import { EventEmitter } from 'events';
 import { log, LogLevel } from '@unchainedshop/logger';
@@ -45,7 +44,7 @@ export const WorkerDirector: IWorkerDirector = {
   },
   getAutoSchedules: () => Array.from(AutoScheduleMap),
 
-  doWork: async ({ type, input, _id: workId }, requestContext: Context) => {
+  doWork: async ({ type, input, _id: workId }, requestContext) => {
     const adapter = WorkerDirector.getAdapter(type);
 
     if (!adapter) {

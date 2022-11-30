@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/types/api';
 import { AssortmentLink } from '@unchainedshop/types/assortments';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
-const upsert = async (assortmentLink: AssortmentLink, { modules, userId }: Context) => {
+const upsert = async (assortmentLink: AssortmentLink, { modules }: Context) => {
   if (
     !(await modules.assortments.assortmentExists({
       assortmentId: assortmentLink.childAssortmentId,
@@ -11,19 +11,14 @@ const upsert = async (assortmentLink: AssortmentLink, { modules, userId }: Conte
     throw new Error(`Can't link non-existing assortment ${assortmentLink.childAssortmentId}`);
   }
   try {
-    const newAssortmentLink = await modules.assortments.links.create(
-      assortmentLink,
-      { skipInvalidation: true },
-      userId,
-    );
+    const newAssortmentLink = await modules.assortments.links.create(assortmentLink, {
+      skipInvalidation: true,
+    });
     return newAssortmentLink;
   } catch (e) {
-    return modules.assortments.links.update(
-      assortmentLink._id,
-      assortmentLink,
-      { skipInvalidation: true },
-      userId,
-    );
+    return modules.assortments.links.update(assortmentLink._id, assortmentLink, {
+      skipInvalidation: true,
+    });
   }
 };
 

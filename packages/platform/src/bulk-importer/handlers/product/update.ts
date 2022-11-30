@@ -5,7 +5,7 @@ import upsertProductContent from './upsertProductContent';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
 
 export default async function createProduct(payload: any, { logger, authorId }, unchainedAPI: Context) {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
 
   if (!(await modules.products.productExists({ productId: _id }))) {
@@ -15,14 +15,10 @@ export default async function createProduct(payload: any, { logger, authorId }, 
   if (specification) {
     const productData = transformSpecificationToProductStructure(specification);
     logger.debug('update product object', productData);
-    await modules.products.update(
-      _id,
-      {
-        ...productData,
-        authorId,
-      },
-      userId,
-    );
+    await modules.products.update(_id, {
+      ...productData,
+      authorId,
+    });
 
     if (specification.content) {
       logger.debug('replace localized content for product', specification.content);
@@ -30,7 +26,6 @@ export default async function createProduct(payload: any, { logger, authorId }, 
         {
           content: specification.content,
           productId: _id,
-          authorId,
         },
         unchainedAPI,
       );

@@ -3,7 +3,7 @@ import { AssortmentProduct } from '@unchainedshop/types/assortments';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
 const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Context) => {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   if (
     !(await modules.products.productExists({
       productId: assortmentProduct.productId,
@@ -12,21 +12,14 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Contex
     throw new Error(`Can't link non-existing product ${assortmentProduct.productId}`);
   }
   try {
-    const newAssortmentProduct = await modules.assortments.products.create(
-      assortmentProduct,
-      {
-        skipInvalidation: true,
-      },
-      userId,
-    );
+    const newAssortmentProduct = await modules.assortments.products.create(assortmentProduct, {
+      skipInvalidation: true,
+    });
     return newAssortmentProduct;
   } catch (e) {
-    return modules.assortments.products.update(
-      assortmentProduct._id,
-      assortmentProduct,
-      { skipInvalidation: true },
-      userId,
-    );
+    return modules.assortments.products.update(assortmentProduct._id, assortmentProduct, {
+      skipInvalidation: true,
+    });
   }
 };
 

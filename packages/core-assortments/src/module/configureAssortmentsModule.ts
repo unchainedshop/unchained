@@ -322,35 +322,29 @@ export const configureAssortmentsModule = async ({
     },
 
     // Mutations
-    create: async (
-      {
+    create: async ({
+      authorId,
+      isActive = true,
+      isBase = false,
+      isRoot = false,
+      locale,
+      meta = {},
+      sequence,
+      title,
+      ...rest
+    }) => {
+      const assortmentId = await mutations.create({
+        sequence: sequence || (await Assortments.countDocuments({})) + 10,
+        isBase,
+        isActive,
+        isRoot,
+        meta,
         authorId,
-        isActive = true,
-        isBase = false,
-        isRoot = false,
-        locale,
-        meta = {},
-        sequence,
-        title,
-        ...rest
-      },
-      userId,
-    ) => {
-      const assortmentId = await mutations.create(
-        {
-          sequence: sequence || (await Assortments.countDocuments({})) + 10,
-          isBase,
-          isActive,
-          isRoot,
-          meta,
-          authorId,
-          ...rest,
-        },
-        userId,
-      );
+        ...rest,
+      });
 
       if (locale) {
-        await assortmentTexts.upsertLocalizedText(assortmentId, locale, { title }, userId);
+        await assortmentTexts.upsertLocalizedText(assortmentId, locale, { title });
       }
 
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId));
@@ -358,8 +352,8 @@ export const configureAssortmentsModule = async ({
       return assortmentId;
     },
 
-    update: async (_id, doc, userId, options) => {
-      const assortmentId = await mutations.update(_id, doc, userId);
+    update: async (_id, doc, options) => {
+      const assortmentId = await mutations.update(_id, doc);
       await emit('ASSORTMENT_UPDATE', { assortmentId });
 
       if (!options?.skipInvalidation) {
@@ -394,14 +388,13 @@ export const configureAssortmentsModule = async ({
     },
 
     invalidateCache,
-    setBase: async (assortmentId, userId) => {
+    setBase: async (assortmentId) => {
       await Assortments.updateMany(
         { isBase: true },
         {
           $set: {
             isBase: false,
             updated: new Date(),
-            updatedBy: userId,
           },
         },
       );
@@ -410,7 +403,6 @@ export const configureAssortmentsModule = async ({
         $set: {
           isBase: true,
           updated: new Date(),
-          updatedBy: userId,
         },
       });
       await emit('ASSORTMENT_SET_BASE', { assortmentId });

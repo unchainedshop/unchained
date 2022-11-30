@@ -11,7 +11,7 @@ export default async function updateAssortment(
   { logger, authorId },
   unchainedAPI: Context,
 ) {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
 
   if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
@@ -23,14 +23,13 @@ export default async function updateAssortment(
 
     specification.tags = convertTagsToLowerCase(specification?.tags);
 
-    await unchainedAPI.modules.assortments.update(_id, { ...specification, authorId }, userId);
+    await unchainedAPI.modules.assortments.update(_id, { ...specification, authorId });
     if (specification.content) {
       logger.debug('replace localized content for assortment', specification.content);
       await upsertAssortmentContent(
         {
           content: specification.content,
           assortmentId: _id,
-          authorId,
         },
         unchainedAPI,
       );

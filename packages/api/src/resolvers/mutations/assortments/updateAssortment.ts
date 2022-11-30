@@ -17,7 +17,7 @@ export default async function updateAssortment(
   if (!(await modules.assortments.assortmentExists({ assortmentId })))
     throw new AssortmentNotFoundError({ assortmentId });
 
-  await modules.assortments.update(assortmentId, assortment, userId);
+  await modules.assortments.update(assortmentId, assortment);
 
   return modules.assortments.findAssortment({ assortmentId });
 }

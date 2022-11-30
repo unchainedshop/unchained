@@ -17,5 +17,5 @@ export default async function updateProductReview(
   if (!(await modules.products.reviews.reviewExists({ productReviewId })))
     throw new ProductReviewNotFoundError({ productReviewId });
 
-  return modules.products.reviews.update(productReviewId, productReview, userId);
+  return modules.products.reviews.update(productReviewId, productReview);
 }

@@ -1,6 +1,6 @@
-import { Context } from './api';
+import { Context, UnchainedAPI } from './api';
 import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
-import { ModuleMutationsWithReturnDoc } from './core';
+import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core';
 import { Order } from './orders';
 import { OrderPayment } from './orders.payments';
 import {
@@ -93,7 +93,7 @@ export type IPaymentAdapter = IBaseAdapter & {
       paymentProviderId: string;
       paymentProvider: PaymentProvider;
     };
-    context: Context;
+    context: UnchainedCore;
   }) => IPaymentActions;
 };
 
@@ -101,7 +101,7 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   actions: (
     paymentProvider: PaymentProvider,
     paymentContext: PaymentContext,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => Promise<IPaymentActions>;
 };
 
@@ -137,11 +137,14 @@ export type PaymentModule = {
     providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
 
     // Payment adapter
-    findSupported: (query: { order: Order }, requestContext: Context) => Promise<Array<PaymentProvider>>;
+    findSupported: (
+      query: { order: Order },
+      requestContext: UnchainedCore,
+    ) => Promise<Array<PaymentProvider>>;
     determineDefault: (
       paymentProviders: Array<PaymentProvider>,
       params: { order: Order; paymentCredentials?: Array<PaymentCredentials> },
-      requestContext: Context,
+      requestContext: UnchainedCore,
     ) => Promise<PaymentProvider>;
 
     findInterface: (query: PaymentProvider) => PaymentInterface;
@@ -163,7 +166,7 @@ export type PaymentModule = {
 
     calculate: (
       pricingContext: PaymentPricingContext,
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<Array<PaymentPricingCalculation>>;
 
     charge: (
@@ -282,7 +285,7 @@ export type FilterProviders = (
     providers: Array<PaymentProvider>;
     order: Order;
   },
-  context: Context,
+  context: UnchainedCore,
 ) => Promise<Array<PaymentProvider>>;
 
 export type DetermineDefaultProvider = (
@@ -291,7 +294,7 @@ export type DetermineDefaultProvider = (
     order: Order;
     paymentCredentials?: Array<PaymentCredentials>;
   },
-  context: Context,
+  context: UnchainedCore,
 ) => Promise<PaymentProvider>;
 export interface PaymentSettingsOptions {
   sortProviders?: (a: PaymentProvider, b: PaymentProvider) => number;

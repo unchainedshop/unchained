@@ -154,11 +154,6 @@ export const User: UserHelperTypes = {
     return context.services.users.getUserRoleActions(user, context);
   },
 
-  // locale: async (user, params, context) => {
-  //   await checkAction(context, viewUserPrivateInfos, [user, params, context]);
-  //   return context.modules.users.userLocale(user, params);
-  // },
-
   orders: async (user, params, context) => {
     await checkAction(context, viewUserOrders, [user, params]);
     return context.modules.orders.findOrders({

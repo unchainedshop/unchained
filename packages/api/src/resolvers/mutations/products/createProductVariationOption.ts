@@ -23,9 +23,8 @@ export default async function createProductVariationOption(
   });
   if (!variation) throw new ProductVariationNotFoundError({ productVariationId });
 
-  return modules.products.variations.addVariationOption(
-    productVariationId,
-    { inputData, localeContext },
-    userId,
-  );
+  return modules.products.variations.addVariationOption(productVariationId, {
+    inputData,
+    localeContext,
+  });
 }

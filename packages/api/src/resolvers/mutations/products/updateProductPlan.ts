@@ -22,7 +22,7 @@ export default async function updateProductPlan(
       required: ProductTypes.PlanProduct,
     });
 
-  await modules.products.update(productId, { plan }, userId);
+  await modules.products.update(productId, { plan });
 
   return modules.products.findProduct({ productId });
 }

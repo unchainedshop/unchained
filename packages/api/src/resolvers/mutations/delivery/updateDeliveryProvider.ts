@@ -17,5 +17,5 @@ export default async function updateDeliveryProvider(
   if (!(await modules.delivery.providerExists({ deliveryProviderId })))
     throw new DeliverProviderNotFoundError({ deliveryProviderId });
 
-  return modules.delivery.update(deliveryProviderId, deliveryProvider, userId);
+  return modules.delivery.update(deliveryProviderId, deliveryProvider);
 }

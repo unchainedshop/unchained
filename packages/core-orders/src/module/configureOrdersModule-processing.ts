@@ -195,9 +195,7 @@ export const configureOrderModuleProcessing = ({
 
       // Then ensure new cart is created before we return from checkout
       const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
+      const locale = localeContext || modules.users.userLocale(user);
       await modules.orders.ensureCartForUser(
         {
           user,
@@ -442,46 +440,38 @@ export const configureOrderModuleProcessing = ({
       return order;
     },
 
-    sendOrderConfirmationToCustomer: async (order, params, { modules, localeContext, userId }) => {
+    sendOrderConfirmationToCustomer: async (order, params, { modules, localeContext }) => {
       const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
-      await modules.worker.addWork(
-        {
-          type: 'MESSAGE',
-          retries: 0,
-          input: {
-            ...params,
-            locale,
-            template: 'ORDER_CONFIRMATION',
-            orderId: order._id,
-          },
+      const locale = localeContext || modules.users.userLocale(user);
+
+      await modules.worker.addWork({
+        type: 'MESSAGE',
+        retries: 0,
+        input: {
+          ...params,
+          locale,
+          template: 'ORDER_CONFIRMATION',
+          orderId: order._id,
         },
-        userId,
-      );
+      });
 
       return order;
     },
 
-    sendOrderRejectionToCustomer: async (order, params, { modules, localeContext, userId }) => {
+    sendOrderRejectionToCustomer: async (order, params, { modules, localeContext }) => {
       const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
-      await modules.worker.addWork(
-        {
-          type: 'MESSAGE',
-          retries: 0,
-          input: {
-            ...params,
-            locale,
-            template: 'ORDER_REJECTION',
-            orderId: order._id,
-          },
+      const locale = localeContext || modules.users.userLocale(user);
+
+      await modules.worker.addWork({
+        type: 'MESSAGE',
+        retries: 0,
+        input: {
+          ...params,
+          locale,
+          template: 'ORDER_REJECTION',
+          orderId: order._id,
         },
-        userId,
-      );
+      });
 
       return order;
     },

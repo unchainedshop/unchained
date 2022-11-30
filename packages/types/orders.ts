@@ -114,32 +114,30 @@ export interface OrderProcessing {
 }
 
 export interface OrderMutations {
-  create: (
-    doc: {
-      billingAddress?: Address;
-      contact?: Contact;
-      countryCode: string;
-      currency: string;
-      orderNumber?: string;
-      originEnrollmentId?: string;
-    },
-    userId?: string,
-  ) => Promise<Order>;
+  create: (doc: {
+    userId: string;
+    billingAddress?: Address;
+    contact?: Contact;
+    countryCode: string;
+    currency: string;
+    orderNumber?: string;
+    originEnrollmentId?: string;
+  }) => Promise<Order>;
 
-  delete: (orderId: string, userId?: string) => Promise<number>;
+  delete: (orderId: string) => Promise<number>;
 
-  initProviders: (order: Order, requestContext: Context) => Promise<Order>;
+  initProviders: (order: Order, unchainedAPI: UnchainedCore) => Promise<Order>;
   invalidateProviders: (unchainedAPI: UnchainedCore, maxAgeDays: number) => Promise<void>;
 
   setDeliveryProvider: (
     orderId: string,
     deliveryProviderId: string,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
   setPaymentProvider: (
     orderId: string,
     paymentProviderId: string,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
 
   updateBillingAddress: (
@@ -155,7 +153,7 @@ export interface OrderMutations {
     requestContext: Context,
   ) => Promise<Order>;
 
-  updateCalculation: (orderId: string, requestContext: Context) => Promise<Order>;
+  updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
 }
 
 export type OrdersModule = OrderQueries &

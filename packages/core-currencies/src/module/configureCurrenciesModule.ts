@@ -58,37 +58,34 @@ export const configureCurrenciesModule = async ({
       return !!currencyCount;
     },
 
-    create: async (doc: Currency, userId: string) => {
+    create: async (doc: Currency) => {
       await Currencies.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
-      const currencyId = await mutations.create(
-        { ...doc, isoCode: doc.isoCode.toUpperCase(), isActive: true },
-        userId,
-      );
+      const currencyId = await mutations.create({
+        ...doc,
+        isoCode: doc.isoCode.toUpperCase(),
+        isActive: true,
+      });
       await emit('CURRENCY_CREATE', { currencyId });
       return currencyId;
     },
 
-    update: async (_id: string, doc: Partial<Currency>, userId: string) => {
-      const currencyId = await mutations.update(
-        _id,
-        {
-          ...doc,
-          isoCode: doc.isoCode.toUpperCase(),
-        },
-        userId,
-      );
+    update: async (_id: string, doc: Partial<Currency>) => {
+      const currencyId = await mutations.update(_id, {
+        ...doc,
+        isoCode: doc.isoCode.toUpperCase(),
+      });
       await emit('CURRENCY_UPDATE', { currencyId });
       return currencyId;
     },
 
-    delete: async (currencyId, userId) => {
-      const deletedCount = await mutations.delete(currencyId, userId);
+    delete: async (currencyId) => {
+      const deletedCount = await mutations.delete(currencyId);
       await emit('CURRENCY_REMOVE', { currencyId });
       return deletedCount;
     },
 
-    deletePermanently: async (_id, userId) => {
-      return mutations.deletePermanently(_id, userId);
+    deletePermanently: async (_id) => {
+      return mutations.deletePermanently(_id);
     },
   };
 };

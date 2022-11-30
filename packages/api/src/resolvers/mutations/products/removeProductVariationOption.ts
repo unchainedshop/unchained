@@ -23,7 +23,6 @@ export default async function removeProductVariationOption(
   await modules.products.variations.removeVariationOption(
     productVariationId,
     productVariationOptionValue,
-    userId,
   );
 
   return modules.products.variations.findProductVariation({

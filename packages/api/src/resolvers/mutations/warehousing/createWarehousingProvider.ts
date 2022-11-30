@@ -10,13 +10,10 @@ export default async function createWarehousingProvider(
 ) {
   log('mutation createWarehousingProvider', { userId });
 
-  const warehousingProviderId = await modules.warehousing.create(
-    {
-      ...params.warehousingProvider,
-      authorId: userId,
-    },
-    userId,
-  );
+  const warehousingProviderId = await modules.warehousing.create({
+    ...params.warehousingProvider,
+    authorId: userId,
+  });
 
   if (!warehousingProviderId) throw new ProviderConfigurationInvalid(params.warehousingProvider);
 

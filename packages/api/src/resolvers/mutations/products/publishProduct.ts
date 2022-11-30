@@ -14,7 +14,7 @@ export default async function publishProduct(
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  if (!(await modules.products.publish(product, userId))) {
+  if (!(await modules.products.publish(product))) {
     throw new ProductWrongStatusError({ status: product.status });
   }
 

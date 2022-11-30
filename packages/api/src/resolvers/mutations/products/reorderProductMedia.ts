@@ -10,5 +10,5 @@ export default async function reorderProductMedia(
 
   log('mutation reorderProductMedia', { userId });
 
-  return modules.products.media.updateManualOrder({ sortKeys }, userId);
+  return modules.products.media.updateManualOrder({ sortKeys });
 }

@@ -27,6 +27,5 @@ export default async function F(
     productVariationId,
     texts,
     productVariationOptionValue,
-    userId,
   );
 }

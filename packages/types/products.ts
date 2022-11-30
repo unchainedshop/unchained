@@ -288,31 +288,30 @@ export type ProductsModule = {
 
   calculate: (
     pricingContext: ProductPricingContext & { item: OrderPosition },
-    requestContext: Context,
+    requestContext: UnchainedAPI,
   ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations
   create: (
     doc: Product & { title: string; locale: string },
-    userId?: string,
     options?: { autopublish?: boolean },
   ) => Promise<Product>;
 
-  delete: (productId: string, userId?: string) => Promise<number>;
+  delete: (productId: string) => Promise<number>;
   deleteProductPermanently: (params: { productId: string }) => Promise<number>;
 
-  update: (productId: string, doc: Update<Product>, userId: string) => Promise<string>;
+  update: (productId: string, doc: Update<Product>) => Promise<string>;
 
-  publish: (product: Product, userId?: string) => Promise<boolean>;
-  unpublish: (product: Product, userId?: string) => Promise<boolean>;
+  publish: (product: Product) => Promise<boolean>;
+  unpublish: (product: Product) => Promise<boolean>;
 
   /*
    * Product bundle items
    */
 
   bundleItems: {
-    addBundleItem: (productId: string, doc: ProductBundleItem, userId?: string) => Promise<string>;
-    removeBundleItem: (productId: string, index: number, userId?: string) => Promise<ProductBundleItem>;
+    addBundleItem: (productId: string, doc: ProductBundleItem) => Promise<string>;
+    removeBundleItem: (productId: string, index: number) => Promise<ProductBundleItem>;
   };
 
   /*
@@ -323,12 +322,10 @@ export type ProductsModule = {
     addProxyAssignment: (
       productId: string,
       params: { proxyId: string; vectors: Array<ProductConfiguration> },
-      userId?: string,
     ) => Promise<string>;
     removeAssignment: (
       productId: string,
       params: { vectors: Array<ProductConfiguration> },
-      userId?: string,
     ) => Promise<number>;
   };
 
@@ -374,14 +371,12 @@ export type ProductsModule = {
     updateTexts: (
       productId: string,
       texts: Array<Omit<ProductText, 'productId' | 'authorId'>>,
-      userId?: string,
     ) => Promise<Array<ProductText>>;
 
     upsertLocalizedText: (
       productId: string,
       locale: string,
       text: Omit<ProductText, 'productId' | 'locale' | 'authorId'>,
-      userId?: string,
     ) => Promise<ProductText>;
 
     makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;

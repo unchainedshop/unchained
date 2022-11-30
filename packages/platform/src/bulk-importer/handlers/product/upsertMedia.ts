@@ -3,9 +3,9 @@ import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.me
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 import upsertAsset from '../../upsertAsset';
 
-const upsertProductMedia = async (productMedia: ProductMedia, { modules, userId }: Context) => {
+const upsertProductMedia = async (productMedia: ProductMedia, { modules }: Context) => {
   try {
-    const productMediaObj = await modules.products.media.create(productMedia, userId);
+    const productMediaObj = await modules.products.media.create(productMedia);
     return productMediaObj;
   } catch (e) {
     const { _id, ...productMediaData } = productMedia;
@@ -15,7 +15,7 @@ const upsertProductMedia = async (productMedia: ProductMedia, { modules, userId 
 };
 
 export default async function upsertMedia({ media, authorId, productId }, unchainedAPI: Context) {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
 
   const productMediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
@@ -41,16 +41,13 @@ export default async function upsertMedia({ media, authorId, productId }, unchai
 
       if (content) {
         await Promise.all(
-          Object.entries(content).map(
-            async ([locale, { authorId: tAuthorId, ...localizedData }]: [string, ProductMediaText]) => {
-              return modules.products.media.texts.upsertLocalizedText(
-                productMedia._id,
-                locale,
-                localizedData,
-                tAuthorId || authorId || userId,
-              );
-            },
-          ),
+          Object.entries(content).map(async ([locale, localizedData]: [string, ProductMediaText]) => {
+            return modules.products.media.texts.upsertLocalizedText(
+              productMedia._id,
+              locale,
+              localizedData,
+            );
+          }),
         );
       }
       return productMedia;

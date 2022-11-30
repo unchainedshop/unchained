@@ -24,7 +24,7 @@ const ETHMinter: IWarehousingAdapter = {
   },
 
   actions: (configuration, context) => {
-    const { product, orderPosition, token, modules, localeContext } = context;
+    const { product, orderPosition, token, modules, locale } = context;
 
     const getTokensCreated = async () => {
       const existingTokens = await modules.warehousing.findTokens(
@@ -109,12 +109,12 @@ const ETHMinter: IWarehousingAdapter = {
         const url = file && (await modules.files.getUrl(file, {}));
         const text = await modules.products.texts.findLocalizedText({
           productId: product._id,
-          locale: localeContext.normalized,
+          locale: locale?.normalized || systemLocale.normalized,
         });
 
         const name = `${text.title} #${chainTokenId}`;
 
-        const isDefaultLanguageActive = localeContext.language === systemLocale.language;
+        const isDefaultLanguageActive = locale ? locale?.language === systemLocale.language : true;
         const localization = isDefaultLanguageActive
           ? {
               uri: `${process.env.ROOT_URL}/erc-metadata/${product._id}/{locale}/${product.tokenization.tokenId}.json`,

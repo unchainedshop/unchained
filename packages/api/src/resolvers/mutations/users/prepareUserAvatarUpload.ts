@@ -19,7 +19,6 @@ export default async function prepareUserAvatarUpload(
       directoryName: 'user-avatars',
       fileName: params.mediaName,
       meta: { userId: normalizedUserId },
-      userId,
     },
     context,
   );

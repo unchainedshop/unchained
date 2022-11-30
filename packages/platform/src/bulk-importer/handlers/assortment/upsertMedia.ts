@@ -3,9 +3,9 @@ import { AssortmentMediaText } from '@unchainedshop/types/assortments.media';
 import upsertAsset from '../../upsertAsset';
 
 const upsertMediaObject = async (media, unchainedAPI: Context) => {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   try {
-    const assortmentMedia = await modules.assortments.media.create(media, userId);
+    const assortmentMedia = await modules.assortments.media.create(media);
     return assortmentMedia;
   } catch (e) {
     const { _id, ...mediaData } = media;
@@ -14,7 +14,7 @@ const upsertMediaObject = async (media, unchainedAPI: Context) => {
 };
 
 export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) => {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const mediaObjects = await Promise.all(
     media.map(async ({ asset, content, ...mediaData }) => {
       const file = await upsertAsset(
@@ -38,19 +38,13 @@ export default async ({ media, authorId, assortmentId }, unchainedAPI: Context) 
 
       if (content) {
         await Promise.all(
-          Object.entries(content).map(
-            async ([locale, { authorId: tAuthorId, ...localizedData }]: [
-              string,
-              AssortmentMediaText,
-            ]) => {
-              return modules.assortments.media.texts.upsertLocalizedText(
-                mediaObject._id,
-                locale,
-                localizedData,
-                tAuthorId || authorId || userId,
-              );
-            },
-          ),
+          Object.entries(content).map(async ([locale, localizedData]: [string, AssortmentMediaText]) => {
+            return modules.assortments.media.texts.upsertLocalizedText(
+              mediaObject._id,
+              locale,
+              localizedData,
+            );
+          }),
         );
       }
       return mediaObject;

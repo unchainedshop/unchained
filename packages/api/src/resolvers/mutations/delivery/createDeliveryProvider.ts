@@ -10,13 +10,10 @@ export default async function createDeliveryProvider(
 ) {
   log('mutation createDeliveryProvider', { userId });
 
-  const provider = await modules.delivery.create(
-    {
-      ...deliveryProvider,
-      authorId: userId,
-    },
-    userId,
-  );
+  const provider = await modules.delivery.create({
+    ...deliveryProvider,
+    authorId: userId,
+  });
 
   if (!provider) throw new ProviderConfigurationInvalid(deliveryProvider);
 

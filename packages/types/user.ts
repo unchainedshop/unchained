@@ -95,7 +95,7 @@ export type UsersModule = {
 
   // Transformations
   primaryEmail: (user: User) => Email;
-  userLocale: (user: User, params?: { localeContext?: Locale }) => Locale;
+  userLocale: (user: User) => Locale;
 
   // Mutations
   addRoles: (userId: string, roles: Array<string>) => Promise<number>;

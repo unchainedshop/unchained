@@ -1,5 +1,6 @@
 import { Context } from './api';
 import { Configuration, FindOptions, TimestampFields, _ID } from './common';
+import { UnchainedCore } from './core';
 import { Order } from './orders';
 import { OrderDelivery } from './orders.deliveries';
 import { OrderDiscount } from './orders.discounts';
@@ -35,7 +36,7 @@ export type OrderPositionsModule = {
   pricingSheet: (
     orderPosition: OrderPosition,
     currency: string,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => IProductPricingSheet;
 
   // Mutations
@@ -65,10 +66,13 @@ export type OrderPositionsModule = {
       orderDelivery: OrderDelivery;
       orderPosition: OrderPosition;
     },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPosition>;
 
-  updateCalculation: (orderPosition: OrderPosition, requestContext: Context) => Promise<OrderPosition>;
+  updateCalculation: (
+    orderPosition: OrderPosition,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPosition>;
 
   addProductItem: (
     doc: {

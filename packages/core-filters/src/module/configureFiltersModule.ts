@@ -212,23 +212,18 @@ export const configureFiltersModule = async ({
       requestContext,
       options,
     ) => {
-      const { userId } = requestContext;
-
-      const filterId = await mutations.create(
-        {
-          isActive,
-          created: new Date(),
-          type: FilterType[type],
-          authorId,
-          ...filterData,
-        },
-        userId,
-      );
+      const filterId = await mutations.create({
+        isActive,
+        created: new Date(),
+        type: FilterType[type],
+        authorId,
+        ...filterData,
+      });
 
       const filter = await Filters.findOne(generateDbFilterById(filterId), {});
 
       if (locale) {
-        await filterTexts.upsertLocalizedText({ filterId }, locale, { title }, userId);
+        await filterTexts.upsertLocalizedText({ filterId }, locale, { title });
       }
 
       if (!options?.skipInvalidation) {
@@ -242,12 +237,11 @@ export const configureFiltersModule = async ({
     },
 
     createFilterOption: async (filterId, { value, title }, requestContext) => {
-      const { localeContext, userId } = requestContext;
+      const { localeContext } = requestContext;
       const selector = generateDbFilterById(filterId);
       await Filters.updateOne(selector, {
         $set: {
           updated: new Date(),
-          updatedBy: userId,
         },
         $addToSet: {
           options: value,
@@ -258,7 +252,6 @@ export const configureFiltersModule = async ({
         { filterId, filterOptionValue: value },
         localeContext.language,
         { title },
-        userId,
       );
 
       const filter = await Filters.findOne(selector, {});
@@ -276,12 +269,10 @@ export const configureFiltersModule = async ({
     },
 
     removeFilterOption: async ({ filterId, filterOptionValue }, requestContext) => {
-      const { userId } = requestContext;
       const selector = generateDbFilterById(filterId);
       await Filters.updateOne(selector, {
         $set: {
           updated: new Date(),
-          updatedBy: userId,
         },
         $pull: {
           options: filterOptionValue,
@@ -295,8 +286,8 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    update: async (_id, doc, requestContext, options, userId) => {
-      const filterId = await mutations.update(_id, doc, userId);
+    update: async (_id, doc, requestContext, options) => {
+      const filterId = await mutations.update(_id, doc);
 
       if (filterId && !options?.skipInvalidation) {
         const filter = await Filters.findOne(generateDbFilterById(filterId), {});

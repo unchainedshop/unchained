@@ -14,7 +14,6 @@ export default async function prepareAssortmentMediaUpload(
       directoryName: 'assortment-media',
       fileName: mediaName,
       meta: { assortmentId },
-      userId,
     },
     context,
   );

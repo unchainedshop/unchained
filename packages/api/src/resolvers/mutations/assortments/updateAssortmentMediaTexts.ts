@@ -20,5 +20,5 @@ export default async function updateAssortmentMediaTexts(
 
   if (!assortmentMedia) throw new AssortmentMediaNotFoundError({ assortmentMediaId });
 
-  return modules.assortments.media.texts.updateMediaTexts(assortmentMediaId, texts, userId);
+  return modules.assortments.media.texts.updateMediaTexts(assortmentMediaId, texts);
 }

@@ -25,7 +25,7 @@ export const accountsSettings: AccountsSettings = {
       const customSchema = Schemas.User.extend({
         password: String,
         email: String,
-      }).omit('_id', 'created', 'createdBy', 'emails', 'services');
+      }).omit('_id', 'created', 'emails', 'services');
 
       customSchema.validate(user);
       return customSchema.clean(user);

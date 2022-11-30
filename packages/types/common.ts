@@ -62,11 +62,8 @@ export type LogFields = {
 
 export type TimestampFields = {
   created?: Date;
-  createdBy?: string;
   updated?: Date;
-  updatedBy?: string;
   deleted?: Date;
-  deletedBy?: string;
 };
 
 export interface Address {

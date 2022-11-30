@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedAPI } from '@unchainedshop/types/api';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import {
   DeliveryContext,
@@ -50,11 +50,11 @@ export const configureDeliveryModule = async ({
   const getDeliveryAdapter = async (
     deliveryProviderId: string,
     deliveryContext: DeliveryContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedAPI,
   ) => {
     const provider = await DeliveryProviders.findOne(generateDbFilterById(deliveryProviderId), {});
 
-    return DeliveryDirector.actions(provider, deliveryContext, requestContext);
+    return DeliveryDirector.actions(provider, deliveryContext, unchainedAPI);
   };
 
   return {
@@ -100,13 +100,13 @@ export const configureDeliveryModule = async ({
       }));
     },
 
-    findSupported: async (deliveryContext, requestContext) => {
+    findSupported: async (deliveryContext, unchainedAPI) => {
       const foundProviders = await DeliveryProviders.find(buildFindSelector({})).toArray();
       const providers: DeliveryProvider[] = await asyncFilter(
         foundProviders,
         async (provider: DeliveryProvider) => {
           try {
-            const director = await DeliveryDirector.actions(provider, deliveryContext, requestContext);
+            const director = await DeliveryDirector.actions(provider, deliveryContext, unchainedAPI);
             return director.isActive();
           } catch {
             return false;
@@ -119,42 +119,42 @@ export const configureDeliveryModule = async ({
           providers,
           order: deliveryContext.order,
         },
-        requestContext,
+        unchainedAPI,
       );
     },
 
-    determineDefault: async (deliveryProviders, deliveryContext, requestContext) => {
+    determineDefault: async (deliveryProviders, deliveryContext, unchainedAPI) => {
       return deliverySettings.determineDefaultProvider(
         {
           providers: deliveryProviders,
           ...deliveryContext,
         },
-        requestContext,
+        unchainedAPI,
       );
     },
 
-    configurationError: async (deliveryProvider, requestContext) => {
-      const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    configurationError: async (deliveryProvider, unchainedAPI) => {
+      const director = await DeliveryDirector.actions(deliveryProvider, {}, unchainedAPI);
       return director.configurationError();
     },
 
-    isActive: async (deliveryProvider, requestContext) => {
-      const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    isActive: async (deliveryProvider, unchainedAPI) => {
+      const director = await DeliveryDirector.actions(deliveryProvider, {}, unchainedAPI);
       return Boolean(director.isActive());
     },
 
-    isAutoReleaseAllowed: async (deliveryProvider, requestContext) => {
-      const director = await DeliveryDirector.actions(deliveryProvider, {}, requestContext);
+    isAutoReleaseAllowed: async (deliveryProvider, unchainedAPI) => {
+      const director = await DeliveryDirector.actions(deliveryProvider, {}, unchainedAPI);
       return Boolean(director.isAutoReleaseAllowed());
     },
 
-    calculate: async (pricingContext, requestContext) => {
-      const pricing = await DeliveryPricingDirector.actions(pricingContext, requestContext);
+    calculate: async (pricingContext, unchainedAPI) => {
+      const pricing = await DeliveryPricingDirector.actions(pricingContext, unchainedAPI);
       return pricing.calculate();
     },
 
-    send: async (deliveryProviderId, deliveryContext, requestContext) => {
-      const adapter = await getDeliveryAdapter(deliveryProviderId, deliveryContext, requestContext);
+    send: async (deliveryProviderId, deliveryContext, unchainedAPI) => {
+      const adapter = await getDeliveryAdapter(deliveryProviderId, deliveryContext, unchainedAPI);
       return adapter.send();
     },
 
@@ -163,17 +163,14 @@ export const configureDeliveryModule = async ({
     },
 
     // Mutations
-    create: async (doc, userId) => {
+    create: async (doc) => {
       const Adapter = DeliveryDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
-      const deliveryProviderId = await mutations.create(
-        {
-          configuration: Adapter.initialConfiguration,
-          ...doc,
-        },
-        userId,
-      );
+      const deliveryProviderId = await mutations.create({
+        configuration: Adapter.initialConfiguration,
+        ...doc,
+      });
       const deliveryProvider = await DeliveryProviders.findOne(
         generateDbFilterById(deliveryProviderId),
         {},
@@ -182,23 +179,23 @@ export const configureDeliveryModule = async ({
       return deliveryProvider;
     },
 
-    update: async (_id: string, doc: DeliveryProvider, userId: string) => {
-      await mutations.update(_id, doc, userId);
+    update: async (_id: string, doc: DeliveryProvider) => {
+      await mutations.update(_id, doc);
       const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id), {});
       await emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
       return deliveryProvider;
     },
 
-    delete: async (_id, userId) => {
-      await mutations.delete(_id, userId);
+    delete: async (_id) => {
+      await mutations.delete(_id);
       const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id), {});
       await emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
       return deliveryProvider;
     },
 
-    deletePermanently: async (_id, userId) => {
+    deletePermanently: async (_id) => {
       const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id), {});
-      await mutations.deletePermanently(_id, userId);
+      await mutations.deletePermanently(_id);
       return deliveryProvider;
     },
   };

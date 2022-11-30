@@ -22,13 +22,10 @@ export default async function createBookmark(
 
   if (bookmark) throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });
 
-  const bookmarkId = await modules.bookmarks.create(
-    {
-      userId,
-      productId,
-    },
-    currenctUserId,
-  );
+  const bookmarkId = await modules.bookmarks.create({
+    userId,
+    productId,
+  });
 
   return modules.bookmarks.findById(bookmarkId);
 }

@@ -1,4 +1,4 @@
-import { Context, SortOption } from './api';
+import { SortOption } from './api';
 import {
   Address,
   Configuration,
@@ -10,6 +10,7 @@ import {
   TimestampFields,
   _ID,
 } from './common';
+import { UnchainedCore } from './core';
 import { Order } from './orders';
 import { OrderPosition } from './orders.positions';
 import { Product, ProductPlan } from './products';
@@ -96,8 +97,7 @@ export interface EnrollmentTransformations {
 
 export type EnrollmentContextParams = (
   enrollment: Enrollment,
-  params: { enrollmentContext?: any },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Enrollment>;
 
 export interface EnrollmentProcessing {
@@ -122,13 +122,9 @@ export interface EnrollmentData {
 }
 
 export interface EnrollmentMutations {
-  addEnrollmentPeriod: (
-    enrollmentId: string,
-    period: EnrollmentPeriod,
-    userId?: string,
-  ) => Promise<Enrollment>;
+  addEnrollmentPeriod: (enrollmentId: string, period: EnrollmentPeriod) => Promise<Enrollment>;
 
-  create: (doc: EnrollmentData, requestContext: Context) => Promise<Enrollment>;
+  create: (doc: EnrollmentData, unchainedAPI: UnchainedCore) => Promise<Enrollment>;
 
   createFromCheckout: (
     order: Order,
@@ -142,49 +138,33 @@ export interface EnrollmentMutations {
         deliveryContext?: any;
       };
     },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<void>;
 
-  delete: (enrollmentId: string, userId?: string) => Promise<number>;
+  delete: (enrollmentId: string) => Promise<number>;
 
-  removeEnrollmentPeriodByOrderId: (
-    enrollmentId: string,
-    orderId: string,
-    userId?: string,
-  ) => Promise<Enrollment>;
+  removeEnrollmentPeriodByOrderId: (enrollmentId: string, orderId: string) => Promise<Enrollment>;
 
-  updateBillingAddress: (
-    enrollmentId: string,
-    billingAddress: Address,
-    userId?: string,
-  ) => Promise<Enrollment>;
+  updateBillingAddress: (enrollmentId: string, billingAddress: Address) => Promise<Enrollment>;
 
-  updateContact: (enrollmentId: string, contact: Contact, userId?: string) => Promise<Enrollment>;
+  updateContact: (enrollmentId: string, contact: Contact) => Promise<Enrollment>;
 
-  updateContext: (enrollmentId: string, context: any, userId?: string) => Promise<Enrollment>;
+  updateContext: (enrollmentId: string, context: any) => Promise<Enrollment>;
 
-  updateDelivery: (
-    enrollmentId: string,
-    delivery: Enrollment['delivery'],
-    userId?: string,
-  ) => Promise<Enrollment>;
+  updateDelivery: (enrollmentId: string, delivery: Enrollment['delivery']) => Promise<Enrollment>;
 
-  updatePayment: (
-    enrollmentId: string,
-    payment: Enrollment['payment'],
-    userId?: string,
-  ) => Promise<Enrollment>;
+  updatePayment: (enrollmentId: string, payment: Enrollment['payment']) => Promise<Enrollment>;
 
   updatePlan: (
     enrollmentId: string,
     plan: EnrollmentPlan,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Enrollment>;
 
   updateStatus: (
     enrollmentId: string,
     params: { status: EnrollmentStatus; info?: string },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Enrollment>;
 }
 
@@ -216,22 +196,22 @@ export type IEnrollmentAdapter = IBaseAdapter & {
 
   transformOrderItemToEnrollmentPlan: (
     orderPosition: OrderPosition,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<EnrollmentPlan>;
 
-  actions: (params: EnrollmentContext & Context) => EnrollmentAdapterActions;
+  actions: (params: EnrollmentContext & UnchainedCore) => EnrollmentAdapterActions;
 };
 
 export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   transformOrderItemToEnrollment: (
     item: { orderPosition: OrderPosition; product: Product },
     doc: Omit<EnrollmentData, 'configuration' | 'productId' | 'quantity'>,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<EnrollmentData>;
 
   actions: (
     enrollmentContext: EnrollmentContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<EnrollmentAdapterActions>;
 };
 

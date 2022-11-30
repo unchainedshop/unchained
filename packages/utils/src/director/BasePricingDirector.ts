@@ -40,8 +40,8 @@ export const BasePricingDirector = <
     buildPricingContext: async () => {
       return {} as AdapterContext;
     },
-    actions: async (pricingContext, requestContext, buildPricingContext) => {
-      const context = await buildPricingContext(pricingContext, requestContext);
+    actions: async (pricingContext, unchainedAPI, buildPricingContext) => {
+      const context = await buildPricingContext(pricingContext, unchainedAPI);
 
       let calculation: Array<Calculation> = [];
 

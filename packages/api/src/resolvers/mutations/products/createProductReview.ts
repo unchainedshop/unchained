@@ -16,12 +16,9 @@ export default async function createProductReview(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  return modules.products.reviews.create(
-    {
-      productId,
-      authorId: userId,
-      ...productReview,
-    },
-    userId,
-  );
+  return modules.products.reviews.create({
+    productId,
+    authorId: userId,
+    ...productReview,
+  });
 }

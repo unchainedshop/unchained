@@ -164,14 +164,12 @@ export type FiltersModule = {
     updateTexts: (
       query: { filterId: string; filterOptionValue?: string },
       texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue' | 'authorId'>>,
-      userId?: string,
     ) => Promise<Array<FilterText>>;
 
     upsertLocalizedText: (
       params: { filterId: string; filterOptionValue?: string },
       locale: string,
       text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale' | 'authorId'>,
-      userId?: string,
     ) => Promise<FilterText>;
 
     deleteMany: (params: { filterId?: string; excludedFilterIds?: string[] }) => Promise<number>;

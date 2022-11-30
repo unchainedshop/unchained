@@ -3,7 +3,7 @@ import { getFileAdapter } from '../utils/getFileAdapter';
 import { getFileFromFileData } from '../utils/getFileFromFileData';
 
 export const uploadFileFromStreamService: UploadFileFromStreamService = async (
-  { directoryName, rawFile, meta, userId },
+  { directoryName, rawFile, meta },
   unchainedContext,
 ) => {
   const {
@@ -16,6 +16,6 @@ export const uploadFileFromStreamService: UploadFileFromStreamService = async (
     unchainedContext,
   );
   const fileData = getFileFromFileData(uploadFileData, meta);
-  const fileId = await files.create(fileData, userId);
+  const fileId = await files.create(fileData);
   return files.findFile({ fileId });
 };

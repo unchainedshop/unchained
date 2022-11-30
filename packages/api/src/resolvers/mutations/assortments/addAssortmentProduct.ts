@@ -31,6 +31,5 @@ export default async function addAssortmentProduct(
       ...assortmentProduct,
     },
     { skipInvalidation: false },
-    userId,
   );
 }

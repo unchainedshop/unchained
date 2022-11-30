@@ -65,19 +65,11 @@ const fixPeriods = async (
       return left.end.getTime() - right.end.getTime();
     });
 
-  await requestContext.modules.enrollments.removeEnrollmentPeriodByOrderId(
-    enrollmentId,
-    orderId,
-    requestContext.userId,
-  );
+  await requestContext.modules.enrollments.removeEnrollmentPeriodByOrderId(enrollmentId, orderId);
 
   return Promise.all(
     adjustedEnrollmentPeriods.map((period) =>
-      requestContext.modules.enrollments.addEnrollmentPeriod(
-        enrollmentId,
-        period,
-        requestContext.userId,
-      ),
+      requestContext.modules.enrollments.addEnrollmentPeriod(enrollmentId, period),
     ),
   );
 };
@@ -183,7 +175,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
+            await modules.enrollments.terminateEnrollment(enrollment, resolvedContext);
           }
         }
 
@@ -192,7 +184,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
+            await modules.enrollments.terminateEnrollment(enrollment, resolvedContext);
           }
         }
         logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
@@ -225,7 +217,7 @@ const AppleIAP: IPaymentAdapter = {
   },
 
   actions: (params) => {
-    const { modules, userId } = params.context;
+    const { modules } = params.context;
 
     const adapterActions = {
       ...PaymentAdapter.actions(params),
@@ -355,6 +347,7 @@ const AppleIAP: IPaymentAdapter = {
           throw new Error('Apple IAP Plugin: Transaction already processed');
 
         // All good
+        const userId = order?.userId || params.paymentContext?.userId;
         await appleTransactions.createTransaction(
           {
             _id: transactionIdentifier,

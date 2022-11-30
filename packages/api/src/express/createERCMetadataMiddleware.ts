@@ -54,9 +54,10 @@ export default function ercMetadataMiddleware(contextResolver: UnchainedContextR
         {
           token,
           product,
+          locale: new Locale(locale),
           referenceDate: new Date(),
         },
-        { ...context, localeContext: new Locale(locale) },
+        context,
       );
 
       const body = JSON.stringify(ercMetadata);

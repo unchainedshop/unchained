@@ -65,7 +65,7 @@ export const configureAssortmentProductsModule = ({
     },
 
     // Mutations
-    create: async (doc: AssortmentProduct, options, userId) => {
+    create: async (doc: AssortmentProduct, options) => {
       const { _id, assortmentId, productId, sortKey, ...rest } = doc;
 
       const selector = {
@@ -75,7 +75,6 @@ export const configureAssortmentProductsModule = ({
       };
       const $set: any = {
         updated: new Date(),
-        updatedBy: userId,
         ...rest,
       };
       const $setOnInsert: any = {
@@ -83,7 +82,6 @@ export const configureAssortmentProductsModule = ({
         productId,
         assortmentId,
         created: new Date(),
-        createdBy: userId,
       };
 
       if (!sortKey) {
@@ -163,13 +161,12 @@ export const configureAssortmentProductsModule = ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (assortmentProductId, doc, options, userId) => {
+    update: async (assortmentProductId, doc, options) => {
       const selector = generateDbFilterById(assortmentProductId);
       const modifier = {
         $set: {
           ...doc,
           updated: new Date(),
-          updatedBy: userId,
         },
       };
       await AssortmentProducts.updateOne(selector, modifier);
@@ -181,14 +178,13 @@ export const configureAssortmentProductsModule = ({
       return assortmentProduct;
     },
 
-    updateManualOrder: async ({ sortKeys }, options, userId) => {
+    updateManualOrder: async ({ sortKeys }, options) => {
       const changedAssortmentProductIds = await Promise.all(
         sortKeys.map(async ({ assortmentProductId, sortKey }) => {
           await AssortmentProducts.updateOne(generateDbFilterById(assortmentProductId), {
             $set: {
               sortKey: sortKey + 1,
               updated: new Date(),
-              updatedBy: userId,
             },
           });
           return assortmentProductId;

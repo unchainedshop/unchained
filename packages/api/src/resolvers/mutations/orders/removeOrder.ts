@@ -18,7 +18,7 @@ export default async function removeOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  await modules.orders.delete(orderId, userId);
+  await modules.orders.delete(orderId);
 
   return order;
 }

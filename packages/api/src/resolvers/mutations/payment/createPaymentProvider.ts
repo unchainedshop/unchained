@@ -10,13 +10,10 @@ export default async (
 ) => {
   log('mutation createPaymentProvider', { userId });
 
-  const provider = await modules.payment.paymentProviders.create(
-    {
-      ...paymentProvider,
-      authorId: userId,
-    },
-    userId,
-  );
+  const provider = await modules.payment.paymentProviders.create({
+    ...paymentProvider,
+    authorId: userId,
+  });
 
   if (!provider) throw new ProviderConfigurationInvalid(paymentProvider);
 

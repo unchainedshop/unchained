@@ -1,9 +1,9 @@
-import { ModifyResult, Projection, Query } from '@unchainedshop/types/common';
+import os from 'os';
+import { Query } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import os from 'os';
 import { SortDirection } from '@unchainedshop/types/api';
 import { WorkQueueCollection } from '../db/WorkQueueCollection';
 import { WorkQueueSchema } from '../db/WorkQueueSchema';
@@ -106,7 +106,6 @@ export const configureWorkerModule = async ({
       success,
       worker = UNCHAINED_WORKER_ID,
     },
-    userId,
   ) => {
     const workBeforeUpdate = await WorkQueue.findOne(
       buildQuerySelector({ workId, status: [WorkStatus.ALLOCATED] }),
@@ -114,20 +113,16 @@ export const configureWorkerModule = async ({
 
     if (!workBeforeUpdate) return null;
 
-    await mutations.update(
-      workId,
-      {
-        $set: {
-          finished,
-          success,
-          error,
-          result,
-          ...(!workBeforeUpdate.started ? { started } : {}),
-          worker,
-        },
+    await mutations.update(workId, {
+      $set: {
+        finished,
+        success,
+        error,
+        result,
+        ...(!workBeforeUpdate.started ? { started } : {}),
+        worker,
       },
-      userId,
-    );
+    });
 
     const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
@@ -136,7 +131,7 @@ export const configureWorkerModule = async ({
       work,
     });
 
-    WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work, userId });
+    WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work });
 
     return work;
   };
@@ -210,37 +205,31 @@ export const configureWorkerModule = async ({
     },
 
     // Mutations
-    addWork: async ({ type, input, priority = 0, scheduled, originalWorkId, retries = 20 }, userId) => {
+    addWork: async ({ type, input, priority = 0, scheduled, originalWorkId, retries = 20 }) => {
       if (!WorkerDirector.getAdapter(type)) {
         throw new Error(`No plugin registered for type ${type}`);
       }
 
       const created = new Date();
-      const workId = await mutations.create(
-        {
-          type,
-          input,
-          priority,
-          scheduled: scheduled || created,
-          originalWorkId,
-          retries,
-          created,
-        },
-        userId,
-      );
+      const workId = await mutations.create({
+        type,
+        input,
+        priority,
+        scheduled: scheduled || created,
+        originalWorkId,
+        retries,
+        created,
+      });
 
       log(
         `WorkerDirector -> Work added ${workId} (${type} / ${new Date(
           scheduled || created,
         ).toISOString()} / ${retries})`,
-        {
-          userId,
-        },
       );
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
-      WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work, userId });
+      WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work });
 
       return work;
     },
@@ -297,7 +286,7 @@ export const configureWorkerModule = async ({
       });
       try {
         const workId = `${type}:${scheduled.getTime()}`;
-        const result = await (WorkQueue.findOneAndUpdate(
+        const result = await WorkQueue.findOneAndUpdate(
           query,
           {
             $set: {
@@ -320,7 +309,7 @@ export const configureWorkerModule = async ({
             returnDocument: 'after',
             upsert: true,
           },
-        ) as Promise<ModifyResult<Work>>);
+        );
 
         if (!result.lastErrorObject.updatedExisting) {
           log(
@@ -345,7 +334,7 @@ export const configureWorkerModule = async ({
 
     finishWork,
 
-    deleteWork: async (workId, userId) => {
+    deleteWork: async (workId) => {
       const workBeforeRemoval = await WorkQueue.findOne(
         buildQuerySelector({
           workId,
@@ -354,16 +343,16 @@ export const configureWorkerModule = async ({
       );
       if (!workBeforeRemoval) return null;
 
-      await mutations.delete(workId, userId);
+      await mutations.delete(workId);
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
-      WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work, userId });
+      WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work });
 
       return work;
     },
 
-    markOldWorkAsFailed: async ({ types, worker, referenceDate }, userId) => {
+    markOldWorkAsFailed: async ({ types, worker, referenceDate }) => {
       const workQueue = await WorkQueue.find(
         buildQuerySelector({
           status: [WorkStatus.ALLOCATED],
@@ -371,26 +360,22 @@ export const configureWorkerModule = async ({
           worker,
           type: { $in: types },
         }),
-        { type: 1, sort: { test: 1 } } as Projection<Work>,
+        { projection: { _id: true }, sort: { test: 1 } },
       ).toArray();
 
       return Promise.all(
         workQueue.map(({ _id }) =>
-          finishWork(
-            _id as string,
-            {
-              finished: new Date(),
-              result: null,
-              success: false,
-              error: {
-                name: DIRECTOR_MARKED_FAILED_ERROR,
-                message:
-                  'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
-              },
-              worker,
+          finishWork(_id as string, {
+            finished: new Date(),
+            result: null,
+            success: false,
+            error: {
+              name: DIRECTOR_MARKED_FAILED_ERROR,
+              message:
+                'Director marked old work as failed after restart. This work was eventually running at the moment when node.js exited.',
             },
-            userId,
-          ),
+            worker,
+          }),
         ),
       );
     },

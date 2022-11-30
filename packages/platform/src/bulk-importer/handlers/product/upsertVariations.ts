@@ -2,9 +2,9 @@ import { Context } from '@unchainedshop/types/api';
 import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations';
 
 const upsert = async (productVariation: ProductVariation, unchainedAPI: Context) => {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   try {
-    const newVariation = await modules.products.variations.create(productVariation, userId);
+    const newVariation = await modules.products.variations.create(productVariation);
     return newVariation;
   } catch (e) {
     return modules.products.variations.update(productVariation._id, productVariation);
@@ -33,10 +33,7 @@ export default async function upsertVariations(
         options.map(async ({ content: optionContent, value: optionValue }) => {
           await Promise.all(
             Object.entries(optionContent).map(
-              async ([locale, { authorId: tAuthorId, ...localizedData }]: [
-                string,
-                ProductVariationText,
-              ]) => {
+              async ([locale, localizedData]: [string, ProductVariationText]) => {
                 return modules.products.variations.texts.upsertLocalizedText(
                   {
                     productVariationId: variation._id,
@@ -44,7 +41,6 @@ export default async function upsertVariations(
                   },
                   locale,
                   localizedData,
-                  tAuthorId || authorId || userId,
                 );
               },
             ),
@@ -52,21 +48,15 @@ export default async function upsertVariations(
         }),
       );
       await Promise.all(
-        Object.entries(content).map(
-          async ([locale, { authorId: tAuthorId, ...localizedData }]: [
-            string,
-            ProductVariationText,
-          ]) => {
-            return modules.products.variations.texts.upsertLocalizedText(
-              {
-                productVariationId: variation._id,
-              },
-              locale,
-              localizedData,
-              tAuthorId || authorId || userId,
-            );
-          },
-        ),
+        Object.entries(content).map(async ([locale, localizedData]: [string, ProductVariationText]) => {
+          return modules.products.variations.texts.upsertLocalizedText(
+            {
+              productVariationId: variation._id,
+            },
+            locale,
+            localizedData,
+          );
+        }),
       );
       return variation._id;
     }),

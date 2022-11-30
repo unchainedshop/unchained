@@ -32,13 +32,10 @@ export const MessageWorker: IWorkerAdapter<
       if (workConfigurations.length > 0) {
         const forked = await Promise.all(
           workConfigurations.map(async (workConfiguration: any) => {
-            const work = await requestContext.modules.worker.addWork(
-              {
-                ...workConfiguration,
-                originalWorkId: workId,
-              },
-              null,
-            );
+            const work = await requestContext.modules.worker.addWork({
+              ...workConfiguration,
+              originalWorkId: workId,
+            });
             delete work.input;
             return work;
           }),

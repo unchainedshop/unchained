@@ -127,13 +127,12 @@ export const configureProductsModule = async ({
     return deletedResult.deletedCount;
   };
 
-  const publishProduct: ProductsModule['publish'] = async (product, userId) => {
+  const publishProduct: ProductsModule['publish'] = async (product) => {
     if (product.status === InternalProductStatus.DRAFT) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
           status: ProductStatus.ACTIVE,
           updated: new Date(),
-          updatedBy: userId,
           published: new Date(),
         },
       });
@@ -145,13 +144,12 @@ export const configureProductsModule = async ({
     return false;
   };
 
-  const unpublishProduct: ProductsModule['unpublish'] = async (product, userId) => {
+  const unpublishProduct: ProductsModule['unpublish'] = async (product) => {
     if (product.status === ProductStatus.ACTIVE) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
           status: InternalProductStatus.DRAFT,
           updated: new Date(),
-          updatedBy: userId,
           published: null,
         },
       });
@@ -329,24 +327,21 @@ export const configureProductsModule = async ({
         });
       }
 
-      const productId = await mutations.create(
-        {
-          type: ProductTypes[type],
-          status: InternalProductStatus.DRAFT,
-          sequence: sequence ?? (await Products.countDocuments({})) + 10,
-          authorId,
-          ...productData,
-        },
-        userId,
-      );
+      const productId = await mutations.create({
+        type: ProductTypes[type],
+        status: InternalProductStatus.DRAFT,
+        sequence: sequence ?? (await Products.countDocuments({})) + 10,
+        authorId,
+        ...productData,
+      });
 
       const product = await Products.findOne(generateDbFilterById(productId), {});
 
       if (locale) {
-        await productTexts.upsertLocalizedText(productId, locale, { title }, userId);
+        await productTexts.upsertLocalizedText(productId, locale, { title });
 
         if (autopublish) {
-          await publishProduct(product, userId);
+          await publishProduct(product);
         }
       }
 
@@ -355,20 +350,20 @@ export const configureProductsModule = async ({
       return product;
     },
 
-    update: async (_id, doc, userId) => {
+    update: async (_id, doc) => {
       const updateDoc = doc;
       if (doc.type) {
         updateDoc.type = ProductTypes[doc.type];
       }
 
-      const productId = await mutations.update(_id, updateDoc, userId);
+      const productId = await mutations.update(_id, updateDoc);
 
       await emit('PRODUCT_UPDATE', { productId, ...updateDoc });
 
       return productId;
     },
 
-    delete: async (productId, userId) => {
+    delete: async (productId) => {
       const product = await Products.findOne(generateDbFilterById(productId), {});
 
       if (product.status !== InternalProductStatus.DRAFT) {
@@ -379,7 +374,6 @@ export const configureProductsModule = async ({
         $set: {
           status: ProductStatus.DELETED,
           updated: new Date(),
-          updatedBy: userId,
         },
       });
 
@@ -398,7 +392,7 @@ export const configureProductsModule = async ({
      */
 
     assignments: {
-      addProxyAssignment: async (productId, { proxyId, vectors }, userId) => {
+      addProxyAssignment: async (productId, { proxyId, vectors }) => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
           vector[key] = value;
@@ -406,7 +400,6 @@ export const configureProductsModule = async ({
         const modifier = {
           $set: {
             updated: new Date(),
-            updatedBy: userId,
           },
           $push: {
             'proxy.assignments': {
@@ -423,7 +416,7 @@ export const configureProductsModule = async ({
         return proxyId;
       },
 
-      removeAssignment: async (productId, { vectors }, userId) => {
+      removeAssignment: async (productId, { vectors }) => {
         const vector = {};
         vectors.forEach(({ key, value }) => {
           vector[key] = value;
@@ -431,7 +424,6 @@ export const configureProductsModule = async ({
         const modifier = {
           $set: {
             updated: new Date(),
-            updatedBy: userId,
           },
           $pull: {
             'proxy.assignments': {
@@ -448,11 +440,10 @@ export const configureProductsModule = async ({
     },
 
     bundleItems: {
-      addBundleItem: async (productId, doc, userId) => {
+      addBundleItem: async (productId, doc) => {
         await Products.updateOne(generateDbFilterById(productId), {
           $set: {
             updated: new Date(),
-            updatedBy: userId,
           },
           $push: {
             bundleItems: doc,
@@ -464,7 +455,7 @@ export const configureProductsModule = async ({
         return productId;
       },
 
-      removeBundleItem: async (productId, index, userId) => {
+      removeBundleItem: async (productId, index) => {
         const product = await Products.findOne(generateDbFilterById(productId), {});
 
         const { bundleItems = [] } = product;
@@ -475,7 +466,6 @@ export const configureProductsModule = async ({
           await Products.updateOne(generateDbFilterById(productId), {
             $set: {
               updated: new Date(),
-              updatedBy: userId,
               bundleItems,
             },
           });

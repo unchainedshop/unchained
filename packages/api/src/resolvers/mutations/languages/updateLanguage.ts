@@ -15,7 +15,7 @@ export default async function updateLanguage(
   if (!(await modules.languages.languageExists({ languageId })))
     throw new LanguageNotFoundError({ languageId });
 
-  await modules.languages.update(languageId, language, userId);
+  await modules.languages.update(languageId, language);
 
   return modules.languages.findLanguage({ languageId });
 }

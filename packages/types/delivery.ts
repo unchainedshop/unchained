@@ -1,6 +1,5 @@
-import { Context } from './api';
 import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
-import { ModuleMutationsWithReturnDoc } from './core';
+import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core';
 
 import {
   DeliveryPricingCalculation,
@@ -60,7 +59,7 @@ export interface DeliveryContext {
   warehousingThroughputTime?: number;
 }
 
-export type DeliveryAdapterContext = DeliveryContext & Context;
+export type DeliveryAdapterContext = DeliveryContext & UnchainedCore;
 
 export interface DeliveryLocation {
   _id: string;
@@ -99,7 +98,7 @@ export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
   actions: (
     deliveryProvider: DeliveryProvider,
     deliveryContext: DeliveryContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<DeliveryAdapterActions>;
 };
 
@@ -139,31 +138,34 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   // Delivery adapter
   findInterface: (params: DeliveryProvider) => IDeliveryAdapter;
   findInterfaces: (params: { type: DeliveryProviderType }) => Array<DeliveryInterface>;
-  findSupported: (params: { order: Order }, requestContext: Context) => Promise<Array<DeliveryProvider>>;
+  findSupported: (
+    params: { order: Order },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Array<DeliveryProvider>>;
   determineDefault: (
     deliveryProviders: Array<DeliveryProvider>,
     params: { order: Order },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<DeliveryProvider>;
 
-  isActive: (deliveryProvider: DeliveryProvider, requestContext: Context) => Promise<boolean>;
+  isActive: (deliveryProvider: DeliveryProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
   configurationError: (
     deliveryProvider: DeliveryProvider,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<DeliveryError>;
 
   isAutoReleaseAllowed: (
     deliveryProvider: DeliveryProvider,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<boolean>;
   calculate: (
     pricingContext: DeliveryPricingContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Array<DeliveryPricingCalculation>>;
   send: (
     deliveryProviderId: string,
     deliveryContext: DeliveryContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<any>;
 };
 
@@ -176,7 +178,7 @@ export type FilterProviders = (
     providers: Array<DeliveryProvider>;
     order: Order;
   },
-  context: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Array<DeliveryProvider>>;
 
 export type DetermineDefaultProvider = (
@@ -184,7 +186,7 @@ export type DetermineDefaultProvider = (
     providers: Array<DeliveryProvider>;
     order: Order;
   },
-  context: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<DeliveryProvider>;
 export interface DeliverySettingsOptions {
   sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;

@@ -82,7 +82,7 @@ export type WorkerModule = {
   type: (work: Work) => string;
 
   // Mutations
-  addWork: (data: WorkData, userId?: string) => Promise<Work>;
+  addWork: (data: WorkData) => Promise<Work>;
 
   allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
 
@@ -99,19 +99,15 @@ export type WorkerModule = {
       started?: Date;
       worker: string;
     },
-    userId: string,
   ) => Promise<Work | null>;
 
-  deleteWork: (_id: string, userId: string) => Promise<Work | null>;
+  deleteWork: (_id: string) => Promise<Work | null>;
 
-  markOldWorkAsFailed: (
-    params: {
-      types: Array<string>;
-      worker: string;
-      referenceDate: Date;
-    },
-    userId?: string,
-  ) => Promise<Array<Work>>;
+  markOldWorkAsFailed: (params: {
+    types: Array<string>;
+    worker: string;
+    referenceDate: Date;
+  }) => Promise<Array<Work>>;
 };
 
 /*

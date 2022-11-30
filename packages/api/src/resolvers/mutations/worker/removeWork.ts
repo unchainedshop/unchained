@@ -13,7 +13,7 @@ export default async function removeWork(
 
   if (!workId) throw new InvalidIdError({ workId });
 
-  const work = await modules.worker.deleteWork(workId, userId);
+  const work = await modules.worker.deleteWork(workId);
 
   if (!work) throw new WorkNotFoundOrWrongStatus({ workId });
 

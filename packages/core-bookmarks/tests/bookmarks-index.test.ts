@@ -37,8 +37,6 @@ describe('Test exports', () => {
     assert.equal(bookmark.productId, 'Product-22');
     assert.isDefined(bookmark.created);
     assert.isUndefined(bookmark.updated);
-    assert.isUndefined(bookmark.updatedBy);
-    assert.equal(bookmark.createdBy, 'Test-User-1');
 
     const deletedCount = await module.delete(bookmarkId);
     assert.equal(deletedCount, 1);

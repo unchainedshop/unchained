@@ -50,9 +50,10 @@ export const Token: TokenHelperTypes = {
       {
         token,
         product,
+        locale: new Locale(forceLocale),
         referenceDate: new Date(),
       },
-      { ...context, localeContext: new Locale(forceLocale) },
+      context,
     );
 
     return ercMetadata;

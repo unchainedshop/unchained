@@ -1,5 +1,6 @@
-import { Context } from './api';
+import { UnchainedAPI } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
+import { UnchainedCore } from './core';
 import { Discount } from './discount';
 import { Order } from './orders';
 import { OrderDelivery } from './orders.deliveries';
@@ -8,7 +9,7 @@ import { OrderPayment } from './orders.payments';
 import { OrderPosition } from './orders.positions';
 import { User } from './user';
 
-export interface BasePricingAdapterContext extends Context {
+export interface BasePricingAdapterContext extends UnchainedAPI {
   order: Order;
   user: User;
   discounts: Array<OrderDiscount>;
@@ -114,11 +115,14 @@ export type IPricingDirector<
   PricingAdapterSheet extends IPricingSheet<Calculation>,
   Adapter extends IPricingAdapter<PricingAdapterContext, Calculation, PricingAdapterSheet>,
 > = IBaseDirector<Adapter> & {
-  buildPricingContext: (context: any, requestContext: Context) => Promise<PricingAdapterContext>;
+  buildPricingContext: (context: any, unchainedAPI: UnchainedCore) => Promise<PricingAdapterContext>;
   actions: (
     pricingContext: PricingContext,
-    requestContext: Context,
-    buildPricingContext?: (pricingCtx: any, requestCtx: Context) => Promise<PricingAdapterContext>,
+    requestContext: UnchainedAPI,
+    buildPricingContext?: (
+      pricingCtx: any,
+      unchainedAPI: UnchainedCore,
+    ) => Promise<PricingAdapterContext>,
   ) => Promise<
     IPricingAdapterActions<Calculation, PricingAdapterContext> & {
       calculationSheet: () => PricingAdapterSheet;

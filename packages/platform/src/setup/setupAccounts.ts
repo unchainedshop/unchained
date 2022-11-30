@@ -29,14 +29,11 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     if (!input) return true;
     if (input.skipMessaging) return true;
 
-    return unchainedAPI.modules.worker.addWork(
-      {
-        type: 'MESSAGE',
-        retries: 0,
-        input,
-      },
-      undefined,
-    );
+    return unchainedAPI.modules.worker.addWork({
+      type: 'MESSAGE',
+      retries: 0,
+      input,
+    });
   };
 
   accountsServer.services.guest = {

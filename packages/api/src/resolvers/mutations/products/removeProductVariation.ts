@@ -16,7 +16,7 @@ export default async function removeProductVariation(
   });
   if (!productVariation) throw new ProductVariationNotFoundError({ productVariationId });
 
-  await modules.products.variations.delete(productVariationId, userId);
+  await modules.products.variations.delete(productVariationId);
 
   return productVariation;
 }

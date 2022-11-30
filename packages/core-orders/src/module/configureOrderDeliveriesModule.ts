@@ -40,13 +40,12 @@ export const configureOrderDeliveriesModule = ({
   const updateStatus: OrderDeliveriesModule['updateStatus'] = async (
     orderDeliveryId,
     { status, info },
-    userId,
   ) => {
     log(`OrderDelivery ${orderDeliveryId} -> New Status: ${status}`);
 
     const date = new Date();
     const modifier: Update<OrderDelivery> = {
-      $set: { status, updated: new Date(), updatedBy: userId },
+      $set: { status, updated: new Date() },
       $push: {
         log: {
           date,
@@ -117,31 +116,28 @@ export const configureOrderDeliveriesModule = ({
 
     // Mutations
 
-    create: async (doc, userId) => {
-      const orderDeliveryId = await mutations.create(
-        { ...doc, context: doc.context || {}, status: null },
-        userId,
-      );
+    create: async (doc) => {
+      const orderDeliveryId = await mutations.create({
+        ...doc,
+        context: doc.context || {},
+        status: null,
+      });
 
       const orderDelivery = await OrderDeliveries.findOne(buildFindByIdSelector(orderDeliveryId));
       return orderDelivery;
     },
 
-    delete: async (orderDeliveryId, userId) => {
-      const deletedCount = await mutations.delete(orderDeliveryId, userId);
+    delete: async (orderDeliveryId) => {
+      const deletedCount = await mutations.delete(orderDeliveryId);
       return deletedCount;
     },
 
-    markAsDelivered: async (orderDelivery, userId) => {
+    markAsDelivered: async (orderDelivery) => {
       if (normalizedStatus(orderDelivery) !== OrderDeliveryStatus.OPEN) return;
-      const updatedOrderDelivery = await updateStatus(
-        orderDelivery._id,
-        {
-          status: OrderDeliveryStatus.DELIVERED,
-          info: 'mark delivered manually',
-        },
-        userId,
-      );
+      const updatedOrderDelivery = await updateStatus(orderDelivery._id, {
+        status: OrderDeliveryStatus.DELIVERED,
+        info: 'mark delivered manually',
+      });
       await emit('ORDER_DELIVER', { orderDelivery: updatedOrderDelivery });
     },
 
@@ -171,14 +167,10 @@ export const configureOrderDeliveriesModule = ({
       );
 
       if (arbitraryResponseData) {
-        return updateStatus(
-          orderDelivery._id,
-          {
-            status: OrderDeliveryStatus.DELIVERED,
-            info: JSON.stringify(arbitraryResponseData),
-          },
-          requestContext.userId,
-        );
+        return updateStatus(orderDelivery._id, {
+          status: OrderDeliveryStatus.DELIVERED,
+          info: JSON.stringify(arbitraryResponseData),
+        });
       }
 
       return orderDelivery;
@@ -199,7 +191,6 @@ export const configureOrderDeliveriesModule = ({
         $set: {
           context: { ...(orderDelivery.context || {}), ...context },
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 
@@ -236,7 +227,6 @@ export const configureOrderDeliveriesModule = ({
         $set: {
           calculation,
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 

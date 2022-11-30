@@ -40,23 +40,19 @@ export const configureOrderModuleMutations = ({
   }) as ModuleMutations<Order>;
 
   return {
-    create: async ({ orderNumber, currency, countryCode, billingAddress, contact }, userId) => {
-      const orderId = await mutations.create(
-        {
-          created: new Date(),
-          createdBy: userId,
-          status: null,
-          billingAddress,
-          contact,
-          userId,
-          currency,
-          countryCode,
-          calculation: [],
-          log: [],
-          orderNumber,
-        },
+    create: async ({ userId, orderNumber, currency, countryCode, billingAddress, contact }) => {
+      const orderId = await mutations.create({
+        created: new Date(),
+        status: null,
+        billingAddress,
+        contact,
         userId,
-      );
+        currency,
+        countryCode,
+        calculation: [],
+        log: [],
+        orderNumber,
+      });
 
       const order = await Orders.findOne(generateDbFilterById(orderId), {});
 
@@ -64,8 +60,8 @@ export const configureOrderModuleMutations = ({
       return order;
     },
 
-    delete: async (orderId, userId) => {
-      const deletedCount = await mutations.delete(orderId, userId);
+    delete: async (orderId) => {
+      const deletedCount = await mutations.delete(orderId);
       await emit('ORDER_REMOVE', { orderId });
       return deletedCount;
     },
@@ -98,16 +94,13 @@ export const configureOrderModuleMutations = ({
       const deliveryId =
         delivery?._id ||
         (
-          await modules.orders.deliveries.create(
-            {
-              calculation: [],
-              deliveryProviderId,
-              log: [],
-              orderId,
-              status: null,
-            },
-            requestContext.userId,
-          )
+          await modules.orders.deliveries.create({
+            calculation: [],
+            deliveryProviderId,
+            log: [],
+            orderId,
+            status: null,
+          })
         )._id;
 
       log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
@@ -117,7 +110,6 @@ export const configureOrderModuleMutations = ({
         $set: {
           deliveryId,
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 
@@ -132,7 +124,7 @@ export const configureOrderModuleMutations = ({
     },
 
     setPaymentProvider: async (orderId, paymentProviderId, requestContext) => {
-      const { modules, userId } = requestContext;
+      const { modules } = requestContext;
       const payment = await OrderPayments.findOne({
         orderId,
         paymentProviderId,
@@ -141,22 +133,19 @@ export const configureOrderModuleMutations = ({
       const paymentId =
         payment?._id ||
         (
-          await modules.orders.payments.create(
-            {
-              calculation: [],
-              paymentProviderId,
-              log: [],
-              orderId,
-              status: null,
-            },
-            userId,
-          )
+          await modules.orders.payments.create({
+            calculation: [],
+            paymentProviderId,
+            log: [],
+            orderId,
+            status: null,
+          })
         )._id;
       log(`Set Payment Provider ${paymentProviderId}`, { orderId });
 
       const selector = generateDbFilterById(orderId);
       await Orders.updateOne(selector, {
-        $set: { paymentId, updated: new Date(), updatedBy: userId },
+        $set: { paymentId, updated: new Date() },
       });
 
       const order = await updateCalculation(orderId, requestContext);
@@ -177,7 +166,6 @@ export const configureOrderModuleMutations = ({
         $set: {
           billingAddress,
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 
@@ -194,7 +182,6 @@ export const configureOrderModuleMutations = ({
         $set: {
           contact,
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 
@@ -215,7 +202,6 @@ export const configureOrderModuleMutations = ({
         $set: {
           context: { ...(order.context || {}), ...context },
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 

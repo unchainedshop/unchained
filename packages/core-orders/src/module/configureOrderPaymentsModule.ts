@@ -69,13 +69,12 @@ export const configureOrderPaymentsModule = ({
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,
     { status, transactionId, info },
-    userId,
   ) => {
     log(`OrderPayment ${orderPaymentId} -> New Status: ${status}`);
 
     const date = new Date();
     const modifier: Update<OrderPayment> = {
-      $set: { status, updated: new Date(), updatedBy: userId },
+      $set: { status, updated: new Date() },
       $push: {
         log: {
           date,
@@ -156,11 +155,12 @@ export const configureOrderPaymentsModule = ({
 
     // Mutations
 
-    create: async (doc, userId) => {
-      const orderPaymentId = await mutations.create(
-        { ...doc, status: null, context: doc.context || {} },
-        userId,
-      );
+    create: async (doc) => {
+      const orderPaymentId = await mutations.create({
+        ...doc,
+        status: null,
+        context: doc.context || {},
+      });
 
       const orderPayment = await OrderPayments.findOne(buildFindByIdSelector(orderPaymentId));
 
@@ -180,14 +180,10 @@ export const configureOrderPaymentsModule = ({
       );
 
       if (arbitraryResponseData) {
-        return updateStatus(
-          orderPayment._id,
-          {
-            status: OrderPaymentStatus.PAID,
-            info: JSON.stringify(arbitraryResponseData),
-          },
-          requestContext.userId,
-        );
+        return updateStatus(orderPayment._id, {
+          status: OrderPaymentStatus.PAID,
+          info: JSON.stringify(arbitraryResponseData),
+        });
       }
 
       return orderPayment;
@@ -206,14 +202,10 @@ export const configureOrderPaymentsModule = ({
       );
 
       if (arbitraryResponseData) {
-        return updateStatus(
-          orderPayment._id,
-          {
-            status: OrderPaymentStatus.REFUNDED,
-            info: JSON.stringify(arbitraryResponseData),
-          },
-          requestContext.userId,
-        );
+        return updateStatus(orderPayment._id, {
+          status: OrderPaymentStatus.REFUNDED,
+          info: JSON.stringify(arbitraryResponseData),
+        });
       }
 
       return orderPayment;
@@ -233,15 +225,11 @@ export const configureOrderPaymentsModule = ({
 
       if (arbitraryResponseData) {
         const { transactionId, ...info } = arbitraryResponseData;
-        return updateStatus(
-          orderPayment._id,
-          {
-            transactionId,
-            status: OrderPaymentStatus.PAID,
-            info: JSON.stringify(info),
-          },
-          requestContext.userId,
-        );
+        return updateStatus(orderPayment._id, {
+          transactionId,
+          status: OrderPaymentStatus.PAID,
+          info: JSON.stringify(info),
+        });
       }
 
       return orderPayment;
@@ -263,17 +251,13 @@ export const configureOrderPaymentsModule = ({
       return true;
     },
 
-    markAsPaid: async (orderPayment, meta, userId) => {
+    markAsPaid: async (orderPayment, meta) => {
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) return;
 
-      await updateStatus(
-        orderPayment._id,
-        {
-          status: OrderPaymentStatus.PAID,
-          info: meta ? JSON.stringify(meta) : 'mark paid manually',
-        },
-        userId,
-      );
+      await updateStatus(orderPayment._id, {
+        status: OrderPaymentStatus.PAID,
+        info: meta ? JSON.stringify(meta) : 'mark paid manually',
+      });
       await emit('ORDER_PAY', { orderPayment });
     },
 
@@ -292,7 +276,6 @@ export const configureOrderPaymentsModule = ({
         $set: {
           context: { ...(orderPayment.context || {}), ...context },
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 
@@ -312,16 +295,16 @@ export const configureOrderPaymentsModule = ({
 
     updateStatus,
 
-    updateCalculation: async (orderPayment, requestContext) => {
+    updateCalculation: async (orderPayment, unchainedAPI) => {
       log(`OrderPayment ${orderPayment._id} -> Update Calculation`, {
         orderId: orderPayment.orderId,
       });
 
-      const calculation = await requestContext.modules.payment.paymentProviders.calculate(
+      const calculation = await unchainedAPI.modules.payment.paymentProviders.calculate(
         {
           item: orderPayment,
         },
-        requestContext,
+        unchainedAPI,
       );
 
       const selector = buildFindByIdSelector(orderPayment._id);
@@ -329,7 +312,6 @@ export const configureOrderPaymentsModule = ({
         $set: {
           calculation,
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 

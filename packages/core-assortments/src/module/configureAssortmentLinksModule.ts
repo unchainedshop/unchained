@@ -51,7 +51,7 @@ export const configureAssortmentLinksModule = ({
     },
 
     // Mutations
-    create: async (doc, options, userId) => {
+    create: async (doc, options) => {
       const { _id: assortmentLinkId, parentAssortmentId, childAssortmentId, sortKey, ...rest } = doc;
 
       const selector = {
@@ -62,7 +62,6 @@ export const configureAssortmentLinksModule = ({
 
       const $set: any = {
         updated: new Date(),
-        updatedBy: userId,
         ...rest,
       };
       const $setOnInsert: any = {
@@ -70,7 +69,6 @@ export const configureAssortmentLinksModule = ({
         parentAssortmentId,
         childAssortmentId,
         created: new Date(),
-        createdBy: userId,
       };
 
       const assortmentLinksPath = await walkUpFromAssortment({
@@ -117,13 +115,12 @@ export const configureAssortmentLinksModule = ({
     },
 
     // This action is specifically used for the bulk migration scripts in the platform package
-    update: async (assortmentLinkId, doc, options, userId) => {
+    update: async (assortmentLinkId, doc, options) => {
       const selector = generateDbFilterById(assortmentLinkId);
       const modifier = {
         $set: {
           ...doc,
           updated: new Date(),
-          updatedBy: userId,
         },
       };
       await AssortmentLinks.updateOne(selector, modifier);
@@ -185,14 +182,13 @@ export const configureAssortmentLinksModule = ({
       return deletionResult.deletedCount;
     },
 
-    updateManualOrder: async ({ sortKeys }, options, userId) => {
+    updateManualOrder: async ({ sortKeys }, options) => {
       const changedAssortmentLinkIds = await Promise.all(
         sortKeys.map(async ({ assortmentLinkId, sortKey }) => {
           await AssortmentLinks.updateOne(generateDbFilterById(assortmentLinkId), {
             $set: {
               sortKey: sortKey + 1,
               updated: new Date(),
-              updatedBy: userId,
             },
           });
 

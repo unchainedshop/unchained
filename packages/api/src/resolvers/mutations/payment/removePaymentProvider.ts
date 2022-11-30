@@ -17,5 +17,5 @@ export default async (
   )
     throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return modules.payment.paymentProviders.delete(paymentProviderId, userId);
+  return modules.payment.paymentProviders.delete(paymentProviderId);
 };

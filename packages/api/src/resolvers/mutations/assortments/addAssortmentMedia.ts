@@ -16,15 +16,11 @@ export default async function addAssortmentMedia(root: Root, { media, assortment
       directoryName: 'assortment-media',
       rawFile: media,
       meta: { authorId: userId },
-      userId,
     },
     context,
   );
 
-  const assortmentMedia = await modules.assortments.media.create(
-    { assortmentId, mediaId: file._id },
-    userId,
-  );
+  const assortmentMedia = await modules.assortments.media.create({ assortmentId, mediaId: file._id });
 
   return assortmentMedia;
 }

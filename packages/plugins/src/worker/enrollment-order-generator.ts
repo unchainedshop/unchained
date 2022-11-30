@@ -22,17 +22,15 @@ const generateOrder = async (
 
   const { modules } = requestContext;
   const { orderProducts, orderContext, ...configuration } = params;
-  let order = await modules.orders.create(
-    {
-      currency: enrollment.currencyCode,
-      countryCode: enrollment.countryCode,
-      contact: enrollment.contact,
-      billingAddress: enrollment.billingAddress,
-      originEnrollmentId: enrollment._id,
-      ...configuration,
-    },
-    enrollment.userId,
-  );
+  let order = await modules.orders.create({
+    userId: enrollment.userId,
+    currency: enrollment.currencyCode,
+    countryCode: enrollment.countryCode,
+    contact: enrollment.contact,
+    billingAddress: enrollment.billingAddress,
+    originEnrollmentId: enrollment._id,
+    ...configuration,
+  });
   const orderId = order._id;
 
   if (orderProducts) {

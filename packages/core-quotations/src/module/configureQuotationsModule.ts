@@ -85,11 +85,7 @@ export const configureQuotationsModule = async ({
     return status;
   };
 
-  const updateStatus: QuotationsModule['updateStatus'] = async (
-    quotationId,
-    { status, info = '' },
-    userId,
-  ) => {
+  const updateStatus: QuotationsModule['updateStatus'] = async (quotationId, { status, info = '' }) => {
     const selector = generateDbFilterById(quotationId);
     const quotation = await Quotations.findOne(selector, {});
 
@@ -99,7 +95,6 @@ export const configureQuotationsModule = async ({
     const $set: Partial<Quotation> = {
       status,
       updated: new Date(),
-      updatedBy: userId,
     };
 
     switch (status) {
@@ -149,7 +144,7 @@ export const configureQuotationsModule = async ({
     params: { quotationContext?: any },
     requestContext: Context,
   ) => {
-    const { modules, userId } = requestContext;
+    const { modules } = requestContext;
 
     const quotationId = initialQuotation._id;
     let quotation = initialQuotation;
@@ -176,51 +171,43 @@ export const configureQuotationsModule = async ({
     nextStatus = await findNextStatus(quotation, requestContext);
     if (nextStatus === QuotationStatus.PROPOSED) {
       const proposal = await director.quote();
-      quotation = await modules.quotations.updateProposal(quotation._id, proposal, userId);
+      quotation = await modules.quotations.updateProposal(quotation._id, proposal);
       nextStatus = await findNextStatus(quotation, requestContext);
     }
 
-    return updateStatus(
-      quotation._id,
-      { status: nextStatus, info: 'quotation processed' },
-      requestContext.userId,
-    );
+    return updateStatus(quotation._id, { status: nextStatus, info: 'quotation processed' });
   };
 
   const sendStatusToCustomer = async (quotation: Quotation, requestContext: Context) => {
-    const { modules, userId } = requestContext;
+    const { modules } = requestContext;
 
     const user = await modules.users.findUserById(quotation.userId);
-    const locale = modules.users.userLocale(user, requestContext);
+    const locale = requestContext.localeContext || modules.users.userLocale(user);
 
-    await modules.worker.addWork(
-      {
-        type: 'MESSAGE',
-        retries: 0,
-        input: {
-          locale,
-          template: 'QUOTATION_STATUS',
-          quotationId: quotation._id,
-        },
+    await modules.worker.addWork({
+      type: 'MESSAGE',
+      retries: 0,
+      input: {
+        locale,
+        template: 'QUOTATION_STATUS',
+        quotationId: quotation._id,
       },
-      userId,
-    );
+    });
 
     return quotation;
   };
 
   const updateQuotationFields =
-    (fieldKeys: Array<string>) => async (quotationId: string, values: any, userId?: string) => {
+    (fieldKeys: Array<string>) => async (quotationId: string, values: any) => {
       log(`Update quotation fields ${fieldKeys.join(', ').toUpperCase()}`, {
         quotationId,
-        userId,
       });
 
       const modifier = {
         $set: fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
       };
 
-      await mutations.update(quotationId, modifier, userId);
+      await mutations.update(quotationId, modifier);
 
       const selector = generateDbFilterById(quotationId);
       const quotation = await Quotations.findOne(selector, {});
@@ -274,14 +261,10 @@ export const configureQuotationsModule = async ({
 
       if (quotation.status === QuotationStatus.FULLFILLED) return quotation;
 
-      let updatedQuotation = await updateStatus(
-        quotation._id,
-        {
-          status: QuotationStatus.FULLFILLED,
-          info: JSON.stringify(info),
-        },
-        requestContext.userId,
-      );
+      let updatedQuotation = await updateStatus(quotation._id, {
+        status: QuotationStatus.FULLFILLED,
+        info: JSON.stringify(info),
+      });
 
       updatedQuotation = await processQuotation(updatedQuotation, {}, requestContext);
 
@@ -291,14 +274,10 @@ export const configureQuotationsModule = async ({
     proposeQuotation: async (quotation, { quotationContext }, requestContext) => {
       if (quotation.status !== QuotationStatus.PROCESSING) return quotation;
 
-      let updatedQuotation = await updateStatus(
-        quotation._id,
-        {
-          status: QuotationStatus.PROPOSED,
-          info: 'proposed manually',
-        },
-        requestContext.userId,
-      );
+      let updatedQuotation = await updateStatus(quotation._id, {
+        status: QuotationStatus.PROPOSED,
+        info: 'proposed manually',
+      });
 
       updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, requestContext);
 
@@ -308,14 +287,10 @@ export const configureQuotationsModule = async ({
     rejectQuotation: async (quotation, { quotationContext }, requestContext) => {
       if (quotation.status === QuotationStatus.FULLFILLED) return quotation;
 
-      let updatedQuotation = await updateStatus(
-        quotation._id,
-        {
-          status: QuotationStatus.REJECTED,
-          info: 'rejected manually',
-        },
-        requestContext.userId,
-      );
+      let updatedQuotation = await updateStatus(quotation._id, {
+        status: QuotationStatus.REJECTED,
+        info: 'rejected manually',
+      });
 
       updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, requestContext);
 
@@ -325,14 +300,10 @@ export const configureQuotationsModule = async ({
     verifyQuotation: async (quotation, { quotationContext }, requestContext) => {
       if (quotation.status !== QuotationStatus.REQUESTED) return quotation;
 
-      let updatedQuotation = await updateStatus(
-        quotation._id,
-        {
-          status: QuotationStatus.PROCESSING,
-          info: 'verified elligibility manually',
-        },
-        requestContext.userId,
-      );
+      let updatedQuotation = await updateStatus(quotation._id, {
+        status: QuotationStatus.PROCESSING,
+        info: 'verified elligibility manually',
+      });
 
       updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, requestContext);
 
@@ -357,17 +328,14 @@ export const configureQuotationsModule = async ({
         requestContext,
       );
 
-      const quotationId = await mutations.create(
-        {
-          ...quotationData,
-          configuration: quotationData.configuration || [],
-          countryCode,
-          currency,
-          log: [],
-          status: QuotationStatus.REQUESTED,
-        },
-        userId,
-      );
+      const quotationId = await mutations.create({
+        ...quotationData,
+        configuration: quotationData.configuration || [],
+        countryCode,
+        currency,
+        log: [],
+        status: QuotationStatus.REQUESTED,
+      });
 
       const newQuotation = await Quotations.findOne(generateDbFilterById(quotationId), {});
 

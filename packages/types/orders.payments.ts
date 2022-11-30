@@ -1,5 +1,6 @@
 import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
+import { UnchainedCore } from './core';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing';
@@ -58,11 +59,11 @@ export type OrderPaymentsModule = {
   pricingSheet: (
     orderPayment: OrderPayment,
     currency: string,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => IPaymentPricingSheet;
 
   // Mutations
-  create: (doc: OrderPayment, userId?: string) => Promise<OrderPayment>;
+  create: (doc: OrderPayment) => Promise<OrderPayment>;
 
   cancel: (
     orderPayment: OrderPayment,
@@ -82,19 +83,18 @@ export type OrderPaymentsModule = {
     requestContext: Context,
   ) => Promise<OrderPayment>;
 
-  logEvent: (orderPaymentId: string, event: any, userId?: string) => Promise<boolean>;
+  logEvent: (orderPaymentId: string, event: any) => Promise<boolean>;
 
-  markAsPaid: (payment: OrderPayment, meta: any, userId?: string) => Promise<void>;
+  markAsPaid: (payment: OrderPayment, meta: any) => Promise<void>;
 
   updateContext: (orderPaymentId: string, context: any, requestContext: Context) => Promise<boolean>;
 
   updateStatus: (
     orderPaymentId: string,
     params: { transactionId?: string; status: OrderPaymentStatus; info?: string },
-    userId?: string,
   ) => Promise<OrderPayment>;
 
-  updateCalculation: (orderPayment: OrderPayment, requestContext: Context) => Promise<OrderPayment>;
+  updateCalculation: (orderPayment: OrderPayment, unchainedAPI: UnchainedCore) => Promise<OrderPayment>;
 };
 
 export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {

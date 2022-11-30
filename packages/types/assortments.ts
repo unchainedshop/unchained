@@ -108,12 +108,11 @@ export type AssortmentsModule = {
   }) => Promise<Array<{ links: Array<AssortmentPathLink> }>>;
 
   // Mutations
-  create: (doc: Assortment & { title: string; locale: string }, userId: string) => Promise<string>;
+  create: (doc: Assortment & { title: string; locale: string }) => Promise<string>;
 
   update: (
     assortmentId: string,
     doc: Assortment,
-    userId: string,
     options?: { skipInvalidation?: boolean },
   ) => Promise<string>;
 
@@ -121,7 +120,7 @@ export type AssortmentsModule = {
 
   invalidateCache: (params: AssortmentQuery, options?: { skipUpstreamTraversal: boolean }) => void;
 
-  setBase: (assortmentId: string, userId?: string) => Promise<void>;
+  setBase: (assortmentId: string) => Promise<void>;
 
   /*
    * Assortment media
@@ -147,22 +146,19 @@ export type AssortmentsModule = {
     findFilterIds: (params: { assortmentId: string }) => Promise<Array<string>>;
 
     // Mutations
-    create: (doc: AssortmentFilter, userId?: string) => Promise<AssortmentFilter>;
+    create: (doc: AssortmentFilter) => Promise<AssortmentFilter>;
 
     delete: (assortmentFilterId: string) => Promise<Array<{ _id: _ID }>>;
     deleteMany: (selector: Filter<AssortmentFilter>) => Promise<number>;
 
     update: (assortmentFilterId: string, doc: AssortmentFilter) => Promise<AssortmentFilter>;
 
-    updateManualOrder: (
-      params: {
-        sortKeys: Array<{
-          assortmentFilterId: string;
-          sortKey: number;
-        }>;
-      },
-      userId?: string,
-    ) => Promise<Array<AssortmentFilter>>;
+    updateManualOrder: (params: {
+      sortKeys: Array<{
+        assortmentFilterId: string;
+        sortKey: number;
+      }>;
+    }) => Promise<Array<AssortmentFilter>>;
   };
 
   /*
@@ -188,11 +184,7 @@ export type AssortmentsModule = {
     ) => Promise<Array<AssortmentLink>>;
 
     // Mutations
-    create: (
-      doc: AssortmentLink,
-      options?: { skipInvalidation?: boolean },
-      userId?: string,
-    ) => Promise<AssortmentLink>;
+    create: (doc: AssortmentLink, options?: { skipInvalidation?: boolean }) => Promise<AssortmentLink>;
 
     delete: (
       assortmentLinkId: string,
@@ -208,7 +200,6 @@ export type AssortmentsModule = {
       assortmentLinkId: string,
       doc: AssortmentLink,
       options?: { skipInvalidation?: boolean },
-      userId?: string,
     ) => Promise<AssortmentLink>;
 
     updateManualOrder: (
@@ -219,7 +210,6 @@ export type AssortmentsModule = {
         }>;
       },
       options?: { skipInvalidation?: boolean },
-      userId?: string,
     ) => Promise<Array<AssortmentLink>>;
   };
 
@@ -250,7 +240,6 @@ export type AssortmentsModule = {
     create: (
       doc: AssortmentProduct,
       options?: { skipInvalidation?: boolean },
-      userId?: string,
     ) => Promise<AssortmentProduct>;
 
     delete: (
@@ -267,7 +256,6 @@ export type AssortmentsModule = {
       assortmentProductId: string,
       doc: AssortmentProduct,
       options?: { skipInvalidation?: boolean },
-      userId?: string,
     ) => Promise<AssortmentProduct>;
 
     updateManualOrder: (
@@ -278,7 +266,6 @@ export type AssortmentsModule = {
         }>;
       },
       options?: { skipInvalidation?: boolean },
-      userId?: string,
     ) => Promise<Array<AssortmentProduct>>;
   };
 
@@ -311,14 +298,12 @@ export type AssortmentsModule = {
     updateTexts: (
       assortmentId: string,
       texts: Array<Omit<AssortmentText, 'assortmentId' | 'authorId'>>,
-      userId?: string,
     ) => Promise<Array<AssortmentText>>;
 
     upsertLocalizedText: (
       assortmentId: string,
       locale: string,
       text: Omit<AssortmentText, 'assortmentId' | 'authorId' | 'locale'>,
-      userId?: string,
     ) => Promise<AssortmentText>;
 
     makeSlug: (data: { slug?: string; title: string; assortmentId: string }) => Promise<string>;

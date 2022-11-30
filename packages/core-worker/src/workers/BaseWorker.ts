@@ -86,16 +86,12 @@ export const BaseWorker: IWorker<WorkerParams> = {
           if (work) {
             const output = await requestContext.modules.worker.doWork(work, requestContext);
 
-            doneWork = await requestContext.modules.worker.finishWork(
-              work._id,
-              {
-                ...output,
-                finished: work.finished || new Date(),
-                started: work.started,
-                worker: workerId,
-              },
-              '0',
-            );
+            doneWork = await requestContext.modules.worker.finishWork(work._id, {
+              ...output,
+              finished: work.finished || new Date(),
+              started: work.started,
+              worker: workerId,
+            });
           }
 
           if (doneWork) return processRecursively(recursionCounter + 1);

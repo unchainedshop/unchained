@@ -6,7 +6,7 @@ const upsertAsset = async (
   asset: File & { fileName: string; headers?: Record<string, unknown> },
   unchainedAPI: Context,
 ) => {
-  const { modules, services, userId } = unchainedAPI;
+  const { modules, services } = unchainedAPI;
   const { _id: fileId, fileName, url, meta, headers, ...assetData } = asset;
 
   try {
@@ -16,7 +16,7 @@ const upsertAsset = async (
       if (JSON.stringify(newMeta) === JSON.stringify(existingFile.meta)) {
         return existingFile;
       }
-      await modules.files.update(fileId, { meta: newMeta, ...assetData }, userId);
+      await modules.files.update(fileId, { meta: newMeta, ...assetData });
       const updatedFile = await modules.files.findFile({ fileId });
       return updatedFile;
     }
@@ -30,7 +30,6 @@ const upsertAsset = async (
           headers,
         },
         meta: { ...meta, fileId },
-        userId,
       },
       unchainedAPI,
     );

@@ -24,7 +24,7 @@ export default async function removeProductAssignment(
       required: ProductTypes.ConfigurableProduct,
     });
 
-  await modules.products.assignments.removeAssignment(proxyId, { vectors }, userId);
+  await modules.products.assignments.removeAssignment(proxyId, { vectors });
 
   return modules.products.findProduct({ productId: proxyId });
 }

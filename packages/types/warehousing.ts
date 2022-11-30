@@ -1,6 +1,5 @@
-import { Context } from './api';
-import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
-import { ModuleMutations } from './core';
+import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID, Locale } from './common';
+import { ModuleMutations, UnchainedCore } from './core';
 
 import { DeliveryProvider } from './delivery';
 import { Order } from './orders';
@@ -58,6 +57,7 @@ export interface WarehousingContext {
   token?: TokenSurrogate;
   quantity?: number;
   referenceDate?: Date;
+  locale?: Locale;
   order?: Order;
   warehousingProviderId?: string;
   orderPosition?: OrderPosition;
@@ -87,7 +87,7 @@ export type IWarehousingAdapter = IBaseAdapter & {
 
   actions: (
     config: WarehousingConfiguration,
-    context: WarehousingContext & Context,
+    context: WarehousingContext & UnchainedCore,
   ) => WarehousingAdapterActions;
 };
 
@@ -95,7 +95,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
   actions: (
     warehousingProvider: WarehousingProvider,
     warehousingContext: WarehousingContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<{
     configurationError: () => WarehousingError;
     isActive: () => boolean;
@@ -132,26 +132,26 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
 
   findSupported: (
     warehousingContext: WarehousingContext,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => Promise<Array<WarehousingProvider>>;
   findInterface: (query: WarehousingProvider) => WarehousingInterface;
   findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
   configurationError: (
     provider: WarehousingProvider,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => Promise<WarehousingError>;
-  isActive: (provider: WarehousingProvider, requestContext: Context) => Promise<boolean>;
+  isActive: (provider: WarehousingProvider, requestContext: UnchainedCore) => Promise<boolean>;
 
   estimatedDispatch: (
     provider: WarehousingProvider,
     context: WarehousingContext,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => Promise<EstimatedDispatch>;
 
   estimatedStock: (
     provider: WarehousingProvider,
     context: WarehousingContext,
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => Promise<EstimatedStock>;
 
   updateTokenOwnership: (input: {
@@ -168,20 +168,20 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
         product: Product;
       }>;
     },
-    requestContext: Context,
+    requestContext: UnchainedCore,
   ) => Promise<void>;
 
   tokenMetadata: (
     chainTokenId: string,
-    params: { product: Product; token: TokenSurrogate; referenceDate: Date },
-    requestContext: Context,
+    params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Locale },
+    requestContext: UnchainedCore,
   ) => Promise<any>;
 
   // Mutations
-  delete: (providerId: string, userId?: string) => Promise<WarehousingProvider>;
+  delete: (providerId: string) => Promise<WarehousingProvider>;
 };
 
-export type HelperType<P, T> = (provider: WarehousingProvider, params: P, context: Context) => T;
+export type HelperType<P, T> = (provider: WarehousingProvider, params: P, context: UnchainedCore) => T;
 
 export interface WarehousingProviderHelperTypes {
   configurationError: HelperType<never, Promise<WarehousingError>>;

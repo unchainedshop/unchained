@@ -64,10 +64,7 @@ const WordlineSaferpay: IPaymentAdapter = {
       },
 
       sign: async (transactionContext: any = {}) => {
-        const { orderPayment } = params.paymentContext;
-        const order = await modules.orders.findOrder({
-          orderId: orderPayment.orderId,
-        });
+        const { orderPayment, order } = params.paymentContext;
         const pricing = modules.orders.pricingSheet(order);
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         const paymentPageInitInput: PaymentPageInitializeInput = {
@@ -95,8 +92,7 @@ const WordlineSaferpay: IPaymentAdapter = {
       },
 
       charge: async ({ transactionId }: { transactionId: string }) => {
-        const { orderPayment } = params.paymentContext;
-        const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
+        const { orderPayment, order } = params.paymentContext;
         const pricing = modules.orders.pricingSheet(order);
         const totalAmount = pricing.total({ useNetPrice: false }).amount;
         const paymentPageAssert = await saferpayClient.paymentPageAssert({
