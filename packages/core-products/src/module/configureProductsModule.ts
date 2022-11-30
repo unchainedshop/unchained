@@ -223,7 +223,7 @@ export const configureProductsModule = async ({
 
     productExists: async ({ productId, slug }) => {
       const selector: Query = productId ? generateDbFilterById(productId) : { slugs: slug };
-      selector.status = { $ne: ProductStatus.DELETED }; // TODO: Slow IDXSCAN in common query
+      selector.status = { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] };
 
       const productCount = await Products.countDocuments(selector, { limit: 1 });
 
@@ -324,10 +324,6 @@ export const configureProductsModule = async ({
       { autopublish = false } = {},
     ) => {
       if (productData._id) {
-        // Remove deleted product by _id before creating a new one.
-        // TODO: Fix
-        // productReviews.removeMany(productData._id);
-
         await deleteProductPermanently({
           productId: productData._id as string,
         });
