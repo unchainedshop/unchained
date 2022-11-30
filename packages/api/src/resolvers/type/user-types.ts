@@ -183,12 +183,12 @@ export const User: UserHelperTypes = {
 
   webAuthnCredentials: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return user.services.webAuthn || [];
+    return user.services?.webAuthn || [];
   },
 
   web3Addresses: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return user.services.web3 || [];
+    return user.services?.web3 || [];
   },
 
   quotations: async (user, params, context) => {
