@@ -17,27 +17,22 @@ export default async (
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLoaders['loaders']> => {
   return {
-    assortmentLoader: new DataLoader<{ assortmentId: string; includeInactive: boolean }, Assortment>(
-      async (queries) => {
-        const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+    assortmentLoader: new DataLoader<{ assortmentId: string }, Assortment>(async (queries) => {
+      const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 
-        const assortments = await unchainedAPI.modules.assortments.findAssortments({
-          assortmentIds,
-          includeInactive: true,
-          includeLeaves: true,
-        });
+      const assortments = await unchainedAPI.modules.assortments.findAssortments({
+        assortmentIds,
+        includeInactive: true,
+        includeLeaves: true,
+      });
 
-        return queries.map(({ assortmentId, includeInactive }) => {
-          return assortments.find((assortment) => {
-            if (assortment._id !== assortmentId) return false;
-            if (!includeInactive) {
-              return assortment.isActive === true;
-            }
-            return true;
-          });
+      return queries.map(({ assortmentId }) => {
+        return assortments.find((assortment) => {
+          if (assortment._id !== assortmentId) return false;
+          return true;
         });
-      },
-    ),
+      });
+    }),
 
     assortmentTextLoader: new DataLoader<{ assortmentId: string; locale: string }, AssortmentText>(
       async (queries) => {
@@ -118,26 +113,23 @@ export default async (
       });
     }),
 
-    productLoader: new DataLoader<{ productId: string; includeDrafts: boolean }, Product>(
-      async (queries) => {
-        const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
+    productLoader: new DataLoader<{ productId: string }, Product>(async (queries) => {
+      const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
 
-        const products = await unchainedAPI.modules.products.findProducts({
-          productIds,
-          includeDrafts: true,
-        });
+      const products = await unchainedAPI.modules.products.findProducts({
+        productIds,
+        productSelector: {
+          status: { $in: [null, ProductStatus.ACTIVE, ProductStatus.DELETED] },
+        },
+      });
 
-        return queries.map(({ productId, includeDrafts }) => {
-          return products.find((product) => {
-            if (product._id !== productId) return false;
-            if (!includeDrafts) {
-              return product.status === ProductStatus.ACTIVE;
-            }
-            return true;
-          });
+      return queries.map(({ productId }) => {
+        return products.find((product) => {
+          if (product._id !== productId) return false;
+          return true;
         });
-      },
-    ),
+      });
+    }),
 
     productTextLoader: new DataLoader<{ productId: string; locale: string }, ProductText>(
       async (queries) => {

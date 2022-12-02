@@ -12,7 +12,6 @@ export const EnrollmentPlan: EnrollmentPlanHelperTypes = {
   product: async (plan, _, { loaders }) => {
     const product = await loaders.productLoader.load({
       productId: plan.productId,
-      includeDrafts: true,
     });
     return product;
   },

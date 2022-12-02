@@ -77,12 +77,12 @@ const buildFindSelector = ({
     selector.$text = { $search: queryString };
   }
 
-  if (!includeDrafts) {
-    selector.status = { $eq: ProductStatus.ACTIVE };
-  } else {
-    selector.status = {
-      $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
-    };
+  if (!selector.status) {
+    selector.status = !includeDrafts
+      ? { $eq: ProductStatus.ACTIVE }
+      : {
+          $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
+        };
   }
 
   return selector;

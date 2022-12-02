@@ -23,7 +23,6 @@ export const ProductReview: ProductReviewHelperTypes = {
   product: async (review, _, { loaders }) => {
     const product = await loaders.productLoader.load({
       productId: review.productId,
-      includeDrafts: true,
     });
     return product;
   },
