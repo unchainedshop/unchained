@@ -11,19 +11,14 @@ import {
   resolveBestCountry,
   resolveBestSupported,
   resolveUserRemoteAddress,
-  Schemas,
+  
   slugify,
   systemLocale,
 } from '@unchainedshop/utils';
-import './generate-db-mutations.test';
+
 
 describe('Test exports', () => {
-  it('Schemas', () => {
-    assert.isDefined(Schemas);
 
-    assert.isDefined(Schemas.Address);
-    assert.isDefined(Schemas.Contact);
-  });
   it('Locale', () => {
     assert.isDefined(systemLocale);
     assert.isFunction(resolveBestCountry);

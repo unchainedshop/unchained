@@ -1,44 +1,12 @@
-import { assert } from 'chai';
-import { initDb } from '@unchainedshop/mongodb';
-import { configureCountriesModule } from '@unchainedshop/core-countries';
 
-describe('Test exports', () => {
-  let module;
+import {buildFindSelector} from '../src/module/configureCountriesModule'
+describe('Country', () => {
+  
+  it('buildFindSelector should return correct filter object', async () => {
 
-  before(async () => {
-    const db = await initDb();
-    module = await configureCountriesModule({ db });
+    expect(buildFindSelector({includeInactive: true, queryString: 'hello world'})).toEqual({ deleted: undefined, '$text': { '$search': 'hello world' } })
+    expect(buildFindSelector({includeInactive: true})).toEqual({ deleted: undefined })
+    expect(buildFindSelector({queryString: 'hello world'})).toEqual({ deleted: undefined, '$text': { '$search': 'hello world' }, isActive: true })
   });
 
-  it('Check Country module', async () => {
-    assert.ok(module);
-    assert.isFunction(module.findCountry);
-    assert.isFunction(module.findCountries);
-    assert.isFunction(module.countryExists);
-    assert.isFunction(module.create);
-    assert.isFunction(module.update);
-    assert.isFunction(module.delete);
-  });
-
-  it('Mutate country', async () => {
-    const countryId = await module.create(
-      {
-        isoCode: 'CHF',
-      },
-      'Test-User-1'
-    );
-
-    assert.ok(countryId);
-    const country = await module.findCountry(countryId);
-
-    assert.ok(country);
-    assert.equal(country._id, countryId);
-    assert.equal(country.isoCode, 'CHF');
-    assert.equal(country.userId, 'Test-User-1');
-    assert.isDefined(country.created);
-    assert.isUndefined(country.updated);
-
-    const deletedCount = await module.delete(countryId);
-    assert.equal(deletedCount, 1);
-  });
 });

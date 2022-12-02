@@ -1,44 +1,27 @@
-import { assert } from 'chai';
-import { initDb } from '@unchainedshop/mongodb';
-import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
+import {buildFindSelector} from '../src/module/configureCurrenciesModule'
 
-describe('Test exports', () => {
-  let module;
+describe('Currency', () => {
+  
+  it('buildFindSelector should return correct filter object', async () => {
 
-  before(async () => {
-    const db = await initDb();
-    module = await configureCurrenciesModule({ db });
+    expect(buildFindSelector({contractAddress: '0xf12EC0F79a8855d093DeCe22b24c0603f5b8E34A', includeInactive: true, queryString: 'hello world'})).toEqual({
+      deleted: null,
+      contractAddress: '0xf12EC0F79a8855d093DeCe22b24c0603f5b8E34A',
+      '$text': { '$search': 'hello world' }
+    })
+    expect(buildFindSelector({contractAddress: '0xf12EC0F79a8855d093DeCe22b24c0603f5b8E34A', includeInactive: true})).toEqual({
+      deleted: null,
+      contractAddress: '0xf12EC0F79a8855d093DeCe22b24c0603f5b8E34A',
+    })
+    expect(buildFindSelector({includeInactive: true, queryString: 'hello world'})).toEqual({
+      deleted: null,
+      '$text': { '$search': 'hello world' }
+    })
+    expect(buildFindSelector({ queryString: 'hello world'})).toEqual({
+      deleted: null,
+      isActive: true,
+      '$text': { '$search': 'hello world' }
+    })
   });
 
-  it('Check Bookmarks module', async () => {
-    assert.ok(module);
-    assert.isFunction(module.findCurrency);
-    assert.isFunction(module.findCurrencies);
-    assert.isFunction(module.currencyExists);
-    assert.isFunction(module.create);
-    assert.isFunction(module.update);
-    assert.isFunction(module.delete);
-  });
-
-  it('Mutate currency', async () => {
-    const currencyId = await module.create(
-      {
-        isoCode: 'CHF',
-      },
-      'Test-User-1'
-    );
-
-    assert.ok(currencyId);
-    const currency = await module.findCurrency(currencyId);
-
-    assert.ok(currency);
-    assert.equal(currency._id, currencyId);
-    assert.equal(currency.isoCode, 'CHF');
-    assert.equal(currency.userId, 'Test-User-1');
-    assert.isDefined(currency.created);
-    assert.isUndefined(currency.updated);
-
-    const deletedCount = await module.delete(currencyId);
-    assert.equal(deletedCount, 1);
-  });
 });

@@ -12,7 +12,7 @@
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
-    "test": "jest --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit tests/*"
   },
   "repository": {
     "type": "git",

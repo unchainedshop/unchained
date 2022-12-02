@@ -15,8 +15,8 @@ import { CountriesSchema } from '../db/CountriesSchema';
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 
-const buildFindSelector = ({ includeInactive = false, queryString = '' }: CountryQuery) => {
-  const selector: { isActive?: true; $text?: any; deleted?: Date } = { deleted: null };
+export const buildFindSelector = ({ includeInactive = false, queryString = '' }: CountryQuery) => {
+  const selector: { isActive?: true; $text?: any; deleted?: Date } = { deleted: undefined };
   if (!includeInactive) selector.isActive = true;
   if (queryString) selector.$text = { $search: queryString };
   return selector;
@@ -71,7 +71,6 @@ export const configureCountriesModule = async ({
     isBase(country) {
       return country.isoCode === systemLocale.country;
     },
-
     create: async (doc: Country) => {
       await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
       const countryId = await mutations.create({

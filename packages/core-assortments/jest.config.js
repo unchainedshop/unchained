@@ -1,6 +1,6 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 export default {
-  preset: '@shelf/jest-mongodb',
+  preset: 'ts-jest',
   transform: {
     '^.+\\.ts?$': [
       'ts-jest',

@@ -1,3 +1,4 @@
+import { WithId } from 'mongodb';
 import { SortOption } from './api';
 import { FindOptions, TimestampFields, _ID } from './common';
 import { ModuleMutations, UnchainedCore } from './core';
@@ -14,7 +15,7 @@ export type CountryQuery = {
   queryString?: string;
 };
 export type CountriesModule = ModuleMutations<Country> & {
-  findCountry: (params: { countryId?: string; isoCode?: string }) => Promise<Country>;
+  findCountry: (params: { countryId?: string; isoCode?: string }) => Promise<WithId<Country> | null>;
   findCountries: (
     params: CountryQuery & {
       limit?: number;
