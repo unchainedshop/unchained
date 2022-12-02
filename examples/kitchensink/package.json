@@ -62,11 +62,11 @@
     "serve-static": "^1.15.0",
     "stripe": "^10.17.0",
     "tiny-secp256k1": "^2.2.1",
-    "twilio": "^3.83.3",
+    "twilio": "^3.83.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.11.9",
+    "@types/node": "^18.11.10",
     "mongodb-memory-server": "^8.10.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.0",
