@@ -14,7 +14,6 @@ export const Bookmark: BookmarkHelperTypes = {
   product: async (obj, _, { loaders }) => {
     const product = await loaders.productLoader.load({
       productId: obj.productId,
-      includeDrafts: true,
     });
     return product;
   },

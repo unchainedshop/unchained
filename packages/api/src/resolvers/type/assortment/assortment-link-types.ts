@@ -12,7 +12,6 @@ export const AssortmentLink: AssortmentLinkHelperTypes = {
   child: async (obj, _, { loaders }) => {
     const assortment = await loaders.assortmentLoader.load({
       assortmentId: obj.childAssortmentId,
-      includeInactive: true,
     });
     return assortment;
   },
@@ -20,7 +19,6 @@ export const AssortmentLink: AssortmentLinkHelperTypes = {
   parent: async (obj, _, { loaders }) => {
     const assortment = await loaders.assortmentLoader.load({
       assortmentId: obj.parentAssortmentId,
-      includeInactive: true,
     });
     return assortment;
   },

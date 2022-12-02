@@ -16,7 +16,6 @@ export const AssortmentProduct: AssortmentProductHelperTypes = {
   assortment: async (obj, _, { loaders }) => {
     const assortment = await loaders.assortmentLoader.load({
       assortmentId: obj.assortmentId,
-      includeInactive: true,
     });
     return assortment;
   },
@@ -24,7 +23,6 @@ export const AssortmentProduct: AssortmentProductHelperTypes = {
   product: async (obj, _, { loaders }) => {
     const product = await loaders.productLoader.load({
       productId: obj.productId,
-      includeDrafts: true,
     });
     return product;
   },

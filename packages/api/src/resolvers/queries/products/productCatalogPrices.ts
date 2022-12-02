@@ -13,7 +13,6 @@ export default async function productCatalogPrices(
 
   const product = await loaders.productLoader.load({
     productId,
-    includeDrafts: true,
   });
   if (!product) return null;
 

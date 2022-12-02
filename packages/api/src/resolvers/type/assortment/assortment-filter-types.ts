@@ -13,7 +13,6 @@ export const AssortmentFilter: AssortmentFilterHelperTypes = {
   assortment: async (obj, _, { loaders }) => {
     const assortment = await loaders.assortmentLoader.load({
       assortmentId: obj.assortmentId,
-      includeInactive: true,
     });
     return assortment;
   },

@@ -14,7 +14,6 @@ export const ProductVariationAssignment: ProductVariationAssignmentHelperTypes =
   product: async ({ assignment }, _, { loaders }) => {
     const product = await loaders.productLoader.load({
       productId: assignment.productId,
-      includeDrafts: true,
     });
     return product;
   },

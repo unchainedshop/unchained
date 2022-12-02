@@ -70,7 +70,6 @@ export const OrderItem: OrderItemHelperTypes = {
     });
     const product = await loaders.productLoader.load({
       productId: obj.productId,
-      includeDrafts: true,
     });
 
     return Promise.all(
@@ -103,7 +102,6 @@ export const OrderItem: OrderItemHelperTypes = {
   originalProduct: async (obj, _, { loaders }) => {
     const product = await loaders.productLoader.load({
       productId: obj.originalProductId,
-      includeDrafts: true,
     });
     return product;
   },
@@ -111,7 +109,6 @@ export const OrderItem: OrderItemHelperTypes = {
   product: async (obj, _, { loaders }) => {
     const product = await loaders.productLoader.load({
       productId: obj.productId,
-      includeDrafts: true,
     });
     return product;
   },
