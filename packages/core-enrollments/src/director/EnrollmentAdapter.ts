@@ -3,7 +3,7 @@ import { startOfHour, startOfMinute, add } from 'date-fns';
 
 import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
 
-const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
+export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
   const lowerCase = interval.toLowerCase();
   const start = lowerCase === 'hours' ? startOfMinute(referenceDate) : startOfHour(referenceDate);
 

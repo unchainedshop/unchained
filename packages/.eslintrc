@@ -30,6 +30,7 @@
         "proseWrap": "always"
       }
     ],
+    "@typescript-eslint/no-unused-expressions": "error",
     "no-underscore-dangle": [
       "error",
       {

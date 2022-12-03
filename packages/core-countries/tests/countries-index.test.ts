@@ -1,4 +1,3 @@
-
 import {buildFindSelector} from '../src/module/configureCountriesModule'
 describe('Country', () => {
   
