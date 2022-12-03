@@ -8,7 +8,7 @@ import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
 
-const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
+export const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
   const selector: { type?: any; $text?: any; created?: any } = {};
 
   if (types && Array.isArray(types)) selector.type = { $in: types };
