@@ -22,7 +22,11 @@ import { filtersSettings } from '../filters-settings';
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
-const buildFindSelector = ({ includeInactive = false, queryString = '', filterIds }: FilterQuery) => {
+export const buildFindSelector = ({
+  includeInactive = false,
+  queryString = '',
+  filterIds,
+}: FilterQuery) => {
   const selector: Query = {};
   if (!includeInactive) selector.isActive = true;
   if (filterIds) {
