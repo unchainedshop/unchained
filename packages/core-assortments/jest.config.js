@@ -1,14 +1,14 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 export default {
   preset: 'ts-jest',
+  testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
   transform: {
-    '^.+\\.ts?$': [
+    '^.+\\.tsx?$': [
       'ts-jest',
       {
         useESM: true,
       },
     ],
   },
-  testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
 };
