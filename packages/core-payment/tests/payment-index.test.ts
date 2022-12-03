@@ -1,6 +1,16 @@
+import { PaymentProviderType } from "../src/director/PaymentProviderType";
+import { buildFindSelector } from "../src/module/configurePaymentProvidersModule";
+
 
 describe('Payment', () => {
-  it('Init', async () => {
-    expect(true).toBeTruthy()
-  });
+  describe('buildFindSelector', () => {
+    it('Return correct filter object when passed no argument', async () => {      
+      expect(buildFindSelector({})).toEqual({ deleted: null })
+    });
+
+    it('Return correct filter object when passed no argument', async () => {      
+      expect(buildFindSelector({type: PaymentProviderType.GENERIC})).toEqual({ type: "GENERIC", deleted: null })
+    });
+  })
+  
 });

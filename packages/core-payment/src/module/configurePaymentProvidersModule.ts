@@ -20,7 +20,7 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_REMOVE',
 ];
 
-const buildFindSelector = ({ type }: PaymentProviderQuery = {}) => {
+export const buildFindSelector = ({ type }: PaymentProviderQuery = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 
