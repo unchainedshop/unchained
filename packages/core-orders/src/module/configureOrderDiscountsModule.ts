@@ -21,7 +21,7 @@ const OrderDiscountErrorCode = {
   CODE_NOT_VALID: 'CODE_NOT_VALID',
 };
 
-const buildFindByIdSelector = (orderDiscountId: string) =>
+export const buildFindByIdSelector = (orderDiscountId: string) =>
   generateDbFilterById(orderDiscountId) as Filter<OrderDiscount>;
 
 export const configureOrderDiscountsModule = ({

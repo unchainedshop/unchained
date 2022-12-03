@@ -14,10 +14,10 @@ import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
-const buildFindByIdSelector = (orderPaymentId: string) =>
+export const buildFindByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as Filter<OrderPayment>;
 
-const buildFindByContextDataSelector = (context: any): Query => {
+export const buildFindByContextDataSelector = (context: any): Query => {
   const contextKeys = Object.keys(context);
 
   if (contextKeys.length === 0) return null;

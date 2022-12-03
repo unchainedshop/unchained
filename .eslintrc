@@ -15,8 +15,6 @@
     "node": true,
     "jest": true
   },
-  "no-unused-expressions": "off",
-  "@typescript-eslint/no-unused-expressions": "error",
   "rules": {
     "prettier/prettier": [
       "error",

@@ -14,7 +14,7 @@ import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
-const buildFindByIdSelector = (orderDeliveryId: string) =>
+export const buildFindByIdSelector = (orderDeliveryId: string) =>
   generateDbFilterById(orderDeliveryId) as Filter<OrderDelivery>;
 
 export const configureOrderDeliveriesModule = ({
