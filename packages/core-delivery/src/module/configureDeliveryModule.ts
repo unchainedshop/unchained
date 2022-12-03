@@ -27,7 +27,7 @@ const asyncFilter = async (arr, predicate) => {
   return arr.filter((_v, index) => results[index]);
 };
 
-const buildFindSelector = ({ type }: DeliveryProviderQuery = {}) => {
+export const buildFindSelector = ({ type }: DeliveryProviderQuery = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 
