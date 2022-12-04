@@ -29,7 +29,7 @@ const USER_EVENTS = [
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
 ];
-const removeConfidentialServiceHashes = (rawUser: User): User => {
+export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = rawUser;
   delete user?.services;
   return user;
