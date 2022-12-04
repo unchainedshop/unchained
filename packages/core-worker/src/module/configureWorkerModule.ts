@@ -13,7 +13,7 @@ import { WorkStatus } from '../director/WorkStatus';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
-const buildQuerySelector = ({
+export const buildQuerySelector = ({
   created,
   scheduled,
   types,
@@ -70,7 +70,7 @@ const buildQuerySelector = ({
       ? { $gte: scheduled.start || new Date(0), $lte: scheduled.end }
       : { $gte: scheduled.start || new Date(0) };
   }
-  if (types) {
+  if (types && Array.isArray(types)) {
     query.type = { $in: types };
   }
 
