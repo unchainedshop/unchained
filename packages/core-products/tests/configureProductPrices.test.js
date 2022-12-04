@@ -1,4 +1,7 @@
 import { getDecimals, normalizeRate } from '../src/module/configureProductPrices';
+import { getPriceLevels } from '../src/module/utils/getPriceLevels';
+import { getPriceRange } from '../src/module/utils/getPriceRange';
+import product from './mock/product'
 
 describe('Rate conversion', () => {
   test('getDecimals', () => {
@@ -90,3 +93,226 @@ describe('Rate conversion', () => {
     // 1,000,000,000 GWEI = 1’259’445 CLP
   });
 });
+
+describe('Price level', () => {
+  it('Should return empty array when country code is not specified', () => {
+    expect(getPriceLevels({product,  currencyCode: "CHF"})).toHaveLength(0)
+  })
+
+  it('Should return empty array when country code is not specified', () => {
+    expect(getPriceLevels({product,  countryCode: "ET"})).toHaveLength(1)
+    expect(getPriceLevels({product,  countryCode: "ET"})).toEqual([
+      {
+        amount: 20000,
+        maxQuantity: 2,
+        isTaxable: true,
+        isNetPrice: true,
+        currencyCode: 'ETB',
+        countryCode: 'ET'
+      }
+    ])
+    expect(getPriceLevels({product,  countryCode: "CH"})).toHaveLength(3)
+    expect(getPriceLevels({product,  countryCode: "CH"})).toEqual([
+      {
+        amount: 1000,
+        maxQuantity: null,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH'
+      },
+      {
+        amount: 1,
+        maxQuantity: 1,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'ETH',
+        countryCode: 'CH'
+      },
+      {
+        amount: 750,
+        maxQuantity: 2,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH'
+      }
+    ])
+  })
+
+
+  it('Should return all prices for a given country sorted by max quantity ASC', () => {
+    expect(getPriceLevels({product,  countryCode: "CH"})).toEqual([
+      {
+        amount: 1000,
+        maxQuantity: null,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH'
+      },
+      {
+        amount: 1,
+        maxQuantity: 1,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'ETH',
+        countryCode: 'CH'
+      },
+      {
+        amount: 750,
+        maxQuantity: 2,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH'
+      }
+    ])
+  })
+
+  it('Should return all prices currencyCode', () => {
+    expect(getPriceLevels({product,  countryCode: "CH", currencyCode: "CHF"})).toHaveLength(2)
+    expect(getPriceLevels({product,  countryCode: "CH", currencyCode: "ETH"})).toHaveLength(1)
+    
+  })
+})
+
+
+
+describe('Price Range', () => {
+  it('Should return the minimum and maximum price of a product when there are multiple prices', () => {
+    expect(getPriceRange({productId: product._id, prices: getPriceLevels({product, countryCode: "CH", currencyCode: "CHF"}) })).toEqual({
+      minPrice: {
+        _id: '3e94daeb7a9600e9bb07b50c92c21ac9002da34a2d8fe799a6ce885404b545b9',
+        isTaxable: false,
+        isNetPrice: false,
+        amount: 750,
+        currencyCode: 'CHF'
+      },
+      maxPrice: {
+        _id: 'b6a9702eb217f07ad5fa8c3a378e072d49b667813db0e127fab7cf5e2c4b2639',
+        isTaxable: false,
+        isNetPrice: false,
+        amount: 1000,
+        currencyCode: 'CHF'
+      }
+    })
+  })
+
+  it('Should return the same price as minimum and maximum when only one price exist for a given currency', () => {
+    expect(getPriceRange({productId: product._id, prices: getPriceLevels({product, countryCode: "ET", currencyCode: "ETB"}) })).toEqual({
+      minPrice: {
+        _id: '1740965265959af6ecda7cc3e06454069d6ed4e21ae052791ab172a342c82fa0',
+        isTaxable: true,
+        isNetPrice: true,
+        amount: 20000,
+        currencyCode: 'ETB'
+      },
+      maxPrice: {
+        _id: '1740965265959af6ecda7cc3e06454069d6ed4e21ae052791ab172a342c82fa0',
+        isTaxable: true,
+        isNetPrice: true,
+        amount: 20000,
+        currencyCode: 'ETB'
+      }
+    })
+  })
+
+  it('Should still return and object with min and max price field when no price list is provided', () => {
+
+    
+    expect(getPriceRange({productId: product._id, prices: getPriceLevels({product, countryCode: "DE", currencyCode: "EUR"}) })).toEqual({
+      minPrice: {
+        _id: '00f750fe893f9f5e04c31a6a6f1a60f5d941182e388b7908a02e5bc855d16797',
+        isTaxable: false,
+        isNetPrice: false,
+        amount: NaN,
+        currencyCode: undefined
+      },
+      maxPrice: {
+        _id: '00f750fe893f9f5e04c31a6a6f1a60f5d941182e388b7908a02e5bc855d16797',
+        isTaxable: false,
+        isNetPrice: false,
+        amount: NaN,
+        currencyCode: undefined
+      }
+    })
+  })
+
+  it('Should return empty array when country code is not specified', () => {
+    expect(getPriceLevels({product,  countryCode: "ET"})).toHaveLength(1)
+    expect(getPriceLevels({product,  countryCode: "ET"})).toEqual([
+      {
+        amount: 20000,
+        maxQuantity: 2,
+        isTaxable: true,
+        isNetPrice: true,
+        currencyCode: 'ETB',
+        countryCode: 'ET'
+      }
+    ])
+    expect(getPriceLevels({product,  countryCode: "CH"})).toHaveLength(3)
+    expect(getPriceLevels({product,  countryCode: "CH"})).toEqual([
+      {
+        amount: 1000,
+        maxQuantity: null,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH'
+      },
+      {
+        amount: 1,
+        maxQuantity: 1,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'ETH',
+        countryCode: 'CH'
+      },
+      {
+        amount: 750,
+        maxQuantity: 2,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH'
+      }
+    ])
+  })
+
+
+  it('Should return all prices for a given country sorted by max quantity ASC', () => {
+    expect(getPriceLevels({product,  countryCode: "CH"})).toEqual([
+      {
+        amount: 1000,
+        maxQuantity: null,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH'
+      },
+      {
+        amount: 1,
+        maxQuantity: 1,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'ETH',
+        countryCode: 'CH'
+      },
+      {
+        amount: 750,
+        maxQuantity: 2,
+        isTaxable: false,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH'
+      }
+    ])
+  })
+
+  it('Should return all prices currencyCode', () => {
+    expect(getPriceLevels({product,  countryCode: "CH", currencyCode: "CHF"})).toHaveLength(2)
+    expect(getPriceLevels({product,  countryCode: "CH", currencyCode: "ETH"})).toHaveLength(1)
+    
+  })
+})
