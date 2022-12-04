@@ -1,74 +1,63 @@
-import {buildFindSelector} from "../src/module/configureProductReviewsModule"
-describe('Product Review', () => {
+import {buildFindSelector} from "../src/module/configureProductsModule"
+describe('Product', () => {
   describe("buildFindSelector", () => {
     it('Return correct filter object object when no parameter is passed', async () => {
-      expect(buildFindSelector({})).toEqual({deleted: null})
+      expect(buildFindSelector({})).toEqual({ status: { $eq: 'ACTIVE' } })
     })
 
-    it('Return correct filter object object when passed authorId, productId, queryString & updated', async () => {
-      expect(buildFindSelector({authorId: "admin-id", productId: "product-id", queryString: "hello world", updated: {start: new Date("2022-12-04T14:54:51.184Z"), end: new Date("2022-12-04T14:54:51.184Z")}})).toEqual( {
-        productId: 'product-id',
-        authorId: 'admin-id',
-        deleted: null,
+    it('Return correct filter object object when passed includeDraft:true, productsIds, productSelector, queryString, slugs, tags ', async () => {
+      expect(buildFindSelector({includeDrafts: true, productIds: ['product-1-id', 'product-id-2'], productSelector: {type: "SIMPLE_PRODUCT"}, queryString: "hello world", slugs: ['slug-1', 'slug-2'], tags: ['tag-1', 'tag-2'] })).toEqual( {
+        type: 'SIMPLE_PRODUCT',
+        _id: { '$in': [ 'product-1-id', 'product-id-2' ] },
+        slugs: { '$in': [ 'slug-1', 'slug-2' ] },
+        tags: { '$all': [ 'tag-1', 'tag-2' ] },
         '$text': { '$search': 'hello world' },
-        
-        updated: {
-          '$gte': new Date("2022-12-04T14:54:51.184Z"),
-          '$lte': new Date("2022-12-04T14:54:51.184Z")
-        }
+        status: { '$in': [ 'ACTIVE', null ] }
       })
     });
 
-    it('Return correct filter object object when passed authorId, productId & queryString ', async () => {
-      expect(buildFindSelector({authorId: "admin-id", productId: "product-id", queryString: "hello world",})).toEqual( {
-        productId: 'product-id',
-        authorId: 'admin-id',
-        deleted: null,
+    it('Return correct filter object object when passed includeDraft:true, productsIds, productSelector, queryString, slugs ', async () => {
+      expect(buildFindSelector({includeDrafts: true, productIds: ['product-1-id', 'product-id-2'], productSelector: {type: "SIMPLE_PRODUCT"}, queryString: "hello world", slugs: ['slug-1', 'slug-2']})).toEqual( {
+        type: 'SIMPLE_PRODUCT',
+        _id: { '$in': [ 'product-1-id', 'product-id-2' ] },
+        slugs: { '$in': [ 'slug-1', 'slug-2' ] },
         '$text': { '$search': 'hello world' },
+        status: { '$in': [ 'ACTIVE', null ] }
       })
     });
 
-    it('Return correct filter object object when passed authorId &  productId ', async () => {
-      expect(buildFindSelector({authorId: "admin-id", productId: "product-id"})).toEqual( {
-        productId: 'product-id',
-        authorId: 'admin-id',
-        deleted: null,
+    it('Return correct filter object object when passed includeDraft:true, productsIds, productSelector, queryString ', async () => {
+      expect(buildFindSelector({includeDrafts: true, productIds: ['product-1-id', 'product-id-2'], productSelector: {type: "SIMPLE_PRODUCT"}, queryString: "hello world"})).toEqual( {
+        type: 'SIMPLE_PRODUCT',
+        _id: { '$in': [ 'product-1-id', 'product-id-2' ] },
+        '$text': { '$search': 'hello world' },
+        status: { '$in': [ 'ACTIVE', null ] }
       })
     });
 
-    it('Return correct filter object object when passed authorId ', async () => {
-      expect(buildFindSelector({authorId: "admin-id"})).toEqual( {
-        authorId: 'admin-id',
-        deleted: null,
+    it('Return correct filter object object when passed includeDraft:true, productsIds, productSelector ', async () => {
+      expect(buildFindSelector({includeDrafts: true, productIds: ['product-1-id', 'product-id-2'], productSelector: {type: "SIMPLE_PRODUCT"}})).toEqual( {
+        type: 'SIMPLE_PRODUCT',
+        _id: { '$in': [ 'product-1-id', 'product-id-2' ] },
+        status: { '$in': [ 'ACTIVE', null ] }
       })
     });
 
-    it('Set created date filter to unix start time if created.start is not provided  ', async () => {
-      expect(buildFindSelector({created: { end: new Date("2022-12-04T14:54:51.184Z")}})).toEqual({
-        deleted: null,
-        created: {
-          '$gte': new Date(0),
-          '$lte': new Date("2022-12-04T14:54:51.184Z")
-        }
+    it('Return correct filter object object when passed includeDraft:true, productsIds ', async () => {
+      expect(buildFindSelector({includeDrafts: true, productIds: ['product-1-id', 'product-id-2']})).toEqual( {
+        _id: { '$in': [ 'product-1-id', 'product-id-2' ] },
+        status: { '$in': [ 'ACTIVE', null ] }
       })
     });
 
-    it('Set updated date filter to unix start time if updated.start is not provided  ', async () => {
-      expect(buildFindSelector({updated: { end: new Date("2022-12-04T14:54:51.184Z")}})).toEqual({
-        deleted: null,
-        updated: {
-          '$gte': new Date(0),
-          '$lte': new Date("2022-12-04T14:54:51.184Z")
-        }
-      })
+    it('Return filter tags if passed as a string ', async () => {
+      expect(buildFindSelector({tags: "string-tag"})).toEqual({ tags: 'string-tag', status: { '$eq': 'ACTIVE' } })
     });
 
-    it('Should filter created date greater that provided when created.end is not provided', async () => {      
-      expect(buildFindSelector({created: { start: new Date("2022-12-04T14:54:51.184Z")}})).toEqual({ deleted: null, created: { '$gte': new Date("2022-12-04T14:54:51.184Z") } })
+    it('includeDrafts true  should add null to status filter array as null ', async () => {
+      expect(buildFindSelector({includeDrafts: true})).toEqual({status: { '$in': [ 'ACTIVE', null ] }} )
     });
 
-    it('Should filter updated date greater that provided when updated.end is not provided', async () => {      
-      expect(buildFindSelector({updated: { start: new Date("2022-12-04T14:54:51.184Z")}})).toEqual({ deleted: null, updated: { '$gte': new Date("2022-12-04T14:54:51.184Z") } })
-    });
-  })
+  });
 });
+
