@@ -21,7 +21,7 @@ const PRODUCT_REVIEW_EVENTS = [
   'PRODUCT_REMOVE_REVIEW_VOTE',
 ];
 
-const buildFindSelector = ({
+export const buildFindSelector = ({
   productId,
   authorId,
   queryString,
@@ -40,12 +40,12 @@ const buildFindSelector = ({
 
   if (created) {
     selector.created = created?.end
-      ? { $gte: created.start, $lte: created.end }
+      ? { $gte: created?.start || new Date(0), $lte: created.end }
       : { $gte: created?.start || new Date(0) };
   }
   if (updated) {
     selector.updated = updated?.end
-      ? { $gte: updated.start, $lte: updated.end }
+      ? { $gte: updated?.start || new Date(0), $lte: updated.end }
       : { $gte: updated?.start || new Date(0) };
   }
 

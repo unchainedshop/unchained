@@ -28,7 +28,6 @@ export type ProductReview = {
 export type ProductReviewQuery = {
   productId?: string;
   authorId?: string;
-  deleted?: Date | null;
   queryString?: string;
   created?: { end?: Date; start?: Date };
   updated?: { end?: Date; start?: Date };
