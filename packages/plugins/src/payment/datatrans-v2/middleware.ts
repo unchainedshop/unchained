@@ -14,7 +14,7 @@ const logger = createLogger('unchained:core-payment:datatrans');
 
 export const datatransHandler = async (req, res) => {
   const resolvedContext = req.unchainedContext as Context;
-  const { services, modules } = resolvedContext;
+  const { modules } = resolvedContext;
   const signature = req.headers['datatrans-signature'];
   if (req.method === 'POST' && signature) {
     const [rawTimestamp, rawHash] = signature.split(',');

@@ -25,7 +25,7 @@ const stripe = createStripeClient(STRIPE_SECRET);
 export const stripeHandler = async (request, response) => {
   const sig = request.headers['stripe-signature'];
   const resolvedContext = request.unchainedContext as Context;
-  const { modules, services } = resolvedContext;
+  const { modules } = resolvedContext;
 
   let event;
 
