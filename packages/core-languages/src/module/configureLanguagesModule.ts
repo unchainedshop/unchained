@@ -13,10 +13,9 @@ import { LanguagesSchema } from '../db/LanguagesSchema';
 
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 
-export const buildFindSelector = ({ includeInactive = false, queryString, isBase }: LanguageQuery) => {
-  const selector: { isActive?: true; deleted?: Date; $text?: any; isBase?: boolean } = { deleted: null };
+export const buildFindSelector = ({ includeInactive = false, queryString }: LanguageQuery) => {
+  const selector: { isActive?: true; deleted?: Date; $text?: any } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
-  if (isBase) selector.isBase = true;
   if (queryString) {
     selector.$text = { $search: queryString };
   }
@@ -65,7 +64,7 @@ export const configureLanguagesModule = async ({
       return !!languageCount;
     },
 
-    isBase: (language) => {
+    isBase(language) {
       return language.isoCode === systemLocale.language;
     },
 

@@ -10,7 +10,6 @@ export type Language = {
 
 export type LanguageQuery = {
   includeInactive?: boolean;
-  isBase?: boolean;
   queryString?: string;
 };
 

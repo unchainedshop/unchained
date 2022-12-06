@@ -16,7 +16,7 @@ import { CountriesSchema } from '../db/CountriesSchema';
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 
 export const buildFindSelector = ({ includeInactive = false, queryString = '' }: CountryQuery) => {
-  const selector: { isActive?: true; $text?: any; deleted?: Date } = { deleted: undefined };
+  const selector: { isActive?: true; $text?: any; deleted?: Date } = { deleted: null };
   if (!includeInactive) selector.isActive = true;
   if (queryString) selector.$text = { $search: queryString };
   return selector;
@@ -68,6 +68,7 @@ export const configureCountriesModule = async ({
     flagEmoji(country) {
       return countryFlags.countryCode(country.isoCode).emoji || '❌';
     },
+
     isBase(country) {
       return country.isoCode === systemLocale.country;
     },
