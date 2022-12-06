@@ -16,9 +16,6 @@ import {
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
 
-import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
-import { configureQuotationsModule } from '@unchainedshop/core-quotations';
-
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
@@ -115,9 +112,6 @@ export const configureProductsModule = async ({
   });
 
   const productMedia = await configureProductMediaModule({ db });
-  const enrollmentModule = await configureEnrollmentsModule({ db });
-  const quotationsModule = await configureQuotationsModule({ db });
-
   const productReviews = await configureProductReviewsModule({ db });
   const productVariations = await configureProductVariationsModule({ db });
 
@@ -371,7 +365,9 @@ export const configureProductsModule = async ({
 
     delete: async (productId) => {
       const product = await Products.findOne(generateDbFilterById(productId), {});
-
+      if (product.status !== InternalProductStatus.DRAFT) {
+        throw new Error(`Invalid status', ${product.status}`);
+      }
       const activeLinks = await Products.findOne(
         {
           $or: [{ 'proxy.assignments.productId': productId }, { 'bundleItems.productId': productId }],
@@ -392,22 +388,6 @@ export const configureProductsModule = async ({
         )
       )
         throw new Error('ProductLinkedToActiveBundleError');
-
-      const hasActiveEnrollment = await enrollmentModule.enrollmentExistsForProduct({
-        productId,
-      });
-
-      if (hasActiveEnrollment) throw new Error('ProductLinkedToEnrollmentError');
-
-      const hasActiveQuotations = await quotationsModule.quotationExistsForProduct({
-        productId,
-      });
-
-      if (hasActiveQuotations) throw new Error('ProductLinkedToQuotationError');
-
-      if (product.status !== InternalProductStatus.DRAFT) {
-        throw new Error(`Invalid status', ${product.status}`);
-      }
 
       const updatedResult = await Products.updateOne(generateDbFilterById(productId), {
         $set: {

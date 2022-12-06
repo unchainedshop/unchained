@@ -180,6 +180,23 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
+    removeProductByIdFromAllPositions: async ({ productId }, unchainedAPI) => {
+      log('Remove Position Product', { productId });
+      const positions = await OrderPositions.find(
+        { productId },
+        { projection: { orderId: 1 } },
+      ).toArray();
+
+      const result = await OrderPositions.deleteMany({ productId });
+
+      await Promise.all(
+        positions.map(async ({ orderId }) => {
+          await updateCalculation(orderId, unchainedAPI);
+        }),
+      );
+      return result.deletedCount;
+    },
+
     updateScheduling: async ({ order, orderDelivery, orderPosition }, unchainedAPI) => {
       const { modules } = unchainedAPI;
       // scheduling (store in db for auditing)

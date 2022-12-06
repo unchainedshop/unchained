@@ -1,7 +1,9 @@
+/* eslint-disable no-case-declarations */
 import { RemoveProductService } from '@unchainedshop/types/products';
 import { ProductStatus } from '../db/ProductStatus';
 
-export const removeProductService: RemoveProductService = async ({ productId }, { modules }) => {
+export const removeProductService: RemoveProductService = async ({ productId }, unchainedApi) => {
+  const { modules } = unchainedApi;
   const product = await modules.products.findProduct({ productId });
   switch (product.status) {
     case ProductStatus.ACTIVE:
@@ -9,8 +11,17 @@ export const removeProductService: RemoveProductService = async ({ productId }, 
     // falls through
     case null:
     case ProductStatus.DRAFT:
+      const hasActiveQuotations = await modules.quotations.quotationExistsForProduct({ productId });
+      if (hasActiveQuotations) throw new Error('ProductLinkedToQuotationError');
+      const hasActiveEnrollment = await modules.enrollments.enrollmentExistsForProduct({
+        productId,
+      });
+      if (hasActiveEnrollment) throw new Error('ProductLinkedToEnrollmentError');
+
       await modules.bookmarks.deleteByProductId(productId);
       await modules.assortments.products.delete(productId, {});
+      await modules.orders.positions.removeProductByIdFromAllPositions({ productId }, unchainedApi);
+
       await modules.products.delete(productId);
       break;
     default:
