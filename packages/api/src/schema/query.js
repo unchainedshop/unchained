@@ -7,13 +7,14 @@ export default [
       me: User
 
       """
-      Get list of users
+      Get list of users, by default sorted by creation date (ascending) unless a queryString is set
       """
       users(
         limit: Int = 20
         offset: Int = 0
         includeGuests: Boolean = false
         queryString: String
+        sort: [SortOptionInput!]
       ): [User!]!
 
       """
@@ -40,6 +41,7 @@ export default [
       """
       Simple list of published products filtered either by tags or explicit slugs
       If a slug is provided, limit and offset don't have any effect on the result
+      By default sorted by sequence (ascending) and published (ascending) unless a queryString is set
       """
       products(
         queryString: String
@@ -88,7 +90,7 @@ export default [
         @cacheControl(maxAge: 180)
 
       """
-      Get all languages
+      Get all languages, by default sorted by creation date (ascending)
       """
       languages(
         limit: Int = 50
@@ -104,7 +106,7 @@ export default [
       language(languageId: ID!): Language
 
       """
-      Get all countries
+      Get all countries, by default sorted by creation date (ascending)
       """
       countries(
         limit: Int = 50
@@ -132,7 +134,7 @@ export default [
         @cacheControl(maxAge: 180)
 
       """
-      Get all currencies
+      Get all currencies, by default sorted by creation date (ascending)
       """
       currencies(
         limit: Int = 50
@@ -227,7 +229,7 @@ export default [
       ordersCount(includeCarts: Boolean = false, queryString: String): Int!
 
       """
-      Get all orders
+      Get all orders, by default sorted by creation date (descending)
       """
       orders(
         limit: Int = 10
@@ -248,7 +250,7 @@ export default [
       shopInfo: Shop!
 
       """
-      Get all root assortments
+      Get all root assortments, by default sorted by sequence (ascending)
       """
       assortments(
         queryString: String
@@ -302,7 +304,7 @@ export default [
         @cacheControl(maxAge: 180)
 
       """
-      Get all filters
+      Get all filters, by default sorted by creation date (ascending)
       """
       filters(
         limit: Int = 10
@@ -323,7 +325,7 @@ export default [
       productReviewsCount(queryString: String): Int! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
-      Get all product reviews
+      Get all product reviews, by default sorted by creation date (descending)
       """
       productReviews(
         limit: Int = 10
@@ -343,7 +345,7 @@ export default [
       quotationsCount(queryString: String): Int!
 
       """
-      Get all quotations
+      Get all quotations, by default sorted by creation date (ascending)
       """
       quotations(
         limit: Int = 10
@@ -363,7 +365,7 @@ export default [
       enrollmentsCount(queryString: String, status: [String!]): Int!
 
       """
-      Get all enrollments
+      Get all enrollments, by default sorted by creation date (ascending)
       """
       enrollments(
         limit: Int = 10
@@ -401,7 +403,7 @@ export default [
       ): AssortmentSearchResult!
 
       """
-      Get all work from the queue
+      Get all work from the queue, by default sorted by start date (desc), priority (desc), originalWorkId (asc) and created (asc)
       """
       workQueue(
         limit: Int = 10
@@ -438,7 +440,7 @@ export default [
       event(eventId: ID!): Event
 
       """
-      Get all emitted events
+      Get all emitted events, by default sorted by creation date (desc)
       """
       events(
         types: [String!]

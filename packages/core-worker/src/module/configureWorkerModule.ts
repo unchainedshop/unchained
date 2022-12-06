@@ -155,7 +155,7 @@ export const configureWorkerModule = async ({
       const workQueues = WorkQueue.find(selector, {
         skip,
         limit,
-        sort: buildSortOptions(sort as any),
+        sort: buildSortOptions(sort || defaultSort),
       });
 
       return workQueues.toArray();

@@ -2,7 +2,7 @@ import { log } from '@unchainedshop/logger';
 import { Root, Context, SortOption } from '@unchainedshop/types/api';
 import { WorkStatus } from '@unchainedshop/types/worker';
 
-export default async function workers(
+export default async function workQueue(
   root: Root,
   {
     limit,

@@ -1,4 +1,4 @@
-import { SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import {
   Enrollment,
@@ -232,10 +232,11 @@ export const configureEnrollmentsModule = async ({
       sort,
       ...query
     }: EnrollmentQuery & { limit?: number; offset?: number; sort?: Array<SortOption> }) => {
+      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.ASC }];
       const enrollments = Enrollments.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort),
+        sort: buildSortOptions(sort || defaultSortOption),
       });
 
       return enrollments.toArray();

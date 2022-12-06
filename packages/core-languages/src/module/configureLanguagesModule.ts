@@ -7,6 +7,7 @@ import {
   systemLocale,
   buildSortOptions,
 } from '@unchainedshop/utils';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { LanguagesCollection } from '../db/LanguagesCollection';
 import { LanguagesSchema } from '../db/LanguagesSchema';
 
@@ -39,10 +40,11 @@ export const configureLanguagesModule = async ({
     },
 
     findLanguages: async ({ limit, offset, sort, ...query }, options) => {
+      const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       return Languages.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort),
+        sort: buildSortOptions(sort || defaultSort),
         ...options,
       }).toArray();
     },

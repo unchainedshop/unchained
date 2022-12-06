@@ -4,8 +4,15 @@ import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/type
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, Schemas, systemLocale } from '@unchainedshop/utils';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  Schemas,
+  systemLocale,
+  buildSortOptions,
+} from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';
 
@@ -90,6 +97,7 @@ export const configureUsersModule = async ({
     },
 
     findUsers: async ({ limit, offset, ...query }) => {
+      const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       const selector = buildFindSelector(query);
 
       if (query.queryString) {
@@ -101,7 +109,11 @@ export const configureUsersModule = async ({
         }).toArray();
       }
 
-      return Users.find(selector, { skip: offset, limit }).toArray();
+      return Users.find(selector, {
+        skip: offset,
+        limit,
+        sort: buildSortOptions(query.sort || defaultSort),
+      }).toArray();
     },
 
     userExists: async ({ userId }) => {

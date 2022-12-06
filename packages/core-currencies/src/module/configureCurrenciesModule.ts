@@ -2,6 +2,7 @@ import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
 import { CurrenciesSchema } from '../db/CurrenciesSchema';
 
@@ -35,10 +36,11 @@ export const configureCurrenciesModule = async ({
     },
 
     findCurrencies: async ({ limit, offset, sort, ...query }) => {
+      const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       const currencies = Currencies.find(buildFindSelector(query), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort),
+        sort: buildSortOptions(sort || defaultSort),
       });
       return currencies.toArray();
     },

@@ -182,7 +182,7 @@ export const configureFiltersModule = async ({
       }: FilterQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
       options?: FindOptions<Document>,
     ) => {
-      const defaultSortOption = [{ key: 'sequence', value: SortDirection.ASC }];
+      const defaultSortOption = [{ key: 'created', value: SortDirection.ASC }];
       const filters = Filters.find(buildFindSelector(query), {
         ...options,
         skip: offset,

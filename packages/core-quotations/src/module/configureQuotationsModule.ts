@@ -230,7 +230,7 @@ export const configureQuotationsModule = async ({
     },
 
     findQuotations: async ({ limit, offset, sort, ...query }, options) => {
-      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.DESC }];
+      const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.ASC }];
       const quotations = Quotations.find(buildFindSelector(query), {
         limit,
         skip: offset,

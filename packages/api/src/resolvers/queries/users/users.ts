@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root, SortOption } from '@unchainedshop/types/api';
 import { UserQuery } from '@unchainedshop/types/user';
 
 export default async function users(
@@ -7,6 +7,7 @@ export default async function users(
   params: UserQuery & {
     limit?: number;
     offset?: number;
+    sort?: Array<SortOption>;
   },
   { modules, userId }: Context,
 ) {

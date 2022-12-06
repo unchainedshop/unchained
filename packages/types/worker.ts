@@ -1,4 +1,5 @@
 import { EventEmitter } from 'stream';
+import { SortOption } from './api';
 import { IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
 import { UnchainedCore } from './core';
 
@@ -68,7 +69,7 @@ export type WorkerModule = {
   findWork: (query: { workId?: string; originalWorkId?: string }) => Promise<Work>;
   findWorkQueue: (
     query: WorkQueueQuery & {
-      sort?: Array<{ key: string; value: 'DESC' | 'ASC' }>;
+      sort?: Array<SortOption>;
       limit?: number;
       skip?: number;
     },

@@ -9,6 +9,7 @@ import {
   systemLocale,
   buildSortOptions,
 } from '@unchainedshop/utils';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { CountriesCollection } from '../db/CountriesCollection';
 import { CountriesSchema } from '../db/CountriesSchema';
 
@@ -41,10 +42,11 @@ export const configureCountriesModule = async ({
     },
 
     findCountries: async ({ limit, offset, sort, includeInactive, queryString }, options) => {
+      const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       const countries = Countries.find(buildFindSelector({ includeInactive, queryString }), {
         skip: offset,
         limit,
-        sort: buildSortOptions(sort),
+        sort: buildSortOptions(sort || defaultSort),
         ...options,
       });
       return countries.toArray();
