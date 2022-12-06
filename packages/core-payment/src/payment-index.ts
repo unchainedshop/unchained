@@ -1,6 +1,5 @@
 export { configurePaymentModule } from './module/configurePaymentModule';
 
-export { paymentServices } from './service/paymentServices';
 export { paymentSettings } from './payment-settings';
 
 export { PaymentDirector } from './director/PaymentDirector';

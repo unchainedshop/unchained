@@ -42,7 +42,7 @@ export const datatransHandler = async (req, res) => {
       try {
         if (transaction.type === 'card_check') {
           const paymentProviderId = referenceId;
-          const paymentCredentials = await services.payment.registerPaymentCredentials(
+          const paymentCredentials = await modules.payment.registerCredentials(
             paymentProviderId,
             { userId, transactionContext: { transactionId: transaction.transactionId } },
             { ...resolvedContext },

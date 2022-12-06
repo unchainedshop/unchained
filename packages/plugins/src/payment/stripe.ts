@@ -68,12 +68,13 @@ export const stripeHandler = async (request, response) => {
       const setupIntent = event.data.object;
       const { paymentProviderId, userId } = setupIntent.metadata;
 
-      await services.payment.registerPaymentCredentials(
+      await modules.payment.registerCredentials(
         paymentProviderId,
         {
           transactionContext: {
             setupIntentId: setupIntent.id,
           },
+          userId,
         },
         resolvedContext,
       );

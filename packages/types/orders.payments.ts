@@ -69,19 +69,28 @@ export type OrderPaymentsModule = {
 
   cancel: (
     orderPayment: OrderPayment,
-    paymentContext: any,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
     unchainedAPI: UnchainedCore,
   ) => Promise<OrderPayment>;
 
   confirm: (
     orderPayment: OrderPayment,
-    paymentContext: any,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
     unchainedAPI: UnchainedCore,
   ) => Promise<OrderPayment>;
 
   charge: (
     orderPayment: OrderPayment,
-    paymentContext: any,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
     unchainedAPI: UnchainedCore,
   ) => Promise<OrderPayment>;
 

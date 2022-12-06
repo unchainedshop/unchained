@@ -119,6 +119,12 @@ export type PaymentModule = {
    * Payment Providers Module
    */
 
+  registerCredentials: (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<PaymentCredentials>;
+
   paymentProviders: ModuleMutationsWithReturnDoc<PaymentProvider> & {
     // Queries
     count: (query: PaymentProviderQuery) => Promise<number>;
@@ -236,47 +242,6 @@ export type PaymentModule = {
     removeCredentials: (paymentCredentialsId: string) => Promise<PaymentCredentials>;
   };
 };
-
-/*
- * Services
- */
-
-export type ChargeService = (
-  params: {
-    paymentContext: PaymentContext;
-    paymentProviderId: string;
-  },
-  context: UnchainedCore,
-) => Promise<ChargeResult | false>;
-
-export type CancelService = (
-  params: {
-    paymentContext: PaymentContext;
-    paymentProviderId: string;
-  },
-  unchainedAPI: UnchainedCore,
-) => Promise<any>;
-
-export type ConfirmService = (
-  params: {
-    paymentContext: PaymentContext;
-    paymentProviderId: string;
-  },
-  unchainedAPI: UnchainedCore,
-) => Promise<any>;
-
-export type RegisterPaymentCredentialsService = (
-  paymentProviderId: string,
-  paymentContext: PaymentContext,
-  unchainedAPI: UnchainedCore,
-) => Promise<PaymentCredentials | null>;
-
-export interface PaymentServices {
-  charge: ChargeService;
-  cancel: CancelService;
-  confirm: ConfirmService;
-  registerPaymentCredentials: RegisterPaymentCredentialsService;
-}
 
 /*
  * Settings

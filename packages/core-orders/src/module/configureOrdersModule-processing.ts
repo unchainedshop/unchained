@@ -298,7 +298,7 @@ export const configureOrderModuleProcessing = ({
 
         await modules.orders.payments.charge(
           orderPayment,
-          { transactionContext: paymentContext },
+          { userId: order.userId, transactionContext: paymentContext },
           unchainedAPI,
         );
         nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
@@ -311,7 +311,7 @@ export const configureOrderModuleProcessing = ({
         });
         await modules.orders.payments.cancel(
           orderPayment,
-          { transactionContext: paymentContext },
+          { userId: order.userId, transactionContext: paymentContext },
           unchainedAPI,
         );
         nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
@@ -324,7 +324,7 @@ export const configureOrderModuleProcessing = ({
         });
         await modules.orders.payments.confirm(
           orderPayment,
-          { transactionContext: paymentContext },
+          { userId: order.userId, transactionContext: paymentContext },
           unchainedAPI,
         );
 

@@ -55,14 +55,16 @@ export const configureOrderPaymentsModule = ({
       : (orderPayment.status as OrderPaymentStatus);
   };
 
-  const buildPaymentProviderActionsContext = (orderPayment: OrderPayment, transactionContext) => ({
+  const buildPaymentProviderActionsContext = (
+    orderPayment: OrderPayment,
+    { transactionContext, ...rest }: { transactionContext: any; userId: string },
+  ) => ({
+    ...rest,
+    orderPayment,
     paymentProviderId: orderPayment.paymentProviderId,
-    paymentContext: {
-      orderPayment,
-      transactionContext: {
-        ...(transactionContext || {}),
-        ...(orderPayment.context || {}),
-      },
+    transactionContext: {
+      ...(transactionContext || {}),
+      ...(orderPayment.context || {}),
     },
   });
 
@@ -167,15 +169,16 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    confirm: async (orderPayment, { transactionContext }, unchainedAPI) => {
-      const { services } = unchainedAPI;
+    confirm: async (orderPayment, paymentContext, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
         return orderPayment;
       }
 
-      const arbitraryResponseData = await services.payment.confirm(
-        buildPaymentProviderActionsContext(orderPayment, transactionContext),
+      const arbitraryResponseData = await modules.payment.paymentProviders.confirm(
+        orderPayment.paymentProviderId,
+        buildPaymentProviderActionsContext(orderPayment, paymentContext),
         unchainedAPI,
       );
 
@@ -189,15 +192,16 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    cancel: async (orderPayment, { transactionContext }, unchainedAPI) => {
-      const { services } = unchainedAPI;
+    cancel: async (orderPayment, paymentContext, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
         return orderPayment;
       }
 
-      const arbitraryResponseData = await services.payment.cancel(
-        buildPaymentProviderActionsContext(orderPayment, transactionContext),
+      const arbitraryResponseData = await modules.payment.paymentProviders.cancel(
+        orderPayment.paymentProviderId,
+        buildPaymentProviderActionsContext(orderPayment, paymentContext),
         unchainedAPI,
       );
 
@@ -211,17 +215,48 @@ export const configureOrderPaymentsModule = ({
       return orderPayment;
     },
 
-    charge: async (orderPayment, { transactionContext }, unchainedAPI) => {
-      const { services } = unchainedAPI;
+    charge: async (orderPayment, context, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
         return orderPayment;
       }
 
-      const arbitraryResponseData = await services.payment.charge(
-        buildPaymentProviderActionsContext(orderPayment, transactionContext),
+      const paymentCredentials =
+        context.transactionContext?.paymentCredentials ||
+        (await modules.payment.paymentCredentials.findPaymentCredential({
+          userId: context.userId,
+          paymentProviderId: orderPayment.paymentProviderId,
+          isPreferred: true,
+        }));
+
+      const paymentContext = buildPaymentProviderActionsContext(orderPayment, {
+        ...context,
+        transactionContext: {
+          ...context.transactionContext,
+          paymentCredentials,
+        },
+      });
+
+      const result = await modules.payment.paymentProviders.charge(
+        orderPayment.paymentProviderId,
+        paymentContext,
         unchainedAPI,
       );
+
+      if (!result) return orderPayment;
+
+      const { credentials, ...arbitraryResponseData } = result;
+
+      if (credentials) {
+        const { token, ...meta } = credentials;
+        await modules.payment.paymentCredentials.upsertCredentials({
+          userId: paymentContext.userId,
+          paymentProviderId: orderPayment.paymentProviderId,
+          token,
+          ...meta,
+        });
+      }
 
       if (arbitraryResponseData) {
         const { transactionId, ...info } = arbitraryResponseData;

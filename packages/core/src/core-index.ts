@@ -12,7 +12,7 @@ import { configureFiltersModule } from '@unchainedshop/core-filters';
 import { configureLanguagesModule } from '@unchainedshop/core-languages';
 import { configureMessagingModule } from '@unchainedshop/core-messaging';
 import { configureOrdersModule, orderServices } from '@unchainedshop/core-orders';
-import { configurePaymentModule, paymentServices } from '@unchainedshop/core-payment';
+import { configurePaymentModule } from '@unchainedshop/core-payment';
 import { configureProductsModule, productServices } from '@unchainedshop/core-products';
 import { configureQuotationsModule } from '@unchainedshop/core-quotations';
 import { configureUsersModule, userServices } from '@unchainedshop/core-users';
@@ -156,7 +156,6 @@ export const initCore = async ({
       countries: countryServices,
       files: fileServices,
       orders: orderServices,
-      payment: paymentServices,
       products: productServices,
       users: userServices,
       ...services,

@@ -79,7 +79,7 @@ export const appleIAPHandler = async (req, res) => {
   if (req.method === 'POST') {
     try {
       const resolvedContext = req.unchainedContext as Context;
-      const { modules, services } = resolvedContext;
+      const { modules } = resolvedContext;
       const responseBody = req.body || {};
       if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
         throw new Error('shared secret not valid');
@@ -147,12 +147,13 @@ export const appleIAPHandler = async (req, res) => {
           orderId: originalOrder._id,
         });
 
-        await services.payment.registerPaymentCredentials(
+        await modules.payment.registerCredentials(
           enrollment.payment.paymentProviderId,
           {
             transactionContext: {
               receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
             },
+            userId: enrollment.userId,
           },
           resolvedContext,
         );
