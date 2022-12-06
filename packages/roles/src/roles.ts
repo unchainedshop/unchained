@@ -139,6 +139,9 @@ export class Role implements RoleInterface {
    * Adds allow properties to a role
    */
   allow(action, allow) {
+    if (!action) {
+      throw new Error(`Action doesn't exist`);
+    }
     if (!Roles.actions.includes(action)) {
       Roles.registerAction(action);
     }
