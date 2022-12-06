@@ -30,10 +30,9 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
   };
 
   return {
-    create: async (doc, userId) => {
+    create: async (doc) => {
       const values: any = schema.clean(doc);
       values.created = new Date();
-      values.createdBy = userId;
       schema.validate(values);
       values._id = doc._id || generateDbObjectId();
 
@@ -43,7 +42,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
 
     update: hasCreateOnly
       ? undefined
-      : async (_id, doc, userId) => {
+      : async (_id, doc) => {
           checkId(_id);
 
           let modifier: Update<T>;
@@ -55,7 +54,6 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
               $set: {
                 ...(values.$set || {}),
                 updated: new Date(),
-                updatedBy: userId,
               },
             };
           } else {
@@ -64,7 +62,6 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
               $set: {
                 ...values,
                 updated: new Date(),
-                updatedBy: userId,
               },
             };
           }
@@ -80,13 +77,13 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
 
     delete: hasCreateOnly
       ? undefined
-      : async (_id, userId) => {
+      : async (_id) => {
           if (permanentlyDeleteByDefault) {
             return deletePermanently(_id);
           }
           checkId(_id);
           const filter = generateDbFilterById<T>(_id, { deleted: null });
-          const modifier = { $set: { deleted: new Date(), deletedBy: userId } };
+          const modifier = { $set: { deleted: new Date() } };
           const values = schema.clean(modifier, { isModifier: true });
           const result = await collection.updateOne(filter, values);
 

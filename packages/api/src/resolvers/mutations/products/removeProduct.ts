@@ -15,7 +15,7 @@ export default async function removeProduct(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  await services.products.removeProduct({ productId, userId: context.userId }, context);
+  await services.products.removeProduct({ productId }, context);
 
   return modules.products.findProduct({ productId });
 }

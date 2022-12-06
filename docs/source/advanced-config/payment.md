@@ -131,7 +131,6 @@ import {
   PaymentProviderType,
   PaymentError,
 } from '@unchainedshop/core-payment';
-import { Context } from '@unchainedshop/types/api';
 
 const ShopPayment: IPaymentAdapter = {
   key: 'ch.Shop.payment',
@@ -144,17 +143,10 @@ const ShopPayment: IPaymentAdapter = {
     return type === PaymentProviderType.INVOICE;
   },
 
-  actions: (params: {
-    config: PaymentConfiguration;
-    paymentContext: PaymentContext & {
-      paymentProviderId: string;
-      paymentProvider: PaymentProvider;
-    };
-    context: Context;
-  }): IPaymentActions => {
+  actions: (params): IPaymentActions => {
     const { context, paymentContext } = params;
     const { order } = paymentContext;
-    const { modules } = context as Context;
+    const { modules } = context;
 
     return {
 

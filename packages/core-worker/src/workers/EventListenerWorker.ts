@@ -11,13 +11,13 @@ export const EventListenerWorker: IWorker<{ workerId: string }> = {
   version: '1.0.0',
   type: 'EVENT_LISTENER',
 
-  actions: ({ workerId }, requestContext) => {
+  actions: ({ workerId }, unchainedAPI) => {
     let onAdded: () => Promise<void>;
     let onFinished: () => Promise<void>;
 
     const baseWorkerActions = BaseWorker.actions(
       { workerId, worker: EventListenerWorker },
-      requestContext,
+      unchainedAPI,
     );
     return {
       ...baseWorkerActions,

@@ -1,13 +1,11 @@
 import localePkg from 'locale';
-import type { Locale as LocaleType } from 'locale';
 import { Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, Schemas, systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { Context } from '@unchainedshop/types/api';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';
 
@@ -32,22 +30,14 @@ const removeConfidentialServiceHashes = (rawUser: User): User => {
 
 const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
   const selector: Query = { ...rest };
-  if (!includeGuests) selector.guest = { $ne: true }; // TODO: Slow IDXSCAN in common query
+  if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {
     selector.$text = { $search: queryString };
   }
   return selector;
 };
 
-const getUserLocale = (user: User, params: { localeContext?: LocaleType } = {}) => {
-  const locale =
-    params.localeContext ||
-    (user.lastLogin?.locale && new Locale(user.lastLogin.locale)) ||
-    systemLocale;
-  return locale;
-};
-
-FileDirector.registerFileUploadCallback('user-avatars', async (file, context: Context) => {
+FileDirector.registerFileUploadCallback('user-avatars', async (file, context: UnchainedCore) => {
   const { services } = context;
 
   return services.users.updateUserAvatarAfterUpload({ file }, context);
@@ -127,8 +117,9 @@ export const configureUsersModule = async ({
       )?.[0];
     },
 
-    userLocale: (user, params = {}) => {
-      return getUserLocale(user, params);
+    userLocale: (user) => {
+      const locale = (user.lastLogin?.locale && new Locale(user.lastLogin.locale)) || systemLocale;
+      return locale;
     },
 
     // Mutations
@@ -146,7 +137,7 @@ export const configureUsersModule = async ({
       return updateResult.modifiedCount;
     },
 
-    updateAvatar: async (_id, fileId, userId) => {
+    updateAvatar: async (_id, fileId) => {
       const userFilter = generateDbFilterById(_id);
       log('Update Avatar', { userId: _id });
 
@@ -154,11 +145,10 @@ export const configureUsersModule = async ({
         $set: {
           avatarId: fileId,
           updated: new Date(),
-          updatedBy: userId,
         },
       };
 
-      await mutations.update(_id, modifier, userId);
+      await mutations.update(_id, modifier);
       const user = await Users.findOne(userFilter, {});
       await emit('USER_UPDATE_AVATAR', {
         user: removeConfidentialServiceHashes(user),
@@ -185,7 +175,7 @@ export const configureUsersModule = async ({
         },
       };
 
-      await mutations.update(userId, modifier, userId);
+      await mutations.update(userId, modifier);
       const user = await Users.findOne(userFilter, {});
 
       await emit('USER_UPDATE_HEARTBEAT', {
@@ -204,7 +194,7 @@ export const configureUsersModule = async ({
       await Users.updateOne(generateDbFilterById(user._id), modifier);
     },
 
-    updateProfile: async (_id, updatedData, userId) => {
+    updateProfile: async (_id, updatedData) => {
       const userFilter = generateDbFilterById(_id);
       const { meta, profile } = updatedData;
 
@@ -229,7 +219,7 @@ export const configureUsersModule = async ({
         modifier.$set.meta = meta;
       }
 
-      await mutations.update(_id, modifier, userId);
+      await mutations.update(_id, modifier);
       const user = await Users.findOne(userFilter, {});
       await emit('USER_UPDATE_PROFILE', {
         user: removeConfidentialServiceHashes(user),
@@ -237,17 +227,14 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    updateLastBillingAddress: async (_id, lastBillingAddress, userId) => {
+    updateLastBillingAddress: async (_id, lastBillingAddress) => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
-
-      log('Store Last Billing Address', { userId });
 
       const modifier = {
         $set: {
           lastBillingAddress,
           updated: new Date(),
-          updatedBy: userId,
         },
       };
       const profile = user.profile || {};
@@ -262,7 +249,7 @@ export const configureUsersModule = async ({
           .join(' ');
       }
 
-      await mutations.update(_id, modifier, userId);
+      await mutations.update(_id, modifier);
       const updatedUser = await Users.findOne(userFilter, {});
       await emit('USER_UPDATE_BILLING_ADDRESS', {
         user: removeConfidentialServiceHashes(user),
@@ -270,19 +257,15 @@ export const configureUsersModule = async ({
       return updatedUser;
     },
 
-    updateLastContact: async (_id, lastContact, userId) => {
+    updateLastContact: async (_id, lastContact) => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
-
-      log('Store Last Contact', { userId });
-
       const profile = user.profile || {};
       const isGuest = !!user.guest;
 
       const modifier = {
         $set: {
           updated: new Date(),
-          updatedBy: userId,
           lastContact,
         },
       };
@@ -292,7 +275,7 @@ export const configureUsersModule = async ({
         modifier.$set['profile.phoneMobile'] = lastContact.telNumber;
       }
 
-      await mutations.update(_id, modifier, userId);
+      await mutations.update(_id, modifier);
       const updatedUser = await Users.findOne(userFilter, {});
       await emit('USER_UPDATE_LAST_CONTACT', {
         user: removeConfidentialServiceHashes(user),
@@ -300,35 +283,33 @@ export const configureUsersModule = async ({
       return updatedUser;
     },
 
-    updateRoles: async (_id, roles, userId) => {
+    updateRoles: async (_id, roles) => {
       const userFilter = generateDbFilterById(_id);
 
       const modifier = {
         $set: {
           updated: new Date(),
-          updateBy: userId,
           roles,
         },
       };
-      await mutations.update(_id, modifier, userId);
+      await mutations.update(_id, modifier);
       const user = await Users.findOne(userFilter, {});
       await emit('USER_UPDATE_ROLE', {
         user: removeConfidentialServiceHashes(user),
       });
       return user;
     },
-    updateTags: async (_id, tags, userId) => {
+    updateTags: async (_id, tags) => {
       const userFilter = generateDbFilterById(_id);
 
       const modifier = {
         $set: {
           updated: new Date(),
-          updateBy: userId,
           tags,
         },
       };
 
-      await mutations.update(_id, modifier, userId);
+      await mutations.update(_id, modifier);
       const user = await Users.findOne(userFilter, {});
       await emit('USER_UPDATE_TAGS', {
         user: removeConfidentialServiceHashes(user),

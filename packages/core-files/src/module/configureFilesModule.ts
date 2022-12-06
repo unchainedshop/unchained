@@ -56,18 +56,18 @@ export const configureFilesModule = async ({
       return deletionResult.deletedCount;
     },
 
-    create: async (doc: File, userId: string) => {
-      const fileId = await mutations.create(doc, userId);
+    create: async (doc: File) => {
+      const fileId = await mutations.create(doc);
       await emit('FILE_CREATE', { fileId });
       return fileId;
     },
-    update: async (_id: string, doc: File, userId: string) => {
-      const fileId = await mutations.update(_id, { $set: doc }, userId);
+    update: async (_id: string, doc: File) => {
+      const fileId = await mutations.update(_id, { $set: doc });
       await emit('FILE_UPDATE', { fileId });
       return fileId;
     },
-    delete: async (fileId: string, userId: string) => {
-      const deletedCount = await mutations.delete(fileId, userId);
+    delete: async (fileId: string) => {
+      const deletedCount = await mutations.delete(fileId);
       await emit('FILE_REMOVE', { fileId });
       return deletedCount;
     },

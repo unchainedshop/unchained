@@ -7,5 +7,5 @@ export default async function addWork(root: Root, workData: WorkData, { modules,
 
   log(`mutation addWork ${type} ${JSON.stringify(input)}`, { userId });
 
-  return modules.worker.addWork(workData, userId);
+  return modules.worker.addWork(workData);
 }

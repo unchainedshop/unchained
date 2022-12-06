@@ -22,13 +22,10 @@ export default async function bookmark(
   if (bookmarked) {
     if (foundBookmark) return foundBookmark;
 
-    const bookmarkId = await modules.bookmarks.create(
-      {
-        productId,
-        userId,
-      },
+    const bookmarkId = await modules.bookmarks.create({
+      productId,
       userId,
-    );
+    });
 
     return modules.bookmarks.findById(bookmarkId);
   }
@@ -37,7 +34,7 @@ export default async function bookmark(
     throw new BookmarkNotFoundError({ productId, userId });
   }
 
-  await modules.bookmarks.delete(foundBookmark._id, userId);
+  await modules.bookmarks.delete(foundBookmark._id);
 
   return foundBookmark;
 }

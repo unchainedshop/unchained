@@ -68,15 +68,12 @@ export default function bulkImportMiddleware(contextResolver: UnchainedContextRe
               input.payloadId = file._id;
               input.payloadSize = file.length;
             }
-            const work = await context.modules.worker.addWork(
-              {
-                type: 'BULK_IMPORT',
-                input: Object.fromEntries(Object.entries(input).filter(([, value]) => Boolean(value))),
-                retries: 0,
-                priority: 10,
-              },
-              context.userId,
-            );
+            const work = await context.modules.worker.addWork({
+              type: 'BULK_IMPORT',
+              input: Object.fromEntries(Object.entries(input).filter(([, value]) => Boolean(value))),
+              retries: 0,
+              priority: 10,
+            });
             res.writeHead(200);
             res.end(JSON.stringify(work));
           } catch (e) {

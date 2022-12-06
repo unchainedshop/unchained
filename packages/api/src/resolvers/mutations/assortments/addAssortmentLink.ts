@@ -38,13 +38,11 @@ export default async function addAssortmentLink(
       {
         parentAssortmentId,
         childAssortmentId,
-        authorId: userId,
         ...assortmentLink,
       },
       {
         skipInvalidation: false,
       },
-      userId,
     );
     return result;
   } catch (e) {

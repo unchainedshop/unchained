@@ -232,7 +232,7 @@ unchainedApiContext.services.serviceName.[function name]
   It is possible to create a custom service for your need and have it available throughout the engine context like the built-in services. Custom services function can accept first arguments that will be used in the service and will also receive unchained context as there second argument
 
   ```
-  function serviceFunc(args: obj, context: Context) {
+  function serviceFunc(args: obj, context: UnchainedCore) {
     ...
   }
   ``` 

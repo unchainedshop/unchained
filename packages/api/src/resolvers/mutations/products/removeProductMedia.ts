@@ -16,8 +16,8 @@ export default async function removeProductMedia(
   });
   if (!productMedia) throw new ProductMediaNotFoundError({ productMediaId });
 
-  await modules.files.delete(productMedia.mediaId, userId);
-  await modules.products.media.delete(productMediaId, userId);
+  await modules.files.delete(productMedia.mediaId);
+  await modules.products.media.delete(productMediaId);
 
   return productMedia;
 }

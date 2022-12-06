@@ -15,7 +15,7 @@ export default async function updateProductCommerce(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  await modules.products.update(productId, { commerce }, userId);
+  await modules.products.update(productId, { commerce });
 
   return modules.products.findProduct({ productId });
 }

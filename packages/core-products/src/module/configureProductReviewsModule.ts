@@ -110,8 +110,8 @@ export const configureProductReviewsModule = async ({
     },
 
     // Mutations
-    create: async (doc, userId) => {
-      const productReviewId = await mutations.create(doc, userId);
+    create: async (doc) => {
+      const productReviewId = await mutations.create(doc);
 
       const productReview = await ProductReviews.findOne(generateDbFilterById(productReviewId), {});
 
@@ -122,8 +122,8 @@ export const configureProductReviewsModule = async ({
       return productReview;
     },
 
-    delete: async (productReviewId, userId) => {
-      const deletedCount = await mutations.delete(productReviewId, userId);
+    delete: async (productReviewId) => {
+      const deletedCount = await mutations.delete(productReviewId);
 
       await emit('PRODUCT_REMOVE_REVIEW', {
         productReviewId,
@@ -150,8 +150,8 @@ export const configureProductReviewsModule = async ({
       return deletionResult.deletedCount;
     },
 
-    update: async (productReviewId, doc, userId) => {
-      await mutations.update(productReviewId, doc, userId);
+    update: async (productReviewId, doc) => {
+      await mutations.update(productReviewId, doc);
 
       const productReview = await ProductReviews.findOne(
         generateDbFilterById(productReviewId, {
@@ -174,8 +174,7 @@ export const configureProductReviewsModule = async ({
 
       addVote: async (
         productReview,
-        { type = ProductReviewVoteTypes.UPVOTE as ProductReviewVoteType, meta },
-        userId,
+        { userId, type = ProductReviewVoteTypes.UPVOTE as ProductReviewVoteType, meta },
       ) => {
         if (!userIdsThatVoted(productReview, { type }).includes(userId)) {
           const selector = generateDbFilterById(productReview._id, {

@@ -12,6 +12,5 @@ export default async function reorderAssortmentProducts(
       sortKeys: params.sortKeys,
     },
     { skipInvalidation: false },
-    userId,
   );
 }

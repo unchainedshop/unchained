@@ -73,11 +73,9 @@ export const configurePaymentCredentialsModule = (
             paymentProviderId,
             isPreferred: false,
             created: new Date(),
-            createdBy: userId,
           },
           $set: {
             updated: new Date(),
-            updatedBy: userId,
             token,
             meta,
           },

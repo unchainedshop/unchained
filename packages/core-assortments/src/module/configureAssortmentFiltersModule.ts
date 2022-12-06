@@ -37,7 +37,7 @@ export const configureAssortmentFiltersModule = ({
 
       return filters.toArray();
     },
-    create: async (doc: AssortmentFilter, userId) => {
+    create: async (doc: AssortmentFilter) => {
       const { _id, assortmentId, filterId, sortKey, ...rest } = doc;
 
       const selector = {
@@ -48,7 +48,6 @@ export const configureAssortmentFiltersModule = ({
 
       const $set: any = {
         updated: new Date(),
-        updatedBy: userId,
         ...rest,
       };
       const $setOnInsert: any = {
@@ -56,7 +55,6 @@ export const configureAssortmentFiltersModule = ({
         filterId,
         assortmentId,
         created: new Date(),
-        createdBy: userId,
       };
 
       if (!doc.sortKey) {
@@ -128,14 +126,13 @@ export const configureAssortmentFiltersModule = ({
       return AssortmentFilters.findOne(selector, {});
     },
 
-    updateManualOrder: async ({ sortKeys }, userId) => {
+    updateManualOrder: async ({ sortKeys }) => {
       const changedAssortmentFilterIds = await Promise.all(
         sortKeys.map(async ({ assortmentFilterId, sortKey }) => {
           await AssortmentFilters.updateOne(generateDbFilterById(assortmentFilterId), {
             $set: {
               sortKey: sortKey + 1,
               updated: new Date(),
-              updatedBy: userId,
             },
           });
 

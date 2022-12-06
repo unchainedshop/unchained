@@ -9,14 +9,12 @@ export type ProductMedia = {
   sortKey: number;
   tags: Array<string>;
   meta?: any;
-  authorId: string;
 } & TimestampFields;
 
 export type ProductMediaText = {
   _id?: _ID;
   productMediaId: string;
   locale?: string;
-  authorId: string;
   title?: string;
   subtitle?: string;
 } & TimestampFields;
@@ -36,9 +34,9 @@ export type ProductMediaModule = {
   ) => Promise<Array<ProductMedia>>;
 
   // Mutations
-  create: (data: { productId: string; mediaId: string }, userId: string) => Promise<ProductMedia>;
+  create: (data: { productId: string; mediaId: string }) => Promise<ProductMedia>;
 
-  delete: (productMediaId: string, userId?: string) => Promise<number>;
+  delete: (productMediaId: string) => Promise<number>;
   deleteMediaFiles: (params: {
     productId?: string;
     excludedProductIds?: Array<_ID>;
@@ -46,15 +44,12 @@ export type ProductMediaModule = {
   }) => Promise<number>;
 
   update: (productMediaId: string, productMedia: ProductMedia) => Promise<ProductMedia>;
-  updateManualOrder: (
-    params: {
-      sortKeys: Array<{
-        productMediaId: string;
-        sortKey: number;
-      }>;
-    },
-    userId?: string,
-  ) => Promise<Array<ProductMedia>>;
+  updateManualOrder: (params: {
+    sortKeys: Array<{
+      productMediaId: string;
+      sortKey: number;
+    }>;
+  }) => Promise<Array<ProductMedia>>;
 
   texts: {
     // Queries
@@ -68,15 +63,13 @@ export type ProductMediaModule = {
     // Mutations
     updateMediaTexts: (
       productMediaId: string,
-      texts: Array<Omit<ProductMediaText, 'productMediaId' | 'authorId'>>,
-      userId: string,
+      texts: Array<Omit<ProductMediaText, 'productMediaId'>>,
     ) => Promise<Array<ProductMediaText>>;
 
     upsertLocalizedText: (
       productMediaId: string,
       locale: string,
-      text: Omit<ProductMediaText, 'productMediaId' | 'locale' | 'authorId'>,
-      userId?: string,
+      text: Omit<ProductMediaText, 'productMediaId' | 'locale'>,
     ) => Promise<ProductMediaText>;
   };
 };

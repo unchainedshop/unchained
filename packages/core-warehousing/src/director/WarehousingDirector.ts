@@ -19,7 +19,7 @@ const baseDirector = BaseDirector<IWarehousingAdapter>('WarehousingDirector', {
 export const WarehousingDirector: IWarehousingDirector = {
   ...baseDirector,
 
-  actions: async (warehousingProvider, warehousingContext, requestContext) => {
+  actions: async (warehousingProvider, warehousingContext, unchainedAPI) => {
     const Adapter = baseDirector.getAdapter(warehousingProvider.adapterKey);
 
     if (!Adapter) {
@@ -28,7 +28,7 @@ export const WarehousingDirector: IWarehousingDirector = {
     const context = {
       warehousingProviderId: warehousingProvider._id,
       ...warehousingContext,
-      ...requestContext,
+      ...unchainedAPI,
     };
     const adapter = Adapter.actions(warehousingProvider.configuration, context);
 
@@ -85,7 +85,7 @@ export const WarehousingDirector: IWarehousingDirector = {
           const referenceDate = getReferenceDate(context);
           const warehousingThroughputTime = await throughputTime();
 
-          const actions = await DeliveryDirector.actions(deliveryProvider, context, requestContext);
+          const actions = await DeliveryDirector.actions(deliveryProvider, context, unchainedAPI);
           const deliveryThroughputTime = await actions.estimatedDeliveryThroughput(
             warehousingThroughputTime,
           );

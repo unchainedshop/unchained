@@ -23,14 +23,11 @@ const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_UPDATE_MEDIA_TEXT',
 ];
 
-FileDirector.registerFileUploadCallback('product-media', async (file, { modules, userId }) => {
-  await modules.products.media.create(
-    {
-      productId: file.meta?.productId as string,
-      mediaId: file._id,
-    },
-    userId || file.updatedBy || file.createdBy,
-  );
+FileDirector.registerFileUploadCallback('product-media', async (file, { modules }) => {
+  await modules.products.media.create({
+    productId: file.meta?.productId as string,
+    mediaId: file._id,
+  });
 });
 
 export const configureProductMediaModule = async ({
@@ -49,7 +46,6 @@ export const configureProductMediaModule = async ({
     productMediaId,
     locale,
     text,
-    userId,
   ) => {
     await ProductMediaTexts.updateOne(
       {
@@ -59,15 +55,12 @@ export const configureProductMediaModule = async ({
       {
         $set: {
           updated: new Date(),
-          updatedBy: userId,
-          authorId: userId,
           ...text,
         },
         $setOnInsert: {
           _id: generateDbObjectId(),
           productMediaId,
           created: new Date(),
-          createdBy: userId,
           locale,
         },
       },
@@ -105,7 +98,7 @@ export const configureProductMediaModule = async ({
     },
 
     // Mutations
-    create: async (doc: ProductMedia, userId) => {
+    create: async (doc: ProductMedia) => {
       let { sortKey } = doc;
 
       if (!sortKey) {
@@ -121,15 +114,11 @@ export const configureProductMediaModule = async ({
         sortKey = lastProductMedia.sortKey + 1;
       }
 
-      const productMediaId = await mutations.create(
-        {
-          tags: [],
-          authorId: userId,
-          ...doc,
-          sortKey,
-        },
-        userId,
-      );
+      const productMediaId = await mutations.create({
+        tags: [],
+        ...doc,
+        sortKey,
+      });
 
       const productMedia = await ProductMedias.findOne(generateDbFilterById(productMediaId), {});
 
@@ -192,14 +181,13 @@ export const configureProductMediaModule = async ({
       return ProductMedias.findOne(selector, {});
     },
 
-    updateManualOrder: async ({ sortKeys }, userId) => {
+    updateManualOrder: async ({ sortKeys }) => {
       const changedProductMediaIds = await Promise.all(
         sortKeys.map(async ({ productMediaId, sortKey }) => {
           await ProductMedias.updateOne(generateDbFilterById(productMediaId), {
             $set: {
               sortKey: sortKey + 1,
               updated: new Date(),
-              updatedBy: userId,
             },
           });
 
@@ -239,10 +227,10 @@ export const configureProductMediaModule = async ({
       },
 
       // Mutations
-      updateMediaTexts: async (productMediaId, texts, userId) => {
+      updateMediaTexts: async (productMediaId, texts) => {
         const mediaTexts = await Promise.all(
           texts.map(({ locale, ...localizations }) =>
-            upsertLocalizedText(productMediaId, locale, localizations, userId),
+            upsertLocalizedText(productMediaId, locale, localizations),
           ),
         );
 

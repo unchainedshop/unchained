@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { Enrollment } from '@unchainedshop/types/enrollments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { Product } from '@unchainedshop/types/products';
@@ -9,6 +8,7 @@ import {
   EnrollmentStatus,
 } from '@unchainedshop/core-enrollments';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
+import { UnchainedCore } from '@unchainedshop/types/core';
 
 const generateOrder = async (
   enrollment: Enrollment,
@@ -16,29 +16,27 @@ const generateOrder = async (
     orderProducts: Array<{ orderPosition: OrderPosition; product: Product }>;
     orderContext?: any;
   } & { [x: string]: any },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => {
   if (!enrollment.payment || !enrollment.delivery) return null;
 
-  const { modules } = requestContext;
+  const { modules } = unchainedAPI;
   const { orderProducts, orderContext, ...configuration } = params;
-  let order = await modules.orders.create(
-    {
-      currency: enrollment.currencyCode,
-      countryCode: enrollment.countryCode,
-      contact: enrollment.contact,
-      billingAddress: enrollment.billingAddress,
-      originEnrollmentId: enrollment._id,
-      ...configuration,
-    },
-    enrollment.userId,
-  );
+  let order = await modules.orders.create({
+    userId: enrollment.userId,
+    currency: enrollment.currencyCode,
+    countryCode: enrollment.countryCode,
+    contact: enrollment.contact,
+    billingAddress: enrollment.billingAddress,
+    originEnrollmentId: enrollment._id,
+    ...configuration,
+  });
   const orderId = order._id;
 
   if (orderProducts) {
     await Promise.all(
       orderProducts.map(({ orderPosition, product }) =>
-        modules.orders.positions.addProductItem(orderPosition, { order, product }, requestContext),
+        modules.orders.positions.addProductItem(orderPosition, { order, product }, unchainedAPI),
       ),
     );
   } else {
@@ -51,18 +49,18 @@ const generateOrder = async (
         order,
         product,
       },
-      requestContext,
+      unchainedAPI,
     );
   }
 
   const { paymentProviderId, context: paymentContext } = enrollment.payment;
 
   if (paymentProviderId) {
-    await modules.orders.setPaymentProvider(orderId, paymentProviderId, requestContext);
+    await modules.orders.setPaymentProvider(orderId, paymentProviderId, unchainedAPI);
   }
   const { deliveryProviderId, context: deliveryContext } = enrollment.delivery;
   if (deliveryProviderId) {
-    await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, requestContext);
+    await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, unchainedAPI);
   }
 
   order = await modules.orders.checkout(
@@ -72,7 +70,7 @@ const generateOrder = async (
       deliveryContext,
       orderContext,
     },
-    requestContext,
+    unchainedAPI,
   );
 
   return order;
@@ -86,8 +84,8 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
   version: '1.0.0',
   type: 'ENROLLMENT_ORDER_GENERATOR',
 
-  doWork: async (input, requestContext) => {
-    const { modules } = requestContext;
+  doWork: async (input, unchainedAPI) => {
+    const { modules } = unchainedAPI;
 
     const enrollments = await modules.enrollments.findEnrollments({
       status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED],
@@ -97,7 +95,7 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
       await Promise.all(
         enrollments.map(async (enrollment) => {
           try {
-            const director = await EnrollmentDirector.actions({ enrollment }, requestContext as Context); // TODO: Type Refactor
+            const director = await EnrollmentDirector.actions({ enrollment }, unchainedAPI);
             const period = await director.nextPeriod();
             if (period) {
               const configuration = await director.configurationForOrder({
@@ -105,7 +103,7 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
                 period,
               });
               if (configuration) {
-                const order = await generateOrder(enrollment, configuration, requestContext as Context); // TODO: Type Refactor
+                const order = await generateOrder(enrollment, configuration, unchainedAPI);
                 if (order) {
                   await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
                     ...period,

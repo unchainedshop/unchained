@@ -1,5 +1,5 @@
-import { Context } from './api';
 import { FindOptions, TimestampFields, _ID } from './common';
+import { UnchainedCore } from './core';
 import { DiscountAdapterActions, DiscountConfiguration, DiscountContext } from './discount';
 import { Order } from './orders';
 import { OrderPrice } from './orders.pricing';
@@ -27,25 +27,28 @@ export type OrderDiscountsModule = {
   findOrderDiscounts: (params: { orderId: string }) => Promise<Array<OrderDiscount>>;
 
   // Transformations
-  interface: (orderDiscount: OrderDiscount, requestContext: Context) => Promise<DiscountAdapterActions>;
+  interface: (
+    orderDiscount: OrderDiscount,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<DiscountAdapterActions>;
 
-  isValid: (orderDiscount: OrderDiscount, requestContext: Context) => Promise<boolean>;
+  isValid: (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => Promise<boolean>;
 
   // Adapter
   configurationForPricingAdapterKey: (
     orderDiscount: OrderDiscount,
     adapterKey: string,
     calculationSheet: IPricingSheet<PricingCalculation>,
-    pricingContext: DiscountContext & Context,
+    pricingContext: DiscountContext & UnchainedCore,
   ) => Promise<DiscountConfiguration>;
 
   // Mutations
   createManualOrderDiscount: (
     params: { code: string; order: Order },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderDiscount>;
 
-  create: (doc: OrderDiscount, userId?: string) => Promise<OrderDiscount>;
-  update: (orderDiscountId: string, doc: OrderDiscount, userId?: string) => Promise<OrderDiscount>;
-  delete: (orderDiscountId: string, requestContext: Context) => Promise<OrderDiscount>;
+  create: (doc: OrderDiscount) => Promise<OrderDiscount>;
+  update: (orderDiscountId: string, doc: OrderDiscount) => Promise<OrderDiscount>;
+  delete: (orderDiscountId: string, unchainedAPI: UnchainedCore) => Promise<OrderDiscount>;
 };

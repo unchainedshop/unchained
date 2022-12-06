@@ -102,7 +102,6 @@ export const ProductsSchema = new SimpleSchema(
       required: true,
     },
     status: String,
-    authorId: { type: String, required: true },
     published: Date,
     tags: Array,
     'tags.$': String,
@@ -127,7 +126,6 @@ export const ProductTextsSchema = new SimpleSchema(
   {
     productId: { type: String, required: true },
     locale: { type: String, required: true },
-    authorId: { type: String, required: true },
     vendor: String,
     brand: String,
     title: String,

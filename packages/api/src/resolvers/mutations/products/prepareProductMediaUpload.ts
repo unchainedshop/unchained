@@ -14,7 +14,6 @@ export default async function prepareProductMediaUpload(
       directoryName: 'product-media',
       fileName: mediaName,
       meta: { productId },
-      userId,
     },
     context,
   );

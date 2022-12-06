@@ -9,7 +9,7 @@ const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');
 export const PaymentDirector: IPaymentDirector = {
   ...baseDirector,
 
-  actions: async (paymentProvider, paymentContext, requestContext) => {
+  actions: async (paymentProvider, paymentContext, unchainedAPI) => {
     const Adapter = baseDirector.getAdapter(paymentProvider.adapterKey) as IPaymentAdapter;
 
     if (!Adapter) {
@@ -21,7 +21,7 @@ export const PaymentDirector: IPaymentDirector = {
     };
 
     if (paymentContext?.orderPayment) {
-      const { modules } = requestContext;
+      const { modules } = unchainedAPI;
       const { orderId } = paymentContext.orderPayment;
       const order =
         paymentContext?.order ||
@@ -39,7 +39,7 @@ export const PaymentDirector: IPaymentDirector = {
         paymentProviderId: paymentProvider._id,
         ...newPaymentContext,
       },
-      context: requestContext,
+      context: unchainedAPI,
     });
 
     return {

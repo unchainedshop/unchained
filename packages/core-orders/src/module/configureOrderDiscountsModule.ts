@@ -1,6 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
 import { Collection, Filter } from '@unchainedshop/types/common';
-import { ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -39,31 +38,31 @@ export const configureOrderDiscountsModule = ({
     hasCreateOnly: false,
   }) as ModuleMutations<OrderDiscount>;
 
-  const getAdapter = async (orderDiscount: OrderDiscount, requestContext: Context) => {
-    const order = await requestContext.modules.orders.findOrder({
+  const getAdapter = async (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => {
+    const order = await unchainedAPI.modules.orders.findOrder({
       orderId: orderDiscount.orderId,
     });
     const Adapter = OrderDiscountDirector.getAdapter(orderDiscount.discountKey);
     if (!Adapter) return null;
     const adapter = await Adapter.actions({
-      context: { order, orderDiscount, code: orderDiscount.code, ...requestContext },
+      context: { order, orderDiscount, code: orderDiscount.code, ...unchainedAPI },
     });
     return adapter;
   };
 
-  const createDiscount: OrderDiscountsModule['create'] = async (doc, userId) => {
+  const createDiscount: OrderDiscountsModule['create'] = async (doc) => {
     const normalizedTrigger = doc.trigger || OrderDiscountTrigger.USER;
 
     log(`Create Order Discount: ${doc.discountKey} with trigger ${normalizedTrigger}`, {
       orderId: doc.orderId,
     });
 
-    const discountId = await mutations.create({ ...doc, trigger: normalizedTrigger }, userId);
+    const discountId = await mutations.create({ ...doc, trigger: normalizedTrigger });
     const discount = await OrderDiscounts.findOne(buildFindByIdSelector(discountId));
     return discount;
   };
 
-  const deleteDiscount: OrderDiscountsModule['delete'] = async (orderDiscountId, requestContext) => {
+  const deleteDiscount: OrderDiscountsModule['delete'] = async (orderDiscountId, unchainedAPI) => {
     const selector = buildFindByIdSelector(orderDiscountId);
     const discount = await OrderDiscounts.findOne(selector, {});
 
@@ -73,12 +72,12 @@ export const configureOrderDiscountsModule = ({
 
     if (discount.trigger === OrderDiscountTrigger.USER) {
       // Release
-      const adapter = await getAdapter(discount, requestContext);
+      const adapter = await getAdapter(discount, unchainedAPI);
       if (!adapter) return null;
       await adapter.release();
 
       await OrderDiscounts.deleteOne(selector);
-      await updateCalculation(discount.orderId, requestContext);
+      await updateCalculation(discount.orderId, unchainedAPI);
     } else {
       await OrderDiscounts.deleteOne(selector);
       await emit('ORDER_REMOVE_DISCOUNT', { discount });
@@ -86,14 +85,10 @@ export const configureOrderDiscountsModule = ({
     return discount;
   };
 
-  const updateDiscount: OrderDiscountsModule['update'] = async (orderDiscountId, doc, userId) => {
-    await mutations.update(
-      orderDiscountId,
-      {
-        $set: doc,
-      },
-      userId,
-    );
+  const updateDiscount: OrderDiscountsModule['update'] = async (orderDiscountId, doc) => {
+    await mutations.update(orderDiscountId, {
+      $set: doc,
+    });
 
     const selector = buildFindByIdSelector(orderDiscountId);
     const discount = await OrderDiscounts.findOne(selector, {});
@@ -101,24 +96,20 @@ export const configureOrderDiscountsModule = ({
     return discount;
   };
 
-  const reserveDiscount = async (orderDiscount: OrderDiscount, requestContext: Context) => {
-    const adapter = await getAdapter(orderDiscount, requestContext);
+  const reserveDiscount = async (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => {
+    const adapter = await getAdapter(orderDiscount, unchainedAPI);
     if (!adapter) return null;
 
     const reservation = await adapter.reserve({
       code: orderDiscount.code,
     });
 
-    return updateDiscount(
-      orderDiscount._id,
-      { orderId: orderDiscount.orderId, reservation },
-      requestContext.userId,
-    );
+    return updateDiscount(orderDiscount._id, { orderId: orderDiscount.orderId, reservation });
   };
 
   const grabDiscount = async (
     { code, orderId }: { code: string; orderId: string },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => {
     log(`OrderDiscounts -> Try to grab ${code}`, { orderId });
 
@@ -131,12 +122,12 @@ export const configureOrderDiscountsModule = ({
 
     const discountId = discount._id;
     try {
-      const updatedDiscount = await updateDiscount(discountId, { orderId }, requestContext.userId);
-      const reservedDiscount = await reserveDiscount(updatedDiscount, requestContext);
+      const updatedDiscount = await updateDiscount(discountId, { orderId });
+      const reservedDiscount = await reserveDiscount(updatedDiscount, unchainedAPI);
       return reservedDiscount;
     } catch (error) {
       // Rollback
-      await updateDiscount(discountId, { orderId: discount.orderId }, requestContext.userId);
+      await updateDiscount(discountId, { orderId: discount.orderId });
 
       throw error;
     }
@@ -153,13 +144,13 @@ export const configureOrderDiscountsModule = ({
     },
 
     // Transformations
-    interface: async (orderDiscount, requestContext) => {
-      const adapter = await getAdapter(orderDiscount, requestContext);
+    interface: async (orderDiscount, unchainedAPI) => {
+      const adapter = await getAdapter(orderDiscount, unchainedAPI);
       return adapter;
     },
 
-    isValid: async (orderDiscount, requestContext) => {
-      const adapter = await getAdapter(orderDiscount, requestContext);
+    isValid: async (orderDiscount, unchainedAPI) => {
+      const adapter = await getAdapter(orderDiscount, unchainedAPI);
       if (!adapter) return null;
 
       if (orderDiscount.trigger === OrderDiscountTrigger.SYSTEM) {
@@ -176,9 +167,9 @@ export const configureOrderDiscountsModule = ({
       orderDiscount,
       adapterKey,
       calculationSheet,
-      requestContext,
+      unchainedAPI,
     ) => {
-      const adapter = await getAdapter(orderDiscount, requestContext);
+      const adapter = await getAdapter(orderDiscount, unchainedAPI);
       if (!adapter) return null;
 
       return adapter.discountForPricingAdapterKey({
@@ -188,35 +179,32 @@ export const configureOrderDiscountsModule = ({
     },
 
     // Mutations
-    createManualOrderDiscount: async ({ order, code }, requestContext) => {
+    createManualOrderDiscount: async ({ order, code }, unchainedAPI) => {
       // Try to grab single-usage-discount
       if (!code) throw new Error(OrderDiscountErrorCode.CODE_NOT_VALID);
 
-      const fetchedDiscount = await grabDiscount({ code, orderId: order._id }, requestContext);
+      const fetchedDiscount = await grabDiscount({ code, orderId: order._id }, unchainedAPI);
       if (fetchedDiscount) return fetchedDiscount;
 
-      const director = await OrderDiscountDirector.actions({ order, code }, requestContext);
+      const director = await OrderDiscountDirector.actions({ order, code }, unchainedAPI);
       const discountKey = await director.resolveDiscountKeyFromStaticCode({
         code,
       });
 
       if (discountKey) {
-        const newDiscount = await createDiscount(
-          {
-            orderId: order._id,
-            code,
-            discountKey,
-          },
-          requestContext.userId,
-        );
+        const newDiscount = await createDiscount({
+          orderId: order._id,
+          code,
+          discountKey,
+        });
 
         try {
-          const reservedDiscount = await reserveDiscount(newDiscount, requestContext);
-          await updateCalculation(order._id, requestContext);
+          const reservedDiscount = await reserveDiscount(newDiscount, unchainedAPI);
+          await updateCalculation(order._id, unchainedAPI);
           await emit('ORDER_ADD_DISCOUNT', { discount: reserveDiscount });
           return reservedDiscount;
         } catch (error) {
-          await deleteDiscount(newDiscount._id, requestContext);
+          await deleteDiscount(newDiscount._id, unchainedAPI);
           throw error;
         }
       }
@@ -224,8 +212,8 @@ export const configureOrderDiscountsModule = ({
       throw new Error(OrderDiscountErrorCode.CODE_NOT_VALID);
     },
 
-    create: async (doc, userId) => {
-      const discount = await createDiscount(doc, userId);
+    create: async (doc) => {
+      const discount = await createDiscount(doc);
 
       if (discount.trigger === OrderDiscountTrigger.USER) {
         await emit('ORDER_CREATE_DISCOUNT', { discount });
@@ -236,8 +224,8 @@ export const configureOrderDiscountsModule = ({
 
     delete: deleteDiscount,
 
-    update: async (orderDiscountId, doc, userId) => {
-      await mutations.update(orderDiscountId, doc, userId);
+    update: async (orderDiscountId, doc) => {
+      await mutations.update(orderDiscountId, doc);
 
       const selector = buildFindByIdSelector(orderDiscountId);
       const discount = await OrderDiscounts.findOne(selector, {});

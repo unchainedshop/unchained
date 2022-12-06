@@ -15,5 +15,5 @@ export default async function updateUserProfile(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  return modules.users.updateTags(normalizedUserId, params.tags, userId);
+  return modules.users.updateTags(normalizedUserId, params.tags);
 }

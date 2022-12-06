@@ -40,7 +40,6 @@ export default async (unchainedApi) => {
           {
             isoCode: code,
             isActive: true,
-            authorId: adminId,
           },
           adminId,
         );
@@ -55,7 +54,6 @@ export default async (unchainedApi) => {
           {
             isoCode: code,
             isActive: true,
-            authorId: adminId,
           },
           adminId,
         );
@@ -72,7 +70,6 @@ export default async (unchainedApi) => {
           {
             isoCode: code,
             isActive: true,
-            authorId: adminId,
             defaultCurrencyId: currencies[key]._id,
           },
           adminId,
@@ -97,7 +94,6 @@ export default async (unchainedApi) => {
           },
         ],
         created: new Date(),
-        authorId: adminId,
       },
       adminId,
     );
@@ -108,7 +104,6 @@ export default async (unchainedApi) => {
         type: PaymentProviderType.INVOICE,
         configuration: [],
         created: new Date(),
-        authorId: adminId,
       },
       adminId,
     );

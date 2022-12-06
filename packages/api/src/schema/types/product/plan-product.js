@@ -46,7 +46,6 @@ export default [
       leveledCatalogPrices(currency: String): [PriceLevel!]!
       simulatedPrice(currency: String, useNetPrice: Boolean = false, quantity: Int = 1): Price
         @cacheControl(scope: PRIVATE)
-      simulatedDiscounts(quantity: Int = 1): [ProductDiscount!] @cacheControl(scope: PRIVATE)
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID

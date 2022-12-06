@@ -28,8 +28,8 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
   type: 'REFRESH_TOKENS',
   external: false,
 
-  async doWork(input, requestContext) {
-    const { modules } = requestContext;
+  async doWork(input, unchainedAPI) {
+    const { modules } = unchainedAPI;
 
     const tokens = await modules.warehousing.findTokens({});
     const users = await modules.users.findUsers({ includeGuests: true });
@@ -48,19 +48,16 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
       return { success: true, result: {} };
     }
 
-    const forked = await modules.worker.addWork(
-      {
-        type: 'UPDATE_TOKEN_OWNERSHIP',
-        retries: 0,
-        input: {
-          filter: {
-            tokens,
-            accounts: [...new Set(accounts)],
-          },
+    const forked = await modules.worker.addWork({
+      type: 'UPDATE_TOKEN_OWNERSHIP',
+      retries: 0,
+      input: {
+        filter: {
+          tokens,
+          accounts: [...new Set(accounts)],
         },
       },
-      null,
-    );
+    });
     return { success: true, result: { forked } };
   },
 };

@@ -82,10 +82,10 @@ export const configureProductPricesModule = ({
 
   const userPrice: ProductsModule['prices']['userPrice'] = async (
     product,
-    { quantity = 1, country, currency, useNetPrice, configuration },
-    requestContext,
+    { quantity = 1, country, currency, useNetPrice, userId, configuration },
+    unchainedAPI,
   ) => {
-    const user = await requestContext.modules.users.findUserById(requestContext.userId);
+    const user = await unchainedAPI.modules.users.findUserById(userId);
     const pricingDirector = await ProductPricingDirector.actions(
       {
         product,
@@ -95,7 +95,7 @@ export const configureProductPricesModule = ({
         quantity,
         configuration,
       },
-      requestContext,
+      unchainedAPI,
     );
 
     const calculated = await pricingDirector.calculate();
@@ -181,8 +181,16 @@ export const configureProductPricesModule = ({
 
     simulatedPriceRange: async (
       product,
-      { country, currency, includeInactive = false, quantity, useNetPrice = false, vectors = [] },
-      requestContext,
+      {
+        userId,
+        country,
+        currency,
+        includeInactive = false,
+        quantity,
+        useNetPrice = false,
+        vectors = [],
+      },
+      unchainedAPI,
     ) => {
       const products = await proxyProducts(product, vectors, {
         includeInactive,
@@ -197,9 +205,10 @@ export const configureProductPricesModule = ({
                 quantity,
                 currency,
                 country,
+                userId,
                 useNetPrice,
               },
-              requestContext,
+              unchainedAPI,
             ),
           ),
         )

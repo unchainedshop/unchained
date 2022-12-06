@@ -29,14 +29,11 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     if (!input) return true;
     if (input.skipMessaging) return true;
 
-    return unchainedAPI.modules.worker.addWork(
-      {
-        type: 'MESSAGE',
-        retries: 0,
-        input,
-      },
-      undefined,
-    );
+    return unchainedAPI.modules.worker.addWork({
+      type: 'MESSAGE',
+      retries: 0,
+      input,
+    });
   };
 
   accountsServer.services.guest = {
@@ -76,6 +73,8 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
   accountsServer.on('LoginTokenCreated', async (props) => {
     const { userId, connection = {} } = props;
+
+    // TODO: Doubt that there is countryContext etc. here?
     const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
       connection;
 

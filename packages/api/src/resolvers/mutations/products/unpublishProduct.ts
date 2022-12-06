@@ -14,7 +14,7 @@ export default async function unpublishProduct(
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  if (!(await modules.products.unpublish(product, userId))) {
+  if (!(await modules.products.unpublish(product))) {
     throw new ProductWrongStatusError({ status: product.status });
   }
 

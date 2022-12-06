@@ -15,8 +15,38 @@ export const configurePaymentModule = async ({
 
   paymentSettings.configureSettings(paymentOptions);
 
+  const paymentProviders = configurePaymentProvidersModule(PaymentProviders);
+  const paymentCredentials = configurePaymentCredentialsModule(PaymentCredentials);
+
+  const registerCredentials: PaymentModule['registerCredentials'] = async (
+    paymentProviderId,
+    paymentContext,
+    unchainedAPI,
+  ) => {
+    const registration = await paymentProviders.register(
+      paymentProviderId,
+      paymentContext,
+      unchainedAPI,
+    );
+
+    if (!registration) return null;
+
+    const paymentCredentialsId = await paymentCredentials.upsertCredentials({
+      userId: paymentContext.userId,
+      paymentProviderId,
+      ...registration,
+    });
+
+    return paymentCredentials.findPaymentCredential({
+      paymentCredentialsId,
+      userId: paymentContext.userId,
+      paymentProviderId,
+    });
+  };
+
   return {
-    paymentProviders: configurePaymentProvidersModule(PaymentProviders),
-    paymentCredentials: configurePaymentCredentialsModule(PaymentCredentials),
+    paymentProviders,
+    paymentCredentials,
+    registerCredentials,
   };
 };

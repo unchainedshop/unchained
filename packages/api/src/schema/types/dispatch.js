@@ -1,4 +1,3 @@
-// TODO: Cache?
 export default [
   /* GraphQL */ `
     type Dispatch {

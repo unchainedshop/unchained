@@ -49,13 +49,13 @@ export type ProductReviewsModule = {
   reviewExists: (query: { productReviewId: string }) => Promise<boolean>;
 
   // Mutations
-  create: (doc: ProductReview, userId?: string) => Promise<ProductReview>;
+  create: (doc: ProductReview) => Promise<ProductReview>;
 
-  delete: (productPreviewId: string, userId?: string) => Promise<number>;
+  delete: (productPreviewId: string) => Promise<number>;
 
   deleteMany: (selector: Filter<ProductReview>) => Promise<number>;
 
-  update: (productReviewId: string, doc: ProductReview, userId?: string) => Promise<ProductReview>;
+  update: (productReviewId: string, doc: ProductReview) => Promise<ProductReview>;
 
   /*
    * Product review votes
@@ -71,8 +71,8 @@ export type ProductReviewsModule = {
     ownVotes: (productReview: ProductReview, query: { userId: string }) => Array<ProductVote>;
 
     // Mutations
-    addVote: (productReview: ProductReview, doc: ProductVote, userId?: string) => Promise<ProductReview>;
+    addVote: (productReview: ProductReview, doc: ProductVote) => Promise<ProductReview>;
 
-    removeVote: (productReviewId: string, doc: ProductVote, userId?: string) => Promise<ProductReview>;
+    removeVote: (productReviewId: string, doc: ProductVote) => Promise<ProductReview>;
   };
 };

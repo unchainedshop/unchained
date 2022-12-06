@@ -6,7 +6,6 @@ export type Currency = {
   _id?: _ID;
   isoCode: string;
   isActive: boolean;
-  authorId: string;
   contractAddress?: string;
   decimals?: number;
 } & TimestampFields;

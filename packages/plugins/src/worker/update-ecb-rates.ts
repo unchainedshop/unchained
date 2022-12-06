@@ -32,8 +32,8 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
   version: '1.0.0',
   type: 'UPDATE_ECB_RATES',
 
-  doWork: async (input, requestContext) => {
-    const { modules } = requestContext;
+  doWork: async (input, unchainedAPI) => {
+    const { modules } = unchainedAPI;
 
     try {
       const data: Array<{ currency: string; rate: string }> = await getExchangeRates();

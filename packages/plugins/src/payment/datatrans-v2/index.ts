@@ -116,8 +116,8 @@ const Datatrans: IPaymentAdapter = {
 
     const authorize = async ({ paymentCredentials, ...arbitraryFields }): Promise<string> => {
       const { order, orderPayment } = params.paymentContext;
-      const userId = order?.userId || params.context.userId;
       const refno = Buffer.from(orderPayment._id, 'hex').toString('base64');
+      const userId = order?.userId || params.paymentContext?.userId;
       const refno2 = userId;
       const { currency, amount } = roundedAmountFromOrder(order, params.context);
       const splits = await getMarketplaceSplits();
@@ -249,12 +249,10 @@ const Datatrans: IPaymentAdapter = {
       async sign(transactionContext: any = {}) {
         const { useSecureFields = false, ...arbitraryFields } = transactionContext || {};
         const { orderPayment, paymentProviderId, order } = params.paymentContext;
-
-        const userId = order?.userId || params.context?.userId;
-
         const refno = Buffer.from(orderPayment ? orderPayment._id : paymentProviderId, 'hex').toString(
           'base64',
         );
+        const userId = order?.userId || params.paymentContext?.userId;
         const refno2 = userId;
         const price: { amount?: number; currency?: string } = order
           ? roundedAmountFromOrder(order, params.context)

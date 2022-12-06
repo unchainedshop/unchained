@@ -70,26 +70,23 @@ export const configureCountriesModule = async ({
       return country.isoCode === systemLocale.country;
     },
 
-    create: async (doc: Country, userId: string) => {
+    create: async (doc: Country) => {
       await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
-      const countryId = await mutations.create(
-        {
-          ...doc,
-          isoCode: doc.isoCode.toUpperCase(),
-          isActive: true,
-        },
-        userId,
-      );
+      const countryId = await mutations.create({
+        ...doc,
+        isoCode: doc.isoCode.toUpperCase(),
+        isActive: true,
+      });
       await emit('COUNTRY_CREATE', { countryId });
       return countryId;
     },
-    update: async (_id: string, doc: Partial<Country>, userId: string) => {
-      const countryId = await mutations.update(_id, { $set: doc }, userId);
+    update: async (_id: string, doc: Partial<Country>) => {
+      const countryId = await mutations.update(_id, { $set: doc });
       await emit('COUNTRY_UPDATE', { countryId });
       return countryId;
     },
-    delete: async (countryId, userId) => {
-      const deletedCount = await mutations.delete(countryId, userId);
+    delete: async (countryId) => {
+      const deletedCount = await mutations.delete(countryId);
       await emit('COUNTRY_REMOVE', { countryId });
       return deletedCount;
     },

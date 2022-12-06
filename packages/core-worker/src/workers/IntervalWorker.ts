@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { IWorker, WorkerSchedule } from '@unchainedshop/types/worker';
 import later from '@breejs/later';
 import { BaseWorker } from './BaseWorker';
@@ -31,8 +30,8 @@ export const IntervalWorker: IWorker<WorkerParams> = {
   version: '1.0.0',
   type: 'CRON',
 
-  actions: ({ workerId, batchCount = 0, schedule = defaultSchedule }, requestContext: Context) => {
-    const baseWorkerActions = BaseWorker.actions({ workerId, worker: IntervalWorker }, requestContext);
+  actions: ({ workerId, batchCount = 0, schedule = defaultSchedule }, unchainedAPI) => {
+    const baseWorkerActions = BaseWorker.actions({ workerId, worker: IntervalWorker }, unchainedAPI);
 
     const intervalDelay = scheduleToInterval(schedule);
     let intervalHandle: NodeJS.Timer;

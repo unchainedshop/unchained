@@ -18,8 +18,8 @@ const baseDirector = BasePricingDirector<
 export const OrderPricingDirector: IOrderPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: async ({ order, ...context }, requestContext) => {
-    const { modules } = requestContext;
+  buildPricingContext: async ({ order, ...context }, unchainedAPI) => {
+    const { modules } = unchainedAPI;
     const user = await modules.users.findUserById(order.userId);
 
     const orderDelivery = await modules.orders.deliveries.findDelivery({
@@ -42,7 +42,7 @@ export const OrderPricingDirector: IOrderPricingDirector = {
       country: order.countryCode,
       currency: order.currency,
       ...context,
-      ...requestContext,
+      ...unchainedAPI,
       discounts,
       order,
       orderDelivery,
@@ -52,8 +52,8 @@ export const OrderPricingDirector: IOrderPricingDirector = {
     };
   },
 
-  async actions(pricingContext, requestContext) {
-    const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
+  async actions(pricingContext, unchainedAPI) {
+    const actions = await baseDirector.actions(pricingContext, unchainedAPI, this.buildPricingContext);
     return {
       ...actions,
       calculationSheet() {

@@ -66,33 +66,26 @@ export const configureLanguagesModule = async ({
       return language.isoCode === systemLocale.language;
     },
 
-    create: async (doc: Language, userId?: string) => {
+    create: async (doc: Language) => {
       await Languages.deleteOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
-      const languageId = await mutations.create(
-        {
-          ...doc,
-          isoCode: doc.isoCode.toLowerCase(),
-          isActive: true,
-        },
-        userId,
-      );
+      const languageId = await mutations.create({
+        ...doc,
+        isoCode: doc.isoCode.toLowerCase(),
+        isActive: true,
+      });
       await emit('LANGUAGE_CREATE', { languageId });
       return languageId;
     },
-    update: async (languageId, doc, userId) => {
-      await mutations.update(
-        languageId,
-        {
-          ...doc,
-          isoCode: doc.isoCode.toLowerCase(),
-        },
-        userId,
-      );
+    update: async (languageId, doc) => {
+      await mutations.update(languageId, {
+        ...doc,
+        isoCode: doc.isoCode.toLowerCase(),
+      });
       await emit('LANGUAGE_UPDATE', { languageId });
       return languageId;
     },
-    delete: async (languageId, userId) => {
-      const deletedCount = await mutations.delete(languageId, userId);
+    delete: async (languageId) => {
+      const deletedCount = await mutations.delete(languageId);
       await emit('LANGUAGE_REMOVE', { languageId });
       return deletedCount;
     },

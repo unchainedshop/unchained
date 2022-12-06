@@ -7,14 +7,12 @@ export type AssortmentMedia = {
   sortKey: number;
   tags: Array<string>;
   meta?: any;
-  authorId: string;
 } & TimestampFields;
 
 export type AssortmentMediaText = {
   _id?: _ID;
   assortmentMediaId: string;
   locale?: string;
-  authorId: string;
   title?: string;
   subtitle?: string;
 } & TimestampFields;
@@ -34,9 +32,9 @@ export type AssortmentMediaModule = {
   ) => Promise<Array<AssortmentMedia>>;
 
   // Mutations
-  create: (doc: { assortmentId: string; mediaId: string }, userId: string) => Promise<AssortmentMedia>;
+  create: (doc: { assortmentId: string; mediaId: string }) => Promise<AssortmentMedia>;
 
-  delete: (assortmentMediaId: string, userId?: string) => Promise<number>;
+  delete: (assortmentMediaId: string) => Promise<number>;
   deleteMediaFiles: (params: {
     assortmentId?: string;
     excludedAssortmentIds?: Array<_ID>;
@@ -45,15 +43,12 @@ export type AssortmentMediaModule = {
 
   update: (assortmentMediaId: string, doc: AssortmentMedia) => Promise<AssortmentMedia>;
 
-  updateManualOrder: (
-    params: {
-      sortKeys: Array<{
-        assortmentMediaId: string;
-        sortKey: number;
-      }>;
-    },
-    userId?: string,
-  ) => Promise<Array<AssortmentMedia>>;
+  updateManualOrder: (params: {
+    sortKeys: Array<{
+      assortmentMediaId: string;
+      sortKey: number;
+    }>;
+  }) => Promise<Array<AssortmentMedia>>;
 
   texts: {
     // Queries
@@ -67,15 +62,13 @@ export type AssortmentMediaModule = {
     // Mutations
     updateMediaTexts: (
       assortmentMediaId: string,
-      texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId' | 'authorId'>>,
-      userId: string,
+      texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId'>>,
     ) => Promise<Array<AssortmentMediaText>>;
 
     upsertLocalizedText: (
       assortmentId: string,
       locale: string,
-      text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale' | 'authorId'>,
-      userId?: string,
+      text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale'>,
     ) => Promise<AssortmentMediaText>;
   };
 };

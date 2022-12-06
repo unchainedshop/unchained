@@ -16,10 +16,9 @@ export default async function addProductMedia(root: Root, { media, productId }, 
       directoryName: 'product-media',
       rawFile: media,
       meta: { productId },
-      userId,
     },
     context,
   );
 
-  return modules.products.media.create({ productId, mediaId: file._id }, userId);
+  return modules.products.media.create({ productId, mediaId: file._id });
 }

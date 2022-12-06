@@ -1,5 +1,5 @@
 import { Context } from './api';
-import { Locale, TimestampFields, _ID } from './common';
+import { TimestampFields, _ID } from './common';
 import { Product, ProductAssignment, ProductConfiguration } from './products';
 
 export enum ProductVariationType {
@@ -9,7 +9,6 @@ export enum ProductVariationType {
 
 export type ProductVariation = {
   _id?: _ID;
-  authorId: string;
   key?: string;
   options: Array<string>;
   productId: string;
@@ -18,7 +17,6 @@ export type ProductVariation = {
 
 export type ProductVariationText = {
   _id?: _ID;
-  authorId: string;
   locale: string;
   productVariationId: string;
   productVariationOptionValue?: string;
@@ -54,29 +52,21 @@ export type ProductVariationsModule = {
   };
 
   // Mutations
-  create: (
-    doc: ProductVariation & { locale?: string; title?: string },
-    userId?: string,
-  ) => Promise<ProductVariation>;
+  create: (doc: ProductVariation & { locale?: string; title?: string }) => Promise<ProductVariation>;
 
-  delete: (productVariationId: string, userId?: string) => Promise<number>;
+  delete: (productVariationId: string) => Promise<number>;
   deleteVariations: (params: { productId?: string; excludedProductIds?: Array<_ID> }) => Promise<number>;
 
   update: (productMediaId: string, doc: ProductVariation) => Promise<ProductVariation>;
 
   addVariationOption: (
     productVariationId: string,
-    data: {
-      inputData: { value: string; title: string };
-      localeContext: Locale;
-    },
-    userId?: string,
+    data: { value: string; title: string; locale: string },
   ) => Promise<ProductVariation>;
 
   removeVariationOption: (
     productVariationId: string,
     productVariationOptionValue: string,
-    userId?: string,
   ) => Promise<void>;
 
   texts: {
@@ -95,11 +85,8 @@ export type ProductVariationsModule = {
     // Mutations
     updateVariationTexts: (
       productVariationId: string,
-      texts: Array<
-        Omit<ProductVariationText, 'authorId' | 'productVariationId' | 'productVariationOptionValue'>
-      >,
+      texts: Array<Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>>,
       productVariationOptionValue?: string,
-      userId?: string,
     ) => Promise<Array<ProductVariationText>>;
 
     upsertLocalizedText: (
@@ -108,11 +95,7 @@ export type ProductVariationsModule = {
         productVariationOptionValue?: string;
       },
       locale: string,
-      text: Omit<
-        ProductVariationText,
-        'authorId' | 'locale' | 'productVariationId' | 'productVariationOptionValue'
-      >,
-      userId?: string,
+      text: Omit<ProductVariationText, 'locale' | 'productVariationId' | 'productVariationOptionValue'>,
     ) => Promise<ProductVariationText>;
   };
 };

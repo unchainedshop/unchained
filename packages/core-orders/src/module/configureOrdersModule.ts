@@ -1,6 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
 import { Update } from '@unchainedshop/types/common';
-import { ModuleInput } from '@unchainedshop/types/core';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core';
 import { Order, OrderStatus, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
@@ -60,11 +59,7 @@ export const configureOrdersModule = async ({
     return findNewOrderNumber(order, index + 1);
   };
 
-  const updateStatus: OrdersModule['updateStatus'] = async (
-    orderId,
-    { status, info },
-    requestContext,
-  ) => {
+  const updateStatus: OrdersModule['updateStatus'] = async (orderId, { status, info }) => {
     const selector = generateDbFilterById(orderId);
     const order = await Orders.findOne(selector, {});
 
@@ -74,7 +69,6 @@ export const configureOrdersModule = async ({
     const $set: Partial<Order> = {
       status,
       updated: new Date(),
-      updatedBy: requestContext.userId,
     };
 
     switch (status) {
@@ -122,8 +116,8 @@ export const configureOrdersModule = async ({
     return Orders.findOne(selector, {});
   };
 
-  const updateDiscounts = async (order: Order, requestContext: Context) => {
-    const { modules } = requestContext;
+  const updateDiscounts = async (order: Order, unchainedAPI: UnchainedCore) => {
+    const { modules } = unchainedAPI;
 
     // 1. go through existing order-discounts and check if discount still valid,
     // those who are not valid anymore should get removed
@@ -133,10 +127,10 @@ export const configureOrdersModule = async ({
 
     await Promise.all(
       discounts.map(async (discount) => {
-        const isValid = await modules.orders.discounts.isValid(discount, requestContext);
+        const isValid = await modules.orders.discounts.isValid(discount, unchainedAPI);
 
         if (!isValid) {
-          await modules.orders.discounts.delete(discount._id, requestContext);
+          await modules.orders.discounts.delete(discount._id, unchainedAPI);
         }
       }),
     );
@@ -148,34 +142,31 @@ export const configureOrdersModule = async ({
 
     const currentDiscountKeys = cleanedDiscounts.map(({ discountKey }) => discountKey);
 
-    const director = await OrderDiscountDirector.actions({ order, code: null }, requestContext);
+    const director = await OrderDiscountDirector.actions({ order, code: null }, unchainedAPI);
     const systemDiscounts = await director.findSystemDiscounts();
 
     await Promise.all(
       systemDiscounts
         .filter((key) => currentDiscountKeys.indexOf(key) === -1)
         .map((discountKey) =>
-          modules.orders.discounts.create(
-            {
-              orderId: order._id,
-              discountKey,
-              trigger: OrderDiscountTrigger.SYSTEM,
-            },
-            requestContext.userId,
-          ),
+          modules.orders.discounts.create({
+            orderId: order._id,
+            discountKey,
+            trigger: OrderDiscountTrigger.SYSTEM,
+          }),
         ),
     );
   };
 
-  const initProviders = async (order: Order, requestContext: Context) => {
-    const { modules } = requestContext;
+  const initProviders = async (order: Order, unchainedAPI: UnchainedCore) => {
+    const { modules } = unchainedAPI;
 
     let updatedOrder = order;
 
     // Init delivery provider
     const supportedDeliveryProviders = await modules.delivery.findSupported(
       { order: updatedOrder },
-      requestContext,
+      unchainedAPI,
     );
 
     const orderDelivery = await modules.orders.deliveries.findDelivery({
@@ -193,13 +184,13 @@ export const configureOrdersModule = async ({
       const defaultOrderDeliveryProvider = await modules.delivery.determineDefault(
         supportedDeliveryProviders,
         { order: updatedOrder },
-        requestContext,
+        unchainedAPI,
       );
       if (defaultOrderDeliveryProvider) {
         updatedOrder = await modules.orders.setDeliveryProvider(
           updatedOrder._id,
           defaultOrderDeliveryProvider._id,
-          requestContext,
+          unchainedAPI,
         );
       }
     }
@@ -207,7 +198,7 @@ export const configureOrdersModule = async ({
     // Init payment provider
     const supportedPaymentProviders = await modules.payment.paymentProviders.findSupported(
       { order: updatedOrder },
-      requestContext,
+      unchainedAPI,
     );
 
     const orderPayment = await modules.orders.payments.findOrderPayment({
@@ -234,22 +225,22 @@ export const configureOrdersModule = async ({
       const defaultOrderPaymentProvider = await modules.payment.paymentProviders.determineDefault(
         supportedPaymentProviders,
         { order: updatedOrder, paymentCredentials },
-        requestContext,
+        unchainedAPI,
       );
 
       if (defaultOrderPaymentProvider) {
         updatedOrder = await modules.orders.setPaymentProvider(
           updatedOrder._id,
           defaultOrderPaymentProvider._id,
-          requestContext,
+          unchainedAPI,
         );
       }
     }
     return updatedOrder;
   };
 
-  const updateCalculation: OrdersModule['updateCalculation'] = async (orderId, requestContext) => {
-    const { modules } = requestContext;
+  const updateCalculation: OrdersModule['updateCalculation'] = async (orderId, unchainedAPI) => {
+    const { modules } = unchainedAPI;
 
     const selector = generateDbFilterById(orderId);
     let order = (await Orders.findOne(selector, {})) as Order;
@@ -257,38 +248,35 @@ export const configureOrdersModule = async ({
     // Don't recalculate orders, only carts
     if (order.status !== null) return order;
 
-    await updateDiscounts(order, requestContext);
+    await updateDiscounts(order, unchainedAPI);
 
-    order = await initProviders(order, requestContext);
+    order = await initProviders(order, unchainedAPI);
 
     let orderPositions = (await findOrderPositions(order)) as OrderPosition[];
     orderPositions = await Promise.all(
       orderPositions.map(async (orderPosition) =>
-        modules.orders.positions.updateCalculation(orderPosition, requestContext),
+        modules.orders.positions.updateCalculation(orderPosition, unchainedAPI),
       ),
     );
 
     let orderDelivery = (await findOrderDelivery(order)) as OrderDelivery;
     if (orderDelivery) {
-      orderDelivery = await modules.orders.deliveries.updateCalculation(orderDelivery, requestContext);
+      orderDelivery = await modules.orders.deliveries.updateCalculation(orderDelivery, unchainedAPI);
     }
     let orderPayment = (await findOrderPayment(order)) as OrderPayment;
     if (orderPayment) {
-      orderPayment = await modules.orders.payments.updateCalculation(orderPayment, requestContext);
+      orderPayment = await modules.orders.payments.updateCalculation(orderPayment, unchainedAPI);
     }
 
     orderPositions = await Promise.all(
       orderPositions.map(async (orderPosition) =>
-        modules.orders.positions.updateScheduling(
-          { order, orderDelivery, orderPosition },
-          requestContext,
-        ),
+        modules.orders.positions.updateScheduling({ order, orderDelivery, orderPosition }, unchainedAPI),
       ),
     );
 
     const pricing = await OrderPricingDirector.actions(
       { order, orderPositions, orderDelivery, orderPayment },
-      requestContext,
+      unchainedAPI,
     );
 
     const calculation = await pricing.calculate();
@@ -297,7 +285,6 @@ export const configureOrdersModule = async ({
       $set: {
         calculation,
         updated: new Date(),
-        updatedBy: requestContext.userId,
       },
     });
 

@@ -1,4 +1,5 @@
 import { FindOptions } from '@unchainedshop/types/common';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { SearchQuery } from '@unchainedshop/types/filters';
 
 export type CleanedSearchQuery = Omit<SearchQuery, 'query'> & {
@@ -23,5 +24,5 @@ export interface SearchAssortmentConfiguration extends SearchConfiguration {
 export type FilterProductIds = (
   filter: Filter,
   params: { values: Array<string>; forceLiveCollection?: boolean },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Array<string>>;

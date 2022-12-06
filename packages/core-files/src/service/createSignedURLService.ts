@@ -3,7 +3,7 @@ import { getFileAdapter } from '../utils/getFileAdapter';
 import { getFileFromFileData } from '../utils/getFileFromFileData';
 
 export const createSignedURLService: CreateSignedURLService = async (
-  { directoryName, fileName, meta, userId },
+  { directoryName, fileName, meta },
   unchainedContext,
 ) => {
   const {
@@ -16,7 +16,7 @@ export const createSignedURLService: CreateSignedURLService = async (
     unchainedContext,
   );
   const fileData = getFileFromFileData(preparedFileData, meta);
-  const fileId = await files.create(fileData, userId);
+  const fileId = await files.create(fileData);
   const file = await files.findFile({ fileId });
 
   return {

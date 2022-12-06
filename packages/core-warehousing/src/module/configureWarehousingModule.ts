@@ -118,36 +118,36 @@ export const configureWarehousingModule = async ({
       }));
     },
 
-    findSupported: async (warehousingContext, requestContext) => {
+    findSupported: async (warehousingContext, unchainedAPI) => {
       const allProviders = await WarehousingProviders.find(buildFindSelector({})).toArray();
 
       const providers = asyncFilter(allProviders, async (provider) => {
-        const director = await WarehousingDirector.actions(provider, warehousingContext, requestContext);
+        const director = await WarehousingDirector.actions(provider, warehousingContext, unchainedAPI);
         return director.isActive();
       });
 
       return providers;
     },
 
-    configurationError: async (warehousingProvider, requestContext) => {
-      const actions = await WarehousingDirector.actions(warehousingProvider, {}, requestContext);
+    configurationError: async (warehousingProvider, unchainedAPI) => {
+      const actions = await WarehousingDirector.actions(warehousingProvider, {}, unchainedAPI);
       return actions.configurationError();
     },
 
-    estimatedDispatch: async (warehousingProvider, warehousingContext, requestContext) => {
+    estimatedDispatch: async (warehousingProvider, warehousingContext, unchainedAPI) => {
       const director = await WarehousingDirector.actions(
         warehousingProvider,
         warehousingContext,
-        requestContext,
+        unchainedAPI,
       );
       return director.estimatedDispatch();
     },
 
-    estimatedStock: async (warehousingProvider, warehousingContext, requestContext) => {
+    estimatedStock: async (warehousingProvider, warehousingContext, unchainedAPI) => {
       const director = await WarehousingDirector.actions(
         warehousingProvider,
         warehousingContext,
-        requestContext,
+        unchainedAPI,
       );
       return director.estimatedStock();
     },
@@ -164,7 +164,7 @@ export const configureWarehousingModule = async ({
       );
     },
 
-    tokenizeItems: async (order, { items }, requestContext) => {
+    tokenizeItems: async (order, { items }, unchainedAPI) => {
       const virtualProviders = await WarehousingProviders.find(
         buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
       ).toArray();
@@ -184,7 +184,7 @@ export const configureWarehousingModule = async ({
             const currentDirector = await WarehousingDirector.actions(
               provider,
               warehousingContext,
-              requestContext,
+              unchainedAPI,
             );
             const isActive = await currentDirector.isActive();
             if (isActive) {
@@ -197,7 +197,7 @@ export const configureWarehousingModule = async ({
       );
     },
 
-    tokenMetadata: async (chainTokenId, { token, product, referenceDate }, requestContext) => {
+    tokenMetadata: async (chainTokenId, { token, product, locale, referenceDate }, unchainedAPI) => {
       const virtualProviders = await WarehousingProviders.find(
         buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
       ).toArray();
@@ -205,6 +205,7 @@ export const configureWarehousingModule = async ({
       const warehousingContext: WarehousingContext = {
         product,
         token,
+        locale,
         quantity: token?.quantity || 1,
         referenceDate,
       };
@@ -214,7 +215,7 @@ export const configureWarehousingModule = async ({
         const currentDirector = await WarehousingDirector.actions(
           provider,
           warehousingContext,
-          requestContext,
+          unchainedAPI,
         );
         const isActive = await currentDirector.isActive();
         if (isActive) {
@@ -224,20 +225,20 @@ export const configureWarehousingModule = async ({
       }, Promise.resolve(null));
     },
 
-    isActive: async (warehousingProvider, requestContext) => {
-      const actions = await WarehousingDirector.actions(warehousingProvider, {}, requestContext);
+    isActive: async (warehousingProvider, unchainedAPI) => {
+      const actions = await WarehousingDirector.actions(warehousingProvider, {}, unchainedAPI);
       return actions.isActive();
     },
 
     // Mutations
-    create: async (doc, userId) => {
+    create: async (doc) => {
       const Adapter = WarehousingDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
-      const warehousingProviderId = await mutations.create(
-        { configuration: Adapter.initialConfiguration, ...doc },
-        userId,
-      );
+      const warehousingProviderId = await mutations.create({
+        configuration: Adapter.initialConfiguration,
+        ...doc,
+      });
 
       const warehousingProvider = await WarehousingProviders.findOne(
         generateDbFilterById(warehousingProviderId),
@@ -246,8 +247,8 @@ export const configureWarehousingModule = async ({
       return warehousingProviderId;
     },
 
-    update: async (_id: string, doc: WarehousingProvider, userId: string) => {
-      const warehousingProviderId = await mutations.update(_id, doc, userId);
+    update: async (_id: string, doc: WarehousingProvider) => {
+      const warehousingProviderId = await mutations.update(_id, doc);
       const warehousingProvider = await WarehousingProviders.findOne(generateDbFilterById(_id), {});
 
       if (!warehousingProvider) return null;
@@ -256,8 +257,8 @@ export const configureWarehousingModule = async ({
       return warehousingProviderId;
     },
 
-    delete: async (providerId, userId) => {
-      await mutations.delete(providerId, userId);
+    delete: async (providerId) => {
+      await mutations.delete(providerId);
       const warehousingProvider = await WarehousingProviders.findOne(
         generateDbFilterById(providerId),
         {},

@@ -23,7 +23,6 @@ describe('Test exports', () => {
   it('Mutate language', async () => {
     const languageId = await module.create(
       {
-        authorId: 'Test-User-1',
         isoCode: 'CHF',
       },
       'Test-User-1'
@@ -38,8 +37,6 @@ describe('Test exports', () => {
     assert.equal(language.userId, 'Test-User-1');
     assert.isDefined(language.created);
     assert.isUndefined(language.updated);
-    assert.isUndefined(language.updatedBy);
-    assert.equal(language.createdBy, 'Test-User-1');
 
     const deletedCount = await module.delete(languageId);
     assert.equal(deletedCount, 1);

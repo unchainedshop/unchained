@@ -1,5 +1,5 @@
-import { Context } from './api';
 import { IBaseAdapter, IBaseDirector } from './common';
+import { UnchainedCore } from './core';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
 import { IPricingSheet, PricingCalculation } from './pricing';
@@ -40,13 +40,13 @@ export type IDiscountAdapter = IBaseAdapter & {
   isManualAdditionAllowed: (code: string) => Promise<boolean>;
   isManualRemovalAllowed: () => Promise<boolean>;
 
-  actions: (params: { context: DiscountContext & Context }) => Promise<DiscountAdapterActions>;
+  actions: (params: { context: DiscountContext & UnchainedCore }) => Promise<DiscountAdapterActions>;
 };
 
 export type IDiscountDirector = IBaseDirector<IDiscountAdapter> & {
   actions: (
     discountContext: DiscountContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<{
     resolveDiscountKeyFromStaticCode: (params: { code: string }) => Promise<string | null>;
     findSystemDiscounts: () => Promise<Array<string>>;

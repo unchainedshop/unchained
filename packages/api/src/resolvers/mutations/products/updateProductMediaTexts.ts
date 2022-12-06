@@ -17,5 +17,5 @@ export default async function updateProductMediaTexts(
   });
   if (!productMedia) throw new ProductMediaNotFoundError({ productMediaId });
 
-  return modules.products.media.texts.updateMediaTexts(productMediaId, texts, userId);
+  return modules.products.media.texts.updateMediaTexts(productMediaId, texts);
 }

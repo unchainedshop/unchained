@@ -64,6 +64,7 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
       {
         quantity,
         currency,
+        userId: requestContext.userId,
         country: countryContext,
         useNetPrice,
         vectors,

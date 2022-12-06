@@ -1,11 +1,11 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import upsertFilterContent from './upsertFilterContent';
 import upsertFilterOptionContent from './upsertFilterOptionContent';
 
 export default async function updateFilter(
   payload: any,
-  { authorId, logger }: { authorId: string; logger: any },
-  unchainedAPI: Context,
+  { logger }: { logger: any },
+  unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;
@@ -23,17 +23,15 @@ export default async function updateFilter(
       {
         ...filterData,
         options: options?.map((option) => option.value) || [],
-        authorId,
       },
       unchainedAPI,
       { skipInvalidation: true },
-      unchainedAPI.userId,
     );
   }
 
   if (content) {
     logger.debug('replace localized content for filter', content);
-    await upsertFilterContent({ content, filterId: _id, authorId }, unchainedAPI);
+    await upsertFilterContent({ content, filterId: _id }, unchainedAPI);
   }
 
   if (options) {

@@ -55,27 +55,28 @@ export const configureOrderPaymentsModule = ({
       : (orderPayment.status as OrderPaymentStatus);
   };
 
-  const buildPaymentProviderActionsContext = (orderPayment: OrderPayment, transactionContext) => ({
+  const buildPaymentProviderActionsContext = (
+    orderPayment: OrderPayment,
+    { transactionContext, ...rest }: { transactionContext: any; userId: string },
+  ) => ({
+    ...rest,
+    orderPayment,
     paymentProviderId: orderPayment.paymentProviderId,
-    paymentContext: {
-      orderPayment,
-      transactionContext: {
-        ...(transactionContext || {}),
-        ...(orderPayment.context || {}),
-      },
+    transactionContext: {
+      ...(transactionContext || {}),
+      ...(orderPayment.context || {}),
     },
   });
 
   const updateStatus: OrderPaymentsModule['updateStatus'] = async (
     orderPaymentId,
     { status, transactionId, info },
-    userId,
   ) => {
     log(`OrderPayment ${orderPaymentId} -> New Status: ${status}`);
 
     const date = new Date();
     const modifier: Update<OrderPayment> = {
-      $set: { status, updated: new Date(), updatedBy: userId },
+      $set: { status, updated: new Date() },
       $push: {
         log: {
           date,
@@ -126,16 +127,16 @@ export const configureOrderPaymentsModule = ({
       }));
     },
 
-    isBlockingOrderConfirmation: async (orderPayment, requestContext) => {
+    isBlockingOrderConfirmation: async (orderPayment, unchainedAPI) => {
       if (orderPayment.status === OrderPaymentStatus.PAID) return false;
 
-      const provider = await requestContext.modules.payment.paymentProviders.findProvider({
+      const provider = await unchainedAPI.modules.payment.paymentProviders.findProvider({
         paymentProviderId: orderPayment.paymentProviderId,
       });
 
-      const isPayLaterAllowed = await requestContext.modules.payment.paymentProviders.isPayLaterAllowed(
+      const isPayLaterAllowed = await unchainedAPI.modules.payment.paymentProviders.isPayLaterAllowed(
         provider,
-        requestContext,
+        unchainedAPI,
       );
 
       return !isPayLaterAllowed;
@@ -156,92 +157,114 @@ export const configureOrderPaymentsModule = ({
 
     // Mutations
 
-    create: async (doc, userId) => {
-      const orderPaymentId = await mutations.create(
-        { ...doc, status: null, context: doc.context || {} },
-        userId,
-      );
+    create: async (doc) => {
+      const orderPaymentId = await mutations.create({
+        ...doc,
+        status: null,
+        context: doc.context || {},
+      });
 
       const orderPayment = await OrderPayments.findOne(buildFindByIdSelector(orderPaymentId));
 
       return orderPayment;
     },
 
-    confirm: async (orderPayment, { transactionContext }, requestContext) => {
-      const { services } = requestContext;
+    confirm: async (orderPayment, paymentContext, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
         return orderPayment;
       }
 
-      const arbitraryResponseData = await services.payment.confirm(
-        buildPaymentProviderActionsContext(orderPayment, transactionContext),
-        requestContext,
+      const arbitraryResponseData = await modules.payment.paymentProviders.confirm(
+        orderPayment.paymentProviderId,
+        buildPaymentProviderActionsContext(orderPayment, paymentContext),
+        unchainedAPI,
       );
 
       if (arbitraryResponseData) {
-        return updateStatus(
-          orderPayment._id,
-          {
-            status: OrderPaymentStatus.PAID,
-            info: JSON.stringify(arbitraryResponseData),
-          },
-          requestContext.userId,
-        );
+        return updateStatus(orderPayment._id, {
+          status: OrderPaymentStatus.PAID,
+          info: JSON.stringify(arbitraryResponseData),
+        });
       }
 
       return orderPayment;
     },
 
-    cancel: async (orderPayment, { transactionContext }, requestContext) => {
-      const { services } = requestContext;
+    cancel: async (orderPayment, paymentContext, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.PAID) {
         return orderPayment;
       }
 
-      const arbitraryResponseData = await services.payment.cancel(
-        buildPaymentProviderActionsContext(orderPayment, transactionContext),
-        requestContext,
+      const arbitraryResponseData = await modules.payment.paymentProviders.cancel(
+        orderPayment.paymentProviderId,
+        buildPaymentProviderActionsContext(orderPayment, paymentContext),
+        unchainedAPI,
       );
 
       if (arbitraryResponseData) {
-        return updateStatus(
-          orderPayment._id,
-          {
-            status: OrderPaymentStatus.REFUNDED,
-            info: JSON.stringify(arbitraryResponseData),
-          },
-          requestContext.userId,
-        );
+        return updateStatus(orderPayment._id, {
+          status: OrderPaymentStatus.REFUNDED,
+          info: JSON.stringify(arbitraryResponseData),
+        });
       }
 
       return orderPayment;
     },
 
-    charge: async (orderPayment, { transactionContext }, requestContext) => {
-      const { services } = requestContext;
+    charge: async (orderPayment, context, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) {
         return orderPayment;
       }
 
-      const arbitraryResponseData = await services.payment.charge(
-        buildPaymentProviderActionsContext(orderPayment, transactionContext),
-        requestContext,
+      const paymentCredentials =
+        context.transactionContext?.paymentCredentials ||
+        (await modules.payment.paymentCredentials.findPaymentCredential({
+          userId: context.userId,
+          paymentProviderId: orderPayment.paymentProviderId,
+          isPreferred: true,
+        }));
+
+      const paymentContext = buildPaymentProviderActionsContext(orderPayment, {
+        ...context,
+        transactionContext: {
+          ...context.transactionContext,
+          paymentCredentials,
+        },
+      });
+
+      const result = await modules.payment.paymentProviders.charge(
+        orderPayment.paymentProviderId,
+        paymentContext,
+        unchainedAPI,
       );
+
+      if (!result) return orderPayment;
+
+      const { credentials, ...arbitraryResponseData } = result;
+
+      if (credentials) {
+        const { token, ...meta } = credentials;
+        await modules.payment.paymentCredentials.upsertCredentials({
+          userId: paymentContext.userId,
+          paymentProviderId: orderPayment.paymentProviderId,
+          token,
+          ...meta,
+        });
+      }
 
       if (arbitraryResponseData) {
         const { transactionId, ...info } = arbitraryResponseData;
-        return updateStatus(
-          orderPayment._id,
-          {
-            transactionId,
-            status: OrderPaymentStatus.PAID,
-            info: JSON.stringify(info),
-          },
-          requestContext.userId,
-        );
+        return updateStatus(orderPayment._id, {
+          transactionId,
+          status: OrderPaymentStatus.PAID,
+          info: JSON.stringify(info),
+        });
       }
 
       return orderPayment;
@@ -263,21 +286,17 @@ export const configureOrderPaymentsModule = ({
       return true;
     },
 
-    markAsPaid: async (orderPayment, meta, userId) => {
+    markAsPaid: async (orderPayment, meta) => {
       if (normalizedStatus(orderPayment) !== OrderPaymentStatus.OPEN) return;
 
-      await updateStatus(
-        orderPayment._id,
-        {
-          status: OrderPaymentStatus.PAID,
-          info: meta ? JSON.stringify(meta) : 'mark paid manually',
-        },
-        userId,
-      );
+      await updateStatus(orderPayment._id, {
+        status: OrderPaymentStatus.PAID,
+        info: meta ? JSON.stringify(meta) : 'mark paid manually',
+      });
       await emit('ORDER_PAY', { orderPayment });
     },
 
-    updateContext: async (orderPaymentId, context, requestContext) => {
+    updateContext: async (orderPaymentId, context, unchainedAPI) => {
       if (!context) return false;
 
       const selector = buildFindByIdSelector(orderPaymentId);
@@ -292,12 +311,11 @@ export const configureOrderPaymentsModule = ({
         $set: {
           context: { ...(orderPayment.context || {}), ...context },
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 
       if (result.modifiedCount) {
-        await updateCalculation(orderId, requestContext);
+        await updateCalculation(orderId, unchainedAPI);
         await emit('ORDER_UPDATE_PAYMENT', {
           orderPayment: {
             ...orderPayment,
@@ -312,16 +330,16 @@ export const configureOrderPaymentsModule = ({
 
     updateStatus,
 
-    updateCalculation: async (orderPayment, requestContext) => {
+    updateCalculation: async (orderPayment, unchainedAPI) => {
       log(`OrderPayment ${orderPayment._id} -> Update Calculation`, {
         orderId: orderPayment.orderId,
       });
 
-      const calculation = await requestContext.modules.payment.paymentProviders.calculate(
+      const calculation = await unchainedAPI.modules.payment.paymentProviders.calculate(
         {
           item: orderPayment,
         },
-        requestContext,
+        unchainedAPI,
       );
 
       const selector = buildFindByIdSelector(orderPayment._id);
@@ -329,7 +347,6 @@ export const configureOrderPaymentsModule = ({
         $set: {
           calculation,
           updated: new Date(),
-          updatedBy: requestContext.userId,
         },
       });
 

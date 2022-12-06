@@ -112,7 +112,6 @@ import {
   QuotationsSettingsOptions,
   QuotationStatus as QuotationStatusType,
 } from './quotations';
-import { RolesInterface, RoleInterfaceFactory } from './roles';
 import { UserServices, UsersModule } from './user';
 import {
   IWarehousingAdapter,
@@ -450,12 +449,4 @@ declare module '@unchainedshop/api' {
 
 declare module '@unchainedshop/mongodb' {
   function initDb(): Promise<Db>;
-}
-
-declare module '@unchainedshop/roles' {
-  const Roles: RolesInterface;
-  const Role: RoleInterfaceFactory;
-
-  function isFunction(func: () => any): boolean;
-  function has(obj: { [key: string]: any }, key: string): boolean;
 }

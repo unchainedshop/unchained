@@ -14,5 +14,5 @@ export default async function removeDeliveryProvider(
   const provider = await modules.delivery.findProvider({ deliveryProviderId });
   if (!provider) throw new DeliverProviderNotFoundError({ deliveryProviderId });
 
-  return modules.delivery.delete(deliveryProviderId, userId);
+  return modules.delivery.delete(deliveryProviderId);
 }

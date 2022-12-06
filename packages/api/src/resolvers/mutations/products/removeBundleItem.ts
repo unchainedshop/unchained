@@ -8,7 +8,7 @@ export default async function removeBundleItem(
   { productId, index }: { productId: string; index: number },
   { modules, userId }: Context,
 ) {
-  log(`mutation removeBundleItem ${productId}`, { index });
+  log(`mutation removeBundleItem ${productId} ${index}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
 
@@ -22,7 +22,7 @@ export default async function removeBundleItem(
       required: ProductTypes.BundleProduct,
     });
 
-  await modules.products.bundleItems.removeBundleItem(productId, index, userId);
+  await modules.products.bundleItems.removeBundleItem(productId, index);
 
   return modules.products.findProduct({ productId });
 }

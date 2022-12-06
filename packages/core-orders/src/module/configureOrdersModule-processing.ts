@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { Collection } from '@unchainedshop/types/common';
 import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
@@ -8,6 +7,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
 import { ProductType } from '@unchainedshop/types/products';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { ordersSettings } from '../orders-settings';
 
 const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
@@ -48,7 +48,7 @@ export const configureOrderModuleProcessing = ({
     return errors;
   };
 
-  const itemValidationErrors = async (order: Order, { modules }: Context) => {
+  const itemValidationErrors = async (order: Order, { modules }: UnchainedCore) => {
     // Check if items are valid
     const orderPositions = await findOrderPositions(order);
     if (orderPositions.length === 0) {
@@ -87,8 +87,8 @@ export const configureOrderModuleProcessing = ({
     return validationErrors.flatMap((f) => f);
   };
 
-  const isAutoConfirmationEnabled = async (order: Order, requestContext: Context) => {
-    const { modules } = requestContext;
+  const isAutoConfirmationEnabled = async (order: Order, unchainedAPI: UnchainedCore) => {
+    const { modules } = unchainedAPI;
 
     if (order.status === OrderStatus.FULLFILLED || order.status === OrderStatus.CONFIRMED) {
       return false;
@@ -97,20 +97,20 @@ export const configureOrderModuleProcessing = ({
     const orderPayment = await findOrderPayment(order);
     let isBlockingOrderConfirmation =
       orderPayment &&
-      (await modules.orders.payments.isBlockingOrderConfirmation(orderPayment, requestContext));
+      (await modules.orders.payments.isBlockingOrderConfirmation(orderPayment, unchainedAPI));
     if (isBlockingOrderConfirmation) return false;
 
     const orderDelivery = await findOrderDelivery(order);
     isBlockingOrderConfirmation =
       orderDelivery &&
-      (await modules.orders.deliveries.isBlockingOrderConfirmation(orderDelivery, requestContext));
+      (await modules.orders.deliveries.isBlockingOrderConfirmation(orderDelivery, unchainedAPI));
     if (isBlockingOrderConfirmation) return false;
 
     return true;
   };
 
-  const isAutoFullfillmentEnabled = async (order: Order, requestContext: Context) => {
-    const { modules } = requestContext;
+  const isAutoFullfillmentEnabled = async (order: Order, unchainedAPI: UnchainedCore) => {
+    const { modules } = unchainedAPI;
 
     const orderPayment = await findOrderPayment(order);
     let isBlockingOrderFullfillment =
@@ -134,7 +134,7 @@ export const configureOrderModuleProcessing = ({
   const findNextStatus = async (
     status: OrderStatus | null,
     order: Order,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ): Promise<OrderStatus> => {
     if (status === null) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
@@ -144,14 +144,14 @@ export const configureOrderModuleProcessing = ({
     }
 
     if (status === OrderStatus.PENDING) {
-      if (await isAutoConfirmationEnabled(order, requestContext)) {
+      if (await isAutoConfirmationEnabled(order, unchainedAPI)) {
         await emit('ORDER_CONFIRMED', { order });
         return OrderStatus.CONFIRMED;
       }
     }
 
     if (status === OrderStatus.CONFIRMED) {
-      const isFullfilled = await isAutoFullfillmentEnabled(order, requestContext);
+      const isFullfilled = await isAutoFullfillmentEnabled(order, unchainedAPI);
       if (isFullfilled) {
         await emit('ORDER_FULLFILLED', { order });
         return OrderStatus.FULLFILLED;
@@ -162,17 +162,17 @@ export const configureOrderModuleProcessing = ({
   };
 
   return {
-    checkout: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
-      const { modules, localeContext, userId } = requestContext;
+    checkout: async (orderId, { orderContext, paymentContext, deliveryContext }, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
-      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      await modules.orders.updateContext(orderId, orderContext, unchainedAPI);
       let order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== null) return order;
 
       const errors = [
         ...(await missingInputDataForCheckout(order)),
-        ...(await itemValidationErrors(order, requestContext)),
+        ...(await itemValidationErrors(order, unchainedAPI)),
       ].filter(Boolean);
 
       if (errors.length > 0) {
@@ -186,33 +186,31 @@ export const configureOrderModuleProcessing = ({
           paymentContext,
           deliveryContext,
         },
-        requestContext,
+        unchainedAPI,
       );
 
       // After checkout, store last checkout information on user
-      await modules.users.updateLastBillingAddress(order.userId, order.billingAddress, userId);
-      await modules.users.updateLastContact(order.userId, order.contact, userId);
+      await modules.users.updateLastBillingAddress(order.userId, order.billingAddress);
+      await modules.users.updateLastContact(order.userId, order.contact);
 
       // Then ensure new cart is created before we return from checkout
       const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
+      const locale = modules.users.userLocale(user);
       await modules.orders.ensureCartForUser(
         {
           user,
           countryCode: locale.country,
         },
-        requestContext,
+        unchainedAPI,
       );
 
       return order;
     },
 
-    confirm: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
-      const { modules } = requestContext;
+    confirm: async (orderId, { orderContext, paymentContext, deliveryContext }, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
-      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      await modules.orders.updateContext(orderId, orderContext, unchainedAPI);
       const order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== OrderStatus.PENDING) return order;
@@ -224,14 +222,14 @@ export const configureOrderModuleProcessing = ({
           deliveryContext,
           nextStatus: OrderStatus.CONFIRMED,
         },
-        requestContext,
+        unchainedAPI,
       );
     },
 
-    reject: async (orderId, { orderContext, paymentContext, deliveryContext }, requestContext) => {
-      const { modules } = requestContext;
+    reject: async (orderId, { orderContext, paymentContext, deliveryContext }, unchainedAPI) => {
+      const { modules } = unchainedAPI;
 
-      await modules.orders.updateContext(orderId, orderContext, requestContext);
+      await modules.orders.updateContext(orderId, orderContext, unchainedAPI);
       const order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== OrderStatus.PENDING) return order;
@@ -243,12 +241,12 @@ export const configureOrderModuleProcessing = ({
           deliveryContext,
           nextStatus: OrderStatus.REJECTED,
         },
-        requestContext,
+        unchainedAPI,
       );
     },
 
-    ensureCartForUser: async ({ user, countryCode }, requestContext) => {
-      const { modules, services } = requestContext;
+    ensureCartForUser: async ({ user, countryCode }, unchainedAPI) => {
+      const { modules, services } = unchainedAPI;
 
       if (!ordersSettings.ensureUserHasCart) return null;
 
@@ -260,7 +258,7 @@ export const configureOrderModuleProcessing = ({
           user,
           countryCode,
         },
-        requestContext as Context,
+        unchainedAPI,
       );
     },
 
@@ -283,14 +281,14 @@ export const configureOrderModuleProcessing = ({
       );
     },
 
-    processOrder: async (initialOrder, params, requestContext) => {
-      const { modules } = requestContext;
+    processOrder: async (initialOrder, params, unchainedAPI) => {
+      const { modules } = unchainedAPI;
       const { paymentContext, deliveryContext, nextStatus: forceNextStatus } = params;
 
       const orderId = initialOrder._id;
       let order = initialOrder;
       let nextStatus =
-        forceNextStatus || (await findNextStatus(initialOrder.status, order, requestContext));
+        forceNextStatus || (await findNextStatus(initialOrder.status, order, unchainedAPI));
 
       if (nextStatus === OrderStatus.PENDING) {
         // auto charge during transition to pending
@@ -300,10 +298,10 @@ export const configureOrderModuleProcessing = ({
 
         await modules.orders.payments.charge(
           orderPayment,
-          { transactionContext: paymentContext },
-          requestContext,
+          { userId: order.userId, transactionContext: paymentContext },
+          unchainedAPI,
         );
-        nextStatus = await findNextStatus(nextStatus, order, requestContext);
+        nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }
 
       if (nextStatus === OrderStatus.REJECTED) {
@@ -313,10 +311,10 @@ export const configureOrderModuleProcessing = ({
         });
         await modules.orders.payments.cancel(
           orderPayment,
-          { transactionContext: paymentContext },
-          requestContext,
+          { userId: order.userId, transactionContext: paymentContext },
+          unchainedAPI,
         );
-        nextStatus = await findNextStatus(nextStatus, order, requestContext);
+        nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }
 
       if (nextStatus === OrderStatus.CONFIRMED) {
@@ -326,8 +324,8 @@ export const configureOrderModuleProcessing = ({
         });
         await modules.orders.payments.confirm(
           orderPayment,
-          { transactionContext: paymentContext },
-          requestContext,
+          { userId: order.userId, transactionContext: paymentContext },
+          unchainedAPI,
         );
 
         const orderDelivery = await modules.orders.deliveries.findDelivery({
@@ -343,7 +341,7 @@ export const configureOrderModuleProcessing = ({
               status: OrderStatus.CONFIRMED,
               info: 'before delivery',
             },
-            requestContext,
+            unchainedAPI,
           );
 
           await modules.orders.deliveries.send(
@@ -352,7 +350,7 @@ export const configureOrderModuleProcessing = ({
               order,
               deliveryContext,
             },
-            requestContext,
+            unchainedAPI,
           );
 
           const orderPositions = await findOrderPositions(order);
@@ -377,7 +375,7 @@ export const configureOrderModuleProcessing = ({
               {
                 items: tokenizedItems,
               },
-              requestContext,
+              unchainedAPI,
             );
           }
 
@@ -395,7 +393,7 @@ export const configureOrderModuleProcessing = ({
                   deliveryContext,
                 },
               },
-              requestContext,
+              unchainedAPI,
             );
           }
 
@@ -411,7 +409,7 @@ export const configureOrderModuleProcessing = ({
                   orderId,
                   orderPositionId: orderPosition._id,
                 },
-                requestContext,
+                unchainedAPI,
               );
             }),
           );
@@ -422,66 +420,58 @@ export const configureOrderModuleProcessing = ({
           // ???
         }
 
-        nextStatus = await findNextStatus(nextStatus, order, requestContext);
+        nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }
 
       order = await updateStatus(
         order._id,
         { status: nextStatus, info: 'order processed' },
-        requestContext,
+        unchainedAPI,
       );
 
       if (initialOrder.status !== order.status) {
         if (order.status === OrderStatus.REJECTED) {
-          await modules.orders.sendOrderRejectionToCustomer(order, params, requestContext);
+          await modules.orders.sendOrderRejectionToCustomer(order, params, unchainedAPI);
         } else {
-          await modules.orders.sendOrderConfirmationToCustomer(order, params, requestContext);
+          await modules.orders.sendOrderConfirmationToCustomer(order, params, unchainedAPI);
         }
       }
 
       return order;
     },
 
-    sendOrderConfirmationToCustomer: async (order, params, { modules, localeContext, userId }) => {
+    sendOrderConfirmationToCustomer: async (order, params, { modules }) => {
       const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
-      await modules.worker.addWork(
-        {
-          type: 'MESSAGE',
-          retries: 0,
-          input: {
-            ...params,
-            locale,
-            template: 'ORDER_CONFIRMATION',
-            orderId: order._id,
-          },
+      const locale = modules.users.userLocale(user);
+
+      await modules.worker.addWork({
+        type: 'MESSAGE',
+        retries: 0,
+        input: {
+          ...params,
+          locale,
+          template: 'ORDER_CONFIRMATION',
+          orderId: order._id,
         },
-        userId,
-      );
+      });
 
       return order;
     },
 
-    sendOrderRejectionToCustomer: async (order, params, { modules, localeContext, userId }) => {
+    sendOrderRejectionToCustomer: async (order, params, { modules }) => {
       const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user, {
-        localeContext,
-      });
-      await modules.worker.addWork(
-        {
-          type: 'MESSAGE',
-          retries: 0,
-          input: {
-            ...params,
-            locale,
-            template: 'ORDER_REJECTION',
-            orderId: order._id,
-          },
+      const locale = modules.users.userLocale(user);
+
+      await modules.worker.addWork({
+        type: 'MESSAGE',
+        retries: 0,
+        input: {
+          ...params,
+          locale,
+          template: 'ORDER_REJECTION',
+          orderId: order._id,
         },
-        userId,
-      );
+      });
 
       return order;
     },

@@ -1,8 +1,8 @@
-import { Context } from '@unchainedshop/types/api';
 import { AssortmentFilter } from '@unchainedshop/types/assortments';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
-const upsert = async (assortmentFilter: AssortmentFilter, { modules, userId }: Context) => {
+const upsert = async (assortmentFilter: AssortmentFilter, { modules }: UnchainedCore) => {
   if (
     !(await modules.filters.filterExists({
       filterId: assortmentFilter.filterId,
@@ -11,14 +11,14 @@ const upsert = async (assortmentFilter: AssortmentFilter, { modules, userId }: C
     throw new Error(`Can't link non-existing filter ${assortmentFilter.filterId}`);
   }
   try {
-    const newAssortmentFilter = await modules.assortments.filters.create(assortmentFilter, userId);
+    const newAssortmentFilter = await modules.assortments.filters.create(assortmentFilter);
     return newAssortmentFilter;
   } catch (e) {
     return modules.assortments.filters.update(assortmentFilter._id, assortmentFilter);
   }
 };
 
-export default async ({ filters, authorId, assortmentId }, unchainedAPI: Context) => {
+export default async ({ filters, assortmentId }, unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;
   const assortmentFilterIds = await Promise.all(
     filters.map(async (filter: AssortmentFilter) => {
@@ -27,7 +27,6 @@ export default async ({ filters, authorId, assortmentId }, unchainedAPI: Context
         {
           ...filter,
           tags,
-          authorId,
           assortmentId,
         },
         unchainedAPI,

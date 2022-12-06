@@ -1,5 +1,5 @@
-import { Context } from './api';
 import { FindOptions, LogFields, TimestampFields, _ID } from './common';
+import { UnchainedCore } from './core';
 import { IDeliveryPricingSheet } from './delivery.pricing';
 import { Order } from './orders';
 import { OrderDiscount } from './orders.discounts';
@@ -30,41 +30,47 @@ export type OrderDeliveriesModule = {
   discounts: (
     orderDelivery: OrderDelivery,
     params: { order: Order; orderDiscount: OrderDiscount },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Array<OrderPricingDiscount>;
   isBlockingOrderConfirmation: (
     orderDelivery: OrderDelivery,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<boolean>;
   isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
   normalizedStatus: (orderDelivery: OrderDelivery) => string;
   pricingSheet: (
     orderDelivery: OrderDelivery,
     currency: string,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => IDeliveryPricingSheet;
 
   // Mutations
-  create: (doc: OrderDelivery, userId?: string) => Promise<OrderDelivery>;
-  delete: (orderDeliveryId: string, userId?: string) => Promise<number>;
+  create: (doc: OrderDelivery) => Promise<OrderDelivery>;
+  delete: (orderDeliveryId: string) => Promise<number>;
 
-  markAsDelivered: (orderDelivery: OrderDelivery, userId?: string) => Promise<void>;
+  markAsDelivered: (orderDelivery: OrderDelivery) => Promise<void>;
 
   send: (
     orderDelivery: OrderDelivery,
     params: { order: Order; deliveryContext?: any },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderDelivery>;
 
-  updateContext: (orderDeliveryId: string, context: any, requestContext: Context) => Promise<boolean>;
+  updateContext: (
+    orderDeliveryId: string,
+    context: any,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
 
   updateStatus: (
     orderDeliveryId: string,
     params: { status: OrderDeliveryStatus; info?: string },
-    userId?: string,
   ) => Promise<OrderDelivery>;
 
-  updateCalculation: (orderDelivery: OrderDelivery, requestContext: Context) => Promise<OrderDelivery>;
+  updateCalculation: (
+    orderDelivery: OrderDelivery,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderDelivery>;
 };
 
 export type OrderDeliveryDiscount = Omit<OrderPrice, '_id'> & {

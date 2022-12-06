@@ -24,7 +24,7 @@ export default async function updateProductWarehousing(
       required: ProductTypes.SimpleProduct,
     });
 
-  await modules.products.update(productId, { warehousing }, userId);
+  await modules.products.update(productId, { warehousing });
 
   return modules.products.findProduct({ productId });
 }

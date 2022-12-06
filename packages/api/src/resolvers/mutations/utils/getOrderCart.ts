@@ -17,5 +17,5 @@ export const getOrderCart = async (params: { orderId?: string; user: User }, con
   const cart = await modules.orders.cart({ countryContext }, user);
   if (cart) return cart;
 
-  return services.orders.createUserCart({ user }, context);
+  return services.orders.createUserCart({ user, countryCode: context.countryContext }, context);
 };

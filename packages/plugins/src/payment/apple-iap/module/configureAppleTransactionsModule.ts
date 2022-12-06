@@ -19,11 +19,10 @@ export const configureAppleTransactionsModule = async ({
       return AppleTransactions.findOne({ _id: transactionIdentifier });
     },
 
-    createTransaction: async (doc, userId) => {
+    createTransaction: async (doc) => {
       await AppleTransactions.insertOne({
         ...doc,
         created: new Date(),
-        createdBy: userId,
       });
       return doc._id;
     },

@@ -4,6 +4,7 @@ import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { AppleTransactionsModule } from './module/configureAppleTransactionsModule';
 
 const logger = createLogger('unchained:core-payment:iap');
@@ -43,7 +44,7 @@ const AppleNotificationTypes = {
 
 const fixPeriods = async (
   { transactionId, enrollmentId, orderId, transactions },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => {
   const relevantTransactions = transactions.filter(
     // eslint-disable-next-line
@@ -65,19 +66,11 @@ const fixPeriods = async (
       return left.end.getTime() - right.end.getTime();
     });
 
-  await requestContext.modules.enrollments.removeEnrollmentPeriodByOrderId(
-    enrollmentId,
-    orderId,
-    requestContext.userId,
-  );
+  await unchainedAPI.modules.enrollments.removeEnrollmentPeriodByOrderId(enrollmentId, orderId);
 
   return Promise.all(
     adjustedEnrollmentPeriods.map((period) =>
-      requestContext.modules.enrollments.addEnrollmentPeriod(
-        enrollmentId,
-        period,
-        requestContext.userId,
-      ),
+      unchainedAPI.modules.enrollments.addEnrollmentPeriod(enrollmentId, period),
     ),
   );
 };
@@ -86,7 +79,7 @@ export const appleIAPHandler = async (req, res) => {
   if (req.method === 'POST') {
     try {
       const resolvedContext = req.unchainedContext as Context;
-      const { modules, services } = resolvedContext;
+      const { modules } = resolvedContext;
       const responseBody = req.body || {};
       if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
         throw new Error('shared secret not valid');
@@ -154,12 +147,13 @@ export const appleIAPHandler = async (req, res) => {
           orderId: originalOrder._id,
         });
 
-        await services.payment.registerPaymentCredentials(
+        await modules.payment.registerCredentials(
           enrollment.payment.paymentProviderId,
           {
             transactionContext: {
               receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
             },
+            userId: enrollment.userId,
           },
           resolvedContext,
         );
@@ -183,7 +177,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
+            await modules.enrollments.terminateEnrollment(enrollment, resolvedContext);
           }
         }
 
@@ -192,7 +186,7 @@ export const appleIAPHandler = async (req, res) => {
             enrollment.status !== EnrollmentStatus.TERMINATED &&
             responseBody.auto_renew_status === 'false'
           ) {
-            await modules.enrollments.terminateEnrollment(enrollment, {}, resolvedContext);
+            await modules.enrollments.terminateEnrollment(enrollment, resolvedContext);
           }
         }
         logger.info(`Apple IAP Webhook: Updated enrollment from Apple`);
@@ -225,7 +219,7 @@ const AppleIAP: IPaymentAdapter = {
   },
 
   actions: (params) => {
-    const { modules, userId } = params.context;
+    const { modules } = params.context;
 
     const adapterActions = {
       ...PaymentAdapter.actions(params),
@@ -355,6 +349,7 @@ const AppleIAP: IPaymentAdapter = {
           throw new Error('Apple IAP Plugin: Transaction already processed');
 
         // All good
+        const userId = order?.userId || params.paymentContext?.userId;
         await appleTransactions.createTransaction(
           {
             _id: transactionIdentifier,

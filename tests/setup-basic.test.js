@@ -135,7 +135,7 @@ describe("basic setup of internationalization and localization context", () => {
         await Currencies.countDocuments({ _id: "ltc", deleted: null })
       ).toEqual(0);
       expect(
-        await Currencies.countDocuments({ _id: "ltc", deletedBy: "admin" })
+        await Currencies.countDocuments({ _id: "ltc" })
       ).toEqual(1);
       await Currencies.deleteOne({ _id: "ltc" });
     });
@@ -390,7 +390,7 @@ describe("basic setup of internationalization and localization context", () => {
         await Countries.countDocuments({ _id: "us", deleted: null })
       ).toEqual(0);
       expect(
-        await Countries.countDocuments({ _id: "us", deletedBy: "admin" })
+        await Countries.countDocuments({ _id: "us" })
       ).toEqual(1);
       await Countries.deleteOne({ _id: "us" });
     });
@@ -618,7 +618,7 @@ describe("basic setup of internationalization and localization context", () => {
         await Languages.countDocuments({ _id: "en", deleted: null })
       ).toEqual(0);
       expect(
-        await Languages.countDocuments({ _id: "en", deletedBy: "admin" })
+        await Languages.countDocuments({ _id: "en" })
       ).toEqual(1);
       await Languages.deleteOne({ _id: "en" });
     });

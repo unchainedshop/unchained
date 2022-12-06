@@ -61,10 +61,10 @@ export const configureAccountsWebAuthnModule = async ({
   return {
     findMDSMetadataForAAGUID: async (aaguid) => {
       const mdsCollection = await fetchMDS();
-      const entry = mdsCollection.find((entry) => {
+      const foundEntry = mdsCollection.find((entry) => {
         return entry.aaguid === aaguid;
       });
-      return entry?.metadataStatement;
+      return foundEntry?.metadataStatement;
     },
 
     createCredentialCreationOptions: async (origin, username, extensionOptions) => {

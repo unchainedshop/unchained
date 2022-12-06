@@ -9,13 +9,9 @@ export default async function createCountry(
 ) {
   log('mutation createCountry', { userId });
 
-  const countryId = await modules.countries.create(
-    {
-      ...country,
-      authorId: userId,
-    },
-    userId,
-  );
+  const countryId = await modules.countries.create({
+    ...country,
+  });
 
   return modules.countries.findCountry({ countryId });
 }

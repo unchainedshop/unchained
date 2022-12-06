@@ -40,20 +40,20 @@ export interface ModuleInput<Options extends Record<string, any>> {
 }
 
 export interface ModuleCreateMutation<T> {
-  create: (doc: T, userId?: string) => Promise<string | null>;
+  create: (doc: T) => Promise<string | null>;
 }
 
 export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
-  update: (_id: string, doc: Update<T> | T, userId?: string) => Promise<string>;
-  delete: (_id: string, userId?: string) => Promise<number>;
-  deletePermanently: (_id: string, userId?: string) => Promise<number>;
+  update: (_id: string, doc: Update<T> | T) => Promise<string>;
+  delete: (_id: string) => Promise<number>;
+  deletePermanently: (_id: string) => Promise<number>;
 }
 
 export interface ModuleMutationsWithReturnDoc<T> {
-  create: (doc: T, userId?: string) => Promise<T>;
-  update: (_id: _ID, doc: Update<T> | T, userId?: string) => Promise<T>;
-  delete: (_id: _ID, userId?: string) => Promise<T>;
-  deletePermanently: (_id: string, userId?: string) => Promise<T>;
+  create: (doc: T) => Promise<T>;
+  update: (_id: _ID, doc: Update<T> | T) => Promise<T>;
+  delete: (_id: _ID) => Promise<T>;
+  deletePermanently: (_id: string) => Promise<T>;
 }
 
 export interface UnchainedCoreOptions {

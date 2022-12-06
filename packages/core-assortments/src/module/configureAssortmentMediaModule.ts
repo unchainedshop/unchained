@@ -27,14 +27,11 @@ const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_UPDATE_MEDIA_TEXT',
 ];
 
-FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules, userId }) => {
-  await modules.assortments.media.create(
-    {
-      assortmentId: file.meta.assortmentId as string,
-      mediaId: file._id,
-    },
-    file.updatedBy || file.createdBy || userId,
-  );
+FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules }) => {
+  await modules.assortments.media.create({
+    assortmentId: file.meta.assortmentId as string,
+    mediaId: file._id,
+  });
 });
 
 export const configureAssortmentMediaModule = async ({
@@ -53,7 +50,6 @@ export const configureAssortmentMediaModule = async ({
     assortmentMediaId,
     locale,
     text,
-    userId,
   ) => {
     const selector = {
       assortmentMediaId,
@@ -65,14 +61,11 @@ export const configureAssortmentMediaModule = async ({
       {
         $set: {
           updated: new Date(),
-          updatedBy: userId,
-          authorId: userId,
           ...text,
         },
         $setOnInsert: {
           _id: generateDbObjectId(),
           created: new Date(),
-          createdBy: userId,
           assortmentMediaId,
           locale,
         },
@@ -108,7 +101,7 @@ export const configureAssortmentMediaModule = async ({
     },
 
     // Mutations
-    create: async (doc: AssortmentMediaType, userId) => {
+    create: async (doc: AssortmentMediaType) => {
       let { sortKey } = doc;
 
       if (!sortKey) {
@@ -124,15 +117,11 @@ export const configureAssortmentMediaModule = async ({
         sortKey = lastAssortmentMedia.sortKey + 1;
       }
 
-      const assortmentMediaId = await mutations.create(
-        {
-          tags: [],
-          authorId: userId,
-          ...doc,
-          sortKey,
-        },
-        userId,
-      );
+      const assortmentMediaId = await mutations.create({
+        tags: [],
+        ...doc,
+        sortKey,
+      });
 
       const assortmentMedia = await AssortmentMedia.findOne(generateDbFilterById(assortmentMediaId), {});
 
@@ -195,14 +184,13 @@ export const configureAssortmentMediaModule = async ({
       return AssortmentMedia.findOne(selector, {});
     },
 
-    updateManualOrder: async ({ sortKeys }, userId) => {
+    updateManualOrder: async ({ sortKeys }) => {
       const changedAssortmentMediaIds = await Promise.all(
         sortKeys.map(async ({ assortmentMediaId, sortKey }) => {
           await AssortmentMedia.updateOne(generateDbFilterById(assortmentMediaId), {
             $set: {
               sortKey: sortKey + 1,
               updated: new Date(),
-              updatedBy: userId,
             },
           });
 
@@ -242,11 +230,9 @@ export const configureAssortmentMediaModule = async ({
       },
 
       // Mutations
-      updateMediaTexts: async (assortmentMediaId, texts, userId) => {
+      updateMediaTexts: async (assortmentMediaId, texts) => {
         const mediaTexts = await Promise.all(
-          texts.map(({ locale, ...text }) =>
-            upsertLocalizedText(assortmentMediaId, locale, text, userId),
-          ),
+          texts.map(({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
         );
 
         await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {

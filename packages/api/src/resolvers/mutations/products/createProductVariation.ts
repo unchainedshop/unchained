@@ -32,14 +32,10 @@ export default async function F(
       required: ProductTypes.ConfigurableProduct,
     });
 
-  return modules.products.variations.create(
-    {
-      authorId: userId,
-      locale: localeContext.language,
-      options: [],
-      productId,
-      ...variation,
-    },
-    userId,
-  );
+  return modules.products.variations.create({
+    locale: localeContext.language,
+    options: [],
+    productId,
+    ...variation,
+  });
 }

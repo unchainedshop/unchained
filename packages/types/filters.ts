@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { Context, SortOption } from './api';
+import { SortOption } from './api';
 import { Assortment } from './assortments';
 import {
   FindOptions,
@@ -22,7 +22,6 @@ export enum FilterType {
 
 export type Filter = {
   _id?: _ID;
-  authorId: string;
   isActive?: boolean;
   key: string;
   meta?: any;
@@ -35,7 +34,6 @@ export type FilterOption = Filter & {
 };
 
 export type FilterText = {
-  authorId: string;
   filterId: string;
   filterOptionValue?: string;
   locale?: string;
@@ -100,23 +98,21 @@ export type FiltersModule = {
   // Mutations
   create: (
     doc: Filter & { title: string; locale: string },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
     options?: { skipInvalidation?: boolean },
-    userId?: string,
   ) => Promise<Filter>;
 
   createFilterOption: (
     filterId: string,
-    option: { value: string; title: string },
-    requestContext: Context,
+    option: { value: string; title: string; locale: string },
+    unchainedAPI: UnchainedCore,
   ) => Promise<Filter>;
 
   update: (
     filterId: string,
     doc: Filter,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
     options?: { skipInvalidation?: boolean },
-    userId?: string,
   ) => Promise<string>;
 
   delete: (filterId: string) => Promise<number>;
@@ -126,7 +122,7 @@ export type FiltersModule = {
       filterId: string;
       filterOptionValue?: string;
     },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Filter>;
 
   /*
@@ -136,13 +132,13 @@ export type FiltersModule = {
     searchProducts: (
       searchQuery: SearchQuery,
       params: { forceLiveCollection?: boolean },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<SearchProducts>;
 
     searchAssortments: (
       searchQuery: SearchQuery,
       params: { forceLiveCollection?: boolean },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<SearchAssortments>;
   };
 
@@ -163,15 +159,13 @@ export type FiltersModule = {
     // Mutations
     updateTexts: (
       query: { filterId: string; filterOptionValue?: string },
-      texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue' | 'authorId'>>,
-      userId?: string,
+      texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue'>>,
     ) => Promise<Array<FilterText>>;
 
     upsertLocalizedText: (
       params: { filterId: string; filterOptionValue?: string },
       locale: string,
-      text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale' | 'authorId'>,
-      userId?: string,
+      text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale'>,
     ) => Promise<FilterText>;
 
     deleteMany: (params: { filterId?: string; excludedFilterIds?: string[] }) => Promise<number>;
@@ -223,11 +217,11 @@ export interface FilterAdapterActions {
 export type IFilterAdapter = IBaseAdapter & {
   orderIndex: number;
 
-  actions: (params: FilterContext & Context) => FilterAdapterActions;
+  actions: (params: FilterContext & UnchainedCore) => FilterAdapterActions;
 };
 
 export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
-  actions: (filterContext: FilterContext, requestContext: Context) => Promise<FilterAdapterActions>;
+  actions: (filterContext: FilterContext, unchainedAPI: UnchainedCore) => Promise<FilterAdapterActions>;
 };
 
 /* Settings */

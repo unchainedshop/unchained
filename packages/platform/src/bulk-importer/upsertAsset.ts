@@ -1,12 +1,12 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { File } from '@unchainedshop/types/files';
 
 const upsertAsset = async (
   directoryName: string,
   asset: File & { fileName: string; headers?: Record<string, unknown> },
-  unchainedAPI: Context,
+  unchainedAPI: UnchainedCore,
 ) => {
-  const { modules, services, userId } = unchainedAPI;
+  const { modules, services } = unchainedAPI;
   const { _id: fileId, fileName, url, meta, headers, ...assetData } = asset;
 
   try {
@@ -16,7 +16,7 @@ const upsertAsset = async (
       if (JSON.stringify(newMeta) === JSON.stringify(existingFile.meta)) {
         return existingFile;
       }
-      await modules.files.update(fileId, { meta: newMeta, ...assetData }, userId);
+      await modules.files.update(fileId, { meta: newMeta, ...assetData });
       const updatedFile = await modules.files.findFile({ fileId });
       return updatedFile;
     }
@@ -30,7 +30,6 @@ const upsertAsset = async (
           headers,
         },
         meta: { ...meta, fileId },
-        userId,
       },
       unchainedAPI,
     );

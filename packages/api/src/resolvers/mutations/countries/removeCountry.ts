@@ -14,7 +14,7 @@ export default async function removeCountry(
   if (!(await modules.countries.countryExists({ countryId })))
     throw new CountryNotFoundError({ countryId });
 
-  await modules.countries.delete(countryId, userId);
+  await modules.countries.delete(countryId);
 
   return modules.countries.findCountry({ countryId });
 }

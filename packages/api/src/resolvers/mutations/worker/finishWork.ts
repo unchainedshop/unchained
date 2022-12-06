@@ -23,18 +23,14 @@ export default async function finishWork(
 
   if (!workId) throw new InvalidIdError({ workId });
 
-  const work = await modules.worker.finishWork(
-    workId,
-    {
-      result,
-      error,
-      success,
-      worker,
-      started,
-      finished,
-    },
-    userId,
-  );
+  const work = await modules.worker.finishWork(workId, {
+    result,
+    error,
+    success,
+    worker,
+    started,
+    finished,
+  });
 
   if (!work) throw new WorkNotFoundOrWrongStatus({ workId });
 

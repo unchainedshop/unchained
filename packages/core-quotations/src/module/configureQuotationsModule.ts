@@ -1,6 +1,6 @@
-import { Context, SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api';
 import { Update } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import {
   Quotation,
   QuotationQuery,
@@ -67,10 +67,10 @@ export const configureQuotationsModule = async ({
 
   const findNextStatus = async (
     quotation: Quotation,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ): Promise<QuotationStatus> => {
     let status = quotation.status as QuotationStatus;
-    const director = await QuotationDirector.actions({ quotation }, requestContext);
+    const director = await QuotationDirector.actions({ quotation }, unchainedAPI);
 
     if (status === QuotationStatus.REQUESTED) {
       if (!(await director.isManualRequestVerificationRequired())) {
@@ -85,11 +85,7 @@ export const configureQuotationsModule = async ({
     return status;
   };
 
-  const updateStatus: QuotationsModule['updateStatus'] = async (
-    quotationId,
-    { status, info = '' },
-    userId,
-  ) => {
+  const updateStatus: QuotationsModule['updateStatus'] = async (quotationId, { status, info = '' }) => {
     const selector = generateDbFilterById(quotationId);
     const quotation = await Quotations.findOne(selector, {});
 
@@ -99,7 +95,6 @@ export const configureQuotationsModule = async ({
     const $set: Partial<Quotation> = {
       status,
       updated: new Date(),
-      updatedBy: userId,
     };
 
     switch (status) {
@@ -147,80 +142,72 @@ export const configureQuotationsModule = async ({
   const processQuotation = async (
     initialQuotation: Quotation,
     params: { quotationContext?: any },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => {
-    const { modules, userId } = requestContext;
+    const { modules } = unchainedAPI;
 
     const quotationId = initialQuotation._id;
     let quotation = initialQuotation;
-    let nextStatus = await findNextStatus(quotation, requestContext);
-    const director = await QuotationDirector.actions({ quotation }, requestContext);
+    let nextStatus = await findNextStatus(quotation, unchainedAPI);
+    const director = await QuotationDirector.actions({ quotation }, unchainedAPI);
 
     if (quotation.status === QuotationStatus.REQUESTED && nextStatus !== QuotationStatus.REQUESTED) {
       await director.submitRequest(params.quotationContext);
     }
 
     quotation = await modules.quotations.findQuotation({ quotationId });
-    nextStatus = await findNextStatus(quotation, requestContext);
+    nextStatus = await findNextStatus(quotation, unchainedAPI);
     if (nextStatus !== QuotationStatus.PROCESSING) {
       await director.verifyRequest(params.quotationContext);
     }
 
     quotation = await modules.quotations.findQuotation({ quotationId });
-    nextStatus = await findNextStatus(quotation, requestContext);
+    nextStatus = await findNextStatus(quotation, unchainedAPI);
     if (nextStatus === QuotationStatus.REJECTED) {
       await director.rejectRequest(params.quotationContext);
     }
 
     quotation = await modules.quotations.findQuotation({ quotationId });
-    nextStatus = await findNextStatus(quotation, requestContext);
+    nextStatus = await findNextStatus(quotation, unchainedAPI);
     if (nextStatus === QuotationStatus.PROPOSED) {
       const proposal = await director.quote();
-      quotation = await modules.quotations.updateProposal(quotation._id, proposal, userId);
-      nextStatus = await findNextStatus(quotation, requestContext);
+      quotation = await modules.quotations.updateProposal(quotation._id, proposal);
+      nextStatus = await findNextStatus(quotation, unchainedAPI);
     }
 
-    return updateStatus(
-      quotation._id,
-      { status: nextStatus, info: 'quotation processed' },
-      requestContext.userId,
-    );
+    return updateStatus(quotation._id, { status: nextStatus, info: 'quotation processed' });
   };
 
-  const sendStatusToCustomer = async (quotation: Quotation, requestContext: Context) => {
-    const { modules, userId } = requestContext;
+  const sendStatusToCustomer = async (quotation: Quotation, unchainedAPI: UnchainedCore) => {
+    const { modules } = unchainedAPI;
 
     const user = await modules.users.findUserById(quotation.userId);
-    const locale = modules.users.userLocale(user, requestContext);
+    const locale = modules.users.userLocale(user);
 
-    await modules.worker.addWork(
-      {
-        type: 'MESSAGE',
-        retries: 0,
-        input: {
-          locale,
-          template: 'QUOTATION_STATUS',
-          quotationId: quotation._id,
-        },
+    await modules.worker.addWork({
+      type: 'MESSAGE',
+      retries: 0,
+      input: {
+        locale,
+        template: 'QUOTATION_STATUS',
+        quotationId: quotation._id,
       },
-      userId,
-    );
+    });
 
     return quotation;
   };
 
   const updateQuotationFields =
-    (fieldKeys: Array<string>) => async (quotationId: string, values: any, userId?: string) => {
+    (fieldKeys: Array<string>) => async (quotationId: string, values: any) => {
       log(`Update quotation fields ${fieldKeys.join(', ').toUpperCase()}`, {
         quotationId,
-        userId,
       });
 
       const modifier = {
         $set: fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
       };
 
-      await mutations.update(quotationId, modifier, userId);
+      await mutations.update(quotationId, modifier);
 
       const selector = generateDbFilterById(quotationId);
       const quotation = await Quotations.findOne(selector, {});
@@ -268,112 +255,91 @@ export const configureQuotationsModule = async ({
     },
 
     // Processing
-    fullfillQuotation: async (quotationId, info, requestContext) => {
+    fullfillQuotation: async (quotationId, info, unchainedAPI) => {
       const selector = generateDbFilterById(quotationId);
       const quotation = await Quotations.findOne(selector, {});
 
       if (quotation.status === QuotationStatus.FULLFILLED) return quotation;
 
-      let updatedQuotation = await updateStatus(
-        quotation._id,
-        {
-          status: QuotationStatus.FULLFILLED,
-          info: JSON.stringify(info),
-        },
-        requestContext.userId,
-      );
+      let updatedQuotation = await updateStatus(quotation._id, {
+        status: QuotationStatus.FULLFILLED,
+        info: JSON.stringify(info),
+      });
 
-      updatedQuotation = await processQuotation(updatedQuotation, {}, requestContext);
+      updatedQuotation = await processQuotation(updatedQuotation, {}, unchainedAPI);
 
-      return sendStatusToCustomer(updatedQuotation, requestContext);
+      return sendStatusToCustomer(updatedQuotation, unchainedAPI);
     },
 
-    proposeQuotation: async (quotation, { quotationContext }, requestContext) => {
+    proposeQuotation: async (quotation, { quotationContext }, unchainedAPI) => {
       if (quotation.status !== QuotationStatus.PROCESSING) return quotation;
 
-      let updatedQuotation = await updateStatus(
-        quotation._id,
-        {
-          status: QuotationStatus.PROPOSED,
-          info: 'proposed manually',
-        },
-        requestContext.userId,
-      );
+      let updatedQuotation = await updateStatus(quotation._id, {
+        status: QuotationStatus.PROPOSED,
+        info: 'proposed manually',
+      });
 
-      updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, requestContext);
+      updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, unchainedAPI);
 
-      return sendStatusToCustomer(updatedQuotation, requestContext);
+      return sendStatusToCustomer(updatedQuotation, unchainedAPI);
     },
 
-    rejectQuotation: async (quotation, { quotationContext }, requestContext) => {
+    rejectQuotation: async (quotation, { quotationContext }, unchainedAPI) => {
       if (quotation.status === QuotationStatus.FULLFILLED) return quotation;
 
-      let updatedQuotation = await updateStatus(
-        quotation._id,
-        {
-          status: QuotationStatus.REJECTED,
-          info: 'rejected manually',
-        },
-        requestContext.userId,
-      );
+      let updatedQuotation = await updateStatus(quotation._id, {
+        status: QuotationStatus.REJECTED,
+        info: 'rejected manually',
+      });
 
-      updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, requestContext);
+      updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, unchainedAPI);
 
-      return sendStatusToCustomer(updatedQuotation, requestContext);
+      return sendStatusToCustomer(updatedQuotation, unchainedAPI);
     },
 
-    verifyQuotation: async (quotation, { quotationContext }, requestContext) => {
+    verifyQuotation: async (quotation, { quotationContext }, unchainedAPI) => {
       if (quotation.status !== QuotationStatus.REQUESTED) return quotation;
 
-      let updatedQuotation = await updateStatus(
-        quotation._id,
-        {
-          status: QuotationStatus.PROCESSING,
-          info: 'verified elligibility manually',
-        },
-        requestContext.userId,
-      );
+      let updatedQuotation = await updateStatus(quotation._id, {
+        status: QuotationStatus.PROCESSING,
+        info: 'verified elligibility manually',
+      });
 
-      updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, requestContext);
+      updatedQuotation = await processQuotation(updatedQuotation, { quotationContext }, unchainedAPI);
 
-      return sendStatusToCustomer(updatedQuotation, requestContext);
+      return sendStatusToCustomer(updatedQuotation, unchainedAPI);
     },
 
-    transformItemConfiguration: async (quotation, configuration, requestContext) => {
-      const director = await QuotationDirector.actions({ quotation }, requestContext);
+    transformItemConfiguration: async (quotation, configuration, unchainedAPI) => {
+      const director = await QuotationDirector.actions({ quotation }, unchainedAPI);
       return director.transformItemConfiguration(configuration);
     },
 
     // Mutations
-    create: async ({ countryCode, ...quotationData }, requestContext) => {
-      const { services, userId } = requestContext;
-
-      log('Create Quotation', { userId });
+    create: async ({ countryCode, ...quotationData }, unchainedAPI) => {
+      const { services } = unchainedAPI;
 
       const currency = await services.countries.resolveDefaultCurrencyCode(
         {
           isoCode: countryCode,
         },
-        requestContext,
+        unchainedAPI,
       );
 
-      const quotationId = await mutations.create(
-        {
-          ...quotationData,
-          configuration: quotationData.configuration || [],
-          countryCode,
-          currency,
-          log: [],
-          status: QuotationStatus.REQUESTED,
-        },
-        userId,
-      );
+      const quotationId = await mutations.create({
+        ...quotationData,
+        configuration: quotationData.configuration || [],
+        countryCode,
+        currency,
+        log: [],
+        status: QuotationStatus.REQUESTED,
+      });
 
       const newQuotation = await Quotations.findOne(generateDbFilterById(quotationId), {});
 
-      let quotation = await processQuotation(newQuotation, {}, requestContext);
+      let quotation = await processQuotation(newQuotation, {}, unchainedAPI);
 
-      quotation = await sendStatusToCustomer(quotation, requestContext);
+      quotation = await sendStatusToCustomer(quotation, unchainedAPI);
 
       await emit('QUOTATION_REQUEST_CREATE', { quotation });
 

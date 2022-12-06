@@ -1,4 +1,4 @@
-import { Collection, Filter, FindOptions } from '@unchainedshop/types/common';
+import { Collection, Filter } from '@unchainedshop/types/common';
 import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -47,7 +47,6 @@ export const configureProductTextsModule = ({
     productId,
     locale,
     text,
-    userId,
   ) => {
     const { slug: textSlug, title = null, ...textFields } = text;
     const slug = await makeSlug({
@@ -59,15 +58,12 @@ export const configureProductTextsModule = ({
     const modifier: any = {
       $set: {
         updated: new Date(),
-        updatedBy: userId,
         title: text.title,
-        authorId: userId,
         ...textFields,
       },
       $setOnInsert: {
         _id: generateDbObjectId(),
         created: new Date(),
-        createdBy: userId,
         productId,
         locale,
       },
@@ -89,7 +85,6 @@ export const configureProductTextsModule = ({
       await Products.updateOne(generateDbFilterById(productId), {
         $set: {
           updated: new Date(),
-          updatedBy: userId,
         },
         $addToSet: {
           slugs: slug,
@@ -104,7 +99,6 @@ export const configureProductTextsModule = ({
         {
           $set: {
             updated: new Date(),
-            updatedBy: userId,
           },
           $pull: {
             slugs: slug,
@@ -146,10 +140,10 @@ export const configureProductTextsModule = ({
     },
 
     // Mutations
-    updateTexts: async (productId, texts, userId) => {
+    updateTexts: async (productId, texts) => {
       const productTexts = texts
         ? await Promise.all(
-            texts.map(({ locale, ...text }) => upsertLocalizedText(productId, locale, text, userId)),
+            texts.map(({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
           )
         : [];
 

@@ -1,6 +1,7 @@
-import { Context, SortOption, UnchainedAPI } from './api';
+import { Context, SortOption } from './api';
 import { AssortmentPathLink, AssortmentProduct } from './assortments';
 import { FindOptions, Query, TimestampFields, Update, _ID } from './common';
+import { UnchainedCore } from './core';
 import { Country } from './countries';
 import { Currency } from './currencies';
 import { DeliveryProvider, DeliveryProviderType } from './delivery';
@@ -116,7 +117,6 @@ export interface ProductWarehousing {
 
 export type Product = {
   _id?: _ID;
-  authorId: string;
   bundleItems: Array<ProductBundleItem>;
   commerce?: ProductCommerce;
   meta?: any;
@@ -136,7 +136,6 @@ export type Product = {
 export type ProductText = {
   _id?: _ID;
   productId: string;
-  authorId: string;
   description?: string;
   locale: string;
   slug?: string;
@@ -213,7 +212,7 @@ export type ProductsModule = {
   resolveOrderableProduct: (
     product: Product,
     params: { configuration?: Array<ProductConfiguration> },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Product>;
 
   prices: {
@@ -225,13 +224,14 @@ export type ProductsModule = {
     userPrice: (
       prodct: Product,
       params: {
+        userId: string;
         country: string;
         currency: string;
         quantity?: number;
         useNetPrice?: boolean;
         configuration?: Array<ProductConfiguration>;
       },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<ProductPrice>;
 
     catalogPrices: (prodct: Product) => Array<ProductPrice>;
@@ -259,6 +259,7 @@ export type ProductsModule = {
     simulatedPriceRange: (
       prodct: Product,
       params: {
+        userId: string;
         country: string;
         currency: string;
         includeInactive?: boolean;
@@ -266,7 +267,7 @@ export type ProductsModule = {
         useNetPrice?: boolean;
         vectors: Array<ProductConfiguration>;
       },
-      requestContext: Context,
+      unchainedAPI: UnchainedCore,
     ) => Promise<ProductPriceRange>;
 
     rates: {
@@ -288,31 +289,30 @@ export type ProductsModule = {
 
   calculate: (
     pricingContext: ProductPricingContext & { item: OrderPosition },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations
   create: (
     doc: Product & { title: string; locale: string },
-    userId?: string,
     options?: { autopublish?: boolean },
   ) => Promise<Product>;
 
-  delete: (productId: string, userId?: string) => Promise<number>;
+  delete: (productId: string) => Promise<number>;
   deleteProductPermanently: (params: { productId: string }) => Promise<number>;
 
-  update: (productId: string, doc: Update<Product>, userId: string) => Promise<string>;
+  update: (productId: string, doc: Update<Product>) => Promise<string>;
 
-  publish: (product: Product, userId?: string) => Promise<boolean>;
-  unpublish: (product: Product, userId?: string) => Promise<boolean>;
+  publish: (product: Product) => Promise<boolean>;
+  unpublish: (product: Product) => Promise<boolean>;
 
   /*
    * Product bundle items
    */
 
   bundleItems: {
-    addBundleItem: (productId: string, doc: ProductBundleItem, userId?: string) => Promise<string>;
-    removeBundleItem: (productId: string, index: number, userId?: string) => Promise<ProductBundleItem>;
+    addBundleItem: (productId: string, doc: ProductBundleItem) => Promise<string>;
+    removeBundleItem: (productId: string, index: number) => Promise<ProductBundleItem>;
   };
 
   /*
@@ -323,12 +323,10 @@ export type ProductsModule = {
     addProxyAssignment: (
       productId: string,
       params: { proxyId: string; vectors: Array<ProductConfiguration> },
-      userId?: string,
     ) => Promise<string>;
     removeAssignment: (
       productId: string,
       params: { vectors: Array<ProductConfiguration> },
-      userId?: string,
     ) => Promise<number>;
   };
 
@@ -373,15 +371,13 @@ export type ProductsModule = {
     // Mutations
     updateTexts: (
       productId: string,
-      texts: Array<Omit<ProductText, 'productId' | 'authorId'>>,
-      userId?: string,
+      texts: Array<Omit<ProductText, 'productId'>>,
     ) => Promise<Array<ProductText>>;
 
     upsertLocalizedText: (
       productId: string,
       locale: string,
-      text: Omit<ProductText, 'productId' | 'locale' | 'authorId'>,
-      userId?: string,
+      text: Omit<ProductText, 'productId' | 'locale'>,
     ) => Promise<ProductText>;
 
     makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;
@@ -400,8 +396,8 @@ export type ProductsModule = {
  */
 
 export type RemoveProductService = (
-  params: { productId: string; userId?: string },
-  context: UnchainedAPI,
+  params: { productId: string },
+  context: UnchainedCore,
 ) => Promise<boolean>;
 
 export interface ProductServices {
@@ -508,17 +504,6 @@ export interface PlanProductHelperTypes extends ProductHelperTypes {
   simulatedPrice: HelperType<
     { quantity?: number; currency?: string; useNetPrice?: boolean },
     Promise<ProductPrice>
-  >;
-
-  simulatedDiscounts: HelperType<
-    { quantity?: number },
-    Promise<
-      Array<{
-        _id: string;
-        interface: any;
-        total: ProductPrice;
-      }>
-    >
   >;
 
   salesUnit: HelperType<never, string>;

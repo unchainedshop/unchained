@@ -38,23 +38,23 @@ export default async function updateEnrollment(
   }
 
   if (meta) {
-    enrollment = await modules.enrollments.updateContext(enrollmentId, meta, userId);
+    enrollment = await modules.enrollments.updateContext(enrollmentId, meta);
   }
 
   if (billingAddress) {
-    enrollment = await modules.enrollments.updateBillingAddress(enrollmentId, billingAddress, userId);
+    enrollment = await modules.enrollments.updateBillingAddress(enrollmentId, billingAddress);
   }
 
   if (contact) {
-    enrollment = await modules.enrollments.updateContact(enrollmentId, contact, userId);
+    enrollment = await modules.enrollments.updateContact(enrollmentId, contact);
   }
 
   if (payment) {
-    enrollment = await modules.enrollments.updatePayment(enrollmentId, payment, userId);
+    enrollment = await modules.enrollments.updatePayment(enrollmentId, payment);
   }
 
   if (delivery) {
-    enrollment = await modules.enrollments.updateDelivery(enrollmentId, delivery, userId);
+    enrollment = await modules.enrollments.updateDelivery(enrollmentId, delivery);
   }
 
   if (plan) {

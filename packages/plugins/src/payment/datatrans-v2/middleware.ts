@@ -14,7 +14,7 @@ const logger = createLogger('unchained:core-payment:datatrans');
 
 export const datatransHandler = async (req, res) => {
   const resolvedContext = req.unchainedContext as Context;
-  const { services, modules } = resolvedContext;
+  const { modules } = resolvedContext;
   const signature = req.headers['datatrans-signature'];
   if (req.method === 'POST' && signature) {
     const [rawTimestamp, rawHash] = signature.split(',');
@@ -42,10 +42,10 @@ export const datatransHandler = async (req, res) => {
       try {
         if (transaction.type === 'card_check') {
           const paymentProviderId = referenceId;
-          const paymentCredentials = await services.payment.registerPaymentCredentials(
+          const paymentCredentials = await modules.payment.registerCredentials(
             paymentProviderId,
-            { transactionContext: { transactionId: transaction.transactionId } },
-            { ...resolvedContext, userId },
+            { userId, transactionContext: { transactionId: transaction.transactionId } },
+            { ...resolvedContext },
           );
           logger.info(`Datatrans Webhook: Unchained registered payment credentials for ${userId}`, {
             userId,
@@ -63,8 +63,8 @@ export const datatransHandler = async (req, res) => {
 
           const order = await modules.orders.checkout(
             orderPayment.orderId,
-            { paymentContext: { transactionId: transaction.transactionId } },
-            { ...resolvedContext, userId },
+            { paymentContext: { userId, transactionId: transaction.transactionId } },
+            resolvedContext,
           );
           res.writeHead(200);
           logger.info(`Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {

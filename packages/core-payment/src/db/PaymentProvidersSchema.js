@@ -5,7 +5,6 @@ export const PaymentProvidersSchema = new SimpleSchema(
   {
     type: { type: String, required: true },
     adapterKey: { type: String, required: true },
-    authorId: { type: String, required: true },
     configuration: { type: Array },
     'configuration.$': { type: Object },
     'configuration.$.key': { type: String },

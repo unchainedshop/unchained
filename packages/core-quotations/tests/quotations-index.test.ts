@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api';
 import { QuotationsModule } from '@unchainedshop/types/quotations';
 import { UsersModule } from '@unchainedshop/types/user';
 import { assert } from 'chai';
@@ -50,7 +49,7 @@ describe('Test exports', () => {
         productId: 'Product-123',
         userId: 'Test-User-1',
       },
-      context as Context
+      context
     );
 
     assert.ok(quotation);
@@ -67,7 +66,6 @@ describe('Test exports', () => {
         price: 1000,
         meta: { something: 'Test' },
       },
-      context.userId
     );
   });
 });

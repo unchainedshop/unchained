@@ -1,5 +1,5 @@
 import { User as AccountsUser } from '@accounts/types';
-import { Context } from './api';
+import { UnchainedCore } from './core';
 import { User, UserProfile } from './user';
 
 export interface WebAuthnCredentialsCreationRequest {
@@ -101,7 +101,7 @@ export interface AccountsModule {
   // Authentication
   createLoginToken: (
     userId: string,
-    context: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<{
     id: string;
     token: string;
@@ -109,7 +109,7 @@ export interface AccountsModule {
   }>;
   createImpersonationToken: (
     userId: string,
-    context: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<{
     id: string;
     token: string;
@@ -120,13 +120,16 @@ export interface AccountsModule {
       | LoginWithGuestParams
       | LoginWithPasswordParams
       | LoginWithParams<string, Record<string, any>>,
-    context: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<{
     id: string;
     token: string;
     tokenExpires: Date;
   }>;
-  logout: (params: { token?: string }, context: Context) => Promise<{ success: boolean; error?: any }>;
+  logout: (
+    params: { token?: string; loginToken?: string; userId?: string },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<{ success: boolean; error?: any }>;
   createHashLoginToken: (loginToken: string) => string;
 
   // User Management
@@ -146,7 +149,7 @@ export interface AccountsModule {
   ) => Promise<boolean>;
   resetPassword: (
     params: { newPlainPassword?: string; token: string },
-    context: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<AccountsUser>;
   sendResetPasswordEmail: (email: string) => Promise<boolean>;
 

@@ -99,16 +99,15 @@ const PostfinanceCheckout: IPaymentAdapter = {
       },
 
       sign: async (transactionContext: any = {}) => {
+        const { orderPayment, order } = params.paymentContext;
+
         const { integrationMode = IntegrationModes.PaymentPage }: { integrationMode: IntegrationModes } =
           transactionContext;
         const completionMode = adapter.getCompletionMode();
-        const { orderPayment } = params.paymentContext;
-        const order = await modules.orders.findOrder({
-          orderId: orderPayment.orderId,
-        });
         const pricing = modules.orders.pricingSheet(order);
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         const transaction = new PostFinanceCheckout.model.TransactionCreate();
+        const userId = order?.userId || params.paymentContext?.userId;
         transaction.currency = order.currency;
         transaction.metaData = {
           orderPaymentId: orderPayment._id,
@@ -119,7 +118,7 @@ const PostfinanceCheckout: IPaymentAdapter = {
         transaction.failedUrl = `${transactionContext?.failedUrl || PFCHECKOUT_FAILED_URL}?order_id=${
           orderPayment.orderId
         }`;
-        transaction.customerId = params.context.user._id;
+        transaction.customerId = userId;
         transaction.tokenizationMode =
           PostFinanceCheckout.model.TokenizationMode.ALLOW_ONE_CLICK_PAYMENT;
         if (completionMode === CompletionModes.Immediate) {
@@ -208,16 +207,13 @@ const PostfinanceCheckout: IPaymentAdapter = {
       },
 
       cancel: async () => {
-        const { orderPayment } = params.paymentContext;
+        const { orderPayment, order } = params.paymentContext;
         const { transactionId } = orderPayment;
         if (!transactionId) {
           return false;
         }
         const transaction = await getTransaction(transactionId);
         const refund = transaction.state === PostFinanceCheckout.model.TransactionState.FULFILL;
-        const order = await modules.orders.findOrder({
-          orderId: orderPayment.orderId,
-        });
         const pricing = modules.orders.pricingSheet(order);
         const totalAmount = pricing?.total({ useNetPrice: false }).amount;
         // For immediate settlements, try refunding. For deferred settlements, void the transaction.

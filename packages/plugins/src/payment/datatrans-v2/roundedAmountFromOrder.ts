@@ -1,9 +1,9 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { Order } from '@unchainedshop/types/orders';
 
 const roundedAmountFromOrder = (
   order: Order,
-  context: Context,
+  context: UnchainedCore,
 ): { currency: string; amount: number } => {
   const pricing = context.modules.orders.pricingSheet(order);
   const { currency, amount } = pricing.total({ useNetPrice: false });

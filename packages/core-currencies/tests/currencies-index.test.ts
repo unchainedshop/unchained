@@ -23,7 +23,6 @@ describe('Test exports', () => {
   it('Mutate currency', async () => {
     const currencyId = await module.create(
       {
-        authorId: 'Test-User-1',
         isoCode: 'CHF',
       },
       'Test-User-1'
@@ -38,8 +37,6 @@ describe('Test exports', () => {
     assert.equal(currency.userId, 'Test-User-1');
     assert.isDefined(currency.created);
     assert.isUndefined(currency.updated);
-    assert.isUndefined(currency.updatedBy);
-    assert.equal(currency.createdBy, 'Test-User-1');
 
     const deletedCount = await module.delete(currencyId);
     assert.equal(deletedCount, 1);

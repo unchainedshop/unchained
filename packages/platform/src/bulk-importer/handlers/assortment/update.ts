@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import upsertAssortmentContent from './upsertAssortmentContent';
 import upsertAssortmentProducts from './upsertAssortmentProducts';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
@@ -6,12 +6,8 @@ import upsertAssortmentFilters from './upsertAssortmentFilters';
 import upsertMedia from './upsertMedia';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 
-export default async function updateAssortment(
-  payload: any,
-  { logger, authorId },
-  unchainedAPI: Context,
-) {
-  const { modules, userId } = unchainedAPI;
+export default async function updateAssortment(payload: any, { logger }, unchainedAPI: UnchainedCore) {
+  const { modules } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
 
   if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
@@ -23,14 +19,13 @@ export default async function updateAssortment(
 
     specification.tags = convertTagsToLowerCase(specification?.tags);
 
-    await unchainedAPI.modules.assortments.update(_id, { ...specification, authorId }, userId);
+    await unchainedAPI.modules.assortments.update(_id, { ...specification });
     if (specification.content) {
       logger.debug('replace localized content for assortment', specification.content);
       await upsertAssortmentContent(
         {
           content: specification.content,
           assortmentId: _id,
-          authorId,
         },
         unchainedAPI,
       );
@@ -43,7 +38,6 @@ export default async function updateAssortment(
       {
         products: products || [],
         assortmentId: _id,
-        authorId,
       },
       unchainedAPI,
     );
@@ -55,7 +49,6 @@ export default async function updateAssortment(
       {
         children: children || [],
         assortmentId: _id,
-        authorId,
       },
       unchainedAPI,
     );
@@ -67,14 +60,13 @@ export default async function updateAssortment(
       {
         filters: filters || [],
         assortmentId: _id,
-        authorId,
       },
       unchainedAPI,
     );
   }
   if (media) {
     logger.debug('update assortment media', media);
-    await upsertMedia({ media: media || [], assortmentId: _id, authorId }, unchainedAPI);
+    await upsertMedia({ media: media || [], assortmentId: _id }, unchainedAPI);
   }
 
   return {

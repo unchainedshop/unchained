@@ -1,11 +1,11 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import upsertVariations from './upsertVariations';
 import upsertMedia from './upsertMedia';
 import upsertProductContent from './upsertProductContent';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
 
-export default async function createProduct(payload: any, { logger, authorId }, unchainedAPI: Context) {
-  const { modules, userId } = unchainedAPI;
+export default async function createProduct(payload: any, { logger }, unchainedAPI: UnchainedCore) {
+  const { modules } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
 
   if (!(await modules.products.productExists({ productId: _id }))) {
@@ -15,14 +15,9 @@ export default async function createProduct(payload: any, { logger, authorId }, 
   if (specification) {
     const productData = transformSpecificationToProductStructure(specification);
     logger.debug('update product object', productData);
-    await modules.products.update(
-      _id,
-      {
-        ...productData,
-        authorId,
-      },
-      userId,
-    );
+    await modules.products.update(_id, {
+      ...productData,
+    });
 
     if (specification.content) {
       logger.debug('replace localized content for product', specification.content);
@@ -30,7 +25,6 @@ export default async function createProduct(payload: any, { logger, authorId }, 
         {
           content: specification.content,
           productId: _id,
-          authorId,
         },
         unchainedAPI,
       );
@@ -43,7 +37,6 @@ export default async function createProduct(payload: any, { logger, authorId }, 
       {
         variations: variations || [],
         productId: _id,
-        authorId,
       },
       unchainedAPI,
     );
@@ -51,7 +44,7 @@ export default async function createProduct(payload: any, { logger, authorId }, 
 
   if (media) {
     logger.debug('replace product media', media);
-    await upsertMedia({ media, productId: _id, authorId }, unchainedAPI);
+    await upsertMedia({ media, productId: _id }, unchainedAPI);
   }
 
   return {

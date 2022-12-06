@@ -15,7 +15,7 @@ export default async function updateCountry(
   if (!(await modules.countries.countryExists({ countryId })))
     throw new CountryNotFoundError({ countryId });
 
-  await modules.countries.update(countryId, country, userId);
+  await modules.countries.update(countryId, country);
 
   return modules.countries.findCountry({ countryId });
 }

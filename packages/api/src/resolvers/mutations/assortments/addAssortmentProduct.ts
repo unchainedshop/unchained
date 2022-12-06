@@ -27,10 +27,8 @@ export default async function addAssortmentProduct(
     {
       assortmentId,
       productId,
-      authorId: userId,
       ...assortmentProduct,
     },
     { skipInvalidation: false },
-    userId,
   );
 }

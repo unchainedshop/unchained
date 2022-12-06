@@ -1,10 +1,14 @@
-export const evaluateContext = (filteredContext) => {
+import { UnchainedCore } from '@unchainedshop/types/core';
+
+export const evaluateContext = (filteredContext: UnchainedCore) => {
+  // TODO: userId, user & localeContext not set following the type
+
   const {
     userId: userIdBeforeLogin,
     user: userBeforeLogin,
     localeContext,
     ...handlerContext
-  } = filteredContext;
+  } = filteredContext as any;
 
   return {
     userIdBeforeLogin,

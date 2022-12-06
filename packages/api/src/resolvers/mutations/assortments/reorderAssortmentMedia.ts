@@ -7,10 +7,7 @@ export default async function reorderAssortmentMedia(
   { modules, userId }: Context,
 ) {
   log('mutation reorderAssortmentMedia', { userId });
-  return modules.assortments.media.updateManualOrder(
-    {
-      sortKeys: params.sortKeys,
-    },
-    userId,
-  );
+  return modules.assortments.media.updateManualOrder({
+    sortKeys: params.sortKeys,
+  });
 }

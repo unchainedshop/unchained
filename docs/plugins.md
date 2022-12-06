@@ -179,11 +179,11 @@ version
 - actions(): Object returns object with the following properties
 	
 	- configurationError(paymentProvider: PaymentProvider,
-      requestContext: Context): String returns the problem/error the current adapter has based on a certain rule. example missing environment variable or configuration value. this error is related with the developer or system maintainer
+      unchainedAPI: UnchainedCore): String returns the problem/error the current adapter has based on a certain rule. example missing environment variable or configuration value. this error is related with the developer or system maintainer
 	
-	- isActive(paymentProvider: PaymentProvider, requestContext: Context): Boolean defines the state of adapter and if this payment adapter should be applied in a certain scenario or not 
+	- isActive(paymentProvider: PaymentProvider, unchainedAPI: UnchainedCore): Boolean defines the state of adapter and if this payment adapter should be applied in a certain scenario or not 
 	
-	- isPayLaterAllowed(paymentProvider: PaymentProvider, requestContext: Context): Boolean if this returns true the order will not be blocked for checkout and payment can happen at a later time
+	- isPayLaterAllowed(paymentProvider: PaymentProvider, unchainedAPI: UnchainedCore): Boolean if this returns true the order will not be blocked for checkout and payment can happen at a later time
 	
 	- charge(transactionContext?: any): Boolean it will charge the order amount to the selected payment provider. when charge returns true the order can be checked out and the order payment status will change to PAID, when it returns false the order can still be checkout but the  payment status will stay the same (OPEN), if it throws an error the checkout process will be canceled and order payment status will stay the same
 

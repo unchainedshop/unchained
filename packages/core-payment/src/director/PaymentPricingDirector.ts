@@ -18,22 +18,22 @@ const baseDirector = BasePricingDirector<
 export const PaymentPricingDirector: IPaymentPricingDirector = {
   ...baseDirector,
 
-  async buildPricingContext({ item, ...context }, requestContext) {
+  async buildPricingContext({ item, ...context }, unchainedAPI) {
     if (!item)
       return {
         discounts: [],
         ...context,
-        ...requestContext,
+        ...unchainedAPI,
       };
 
-    const order = await requestContext.modules.orders.findOrder({
+    const order = await unchainedAPI.modules.orders.findOrder({
       orderId: item.orderId,
     });
-    const provider = await requestContext.modules.payment.paymentProviders.findProvider({
+    const provider = await unchainedAPI.modules.payment.paymentProviders.findProvider({
       paymentProviderId: item.paymentProviderId,
     });
-    const user = await requestContext.modules.users.findUserById(order.userId);
-    const discounts = await requestContext.modules.orders.discounts.findOrderDiscounts({
+    const user = await unchainedAPI.modules.users.findUserById(order.userId);
+    const discounts = await unchainedAPI.modules.orders.discounts.findOrderDiscounts({
       orderId: item.orderId,
     });
 
@@ -41,7 +41,7 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
       country: order.countryCode,
       currency: order.currency,
       ...context,
-      ...requestContext,
+      ...unchainedAPI,
       order,
       orderPayment: item,
       provider,
@@ -50,8 +50,8 @@ export const PaymentPricingDirector: IPaymentPricingDirector = {
     };
   },
 
-  async actions(pricingContext, requestContext) {
-    const actions = await baseDirector.actions(pricingContext, requestContext, this.buildPricingContext);
+  async actions(pricingContext, unchainedAPI) {
+    const actions = await baseDirector.actions(pricingContext, unchainedAPI, this.buildPricingContext);
     return {
       ...actions,
       calculationSheet() {

@@ -24,7 +24,7 @@ export default async function updateProductSupply(
       required: ProductTypes.SimpleProduct,
     });
 
-  await modules.products.update(productId, { supply }, userId);
+  await modules.products.update(productId, { supply });
 
   return modules.products.findProduct({ productId });
 }

@@ -1,4 +1,4 @@
-import { Context, SortOption } from './api';
+import { SortOption } from './api';
 import { Address, Configuration, Contact, FindOptions, LogFields, TimestampFields, _ID } from './common';
 import { UnchainedCore } from './core';
 import { OrderDeliveriesModule } from './orders.deliveries';
@@ -56,7 +56,11 @@ export type OrderTransactionContext = {
   orderContext?: any;
   nextStatus?: OrderStatus;
 };
-export type OrderContextParams<P> = (order: Order, params: P, requestContext: Context) => Promise<Order>;
+export type OrderContextParams<P> = (
+  order: Order,
+  params: P,
+  unchainedAPI: UnchainedCore,
+) => Promise<Order>;
 
 export interface OrderQueries {
   findOrder: (
@@ -81,12 +85,12 @@ export interface OrderTransformations {
   discounted: (
     order: Order,
     orderDiscount: OrderDiscount,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Array<OrderPricingDiscount>>;
   discountTotal: (
     order: Order,
     orderDiscount: OrderDiscount,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<OrderPrice>;
 
   isCart: (order: Order) => boolean;
@@ -98,10 +102,18 @@ export interface OrderProcessing {
   checkout: (
     orderId: string,
     params: OrderTransactionContext,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  confirm: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
-  reject: (orderId: string, params: OrderTransactionContext, requestContext: Context) => Promise<Order>;
+  confirm: (
+    orderId: string,
+    params: OrderTransactionContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Order>;
+  reject: (
+    orderId: string,
+    params: OrderTransactionContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Order>;
   ensureCartForUser: (
     params: { user: User; countryCode?: string },
     unchainedAPI: UnchainedCore,
@@ -114,48 +126,46 @@ export interface OrderProcessing {
 }
 
 export interface OrderMutations {
-  create: (
-    doc: {
-      billingAddress?: Address;
-      contact?: Contact;
-      countryCode: string;
-      currency: string;
-      orderNumber?: string;
-      originEnrollmentId?: string;
-    },
-    userId?: string,
-  ) => Promise<Order>;
+  create: (doc: {
+    userId: string;
+    billingAddress?: Address;
+    contact?: Contact;
+    countryCode: string;
+    currency: string;
+    orderNumber?: string;
+    originEnrollmentId?: string;
+  }) => Promise<Order>;
 
-  delete: (orderId: string, userId?: string) => Promise<number>;
+  delete: (orderId: string) => Promise<number>;
 
-  initProviders: (order: Order, requestContext: Context) => Promise<Order>;
+  initProviders: (order: Order, unchainedAPI: UnchainedCore) => Promise<Order>;
   invalidateProviders: (unchainedAPI: UnchainedCore, maxAgeDays: number) => Promise<void>;
 
   setDeliveryProvider: (
     orderId: string,
     deliveryProviderId: string,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
   setPaymentProvider: (
     orderId: string,
     paymentProviderId: string,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
 
   updateBillingAddress: (
     orderId: string,
     billingAddress: Address,
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  updateContact: (orderId: string, contact: Contact, requestContext: Context) => Promise<Order>;
-  updateContext: (orderId: string, context: any, requestContext: Context) => Promise<boolean>;
+  updateContact: (orderId: string, contact: Contact, unchainedAPI: UnchainedCore) => Promise<Order>;
+  updateContext: (orderId: string, context: any, unchainedAPI: UnchainedCore) => Promise<boolean>;
   updateStatus: (
     orderId: string,
     params: { status: OrderStatus; info?: string },
-    requestContext: Context,
+    unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
 
-  updateCalculation: (orderId: string, requestContext: Context) => Promise<Order>;
+  updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
 }
 
 export type OrdersModule = OrderQueries &
@@ -189,7 +199,7 @@ export type CreateUserCartService = (
     orderNumber?: string;
     countryCode?: string;
   },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Order>;
 
 export interface OrderServices {
@@ -213,6 +223,6 @@ export interface OrdersSettingsOptions {
   orderNumberHashFn?: (order: Order, index: number) => string;
   validateOrderPosition?: (
     validationParams: OrderSettingsOrderPositionValidation,
-    context: Context,
+    context: UnchainedCore,
   ) => Promise<void>;
 }

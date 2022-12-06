@@ -5,9 +5,9 @@ import { FilterNotFoundError, InvalidIdError } from '../../../errors';
 export default async function removeFilter(
   root: Root,
   { filterId }: { filterId: string },
-  requestContext: Context,
+  context: Context,
 ) {
-  const { modules, userId } = requestContext;
+  const { modules, userId } = context;
   log(`mutation removeFilter ${filterId}`, { userId });
 
   if (!filterId) throw new InvalidIdError({ filterId });

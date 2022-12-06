@@ -27,7 +27,7 @@ export default async function createProductBundleItem(
   if (!(await modules.products.productExists({ productId: item.productId })))
     throw new ProductNotFoundError({ productId: item.productId });
 
-  await modules.products.bundleItems.addBundleItem(productId, item, userId);
+  await modules.products.bundleItems.addBundleItem(productId, item);
 
   return modules.products.findProduct({ productId });
 }

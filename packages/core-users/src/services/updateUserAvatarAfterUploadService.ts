@@ -4,7 +4,7 @@ export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadServ
   { file },
   context,
 ) => {
-  const { modules, services, userId: currentUserId } = context;
+  const { modules, services } = context;
   const { userId } = file.meta as { userId: string };
   const user = await modules.users.findUserById(userId);
 
@@ -17,5 +17,5 @@ export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadServ
     );
   }
 
-  await modules.users.updateAvatar(userId, file._id, currentUserId || file.updatedBy || file.createdBy);
+  await modules.users.updateAvatar(userId, file._id);
 };

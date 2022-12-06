@@ -6,7 +6,6 @@ import {
 } from '@unchainedshop/core-filters';
 import { configureProductsModule } from '@unchainedshop/core-products';
 import { FiltersModule } from '@unchainedshop/types/filters';
-import { Context } from '@unchainedshop/types/api';
 import { ProductsModule } from '@unchainedshop/types/products';
 
 describe('Test exports', () => {
@@ -50,7 +49,6 @@ describe('Test exports', () => {
   it('Insert filter', async () => {
     const newFilter = await context.modules.filters.create(
       {
-        authorId: 'Test-User-1',
         isActive: true,
         key: 'Test',
         options: [],
@@ -58,7 +56,7 @@ describe('Test exports', () => {
         title: 'My Test Filter',
         locale: 'en',
       },
-      context as Context,
+      context,
       { skipInvalidation: true },
       'Test-User-1'
     );

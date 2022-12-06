@@ -17,6 +17,7 @@ import {
 } from '@unchainedshop/types/user';
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing';
+import { Roles, permissions } from '@unchainedshop/roles';
 import { checkAction, checkTypeResolver } from '../../acl';
 import { actions } from '../../roles';
 
@@ -134,7 +135,7 @@ export const User: UserHelperTypes = {
 
   country: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.services.users.getUserCountry(user, params, context);
+    return context.services.users.getUserCountry(user, context);
   },
 
   enrollments: async (user, params, context) => {
@@ -146,18 +147,15 @@ export const User: UserHelperTypes = {
 
   language: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.services.users.getUserLanguage(user, params, context);
+    return context.services.users.getUserLanguage(user, context);
   },
 
   allowedActions: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.services.users.getUserRoleActions(user, context);
-  },
 
-  // locale: async (user, params, context) => {
-  //   await checkAction(context, viewUserPrivateInfos, [user, params, context]);
-  //   return context.modules.users.userLocale(user, params);
-  // },
+    const userRoles = Roles.getUserRoles(user?._id, user.roles, true);
+    return permissions(userRoles, context.roles) as Promise<string[]>;
+  },
 
   orders: async (user, params, context) => {
     await checkAction(context, viewUserOrders, [user, params]);

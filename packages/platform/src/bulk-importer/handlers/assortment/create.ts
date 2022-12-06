@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 import upsertAssortmentChildren from './upsertAssortmentChildren';
 import upsertAssortmentContent from './upsertAssortmentContent';
@@ -8,10 +8,10 @@ import upsertMedia from './upsertMedia';
 
 export default async function createAssortment(
   payload: any,
-  { logger, authorId, createShouldUpsertIfIDExists },
-  unchainedAPI: Context,
+  { logger, createShouldUpsertIfIDExists },
+  unchainedAPI: UnchainedCore,
 ) {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
   if (!specification) throw new Error(`Specification is required when creating new assortment ${_id}`);
 
@@ -22,18 +22,13 @@ export default async function createAssortment(
 
   logger.debug('create assortment object', specification);
   try {
-    await modules.assortments.create({ ...specification, _id, authorId }, userId);
+    await modules.assortments.create({ ...specification, _id });
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
     logger.debug('entity already exists, falling back to update', specification);
-    await modules.assortments.update(
-      _id,
-      {
-        ...specification,
-        authorId,
-      },
-      userId,
-    );
+    await modules.assortments.update(_id, {
+      ...specification,
+    });
   }
 
   if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
@@ -45,7 +40,6 @@ export default async function createAssortment(
     {
       content: specification.content,
       assortmentId: _id,
-      authorId,
     },
     unchainedAPI,
   );
@@ -55,7 +49,6 @@ export default async function createAssortment(
     {
       products: products || [],
       assortmentId: _id,
-      authorId,
     },
     unchainedAPI,
   );
@@ -65,7 +58,6 @@ export default async function createAssortment(
     {
       children: children || [],
       assortmentId: _id,
-      authorId,
     },
     unchainedAPI,
   );
@@ -75,13 +67,12 @@ export default async function createAssortment(
     {
       filters: filters || [],
       assortmentId: _id,
-      authorId,
     },
     unchainedAPI,
   );
 
   logger.debug('create assortment media', media);
-  await upsertMedia({ media: media || [], assortmentId: _id, authorId }, unchainedAPI);
+  await upsertMedia({ media: media || [], assortmentId: _id }, unchainedAPI);
 
   return {
     entity: 'ASSORTMENT',

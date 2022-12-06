@@ -36,14 +36,10 @@ export default async function addProductAssignment(
       required: ProductTypes.ConfigurableProduct,
     });
 
-  await modules.products.assignments.addProxyAssignment(
-    productId,
-    {
-      proxyId,
-      vectors,
-    },
-    userId,
-  );
+  await modules.products.assignments.addProxyAssignment(productId, {
+    proxyId,
+    vectors,
+  });
 
   return modules.products.findProduct({ productId: proxyId });
 }

@@ -17,7 +17,6 @@ describe.skip('Test exports', () => {
   it('Insert product', async () => {
     let product = await module.create(
       {
-        authorId: 'Test-User-1',
         sequence: 13,
         slugs: ['Test'],
         tags: [],

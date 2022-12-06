@@ -1,4 +1,4 @@
-import { Context } from './api';
+import { UnchainedCore } from './core';
 
 export type EmailTemplateType = {
   type: 'EMAIL';
@@ -29,7 +29,7 @@ export type ArbitraryTemplateType = {
 
 export type TemplateResolver = (
   params: { template: string; [x: string]: any },
-  requestContext: Context,
+  unchainedAPI: UnchainedCore,
 ) => Promise<Array<EmailTemplateType | SMSTemplateType | ArbitraryTemplateType>>;
 
 export interface MessagingModule {

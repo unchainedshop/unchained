@@ -24,7 +24,7 @@ export interface BookmarksModule extends ModuleMutations<Bookmark> {
   findById: (bookmarkId: string) => Promise<Bookmark>;
   find: (query: Query) => Promise<Array<Bookmark>>;
   existsByUserIdAndProductId: (filter: UserProductFilter) => Promise<boolean>;
-  replaceUserId: (fromUserId: string, toUserId: string, userId?: string) => Promise<number>;
+  replaceUserId: (fromUserId: string, toUserId: string) => Promise<number>;
   deleteByUserId: (toUserId: string) => Promise<number>;
   deleteByProductId: (productId: string) => Promise<number>;
 }

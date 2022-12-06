@@ -31,20 +31,17 @@ const SendMessage: IDeliveryAdapter = {
       },
 
       send: async () => {
-        const { modules, order, userId } = context;
+        const { modules, order } = context;
 
-        return modules.worker.addWork(
-          {
-            type: 'MESSAGE',
-            retries: 0,
-            input: {
-              template: 'DELIVERY',
-              orderId: order._id,
-              config,
-            },
+        return modules.worker.addWork({
+          type: 'MESSAGE',
+          retries: 0,
+          input: {
+            template: 'DELIVERY',
+            orderId: order._id,
+            config,
           },
-          userId,
-        );
+        });
       },
     };
   },

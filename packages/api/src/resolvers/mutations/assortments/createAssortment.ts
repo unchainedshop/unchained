@@ -9,14 +9,10 @@ export default async function createAssortment(
 ) {
   log('mutation createAssortment', { userId });
 
-  const assortmentId = await modules.assortments.create(
-    {
-      ...assortment,
-      locale: localeContext.language,
-      authorId: userId,
-    },
-    userId,
-  );
+  const assortmentId = await modules.assortments.create({
+    ...assortment,
+    locale: localeContext.language,
+  });
 
   return modules.assortments.findAssortment({ assortmentId });
 }

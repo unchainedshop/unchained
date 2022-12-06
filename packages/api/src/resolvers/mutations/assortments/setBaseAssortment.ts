@@ -14,7 +14,7 @@ export default async function setBaseAssortment(
   if (!(await modules.assortments.assortmentExists({ assortmentId })))
     throw new AssortmentNotFoundError({ assortmentId });
 
-  await modules.assortments.setBase(assortmentId, userId);
+  await modules.assortments.setBase(assortmentId);
 
   return modules.assortments.findAssortment({ assortmentId });
 }

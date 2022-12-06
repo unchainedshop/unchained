@@ -19,22 +19,18 @@ export const configureFilterTextsModule = ({
     params,
     locale,
     text,
-    userId,
   ) => {
     const { filterId, filterOptionValue } = params;
 
     const modifier: any = {
       $set: {
         updated: new Date(),
-        updatedBy: userId,
         title: text.title,
         subtitle: text.subtitle,
-        authorId: userId,
       },
       $setOnInsert: {
         _id: generateDbObjectId(),
         created: new Date(),
-        createdBy: userId,
         filterId,
         filterOptionValue: filterOptionValue || null,
         locale,
@@ -77,9 +73,9 @@ export const configureFilterTextsModule = ({
     },
 
     // Mutations
-    updateTexts: async (params, texts, userId) => {
+    updateTexts: async (params, texts) => {
       const filterTexts = await Promise.all(
-        texts.map(({ locale, ...text }) => upsertLocalizedText(params, locale, text, userId)),
+        texts.map(({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
       );
 
       await emit('FILTER_UPDATE_TEXTS', {

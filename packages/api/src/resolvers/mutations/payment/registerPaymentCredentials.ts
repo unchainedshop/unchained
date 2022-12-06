@@ -7,7 +7,7 @@ export default async function registerPaymentCredentials(
   params: { paymentProviderId: string; transactionContext: any },
   context: Context,
 ) {
-  const { modules, services, userId } = context;
+  const { modules, userId } = context;
   const { paymentProviderId, transactionContext } = params;
   log(`mutation registerPaymentCredentials for ${paymentProviderId}`, {
     userId,
@@ -18,5 +18,9 @@ export default async function registerPaymentCredentials(
   const paymentProvider = await modules.payment.paymentProviders.findProvider({ paymentProviderId });
   if (!paymentProvider) throw new PaymentProviderNotFoundError({ paymentProviderId });
 
-  return services.payment.registerPaymentCredentials(paymentProviderId, { transactionContext }, context);
+  return modules.payment.registerCredentials(
+    paymentProviderId,
+    { transactionContext, userId: context.userId },
+    context,
+  );
 }

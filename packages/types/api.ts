@@ -47,8 +47,6 @@ export interface UnchainedHTTPServerContext {
   res: OutgoingMessage;
 }
 
-export type UnchainedAPI = UnchainedCore;
-
 export type Context = UnchainedCore & {
   version?: string;
   roles?: any;

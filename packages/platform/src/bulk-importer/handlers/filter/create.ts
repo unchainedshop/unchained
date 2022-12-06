@@ -1,11 +1,11 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import upsertFilterContent from './upsertFilterContent';
 import upsertFilterOptionContent from './upsertFilterOptionContent';
 
 export default async function createFilter(
   payload: any,
-  { logger, authorId, createShouldUpsertIfIDExists },
-  unchainedAPI: Context,
+  { logger, createShouldUpsertIfIDExists },
+  unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;
@@ -23,11 +23,9 @@ export default async function createFilter(
         ...filterData,
         _id,
         options: options?.map((option) => option.value) || [],
-        authorId,
       },
       unchainedAPI,
       { skipInvalidation: true },
-      unchainedAPI.userId,
     );
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
@@ -38,11 +36,9 @@ export default async function createFilter(
       {
         ...filterData,
         options: options?.map((option) => option.value) || [],
-        authorId,
       },
       unchainedAPI,
       { skipInvalidation: true },
-      unchainedAPI.userId,
     );
   }
 
@@ -51,7 +47,7 @@ export default async function createFilter(
   }
 
   logger.debug('create localized content for filter', content);
-  await upsertFilterContent({ content, filterId: _id, authorId }, unchainedAPI);
+  await upsertFilterContent({ content, filterId: _id }, unchainedAPI);
 
   logger.debug('create localized content for filter options', content);
   await upsertFilterOptionContent({ options, filterId: _id }, unchainedAPI);

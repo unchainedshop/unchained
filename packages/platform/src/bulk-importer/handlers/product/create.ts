@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import upsertVariations from './upsertVariations';
 import upsertMedia from './upsertMedia';
 import upsertProductContent from './upsertProductContent';
@@ -6,10 +6,10 @@ import transformSpecificationToProductStructure from './transformSpecificationTo
 
 export default async function createProduct(
   payload: any,
-  { logger, authorId, createShouldUpsertIfIDExists },
-  unchainedAPI: Context,
+  { logger, createShouldUpsertIfIDExists },
+  unchainedAPI: UnchainedCore,
 ) {
-  const { modules, userId } = unchainedAPI;
+  const { modules } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
 
   if (!specification) throw new Error(`Specification is required when creating new product ${_id}`);
@@ -19,26 +19,17 @@ export default async function createProduct(
   const productData = transformSpecificationToProductStructure(specification);
   logger.debug('create product object', productData);
   try {
-    await modules.products.create(
-      {
-        ...productData,
-        _id,
-        authorId,
-      },
-      userId,
-    );
+    await modules.products.create({
+      ...productData,
+      _id,
+    });
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
 
     logger.debug('entity already exists, falling back to update', specification);
-    await modules.products.update(
-      _id,
-      {
-        ...productData,
-        authorId,
-      },
-      userId,
-    );
+    await modules.products.update(_id, {
+      ...productData,
+    });
   }
 
   if (!(await modules.products.productExists({ productId: _id }))) {
@@ -50,7 +41,6 @@ export default async function createProduct(
     {
       content: specification.content,
       productId: _id,
-      authorId,
     },
     unchainedAPI,
   );
@@ -60,13 +50,12 @@ export default async function createProduct(
     {
       variations: variations || [],
       productId: _id,
-      authorId,
     },
     unchainedAPI,
   );
 
   logger.debug('create product media', media);
-  await upsertMedia({ media: media || [], productId: _id, authorId }, unchainedAPI);
+  await upsertMedia({ media: media || [], productId: _id }, unchainedAPI);
 
   return {
     entity: 'PRODUCT',

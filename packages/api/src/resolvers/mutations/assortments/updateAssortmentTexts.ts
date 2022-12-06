@@ -15,5 +15,5 @@ export default async function updateAssortmentTexts(
   if (!(await modules.assortments.assortmentExists({ assortmentId })))
     throw new AssortmentNotFoundError({ assortmentId });
 
-  return modules.assortments.texts.updateTexts(assortmentId, texts, userId);
+  return modules.assortments.texts.updateTexts(assortmentId, texts);
 }

@@ -14,10 +14,8 @@ export default async function createFilter(
     {
       ...filter,
       locale: localeContext.language,
-      authorId: userId,
     },
     context,
     { skipInvalidation: false },
-    userId,
   );
 }

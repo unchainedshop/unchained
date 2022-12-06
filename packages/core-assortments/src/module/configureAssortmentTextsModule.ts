@@ -47,7 +47,6 @@ export const configureAssortmentTextsModule = ({
     assortmentId,
     locale,
     text,
-    userId,
   ) => {
     const { slug: textSlug, ...textFields } = text;
     const slug = await makeSlug({
@@ -59,14 +58,11 @@ export const configureAssortmentTextsModule = ({
     const modifier: any = {
       $set: {
         updated: new Date(),
-        updatedBy: userId,
-        authorId: userId,
         ...textFields,
       },
       $setOnInsert: {
         _id: generateDbObjectId(),
         created: new Date(),
-        createdBy: userId,
         locale,
       },
     };
@@ -88,7 +84,6 @@ export const configureAssortmentTextsModule = ({
       await Assortments.updateOne(assortmentSelector, {
         $set: {
           updated: new Date(),
-          updatedBy: userId,
         },
         $addToSet: {
           slugs: slug,
@@ -103,7 +98,6 @@ export const configureAssortmentTextsModule = ({
         {
           $set: {
             updated: new Date(),
-            updatedBy: userId,
           },
           $pull: {
             slugs: slug,
@@ -149,12 +143,10 @@ export const configureAssortmentTextsModule = ({
     },
 
     // Mutations
-    updateTexts: async (assortmentId, texts, userId) => {
+    updateTexts: async (assortmentId, texts) => {
       const assortmentTexts = Array.isArray(texts)
         ? await Promise.all(
-            texts.map(async ({ locale, ...text }) =>
-              upsertLocalizedText(assortmentId, locale, text, userId),
-            ),
+            texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentId, locale, text)),
           )
         : [];
 
