@@ -6,6 +6,7 @@ import {
   ProductLinkedToActiveVariationError,
   ProductLinkedToActiveBundleError,
   ProductLinkedToEnrollmentError,
+  ProductLinkedToQuotationError,
 } from '../../../errors';
 
 export default async function removeProduct(
@@ -30,7 +31,7 @@ export default async function removeProduct(
     if (e?.message === 'ProductLinkedToEnrollmentError')
       throw new ProductLinkedToEnrollmentError({ productId });
     if (e?.message === 'ProductLinkedToQuotationError')
-      throw new ProductLinkedToEnrollmentError({ productId });
+      throw new ProductLinkedToQuotationError({ productId });
 
     throw e;
   }
