@@ -11,7 +11,6 @@ describe('Accounts', () => {
       expect(buf2hex(Buffer.from("hello"))).toEqual('68656c6c6f')
     })
     it('toArrayBuffer should return ArrayBuffer', () => {
-      console.log(toArrayBuffer(Buffer.from("hello")))
       expect(toArrayBuffer(Buffer.from("hello"))).toBeInstanceOf(ArrayBuffer)
     })
 });
