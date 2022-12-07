@@ -12,7 +12,8 @@
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit tests/*"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
   },
   "repository": {
     "type": "git",

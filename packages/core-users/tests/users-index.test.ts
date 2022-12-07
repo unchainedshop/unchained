@@ -1,8 +1,6 @@
 import user from './mock/user-mock'
-import {buildFindSelector, getUserLocale, removeConfidentialServiceHashes} from '../src/module/configureUsersModule'
+import {buildFindSelector,  removeConfidentialServiceHashes} from '../src/module/configureUsersModule'
 import { User } from '@unchainedshop/types/user';
-import { Locale } from 'locale';
-
 
 describe('User', () => {
   describe('removeConfidentialServiceHashes', () => {
@@ -13,31 +11,6 @@ describe('User', () => {
     });
 
   
-  })
-
-  describe('getUserLocale', () => {
-    it('Should return users locale context from last login if no localeContext is passed ', async () => {
-      expect(getUserLocale(user as unknown as User)).toEqual({
-        code: 'de_CH',
-        language: 'de',
-        country: 'CH',
-        normalized: 'de_CH'
-      })
-    });
-
-    it('Should use the passed locale if provided', async () => {
-      expect(getUserLocale(user as unknown as User,{ localeContext: {
-        code: 'et',
-        language: 'amh',
-        country: 'et',
-        normalized: 'et'
-      } as Locale})).toEqual({
-        code: 'et',
-        language: 'amh',
-        country: 'et',
-        normalized: 'et'
-      })
-    });
   })
 
   describe('buildFindSelector', () => {
