@@ -21,19 +21,21 @@ export default async function removeProduct(
 
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
-  try {
-    await services.products.removeProduct({ productId, userId: context.userId }, context);
-  } catch (e) {
-    if (e?.message === 'ProductLinkedToActiveVariationError')
-      throw new ProductLinkedToActiveVariationError({ productId });
-    if (e?.message === 'ProductLinkedToActiveVariationError')
-      throw new ProductLinkedToActiveBundleError({ productId });
-    if (e?.message === 'ProductLinkedToEnrollmentError')
-      throw new ProductLinkedToEnrollmentError({ productId });
-    if (e?.message === 'ProductLinkedToQuotationError')
-      throw new ProductLinkedToQuotationError({ productId });
 
-    throw e;
-  }
+  const activeLink = await modules.products.firstActiveProductLink(productId);
+  if (activeLink?.bundles?.length)
+    throw new ProductLinkedToActiveBundleError({ productId, bundleId: activeLink?._id });
+  if (activeLink?.variations?.length)
+    throw new ProductLinkedToActiveVariationError({ productId, proxyId: activeLink?._id });
+
+  const openQuotation = await modules.quotations.openQuotationWithProduct({ productId });
+  if (openQuotation)
+    throw new ProductLinkedToQuotationError({ productId, quotationId: openQuotation?._id });
+  const openEnrollment = await modules.enrollments.openEnrollmentsWithProduct({ productId });
+  if (openEnrollment)
+    throw new ProductLinkedToEnrollmentError({ productId, enrollmentId: openEnrollment?._id });
+
+  await services.products.removeProduct({ productId }, context);
+
   return modules.products.findProduct({ productId });
 }

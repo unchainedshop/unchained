@@ -1,5 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
-import { Update } from '@unchainedshop/types/common';
+import { Query, Update } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 
 import {
@@ -224,13 +224,11 @@ export const configureQuotationsModule = async ({
       const quotationCount = await Quotations.countDocuments(buildFindSelector(query));
       return quotationCount;
     },
-    quotationExistsForProduct: async ({ productId }) => {
+    openQuotationWithProduct: async ({ productId }) => {
       const selector: Query = { productId };
       selector.status = { $in: [QuotationStatus.REQUESTED, QuotationStatus.PROPOSED] }; // TODO: Slow IDXSCAN in common query
 
-      const quotationCount = await Quotations.countDocuments(selector, { limit: 1 });
-
-      return !!quotationCount;
+      return Quotations.findOne(selector);
     },
 
     findQuotation: async ({ quotationId }, options) => {

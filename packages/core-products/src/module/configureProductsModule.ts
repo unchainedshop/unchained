@@ -362,32 +362,32 @@ export const configureProductsModule = async ({
 
       return productId;
     },
-
-    delete: async (productId) => {
-      const product = await Products.findOne(generateDbFilterById(productId), {});
-      if (product.status !== InternalProductStatus.DRAFT) {
-        throw new Error(`Invalid status', ${product.status}`);
-      }
-      const activeLinks = await Products.findOne(
+    firstActiveProductLink: async (productId) => {
+      const activeLink = await Products.findOne(
         {
           $or: [{ 'proxy.assignments.productId': productId }, { 'bundleItems.productId': productId }],
           status: { $ne: 'DELETED' },
         },
         { projection: { _id: 1, proxy: 1, bundleItems: 1 } },
       );
-      if (
-        activeLinks?.proxy?.assignments?.some(
-          ({ productId: variantProductId }) => variantProductId === productId,
-        )
-      )
-        throw new Error('ProductLinkedToActiveVariationError');
 
-      if (
-        activeLinks?.bundleItems?.some(
-          ({ productId: bundledProductId }) => bundledProductId === productId,
-        )
-      )
-        throw new Error('ProductLinkedToActiveBundleError');
+      return {
+        _id: activeLink?._id,
+        variations:
+          activeLink?.proxy?.assignments?.filter(
+            ({ productId: variantProductId }) => variantProductId === productId,
+          ) || [],
+        bundles:
+          activeLink?.bundleItems?.filter(
+            ({ productId: bundledProductId }) => bundledProductId === productId,
+          ) || [],
+      };
+    },
+    delete: async (productId) => {
+      const product = await Products.findOne(generateDbFilterById(productId), {});
+      if (product.status !== InternalProductStatus.DRAFT) {
+        throw new Error(`Invalid status', ${product.status}`);
+      }
 
       const updatedResult = await Products.updateOne(generateDbFilterById(productId), {
         $set: {

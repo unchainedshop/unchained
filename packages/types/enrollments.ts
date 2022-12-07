@@ -83,7 +83,7 @@ export interface EnrollmentQueries {
       sort?: Array<SortOption>;
     },
   ) => Promise<Array<Enrollment>>;
-  enrollmentExistsForProduct(params: { productId: string }): Promise<boolean>;
+  openEnrollmentsWithProduct(params: { productId: string }): Promise<Enrollment | null>;
   count: (params: EnrollmentQuery) => Promise<number>;
 }
 

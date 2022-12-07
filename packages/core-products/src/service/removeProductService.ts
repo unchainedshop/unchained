@@ -11,13 +11,6 @@ export const removeProductService: RemoveProductService = async ({ productId }, 
     // falls through
     case null:
     case ProductStatus.DRAFT:
-      const hasActiveQuotations = await modules.quotations.quotationExistsForProduct({ productId });
-      if (hasActiveQuotations) throw new Error('ProductLinkedToQuotationError');
-      const hasActiveEnrollment = await modules.enrollments.enrollmentExistsForProduct({
-        productId,
-      });
-      if (hasActiveEnrollment) throw new Error('ProductLinkedToEnrollmentError');
-
       await modules.bookmarks.deleteByProductId(productId);
       await modules.assortments.products.delete(productId, {});
       await modules.orders.positions.removeProductByIdFromAllPositions({ productId }, unchainedApi);

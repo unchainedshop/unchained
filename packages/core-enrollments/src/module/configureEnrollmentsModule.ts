@@ -218,13 +218,11 @@ export const configureEnrollmentsModule = async ({
       const enrollmentCount = await Enrollments.countDocuments(buildFindSelector(query));
       return enrollmentCount;
     },
-    enrollmentExistsForProduct: async ({ productId }) => {
+    openEnrollmentsWithProduct: async ({ productId }) => {
       const selector: Query = { productId };
       selector.status = { $in: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED] }; // TODO: Slow IDXSCAN in common query
 
-      const enrollmentCount = await Enrollments.countDocuments(selector, { limit: 1 });
-
-      return !!enrollmentCount;
+      return Enrollments.findOne(selector);
     },
 
     findEnrollment: async ({ enrollmentId, orderId }, options) => {
