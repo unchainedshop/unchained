@@ -5,32 +5,31 @@ description: Learn about the cart and it's advanced features
 
 # Orderable Items
 
-In Unchained, you can add products and quotations to carts but in the end, only products will be left in the cart. Input products when adding to cart are transformed by specific rules:
+In Unchained, you can add products and quotations to carts, but only products will remain in the cart in the end. When adding products to the cart, they are transformed according to the following rules:
 
 Products:
+- When adding a SimpleProduct or BundleProduct, the system adds the product to the cart with no transformation happening.
+- When exploding a BundleProduct, it will be removed from the cart and its parts will be added to the cart.
+- When adding a ConfigurableProduct, the system resolves to the concrete product if enough variation vector parameters are provided through the product configuration parameters. If not, the operation will fail. The variation configuration is stored on the resolved item along with the user-provided parameters.
 
-- When adding a SimpleProduct or BundleProduct, the system just adds that product to the cart with no transformation happening
-- When exploding a BundleProduct, it will get removed from the cart and it's parts are added to the cart
-- When adding a ConfigurableProduct, the system resolves to the concrete product if enough variation vector parameters provided through product configuration parameters, else the operation will fail. The variation configuration is stored on the resolved item along user provided parameters.
-
-When one product leads to another, the source productId is saved into context.origin. That way a SimpleProduct item still has a reference to the ConfigurableProduct for UX purposes.
+When one product leads to another, the source productId is saved in context.origin. This way, a SimpleProduct item still has a reference to the ConfigurableProduct for UX purposes.
 
 Quotations:
+When adding a Quotation to the cart, the actual product will be resolved and added to the cart. It uses the transform method of the quotation plugin system to transform a quotationConfiguration into a productConfiguration. The source quotationId is saved in context.origin.
 
-- When adding a Quotation to the cart, the actual product will get resolved and added to the cart. It uses a transform method of the quotation plugin system to transform a quotationConfiguration to a productConfiguration. The source quotationId is saved into context.origin
 
-It's also possible to chain:
+It is also possible to chain operations:
 
-addCartQuotation is called with quotation Y
--> resolves to a configurable product X with a specific configuration
--> specific configuration is handed to vector logic trying to find a distinct concrete product Z
--> bundle product Z is resolved
+1. addCartQuotation is called with quotation Y
+2. quotation Y is resolved to a configurable product X with a specific configuration
+3. the specific configuration is handed to the vector logic to try to find a distinct concrete product Z
+4. bundle product Z is resolved
 
 Now the cart looks like this:
 
-1 x Bundle Z (A furniture for ex.)
+1 x Bundle Z (e.g. a piece of furniture)
 
-Now you could explode the bundle and the cart will result in:
+Now, if you explode the bundle, the cart will contain:
 
 1 x Part A
 2 x Part B
