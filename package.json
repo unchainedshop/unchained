@@ -35,14 +35,15 @@
     "test": "jest --runInBand --detectOpenHandles --forceExit tests/*",
     "test:ci": "npm run test:integration && npm run test:packages",
     "test:integration": "jest --ci --runInBand --detectOpenHandles --verbose --forceExit tests/*",
-    "test:packages": "jest --ci --runInBand --detectOpenHandles --passWithNoTests --verbose --forceExit packages/*",
+    "test:packages": "jest --ci --runInBand --detectOpenHandles --passWithNoTests --verbose --forceExit packages/**/**",
     "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --no-watchman --verbose tests/**",
     "dev": "run-p --print-label dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch-packages": "workspaces-run --only-fs 'packages/**' --parallel -- npm run watch",
     "publish-packages": "(npm run build || true) && npm publish -ws",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit --watch packages/**/tests/*.test.*"
   },
   "devDependencies": {
     "@apollo/client": "^3.7.1",
