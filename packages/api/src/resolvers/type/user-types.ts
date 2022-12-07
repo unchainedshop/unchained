@@ -25,6 +25,9 @@ type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise
 
 export interface UserHelperTypes {
   _id: HelperType<any, boolean>;
+  created: HelperType<any, Date>;
+  updated: HelperType<any, Date>;
+  deleted: HelperType<any, Date>;
   avatar: HelperType<{ localeContext: Locale }, File>;
   bookmarks: HelperType<any, Array<Bookmark>>;
   cart: HelperType<{ orderNumber?: string }, Order>;
@@ -71,6 +74,9 @@ const getPrimaryEmail = (user: UserType) => {
 
 export const User: UserHelperTypes = {
   _id: checkTypeResolver(viewUserPublicInfos, '_id'),
+  created: checkTypeResolver(viewUserPrivateInfos, 'created'),
+  updated: checkTypeResolver(viewUserPrivateInfos, 'updated'),
+  deleted: checkTypeResolver(viewUserPrivateInfos, 'deleted'),
   emails: checkTypeResolver(viewUserPrivateInfos, 'emails'),
   lastBillingAddress: checkTypeResolver(viewUserPrivateInfos, 'lastBillingAddress'),
   lastContact: checkTypeResolver(viewUserPrivateInfos, 'lastContact'),

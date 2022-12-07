@@ -28,6 +28,7 @@ const USER_EVENTS = [
   'USER_UPDATE_HEARTBEAT',
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
+  'USER_REMOVE',
 ];
 const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = rawUser;
@@ -206,8 +207,18 @@ export const configureUsersModule = async ({
       await Users.updateOne(generateDbFilterById(user._id), modifier);
     },
 
-    updateProfile: async (_id, updatedData) => {
-      const userFilter = generateDbFilterById(_id);
+    delete: async (userId) => {
+      const userFilter = generateDbFilterById(userId);
+      await mutations.delete(userId);
+      const user = await Users.findOne(userFilter, {});
+      await emit('USER_REMOVE', {
+        user: removeConfidentialServiceHashes(user),
+      });
+      return user;
+    },
+
+    updateProfile: async (userId, updatedData) => {
+      const userFilter = generateDbFilterById(userId);
       const { meta, profile } = updatedData;
 
       if (!meta && !profile) {
@@ -231,7 +242,7 @@ export const configureUsersModule = async ({
         modifier.$set.meta = meta;
       }
 
-      await mutations.update(_id, modifier);
+      await mutations.update(userId, modifier);
       const user = await Users.findOne(userFilter, {});
       await emit('USER_UPDATE_PROFILE', {
         user: removeConfidentialServiceHashes(user),

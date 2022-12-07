@@ -28,6 +28,7 @@ import removeWeb3Address from './accounts/removeWeb3Address';
 import verifyWeb3Address from './accounts/verifyWeb3Address';
 import updateUserAvatar from './users/updateUserAvatar';
 import updateUserProfile from './users/updateUserProfile';
+import removeUser from './users/removeUser';
 import setUserTags from './users/setUserTags';
 import createLanguage from './languages/createLanguage';
 import updateLanguage from './languages/updateLanguage';
@@ -186,6 +187,7 @@ export default {
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
   prepareUserAvatarUpload: acl(actions.updateUser)(prepareUserAvatarUpload),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
+  removeUser: acl(actions.updateUser)(removeUser),
   setUserTags: acl(actions.manageUsers)(setUserTags),
   setPassword: acl(actions.manageUsers)(setPassword),
   setUsername: acl(actions.updateUsername)(setUsername),
