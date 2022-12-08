@@ -950,6 +950,7 @@ describe('Assortments', () => {
               _id
               created
               updated
+              deleted
               isActive
               isBase
               isRoot
@@ -1005,6 +1006,7 @@ describe('Assortments', () => {
           query Assortment($assortmentId: ID!) {
             assortment(assortmentId: $assortmentId) {
               _id
+              deleted
             }
           }
         `,
@@ -1013,7 +1015,7 @@ describe('Assortments', () => {
         },
       });
 
-      expect(assortment).toBe(null);
+      expect(assortment.deleted).not.toBe(null);
     });
 
     it('return error when passed none existing assortment Id', async () => {
