@@ -36,7 +36,8 @@
     "@unchainedshop/roles": "^2.0.0-beta8",
     "@unchainedshop/utils": "^2.0.0-beta8",
     "locale": "^0.1.0",
-    "simpl-schema": "^3.2.0"
+    "simpl-schema": "^3.2.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.10",
