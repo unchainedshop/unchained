@@ -8,7 +8,7 @@ const impersonate = async (root, { userId }, context: Context) => {
   const userToImpersonate = await context.modules.users.findUserById(userId);
 
   if (!userToImpersonate) {
-    throw new UserNotFoundError(`No user with id ${userId}`);
+    throw new UserNotFoundError({ userId });
   }
 
   if ((userToImpersonate.roles || []).includes('admin')) {
