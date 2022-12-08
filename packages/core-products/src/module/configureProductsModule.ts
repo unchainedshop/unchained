@@ -362,26 +362,11 @@ export const configureProductsModule = async ({
 
       return productId;
     },
-    firstActiveProductLink: async (productId) => {
-      const activeLink = await Products.findOne(
-        {
-          $or: [{ 'proxy.assignments.productId': productId }, { 'bundleItems.productId': productId }],
-          status: { $ne: 'DELETED' },
-        },
-        { projection: { _id: 1, proxy: 1, bundleItems: 1 } },
-      );
-
-      return {
-        _id: activeLink?._id,
-        variations:
-          activeLink?.proxy?.assignments?.filter(
-            ({ productId: variantProductId }) => variantProductId === productId,
-          ) || [],
-        bundles:
-          activeLink?.bundleItems?.filter(
-            ({ productId: bundledProductId }) => bundledProductId === productId,
-          ) || [],
-      };
+    firstActiveProductProxy: async (productId) => {
+      return Products.findOne({ 'proxy.assignments.productId': productId });
+    },
+    firstActiveProductBundle: async (productId) => {
+      return Products.findOne({ 'bundleItems.productId': productId });
     },
     delete: async (productId) => {
       const product = await Products.findOne(generateDbFilterById(productId), {});

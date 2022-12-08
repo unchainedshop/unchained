@@ -22,11 +22,12 @@ export default async function removeProduct(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  const activeLink = await modules.products.firstActiveProductLink(productId);
-  if (activeLink?.bundles?.length)
-    throw new ProductLinkedToActiveBundleError({ productId, bundleId: activeLink?._id });
-  if (activeLink?.variations?.length)
-    throw new ProductLinkedToActiveVariationError({ productId, proxyId: activeLink?._id });
+  const activeBundle = await modules.products.firstActiveProductBundle(productId);
+  if (activeBundle)
+    throw new ProductLinkedToActiveBundleError({ productId, bundleId: activeBundle._id });
+  const activeProxy = await modules.products.firstActiveProductProxy(productId);
+  if (activeProxy)
+    throw new ProductLinkedToActiveVariationError({ productId, proxyId: activeProxy._id });
 
   const openQuotation = await modules.quotations.openQuotationWithProduct({ productId });
   if (openQuotation)
