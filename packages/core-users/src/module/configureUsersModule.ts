@@ -13,6 +13,7 @@ import {
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { v4 as uuidv4 } from 'uuid';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';
 
@@ -37,7 +38,7 @@ const removeConfidentialServiceHashes = (rawUser: User): User => {
 };
 
 const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
-  const selector: Query = { ...rest };
+  const selector: Query = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {
     selector.$text = { $search: queryString };
@@ -209,6 +210,32 @@ export const configureUsersModule = async ({
 
     delete: async (userId) => {
       const userFilter = generateDbFilterById(userId);
+
+      const existingUser = await Users.findOne(userFilter, {
+        projection: { emails: true, username: true },
+      });
+      if (!existingUser) return null;
+
+      const obfuscatedEmails = existingUser.emails?.flatMap(({ address, verified }) => {
+        if (!verified) return [];
+        return [
+          {
+            address: `${address}@${uuidv4()}.unchained.local`,
+            verified: true,
+          },
+        ];
+      });
+
+      const obfuscatedUsername = existingUser.username ? `${existingUser.username}-${uuidv4()}` : null;
+
+      Users.updateOne(userFilter, {
+        $set: {
+          emails: obfuscatedEmails,
+          username: obfuscatedUsername,
+          services: {},
+        },
+      });
+
       await mutations.delete(userId);
       const user = await Users.findOne(userFilter, {});
       await emit('USER_REMOVE', {
