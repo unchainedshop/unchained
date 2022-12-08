@@ -29,7 +29,7 @@ export default function addMigrations(repository: MigrationRepository<Migration>
     up: async () => {
       const { Assortments, AssortmentProductIdCache } = await AssortmentsCollection(repository.db);
       const assortments = await Assortments.find(
-        { _cachedProductIds: { $exists: true } },
+        { _cachedProductIds: { $exists: true }, deleted: null },
         { projection: { _id: true, _cachedProductIds: true } },
       ).toArray();
 
