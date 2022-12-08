@@ -373,16 +373,16 @@ export const configureAssortmentsModule = async ({
       await assortmentTexts.deleteMany({ assortmentId });
       await assortmentMedia.deleteMediaFiles({ assortmentId });
 
-      const deletedResult = await Assortments.deleteOne(generateDbFilterById(assortmentId));
+      const deletedCount = await mutations.delete(assortmentId);
 
-      if (deletedResult.deletedCount === 1 && !options?.skipInvalidation) {
+      if (deletedCount === 1 && !options?.skipInvalidation) {
         // Invalidate all assortments
         await invalidateCache({}, { skipUpstreamTraversal: true });
       }
 
       await emit('ASSORTMENT_REMOVE', { assortmentId });
 
-      return deletedResult.deletedCount;
+      return deletedCount;
     },
 
     invalidateCache,
