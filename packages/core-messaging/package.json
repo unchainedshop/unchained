@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-messaging",
-  "version": "2.0.0-beta8",
+  "version": "2.0.0-beta9",
   "main": "lib/messaging-index.js",
   "exports": {
     ".": "./lib/messaging-index.js",
