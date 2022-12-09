@@ -51,28 +51,28 @@ describe('Utils', () => {
   });
   
   describe('checkId', () => {
-    it('checkId with a string value', () => {
+    it('with a string value', () => {
       const value = '12345';
       const error = { message: 'Invalid id' };
     
       expect(() => checkId(value, error)).not.toThrow();
     });
     
-    it('checkId with a non-string value', () => {
+    it('with a non-string value', () => {
       const value: any = 12345;
       const error = { message: 'Invalid id' };
     
       expect(() => checkId(value, error)).toThrow('Invalid id');
     });
     
-    it('checkId with a different error object', () => {
+    it('with a different error object', () => {
       const value:any = 12345;
       const error = { message: 'Invalid id', path: 'name' };
     
       expect(() => checkId(value, error)).toThrow('Invalid id');
     });
     
-    it('checkId without an error object', () => {
+    it('without an error object', () => {
       const value: any = 12345;
     
       expect(() => checkId(value)).toThrow();
