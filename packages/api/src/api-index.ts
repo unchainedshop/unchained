@@ -13,7 +13,7 @@ export { hashPassword } from './hashPassword';
 export * as roles from './roles';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
-const loadJSON = (filename) => {
+export const loadJSON = (filename) => {
   try {
     const base = typeof __filename !== 'undefined' && __filename;
     if (!base)

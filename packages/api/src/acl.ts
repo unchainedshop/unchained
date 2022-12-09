@@ -10,13 +10,13 @@ const defaultOptions = {
 const emptyObject = {};
 const emptyArray: CheckPermissionArgs = [];
 
-const ensureActionExists = (action, userOptions) => {
+export const ensureActionExists = (action, userOptions) => {
   if (!action) {
     throw new PermissionSystemError({ userOptions });
   }
 };
 
-const ensureIsFunction = (fn, action, options, key) => {
+export const ensureIsFunction = (fn, action, options, key) => {
   if (typeof fn !== 'function') {
     throw new PermissionSystemError({
       action,
