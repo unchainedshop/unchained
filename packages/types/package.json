@@ -37,11 +37,11 @@
     "@accounts/types": "^0.33.2",
     "@apollo/server": "^4.2.2",
     "@types/locale": "^0.1.1",
-    "@types/node": "^18.11.10",
+    "@types/node": "^18.11.12",
     "mongodb": "^4.12.1",
     "simpl-schema": "^3.2.0",
     "typedoc": "^0.23.21",
-    "typescript": "^4.9.3",
+    "typescript": "^4.9.4",
     "winston": "^3.8.2",
     "winston-transport": "4.5.0"
   }

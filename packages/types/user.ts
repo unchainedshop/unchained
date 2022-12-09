@@ -55,6 +55,7 @@ export interface Web3Address {
 
 export type User = {
   _id?: _ID;
+  deleted?: Date;
   avatarId?: _ID;
   emails: Array<Email>;
   guest: boolean;
@@ -110,8 +111,8 @@ export type UsersModule = {
   updateProfile: (
     _id: string,
     { profile, meta }: { profile?: UserProfile; meta?: any },
-    userId: string,
   ) => Promise<User>;
+  delete: (userId: string) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>) => Promise<User>;
   updateUser: (selector: Query, modifier: Update<User>, options: UpdateOptions) => Promise<void>;

@@ -86,6 +86,9 @@ export default [
 
     type User {
       _id: ID!
+      created: DateTime!
+      updated: DateTime
+      deleted: DateTime
       username: String
       isGuest: Boolean!
       isTwoFactorEnabled: Boolean!

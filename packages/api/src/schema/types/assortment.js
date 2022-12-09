@@ -22,6 +22,7 @@ export default [
       _id: ID!
       created: DateTime
       updated: DateTime
+      deleted: DateTime
       isActive: Boolean
       isBase: Boolean
       isRoot: Boolean

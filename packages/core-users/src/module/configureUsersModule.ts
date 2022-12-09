@@ -13,6 +13,7 @@ import {
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { v4 as uuidv4 } from 'uuid';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';
 
@@ -28,6 +29,7 @@ const USER_EVENTS = [
   'USER_UPDATE_HEARTBEAT',
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
+  'USER_REMOVE',
 ];
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = rawUser;
@@ -36,7 +38,7 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
 };
 
 export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
-  const selector: Query = { ...rest };
+  const selector: Query = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {
     selector.$text = { $search: queryString };
@@ -117,7 +119,8 @@ export const configureUsersModule = async ({
     },
 
     userExists: async ({ userId }) => {
-      const selector = generateDbFilterById(userId);
+      const selector = generateDbFilterById<User>(userId);
+      selector.deleted = null; // skip deleted users when checked for existance!
       const userCount = await Users.countDocuments(selector, { limit: 1 });
       return !!userCount;
     },
@@ -206,8 +209,44 @@ export const configureUsersModule = async ({
       await Users.updateOne(generateDbFilterById(user._id), modifier);
     },
 
-    updateProfile: async (_id, updatedData) => {
-      const userFilter = generateDbFilterById(_id);
+    delete: async (userId) => {
+      const userFilter = generateDbFilterById(userId);
+
+      const existingUser = await Users.findOne(userFilter, {
+        projection: { emails: true, username: true },
+      });
+      if (!existingUser) return null;
+
+      const obfuscatedEmails = existingUser.emails?.flatMap(({ address, verified }) => {
+        if (!verified) return [];
+        return [
+          {
+            address: `${address}@${uuidv4()}.unchained.local`,
+            verified: true,
+          },
+        ];
+      });
+
+      const obfuscatedUsername = existingUser.username ? `${existingUser.username}-${uuidv4()}` : null;
+
+      Users.updateOne(userFilter, {
+        $set: {
+          emails: obfuscatedEmails,
+          username: obfuscatedUsername,
+          services: {},
+        },
+      });
+
+      await mutations.delete(userId);
+      const user = await Users.findOne(userFilter, {});
+      await emit('USER_REMOVE', {
+        user: removeConfidentialServiceHashes(user),
+      });
+      return user;
+    },
+
+    updateProfile: async (userId, updatedData) => {
+      const userFilter = generateDbFilterById(userId);
       const { meta, profile } = updatedData;
 
       if (!meta && !profile) {
@@ -231,7 +270,7 @@ export const configureUsersModule = async ({
         modifier.$set.meta = meta;
       }
 
-      await mutations.update(_id, modifier);
+      await mutations.update(userId, modifier);
       const user = await Users.findOne(userFilter, {});
       await emit('USER_UPDATE_PROFILE', {
         user: removeConfidentialServiceHashes(user),

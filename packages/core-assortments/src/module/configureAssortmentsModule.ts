@@ -46,6 +46,7 @@ export const buildFindSelector = ({
   queryString,
 }: AssortmentQuery) => {
   const selector: Query = assortmentSelector || {};
+  selector.deleted = null;
 
   if (assortmentIds) {
     selector._id = { $in: assortmentIds };
@@ -139,7 +140,7 @@ export const configureAssortmentsModule = async ({
     const productIds = await Promise.all(
       childAssortments.map(async ({ childAssortmentId }) => {
         const childAssortment = await Assortments.findOne(
-          generateDbFilterById(childAssortmentId, { isActive: true }),
+          generateDbFilterById(childAssortmentId, { isActive: true, deleted: null }),
           {},
         );
 
@@ -194,7 +195,12 @@ export const configureAssortmentsModule = async ({
 
     await Promise.all(
       filteredLinkedAssortments.map(async ({ parentAssortmentId }) => {
-        const parent = await Assortments.findOne(generateDbFilterById(parentAssortmentId), {});
+        const parent = await Assortments.findOne(
+          generateDbFilterById(parentAssortmentId, {
+            isActive: true,
+            deleted: null,
+          }),
+        );
 
         if (parent) {
           updateCount += await invalidateProductIdCache(parent, cacheOptions);
@@ -303,9 +309,12 @@ export const configureAssortmentsModule = async ({
     count: async (query) => Assortments.countDocuments(buildFindSelector(query)),
 
     assortmentExists: async ({ assortmentId }) => {
-      const assortmentCount = await Assortments.countDocuments(generateDbFilterById(assortmentId), {
-        limit: 1,
-      });
+      const assortmentCount = await Assortments.countDocuments(
+        generateDbFilterById(assortmentId, { deleted: null }),
+        {
+          limit: 1,
+        },
+      );
       return !!assortmentCount;
     },
 
@@ -323,6 +332,7 @@ export const configureAssortmentsModule = async ({
 
     // Mutations
     create: async ({
+      _id,
       isActive = true,
       isBase = false,
       isRoot = false,
@@ -332,7 +342,9 @@ export const configureAssortmentsModule = async ({
       title,
       ...rest
     }) => {
+      if (_id) await Assortments.deleteOne({ _id, deleted: { $ne: null } });
       const assortmentId = await mutations.create({
+        _id,
         sequence: sequence || (await Assortments.countDocuments({})) + 10,
         isBase,
         isActive,
@@ -373,16 +385,16 @@ export const configureAssortmentsModule = async ({
       await assortmentTexts.deleteMany({ assortmentId });
       await assortmentMedia.deleteMediaFiles({ assortmentId });
 
-      const deletedResult = await Assortments.deleteOne(generateDbFilterById(assortmentId));
+      const deletedCount = await mutations.delete(assortmentId);
 
-      if (deletedResult.deletedCount === 1 && !options?.skipInvalidation) {
+      if (deletedCount === 1 && !options?.skipInvalidation) {
         // Invalidate all assortments
         await invalidateCache({}, { skipUpstreamTraversal: true });
       }
 
       await emit('ASSORTMENT_REMOVE', { assortmentId });
 
-      return deletedResult.deletedCount;
+      return deletedCount;
     },
 
     invalidateCache,

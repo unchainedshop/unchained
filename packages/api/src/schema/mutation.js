@@ -20,9 +20,9 @@ export default [
       """
       Web3
       """
-      addWeb3Address(address: String!): User
-      verifyWeb3Address(address: String!, hash: String!): User
-      removeWeb3Address(address: String!): User
+      addWeb3Address(address: String!): User!
+      verifyWeb3Address(address: String!, hash: String!): User!
+      removeWeb3Address(address: String!): User!
 
       """
       Create a new user.
@@ -40,7 +40,7 @@ export default [
       login and logged in user IP address, locale and country where they
       accessed the system)
       """
-      heartbeat: User
+      heartbeat: User!
 
       """
       Change the current user's password. Must be logged in.
@@ -90,12 +90,12 @@ export default [
       """
       In order to activate 2nd factor (TOTP), generate a secret and return
       """
-      enableTOTP(secretBase32: String!, code: String!): User
+      enableTOTP(secretBase32: String!, code: String!): User!
 
       """
       Disable the 2nd factor (TOTP)
       """
-      disableTOTP(code: String!, userId: ID): User
+      disableTOTP(code: String!, userId: ID): User!
 
       """
       Create WebAuthn PublicKeyCredentialCreationOptions to use for Registering a new WebAuthn Device
@@ -309,32 +309,37 @@ export default [
       """
       Update E-Mail address of any user or logged in user if userId is not provided
       """
-      addEmail(email: String!, userId: ID): User
+      addEmail(email: String!, userId: ID): User!
 
       """
       Update E-Mail address of any user or logged in user if userId is not provided
       """
-      removeEmail(email: String!, userId: ID): User
+      removeEmail(email: String!, userId: ID): User!
 
       """
       Update Avatar of any user or logged in user if userId is not provided
       """
-      updateUserAvatar(avatar: Upload!, userId: ID): User
+      updateUserAvatar(avatar: Upload!, userId: ID): User!
 
       """
       Set tags of user
       """
-      setUserTags(tags: [LowerCaseString]!, userId: ID!): User
+      setUserTags(tags: [LowerCaseString]!, userId: ID!): User!
 
       """
       Update Profile of any user or logged in user if userId is not provided
       """
-      updateUserProfile(profile: UserProfileInput, meta: JSON, userId: ID): User
+      updateUserProfile(profile: UserProfileInput, meta: JSON, userId: ID): User!
+
+      """
+      Remove any user or logged in user if userId is not provided
+      """
+      removeUser(userId: ID): User!
 
       """
       Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)
       """
-      enrollUser(profile: UserProfileInput!, email: String!, plainPassword: String): User
+      enrollUser(profile: UserProfileInput!, email: String!, plainPassword: String): User!
 
       """
       Forcefully trigger an enrollment email for already added users by e-mail
@@ -344,17 +349,17 @@ export default [
       """
       Set username for a specific user
       """
-      setUsername(username: String!, userId: ID!): User
+      setUsername(username: String!, userId: ID!): User!
 
       """
       Set a new password for a specific user
       """
-      setPassword(newPlainPassword: String, userId: ID!): User
+      setPassword(newPlainPassword: String, userId: ID!): User!
 
       """
       Set roles of a user
       """
-      setRoles(roles: [String!]!, userId: ID!): User
+      setRoles(roles: [String!]!, userId: ID!): User!
 
       """
       Create a new product
