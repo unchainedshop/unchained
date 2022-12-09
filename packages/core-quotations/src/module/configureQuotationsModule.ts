@@ -226,7 +226,7 @@ export const configureQuotationsModule = async ({
     },
     openQuotationWithProduct: async ({ productId }) => {
       const selector: Query = { productId };
-      selector.status = { $in: [QuotationStatus.REQUESTED, QuotationStatus.PROPOSED] }; // TODO: Slow IDXSCAN in common query
+      selector.status = { $in: [QuotationStatus.REQUESTED, QuotationStatus.PROPOSED] };
 
       return Quotations.findOne(selector);
     },

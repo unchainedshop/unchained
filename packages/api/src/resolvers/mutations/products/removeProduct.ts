@@ -32,7 +32,7 @@ export default async function removeProduct(
   const openQuotation = await modules.quotations.openQuotationWithProduct({ productId });
   if (openQuotation)
     throw new ProductLinkedToQuotationError({ productId, quotationId: openQuotation?._id });
-  const openEnrollment = await modules.enrollments.openEnrollmentsWithProduct({ productId });
+  const openEnrollment = await modules.enrollments.openEnrollmentWithProduct({ productId });
   if (openEnrollment)
     throw new ProductLinkedToEnrollmentError({ productId, enrollmentId: openEnrollment?._id });
 
