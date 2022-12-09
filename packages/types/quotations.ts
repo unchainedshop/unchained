@@ -68,6 +68,7 @@ export interface QuotationQueries {
     options?: FindOptions,
   ) => Promise<Array<Quotation>>;
   count: (query: QuotationQuery) => Promise<number>;
+  openQuotationWithProduct: (param: { productId: string }) => Promise<Quotation | null>;
 }
 
 // Transformations

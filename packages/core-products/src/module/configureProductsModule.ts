@@ -15,6 +15,7 @@ import {
   buildSortOptions,
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api';
+
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
@@ -361,10 +362,14 @@ export const configureProductsModule = async ({
 
       return productId;
     },
-
+    firstActiveProductProxy: async (productId) => {
+      return Products.findOne({ 'proxy.assignments.productId': productId });
+    },
+    firstActiveProductBundle: async (productId) => {
+      return Products.findOne({ 'bundleItems.productId': productId });
+    },
     delete: async (productId) => {
       const product = await Products.findOne(generateDbFilterById(productId), {});
-
       if (product.status !== InternalProductStatus.DRAFT) {
         throw new Error(`Invalid status', ${product.status}`);
       }

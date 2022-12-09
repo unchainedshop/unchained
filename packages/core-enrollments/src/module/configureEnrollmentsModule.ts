@@ -10,6 +10,7 @@ import type { Locale } from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import { Query } from '@unchainedshop/types/common';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
 import { EnrollmentStatus } from '../db/EnrollmentStatus';
@@ -216,6 +217,11 @@ export const configureEnrollmentsModule = async ({
     count: async (query: EnrollmentQuery) => {
       const enrollmentCount = await Enrollments.countDocuments(buildFindSelector(query));
       return enrollmentCount;
+    },
+    openEnrollmentWithProduct: async ({ productId }) => {
+      const selector: Query = { productId };
+      selector.status = { $in: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED] };
+      return Enrollments.findOne(selector);
     },
 
     findEnrollment: async ({ enrollmentId, orderId }, options) => {

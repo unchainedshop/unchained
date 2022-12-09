@@ -267,3 +267,23 @@ export const AuthOperationFailedError = createError(
   'AuthOperationFailed',
   'Operation failed, please make sure you have provided all required parameters',
 );
+
+export const ProductLinkedToActiveVariationError = createError(
+  'ProductLinkedToActiveVariation',
+  'Product is part of a active variation, remove it from any active/draft variation before deleting',
+);
+
+export const ProductLinkedToActiveBundleError = createError(
+  'ProductLinkedToActiveBundle',
+  'Product is part of a active/draft bundle item, remove it from any active/draft bundle item before deleting',
+);
+
+export const ProductLinkedToEnrollmentError = createError(
+  'ProductLinkedToEnrollment',
+  'Product is part of a active/paused subscriptions item, remove it from any active/paused subscriptions item before deleting',
+);
+
+export const ProductLinkedToQuotationError = createError(
+  'ProductLinkedToQuotation',
+  'Product is part of a requested/proposed quotations item, remove it from any requested/proposed quotations item before deleting',
+);

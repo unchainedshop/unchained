@@ -299,6 +299,8 @@ export type ProductsModule = {
   ) => Promise<Product>;
 
   delete: (productId: string) => Promise<number>;
+  firstActiveProductProxy: (productId: string) => Promise<Product>;
+  firstActiveProductBundle: (productId: string) => Promise<Product>;
   deleteProductPermanently: (params: { productId: string }) => Promise<number>;
 
   update: (productId: string, doc: Update<Product>) => Promise<string>;
