@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-messaging",
-  "version": "2.0.0-beta8",
+  "version": "2.0.0-beta9",
   "main": "lib/messaging-index.js",
   "exports": {
     ".": "./lib/messaging-index.js",
@@ -12,7 +12,8 @@
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
-    "test": "jest --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
   },
   "repository": {
     "type": "git",
@@ -30,13 +31,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^2.0.0-beta8",
+    "@unchainedshop/logger": "^2.0.0-beta9",
     "mjml": "^4.13.0",
     "mustache": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.12",
-    "@unchainedshop/types": "^2.0.0-beta8",
+    "@unchainedshop/types": "^2.0.0-beta9",
     "jest": "^29.3.1",
     "locale": "^0.1.0",
     "ts-jest": "^29.0.3",

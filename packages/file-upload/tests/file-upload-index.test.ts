@@ -1,16 +1,8 @@
-import { assert } from 'chai';
-import { FileDirector, FileAdapter } from '@unchainedshop/file-upload';
+import buildHashedFilename from "../lib/buildHashedFilename";
 
-describe('Test exports', () => {
-  it('Check expors', () => {
-    assert.ok(FileDirector);
-    assert.isFunction(FileDirector.registerAdapter);
-    assert.isFunction(FileDirector.registerFileUploadCallback);
 
-    assert.ok(FileAdapter);
-    assert.isFunction(FileAdapter.createSignedURL);
-    assert.isFunction(FileAdapter.removeFiles);
-    assert.isFunction(FileAdapter.uploadFileFromStream);
-    assert.isFunction(FileAdapter.uploadFileFromURL);
+describe('File Uploader', () => {
+  it('Generate unique file name', async () => {
+    expect(buildHashedFilename('root', 'file1.jpg', new Date(new Date("2022-12-04T17:13:09.285Z")))).toEqual("4hI2YuPDacR8ERoR7iM6cQ-file1.jpg")
   });
 });

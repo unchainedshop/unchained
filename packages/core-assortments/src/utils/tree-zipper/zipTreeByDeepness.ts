@@ -1,15 +1,15 @@
 import { Tree } from '@unchainedshop/types/common';
 import * as R from 'ramda';
 
-const fillUp = <T>(arr: Array<T>, size: number): Array<T> =>
+export const fillUp = <T>(arr: Array<T>, size: number): Array<T> =>
   [...arr, ...new Array(size).fill(null)].slice(0, size);
 
-const fillToSameLengthArray = <T>(a: Array<T>, b: Array<T>) => {
+export const fillToSameLengthArray = <T>(a: Array<T>, b: Array<T>) => {
   const length = Math.max(a.length, b.length);
   return [fillUp(a, length), fillUp(b, length)];
 };
 
-const divideTreeByLevels = (
+export const divideTreeByLevels = (
   array: Tree<string>,
   level = 0,
 ): Array<{ level: number; items: Array<string> }> => {
@@ -30,7 +30,7 @@ const divideTreeByLevels = (
   return [currentLevel.length && { level, items: currentLevel }, ...nextLevels].filter(Boolean);
 };
 
-const concatItemsByLevels = (levelArray): Tree<string> => {
+export const concatItemsByLevels = (levelArray): Tree<string> => {
   return Object.values(
     levelArray.reduce((acc, { level, items }) => {
       return {
@@ -41,7 +41,7 @@ const concatItemsByLevels = (levelArray): Tree<string> => {
   );
 };
 
-const shuffleEachLevel = (unshuffledLevels) => {
+export const shuffleEachLevel = (unshuffledLevels) => {
   return unshuffledLevels.map((subArrays) => {
     const shuffled = subArrays.reduce((a, b) => {
       const [accumulator, currentArray] = fillToSameLengthArray(a, b);

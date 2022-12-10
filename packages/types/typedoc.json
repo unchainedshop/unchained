@@ -1,13 +1,10 @@
 {
-    "entryPoints": [
-        "./*.ts",
-        "./*.d.ts"
-    ],
-    "out": "lib/docs",
-    "tsconfig": "./tsconfig.json",
-    "githubPages": false,
-    "readme": "none",
-    "excludeExternals": true,
-    "name": "Unchained Engine Types",
-    "hideGenerator": true
+  "entryPoints": ["./*.ts", "./*.d.ts"],
+  "out": "lib/docs",
+  "tsconfig": "./tsconfig.json",
+  "githubPages": false,
+  "readme": "none",
+  "excludeExternals": true,
+  "name": "Unchained Engine Types",
+  "hideGenerator": true
 }

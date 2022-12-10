@@ -1,22 +1,15 @@
-import { assert } from 'chai';
-import { initDb } from '@unchainedshop/mongodb';
-import { configureDeliveryModule } from '../src/delivery-index';
+import { DeliveryProviderType } from "../src/director/DeliveryProviderType";
+import { buildFindSelector } from "../src/module/configureDeliveryModule";
 
-describe('Test exports', () => {
-  let module;
+describe('Delivery', () => {
+  describe('buildFindSelector', () => {
+    it('Return correct filter object when passed no argument', async () => {      
+      expect(buildFindSelector({})).toEqual({ deleted: null })
+    });
 
-  before(async () => {
-    const db = await initDb();
-    module = await configureDeliveryModule({ db });
-  });
-
-  it('Check Delivery module', async () => {
-    assert.ok(module);
-    assert.isFunction(module.findProvider);
-    assert.isFunction(module.findDelivery);
-    assert.isFunction(module.providerExists);
-    assert.isFunction(module.create);
-    assert.isFunction(module.update);
-    assert.isFunction(module.delete);
-  });
+    it('Return correct filter object when passed no argument', async () => {      
+      expect(buildFindSelector({type: DeliveryProviderType.PICKUP})).toEqual({ type: 'PICKUP', deleted: null })
+    });
+  })
+  
 });

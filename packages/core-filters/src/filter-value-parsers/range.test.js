@@ -1,12 +1,7 @@
 import {
     describe,
-    test,
     expect,
     it,
-    beforeAll,
-    afterAll,
-    afterEach,
-    jest,
   } from '@jest/globals';
   
   import parser from './range';
@@ -49,8 +44,8 @@ import {
   
   describe('Filter Value Parser: Range', () => {
     it('should return all product ids if filter not set', () => {
-      expect(parser(productIds, []).includes(['Z']));
-      expect(parser(productIds, [undefined]).includes([
+      expect(parser(["A:Z"], allProductIds).includes(['Z']));
+      expect(parser(["A"], allProductIds).includes([
         'Z',
       ]));
     });

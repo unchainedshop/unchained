@@ -1,90 +1,54 @@
-import { assert } from 'chai';
-import { initDb } from '@unchainedshop/mongodb';
-import { configureUsersModule } from '@unchainedshop/core-users';
-import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
-import { EnrollmentsModule } from '@unchainedshop/types/enrollments';
-import { User, UsersModule } from '@unchainedshop/types/user';
+import { EnrollmentStatus } from "@unchainedshop/types/enrollments";
+import {periodForReferenceDate} from "../src/director/EnrollmentAdapter";
 
-describe('Test exports', () => {
-  const context: {
-    modules: { enrollments: EnrollmentsModule; users: UsersModule };
-    services: { countries: { resolveDefaultCurrencyCode: () => string } };
-  } = {
-    modules: {
-      enrollments: null,
-      users: null,
-    },
-    services: {
-      countries: {
-        resolveDefaultCurrencyCode: () => 'CHF',
-      },
-    },
-  };
-  let user: User
+import {buildFindSelector} from '../src/module/configureEnrollmentsModule'
 
-  before(async () => {
-    const db = await initDb();
-    const enrollmentsModule = await configureEnrollmentsModule({ db }).catch(
-      (error) => {
-        console.error(error);
 
-        throw error;
-      }
-    );
-
-    const usersModules = await configureUsersModule({ db }).catch((error) => {
-      console.error(error);
-
-      throw error;
+describe('Enrollment', () => {
+  describe('periodForReferenceDate', () => {
+    it('Should return 1 week interval from When passed a given date', async () => {
+      expect(periodForReferenceDate(new Date('2022-12-03T17:00:00.000Z'))).toEqual({ start: new Date( '2022-12-03T17:00:00.000Z'), end: new Date('2022-12-10T17:00:00.000Z') })    
+    });
+    it('Should return 2 week interval from When passed 2 as interval', async () => {
+      expect(periodForReferenceDate(new Date('2022-12-03T17:00:00.000Z'), 2)).toEqual({ start: new Date( '2022-12-03T17:00:00.000Z'), end: new Date('2022-12-17T17:00:00.000Z') })    
     });
 
-    context.modules.enrollments = enrollmentsModule;
-    context.modules.users = usersModules;
+    it('Should return 2 HOURS when interval is set to HOURS', async () => {
+      expect(periodForReferenceDate(new Date('2022-12-03T17:00:00.000Z'), 2, 'HOURS')).toEqual({ start: new Date( '2022-12-03T17:00:00.000Z'), end: new Date('2022-12-03T19:00:00.000Z') })    
+    }); 
   });
 
-  it('Insert enrollment', async () => {
-    let enrollment = await context.modules.enrollments.create(
-      {
-        billingAddress: {
-          lastName: 'Mustermann',
-          firstName: 'Max',
-          addressLine: 'Teststreet 11',
-          city: 'Zürich',
-          postalCode: '8009',
-          company: 'Unchained Commerce',
-          countryCode: 'CH',
-        },
-        countryCode: 'CH',
-        currencyCode: 'CHF',
-        contact: {},
-        productId: 'Product-123',
-        quantity: 2,
-        userId: 'Test-User-1',
-        payment: {
-          paymentProviderId: 'payment-provider-1',
-          context: {},
-        },
-        delivery: {
-          deliveryProviderId: 'delivery-provider-1',
-          context: {},
-        },
-      },
-      context
-    );
-
-    assert.ok(enrollment);
-    const enrollmentId = enrollment._id;
-    enrollment = await context.modules.enrollments.findEnrollment({
-      enrollmentId,
+  describe('buildFindSelector', () => {
+    it('Should correct filter when passed status, userId and queryString', async () => {
+      expect(buildFindSelector({queryString: "Hello World", status: [EnrollmentStatus.ACTIVE], userId: 'admin-id'})).toEqual({
+        deleted: null,
+        status: { '$in': [ 'ACTIVE' ] },
+        userId: 'admin-id',
+        '$text': { '$search': 'Hello World' }
+      })    
+    });
+    it('Should correct filter when passed userId and queryString', async () => {
+      
+      expect(buildFindSelector({queryString: "Hello World",  userId: 'admin-id'})).toEqual({
+        deleted: null,
+        userId: 'admin-id',
+        '$text': { '$search': 'Hello World' }
+      })    
     });
 
-    assert.ok(enrollment);
+    it('Should correct filter when passed  queryString', async () => {
+      
+      expect(buildFindSelector({queryString: "Hello World"})).toEqual({
+        deleted: null,        
+        '$text': { '$search': 'Hello World' }
+      })    
+    });
 
-    const deletedCount = await context.modules.enrollments
-      .delete(enrollmentId, 'Test-User-1')
-      .catch((error) => {
-        return 0;
-      });
-    assert.equal(deletedCount, 1);
-  });
-});
+    it('Should correct filter when passed  no argument', async () => {
+      
+      expect(buildFindSelector({})).toEqual({
+        deleted: null,        
+      })    
+    });
+  })
+})

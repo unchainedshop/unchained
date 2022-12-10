@@ -33,7 +33,6 @@ export type DeliveryProvider = {
 
 export type DeliveryProviderQuery = {
   type?: DeliveryProviderType;
-  deleted?: Date;
 };
 
 export enum DeliveryError {

@@ -1,71 +1,21 @@
-import { QuotationsModule } from '@unchainedshop/types/quotations';
-import { UsersModule } from '@unchainedshop/types/user';
-import { assert } from 'chai';
-import { configureQuotationsModule } from '@unchainedshop/core-quotations';
-import { configureUsersModule } from '@unchainedshop/core-users';
-import { initDb } from '@unchainedshop/mongodb';
-import '../plugins/manual';
+import {buildFindSelector} from '../src/module/configureQuotationsModule'
 
-describe('Test exports', () => {
-  const context: {
-    modules: { quotations: QuotationsModule; users: UsersModule };
-    services: { countries: { resolveDefaultCurrencyCode: () => string } };
-    userId: string;
-  } = {
-    modules: {
-      quotations: null,
-      users: null,
-    },
-    services: {
-      countries: {
-        resolveDefaultCurrencyCode: () => 'CHF',
-      },
-    },
-    userId: 'Test-User-1234',
-  };
-
-  before(async () => {
-    const db = await initDb();
-    const quotationsModule = await configureQuotationsModule({ db }).catch(
-      (error) => {
-        console.error(error);
-        throw error;
-      }
-    );
-
-    const usersModules = await configureUsersModule({ db }).catch((error) => {
-      console.error(error);
-      throw error;
+describe('Quotation', () => {
+  describe("buildFindSelector", () => {
+    it('Return correct filter object when passed no argument', async () => {
+      expect(buildFindSelector({})).toEqual({})
     });
 
-    context.modules.quotations = quotationsModule;
-    context.modules.users = usersModules;
-  });
-
-  it('Insert quotation', async () => {
-    let quotation = await context.modules.quotations.create(
-      {
-        countryCode: 'CH',
-        productId: 'Product-123',
-        userId: 'Test-User-1',
-      },
-      context
-    );
-
-    assert.ok(quotation);
-    const quotationId = quotation._id;
-    quotation = await context.modules.quotations.findQuotation({
-      quotationId,
+    it('Return correct filter object when passed queryString and userId', async () => {
+      expect(buildFindSelector({queryString: "hello world", userId: "admin-id"})).toEqual({ userId: 'admin-id', '$text': { '$search': 'hello world' } })
     });
 
-    assert.ok(quotation);
-
-    await context.modules.quotations.updateProposal(
-      quotationId,
-      {
-        price: 1000,
-        meta: { something: 'Test' },
-      },
-    );
-  });
+    it('Return correct filter object when passed userId', async () => {
+      expect(buildFindSelector({ userId: "admin-id"})).toEqual({ userId: 'admin-id' })
+    });
+    it('Return correct filter object when passed queryString', async () => {
+      expect(buildFindSelector({queryString: "hello world"})).toEqual({  '$text': { '$search': 'hello world' } })
+    });
+  })
+  
 });

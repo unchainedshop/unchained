@@ -1,47 +1,35 @@
-import { assert } from 'chai';
-import { initDb } from '@unchainedshop/mongodb';
-import { configureUsersModule } from '@unchainedshop/core-users';
-import { UsersModule } from '@unchainedshop/types/user';
-import { Db } from '@unchainedshop/types/common';
+import user from './mock/user-mock'
+import {buildFindSelector,  removeConfidentialServiceHashes} from '../src/module/configureUsersModule'
+import { User } from '@unchainedshop/types/user';
 
-describe('Test exports', () => {
-  let module: UsersModule;
-  let db: Db;
-  let userId: string;
-
-  before(async () => {
-    db = await initDb();
-    module = await configureUsersModule({ db });
-    assert.ok(module);
-  });
-  before(async () => {
-    const Users = db.collection('users');
-    await Users.deleteMany({});
-    const insertResult = await Users.insertOne({
-      emails: [],
-      username: 'test.user',
-      lastLogin: {},
-      profile: {
-        displayName: 'Test User',
-        birthday: new Date('1995-01-12'),
-        phoneMobile: '+41701231212',
-        gender: 'Male',
-      },
-      guest: false,
-      tags: [],
-      services: {},
-      roles: ['admin'],
+describe('User', () => {
+  describe('removeConfidentialServiceHashes', () => {
+    it('Should remove sensitive user credentials ', async () => {
+      expect(user.services).not.toBeUndefined()
+      removeConfidentialServiceHashes(user as unknown as User)
+      expect(user.services).toBeUndefined()
     });
 
-    userId = insertResult.insertedId.toHexString();
-  });
+  
+  })
 
-  it('Check queries', async () => {
-    assert.isTrue(await module.userExists({ userId }));
-    assert.isFalse(await module.userExists({ userId: '123123133123ABCD' }));
-    assert.equal(await module.count({ queryString: 'Test' }), 1);
-    assert.equal(await module.count({ queryString: 'Urrghh' }), 0);
-    assert.ok(await module.findUserById(userId));
-    assert.lengthOf(await module.findUsers({ limit: 10 }), 1);
-  });
+  describe('buildFindSelector', () => {
+    it('Return the correct filter when no parameter is passed', async () => {
+      expect(buildFindSelector({})).toEqual({     "deleted": null,    guest: { '$in': [false, null] },
+    })
+    });
+    it('Return the correct filter when no parameter is passed queryString and includeGuest: true', async () => {
+      expect(buildFindSelector({queryString: "Hello world", includeGuests: true})).toEqual({ "deleted": null,'$text': { '$search': 'Hello world' } })
+    });
+
+    it('Should include additional user field selector in addition too queryString and includeGuests', async () => {
+      expect(buildFindSelector({queryString: "Hello world", includeGuests: false, "profile.displayName": "mikael"})).toEqual({
+        'profile.displayName': 'mikael',
+        "deleted": null,
+        guest: { '$in': [false, null] },
+        '$text': { '$search': 'Hello world' }
+      })
+    });
+  })
+  
 });

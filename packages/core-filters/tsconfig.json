@@ -25,5 +25,5 @@
   },
   "include": [
     "src"
-  ]
+, "tests/range.test.ts"  ]
 }

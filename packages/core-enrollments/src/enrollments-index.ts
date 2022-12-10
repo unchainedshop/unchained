@@ -1,4 +1,4 @@
-export { configureEnrollmentsModule } from './module/configureEnrollmentsModule';
+export { configureEnrollmentsModule, buildFindSelector } from './module/configureEnrollmentsModule';
 
 export { EnrollmentAdapter } from './director/EnrollmentAdapter';
 export { EnrollmentDirector } from './director/EnrollmentDirector';

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "2.0.0-beta8",
+  "version": "2.0.0-beta9",
   "description": "Types for unchained core packages",
   "repository": {
     "type": "git",
@@ -21,7 +21,8 @@
   "scripts": {
     "clean": "rm -rf lib",
     "build": "tsc && typedoc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "test": "echo 'No tests'"
   },
   "keywords": [
     "unchained",

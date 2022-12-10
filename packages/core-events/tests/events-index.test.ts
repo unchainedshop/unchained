@@ -1,33 +1,30 @@
-import { assert } from 'chai';
-import { initDb } from '@unchainedshop/mongodb';
-import { configureEventsModule } from '@unchainedshop/events';
-import { emit, registerEvents, getEmitHistoryAdapter } from '@unchainedshop/events';
+import { buildFindSelector } from "../src/module/configureEventsModule";
 
-describe('Test exports', () => {
-  let module;
-  before(async () => {
-    const db = await initDb();
-    module = await configureEventsModule({ db });
-
-    registerEvents(['TEST EVENT']);
-  });
-  it('Configure Events', () => {
-    assert.isDefined(configureEventsModule);
-    assert.ok(module);
-    assert.isFunction(module.findEvent);
+describe('Event', () => {
+  describe('buildFindSelector', () => {
+  it('Return correct filter object when passed create, queryString, types', async () => {
+   expect(buildFindSelector({created: new Date("2022-12-03T18:23:38.278Z"), queryString: "Hello world", types: ['PRODUCT_CREATED']})).toEqual({
+      type: { '$in': [ 'PRODUCT_CREATED' ] },
+      '$text': { '$search': 'Hello world' },
+      created: { '$gte': new Date( "2022-12-03T18:23:38.278Z" )}
+    })
   });
 
-  it('Test event history adapter', async () => {
-    assert.ok(getEmitHistoryAdapter());
+  it('Return correct filter object when passed create, queryString', async () => {
+    expect(buildFindSelector({created: new Date("2022-12-03T18:23:38.278Z"), queryString: "Hello world"})).toEqual({       
+       '$text': { '$search': 'Hello world' },
+       created: { '$gte': new Date( "2022-12-03T18:23:38.278Z" )}
+     })
+   });
 
-    await emit('TEST EVENT', { orderId: 'Order1234' });
+   it('Return correct filter object when passed create', async () => {
+    expect(buildFindSelector({created: new Date("2022-12-03T18:23:38.278Z")})).toEqual({              
+       created: { '$gte': new Date( "2022-12-03T18:23:38.278Z" )}
+     })
+   });
 
-    const events = await module.findEvents({
-      limit: 10,
-      offset: 0,
-      type: 'TEST EVENT',
-    });
-
-    assert.isAtLeast(events.length, 1)
-  });
+   it('Return correct filter object when passed no argument', async () => {
+    expect(buildFindSelector({})).toEqual({})
+   });
+})
 });

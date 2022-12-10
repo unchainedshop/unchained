@@ -15,7 +15,7 @@ const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_ADD_PRODUCT',
 ];
 
-const buildFindByIdSelector = (orderPositionId: string, orderId?: string) =>
+export const buildFindByIdSelector = (orderPositionId: string, orderId?: string) =>
   generateDbFilterById(orderPositionId, orderId ? { orderId } : undefined) as Filter<OrderPosition>;
 
 export const configureOrderPositionsModule = ({

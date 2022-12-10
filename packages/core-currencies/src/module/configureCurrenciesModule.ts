@@ -8,7 +8,11 @@ import { CurrenciesSchema } from '../db/CurrenciesSchema';
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 
-const buildFindSelector = ({ includeInactive = false, contractAddress, queryString }: CurrencyQuery) => {
+export const buildFindSelector = ({
+  includeInactive = false,
+  contractAddress,
+  queryString,
+}: CurrencyQuery) => {
   const selector: { isActive?: true; deleted: null; contractAddress?: string; $text?: any } = {
     deleted: null,
   };

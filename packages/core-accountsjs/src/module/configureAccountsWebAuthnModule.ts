@@ -31,11 +31,11 @@ const fetchMDS = async () => {
   return setupMDSPromise;
 };
 
-function toArrayBuffer(buffer) {
+export function toArrayBuffer(buffer) {
   return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
 }
 
-function buf2hex(buffer) {
+export function buf2hex(buffer) {
   // buffer is an ArrayBuffer
   return Array.prototype.map
     .call(new Uint8Array(buffer), (x) => `00${x.toString(16)}`.slice(-2))

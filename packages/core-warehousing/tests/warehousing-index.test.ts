@@ -1,22 +1,15 @@
-import { Db } from '@unchainedshop/types/common';
-import { WarehousingModule } from '@unchainedshop/types/warehousing';
-import { assert } from 'chai';
-import { configureWarehousingModule } from '@unchainedshop/core-warehousing';
-import { initDb } from '@unchainedshop/mongodb';
+import { WarehousingProviderType } from "../src/director/WarehousingProviderType";
+import { buildFindSelector } from "../src/module/configureWarehousingModule";
 
-describe('Test exports', () => {
-  let module: WarehousingModule;
-  let db: Db;
+describe('Warehousing', () => {
+  describe('buildFindSelector', () => {
+    it('Return correct filter object when passed no argument', async () => {      
+      expect(buildFindSelector({})).toEqual({ deleted: null })
+    });
 
-  before(async () => {
-    db = await initDb();
-    module = await configureWarehousingModule({ db });
-    assert.ok(module);
-  });
-
-
-  it('Check queries', async () => {
-    assert.isFunction(await module.providerExists);
-  });
-
+    it('Return correct filter object when passed no argument', async () => {      
+      expect(buildFindSelector({type: WarehousingProviderType.PHYSICAL})).toEqual({ type: "PHYSICAL", deleted: null })
+    });
+  })
+  
 });

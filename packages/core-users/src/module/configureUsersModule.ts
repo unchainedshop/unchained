@@ -31,13 +31,13 @@ const USER_EVENTS = [
   'USER_UPDATE_LAST_CONTACT',
   'USER_REMOVE',
 ];
-const removeConfidentialServiceHashes = (rawUser: User): User => {
+export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = rawUser;
   delete user?.services;
   return user;
 };
 
-const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
+export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
   const selector: Query = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {

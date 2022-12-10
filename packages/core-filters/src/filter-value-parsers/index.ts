@@ -2,7 +2,9 @@ import { FilterType } from '../db/FilterType';
 import createRangeFilterParser from './range';
 import createSwitchFilterParser from './switch';
 
-export default (type) => {
+type FilterParser = (values: Array<string>, allKeys: Array<string>) => any;
+
+export default (type): FilterParser => {
   switch (type) {
     case FilterType.SWITCH:
       return createSwitchFilterParser;

@@ -3,7 +3,7 @@ import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
 import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders';
 import { generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
 
-const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
+export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: Query = {};
 
   if (userId) {
