@@ -21,7 +21,8 @@
   "scripts": {
     "clean": "rm -rf lib",
     "build": "tsc && typedoc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "test": "echo 'No tests'"
   },
   "keywords": [
     "unchained",

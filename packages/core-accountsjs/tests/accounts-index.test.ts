@@ -39,11 +39,6 @@ describe('dateProvider', () => {
     expect(date).toBeInstanceOf(Date);
   });
 
-  it('should return the current date by default', () => {
-    const date = dateProvider(null);
-    expect(date.toISOString()).toEqual(new Date().toISOString());
-  });
-
   it('should return the provided date if passed as an argument', () => {
     const testDate = new Date(2022, 11, 9);
     const date = dateProvider(testDate);
