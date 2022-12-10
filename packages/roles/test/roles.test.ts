@@ -5,7 +5,7 @@ describe('Roles', () => {
 });
 
 
-/* import {
+import {
   describe,
   test,
   expect,
@@ -14,15 +14,12 @@ describe('Roles', () => {
   afterEach,
   jest,
 } from '@jest/globals';
-import { setupDatabase } from '../../tests/helpers';
-import { User } from '../../tests/seeds/users';
-import {  } from '../src/helpers';
-import { Role, Roles, isFunction, has } from '../src/roles-index';
 
-xdescribe('Roles', () => {
+import { Role, Roles, isFunction, has, permissions } from '../src/roles-index';
+
+describe('Roles', () => {
   beforeAll(async () => {
-    // eslint-disable-next-line no-unused-vars
-    await setupDatabase();
+    
   });
 
   afterEach(() => {
@@ -31,8 +28,8 @@ xdescribe('Roles', () => {
     Roles.helpers = [];
   });
 
-  xdescribe('Role utilities', () => {
-    const testRole = new Role('test_role');
+  describe('Role utilities', () => {
+   /*  const testRole = new Role('test_role');
     const actionName = 'view_secret';
 
     it('should register an action rule', () => {
@@ -55,7 +52,7 @@ xdescribe('Roles', () => {
       const permissionTestRole = new Role('permission_test_role');
       permissionTestRole.allow('view_data', () => true);
 
-      expect(Roles.allow('permission_user', 'view_data')).toBe(true);
+      expect(Roles.allow('permission_user', 'view_data', '', {})).toBe(true);
     });
 
     it("should return false if the user doesn't pass the allow check", () => {
@@ -86,8 +83,8 @@ xdescribe('Roles', () => {
         true
       );
     });
-  });
-
+  }); */
+/* 
   describe('Retrieve Roles', () => {
     it('should add roles to user document', async () => {
       const result = Roles.addUserToRoles(User._id, 'test_role');
@@ -130,19 +127,19 @@ xdescribe('Roles', () => {
       );
     });
   });
-
+ */
   describe('Role Helper Registration', () => {
     it('should add a helper', () => {
       Roles.registerHelper('test_helper');
       expect(Roles.helpers).toEqual(['test_helper']);
     });
 
-    it('should add a helper attaching it to adminRole', () => {
+/*     it('should add a helper attaching it to adminRole', () => {
       Roles.registerHelper('test_admin_helper', jest.fn());
       expect(Roles.helpers).toEqual(
         expect.arrayContaining(['test_admin_helper'])
       );
-    });
+    }); */
 
     it('should skip adding helper if it already exists', () => {
       Roles.registerHelper('test_helper');
@@ -190,7 +187,7 @@ xdescribe('Roles', () => {
     });
 
     test('it should return false given an improper function', () => {
-      expect(isFunction('false')).toBe(false);
+      expect(isFunction('false' as any)).toBe(false);
     });
   });
 
@@ -217,4 +214,99 @@ xdescribe('Roles', () => {
     });
   });
 });
- */
+
+describe('permissions', () => {
+  it('should return an empty array if no user roles are provided', async () => {
+    const userRoles = [];
+    const allRoles = {
+      admin: {
+        name: 'admin',
+        allowRules: {
+          createUser: [
+            async () => true,
+            async () => false,
+          ],
+        },
+      },
+    };
+    const result = await permissions(userRoles, allRoles);
+    expect(result).toEqual([]);
+  });
+
+  it('should return the correct permissions for a single user role', async () => {
+    const userRoles = ['admin'];
+    const allRoles = {
+      admin: {
+        name: 'admin',
+        allowRules: {
+          createUser: [
+            async () => true,
+            async () => false,
+          ],
+        },
+      },
+    };
+    const result = await permissions(userRoles, allRoles);
+    expect(result).toEqual(['createUser']);
+  });
+
+  it('should return the correct permissions for multiple user roles', async () => {
+    const userRoles = ['admin', 'user'];
+    const allRoles = {
+      admin: {
+        name: 'admin',
+        allowRules: {
+          createUser: [
+            async () => true,
+            async () => false,
+          ],
+        },
+      },
+      user: {
+        name: 'user',
+        allowRules: {
+          viewUser: [
+            async () => true,
+            async () => false,
+          ],
+        },
+      },
+    };
+    const result = await permissions(userRoles, allRoles);
+    expect(result).toEqual(['createUser', 'viewUser']);
+  });
+
+  it('should return unique and sorted permissions', async () => {
+    const userRoles = ['admin', 'user'];
+    const allRoles = {
+      admin: {
+        name: 'admin',
+        allowRules: {
+          createUser: [
+            async () => true,
+            async () => true,
+          ],
+          viewUser: [
+            async () => true,
+            async () => false,
+          ],
+        },
+      },
+      user: {
+        name: 'user',
+        allowRules: {
+          viewUser: [
+            async () => true,
+            async () => true,
+          ],
+        },
+      },
+    };
+    const result = await permissions(userRoles, allRoles);
+    expect(result).toEqual(['createUser', 'viewUser']);
+  });
+});
+
+
+})
+
