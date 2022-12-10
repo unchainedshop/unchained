@@ -7,7 +7,7 @@ import { divideTreeByLevels, concatItemsByLevels, fillToSameLengthArray, fillUp 
 describe('Assortment', () => {
   describe('buildFindSelector', () => {
     it('Return the correct filter when passed no argument', async () => {
-      expect(buildFindSelector({})).toEqual({ isRoot: true, isActive: true })
+      expect(buildFindSelector({})).toEqual({ isRoot: true, isActive: true,         "deleted": null,    })
     });
     it('Return the correct filter when passed  queryString, assortmentId, assortmentSelector, includeInactive, includeLeaves, slugs, tags', async () => {
     
@@ -16,6 +16,7 @@ describe('Assortment', () => {
         _id: { '$in': [ 'assortment-1', 'assortment-2' ] },
         slugs: { '$in': [ 'assortment-slug-1', 'assortment-slug-2' ] },
         tags: { '$all': [ 'assortment-tag' ] },
+        "deleted": null,
         '$text': { '$search': 'hello world' }
       }
   )
@@ -25,6 +26,8 @@ describe('Assortment', () => {
     
       expect(buildFindSelector({queryString: "hello world", assortmentIds: ['assortment-1', 'assortment-2'], assortmentSelector: {sequence: 1}, includeInactive: true, includeLeaves: true, slugs: ['assortment-slug-1', 'assortment-slug-2']})).toEqual( {
         sequence: 1,
+        "deleted": null,
+
         _id: { '$in': [ 'assortment-1', 'assortment-2' ] },
         slugs: { '$in': [ 'assortment-slug-1', 'assortment-slug-2' ] },
         '$text': { '$search': 'hello world' }
@@ -36,6 +39,8 @@ describe('Assortment', () => {
     
       expect(buildFindSelector({queryString: "hello world", assortmentIds: ['assortment-1', 'assortment-2'], assortmentSelector: {sequence: 1}, includeInactive: true, includeLeaves: true})).toEqual( {
         sequence: 1,
+        "deleted": null,
+
         _id: { '$in': [ 'assortment-1', 'assortment-2' ] },
         '$text': { '$search': 'hello world' }
       }
@@ -46,6 +51,8 @@ describe('Assortment', () => {
     
       expect(buildFindSelector({queryString: "hello world", assortmentIds: ['assortment-1', 'assortment-2'], assortmentSelector: {sequence: 1}, includeInactive: true})).toEqual( {
         sequence: 1,
+        "deleted": null,
+
         _id: { '$in': [ 'assortment-1', 'assortment-2' ] },
         '$text': { '$search': 'hello world' },
       }
@@ -55,6 +62,8 @@ describe('Assortment', () => {
     
       expect(buildFindSelector({queryString: "hello world", assortmentIds: ['assortment-1', 'assortment-2'], assortmentSelector: {sequence: 1}})).toEqual( {
         sequence: 1,
+        "deleted": null,
+
         _id: { '$in': [ 'assortment-1', 'assortment-2' ] },
         '$text': { '$search': 'hello world' },
       }
@@ -64,6 +73,8 @@ describe('Assortment', () => {
     it('Return the correct filter when passed  assortmentId, assortmentSelector', async () => {
       expect(buildFindSelector({ assortmentIds: ['assortment-1', 'assortment-2'], assortmentSelector: {sequence: 1}})).toEqual( {
         sequence: 1,
+        "deleted": null,
+
         _id: { '$in': [ 'assortment-1', 'assortment-2' ] },
       }
   )
@@ -71,6 +82,8 @@ describe('Assortment', () => {
 
     it('Return the correct filter when passed  assortmentSelector', async () => {
       expect(buildFindSelector({ assortmentSelector: {sequence: 1}})).toEqual( {
+        "deleted": null,
+
         sequence: 1
       }
   )
