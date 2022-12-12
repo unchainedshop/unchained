@@ -1,7 +1,10 @@
 import range from "../src/filter-value-parsers/range";
+import switchFilter from '../src/filter-value-parsers/switch'
 import { buildFindSelector } from "../src/module/configureFiltersModule";
+import { defaultSelector, resolveAssortmentSelector } from "../src/search/resolveAssortmentSelector";
 import { intersectSet } from "../src/utils/intersectSet";
 import { parseQueryArray } from "../src/utils/parseQueryArray";
+
 
 describe('Filters', () => {
 
@@ -102,6 +105,89 @@ describe('parseQueryArray', () => {
 });
 
   
-  
+describe('range', () => {
+  it('returns an empty array if no range is provided', () => {
+    const values = [];
+    const allKeys = [];
+    const result = range(values, allKeys);
+    expect(result).toEqual([]);
+  });
+
+  it('returns an array with the start value if no end value is provided', () => {
+    const values = ['1'];
+    const allKeys = ['1', '2', '3'];
+    const result = range(values, allKeys);
+    expect(result).toEqual(['1']);
+  });
+
+  it('returns an array with all keys within the range of start and end values', () => {
+    const values = ['1:3'];
+    const allKeys = ['1', '2', '3', '4'];
+    const result = range(values, allKeys);
+    expect(result).toEqual(['1', '2', '3']);
+  });
+});
+
+describe('switch', () => {
+  it('returns undefined if no value is provided', () => {
+    const values = [];
+    const result = switchFilter(values);
+    expect(result).toEqual([undefined]);
+  });
+
+  it('returns true if a truthy value is provided', () => {
+    const values = ['true'];
+    const result = switchFilter(values);
+    expect(result).toEqual(['true']);
+  });
+
+  it('returns false if a falsy value is provided', () => {
+    const values = ['false'];
+    const result = switchFilter(values);
+    expect(result).toEqual(['false']);
+  });
+});
+
+describe('defaultSelector', () => {
+  it('returns an object with isActive key set to true if no query is provided', () => {
+    const result = defaultSelector();
+    expect(result).toEqual({isActive: true});
+  });
+
+  it('returns an object with the isActive property set to true if the includeInactive property is not provided or is false', () => {
+    const result1 = defaultSelector({});
+    expect(result1).toEqual({ isActive: true });
+
+    const result2 = defaultSelector({ includeInactive: false });
+    expect(result2).toEqual({ isActive: true });
+  });
+
+  it('returns an empty object if the includeInactive property is true', () => {
+    const result = defaultSelector({ includeInactive: true });
+    expect(result).toEqual({});
+  });
+});
+
+describe('resolveAssortmentSelector', () => {
+  it('returns an object with isActive key set to true if no query is provided', () => {
+    const result = resolveAssortmentSelector();
+    expect(result).toEqual({isActive: true});
+  });
+
+  it('returns an object with the isActive property set to true if the includeInactive property is not provided or is false', () => {
+    const result1 = resolveAssortmentSelector({});
+    expect(result1).toEqual({ isActive: true });
+
+    const result2 = resolveAssortmentSelector({ includeInactive: false });
+    expect(result2).toEqual({ isActive: true });
+  });
+
+  it('returns an empty object if the includeInactive property is true', () => {
+    const result = resolveAssortmentSelector({ includeInactive: true });
+    expect(result).toEqual({});
+  });
+});
+
+
   
 });
