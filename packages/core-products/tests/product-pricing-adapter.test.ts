@@ -77,22 +77,34 @@ describe('ProductPricingAdapter', () => {
     });
   });
 
-  test('isActivatedFor always returns false', () => {
+  it('isActivatedFor always returns false', () => {
     expect(ProductPricingAdapter.isActivatedFor(context)).toBe(false);
   });
 
-  test('calculate returns an empty array', async () => {
+  it('calculate returns an empty array', async () => {
     const actions = ProductPricingAdapter.actions({ context, calculationSheet, discounts: [] });
     const result = await actions.calculate();
     expect(result).toEqual([]);
   });
 
-  test('resultSheet returns a ProductPricingSheet', () => {
+  it('resultSheet returns a ProductPricingSheet', () => {
       const actions = ProductPricingAdapter.actions({ context, calculationSheet, discounts: [] });
       const result =  actions.resultSheet() ;
       expect(result.currency).toBe('CHF');
       expect(result.quantity).toBe(1);
     
-    
   });
+
+  it('getCalculation returns a empty array', () => {
+    const actions = ProductPricingAdapter.actions({ context, calculationSheet, discounts: [] });
+    expect( actions.getCalculation() ).toEqual([]);
+  
+  });
+
+  it('fetContext returns return the context of ProductPricingAdapter', () => {
+    const actions = ProductPricingAdapter.actions({ context, calculationSheet, discounts: [] });
+    expect( actions.getContext() ).toEqual(context);
+  
+  });
+  
 });
