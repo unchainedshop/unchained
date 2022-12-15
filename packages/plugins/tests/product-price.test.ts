@@ -1,6 +1,6 @@
 import { ProductPrice } from '../src/pricing/product-catalog-price';
 import {jest} from '@jest/globals'
-import {IProductPricingSheet} from '@unchainedshop/types/products.pricing'
+
 
 
 describe('ProductPrice.calculate()', () => {

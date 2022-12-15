@@ -1,7 +1,7 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing.js';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 
-const ProductPrice: IProductPricingAdapter = {
+export const ProductPrice: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.product-price',
