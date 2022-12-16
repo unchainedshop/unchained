@@ -4,11 +4,10 @@ import { initCore } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/types/core';
+import { getRegisteredEvents } from '@unchainedshop/events';
+import { WorkerDirector } from '@unchainedshop/core-worker';
 import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
 import { runMigrations } from './migrations/runMigrations';
-import { generateEventTypeDefs } from './setup/generateEventTypeDefs';
-import { generateWorkerTypeDefs } from './setup/generateWorkTypeDefs';
-import { generateRoleActionTypeDefs } from './setup/generateRoleActionTypeDefs';
 import { setupAccounts } from './setup/setupAccounts';
 import { setupCarts } from './setup/setupCarts';
 import { setupTemplates } from './setup/setupTemplates';
@@ -85,6 +84,8 @@ export const startPlatform = async ({
   }
 
   const configuredRoles = roles.configureRoles(rolesOptions);
+  const configuredEvents = getRegisteredEvents();
+  const configuredWorkTypes = WorkerDirector.getActivePluginTypes();
 
   // Setup accountsjs specific extensions and event handlers
   setupAccounts(unchainedAPI);
@@ -92,17 +93,13 @@ export const startPlatform = async ({
   // Setup email templates
   setupTemplates();
 
-  const generatedTypeDefs = [
-    ...generateEventTypeDefs(),
-    ...generateWorkerTypeDefs(),
-    ...generateRoleActionTypeDefs(),
-  ];
-
   // Start the graphQL server
   const apolloGraphQLServer = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
-    typeDefs: [...generatedTypeDefs, ...typeDefs],
+    events: configuredEvents,
+    workTypes: configuredWorkTypes,
+    typeDefs,
     resolvers,
     schema,
     plugins,

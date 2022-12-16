@@ -1,8 +1,9 @@
 import { ApolloServer } from '@apollo/server';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { GraphQLFormattedError } from 'graphql';
-import typeDefs from './schema';
+import { buildDefaultTypeDefs } from './schema';
 import resolvers from './resolvers';
+import { actions } from './roles';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 
@@ -33,11 +34,20 @@ export default async (options) => {
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
     engine = {},
+    events = [],
+    workTypes = [],
     ...apolloServerOptions
   } = options || {};
 
   const server = new ApolloServer({
-    typeDefs: [...typeDefs, ...additionalTypeDefs],
+    typeDefs: [
+      ...buildDefaultTypeDefs({
+        actions: Object.keys(actions),
+        events,
+        workTypes,
+      }),
+      ...additionalTypeDefs,
+    ],
     resolvers: [resolvers, ...additionalResolvers],
     formatError: (error) => {
       logGraphQLServerError(error);
