@@ -18,5 +18,5 @@ export const buildDefaultTypeDefs = ({ actions = [], events = [], workTypes = []
     }
   `;
 
-  return [...scalars, ...directives, ...types, ...inputTypes, ...query, ...mutation, ...dynamicTypeDefs];
+  return [...scalars, ...directives, ...types, ...inputTypes, ...query, ...mutation, dynamicTypeDefs];
 };
