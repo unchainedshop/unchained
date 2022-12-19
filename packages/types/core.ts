@@ -1,5 +1,4 @@
 import { Db, Update, _ID, GridFSBucket } from './common';
-import { Logger } from './logs';
 import { Modules, ModuleOptions } from './modules';
 import { Services } from './services';
 import { IRoleOptionConfig } from './roles';
@@ -19,7 +18,7 @@ export interface UnchainedCore {
 export interface Migration {
   id: number;
   name: string;
-  up: (params: { logger: Logger | Console; unchainedAPI: UnchainedCore }) => Promise<void>;
+  up: (params: { logger: any | Console; unchainedAPI: UnchainedCore }) => Promise<void>;
 }
 
 export interface MigrationRepository<Migration> {

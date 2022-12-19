@@ -50,7 +50,6 @@ import {
   FiltersSettingsOptions,
 } from './filters';
 import { LanguagesModule } from './languages';
-import { Logger, LogLevel as LogLevelType, LogOptions, Transports } from './logs';
 import { IMessagingDirector, MessagingModule } from './messaging';
 import {
   OrderServices,
@@ -192,13 +191,6 @@ declare module '@unchainedshop/utils' {
   ) => IBasePricingSheet<Calculation>;
 }
 
-declare module '@unchainedshop/logger' {
-  function log(message: string, options?: LogOptions): void;
-  function createLogger(moduleName: string, moreTransports?: Transports): Logger;
-
-  const LogLevel: typeof LogLevelType;
-}
-
 /*
  * Director packages
  */
@@ -325,7 +317,7 @@ declare module '@unchainedshop/core-messaging' {
 
   const MessagingDirector: IMessagingDirector;
 
-  const messagingLogger: Logger;
+  const messagingLogger: any;
 }
 
 declare module '@unchainedshop/core-orders' {

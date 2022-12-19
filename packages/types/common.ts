@@ -15,7 +15,6 @@ import {
   GridFSBucket,
 } from 'mongodb';
 import type { Locale, Locales } from 'locale';
-import { LogOptions } from './logs';
 
 export { Locale, Locales };
 
@@ -87,11 +86,25 @@ export interface Contact {
  * Adapter & Director
  */
 
+enum LogLevel {
+  Verbose = 'verbose',
+  Info = 'info',
+  Debug = 'debug',
+  Error = 'error',
+  Warning = 'warn',
+}
+
 export interface IBaseAdapter {
   key: string;
   label: string;
   version: string;
-  log: (message: string, options?: LogOptions) => void;
+  log: (
+    message: string,
+    options?: {
+      level?: LogLevel;
+      [x: string]: any;
+    },
+  ) => void;
 }
 
 export interface IBaseDirector<Adapter extends IBaseAdapter> {

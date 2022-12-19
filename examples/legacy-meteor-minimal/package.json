@@ -54,7 +54,7 @@
     "node-fetch": "^2.6.7",
     "nodemailer": "^6.8.0",
     "postfinancecheckout": "^3.1.2",
-    "simpl-schema": "^3.0.1",
+    "simpl-schema": "=3.2.0",
     "stripe": "^10.17.0",
     "tiny-secp256k1": "^2.2.1",
     "twilio": "^3.83.2",
