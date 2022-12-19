@@ -5,4 +5,18 @@ import inputTypes from './inputTypes';
 import query from './query';
 import mutation from './mutation';
 
-export default [...scalars, ...directives, ...types, ...inputTypes, ...query, ...mutation];
+export const buildDefaultTypeDefs = ({ actions = [], events = [], workTypes = [] }) => {
+  const dynamicTypeDefs = `
+    extend enum RoleAction {
+        ${actions.join(',')}
+    }
+    extend enum EventType {
+        ${events.join(',')}
+    }
+    extend enum WorkType {
+        ${workTypes.join(',')}
+    }
+  `;
+
+  return [...scalars, ...directives, ...types, ...inputTypes, ...query, ...mutation, dynamicTypeDefs];
+};

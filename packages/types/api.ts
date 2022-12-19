@@ -60,8 +60,10 @@ export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => P
 export type UnchainedServerOptions = {
   unchainedAPI: UnchainedCore;
   roles?: any;
-  typeDefs: Array<string>;
-  resolvers: Record<string, any>;
+  events: Array<string>;
+  workTypes: Array<string>;
+  typeDefs?: Array<string>;
+  resolvers?: Record<string, any>;
   context?: any;
   tracing?: boolean;
   schema?: any;
