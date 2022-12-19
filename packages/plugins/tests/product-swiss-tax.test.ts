@@ -136,12 +136,4 @@ describe('isDeliveryAddressInSwitzerland', () => {
       billingAddress: {countryCode: 'HH'}
     }})).toBe(false);
   });
-
-  it('REDUCED rate', async () => {
-    expect(await isDeliveryAddressInSwitzerland(context)).toBe(true);
-  });
-
-  it('SPECIAL rate',async () => {
-    expect(await isDeliveryAddressInSwitzerland(context)).toBe(true);
-  });
 });
