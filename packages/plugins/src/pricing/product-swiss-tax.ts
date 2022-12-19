@@ -24,7 +24,7 @@ export const SwissTaxCategories = {
   },
 };
 
-const getTaxRate = (context: ProductPricingAdapterContext) => {
+export const getTaxRate = (context: ProductPricingAdapterContext) => {
   const { product } = context;
 
   if (product.tags?.includes(SwissTaxCategories.REDUCED.tag)) {
@@ -36,7 +36,7 @@ const getTaxRate = (context: ProductPricingAdapterContext) => {
   return SwissTaxCategories.DEFAULT.rate();
 };
 
-const isDeliveryAddressInSwitzerland = async ({ order, country, modules }) => {
+export const isDeliveryAddressInSwitzerland = async ({ order, country, modules }) => {
   let countryCode = country?.toUpperCase().trim();
 
   if (order) {
@@ -53,7 +53,7 @@ const isDeliveryAddressInSwitzerland = async ({ order, country, modules }) => {
   return countryCode === 'CH' || countryCode === 'LI';
 };
 
-const ProductSwissTax: IProductPricingAdapter = {
+export const ProductSwissTax: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
   key: 'shop.unchained.pricing.product-swiss-tax',
