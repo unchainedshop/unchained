@@ -1,7 +1,5 @@
-import { ProductPrice } from '../src/pricing/product-catalog-price';
 import {jest} from '@jest/globals'
-import { DeliveryPricingAdapterContext } from '@unchainedshop/types/delivery.pricing';
-import { SwissTaxCategories, getTaxRate, isDeliveryAddressInSwitzerland } from '../src/pricing/product-swiss-tax';
+import { SwissTaxCategories, getTaxRate, isDeliveryAddressInSwitzerland, ProductSwissTax } from '../src/pricing/product-swiss-tax';
 
 describe('SwissTaxCategories', () => {
   it('DEFAULT rate', () => {
@@ -89,7 +87,7 @@ describe('isDeliveryAddressInSwitzerland', () => {
       orders: {
         deliveries: {
           findDelivery: jest.fn(async({orderDeliveryId}) =>{ 
-            if(orderDeliveryId === 'CH' )
+            if(orderDeliveryId === 'CH' || orderDeliveryId === 'LI' )
            return {context: { address: { countryCode: 'CH'}}}
            if(orderDeliveryId === null)
            return {context: { address: null}}
@@ -116,24 +114,133 @@ describe('isDeliveryAddressInSwitzerland', () => {
     expect(await isDeliveryAddressInSwitzerland({...context, country: 'ET', order: null})).toBe(false);
   });
 
-  it('Order country should take precedence over country parameter', async () => {
+  it('Order should take precedence over country parameter', async () => {
+    // not CH or LI order so returns false
     expect(await isDeliveryAddressInSwitzerland({...context, country: 'CH', order : {
       deliveryId: 'ET',
       billingAddress: {countryCode: 'ET'}
     }})).toBe(false);
   });
 
-  it('Should return true if billingAddress is either CH or LI and order does not have address', async () => {
-    expect(await isDeliveryAddressInSwitzerland({...context, country: 'CH', order : {
+  it('If order is not from CH and LI but billingAddress is, it should take precedence over country ', async () => {
+    expect(await isDeliveryAddressInSwitzerland({...context, country: 'IT', order : {
       deliveryId: null,
       billingAddress: { countryCode: 'CH'}
     }})).toBe(true);
   });
 
-  it('Should return false if billingAddress is either CH or LI and order does not have address', async () => {
+  it('Should return false if billingAddress is neither CH or LI and order does not have address', async () => {
     expect(await isDeliveryAddressInSwitzerland({...context, country: null, order : {
       deliveryId: null,
       billingAddress: {countryCode: 'HH'}
     }})).toBe(false);
   });
 });
+
+
+describe('ProductSwissTax', () => {
+  describe('actions', () => {
+    let calculationSheet;
+    let params;
+    let context;
+    
+
+    beforeEach(() => {
+      calculationSheet = {
+        addTax: jest.fn(({amount}) => console.log('add tax called', amount)),
+        filterBy: jest.fn().mockReturnValue([
+          { isTaxable: true, amount: 100, isNetPrice: false },
+          { isTaxable: true, amount: 200, isNetPrice: true },
+        ]),
+      };
+      context = {
+        product: {
+          tags: ['swiss-tax-category:reduced']
+        },
+        order: {
+          deliveryId: 'delivery-1',
+        },
+        currency: 'CH',
+        quantity: 3,
+        modules: {
+          orders: {
+            deliveries: {
+              findDelivery: jest.fn().mockReturnValue({
+                context: {
+                  address: {
+                    countryCode: 'CH',
+                  },
+                },
+              }),
+            },
+          },
+        },
+      };
+      params = {
+        context,
+        calculationSheet,
+      };
+    });
+
+    it('should return the correct pricing adapter actions', () => {
+
+      const actions = ProductSwissTax.actions(params);
+      expect(actions).toHaveProperty('calculate');
+      expect(actions).toHaveProperty('getCalculation');
+      expect(actions).toHaveProperty('getContext');
+      expect(actions).toHaveProperty('resultSheet');
+    });
+    
+
+    it('should calculate Swiss tax for taxable rows when the delivery address is in Switzerland', async () => {
+      context.modules.orders.deliveries.findDelivery.mockResolvedValue({
+        context: {
+          address: {
+            countryCode: 'CH',
+          },
+        },
+      });
+      const actions = ProductSwissTax.actions(params);
+      
+      expect(await actions.calculate()).toEqual([
+        {
+          isTaxable: false,
+          amount: -2.439024390243901,
+          isNetPrice: false,
+          meta: { adapter: 'shop.unchained.pricing.product-swiss-tax' }
+        },
+        {
+          category: 'TAX',
+          amount: 2.439024390243901,
+          isTaxable: false,
+          isNetPrice: false,
+          rate: 0.025,
+          meta: { adapter: 'shop.unchained.pricing.product-swiss-tax' }
+        },
+        {
+          category: 'TAX',
+          amount: 5,
+          isTaxable: false,
+          isNetPrice: false,
+          rate: 0.025,
+          meta: { adapter: 'shop.unchained.pricing.product-swiss-tax' }
+        }
+      ])
+      
+    });
+
+    it('should not calculate Swiss tax for taxable rows when the delivery address is not in Switzerland', async () => {
+      context.modules.orders.deliveries.findDelivery.mockResolvedValue({
+        context: {
+          address: {
+            countryCode: 'US',
+          },
+        },
+      });
+      const actions = ProductSwissTax.actions(params);
+      expect(await actions.calculate()).toEqual([]);
+    });
+  });
+
+})
+
