@@ -63,7 +63,5 @@ export default async (options) => {
     ...apolloServerOptions,
   });
 
-  await server.start();
-
   return server;
 };

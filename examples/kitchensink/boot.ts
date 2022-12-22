@@ -58,6 +58,9 @@ const start = async () => {
 
   await seed(engine.unchainedAPI);
 
+  // Start the GraphQL Server
+  await engine.apolloGraphQLServer.start();
+
   connectPlatformToExpress4(app, engine);
   connectDefaultPluginsToExpress4(app, engine);
 
