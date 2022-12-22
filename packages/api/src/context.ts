@@ -1,4 +1,4 @@
-import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
+import { UnchainedContextResolver, AdminUiConfig } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import instantiateLoaders from './loaders/index.js';
 import { getLocaleContext } from './locale-context.js';
@@ -13,7 +13,12 @@ export const setCurrentContextResolver = (newContext: UnchainedContextResolver) 
 };
 
 export const createContextResolver =
-  (unchainedAPI: UnchainedCore, roles: any, version: string): UnchainedContextResolver =>
+  (
+    unchainedAPI: UnchainedCore,
+    roles: any,
+    version: string,
+    adminUiConfig: AdminUiConfig,
+  ): UnchainedContextResolver =>
   async ({ req, res, ...apolloContext }) => {
     const loaders = await instantiateLoaders(req, res, unchainedAPI);
     const userContext = await getUserContext(req, res, unchainedAPI);
@@ -29,5 +34,6 @@ export const createContextResolver =
       loaders,
       roles,
       version,
+      adminUiConfig,
     };
   };

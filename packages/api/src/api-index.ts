@@ -36,9 +36,20 @@ const packageJson = loadJSON('../package.json');
 const UNCHAINED_API_VERSION = process.env.UNCHAINED_API_VERSION || packageJson?.version || '1.2.x';
 
 export const startAPIServer = async (options: UnchainedServerOptions): Promise<ApolloServer> => {
-  const { unchainedAPI, roles, context: customContext, ...apolloServerOptions } = options || {};
+  const {
+    unchainedAPI,
+    roles,
+    context: customContext,
+    adminUiConfig,
+    ...apolloServerOptions
+  } = options || {};
 
-  const contextResolver = createContextResolver(unchainedAPI, roles, UNCHAINED_API_VERSION);
+  const contextResolver = createContextResolver(
+    unchainedAPI,
+    roles,
+    UNCHAINED_API_VERSION,
+    adminUiConfig,
+  );
 
   setCurrentContextResolver(
     customContext

@@ -47,9 +47,18 @@ export interface UnchainedHTTPServerContext {
   res: OutgoingMessage;
 }
 
+interface CustomAdminUiProperties {
+  entityName: string;
+  inlineFragment: string;
+}
+export interface AdminUiConfig {
+  customProperties?: CustomAdminUiProperties[];
+}
+
 export type Context = UnchainedCore & {
   version?: string;
   roles?: any;
+  adminUiConfig?: AdminUiConfig;
 } & UnchainedUserContext &
   UnchainedLocaleContext &
   UnchainedLoaders &
@@ -72,6 +81,7 @@ export type UnchainedServerOptions = {
   cacheControl?: any;
   introspection: boolean;
   playground: boolean;
+  adminUiConfig?: AdminUiConfig;
 } & Omit<
   ApolloServerOptions<Context>,
   'context' | 'uploads' | 'formatError' | 'typeDefs' | 'resolvers' | 'cors' | 'schema' | 'schemaHash'
