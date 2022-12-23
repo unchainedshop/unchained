@@ -54,16 +54,11 @@ export const configureQuotationsModule = async ({
   ) as ModuleMutations<Quotation>;
 
   const findNewQuotationNumber = async (quotation: Quotation, index = 0) => {
-    // let quotationNumber = null;
-    // let i = 0;
-    // while (!quotationNumber) {
     const newHashID = quotationsSettings.quotationNumberHashFn(quotation, index);
     if ((await Quotations.countDocuments({ quotationNumber: newHashID }, { limit: 1 })) === 0) {
       return newHashID;
     }
     return findNewQuotationNumber(quotation, index + 1);
-    // }
-    // return quotationNumber;
   };
 
   const findNextStatus = async (
@@ -107,7 +102,7 @@ export const configureQuotationsModule = async ({
         $set.expires = date;
       case QuotationStatus.PROCESSING: // eslint-disable-line no-fallthrough
         if (!quotation.quotationNumber) {
-          $set.quotationNumber = findNewQuotationNumber(quotation);
+          $set.quotationNumber = await findNewQuotationNumber(quotation);
         }
         break;
       case QuotationStatus.REJECTED:
