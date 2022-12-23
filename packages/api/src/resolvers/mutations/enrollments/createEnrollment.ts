@@ -1,7 +1,12 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api';
-import { ProductStatus } from '@unchainedshop/core-products';
-import { ProductNotFoundError, ProductWrongStatusError, InvalidIdError } from '../../../errors';
+import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
+import {
+  ProductNotFoundError,
+  ProductWrongStatusError,
+  InvalidIdError,
+  ProductWrongTypeError,
+} from '../../../errors';
 
 export default async function createEnrollment(
   root: Root,
@@ -26,6 +31,8 @@ export default async function createEnrollment(
   if (product.status !== ProductStatus.ACTIVE) {
     throw new ProductWrongStatusError({ status: product.status });
   }
+
+  if (product.type !== ProductTypes.PlanProduct) throw new ProductWrongTypeError({ type: product.type });
 
   return modules.enrollments.create(
     {
