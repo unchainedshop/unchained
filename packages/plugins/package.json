@@ -75,7 +75,7 @@
     "express": "^4.18.2"
   },
   "devDependencies": {
-    "@types/node": "^18.11.17",
+    "@types/node": "^18.11.18",
     "@unchainedshop/api": "^2.0.0-rc.1",
     "@unchainedshop/client-oauth2": "^4.3.3",
     "@unchainedshop/core-delivery": "^2.0.0-rc.1",

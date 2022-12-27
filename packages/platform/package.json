@@ -46,7 +46,7 @@
     "open": "^8.4.0"
   },
   "devDependencies": {
-    "@types/node": "^18.11.17",
+    "@types/node": "^18.11.18",
     "@unchainedshop/types": "^2.0.0-rc.1",
     "cross-env": "^7.0.3",
     "jest": "^29.3.1",

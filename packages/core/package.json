@@ -53,7 +53,7 @@
     "@unchainedshop/logger": "^2.0.0-rc.1"
   },
   "devDependencies": {
-    "@types/node": "^18.11.17",
+    "@types/node": "^18.11.18",
     "@unchainedshop/types": "^2.0.0-rc.1",
     "jest": "^29.3.1",
     "ts-jest": "^29.0.3",
