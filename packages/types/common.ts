@@ -86,7 +86,7 @@ export interface Contact {
  * Adapter & Director
  */
 
-enum LogLevel {
+export enum LogLevel {
   Verbose = 'verbose',
   Info = 'info',
   Debug = 'debug',
