@@ -317,11 +317,7 @@ export const configureProductsModule = async ({
     },
 
     // Mutations
-    create: async (
-      { locale, title, type, sequence, ...productData },
-      userId,
-      { autopublish = false } = {},
-    ) => {
+    create: async ({ locale, title, type, sequence, ...productData }, { autopublish = false } = {}) => {
       if (productData._id) {
         await deleteProductPermanently({
           productId: productData._id as string,
