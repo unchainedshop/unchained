@@ -1,8 +1,8 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductVariationType } from '@unchainedshop/types/products.variations';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductVariationType } from '@unchainedshop/types/products.variations.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors';
+import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 
 export default async function F(
   root: Root,

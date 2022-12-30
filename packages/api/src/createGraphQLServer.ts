@@ -1,9 +1,9 @@
 import { ApolloServer } from '@apollo/server';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { GraphQLFormattedError } from 'graphql';
-import { buildDefaultTypeDefs } from './schema';
-import resolvers from './resolvers';
-import { actions } from './roles';
+import { buildDefaultTypeDefs } from './schema/index.js';
+import resolvers from './resolvers/index.js';
+import { actions } from './roles/index.js';
 
 const { APOLLO_ENGINE_KEY } = process.env;
 

@@ -1,4 +1,4 @@
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { Document, Filter as DbFilter, FindOptions, Query } from '@unchainedshop/types/common';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
 import memoizee from 'memoizee';

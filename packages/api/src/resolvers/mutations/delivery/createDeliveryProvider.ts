@@ -1,7 +1,7 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { DeliveryProvider } from '@unchainedshop/types/delivery';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
 import { log } from '@unchainedshop/logger';
-import { ProviderConfigurationInvalid } from '../../../errors';
+import { ProviderConfigurationInvalid } from '../../../errors.js';
 
 export default async function createDeliveryProvider(
   root: Root,

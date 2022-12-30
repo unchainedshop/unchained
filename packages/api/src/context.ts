@@ -1,8 +1,8 @@
-import { UnchainedContextResolver } from '@unchainedshop/types/api';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import instantiateLoaders from './loaders';
-import { getLocaleContext } from './locale-context';
-import { getUserContext } from './user-context';
+import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import instantiateLoaders from './loaders/index.js';
+import { getLocaleContext } from './locale-context.js';
+import { getUserContext } from './user-context.js';
 
 let context;
 

@@ -1,4 +1,4 @@
-import { ProductCatalogPriceHelperTypes } from '@unchainedshop/types/products';
+import { ProductCatalogPriceHelperTypes } from '@unchainedshop/types/products.js';
 
 export const ProductCatalogPrice: ProductCatalogPriceHelperTypes = {
   isTaxable: ({ isTaxable }) => {

@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 
 const logger = createLogger('unchained:platform');
 

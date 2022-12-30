@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { AssortmentNotFoundError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { AssortmentNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function removeAssortment(
   root: Root,

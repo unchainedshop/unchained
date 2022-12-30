@@ -1,4 +1,4 @@
-import { UnchainedLocaleContext } from '@unchainedshop/types/api';
+import { UnchainedLocaleContext } from '@unchainedshop/types/api.js';
 import { IncomingMessage, OutgoingMessage } from 'http';
 import localePkg from 'locale';
 import 'abort-controller/polyfill';
@@ -10,7 +10,7 @@ import {
   resolveUserRemoteAddress,
   systemLocale,
 } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 const { Locales } = localePkg;
 

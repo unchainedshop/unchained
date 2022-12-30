@@ -1,8 +1,8 @@
-import { Context } from '@unchainedshop/types/api';
-import { Product } from '@unchainedshop/types/products';
-import { User } from '@unchainedshop/types/user';
-import { TokenStatus, TokenSurrogate } from '@unchainedshop/types/warehousing';
-import { WorkStatus } from '@unchainedshop/types/worker';
+import { Context } from '@unchainedshop/types/api.js';
+import { Product } from '@unchainedshop/types/products.js';
+import { User } from '@unchainedshop/types/user.js';
+import { TokenStatus, TokenSurrogate } from '@unchainedshop/types/warehousing.js';
+import { WorkStatus } from '@unchainedshop/types/worker.js';
 import localePkg from 'locale';
 
 const { Locale } = localePkg;

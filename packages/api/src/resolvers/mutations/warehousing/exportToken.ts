@@ -1,7 +1,7 @@
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
-import { WorkStatus } from '@unchainedshop/types/worker';
-import { InvalidIdError, TokenWrongStatusError } from '../../../errors';
+import { WorkStatus } from '@unchainedshop/types/worker.js';
+import { InvalidIdError, TokenWrongStatusError } from '../../../errors.js';
 
 export default async function exportToken(
   root: Root,

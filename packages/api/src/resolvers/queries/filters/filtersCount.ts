@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api';
-import { FilterQuery } from '@unchainedshop/types/filters';
+import { Root, Context } from '@unchainedshop/types/api.js';
+import { FilterQuery } from '@unchainedshop/types/filters.js';
 
 export default async function filtersCount(
   root: Root,

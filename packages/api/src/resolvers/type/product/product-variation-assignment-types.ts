@@ -1,4 +1,4 @@
-import { ProductVariationAssignmentHelperTypes } from '@unchainedshop/types/products.variations';
+import { ProductVariationAssignmentHelperTypes } from '@unchainedshop/types/products.variations.js';
 
 export const ProductVariationAssignment: ProductVariationAssignmentHelperTypes = {
   _id: ({ product, assignment }) => {

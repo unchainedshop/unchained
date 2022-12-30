@@ -1,12 +1,12 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductStatus } from '@unchainedshop/core-products';
 import {
   ProductNotFoundError,
   ProductWrongStatusError,
   InvalidIdError,
   ProductWrongTypeError,
-} from '../../../errors';
+} from '../../../errors.js';
 
 export default async function createEnrollment(
   root: Root,

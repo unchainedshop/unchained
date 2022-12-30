@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 import {
   Assortment as AssortmentType,
   AssortmentFilter,
@@ -6,10 +6,10 @@ import {
   AssortmentPathLink,
   AssortmentProduct,
   AssortmentText,
-} from '@unchainedshop/types/assortments';
-import { AssortmentMedia } from '@unchainedshop/types/assortments.media';
-import { Query } from '@unchainedshop/types/common';
-import { SearchFilterQuery, SearchProducts } from '@unchainedshop/types/filters';
+} from '@unchainedshop/types/assortments.js';
+import { AssortmentMedia } from '@unchainedshop/types/assortments.media.js';
+import { Query } from '@unchainedshop/types/common.js';
+import { SearchFilterQuery, SearchProducts } from '@unchainedshop/types/filters.js';
 
 type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
 

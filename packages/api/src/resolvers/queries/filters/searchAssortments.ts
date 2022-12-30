@@ -1,7 +1,7 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { SearchQuery } from '@unchainedshop/types/filters';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { SearchQuery } from '@unchainedshop/types/filters.js';
 import { log } from '@unchainedshop/logger';
-import { QueryStringRequiredError } from '../../../errors';
+import { QueryStringRequiredError } from '../../../errors.js';
 
 export default async function searchAssortments(root: Root, query: SearchQuery, context: Context) {
   const { modules, userId } = context;

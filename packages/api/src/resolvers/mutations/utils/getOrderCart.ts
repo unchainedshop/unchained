@@ -1,6 +1,6 @@
-import { Context } from '@unchainedshop/types/api';
-import { User } from '@unchainedshop/types/user';
-import { OrderNotFoundError, OrderWrongStatusError } from '../../../errors';
+import { Context } from '@unchainedshop/types/api.js';
+import { User } from '@unchainedshop/types/user.js';
+import { OrderNotFoundError, OrderWrongStatusError } from '../../../errors.js';
 
 export const getOrderCart = async (params: { orderId?: string; user: User }, context: Context) => {
   const { countryContext, modules, services } = context;

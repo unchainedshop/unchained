@@ -1,4 +1,4 @@
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
 import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders';
 import { generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';

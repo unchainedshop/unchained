@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { InvalidIdError, ProductNotFoundError, BookmarkNotFoundError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { InvalidIdError, ProductNotFoundError, BookmarkNotFoundError } from '../../../errors.js';
 
 export default async function bookmark(
   root: Root,

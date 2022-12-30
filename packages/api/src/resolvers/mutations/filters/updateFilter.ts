@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api';
-import { Filter } from '@unchainedshop/types/filters';
-import { FilterNotFoundError, InvalidIdError } from '../../../errors';
+import { Root, Context } from '@unchainedshop/types/api.js';
+import { Filter } from '@unchainedshop/types/filters.js';
+import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateFilter(
   root: Root,

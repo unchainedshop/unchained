@@ -1,12 +1,12 @@
-import { UnchainedLoaders } from '@unchainedshop/types/api';
+import { UnchainedLoaders } from '@unchainedshop/types/api.js';
 import DataLoader from 'dataloader';
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { systemLocale } from '@unchainedshop/utils';
 import localePkg from 'locale';
-import { Assortment, AssortmentText } from '@unchainedshop/types/assortments';
-import { Filter, FilterText } from '@unchainedshop/types/filters';
-import { Product, ProductText } from '@unchainedshop/types/products';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { Assortment, AssortmentText } from '@unchainedshop/types/assortments.js';
+import { Filter, FilterText } from '@unchainedshop/types/filters.js';
+import { Product, ProductText } from '@unchainedshop/types/products.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { ProductStatus } from '@unchainedshop/core-products';
 
 const { Locale } = localePkg;

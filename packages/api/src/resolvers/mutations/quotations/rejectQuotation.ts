@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { QuotationStatus } from '@unchainedshop/core-quotations';
-import { Context, Root } from '@unchainedshop/types/api';
-import { QuotationNotFoundError, QuotationWrongStatusError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { QuotationNotFoundError, QuotationWrongStatusError, InvalidIdError } from '../../../errors.js';
 
 export default async function rejectQuotation(
   root: Root,

@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import {
   AuthenticationFailedError,
   AuthOperationFailedError,
@@ -7,8 +7,8 @@ import {
   TwoFactorCodeDidNotMatchError,
   TwoFactorCodeRequiredError,
   UserDeactivatedError,
-} from '../../../errors';
-import { hashPassword } from '../../../hashPassword';
+} from '../../../errors.js';
+import { hashPassword } from '../../../hashPassword.js';
 
 export default async function loginWithPassword(
   root: Root,

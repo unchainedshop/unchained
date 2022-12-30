@@ -9,7 +9,7 @@ import {
   systemLocale,
   buildSortOptions,
 } from '@unchainedshop/utils';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { CountriesCollection } from '../db/CountriesCollection';
 import { CountriesSchema } from '../db/CountriesSchema';
 

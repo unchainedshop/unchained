@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { ProductTypes } from '@unchainedshop/core-products';
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.js';
 
 export default async function removeBundleItem(
   root: Root,

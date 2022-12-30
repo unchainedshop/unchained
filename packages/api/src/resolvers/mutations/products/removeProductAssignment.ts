@@ -1,8 +1,8 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductConfiguration } from '@unchainedshop/types/products';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductConfiguration } from '@unchainedshop/types/products.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors';
+import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 
 export default async function removeProductAssignment(
   root: Root,

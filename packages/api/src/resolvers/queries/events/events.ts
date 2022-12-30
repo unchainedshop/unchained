@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context, SortOption } from '@unchainedshop/types/api';
-import { EventQuery } from '@unchainedshop/types/events';
+import { Root, Context, SortOption } from '@unchainedshop/types/api.js';
+import { EventQuery } from '@unchainedshop/types/events.js';
 
 export default async function events(
   root: Root,

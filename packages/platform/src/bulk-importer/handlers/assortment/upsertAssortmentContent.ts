@@ -1,4 +1,4 @@
-import { AssortmentText } from '@unchainedshop/types/assortments';
+import { AssortmentText } from '@unchainedshop/types/assortments.js';
 import { UnchainedCore } from '@unchainedshop/types/core';
 
 export default async ({ assortmentId, content }, { modules }: UnchainedCore) => {

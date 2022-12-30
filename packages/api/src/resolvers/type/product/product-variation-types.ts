@@ -1,4 +1,4 @@
-import { ProductVariationHelperTypes } from '@unchainedshop/types/products.variations';
+import { ProductVariationHelperTypes } from '@unchainedshop/types/products.variations.js';
 
 export const ProductVariation: ProductVariationHelperTypes = {
   options: (obj, _, { modules }) => {

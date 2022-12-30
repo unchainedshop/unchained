@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
-import { OrderPaymentNotFoundError, InvalidIdError, OrderPaymentTypeError } from '../../../errors';
+import { OrderPaymentNotFoundError, InvalidIdError, OrderPaymentTypeError } from '../../../errors.js';
 
 export default async function updateOrderPaymentCard(
   root: Root,

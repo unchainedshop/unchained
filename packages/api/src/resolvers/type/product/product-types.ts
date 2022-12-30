@@ -1,4 +1,4 @@
-import { ProductHelperTypes } from '@unchainedshop/types/products';
+import { ProductHelperTypes } from '@unchainedshop/types/products.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { objectInvert } from '@unchainedshop/utils';
 

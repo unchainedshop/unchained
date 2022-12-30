@@ -1,12 +1,12 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import {
   AuthOperationFailedError,
   InvalidResetTokenError,
   NoEmailSetError,
   ResetPasswordLinkExpiredError,
   ResetPasswordLinkUnknownAddressError,
-} from '../../../errors';
+} from '../../../errors.js';
 
 export default async function resetPassword(
   root: Root,

@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api';
-import { ProductCommerce } from '@unchainedshop/types/products';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors';
+import { Root, Context } from '@unchainedshop/types/api.js';
+import { ProductCommerce } from '@unchainedshop/types/products.js';
+import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateProductCommerce(
   root: Root,

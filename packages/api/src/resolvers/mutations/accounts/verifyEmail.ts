@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 
 export default async function verifyEmail(root: Root, { token }: { token: any }, context: Context) {
   const { modules, userId } = context;

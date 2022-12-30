@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { Work } from '@unchainedshop/types/worker';
-import { WorkTypeInvalidError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { Work } from '@unchainedshop/types/worker.js';
+import { WorkTypeInvalidError } from '../../../errors.js';
 
 export default async function doWork(root: Root, work: Work, context: Context) {
   const { modules, userId } = context;

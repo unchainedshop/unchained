@@ -1,7 +1,7 @@
-import { Context } from '@unchainedshop/types/api';
-import { Address } from '@unchainedshop/types/common';
-import { DeliveryProvider } from '@unchainedshop/types/delivery';
-import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/types/orders.deliveries';
+import { Context } from '@unchainedshop/types/api.js';
+import { Address } from '@unchainedshop/types/common.js';
+import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/types/orders.deliveries.js';
 
 type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;
 

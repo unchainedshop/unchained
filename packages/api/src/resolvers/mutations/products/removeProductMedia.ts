@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductMediaNotFoundError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductMediaNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function removeProductMedia(
   root: Root,

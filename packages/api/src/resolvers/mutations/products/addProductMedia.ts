@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function addProductMedia(root: Root, { media, productId }, context: Context) {
   const { modules, services, userId } = context;

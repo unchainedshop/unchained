@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 
 import { UnchainedCore } from '@unchainedshop/types/core';
 import { OrderStatus } from '@unchainedshop/core-orders';

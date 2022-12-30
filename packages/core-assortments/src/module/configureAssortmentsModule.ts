@@ -6,7 +6,7 @@ import {
   AssortmentLink,
   AssortmentQuery,
   AssortmentsSettingsOptions,
-} from '@unchainedshop/types/assortments';
+} from '@unchainedshop/types/assortments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
@@ -15,7 +15,7 @@ import {
   findPreservingIds,
   buildSortOptions,
 } from '@unchainedshop/utils';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';
 import addMigrations from '../migrations/addMigrations';

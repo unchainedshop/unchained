@@ -4,7 +4,7 @@ import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { SortDirection } from '@unchainedshop/types/api';
+import { SortDirection } from '@unchainedshop/types/api.js';
 import { WorkQueueCollection } from '../db/WorkQueueCollection';
 import { WorkQueueSchema } from '../db/WorkQueueSchema';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector';

@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';

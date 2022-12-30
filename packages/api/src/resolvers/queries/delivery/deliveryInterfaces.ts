@@ -1,5 +1,5 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { DeliveryProviderType } from '@unchainedshop/types/delivery';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { DeliveryProviderType } from '@unchainedshop/types/delivery.js';
 import { log } from '@unchainedshop/logger';
 
 export default function deliveryInterfaces(

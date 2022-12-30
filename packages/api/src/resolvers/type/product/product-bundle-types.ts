@@ -1,5 +1,5 @@
-import { BundleProductHelperTypes } from '@unchainedshop/types/products';
-import { Product } from './product-types';
+import { BundleProductHelperTypes } from '@unchainedshop/types/products.js';
+import { Product } from './product-types.js';
 
 export const BundleProduct: BundleProductHelperTypes = {
   ...Product,

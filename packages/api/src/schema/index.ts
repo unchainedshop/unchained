@@ -1,9 +1,9 @@
-import scalars from './scalars';
-import directives from './directives';
-import types from './types';
-import inputTypes from './inputTypes';
-import query from './query';
-import mutation from './mutation';
+import scalars from './scalars.js';
+import directives from './directives.js';
+import types from './types/index.js';
+import inputTypes from './inputTypes.js';
+import query from './query.js';
+import mutation from './mutation.js';
 
 export const buildDefaultTypeDefs = ({ actions = [], events = [], workTypes = [] }) => {
   const dynamicTypeDefs = `

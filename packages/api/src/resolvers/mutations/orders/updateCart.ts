@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { Address, Contact } from '@unchainedshop/types/common';
-import { getOrderCart } from '../utils/getOrderCart';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { Address, Contact } from '@unchainedshop/types/common.js';
+import { getOrderCart } from '../utils/getOrderCart.js';
 
 interface UpdateCartParams {
   orderId?: string;

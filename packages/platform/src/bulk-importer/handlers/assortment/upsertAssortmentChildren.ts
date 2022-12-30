@@ -1,4 +1,4 @@
-import { AssortmentLink } from '@unchainedshop/types/assortments';
+import { AssortmentLink } from '@unchainedshop/types/assortments.js';
 import { UnchainedCore } from '@unchainedshop/types/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
 

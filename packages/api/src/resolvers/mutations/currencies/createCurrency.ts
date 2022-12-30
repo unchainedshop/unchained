@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api';
-import { Currency } from '@unchainedshop/types/currencies';
+import { Root, Context } from '@unchainedshop/types/api.js';
+import { Currency } from '@unchainedshop/types/currencies.js';
 
 export default async function createCurrency(
   root: Root,

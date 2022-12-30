@@ -1,12 +1,12 @@
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { ApolloServer } from '@apollo/server';
 import type e from 'express';
-import { getCurrentContextResolver } from '../context';
-import createBulkImportMiddleware from './createBulkImportMiddleware';
-import createERCMetadataMiddleware from './createERCMetadataMiddleware';
-import createApolloMiddleware from './createApolloMiddleware';
-import createSingleSignOnMiddleware from './createSingleSignOnMiddleware';
+import { getCurrentContextResolver } from '../context.js';
+import createBulkImportMiddleware from './createBulkImportMiddleware.js';
+import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
+import createApolloMiddleware from './createApolloMiddleware.js';
+import createSingleSignOnMiddleware from './createSingleSignOnMiddleware.js';
 
 const {
   BULK_IMPORT_API_PATH = '/bulk-import',

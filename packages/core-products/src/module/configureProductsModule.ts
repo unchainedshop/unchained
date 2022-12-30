@@ -14,7 +14,7 @@ import {
   generateDbMutations,
   buildSortOptions,
 } from '@unchainedshop/utils';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
 import { ProductsCollection } from '../db/ProductsCollection';

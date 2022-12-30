@@ -1,4 +1,4 @@
-import { AssortmentsSettingsOptions } from '@unchainedshop/types/assortments';
+import { AssortmentsSettingsOptions } from '@unchainedshop/types/assortments.js';
 import { Db } from '@unchainedshop/types/common';
 import { slugify as defaultSlugify } from '@unchainedshop/utils';
 import zipTreeByDeepness from './utils/tree-zipper/zipTreeByDeepness';

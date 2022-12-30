@@ -2,7 +2,7 @@ import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { CurrenciesCollection } from '../db/CurrenciesCollection';
 import { CurrenciesSchema } from '../db/CurrenciesSchema';
 

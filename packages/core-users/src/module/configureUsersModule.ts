@@ -12,7 +12,7 @@ import {
   buildSortOptions,
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersCollection } from '../db/UsersCollection';
 import addMigrations from './addMigrations';

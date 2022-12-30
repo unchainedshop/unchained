@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 import { createLogger } from '@unchainedshop/logger';
 import { WebhookData } from './types';
 import { getTransaction, getTransactionCompletion } from './api';

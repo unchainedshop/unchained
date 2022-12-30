@@ -1,7 +1,7 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { Currency } from '@unchainedshop/types/currencies';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { Currency } from '@unchainedshop/types/currencies.js';
 import { log } from '@unchainedshop/logger';
-import { CurrencyNotFoundError, InvalidIdError } from '../../../errors';
+import { CurrencyNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateCurrency(
   root: Root,

@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductVariationText } from '@unchainedshop/types/products.variations';
-import { ProductVariationNotFoundError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductVariationText } from '@unchainedshop/types/products.variations.js';
+import { ProductVariationNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function F(
   root: Root,

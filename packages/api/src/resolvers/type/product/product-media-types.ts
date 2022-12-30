@@ -1,4 +1,4 @@
-import { ProductMediaHelperTypes } from '@unchainedshop/types/products.media';
+import { ProductMediaHelperTypes } from '@unchainedshop/types/products.media.js';
 
 export const ProductMedia: ProductMediaHelperTypes = {
   // TODO: Loader for product media texts!

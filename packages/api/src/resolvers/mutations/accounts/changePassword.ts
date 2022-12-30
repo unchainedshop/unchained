@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { AuthOperationFailedError, InvalidCredentialsError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { AuthOperationFailedError, InvalidCredentialsError } from '../../../errors.js';
 
 export default async function changePassword(
   root: Root,

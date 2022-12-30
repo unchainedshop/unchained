@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductNotFoundError, OrderQuantityTooLowError, InvalidIdError } from '../../../errors';
-import { getOrderCart } from '../utils/getOrderCart';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductNotFoundError, OrderQuantityTooLowError, InvalidIdError } from '../../../errors.js';
+import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function addCartProduct(
   root: Root,

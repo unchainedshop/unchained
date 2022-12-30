@@ -1,8 +1,8 @@
-import { Context } from '@unchainedshop/types/api';
-import { Country } from '@unchainedshop/types/countries';
-import { Language } from '@unchainedshop/types/languages';
-import { checkAction } from '../../acl';
-import { allRoles, actions } from '../../roles';
+import { Context } from '@unchainedshop/types/api.js';
+import { Country } from '@unchainedshop/types/countries.js';
+import { Language } from '@unchainedshop/types/languages.js';
+import { checkAction } from '../../acl.js';
+import { allRoles, actions } from '../../roles/index.js';
 
 type HelperType<T> = (root: never, params: never, context: Context) => Promise<T>;
 

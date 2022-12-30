@@ -1,4 +1,4 @@
-import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments';
+import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments.js';
 import { Collection, Filter } from '@unchainedshop/types/common';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';

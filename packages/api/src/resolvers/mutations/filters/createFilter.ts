@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api';
-import { Filter } from '@unchainedshop/types/filters';
+import { Root, Context } from '@unchainedshop/types/api.js';
+import { Filter } from '@unchainedshop/types/filters.js';
 
 export default async function createFilter(
   root: Root,

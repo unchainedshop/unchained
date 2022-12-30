@@ -1,4 +1,4 @@
-import { ProductVariationAssignmentVectorHelperTypes } from '@unchainedshop/types/products.variations';
+import { ProductVariationAssignmentVectorHelperTypes } from '@unchainedshop/types/products.variations.js';
 
 export const ProductVariationAssignmentVector: ProductVariationAssignmentVectorHelperTypes = {
   _id: ({ product, key, value }) => `${product._id}:${key}=${value}`,

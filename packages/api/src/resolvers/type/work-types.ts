@@ -1,5 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
-import { Work as WorkType } from '@unchainedshop/types/worker';
+import { Context } from '@unchainedshop/types/api.js';
+import { Work as WorkType } from '@unchainedshop/types/worker.js';
 
 type HelperType<P, T> = (work: WorkType, params: P, context: Context) => T;
 

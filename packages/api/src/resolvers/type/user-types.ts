@@ -1,25 +1,25 @@
-import { Context, SortOption } from '@unchainedshop/types/api';
-import { Bookmark } from '@unchainedshop/types/bookmarks';
-import { Contact } from '@unchainedshop/types/common';
-import { Country } from '@unchainedshop/types/countries';
-import { Enrollment } from '@unchainedshop/types/enrollments';
-import { File } from '@unchainedshop/types/files';
-import { Language } from '@unchainedshop/types/languages';
-import { Order } from '@unchainedshop/types/orders';
-import { PaymentCredentials } from '@unchainedshop/types/payments';
-import { Quotation } from '@unchainedshop/types/quotations';
+import { Context, SortOption } from '@unchainedshop/types/api.js';
+import { Bookmark } from '@unchainedshop/types/bookmarks.js';
+import { Contact } from '@unchainedshop/types/common.js';
+import { Country } from '@unchainedshop/types/countries.js';
+import { Enrollment } from '@unchainedshop/types/enrollments.js';
+import { File } from '@unchainedshop/types/files.js';
+import { Language } from '@unchainedshop/types/languages.js';
+import { Order } from '@unchainedshop/types/orders.js';
+import { PaymentCredentials } from '@unchainedshop/types/payments.js';
+import { Quotation } from '@unchainedshop/types/quotations.js';
 import {
   Email,
   User as UserType,
   UserProfile,
   Web3Address,
   WebAuthnCredentials,
-} from '@unchainedshop/types/user';
+} from '@unchainedshop/types/user.js';
 import type { Locale } from 'locale';
-import { TokenSurrogate } from '@unchainedshop/types/warehousing';
+import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
 import { Roles, permissions } from '@unchainedshop/roles';
-import { checkAction, checkTypeResolver } from '../../acl';
-import { actions } from '../../roles';
+import { checkAction, checkTypeResolver } from '../../acl.js';
+import { actions } from '../../roles/index.js';
 
 type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
 

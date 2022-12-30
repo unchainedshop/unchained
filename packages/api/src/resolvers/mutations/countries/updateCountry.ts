@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Country } from '@unchainedshop/types/countries';
-import { Context, Root } from '@unchainedshop/types/api';
-import { CountryNotFoundError, InvalidIdError } from '../../../errors';
+import { Country } from '@unchainedshop/types/countries.js';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { CountryNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateCountry(
   root: Root,

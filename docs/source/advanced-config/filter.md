@@ -16,7 +16,7 @@ Below is a simple filter plugin that will filter products based on there attribu
 
 import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/types/filters';
 import { Query, FindOptions } from '@unchainedshop/types/common';
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 
 const ShopAttributeFilter: IFilterAdapter = {
   key: 'ch.shop.filter',
@@ -153,7 +153,7 @@ Below is a simplified implementation of the `ShopAttributeFilter` above, this ti
 ```typescript
 import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/types/filters';
 import { Query } from '@unchainedshop/types/common';
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 
 const ShopAttributeFilter: IFilterAdapter = {
   ...FilterAdapter,

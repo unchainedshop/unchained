@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 import generateSignature, { Security } from './generateSignature';
 
 import type { StatusResponseSuccess } from './api/types';

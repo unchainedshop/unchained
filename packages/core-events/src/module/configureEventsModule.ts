@@ -2,7 +2,7 @@ import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@un
 import { Filter } from '@unchainedshop/types/common';
 import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events';
 import { getRegisteredEvents } from '@unchainedshop/events';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
 import { EventsCollection } from '../db/EventsCollection';
 import { EventsSchema } from '../db/EventsSchema';

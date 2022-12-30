@@ -1,4 +1,4 @@
-import { ProductBundleItemHelperTypes } from '@unchainedshop/types/products';
+import { ProductBundleItemHelperTypes } from '@unchainedshop/types/products.js';
 
 export const ProductBundleItem: ProductBundleItemHelperTypes = {
   product: async (productItem, _, { loaders }) => {
