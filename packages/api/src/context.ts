@@ -17,7 +17,7 @@ export const createContextResolver =
     unchainedAPI: UnchainedCore,
     roles: any,
     version: string,
-    adminUiConfig: AdminUiConfig,
+    adminUiConfig?: AdminUiConfig,
   ): UnchainedContextResolver =>
   async ({ req, res, ...apolloContext }) => {
     const loaders = await instantiateLoaders(req, res, unchainedAPI);

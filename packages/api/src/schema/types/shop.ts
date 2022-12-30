@@ -5,13 +5,13 @@ export default [
       title: String
     }
 
-    type CustomEntityInterface {
+    type AdminUiConfigCustomEntityInterface {
       entityName: String!
       inlineFragment: String!
     }
 
     type AdminUiConfig {
-      customProperties: [CustomEntityInterface!]!
+      customProperties: [AdminUiConfigCustomEntityInterface!]!
     }
 
     type Shop @cacheControl(maxAge: 180) {
@@ -21,7 +21,7 @@ export default [
       version: String
       userRoles: [String!]!
       externalLinks: [Link]!
-      adminUiConfig: AdminUiConfig
+      adminUiConfig: AdminUiConfig!
     }
   `,
 ];
