@@ -1,7 +1,7 @@
 import clone from 'lodash.clone';
-import type { RoleInterface, RolesInterface } from '@unchainedshop/types/roles';
-import { has } from './utils/has';
-import { isFunction } from './utils/isFunction';
+import type { RoleInterface, RolesInterface } from '@unchainedshop/types/roles.js';
+import { has } from './utils/has.js';
+import { isFunction } from './utils/isFunction.js';
 
 export const Roles: RolesInterface = {
   roles: {},
