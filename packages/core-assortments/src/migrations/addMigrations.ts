@@ -1,7 +1,7 @@
-import { Migration, MigrationRepository } from '@unchainedshop/types/core';
+import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
 import { Collection } from 'mongodb';
-import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection';
-import { AssortmentsCollection } from '../db/AssortmentsCollection';
+import { AssortmentMediaCollection } from "../db/AssortmentMediaCollection.js";
+import { AssortmentsCollection } from "../db/AssortmentsCollection.js";
 
 const convertTagsToLowerCase = async (collection: Collection<any>) => {
   let bulk = collection.initializeUnorderedBulkOp();

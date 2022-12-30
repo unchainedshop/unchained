@@ -1,5 +1,5 @@
 import { ProductReview } from '@unchainedshop/types/products.reviews';
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const ProductReviewsCollection = async (db: Db) => {

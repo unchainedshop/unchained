@@ -1,7 +1,7 @@
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '@unchainedshop/types/api.js';
 
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
 import type { CryptopayModule } from './module/configureCryptopayModule';

@@ -1,6 +1,6 @@
 import { UploadFileFromStreamService } from '@unchainedshop/types/files';
-import { getFileAdapter } from '../utils/getFileAdapter';
-import { getFileFromFileData } from '../utils/getFileFromFileData';
+import { getFileAdapter } from "../utils/getFileAdapter.js";
+import { getFileFromFileData } from "../utils/getFileFromFileData.js";
 
 export const uploadFileFromStreamService: UploadFileFromStreamService = async (
   { directoryName, rawFile, meta },

@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { PaymentCredentials as PaymentCredentialsType } from '@unchainedshop/types/payments';
 import { buildDbIndexes } from '@unchainedshop/utils';
 

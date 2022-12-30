@@ -1,4 +1,4 @@
-import { Collection, Filter } from '@unchainedshop/types/common';
+import { Collection, Filter } from '@unchainedshop/types/common.js';
 import { FiltersModule, FilterText } from '@unchainedshop/types/filters';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';

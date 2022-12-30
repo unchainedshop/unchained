@@ -1,6 +1,6 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { PaymentError } from './PaymentError';
+import { PaymentError } from "./PaymentError.js";
 
 export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> = {
   initialConfiguration: [],

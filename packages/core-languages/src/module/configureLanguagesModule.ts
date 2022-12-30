@@ -1,4 +1,4 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { LanguagesModule, Language, LanguageQuery } from '@unchainedshop/types/languages';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -8,8 +8,8 @@ import {
   buildSortOptions,
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { LanguagesCollection } from '../db/LanguagesCollection';
-import { LanguagesSchema } from '../db/LanguagesSchema';
+import { LanguagesCollection } from "../db/LanguagesCollection.js";
+import { LanguagesSchema } from "../db/LanguagesSchema.js";
 
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 

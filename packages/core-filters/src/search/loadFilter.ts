@@ -1,9 +1,9 @@
 import { Filter, FilterAdapterActions } from '@unchainedshop/types/filters';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { FilterType } from '../db/FilterType';
-import { intersectSet } from '../utils/intersectSet';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { FilterType } from "../db/FilterType.js";
+import { intersectSet } from "../utils/intersectSet.js";
 import { FilterProductIds } from './search';
-import createFilterValueParser from '../filter-value-parsers';
+import createFilterValueParser from "../filter-value-parsers/index.js";
 
 const findLoadedOptions = async (
   filter: Filter,

@@ -1,4 +1,4 @@
-import { Db, TimestampFields, _ID } from '@unchainedshop/types/common';
+import { Db, TimestampFields, _ID } from '@unchainedshop/types/common.js';
 import { Decimal128 } from 'mongodb';
 
 export type CryptopayTransaction = {

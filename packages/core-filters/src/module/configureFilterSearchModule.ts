@@ -1,16 +1,16 @@
-import { Collection } from '@unchainedshop/types/common';
+import { Collection } from '@unchainedshop/types/common.js';
 import { Filter, FiltersModule } from '@unchainedshop/types/filters';
 import { Product } from '@unchainedshop/types/products';
-import { FilterDirector } from '../director/FilterDirector';
-import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch';
-import { cleanQuery } from '../search/cleanQuery';
-import { loadFilter } from '../search/loadFilter';
-import { productFacetedSearch } from '../search/productFacetedSearch';
-import { productFulltextSearch } from '../search/productFulltextSearch';
-import { resolveAssortmentSelector } from '../search/resolveAssortmentSelector';
-import { resolveFilterSelector } from '../search/resolveFilterSelector';
-import { resolveProductSelector } from '../search/resolveProductSelector';
-import { resolveSortStage } from '../search/resolveSortStage';
+import { FilterDirector } from "../director/FilterDirector.js";
+import { assortmentFulltextSearch } from "../search/assortmentFulltextSearch.js";
+import { cleanQuery } from "../search/cleanQuery.js";
+import { loadFilter } from "../search/loadFilter.js";
+import { productFacetedSearch } from "../search/productFacetedSearch.js";
+import { productFulltextSearch } from "../search/productFulltextSearch.js";
+import { resolveAssortmentSelector } from "../search/resolveAssortmentSelector.js";
+import { resolveFilterSelector } from "../search/resolveFilterSelector.js";
+import { resolveProductSelector } from "../search/resolveProductSelector.js";
+import { resolveSortStage } from "../search/resolveSortStage.js";
 import {
   FilterProductIds,
   SearchAssortmentConfiguration,

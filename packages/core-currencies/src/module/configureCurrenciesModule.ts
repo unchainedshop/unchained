@@ -1,10 +1,10 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { CurrenciesCollection } from '../db/CurrenciesCollection';
-import { CurrenciesSchema } from '../db/CurrenciesSchema';
+import { CurrenciesCollection } from "../db/CurrenciesCollection.js";
+import { CurrenciesSchema } from "../db/CurrenciesSchema.js";
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 

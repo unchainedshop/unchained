@@ -398,7 +398,7 @@ Below is an example bulk import handler that will be executed to log import dura
 
 ```
 
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 type Duration = {
     _id: string;

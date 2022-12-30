@@ -1,1 +1,1 @@
-export { configureLanguagesModule } from './module/configureLanguagesModule';
+export { configureLanguagesModule } from "./module/configureLanguagesModule.js";

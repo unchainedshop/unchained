@@ -1,12 +1,12 @@
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { Filter } from '@unchainedshop/types/common';
+import { Filter } from '@unchainedshop/types/common.js';
 import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
-import { EventsCollection } from '../db/EventsCollection';
-import { EventsSchema } from '../db/EventsSchema';
-import { configureEventHistoryAdapter } from './configureEventHistoryAdapter';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { EventsCollection } from "../db/EventsCollection.js";
+import { EventsSchema } from "../db/EventsSchema.js";
+import { configureEventHistoryAdapter } from "./configureEventHistoryAdapter.js";
 
 export const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
   const selector: { type?: any; $text?: any; created?: any } = {};

@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export const evaluateContext = (filteredContext: UnchainedCore) => {
   // TODO: userId, user & localeContext not set following the type

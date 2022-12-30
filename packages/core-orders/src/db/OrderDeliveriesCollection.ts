@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { buildDbIndexes } from '@unchainedshop/utils';
 

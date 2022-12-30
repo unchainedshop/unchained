@@ -5,7 +5,7 @@ import {
 } from '@unchainedshop/types/orders.pricing';
 import { IPricingAdapter } from '@unchainedshop/types/pricing';
 import { BasePricingAdapter } from '@unchainedshop/utils';
-import { OrderPricingSheet } from './OrderPricingSheet';
+import { OrderPricingSheet } from "./OrderPricingSheet.js";
 
 const basePricingAdapter = BasePricingAdapter<OrderPricingAdapterContext, OrderPricingCalculation>();
 

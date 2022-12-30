@@ -4,7 +4,7 @@ import { randomBytes } from 'crypto';
 
 // eslint-disable-next-line
 // @ts-ignore
-const MongoDBInterface = mongoPkg.default || mongoPkg;
+const MongoDBInterface: any = mongoPkg.default || mongoPkg;
 
 const METEOR_ID_LENGTH = 17;
 

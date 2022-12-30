@@ -5,7 +5,7 @@ import BIP32Factory from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import * as bitcoin from 'bitcoinjs-lib';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { OrderPricingSheet } from '@unchainedshop/core-orders';
 import { CryptopayModule } from './module/configureCryptopayModule';
 

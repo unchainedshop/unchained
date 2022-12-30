@@ -1,4 +1,4 @@
-import {buildFindSelector} from '../src/module/configureCountriesModule'
+import {buildFindSelector} from "../src/module/configureCountriesModule.js"
 describe('Country', () => {
   
   it('buildFindSelector should return correct filter object', async () => {

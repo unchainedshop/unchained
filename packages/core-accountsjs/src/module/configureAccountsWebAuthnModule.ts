@@ -1,13 +1,13 @@
 /// <reference lib="dom" />
-import { AccountsSettingsOptions, AccountsWebAuthnModule } from '@unchainedshop/types/accounts';
-import { ModuleInput } from '@unchainedshop/types/core';
+import { AccountsSettingsOptions, AccountsWebAuthnModule } from '@unchainedshop/types/accounts.js';
+import { ModuleInput } from '@unchainedshop/types/core.js';
 import {
   Fido2Lib,
   PublicKeyCredentialCreationOptions,
   PublicKeyCredentialRequestOptions,
 } from 'fido2-lib';
 
-import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection';
+import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
 
 const { ROOT_URL, EMAIL_WEBSITE_NAME } = process.env;
 

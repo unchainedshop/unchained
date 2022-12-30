@@ -1,4 +1,4 @@
-import { FindOptions, Query } from '@unchainedshop/types/common';
+import { FindOptions, Query } from '@unchainedshop/types/common.js';
 import { FilterAdapterActions, IFilterAdapter, IFilterDirector } from '@unchainedshop/types/filters';
 import { BaseDirector } from '@unchainedshop/utils';
 

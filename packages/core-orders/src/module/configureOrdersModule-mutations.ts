@@ -1,12 +1,12 @@
-import { Collection } from '@unchainedshop/types/common';
-import { ModuleMutations } from '@unchainedshop/types/core';
+import { Collection } from '@unchainedshop/types/common.js';
+import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { Order, OrderStatus, OrderMutations, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { OrdersSchema } from '../db/OrdersSchema';
+import { OrdersSchema } from "../db/OrdersSchema.js";
 
 const ORDER_EVENTS: string[] = [
   'ORDER_CREATE',

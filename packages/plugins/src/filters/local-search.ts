@@ -1,6 +1,6 @@
 import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
 import { IFilterAdapter } from '@unchainedshop/types/filters';
-import { Query } from '@unchainedshop/types/common';
+import { Query } from '@unchainedshop/types/common.js';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 

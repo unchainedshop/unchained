@@ -1,12 +1,12 @@
-import { Collection, Filter, Query } from '@unchainedshop/types/common';
-import { ModuleMutations } from '@unchainedshop/types/core';
+import { Collection, Filter, Query } from '@unchainedshop/types/common.js';
+import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, generateDbObjectId } from '@unchainedshop/utils';
-import { OrderPositionsSchema } from '../db/OrderPositionsSchema';
-import { ordersSettings } from '../orders-settings';
+import { OrderPositionsSchema } from "../db/OrderPositionsSchema.js";
+import { ordersSettings } from "../orders-settings.js";
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',

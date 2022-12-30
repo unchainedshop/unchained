@@ -1,15 +1,15 @@
 import os from 'os';
-import { Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { Query } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection } from '@unchainedshop/types/api.js';
-import { WorkQueueCollection } from '../db/WorkQueueCollection';
-import { WorkQueueSchema } from '../db/WorkQueueSchema';
-import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector';
-import { WorkerEventTypes } from '../director/WorkerEventTypes';
-import { WorkStatus } from '../director/WorkStatus';
+import { WorkQueueCollection } from "../db/WorkQueueCollection.js";
+import { WorkQueueSchema } from "../db/WorkQueueSchema.js";
+import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from "../director/WorkerDirector.js";
+import { WorkerEventTypes } from "../director/WorkerEventTypes.js";
+import { WorkStatus } from "../director/WorkStatus.js";
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 

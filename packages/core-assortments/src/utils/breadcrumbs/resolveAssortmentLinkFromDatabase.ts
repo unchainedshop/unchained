@@ -1,5 +1,5 @@
 import { AssortmentLink } from '@unchainedshop/types/assortments.js';
-import { Filter, Collection } from '@unchainedshop/types/common';
+import { Filter, Collection } from '@unchainedshop/types/common.js';
 
 export function resolveAssortmentLinkFromDatabase(
   AssortmentLinks: Collection<AssortmentLink>,

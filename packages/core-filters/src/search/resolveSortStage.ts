@@ -1,4 +1,4 @@
-import { FindOptions } from '@unchainedshop/types/common';
+import { FindOptions } from '@unchainedshop/types/common.js';
 import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters';
 
 const ORDER_BY_INDEX = 'default';

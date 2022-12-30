@@ -1,5 +1,5 @@
-import { Collection, Filter, Update } from '@unchainedshop/types/common';
-import { ModuleMutations } from '@unchainedshop/types/core';
+import { Collection, Filter, Update } from '@unchainedshop/types/common.js';
+import { ModuleMutations } from '@unchainedshop/types/core.js';
 
 import { OrdersModule } from '@unchainedshop/types/orders';
 import {
@@ -10,7 +10,7 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema';
+import { OrderDeliveriesSchema } from "../db/OrderDeliveriesSchema.js";
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 

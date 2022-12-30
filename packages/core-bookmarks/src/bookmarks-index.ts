@@ -1,2 +1,2 @@
-export { configureBookmarksModule } from './module/configureBookmarksModule';
-export { bookmarkServices } from './service/bookmarkServices';
+export { configureBookmarksModule } from "./module/configureBookmarksModule.js";
+export { bookmarkServices } from "./service/bookmarkServices.js";

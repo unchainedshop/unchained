@@ -1,8 +1,8 @@
-export { configureEnrollmentsModule, buildFindSelector } from './module/configureEnrollmentsModule';
+export { configureEnrollmentsModule, buildFindSelector } from "./module/configureEnrollmentsModule.js";
 
-export { EnrollmentAdapter } from './director/EnrollmentAdapter';
-export { EnrollmentDirector } from './director/EnrollmentDirector';
+export { EnrollmentAdapter } from "./director/EnrollmentAdapter.js";
+export { EnrollmentDirector } from "./director/EnrollmentDirector.js";
 
-export { EnrollmentStatus } from './db/EnrollmentStatus';
+export { EnrollmentStatus } from "./db/EnrollmentStatus.js";
 
-export { enrollmentsSettings } from './enrollments-settings';
+export { enrollmentsSettings } from "./enrollments-settings.js";

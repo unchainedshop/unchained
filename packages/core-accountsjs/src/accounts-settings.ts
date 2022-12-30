@@ -1,4 +1,4 @@
-import { AccountsSettings, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
+import { AccountsSettings, AccountsSettingsOptions } from '@unchainedshop/types/accounts.js';
 import { Schemas } from '@unchainedshop/utils';
 
 const defaultAutoMessagingAfterUserCreation = true;

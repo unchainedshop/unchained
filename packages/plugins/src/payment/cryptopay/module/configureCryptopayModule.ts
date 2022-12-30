@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { Decimal128 } from 'mongodb';
 import { CryptopayTransaction, CryptopayTransactionsCollection } from '../db/CryptopayTransactions';
 

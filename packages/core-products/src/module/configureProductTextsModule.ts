@@ -1,4 +1,4 @@
-import { Collection, Filter } from '@unchainedshop/types/common';
+import { Collection, Filter } from '@unchainedshop/types/common.js';
 import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -8,7 +8,7 @@ import {
   generateDbFilterById,
   generateDbObjectId,
 } from '@unchainedshop/utils';
-import { productsSettings } from '../products-settings';
+import { productsSettings } from "../products-settings.js";
 
 const { Locale } = localePkg;
 

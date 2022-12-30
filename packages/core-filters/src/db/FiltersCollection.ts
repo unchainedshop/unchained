@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 import { Filter, FilterText, FilterProductIdCacheRecord } from '@unchainedshop/types/filters';
 

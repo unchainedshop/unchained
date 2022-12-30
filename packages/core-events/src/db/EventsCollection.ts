@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { Event } from '@unchainedshop/types/events';
 import { buildDbIndexes } from '@unchainedshop/utils';
 

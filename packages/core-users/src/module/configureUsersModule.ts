@@ -1,7 +1,7 @@
 import localePkg from 'locale';
-import { Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
-import { User, UserQuery, UsersModule } from '@unchainedshop/types/user';
+import { Query } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -14,8 +14,8 @@ import {
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
-import { UsersCollection } from '../db/UsersCollection';
-import addMigrations from './addMigrations';
+import { UsersCollection } from "../db/UsersCollection.js";
+import addMigrations from "./addMigrations.js";
 
 const { Locale } = localePkg;
 

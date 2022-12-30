@@ -1,4 +1,4 @@
-import { walkUpFromAssortment, walkUpFromProduct } from './build-paths';
+import { walkUpFromAssortment, walkUpFromProduct } from "./build-paths.js";
 
 export const buildBreadcrumbs = async (params) => {
   const { productId } = params;

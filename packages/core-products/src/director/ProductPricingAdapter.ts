@@ -4,7 +4,7 @@ import {
   IProductPricingAdapter,
 } from '@unchainedshop/types/products.pricing';
 import { BasePricingAdapter } from '@unchainedshop/utils';
-import { ProductPricingSheet } from './ProductPricingSheet';
+import { ProductPricingSheet } from "./ProductPricingSheet.js";
 
 const basePricingAdapter = BasePricingAdapter<ProductPricingAdapterContext, ProductPricingCalculation>();
 

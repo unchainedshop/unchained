@@ -1,6 +1,6 @@
 import { IDeliveryAdapter } from '@unchainedshop/types/delivery';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { DeliveryError } from './DeliveryError';
+import { DeliveryError } from "./DeliveryError.js";
 
 export const DeliveryAdapter: Omit<IDeliveryAdapter, 'key' | 'label' | 'version'> = {
   initialConfiguration: [],

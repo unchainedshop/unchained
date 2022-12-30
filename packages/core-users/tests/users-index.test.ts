@@ -1,6 +1,6 @@
-import user from './mock/user-mock'
-import {buildFindSelector,  removeConfidentialServiceHashes} from '../src/module/configureUsersModule'
-import { User } from '@unchainedshop/types/user';
+import user from "./mock/user-mock.js"
+import {buildFindSelector,  removeConfidentialServiceHashes} from "../src/module/configureUsersModule.js"
+import { User } from '@unchainedshop/types/user.js';
 
 describe('User', () => {
   describe('removeConfidentialServiceHashes', () => {

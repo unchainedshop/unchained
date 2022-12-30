@@ -1,3 +1,3 @@
-export { configureAssortmentsModule } from './module/configureAssortmentsModule';
+export { configureAssortmentsModule } from "./module/configureAssortmentsModule.js";
 
-export { assortmentsSettings } from './assortments-settings';
+export { assortmentsSettings } from "./assortments-settings.js";

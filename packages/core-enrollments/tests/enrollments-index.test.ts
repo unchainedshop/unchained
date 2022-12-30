@@ -1,7 +1,7 @@
 import { EnrollmentStatus } from "@unchainedshop/types/enrollments";
-import {periodForReferenceDate} from "../src/director/EnrollmentAdapter";
+import {periodForReferenceDate} from "../src/director/EnrollmentAdapter.js";
 
-import {buildFindSelector} from '../src/module/configureEnrollmentsModule'
+import {buildFindSelector} from "../src/module/configureEnrollmentsModule.js"
 
 
 describe('Enrollment', () => {

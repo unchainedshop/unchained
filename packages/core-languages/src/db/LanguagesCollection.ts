@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { Language } from '@unchainedshop/types/languages';
 import { buildDbIndexes } from '@unchainedshop/utils';
 

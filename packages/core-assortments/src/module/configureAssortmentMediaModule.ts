@@ -3,8 +3,8 @@ import {
   AssortmentMediaModule,
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media';
-import { Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { Query } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -15,8 +15,8 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection';
-import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema';
+import { AssortmentMediaCollection } from "../db/AssortmentMediaCollection.js";
+import { AssortmentMediaSchema } from "../db/AssortmentMediaSchema.js";
 
 const { Locale } = localePkg;
 

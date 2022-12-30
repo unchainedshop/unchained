@@ -1,13 +1,13 @@
-import { Collection, Filter } from '@unchainedshop/types/common';
-import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
+import { Collection, Filter } from '@unchainedshop/types/common.js';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema';
-import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger';
-import { OrderDiscountDirector } from '../director/OrderDiscountDirector';
+import { OrderDiscountsSchema } from "../db/OrderDiscountsSchema.js";
+import { OrderDiscountTrigger } from "../db/OrderDiscountTrigger.js";
+import { OrderDiscountDirector } from "../director/OrderDiscountDirector.js";
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_CREATE_DISCOUNT',

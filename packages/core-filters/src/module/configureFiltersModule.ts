@@ -1,6 +1,6 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { Document, Filter as DbFilter, FindOptions, Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
+import { Document, Filter as DbFilter, FindOptions, Query } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import memoizee from 'memoizee';
 import {
   Filter,
@@ -11,14 +11,14 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { FilterType } from '../db/FilterType';
-import { FilterDirector } from '../director/FilterDirector';
-import { FiltersCollection } from '../db/FiltersCollection';
-import { FiltersSchema } from '../db/FiltersSchema';
-import { configureFilterSearchModule } from './configureFilterSearchModule';
-import { configureFilterTextsModule } from './configureFilterTextsModule';
-import createFilterValueParser from '../filter-value-parsers';
-import { filtersSettings } from '../filters-settings';
+import { FilterType } from "../db/FilterType.js";
+import { FilterDirector } from "../director/FilterDirector.js";
+import { FiltersCollection } from "../db/FiltersCollection.js";
+import { FiltersSchema } from "../db/FiltersSchema.js";
+import { configureFilterSearchModule } from "./configureFilterSearchModule.js";
+import { configureFilterTextsModule } from "./configureFilterTextsModule.js";
+import createFilterValueParser from "../filter-value-parsers/index.js";
+import { filtersSettings } from "../filters-settings.js";
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 

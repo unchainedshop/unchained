@@ -2,7 +2,7 @@ import {
   PaymentCredentials as PaymentCredentialsType,
   PaymentModule,
 } from '@unchainedshop/types/payments';
-import { Collection } from '@unchainedshop/types/common';
+import { Collection } from '@unchainedshop/types/common.js';
 import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
 
 export const configurePaymentCredentialsModule = (

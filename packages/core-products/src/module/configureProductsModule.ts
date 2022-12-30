@@ -1,5 +1,5 @@
-import { Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { Query } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 
 import {
   Product,
@@ -16,19 +16,19 @@ import {
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 
-import { ProductDiscountDirector } from '../director/ProductDiscountDirector';
-import { ProductsCollection } from '../db/ProductsCollection';
-import { ProductsSchema, ProductTypes } from '../db/ProductsSchema';
-import { ProductStatus } from '../db/ProductStatus';
-import { ProductPricingSheet } from '../director/ProductPricingSheet';
-import { ProductPricingDirector } from '../products-index';
-import { configureProductMediaModule } from './configureProductMediaModule';
-import { configureProductPricesModule } from './configureProductPrices';
-import { configureProductReviewsModule } from './configureProductReviewsModule';
-import { configureProductTextsModule } from './configureProductTextsModule';
-import { configureProductVariationsModule } from './configureProductVariationsModule';
-import { productsSettings } from '../products-settings';
-import addMigrations from '../migrations/addMigrations';
+import { ProductDiscountDirector } from "../director/ProductDiscountDirector.js";
+import { ProductsCollection } from "../db/ProductsCollection.js";
+import { ProductsSchema, ProductTypes } from "../db/ProductsSchema.js";
+import { ProductStatus } from "../db/ProductStatus.js";
+import { ProductPricingSheet } from "../director/ProductPricingSheet.js";
+import { ProductPricingDirector } from "../products-index.js";
+import { configureProductMediaModule } from "./configureProductMediaModule.js";
+import { configureProductPricesModule } from "./configureProductPrices.js";
+import { configureProductReviewsModule } from "./configureProductReviewsModule.js";
+import { configureProductTextsModule } from "./configureProductTextsModule.js";
+import { configureProductVariationsModule } from "./configureProductVariationsModule.js";
+import { productsSettings } from "../products-settings.js";
+import addMigrations from "../migrations/addMigrations.js";
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',

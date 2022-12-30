@@ -1,3 +1,3 @@
-export { configureMessagingModule } from './module/configureMessagingModule';
+export { configureMessagingModule } from "./module/configureMessagingModule.js";
 
-export { MessagingDirector } from './director/MessagingDirector';
+export { MessagingDirector } from "./director/MessagingDirector.js";

@@ -1,9 +1,9 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { BookmarksCollection } from '../db/BookmarksCollection';
-import { BookmarkSchema } from '../db/BookmarksSchema';
+import { BookmarksCollection } from "../db/BookmarksCollection.js";
+import { BookmarkSchema } from "../db/BookmarksSchema.js";
 
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARKS_UPDATE', 'BOOKMARK_REMOVE'];
 

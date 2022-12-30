@@ -1,3 +1,3 @@
-export { configureUsersModule } from './module/configureUsersModule';
+export { configureUsersModule } from "./module/configureUsersModule.js";
 
-export { userServices } from './services/userServices';
+export { userServices } from "./services/userServices.js";

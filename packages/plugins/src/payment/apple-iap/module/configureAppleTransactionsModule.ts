@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransactionsCollection';
 
 export interface AppleTransactionsModule {

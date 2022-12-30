@@ -1,5 +1,5 @@
-import { PaymentProviderType } from "../src/director/PaymentProviderType";
-import { buildFindSelector } from "../src/module/configurePaymentProvidersModule";
+import { PaymentProviderType } from "../src/director/PaymentProviderType.js";
+import { buildFindSelector } from "../src/module/configurePaymentProvidersModule.js";
 
 
 describe('Payment', () => {

@@ -1,5 +1,5 @@
-import { FindOptions } from '@unchainedshop/types/common';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { FindOptions } from '@unchainedshop/types/common.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { SearchQuery } from '@unchainedshop/types/filters';
 
 export type CleanedSearchQuery = Omit<SearchQuery, 'query'> & {

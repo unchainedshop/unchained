@@ -5,8 +5,8 @@ import {
   QuotationContext,
 } from '@unchainedshop/types/quotations';
 import { BaseDirector } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { QuotationError } from './QuotationError';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { QuotationError } from "./QuotationError.js";
 
 const baseDirector = BaseDirector<IQuotationAdapter>('QuotationDirector', {
   adapterSortKey: 'orderIndex',

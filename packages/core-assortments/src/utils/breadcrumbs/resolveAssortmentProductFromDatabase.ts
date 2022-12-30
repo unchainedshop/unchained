@@ -1,5 +1,5 @@
 import { AssortmentProduct } from '@unchainedshop/types/assortments.js';
-import { Filter, Collection } from '@unchainedshop/types/common';
+import { Filter, Collection } from '@unchainedshop/types/common.js';
 
 export function resolveAssortmentProductFromDatabase(
   AssortmentProducts: Collection<AssortmentProduct>,

@@ -1,15 +1,15 @@
-import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts';
+import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts.js';
 
 import { v4 as uuidv4 } from 'uuid';
-import { ModuleInput } from '@unchainedshop/types/core';
-import { accountsSettings } from '../accounts-settings';
-import { accountsPassword } from '../accounts/accountsPassword';
-import { UnchainedAccountsServer } from '../accounts/accountsServer';
-import { createDbManager } from '../accounts/dbManager';
-import { evaluateContext } from './utils/evaluateContext';
-import { filterContext } from './utils/filterContext';
-import { hashPassword } from './utils/hashPassword';
-import { configureAccountsWebAuthnModule } from './configureAccountsWebAuthnModule';
+import { ModuleInput } from '@unchainedshop/types/core.js';
+import { accountsSettings } from '../accounts-settings.js';
+import { accountsPassword } from '../accounts/accountsPassword.js';
+import { UnchainedAccountsServer } from '../accounts/accountsServer.js';
+import { createDbManager } from '../accounts/dbManager.js';
+import { evaluateContext } from './utils/evaluateContext.js';
+import { filterContext } from './utils/filterContext.js';
+import { hashPassword } from './utils/hashPassword.js';
+import { configureAccountsWebAuthnModule } from './configureAccountsWebAuthnModule.js';
 
 export const configureAccountsModule = async ({
   db,

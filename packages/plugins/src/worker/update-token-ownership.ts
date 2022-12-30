@@ -1,6 +1,6 @@
 import { IWorkerAdapter, Work } from '@unchainedshop/types/worker';
 import { WorkerDirector, WorkerAdapter, WorkerEventTypes } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import later from '@breejs/later';
 
 const everyMinute = later.parse.cron('* * * * *');

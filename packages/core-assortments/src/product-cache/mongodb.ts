@@ -1,5 +1,5 @@
-import { Db } from '@unchainedshop/types/common';
-import { AssortmentsCollection } from '../db/AssortmentsCollection';
+import { Db } from '@unchainedshop/types/common.js';
+import { AssortmentsCollection } from "../db/AssortmentsCollection.js";
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');

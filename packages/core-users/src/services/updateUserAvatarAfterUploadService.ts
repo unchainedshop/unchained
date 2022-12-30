@@ -1,4 +1,4 @@
-import { UpdateUserAvatarAfterUploadService } from '@unchainedshop/types/user';
+import { UpdateUserAvatarAfterUploadService } from '@unchainedshop/types/user.js';
 
 export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadService = async (
   { file },
