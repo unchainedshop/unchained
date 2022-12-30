@@ -6,7 +6,7 @@ import {
   OrderPricingContext,
 } from '@unchainedshop/types/orders.pricing';
 import { BasePricingDirector } from '@unchainedshop/utils';
-import { OrderPricingSheet } from "./OrderPricingSheet.js";
+import { OrderPricingSheet } from './OrderPricingSheet.js';
 
 const baseDirector = BasePricingDirector<
   OrderPricingContext,

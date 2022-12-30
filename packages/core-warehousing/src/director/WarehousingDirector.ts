@@ -6,7 +6,7 @@ import {
 import { DeliveryDirector } from '@unchainedshop/core-delivery';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
-import { WarehousingError } from "./WarehousingError.js";
+import { WarehousingError } from './WarehousingError.js';
 
 const getReferenceDate = (context: WarehousingContext) => {
   return context && context.referenceDate ? context.referenceDate : new Date();

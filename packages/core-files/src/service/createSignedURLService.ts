@@ -1,6 +1,6 @@
 import { CreateSignedURLService } from '@unchainedshop/types/files';
-import { getFileAdapter } from "../utils/getFileAdapter.js";
-import { getFileFromFileData } from "../utils/getFileFromFileData.js";
+import { getFileAdapter } from '../utils/getFileAdapter.js';
+import { getFileFromFileData } from '../utils/getFileFromFileData.js';
 
 export const createSignedURLService: CreateSignedURLService = async (
   { directoryName, fileName, meta },

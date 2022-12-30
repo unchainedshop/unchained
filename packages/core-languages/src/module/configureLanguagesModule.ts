@@ -8,8 +8,8 @@ import {
   buildSortOptions,
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { LanguagesCollection } from "../db/LanguagesCollection.js";
-import { LanguagesSchema } from "../db/LanguagesSchema.js";
+import { LanguagesCollection } from '../db/LanguagesCollection.js';
+import { LanguagesSchema } from '../db/LanguagesSchema.js';
 
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 

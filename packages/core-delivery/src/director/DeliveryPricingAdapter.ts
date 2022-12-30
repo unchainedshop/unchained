@@ -4,7 +4,7 @@ import {
   IDeliveryPricingAdapter,
 } from '@unchainedshop/types/delivery.pricing';
 import { BasePricingAdapter } from '@unchainedshop/utils';
-import { DeliveryPricingSheet } from "./DeliveryPricingSheet.js";
+import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
 
 const basePricingAdapter = BasePricingAdapter<
   DeliveryPricingAdapterContext,

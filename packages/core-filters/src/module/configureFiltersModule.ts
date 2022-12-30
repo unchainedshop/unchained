@@ -11,14 +11,14 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { FilterType } from "../db/FilterType.js";
-import { FilterDirector } from "../director/FilterDirector.js";
-import { FiltersCollection } from "../db/FiltersCollection.js";
-import { FiltersSchema } from "../db/FiltersSchema.js";
-import { configureFilterSearchModule } from "./configureFilterSearchModule.js";
-import { configureFilterTextsModule } from "./configureFilterTextsModule.js";
-import createFilterValueParser from "../filter-value-parsers/index.js";
-import { filtersSettings } from "../filters-settings.js";
+import { FilterType } from '../db/FilterType.js';
+import { FilterDirector } from '../director/FilterDirector.js';
+import { FiltersCollection } from '../db/FiltersCollection.js';
+import { FiltersSchema } from '../db/FiltersSchema.js';
+import { configureFilterSearchModule } from './configureFilterSearchModule.js';
+import { configureFilterTextsModule } from './configureFilterTextsModule.js';
+import createFilterValueParser from '../filter-value-parsers/index.js';
+import { filtersSettings } from '../filters-settings.js';
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 

@@ -1,1 +1,1 @@
-export { configureEventsModule } from "./module/configureEventsModule.js";
+export { configureEventsModule } from './module/configureEventsModule.js';

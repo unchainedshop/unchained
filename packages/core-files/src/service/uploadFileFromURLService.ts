@@ -1,6 +1,6 @@
 import { UploadFileFromURLService } from '@unchainedshop/types/files';
-import { getFileAdapter } from "../utils/getFileAdapter.js";
-import { getFileFromFileData } from "../utils/getFileFromFileData.js";
+import { getFileAdapter } from '../utils/getFileAdapter.js';
+import { getFileFromFileData } from '../utils/getFileFromFileData.js';
 
 export const uploadFileFromURLService: UploadFileFromURLService = async (
   { directoryName, fileInput, meta },

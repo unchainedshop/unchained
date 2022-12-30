@@ -5,11 +5,11 @@ import { Work, WorkerModule } from '@unchainedshop/types/worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection } from '@unchainedshop/types/api.js';
-import { WorkQueueCollection } from "../db/WorkQueueCollection.js";
-import { WorkQueueSchema } from "../db/WorkQueueSchema.js";
-import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from "../director/WorkerDirector.js";
-import { WorkerEventTypes } from "../director/WorkerEventTypes.js";
-import { WorkStatus } from "../director/WorkStatus.js";
+import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
+import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
+import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';
+import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
+import { WorkStatus } from '../director/WorkStatus.js';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 

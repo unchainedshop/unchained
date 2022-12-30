@@ -16,18 +16,18 @@ import {
   buildSortOptions,
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { resolveAssortmentProductFromDatabase } from "../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js";
-import { resolveAssortmentLinkFromDatabase } from "../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js";
-import addMigrations from "../migrations/addMigrations.js";
-import { AssortmentsCollection } from "../db/AssortmentsCollection.js";
-import { AssortmentsSchema } from "../db/AssortmentsSchema.js";
-import { configureAssortmentFiltersModule } from "./configureAssortmentFiltersModule.js";
-import { configureAssortmentLinksModule } from "./configureAssortmentLinksModule.js";
-import { assortmentsSettings } from "../assortments-settings.js";
-import { configureAssortmentProductsModule } from "./configureAssortmentProductsModule.js";
-import { configureAssortmentTextsModule } from "./configureAssortmentTextsModule.js";
-import { configureAssortmentMediaModule } from "./configureAssortmentMediaModule.js";
-import { makeAssortmentBreadcrumbsBuilder } from "../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.js";
+import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
+import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
+import addMigrations from '../migrations/addMigrations.js';
+import { AssortmentsCollection } from '../db/AssortmentsCollection.js';
+import { AssortmentsSchema } from '../db/AssortmentsSchema.js';
+import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule.js';
+import { configureAssortmentLinksModule } from './configureAssortmentLinksModule.js';
+import { assortmentsSettings } from '../assortments-settings.js';
+import { configureAssortmentProductsModule } from './configureAssortmentProductsModule.js';
+import { configureAssortmentTextsModule } from './configureAssortmentTextsModule.js';
+import { configureAssortmentMediaModule } from './configureAssortmentMediaModule.js';
+import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.js';
 
 const ASSORTMENT_EVENTS = [
   'ASSORTMENT_CREATE',

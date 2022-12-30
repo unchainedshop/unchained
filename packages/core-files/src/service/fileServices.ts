@@ -1,9 +1,9 @@
 import { FileServices } from '@unchainedshop/types/files';
-import { linkFileService } from "./linkFileService.js";
-import { createSignedURLService } from "./createSignedURLService.js";
-import { uploadFileFromURLService } from "./uploadFileFromURLService.js";
-import { uploadFileFromStreamService } from "./uploadFileFromStreamService.js";
-import { removeFilesService } from "./removeFilesService.js";
+import { linkFileService } from './linkFileService.js';
+import { createSignedURLService } from './createSignedURLService.js';
+import { uploadFileFromURLService } from './uploadFileFromURLService.js';
+import { uploadFileFromStreamService } from './uploadFileFromStreamService.js';
+import { removeFilesService } from './removeFilesService.js';
 
 export const fileServices: FileServices = {
   linkFile: linkFileService,

@@ -11,11 +11,11 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { Query } from '@unchainedshop/types/common.js';
-import { EnrollmentsCollection } from "../db/EnrollmentsCollection.js";
-import { EnrollmentsSchema } from "../db/EnrollmentsSchema.js";
-import { EnrollmentStatus } from "../db/EnrollmentStatus.js";
-import { EnrollmentDirector } from "../enrollments-index.js";
-import { enrollmentsSettings } from "../enrollments-settings.js";
+import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
+import { EnrollmentsSchema } from '../db/EnrollmentsSchema.js';
+import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
+import { EnrollmentDirector } from '../enrollments-index.js';
+import { enrollmentsSettings } from '../enrollments-settings.js';
 
 const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_ADD_PERIOD',

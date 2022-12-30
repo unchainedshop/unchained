@@ -8,7 +8,7 @@ import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
 import { ProductType } from '@unchainedshop/types/products';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { ordersSettings } from "../orders-settings.js";
+import { ordersSettings } from '../orders-settings.js';
 
 const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
 

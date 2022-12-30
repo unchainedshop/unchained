@@ -5,8 +5,8 @@ import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, generateDbObjectId } from '@unchainedshop/utils';
-import { OrderPositionsSchema } from "../db/OrderPositionsSchema.js";
-import { ordersSettings } from "../orders-settings.js";
+import { OrderPositionsSchema } from '../db/OrderPositionsSchema.js';
+import { ordersSettings } from '../orders-settings.js';
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',

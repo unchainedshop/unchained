@@ -6,7 +6,7 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { OrdersSchema } from "../db/OrdersSchema.js";
+import { OrdersSchema } from '../db/OrdersSchema.js';
 
 const ORDER_EVENTS: string[] = [
   'ORDER_CREATE',

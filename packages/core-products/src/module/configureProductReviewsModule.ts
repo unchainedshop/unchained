@@ -10,8 +10,8 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { ProductReviewsCollection } from "../db/ProductReviewsCollection.js";
-import { ProductReviewsSchema, ProductReviewVoteTypes } from "../db/ProductReviewsSchema.js";
+import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
+import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema.js';
 
 const PRODUCT_REVIEW_EVENTS = [
   'PRODUCT_REVIEW_CREATE',

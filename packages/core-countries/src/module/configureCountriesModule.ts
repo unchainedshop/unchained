@@ -10,8 +10,8 @@ import {
   buildSortOptions,
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { CountriesCollection } from "../db/CountriesCollection.js";
-import { CountriesSchema } from "../db/CountriesSchema.js";
+import { CountriesCollection } from '../db/CountriesCollection.js';
+import { CountriesSchema } from '../db/CountriesSchema.js';
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 

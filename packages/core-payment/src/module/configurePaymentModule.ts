@@ -1,10 +1,10 @@
 import { ModuleInput } from '@unchainedshop/types/core.js';
 import { PaymentModule, PaymentSettingsOptions } from '@unchainedshop/types/payments';
-import { PaymentCredentialsCollection } from "../db/PaymentCredentialsCollection.js";
-import { PaymentProvidersCollection } from "../db/PaymentProvidersCollection.js";
-import { configurePaymentCredentialsModule } from "./configurePaymentCredentialsModule.js";
-import { configurePaymentProvidersModule } from "./configurePaymentProvidersModule.js";
-import { paymentSettings } from "../payment-settings.js";
+import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.js';
+import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.js';
+import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule.js';
+import { configurePaymentProvidersModule } from './configurePaymentProvidersModule.js';
+import { paymentSettings } from '../payment-settings.js';
 
 export const configurePaymentModule = async ({
   db,

@@ -2,7 +2,7 @@ import { IWorker, Work } from '@unchainedshop/types/worker';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';
-import { WorkerDirector } from "../director/WorkerDirector.js";
+import { WorkerDirector } from '../director/WorkerDirector.js';
 
 const { UNCHAINED_WORKER_ID } = process.env;
 

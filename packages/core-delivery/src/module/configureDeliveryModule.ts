@@ -8,12 +8,12 @@ import {
 } from '@unchainedshop/types/delivery';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { DeliveryPricingSheet } from "../director/DeliveryPricingSheet.js";
-import { DeliveryProvidersCollection } from "../db/DeliveryProvidersCollection.js";
-import { DeliveryProvidersSchema } from "../db/DeliveryProvidersSchema.js";
-import { deliverySettings } from "../delivery-settings.js";
-import { DeliveryDirector } from "../director/DeliveryDirector.js";
-import { DeliveryPricingDirector } from "../director/DeliveryPricingDirector.js";
+import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet.js';
+import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection.js';
+import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema.js';
+import { deliverySettings } from '../delivery-settings.js';
+import { DeliveryDirector } from '../director/DeliveryDirector.js';
+import { DeliveryPricingDirector } from '../director/DeliveryPricingDirector.js';
 
 const DELIVERY_PROVIDER_EVENTS: string[] = [
   'DELIVERY_PROVIDER_CREATE',

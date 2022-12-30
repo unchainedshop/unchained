@@ -1,7 +1,7 @@
 import {
   AssortmentMedia as AssortmentMediaType,
   AssortmentMediaText,
-} from '@unchainedshop/types/assortments.media';
+} from '@unchainedshop/types/assortments.media.js';
 import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 

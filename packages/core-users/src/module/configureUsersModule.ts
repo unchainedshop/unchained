@@ -14,8 +14,8 @@ import {
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
-import { UsersCollection } from "../db/UsersCollection.js";
-import addMigrations from "./addMigrations.js";
+import { UsersCollection } from '../db/UsersCollection.js';
+import addMigrations from './addMigrations.js';
 
 const { Locale } = localePkg;
 

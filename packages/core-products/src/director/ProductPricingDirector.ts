@@ -6,7 +6,7 @@ import {
   ProductPricingContext,
 } from '@unchainedshop/types/products.pricing';
 import { BasePricingDirector } from '@unchainedshop/utils';
-import { ProductPricingSheet } from "./ProductPricingSheet.js";
+import { ProductPricingSheet } from './ProductPricingSheet.js';
 
 const baseDirector = BasePricingDirector<
   ProductPricingContext,

@@ -11,11 +11,11 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { QuotationsCollection } from "../db/QuotationsCollection.js";
-import { QuotationsSchema } from "../db/QuotationsSchema.js";
-import { QuotationStatus } from "../db/QuotationStatus.js";
-import { QuotationDirector } from "../quotations-index.js";
-import { quotationsSettings } from "../quotations-settings.js";
+import { QuotationsCollection } from '../db/QuotationsCollection.js';
+import { QuotationsSchema } from '../db/QuotationsSchema.js';
+import { QuotationStatus } from '../db/QuotationStatus.js';
+import { QuotationDirector } from '../quotations-index.js';
+import { quotationsSettings } from '../quotations-settings.js';
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 

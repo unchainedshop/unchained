@@ -5,9 +5,9 @@ import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { OrderDiscountsSchema } from "../db/OrderDiscountsSchema.js";
-import { OrderDiscountTrigger } from "../db/OrderDiscountTrigger.js";
-import { OrderDiscountDirector } from "../director/OrderDiscountDirector.js";
+import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema.js';
+import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
+import { OrderDiscountDirector } from '../director/OrderDiscountDirector.js';
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_CREATE_DISCOUNT',

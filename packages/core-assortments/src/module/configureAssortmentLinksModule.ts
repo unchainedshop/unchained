@@ -2,8 +2,8 @@ import { AssortmentLink, AssortmentsModule } from '@unchainedshop/types/assortme
 import { Collection } from '@unchainedshop/types/common.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
-import { walkUpFromAssortment } from "../utils/breadcrumbs/build-paths.js";
-import { resolveAssortmentLinkFromDatabase } from "../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js";
+import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths.js';
+import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',

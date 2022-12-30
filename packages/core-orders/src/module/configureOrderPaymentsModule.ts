@@ -10,7 +10,7 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { OrderPaymentsSchema } from "../db/OrderPaymentsSchema.js";
+import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema.js';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 

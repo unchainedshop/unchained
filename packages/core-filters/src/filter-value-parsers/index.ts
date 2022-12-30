@@ -1,6 +1,6 @@
-import { FilterType } from "../db/FilterType.js";
-import createRangeFilterParser from "./range.js";
-import createSwitchFilterParser from "./switch.js";
+import { FilterType } from '../db/FilterType.js';
+import createRangeFilterParser from './range.js';
+import createSwitchFilterParser from './switch.js';
 
 type FilterParser = (values: Array<string>, allKeys: Array<string>) => any;
 

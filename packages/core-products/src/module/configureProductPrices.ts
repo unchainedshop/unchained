@@ -2,10 +2,10 @@ import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/ty
 import crypto from 'crypto';
 import { IProductPricingSheet, ProductPriceRate } from '@unchainedshop/types/products.pricing';
 import { Currency } from '@unchainedshop/types/currencies';
-import { ProductPricingDirector } from "../director/ProductPricingDirector.js";
-import { getPriceLevels } from "./utils/getPriceLevels.js";
-import { getPriceRange } from "./utils/getPriceRange.js";
-import { ProductPriceRates } from "../db/ProductPriceRates.js";
+import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
+import { getPriceLevels } from './utils/getPriceLevels.js';
+import { getPriceRange } from './utils/getPriceRange.js';
+import { ProductPriceRates } from '../db/ProductPriceRates.js';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {

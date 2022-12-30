@@ -1,6 +1,6 @@
-export { configureWarehousingModule } from "./module/configureWarehousingModule.js";
+export { configureWarehousingModule } from './module/configureWarehousingModule.js';
 
-export { WarehousingDirector } from "./director/WarehousingDirector.js";
-export { WarehousingAdapter } from "./director/WarehousingAdapter.js";
-export { WarehousingError } from "./director/WarehousingError.js";
-export { WarehousingProviderType } from "./director/WarehousingProviderType.js";
+export { WarehousingDirector } from './director/WarehousingDirector.js';
+export { WarehousingAdapter } from './director/WarehousingAdapter.js';
+export { WarehousingError } from './director/WarehousingError.js';
+export { WarehousingProviderType } from './director/WarehousingProviderType.js';

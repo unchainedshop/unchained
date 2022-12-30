@@ -8,11 +8,11 @@ import {
 } from '@unchainedshop/types/payments';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { PaymentPricingDirector } from "../director/PaymentPricingDirector.js";
-import { PaymentPricingSheet } from "../director/PaymentPricingSheet.js";
-import { PaymentProvidersSchema } from "../db/PaymentProvidersSchema.js";
-import { PaymentDirector } from "../director/PaymentDirector.js";
-import { paymentSettings } from "../payment-settings.js";
+import { PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
+import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
+import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema.js';
+import { PaymentDirector } from '../director/PaymentDirector.js';
+import { paymentSettings } from '../payment-settings.js';
 
 const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_CREATE',

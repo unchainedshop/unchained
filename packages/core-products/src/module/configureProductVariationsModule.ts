@@ -13,8 +13,8 @@ import {
   generateDbMutations,
   generateDbObjectId,
 } from '@unchainedshop/utils';
-import { ProductVariationsCollection } from "../db/ProductVariationsCollection.js";
-import { ProductVariationsSchema, ProductVariationType } from "../db/ProductVariationsSchema.js";
+import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
+import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
 
 const { Locale } = localePkg;
 

@@ -8,7 +8,7 @@ import {
   generateDbFilterById,
   generateDbObjectId,
 } from '@unchainedshop/utils';
-import { assortmentsSettings } from "../assortments-settings.js";
+import { assortmentsSettings } from '../assortments-settings.js';
 
 const { Locale } = localePkg;
 
