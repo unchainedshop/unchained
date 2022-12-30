@@ -1,8 +1,8 @@
-import { User } from '@unchainedshop/types/user';
+import { User } from '@unchainedshop/types/user.js';
 import { randomValueHex } from '@unchainedshop/utils';
 import { accountsSettings } from '@unchainedshop/core-accountsjs';
 import moniker from 'moniker';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export const setupAccounts = (unchainedAPI: UnchainedCore) => {
   const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();

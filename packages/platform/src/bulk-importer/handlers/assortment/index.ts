@@ -1,3 +1,3 @@
-export { default as create } from './create';
-export { default as update } from './update';
-export { default as remove } from './remove';
+export { default as create } from './create.js';
+export { default as update } from './update.js';
+export { default as remove } from './remove.js';

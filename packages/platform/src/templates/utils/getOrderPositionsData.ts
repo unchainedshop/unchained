@@ -1,6 +1,6 @@
-import { Locale } from '@unchainedshop/types/common';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { Order } from '@unchainedshop/types/orders';
+import { Locale } from '@unchainedshop/types/common.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { Order } from '@unchainedshop/types/orders.js';
 
 export const getOrderPositionsData = async (
   order: Order,

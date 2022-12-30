@@ -1,7 +1,7 @@
-import { TemplateResolver } from '@unchainedshop/types/messaging';
+import { TemplateResolver } from '@unchainedshop/types/messaging.js';
 import { systemLocale } from '@unchainedshop/utils';
-import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
-import { getOrderPositionsData } from './utils/getOrderPositionsData';
+import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData.js';
+import { getOrderPositionsData } from './utils/getOrderPositionsData.js';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, ROOT_URL } = process.env;
 

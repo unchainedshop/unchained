@@ -1,6 +1,6 @@
-import { SetupWorkqueueOptions } from '@unchainedshop/types/platform';
+import { SetupWorkqueueOptions } from '@unchainedshop/types/platform.js';
 import { EventListenerWorker, FailedRescheduler, IntervalWorker } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export const setupWorkqueue = (
   unchainedAPI: UnchainedCore,

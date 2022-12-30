@@ -1,18 +1,18 @@
-import { SetupWorkqueueOptions, PlatformOptions, MessageTypes } from '@unchainedshop/types/platform';
+import { SetupWorkqueueOptions, PlatformOptions, MessageTypes } from '@unchainedshop/types/platform.js';
 import { startAPIServer, roles } from '@unchainedshop/api';
 import { initCore } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { WorkerDirector } from '@unchainedshop/core-worker';
-import { createBulkImporterFactory } from './bulk-importer/createBulkImporter';
-import { runMigrations } from './migrations/runMigrations';
-import { setupAccounts } from './setup/setupAccounts';
-import { setupCarts } from './setup/setupCarts';
-import { setupTemplates } from './setup/setupTemplates';
-import { setupWorkqueue } from './setup/setupWorkqueue';
-import { createMigrationRepository } from './migrations/migrationRepository';
+import { createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
+import { runMigrations } from './migrations/runMigrations.js';
+import { setupAccounts } from './setup/setupAccounts.js';
+import { setupCarts } from './setup/setupCarts.js';
+import { setupTemplates } from './setup/setupTemplates.js';
+import { setupWorkqueue } from './setup/setupWorkqueue.js';
+import { createMigrationRepository } from './migrations/migrationRepository.js';
 
 export { MessageTypes };
 

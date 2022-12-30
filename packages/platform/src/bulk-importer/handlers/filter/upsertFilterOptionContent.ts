@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { FilterText } from '@unchainedshop/types/filters';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { FilterText } from '@unchainedshop/types/filters.js';
 
 export default async function upsertFilterOptionContent(
   { options, filterId },

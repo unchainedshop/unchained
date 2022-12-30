@@ -1,6 +1,6 @@
-import { AssortmentMediaText } from '@unchainedshop/types/assortments.media';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import upsertAsset from '../../upsertAsset';
+import { AssortmentMediaText } from '@unchainedshop/types/assortments.media.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import upsertAsset from '../../upsertAsset.js';
 
 const upsertMediaObject = async (media, unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;

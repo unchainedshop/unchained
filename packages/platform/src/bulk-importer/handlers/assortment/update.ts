@@ -1,10 +1,10 @@
-import { UnchainedCore } from '@unchainedshop/types/core';
-import upsertAssortmentContent from './upsertAssortmentContent';
-import upsertAssortmentProducts from './upsertAssortmentProducts';
-import upsertAssortmentChildren from './upsertAssortmentChildren';
-import upsertAssortmentFilters from './upsertAssortmentFilters';
-import upsertMedia from './upsertMedia';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import upsertAssortmentContent from './upsertAssortmentContent.js';
+import upsertAssortmentProducts from './upsertAssortmentProducts.js';
+import upsertAssortmentChildren from './upsertAssortmentChildren.js';
+import upsertAssortmentFilters from './upsertAssortmentFilters.js';
+import upsertMedia from './upsertMedia.js';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 
 export default async function updateAssortment(payload: any, { logger }, unchainedAPI: UnchainedCore) {
   const { modules } = unchainedAPI;

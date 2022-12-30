@@ -1,6 +1,6 @@
 import { AssortmentProduct } from '@unchainedshop/types/assortments.js';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 
 const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;
