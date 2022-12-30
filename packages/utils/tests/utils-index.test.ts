@@ -19,7 +19,7 @@ import {
   slugify,
   systemLocale,
 } from '@unchainedshop/utils';
-import generateHashId from '../src/generate-random-hash'
+import generateHashId from '../lib/generate-random-hash.js'
 
 describe('Utils', () => {
 

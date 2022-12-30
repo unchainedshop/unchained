@@ -1,5 +1,5 @@
-import { DeliveryProviderType } from "../src/director/DeliveryProviderType.js";
-import { buildFindSelector } from "../src/module/configureDeliveryModule.js";
+import { DeliveryProviderType } from "../lib/director/DeliveryProviderType.js";
+import { buildFindSelector } from "../lib/module/configureDeliveryModule.js";
 
 describe('Delivery', () => {
   describe('buildFindSelector', () => {

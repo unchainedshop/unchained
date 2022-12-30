@@ -1,9 +1,9 @@
 
-import {hashPassword} from "../src/module/utils/hashPassword.js"
-import {buf2hex, toArrayBuffer } from "../src/module/configureAccountsWebAuthnModule.js"
-import {dateProvider, idProvider} from "../src/accounts/dbManager.js"
-import {evaluateContext} from "../src/module/utils/evaluateContext.js"
-import {filterContext} from "../src/module/utils/filterContext.js"
+import {hashPassword} from "../lib/module/utils/hashPassword.js"
+import {buf2hex, toArrayBuffer } from "../lib/module/configureAccountsWebAuthnModule.js"
+import {dateProvider, idProvider} from "../lib/accounts/dbManager.js"
+import {evaluateContext} from "../lib/module/utils/evaluateContext.js"
+import {filterContext} from "../lib/module/utils/filterContext.js"
 
 describe('Accounts', () => {
     it('Should hash plain string sha256 and return a hex ', async () => {      

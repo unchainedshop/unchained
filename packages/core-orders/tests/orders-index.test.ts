@@ -1,8 +1,8 @@
-import {buildFindByIdSelector as buildFindByIdSelectorForDelivery} from "../src/module/configureOrderDeliveriesModule.js"
-import {buildFindByIdSelector as buildFindByIdSelectorForDiscount } from "../src/module/configureOrderDiscountsModule.js"
-import {buildFindByIdSelector as buildFindByIdSelectorForPayment, buildFindByContextDataSelector } from "../src/module/configureOrderPaymentsModule.js"
-import {buildFindByIdSelector as buildFindByIdSelectorForPosition } from "../src/module/configureOrderPositionsModule.js"
-import {buildFindSelector as buildFindSelectorForOrder} from "../src/module/configureOrdersModule-queries.js"
+import {buildFindByIdSelector as buildFindByIdSelectorForDelivery} from "../lib/module/configureOrderDeliveriesModule.js"
+import {buildFindByIdSelector as buildFindByIdSelectorForDiscount } from "../lib/module/configureOrderDiscountsModule.js"
+import {buildFindByIdSelector as buildFindByIdSelectorForPayment, buildFindByContextDataSelector } from "../lib/module/configureOrderPaymentsModule.js"
+import {buildFindByIdSelector as buildFindByIdSelectorForPosition } from "../lib/module/configureOrderPositionsModule.js"
+import {buildFindSelector as buildFindSelectorForOrder} from "../lib/module/configureOrdersModule-queries.js"
 
 
 describe('OrderPosition', () => {

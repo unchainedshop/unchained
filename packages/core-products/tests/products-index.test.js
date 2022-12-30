@@ -1,4 +1,4 @@
-import {buildFindSelector} from "../src/module/configureProductsModule"
+import {buildFindSelector} from "../lib/module/configureProductsModule.js"
 describe('Product', () => {
   describe("buildFindSelector", () => {
     it('Return correct filter object object when no parameter is passed', async () => {

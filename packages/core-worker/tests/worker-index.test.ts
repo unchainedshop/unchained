@@ -1,5 +1,5 @@
-import { WorkStatus } from "../src/director/WorkStatus.js";
-import { buildQuerySelector } from "../src/module/configureWorkerModule.js";
+import { WorkStatus } from "../lib/director/WorkStatus.js";
+import { buildQuerySelector } from "../lib/module/configureWorkerModule.js";
 
 describe('Worker', () => {
 
