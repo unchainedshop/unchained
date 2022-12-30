@@ -1,6 +1,6 @@
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { Filter } from '@unchainedshop/types/common.js';
-import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events';
+import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events.js';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';

@@ -1,6 +1,6 @@
-import { SearchQuery } from '@unchainedshop/types/filters';
+import { SearchQuery } from '@unchainedshop/types/filters.js';
 import { parseQueryArray } from '../utils/parseQueryArray.js';
-import { CleanedSearchQuery } from './search';
+import { CleanedSearchQuery } from './search.js';
 
 export const cleanQuery = ({
   filterQuery,

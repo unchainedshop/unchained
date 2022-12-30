@@ -1,4 +1,4 @@
-import { FileServices } from '@unchainedshop/types/files';
+import { FileServices } from '@unchainedshop/types/files.js';
 import { linkFileService } from './linkFileService.js';
 import { createSignedURLService } from './createSignedURLService.js';
 import { uploadFileFromURLService } from './uploadFileFromURLService.js';

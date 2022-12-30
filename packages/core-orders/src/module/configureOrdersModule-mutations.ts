@@ -1,6 +1,6 @@
 import { Collection } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
-import { Order, OrderStatus, OrderMutations, OrdersModule } from '@unchainedshop/types/orders';
+import { Order, OrderStatus, OrderMutations, OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
 import { emit, registerEvents } from '@unchainedshop/events';

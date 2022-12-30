@@ -1,4 +1,4 @@
-import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
 import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 
 import https from 'https';

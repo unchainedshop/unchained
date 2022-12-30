@@ -1,7 +1,7 @@
 import { Collection, Filter, Query, Update } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 
-import { OrdersModule } from '@unchainedshop/types/orders';
+import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
   OrderPayment,
   OrderPaymentsModule,

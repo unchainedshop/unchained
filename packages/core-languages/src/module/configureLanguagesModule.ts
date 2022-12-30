@@ -1,5 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { LanguagesModule, Language, LanguageQuery } from '@unchainedshop/types/languages';
+import { LanguagesModule, Language, LanguageQuery } from '@unchainedshop/types/languages.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbMutations,

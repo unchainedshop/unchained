@@ -7,7 +7,7 @@ import {
   QuotationQuery,
   QuotationsModule,
   QuotationsSettingsOptions,
-} from '@unchainedshop/types/quotations';
+} from '@unchainedshop/types/quotations.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';

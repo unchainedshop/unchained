@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { Work } from '@unchainedshop/types/worker';
+import { Work } from '@unchainedshop/types/worker.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 const ONE_DAY_IN_SECONDS = 86400;

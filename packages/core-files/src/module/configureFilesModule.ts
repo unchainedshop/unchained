@@ -1,5 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { File, FilesModule, FilesSettingsOptions } from '@unchainedshop/types/files';
+import { File, FilesModule, FilesSettingsOptions } from '@unchainedshop/types/files.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection.js';

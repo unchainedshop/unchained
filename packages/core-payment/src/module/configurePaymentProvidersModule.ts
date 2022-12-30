@@ -5,7 +5,7 @@ import {
   PaymentModule,
   PaymentProvider,
   PaymentProviderQuery,
-} from '@unchainedshop/types/payments';
+} from '@unchainedshop/types/payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { PaymentPricingDirector } from '../director/PaymentPricingDirector.js';

@@ -10,7 +10,7 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { ProductsModule } from '@unchainedshop/types/products';
+import { ProductsModule } from '@unchainedshop/types/products.js';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
 import { ProductMediaSchema } from '../db/ProductMediaSchema.js';
 

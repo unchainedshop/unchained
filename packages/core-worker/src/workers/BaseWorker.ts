@@ -1,4 +1,4 @@
-import { IWorker, Work } from '@unchainedshop/types/worker';
+import { IWorker, Work } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';

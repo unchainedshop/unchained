@@ -1,7 +1,7 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 import { startOfHour, startOfMinute, add } from 'date-fns';
 
-import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
+import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments.js';
 
 export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
   const lowerCase = interval.toLowerCase();

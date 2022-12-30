@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
-import { Filter, FilterText, FilterProductIdCacheRecord } from '@unchainedshop/types/filters';
+import { Filter, FilterText, FilterProductIdCacheRecord } from '@unchainedshop/types/filters.js';
 
 export const FiltersCollection = async (db: Db) => {
   const Filters = db.collection<Filter>('filters');

@@ -1,4 +1,4 @@
-import { LinkFileService } from '@unchainedshop/types/files';
+import { LinkFileService } from '@unchainedshop/types/files.js';
 import { FileDirector } from '@unchainedshop/file-upload';
 
 export const linkFileService: LinkFileService = async ({ fileId, size, type }, unchainedAPI) => {

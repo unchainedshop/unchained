@@ -4,7 +4,7 @@ import {
   ProductPricingRowCategory,
   IProductPricingSheet,
 } from '@unchainedshop/types/products.pricing';
-import { PricingSheetParams } from '@unchainedshop/types/pricing';
+import { PricingSheetParams } from '@unchainedshop/types/pricing.js';
 
 export const ProductPricingSheet = (
   params: PricingSheetParams<ProductPricingCalculation>,

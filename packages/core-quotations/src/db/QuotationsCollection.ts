@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
-import { Quotation } from '@unchainedshop/types/quotations';
+import { Quotation } from '@unchainedshop/types/quotations.js';
 
 export const QuotationsCollection = async (db: Db) => {
   const Quotations = db.collection<Quotation>('quotations');

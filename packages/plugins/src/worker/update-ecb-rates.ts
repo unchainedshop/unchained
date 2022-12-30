@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
 import xmlJs from 'xml-js';

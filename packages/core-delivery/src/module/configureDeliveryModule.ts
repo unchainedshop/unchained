@@ -5,7 +5,7 @@ import {
   DeliveryProvider,
   DeliveryProviderQuery,
   DeliverySettingsOptions,
-} from '@unchainedshop/types/delivery';
+} from '@unchainedshop/types/delivery.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet.js';

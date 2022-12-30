@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing';
+import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const WarehousingProvidersCollection = async (db: Db) => {

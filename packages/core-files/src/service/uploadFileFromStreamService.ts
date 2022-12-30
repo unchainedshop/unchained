@@ -1,4 +1,4 @@
-import { UploadFileFromStreamService } from '@unchainedshop/types/files';
+import { UploadFileFromStreamService } from '@unchainedshop/types/files.js';
 import { getFileAdapter } from '../utils/getFileAdapter.js';
 import { getFileFromFileData } from '../utils/getFileFromFileData.js';
 

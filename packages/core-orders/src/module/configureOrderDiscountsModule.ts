@@ -1,6 +1,6 @@
 import { Collection, Filter } from '@unchainedshop/types/common.js';
 import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import { OrdersModule } from '@unchainedshop/types/orders';
+import { OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';

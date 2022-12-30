@@ -1,5 +1,5 @@
 import { ModuleInput } from '@unchainedshop/types/core.js';
-import { PaymentModule, PaymentSettingsOptions } from '@unchainedshop/types/payments';
+import { PaymentModule, PaymentSettingsOptions } from '@unchainedshop/types/payments.js';
 import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.js';
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.js';
 import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule.js';

@@ -7,7 +7,7 @@ import {
   FilterQuery,
   FiltersModule,
   FiltersSettingsOptions,
-} from '@unchainedshop/types/filters';
+} from '@unchainedshop/types/filters.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';

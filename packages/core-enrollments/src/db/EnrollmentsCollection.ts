@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
-import { Enrollment } from '@unchainedshop/types/enrollments';
+import { Enrollment } from '@unchainedshop/types/enrollments.js';
 
 export const EnrollmentsCollection = async (db: Db) => {
   const Enrollments = db.collection<Enrollment>('enrollments');

@@ -1,4 +1,4 @@
-import { FilterAdapterActions } from '@unchainedshop/types/filters';
+import { FilterAdapterActions } from '@unchainedshop/types/filters.js';
 
 export const assortmentFulltextSearch =
   ({ filterSelector, assortmentSelector, sortStage }, filterActions: FilterAdapterActions) =>

@@ -1,4 +1,4 @@
-import { IMessagingDirector, TemplateResolver } from '@unchainedshop/types/messaging';
+import { IMessagingDirector, TemplateResolver } from '@unchainedshop/types/messaging.js';
 import { log } from '@unchainedshop/logger';
 
 const TemplateResolvers = new Map<string, TemplateResolver>();

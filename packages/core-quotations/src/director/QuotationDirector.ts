@@ -3,7 +3,7 @@ import {
   IQuotationAdapter,
   IQuotationDirector,
   QuotationContext,
-} from '@unchainedshop/types/quotations';
+} from '@unchainedshop/types/quotations.js';
 import { BaseDirector } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { QuotationError } from './QuotationError.js';

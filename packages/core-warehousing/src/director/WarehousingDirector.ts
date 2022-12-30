@@ -2,7 +2,7 @@ import {
   IWarehousingAdapter,
   IWarehousingDirector,
   WarehousingContext,
-} from '@unchainedshop/types/warehousing';
+} from '@unchainedshop/types/warehousing.js';
 import { DeliveryDirector } from '@unchainedshop/core-delivery';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';

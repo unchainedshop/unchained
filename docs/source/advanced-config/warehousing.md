@@ -21,7 +21,7 @@ import {
   WarehousingAdapterActions,
   WarehousingContext,
   WarehousingProviderType,
-} from '@unchainedshop/types/warehousing';
+} from '@unchainedshop/types/warehousing.js';
 import { Context } from '@unchainedshop/types/api.js';
 
 const Store: IWarehousingAdapter = {

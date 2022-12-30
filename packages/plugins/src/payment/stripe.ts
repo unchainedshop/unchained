@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api.js';
-import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 

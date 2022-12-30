@@ -1,7 +1,7 @@
 import os from 'os';
 import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkerModule } from '@unchainedshop/types/worker';
+import { Work, WorkerModule } from '@unchainedshop/types/worker.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection } from '@unchainedshop/types/api.js';

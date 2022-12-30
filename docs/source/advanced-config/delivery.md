@@ -120,7 +120,7 @@ import {
 } from '@unchainedshop/core-delivery';
 import { DeliveryPricingAdapterContext, Calculation, PricingAdapterContext } from '@unchainedshop/types';
 import type { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing';
-import { Discount } from '@unchainedshop/types/discount';
+import { Discount } from '@unchainedshop/types/discount.js';
 
 export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
   key: 'ch.shop.delivery.pickup-fee',

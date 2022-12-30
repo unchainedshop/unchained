@@ -1,4 +1,4 @@
-import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger, LogLevel } from '@unchainedshop/logger';
 import fs from 'fs';

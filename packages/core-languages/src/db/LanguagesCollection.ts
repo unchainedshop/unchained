@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { Language } from '@unchainedshop/types/languages';
+import { Language } from '@unchainedshop/types/languages.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const LanguagesCollection = async (db: Db) => {

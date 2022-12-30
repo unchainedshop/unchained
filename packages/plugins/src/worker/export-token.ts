@@ -1,4 +1,4 @@
-import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter, WorkerEventTypes } from '@unchainedshop/core-worker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 

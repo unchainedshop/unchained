@@ -16,12 +16,12 @@ import {
   OrderPricingSheet,
   IOrderPricingSheet,
   OrderPricingAdapterContext,
-} from '@unchainedshop/types/order';
+} from '@unchainedshop/types/order.js';
 
-import { LogOptions } from '@unchainedshop/types/logs';
+import { LogOptions } from '@unchainedshop/types/logs.js';
 import { OrderPricingCalculation } from '@unchainedshop/types/orders.pricing';
-import { IPricingAdapter, IPricingAdapterActions } from '@unchainedshop/types/pricing';
-import { Discount } from '@unchainedshop/types/discount';
+import { IPricingAdapter, IPricingAdapterActions } from '@unchainedshop/types/pricing.js';
+import { Discount } from '@unchainedshop/types/discount.js';
 
 export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
   key: 'shop-order-service-pricing',
@@ -92,7 +92,7 @@ Below is an example of [IDiscountAdapter](https://docs.unchained.shop/types/inte
 
 ```typescript
 
-import { IDiscountAdapter } from '@unchainedshop/types/discount';
+import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 import { OrderDiscountDirector, OrderDiscountAdapter } from '@unchainedshop/core-orders';
 
 const ShopDiscount_TAG = 'ShopDiscount';

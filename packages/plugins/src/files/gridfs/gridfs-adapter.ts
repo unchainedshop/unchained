@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
 import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 import mimeType from 'mime-types';
 import { URL } from 'url';

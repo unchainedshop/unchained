@@ -1,5 +1,5 @@
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common.js';
-import { Order, OrderTransformations } from '@unchainedshop/types/orders';
+import { Order, OrderTransformations } from '@unchainedshop/types/orders.js';
 import { OrderPricingSheet } from '../director/OrderPricingSheet.js';
 
 export const configureOrderModuleTransformations = ({

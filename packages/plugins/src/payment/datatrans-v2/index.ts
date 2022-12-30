@@ -1,4 +1,4 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentError, PaymentDirector } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 import createDatatransAPI from './api';

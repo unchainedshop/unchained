@@ -1,4 +1,4 @@
-import { IPaymentAdapter, PaymentChargeActionResult } from '@unchainedshop/types/payments';
+import { IPaymentAdapter, PaymentChargeActionResult } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { PaymentPageInitializeInput, SaferpayClient } from './worldline-saferpay-client';
 

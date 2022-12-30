@@ -6,7 +6,7 @@ import {
   ProductQuery,
   ProductsModule,
   ProductsSettingsOptions,
-} from '@unchainedshop/types/products';
+} from '@unchainedshop/types/products.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findPreservingIds,

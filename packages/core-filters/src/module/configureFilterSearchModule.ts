@@ -1,6 +1,6 @@
 import { Collection } from '@unchainedshop/types/common.js';
-import { Filter, FiltersModule } from '@unchainedshop/types/filters';
-import { Product } from '@unchainedshop/types/products';
+import { Filter, FiltersModule } from '@unchainedshop/types/filters.js';
+import { Product } from '@unchainedshop/types/products.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch.js';
 import { cleanQuery } from '../search/cleanQuery.js';
@@ -15,7 +15,7 @@ import {
   FilterProductIds,
   SearchAssortmentConfiguration,
   SearchProductConfiguration,
-} from '../search/search';
+} from '../search/search.js';
 
 export const configureFilterSearchModule = ({
   Filters,

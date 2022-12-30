@@ -1,5 +1,5 @@
 import { Collection, Filter } from '@unchainedshop/types/common.js';
-import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products';
+import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {

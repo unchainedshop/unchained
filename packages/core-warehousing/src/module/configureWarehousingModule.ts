@@ -5,7 +5,7 @@ import {
   WarehousingProvider,
   WarehousingProviderQuery,
   WarehousingProviderType,
-} from '@unchainedshop/types/warehousing';
+} from '@unchainedshop/types/warehousing.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection.js';

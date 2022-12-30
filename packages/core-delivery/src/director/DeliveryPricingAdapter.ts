@@ -2,7 +2,7 @@ import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
   IDeliveryPricingAdapter,
-} from '@unchainedshop/types/delivery.pricing';
+} from '@unchainedshop/types/delivery.pricing.js';
 import { BasePricingAdapter } from '@unchainedshop/utils';
 import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
 

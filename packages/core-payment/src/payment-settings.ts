@@ -3,7 +3,7 @@ import {
   PaymentSettings,
   FilterProviders,
   DetermineDefaultProvider,
-} from '@unchainedshop/types/payments';
+} from '@unchainedshop/types/payments.js';
 
 const sortByCreationDate = (left: PaymentProvider, right: PaymentProvider) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();

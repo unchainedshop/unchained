@@ -1,7 +1,7 @@
 export { configureOrdersModule } from './module/configureOrdersModule.js';
 export { orderServices } from './service/orderServices.js';
 
-export { OrderStatus } from '@unchainedshop/types/orders';
+export { OrderStatus } from '@unchainedshop/types/orders.js';
 export { OrderDeliveryStatus } from '@unchainedshop/types/orders.deliveries';
 export { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
 

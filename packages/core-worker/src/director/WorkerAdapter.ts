@@ -1,4 +1,4 @@
-import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 
 export const WorkerAdapter: Omit<IWorkerAdapter<any, void>, 'key' | 'label' | 'type' | 'version'> = {

@@ -1,4 +1,4 @@
-import { IFilterAdapter } from '@unchainedshop/types/filters';
+import { IFilterAdapter } from '@unchainedshop/types/filters.js';
 import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
 
 const StrictQualFilter: IFilterAdapter = {

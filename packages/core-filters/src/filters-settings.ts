@@ -1,4 +1,4 @@
-import { FiltersSettings } from '@unchainedshop/types/filters';
+import { FiltersSettings } from '@unchainedshop/types/filters.js';
 import makeMongoDBCache from './product-cache/mongodb.js';
 
 export const filtersSettings: FiltersSettings = {

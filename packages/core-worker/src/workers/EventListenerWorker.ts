@@ -1,4 +1,4 @@
-import { IWorker } from '@unchainedshop/types/worker';
+import { IWorker } from '@unchainedshop/types/worker.js';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 import { BaseWorker } from './BaseWorker.js';

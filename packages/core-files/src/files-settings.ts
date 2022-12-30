@@ -1,4 +1,4 @@
-import { FilesSettings } from '@unchainedshop/types/files';
+import { FilesSettings } from '@unchainedshop/types/files.js';
 
 export const defaultTransformUrl = (url) => url;
 

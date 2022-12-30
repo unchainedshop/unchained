@@ -1,4 +1,4 @@
-import { CreateUserCartService } from '@unchainedshop/types/orders';
+import { CreateUserCartService } from '@unchainedshop/types/orders.js';
 
 export const createUserCartService: CreateUserCartService = async (
   { user, orderNumber, countryCode },

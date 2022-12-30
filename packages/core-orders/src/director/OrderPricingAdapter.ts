@@ -3,7 +3,7 @@ import {
   OrderPricingAdapterContext,
   OrderPricingCalculation,
 } from '@unchainedshop/types/orders.pricing';
-import { IPricingAdapter } from '@unchainedshop/types/pricing';
+import { IPricingAdapter } from '@unchainedshop/types/pricing.js';
 import { BasePricingAdapter } from '@unchainedshop/utils';
 import { OrderPricingSheet } from './OrderPricingSheet.js';
 

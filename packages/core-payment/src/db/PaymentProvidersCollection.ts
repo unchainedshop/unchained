@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { PaymentProvider } from '@unchainedshop/types/payments';
+import { PaymentProvider } from '@unchainedshop/types/payments.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const PaymentProvidersCollection = async (db: Db) => {

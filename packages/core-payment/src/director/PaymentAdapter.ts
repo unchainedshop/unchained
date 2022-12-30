@@ -1,4 +1,4 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { PaymentError } from './PaymentError.js';
 

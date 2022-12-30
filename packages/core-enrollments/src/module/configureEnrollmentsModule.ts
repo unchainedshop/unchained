@@ -5,7 +5,7 @@ import {
   EnrollmentQuery,
   EnrollmentsModule,
   EnrollmentsSettingsOptions,
-} from '@unchainedshop/types/enrollments';
+} from '@unchainedshop/types/enrollments.js';
 import type { Locale } from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';

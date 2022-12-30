@@ -1,4 +1,4 @@
-import { ProductsSettingsOptions } from '@unchainedshop/types/products';
+import { ProductsSettingsOptions } from '@unchainedshop/types/products.js';
 import { slugify as defaultSlugify } from '@unchainedshop/utils';
 
 export const productsSettings = {

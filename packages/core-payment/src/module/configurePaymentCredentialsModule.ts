@@ -1,7 +1,7 @@
 import {
   PaymentCredentials as PaymentCredentialsType,
   PaymentModule,
-} from '@unchainedshop/types/payments';
+} from '@unchainedshop/types/payments.js';
 import { Collection } from '@unchainedshop/types/common.js';
 import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
 
