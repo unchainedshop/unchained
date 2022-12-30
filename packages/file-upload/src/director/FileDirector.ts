@@ -1,4 +1,4 @@
-import { IFileAdapter, IFileDirector, UploadFileCallback } from '@unchainedshop/types/files';
+import { IFileAdapter, IFileDirector, UploadFileCallback } from '@unchainedshop/types/files.js';
 import { BaseDirector } from '@unchainedshop/utils';
 
 const FileUploadRegistry = new Map<string, UploadFileCallback>();

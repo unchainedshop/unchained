@@ -1,4 +1,4 @@
-import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core';
+import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core.js';
 import { configureAccountsModule } from '@unchainedshop/core-accountsjs';
 import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
 import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-bookmarks';

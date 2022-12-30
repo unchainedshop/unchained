@@ -2,7 +2,7 @@ import {
   ContextNormalizerFunction,
   EmitAdapter,
   EventDirector as IEventDirector,
-} from '@unchainedshop/types/events';
+} from '@unchainedshop/types/events.js';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:events');

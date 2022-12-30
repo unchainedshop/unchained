@@ -1,4 +1,4 @@
-import { EventDirector } from './EventDirector';
+import { EventDirector } from './EventDirector.js';
 
 const {
   emit,
