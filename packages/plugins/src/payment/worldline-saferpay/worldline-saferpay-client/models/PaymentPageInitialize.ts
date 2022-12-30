@@ -1,7 +1,7 @@
-import { PaymentMethods } from './PaymentMethods';
-import { Request } from './Request';
-import { Response } from './Response';
-import { TransactionAmount } from './Transaction';
+import { PaymentMethods } from "./PaymentMethods.js";
+import { Request } from "./Request.js";
+import { Response } from "./Response.js";
+import { TransactionAmount } from "./Transaction.js";
 
 export interface PaymentPageInitializeInput extends Request {
   ConfigSet?: string;

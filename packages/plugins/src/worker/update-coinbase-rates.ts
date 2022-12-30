@@ -2,7 +2,7 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
-import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
+import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
 import { systemLocale } from '@unchainedshop/utils';
 
 const getExchangeRates = async (base) => {

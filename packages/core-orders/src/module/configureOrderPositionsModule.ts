@@ -1,7 +1,7 @@
 import { Collection, Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders.js';
-import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions';
+import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, generateDbObjectId } from '@unchainedshop/utils';

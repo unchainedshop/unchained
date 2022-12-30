@@ -1,8 +1,8 @@
 import { Collection } from '@unchainedshop/types/common.js';
 import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders.js';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
-import { OrderPayment } from '@unchainedshop/types/orders.payments';
-import { OrderPosition } from '@unchainedshop/types/orders.positions';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';

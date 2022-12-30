@@ -19,7 +19,7 @@ import {
 } from '@unchainedshop/types/order.js';
 
 import { LogOptions } from '@unchainedshop/types/logs.js';
-import { OrderPricingCalculation } from '@unchainedshop/types/orders.pricing';
+import { OrderPricingCalculation } from '@unchainedshop/types/orders.pricing.js';
 import { IPricingAdapter, IPricingAdapterActions } from '@unchainedshop/types/pricing.js';
 import { Discount } from '@unchainedshop/types/discount.js';
 

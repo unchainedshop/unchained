@@ -1,8 +1,8 @@
 import { Collection } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { Order, OrderStatus, OrderMutations, OrdersModule } from '@unchainedshop/types/orders.js';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
-import { OrderPayment } from '@unchainedshop/types/orders.payments';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';

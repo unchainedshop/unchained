@@ -1,5 +1,5 @@
 import { PaymentPricingAdapter, PaymentPricingDirector } from '@unchainedshop/core-payment';
-import { IPaymentPricingAdapter } from '@unchainedshop/types/payments.pricing';
+import { IPaymentPricingAdapter } from '@unchainedshop/types/payments.pricing.js';
 
 export const PaymentFreePrice: IPaymentPricingAdapter = {
   ...PaymentPricingAdapter,

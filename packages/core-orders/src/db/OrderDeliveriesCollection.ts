@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const OrderDeliveriesCollection = async (db: Db) => {

@@ -5,7 +5,7 @@ import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { AppleTransactionsModule } from './module/configureAppleTransactionsModule';
+import { AppleTransactionsModule } from './module/configureAppleTransactionsModule.js';
 
 const logger = createLogger('unchained:core-payment:iap');
 

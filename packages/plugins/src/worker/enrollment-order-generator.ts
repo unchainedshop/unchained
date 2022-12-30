@@ -1,5 +1,5 @@
 import { Enrollment } from '@unchainedshop/types/enrollments.js';
-import { OrderPosition } from '@unchainedshop/types/orders.positions';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import {

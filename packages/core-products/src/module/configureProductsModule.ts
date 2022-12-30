@@ -1,6 +1,5 @@
 import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-
 import {
   Product,
   ProductQuery,
@@ -15,7 +14,6 @@ import {
   buildSortOptions,
 } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
 import { ProductsCollection } from '../db/ProductsCollection.js';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema.js';

@@ -2,7 +2,7 @@ import { log, LogLevel } from '@unchainedshop/logger';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
 import { pipeline as rawPipeline } from 'stream';
 import { promisify } from 'util';
-import sign from './sign';
+import sign from './sign.js';
 
 const pipeline = promisify(rawPipeline);
 

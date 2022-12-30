@@ -1,4 +1,4 @@
-import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
+import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
 import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 

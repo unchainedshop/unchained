@@ -17,11 +17,11 @@ import {
   getTransaction,
   refundTransaction,
   voidTransaction,
-} from './api';
-import { orderIsPaid } from './utils';
-import { CompletionModes, IntegrationModes, SignResponse } from './types';
+} from './api.js';
+import { orderIsPaid } from './utils.js';
+import { CompletionModes, IntegrationModes, SignResponse } from './types.js';
 
-export * from './middleware';
+export * from './middleware.js';
 
 const { PostFinanceCheckout } = pf;
 

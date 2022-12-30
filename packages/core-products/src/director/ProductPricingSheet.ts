@@ -3,7 +3,7 @@ import {
   ProductPricingCalculation,
   ProductPricingRowCategory,
   IProductPricingSheet,
-} from '@unchainedshop/types/products.pricing';
+} from '@unchainedshop/types/products.pricing.js';
 import { PricingSheetParams } from '@unchainedshop/types/pricing.js';
 
 export const ProductPricingSheet = (

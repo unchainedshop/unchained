@@ -6,7 +6,7 @@ import {
   ProductReviewsModule,
   ProductReviewVoteType,
   ProductVote,
-} from '@unchainedshop/types/products.reviews';
+} from '@unchainedshop/types/products.reviews.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';

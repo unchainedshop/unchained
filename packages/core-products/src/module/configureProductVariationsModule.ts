@@ -2,7 +2,7 @@ import {
   ProductVariation,
   ProductVariationsModule,
   ProductVariationText,
-} from '@unchainedshop/types/products.variations';
+} from '@unchainedshop/types/products.variations.js';
 import { Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import localePkg from 'locale';

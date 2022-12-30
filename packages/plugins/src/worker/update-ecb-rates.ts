@@ -3,7 +3,7 @@ import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
 import xmlJs from 'xml-js';
-import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
+import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
 
 const getExchangeRates = async () => {
   return fetch(`https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml`, {

@@ -2,7 +2,7 @@ import {
   IPaymentPricingSheet,
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
-} from '@unchainedshop/types/payments.pricing';
+} from '@unchainedshop/types/payments.pricing.js';
 import { IPricingAdapter } from '@unchainedshop/types/pricing.js';
 import { BasePricingAdapter } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';

@@ -1,6 +1,6 @@
-import CryptopayPlugin from './plugin';
+import CryptopayPlugin from './plugin.js';
 
-export * from './middleware';
-export * from './module/configureCryptopayModule';
+export * from './middleware.js';
+export * from './module/configureCryptopayModule.js';
 
 export default CryptopayPlugin;

@@ -1,5 +1,5 @@
 import { DeliveryPricingAdapter, DeliveryPricingDirector } from '@unchainedshop/core-delivery';
-import { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing';
+import { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing.js';
 
 export const DeliveryFreePrice: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,

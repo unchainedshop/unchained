@@ -1,7 +1,7 @@
-import { Response } from './Response';
-import { Request } from './Request';
-import { TransactionAmount, TransactionStatus } from './Transaction';
-import { PaymentMethods } from './PaymentMethods';
+import { Response } from "./Response.js";
+import { Request } from "./Request.js";
+import { TransactionAmount, TransactionStatus } from "./Transaction.js";
+import { PaymentMethods } from "./PaymentMethods.js";
 
 export interface PaymentPageAssertInput extends Request {
   Token: string;

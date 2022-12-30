@@ -6,7 +6,7 @@ import {
   OrderDeliveriesModule,
   OrderDelivery,
   OrderDeliveryStatus,
-} from '@unchainedshop/types/orders.deliveries';
+} from '@unchainedshop/types/orders.deliveries.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';

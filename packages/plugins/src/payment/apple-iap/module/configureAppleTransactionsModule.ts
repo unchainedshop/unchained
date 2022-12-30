@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransactionsCollection';
+import { AppleTransaction, AppleTransactionsCollection } from "../db/AppleTransactionsCollection.js";
 
 export interface AppleTransactionsModule {
   findTransactionById: (transactionIdentifier: string) => Promise<AppleTransaction>;

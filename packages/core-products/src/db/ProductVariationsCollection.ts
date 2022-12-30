@@ -1,4 +1,4 @@
-import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations';
+import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations.js';
 import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 

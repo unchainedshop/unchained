@@ -1,4 +1,4 @@
-import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media';
+import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media.js';
 import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 

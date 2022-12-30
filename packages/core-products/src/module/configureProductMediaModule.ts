@@ -1,4 +1,8 @@
-import { ProductMedia, ProductMediaModule, ProductMediaText } from '@unchainedshop/types/products.media';
+import {
+  ProductMedia,
+  ProductMediaModule,
+  ProductMediaText,
+} from '@unchainedshop/types/products.media.js';
 import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import localePkg from 'locale';

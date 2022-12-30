@@ -2,7 +2,7 @@ import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/co
 import {
   IProductPricingAdapter,
   ProductPricingAdapterContext,
-} from '@unchainedshop/types/products.pricing';
+} from '@unchainedshop/types/products.pricing.js';
 
 export const SwissTaxCategories = {
   DEFAULT: {

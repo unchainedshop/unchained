@@ -1,4 +1,4 @@
-import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing';
+import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
 import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
 
 const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {

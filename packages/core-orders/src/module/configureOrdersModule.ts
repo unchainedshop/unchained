@@ -1,9 +1,9 @@
 import { Update } from '@unchainedshop/types/common.js';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order, OrderStatus, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders.js';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
-import { OrderPayment } from '@unchainedshop/types/orders.payments';
-import { OrderPosition } from '@unchainedshop/types/orders.positions';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';

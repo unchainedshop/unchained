@@ -1,12 +1,11 @@
 import { Collection, Filter, Query, Update } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
-
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
   OrderPayment,
   OrderPaymentsModule,
   OrderPaymentStatus,
-} from '@unchainedshop/types/orders.payments';
+} from '@unchainedshop/types/orders.payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';

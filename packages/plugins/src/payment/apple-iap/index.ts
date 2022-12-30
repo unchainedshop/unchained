@@ -1,2 +1,2 @@
-export * from './adapter';
-export * from './module/configureAppleTransactionsModule';
+export * from './adapter.js';
+export * from './module/configureAppleTransactionsModule.js';

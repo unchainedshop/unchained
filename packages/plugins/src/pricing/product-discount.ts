@@ -2,7 +2,7 @@ import type { Discount, DiscountConfiguration } from '@unchainedshop/types/disco
 import {
   IProductPricingAdapter,
   ProductPricingRowCategory,
-} from '@unchainedshop/types/products.pricing';
+} from '@unchainedshop/types/products.pricing.js';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 
 const applyRate = (configuration: DiscountConfiguration, amount) => {
