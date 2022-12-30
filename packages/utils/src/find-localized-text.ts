@@ -1,4 +1,4 @@
-import 'abort-controller/polyfill';
+import 'abort-controller/polyfill.js';
 import LRU from 'lru-cache';
 import { Collection, Filter, Locale, Document } from '@unchainedshop/types/common.js';
 import { systemLocale } from './locale-helpers.js';

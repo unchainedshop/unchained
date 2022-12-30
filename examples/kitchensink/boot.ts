@@ -1,4 +1,4 @@
-import './load_env';
+import './load_env.js';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import http from 'http';
@@ -8,7 +8,7 @@ import { startPlatform, connectPlatformToExpress4 } from '@unchainedshop/platfor
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
 import serveStatic from 'serve-static';
 
-import seed from './seed';
+import seed from './seed.js';
 
 const start = async () => {
   const app = express();

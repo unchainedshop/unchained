@@ -5,7 +5,7 @@ import {
 } from '@unchainedshop/core-warehousing';
 import Sheets from 'node-sheets';
 import { log, LogLevel } from '@unchainedshop/logger';
-import 'abort-controller/polyfill';
+import 'abort-controller/polyfill.js';
 import LRU from 'lru-cache';
 import { IWarehousingAdapter } from '@unchainedshop/types/warehousing.js';
 
