@@ -1,11 +1,11 @@
-import { TransactionCancelInput, TransactionCancelResponse } from "../models/TransactionCancel.js";
-import { PaymentPageAssertInput, PaymentPageAssertResponse } from "../models/PaymentPageAssert.js";
+import { TransactionCancelInput, TransactionCancelResponse } from '../models/TransactionCancel.js';
+import { PaymentPageAssertInput, PaymentPageAssertResponse } from '../models/PaymentPageAssert.js';
 import {
   PaymentPageInitializeInput,
   PaymentPageInitializeResponse,
-} from "../models/PaymentPageInitialize.js";
-import { RequestHeader } from "../models/Request.js";
-import { SaferpayConnection } from "./SaferpayConnection.js";
+} from '../models/PaymentPageInitialize.js';
+import { RequestHeader } from '../models/Request.js';
+import { SaferpayConnection } from './SaferpayConnection.js';
 
 export class SaferpayClient {
   private conn: SaferpayConnection;

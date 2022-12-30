@@ -1,4 +1,8 @@
-import { IWorkerAdapter, IWorkerDirector, WorkScheduleConfiguration } from '@unchainedshop/types/worker.js';
+import {
+  IWorkerAdapter,
+  IWorkerDirector,
+  WorkScheduleConfiguration,
+} from '@unchainedshop/types/worker.js';
 import { EventEmitter } from 'events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';

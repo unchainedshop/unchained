@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { ProductStatus } from '@unchainedshop/core-products';
+import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
 import {
   ProductNotFoundError,
   ProductWrongStatusError,

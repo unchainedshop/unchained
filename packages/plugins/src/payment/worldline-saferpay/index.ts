@@ -1,6 +1,6 @@
 import { IPaymentAdapter, PaymentChargeActionResult } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
-import { PaymentPageInitializeInput, SaferpayClient } from "./worldline-saferpay-client/index.js";
+import { PaymentPageInitializeInput, SaferpayClient } from './worldline-saferpay-client/index.js';
 
 const {
   WORLDLINE_BASE_URL = 'https://test.saferpay.com/api',
