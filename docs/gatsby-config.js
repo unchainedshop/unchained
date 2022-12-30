@@ -71,6 +71,7 @@ module.exports = {
             'advanced-config/extending-schema',
             'advanced-config/product-pricing',
             'advanced-config/extending-db',
+            'advanced-config/admin-ui',
           ],
           'API Reference': [
             '[GraphQL API Reference](https://docs.unchained.shop/api)',
