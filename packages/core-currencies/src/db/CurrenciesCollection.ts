@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { Currency } from '@unchainedshop/types/currencies';
+import { Currency } from '@unchainedshop/types/currencies.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const CurrenciesCollection = async (db: Db) => {

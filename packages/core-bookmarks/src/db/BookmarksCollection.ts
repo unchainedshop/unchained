@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { Bookmark } from '@unchainedshop/types/bookmarks';
+import { Bookmark } from '@unchainedshop/types/bookmarks.js';
 
 export const BookmarksCollection = async (db: Db) => {
   const Bookmarks = db.collection<Bookmark>('bookmarks');

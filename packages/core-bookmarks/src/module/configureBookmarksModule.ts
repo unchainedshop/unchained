@@ -1,5 +1,5 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks';
+import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { BookmarksCollection } from '../db/BookmarksCollection.js';

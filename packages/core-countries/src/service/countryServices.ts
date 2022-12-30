@@ -1,4 +1,4 @@
-import { CountryServices } from '@unchainedshop/types/countries';
+import { CountryServices } from '@unchainedshop/types/countries.js';
 import { resolveDefaultCurrencyCodeService } from './resolveDefaultCurrencyCodeService.js';
 
 export const countryServices: CountryServices = {
