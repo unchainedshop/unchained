@@ -1,4 +1,4 @@
-import { IBaseAdapter, IBaseDirector } from '@unchainedshop/types/common';
+import { IBaseAdapter, IBaseDirector } from '@unchainedshop/types/common.js';
 import { log } from '@unchainedshop/logger';
 
 export const BaseDirector = <AdapterType extends IBaseAdapter>(

@@ -1,14 +1,14 @@
-import { Context } from './api';
-import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
-import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core';
-import { Order } from './orders';
-import { OrderPayment } from './orders.payments';
+import { Context } from './api.js';
+import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common.js';
+import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
+import { Order } from './orders.js';
+import { OrderPayment } from './orders.payments.js';
 import {
   IPaymentPricingSheet,
   PaymentPricingCalculation,
   PaymentPricingContext,
-} from './payments.pricing';
-import { User } from './user';
+} from './payments.pricing.js';
+import { User } from './user.js';
 
 export enum PaymentProviderType {
   CARD = 'CARD',

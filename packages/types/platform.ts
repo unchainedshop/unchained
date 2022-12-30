@@ -1,6 +1,6 @@
 import { BulkOperationBase } from 'mongodb';
-import { UnchainedCore, UnchainedCoreOptions } from './core';
-import { WorkerSchedule } from './worker';
+import { UnchainedCore, UnchainedCoreOptions } from './core.js';
+import { WorkerSchedule } from './worker.js';
 
 export type BulkImportOperationResult = {
   entity: string;

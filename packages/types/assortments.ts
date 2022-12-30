@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
-import { SortOption } from './api';
-import { AssortmentMediaModule } from './assortments.media';
-import { Filter, FindOptions, Query, TimestampFields, Tree, _ID } from './common';
+import { SortOption } from './api.js';
+import { AssortmentMediaModule } from './assortments.media.js';
+import { Filter, FindOptions, Query, TimestampFields, Tree, _ID } from './common.js';
 
 export type Assortment = {
   _id?: _ID;

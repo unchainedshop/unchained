@@ -1,8 +1,8 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { ApolloServerOptions } from '@apollo/server';
 import type { Locale } from 'locale';
-import { User } from './user';
-import { UnchainedCore } from './core';
+import { User } from './user.js';
+import { UnchainedCore } from './core.js';
 
 export declare type Root = Record<string, unknown>;
 

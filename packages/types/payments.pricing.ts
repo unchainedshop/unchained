@@ -1,15 +1,15 @@
-import { Order } from './orders';
-import { OrderDiscount } from './orders.discounts';
-import { OrderPayment } from './orders.payments';
-import { PaymentProvider } from './payments';
+import { Order } from './orders.js';
+import { OrderDiscount } from './orders.discounts.js';
+import { OrderPayment } from './orders.payments.js';
+import { PaymentProvider } from './payments.js';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
-} from './pricing';
-import { User } from './user';
+} from './pricing.js';
+import { User } from './user.js';
 
 /*
  * Payment pricing

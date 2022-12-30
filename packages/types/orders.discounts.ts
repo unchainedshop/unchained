@@ -1,9 +1,9 @@
-import { FindOptions, TimestampFields, _ID } from './common';
-import { UnchainedCore } from './core';
-import { DiscountAdapterActions, DiscountConfiguration, DiscountContext } from './discount';
-import { Order } from './orders';
-import { OrderPrice } from './orders.pricing';
-import { IPricingSheet, PricingCalculation } from './pricing';
+import { FindOptions, TimestampFields, _ID } from './common.js';
+import { UnchainedCore } from './core.js';
+import { DiscountAdapterActions, DiscountConfiguration, DiscountContext } from './discount.js';
+import { Order } from './orders.js';
+import { OrderPrice } from './orders.pricing.js';
+import { IPricingSheet, PricingCalculation } from './pricing.js';
 
 export enum OrderDiscountTrigger {
   USER = 'USER',

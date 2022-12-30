@@ -1,8 +1,8 @@
-import { Order } from './orders';
-import { OrderDelivery } from './orders.deliveries';
-import { OrderDiscount } from './orders.discounts';
-import { OrderPayment } from './orders.payments';
-import { OrderPosition } from './orders.positions';
+import { Order } from './orders.js';
+import { OrderDelivery } from './orders.deliveries.js';
+import { OrderDiscount } from './orders.discounts.js';
+import { OrderPayment } from './orders.payments.js';
+import { OrderPosition } from './orders.positions.js';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
@@ -10,8 +10,8 @@ import {
   IPricingSheet,
   PricingCalculation,
   PricingDiscount,
-} from './pricing';
-import { User } from './user';
+} from './pricing.js';
+import { User } from './user.js';
 
 /*
  * Order pricing

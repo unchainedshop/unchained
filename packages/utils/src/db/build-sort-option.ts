@@ -1,5 +1,5 @@
-import { SortOption } from '@unchainedshop/types/api';
-import { Sort } from '@unchainedshop/types/common';
+import { SortOption } from '@unchainedshop/types/api.js';
+import { Sort } from '@unchainedshop/types/common.js';
 
 const SORT_DIRECTIONS = {
   ASC: 1,

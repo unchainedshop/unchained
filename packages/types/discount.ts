@@ -1,8 +1,8 @@
-import { IBaseAdapter, IBaseDirector } from './common';
-import { UnchainedCore } from './core';
-import { Order } from './orders';
-import { OrderDiscount } from './orders.discounts';
-import { IPricingSheet, PricingCalculation } from './pricing';
+import { IBaseAdapter, IBaseDirector } from './common.js';
+import { UnchainedCore } from './core.js';
+import { Order } from './orders.js';
+import { OrderDiscount } from './orders.discounts.js';
+import { IPricingSheet, PricingCalculation } from './pricing.js';
 
 export interface DiscountConfiguration {
   fixedRate?: number;

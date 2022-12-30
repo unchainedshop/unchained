@@ -1,6 +1,6 @@
 import { User as AccountsUser } from '@accounts/types';
-import { UnchainedCore } from './core';
-import { User, UserProfile } from './user';
+import { UnchainedCore } from './core.js';
+import { User, UserProfile } from './user.js';
 
 export interface WebAuthnCredentialsCreationRequest {
   challenge: string;

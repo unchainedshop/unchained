@@ -1,4 +1,8 @@
-import { PricingCalculation, IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing';
+import {
+  PricingCalculation,
+  IBasePricingSheet,
+  PricingSheetParams,
+} from '@unchainedshop/types/pricing.js';
 
 export const BasePricingSheet = <Calculation extends PricingCalculation>(
   params: PricingSheetParams<Calculation>,

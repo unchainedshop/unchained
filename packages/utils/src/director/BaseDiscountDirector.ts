@@ -1,6 +1,6 @@
-import { IDiscountAdapter, IDiscountDirector } from '@unchainedshop/types/discount';
+import { IDiscountAdapter, IDiscountDirector } from '@unchainedshop/types/discount.js';
 import { log } from '@unchainedshop/logger';
-import { BaseDirector } from './BaseDirector';
+import { BaseDirector } from './BaseDirector.js';
 
 export const BaseDiscountDirector = (directorName: string): IDiscountDirector => {
   const baseDirector = BaseDirector<IDiscountAdapter>(directorName, {

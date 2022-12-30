@@ -4,7 +4,7 @@ import {
   IPricingAdapter,
   PricingCalculation,
   IPricingAdapterActions,
-} from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/pricing.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 
 export const BasePricingAdapter = <

@@ -1,15 +1,15 @@
-import { DeliveryProvider } from './delivery';
-import { Order } from './orders';
-import { OrderDelivery } from './orders.deliveries';
-import { OrderDiscount } from './orders.discounts';
+import { DeliveryProvider } from './delivery.js';
+import { Order } from './orders.js';
+import { OrderDelivery } from './orders.deliveries.js';
+import { OrderDiscount } from './orders.discounts.js';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
-} from './pricing';
-import { User } from './user';
+} from './pricing.js';
+import { User } from './user.js';
 
 /*
  * Delivery pricing

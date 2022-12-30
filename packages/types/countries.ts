@@ -1,6 +1,6 @@
-import { SortOption } from './api';
-import { FindOptions, TimestampFields, _ID } from './common';
-import { ModuleMutations, UnchainedCore } from './core';
+import { SortOption } from './api.js';
+import { FindOptions, TimestampFields, _ID } from './common.js';
+import { ModuleMutations, UnchainedCore } from './core.js';
 
 export type Country = {
   _id?: _ID;

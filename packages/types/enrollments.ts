@@ -1,4 +1,4 @@
-import { SortOption } from './api';
+import { SortOption } from './api.js';
 import {
   Address,
   Configuration,
@@ -9,12 +9,12 @@ import {
   LogFields,
   TimestampFields,
   _ID,
-} from './common';
-import { UnchainedCore } from './core';
-import { Order } from './orders';
-import { OrderPosition } from './orders.positions';
-import { Product, ProductPlan } from './products';
-import { WorkerSchedule } from './worker';
+} from './common.js';
+import { UnchainedCore } from './core.js';
+import { Order } from './orders.js';
+import { OrderPosition } from './orders.positions.js';
+import { Product, ProductPlan } from './products.js';
+import { WorkerSchedule } from './worker.js';
 
 export enum EnrollmentStatus {
   INITIAL = 'INITIAL',

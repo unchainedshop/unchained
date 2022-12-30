@@ -1,5 +1,5 @@
-import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
-import { ModuleMutations, UnchainedCore } from './core';
+import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common.js';
+import { ModuleMutations, UnchainedCore } from './core.js';
 
 export type File = {
   _id?: _ID;

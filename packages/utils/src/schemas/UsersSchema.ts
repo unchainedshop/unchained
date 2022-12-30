@@ -1,6 +1,6 @@
 import SimpleSchema from 'simpl-schema';
-import { AddressSchema } from './AddressSchema';
-import { timestampFields } from './commonSchemaFields';
+import { AddressSchema } from './AddressSchema.js';
+import { timestampFields } from './commonSchemaFields.js';
 
 const ProfileSchema = new SimpleSchema(
   {

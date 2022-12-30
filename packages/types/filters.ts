@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
-import { SortOption } from './api';
-import { Assortment } from './assortments';
+import { SortOption } from './api.js';
+import { Assortment } from './assortments.js';
 import {
   FindOptions,
   Document,
@@ -9,9 +9,9 @@ import {
   Query,
   TimestampFields,
   _ID,
-} from './common';
-import { UnchainedCore } from './core';
-import { Product } from './products';
+} from './common.js';
+import { UnchainedCore } from './core.js';
+import { Product } from './products.js';
 
 export enum FilterType {
   SWITCH = 'SWITCH',

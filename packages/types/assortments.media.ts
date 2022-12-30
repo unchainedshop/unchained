@@ -1,4 +1,4 @@
-import { FindOptions, TimestampFields, _ID } from './common';
+import { FindOptions, TimestampFields, _ID } from './common.js';
 
 export type AssortmentMedia = {
   _id?: _ID;

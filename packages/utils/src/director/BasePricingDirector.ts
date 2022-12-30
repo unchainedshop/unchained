@@ -1,4 +1,4 @@
-import { Discount } from '@unchainedshop/types/discount';
+import { Discount } from '@unchainedshop/types/discount.js';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
@@ -7,9 +7,9 @@ import {
   IPricingSheet,
   PricingCalculation,
   IPricingAdapterActions,
-} from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/pricing.js';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { BaseDirector } from './BaseDirector';
+import { BaseDirector } from './BaseDirector.js';
 
 export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,

@@ -1,52 +1,38 @@
-import { AddressSchema } from './schemas/AddressSchema';
-import { ContactSchema } from './schemas/ContactSchema';
-import { timestampFields, contextFields, logFields } from './schemas/commonSchemaFields';
-import { UserSchema } from './schemas/UsersSchema';
-
-export { default as findLocalizedText } from './find-localized-text';
-export * from './locale-helpers';
-export { default as objectInvert } from './object-invert';
-export { default as findUnusedSlug } from './find-unused-slug';
-export { default as slugify } from './slugify';
-export { default as pipePromises } from './pipe-promises';
-export { default as generateRandomHash } from './generate-random-hash';
-export { default as randomValueHex } from './random-value-hex';
-export { default as buildSortOptions } from './db/build-sort-option';
+export { default as findLocalizedText } from './find-localized-text.js';
+export * from './locale-helpers.js';
+export { default as objectInvert } from './object-invert.js';
+export { default as findUnusedSlug } from './find-unused-slug.js';
+export { default as slugify } from './slugify.js';
+export { default as pipePromises } from './pipe-promises.js';
+export { default as generateRandomHash } from './generate-random-hash.js';
+export { default as randomValueHex } from './random-value-hex.js';
+export { default as buildSortOptions } from './db/build-sort-option.js';
 
 /*
  * Db utils
  */
 
-export { checkId } from './db/check-id';
-export { generateDbObjectId } from './db/generate-db-object-id';
-export { generateDbFilterById } from './db/generate-db-filter-by-id';
-export { generateDbMutations } from './db/generate-db-mutations';
-export { buildDbIndexes } from './db/build-db-indexes';
-export { findPreservingIds } from './find-preserving-ids';
+export { checkId } from './db/check-id.js';
+export { generateDbObjectId } from './db/generate-db-object-id.js';
+export { generateDbFilterById } from './db/generate-db-filter-by-id.js';
+export { generateDbMutations } from './db/generate-db-mutations.js';
+export { buildDbIndexes } from './db/build-db-indexes.js';
+export { findPreservingIds } from './find-preserving-ids.js';
 
 /*
  * Schemas
  */
 
-const Schemas = {
-  timestampFields,
-  contextFields,
-  logFields,
-  Address: AddressSchema,
-  Contact: ContactSchema,
-  User: UserSchema,
-};
-
-export { Schemas };
+export { Schemas } from './schemas/index.js';
 
 /*
  * Director
  */
 
-export { BaseAdapter } from './director/BaseAdapter';
-export { BaseDirector } from './director/BaseDirector';
-export { BasePricingAdapter } from './director/BasePricingAdapter';
-export { BasePricingDirector } from './director/BasePricingDirector';
-export { BasePricingSheet } from './director/BasePricingSheet';
-export { BaseDiscountAdapter } from './director/BaseDiscountAdapter';
-export { BaseDiscountDirector } from './director/BaseDiscountDirector';
+export { BaseAdapter } from './director/BaseAdapter.js';
+export { BaseDirector } from './director/BaseDirector.js';
+export { BasePricingAdapter } from './director/BasePricingAdapter.js';
+export { BasePricingDirector } from './director/BasePricingDirector.js';
+export { BasePricingSheet } from './director/BasePricingSheet.js';
+export { BaseDiscountAdapter } from './director/BaseDiscountAdapter.js';
+export { BaseDiscountDirector } from './director/BaseDiscountDirector.js';

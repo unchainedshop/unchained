@@ -1,5 +1,5 @@
-import { SortOption } from './api';
-import { Filter, TimestampFields, _ID } from './common';
+import { SortOption } from './api.js';
+import { Filter, TimestampFields, _ID } from './common.js';
 
 export enum ProductReviewVoteType {
   UPVOTE = 'UPVOTE',

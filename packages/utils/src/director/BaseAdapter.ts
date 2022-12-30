@@ -1,4 +1,4 @@
-import { IBaseAdapter } from '@unchainedshop/types/common';
+import { IBaseAdapter } from '@unchainedshop/types/common.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 
 export const BaseAdapter: Omit<IBaseAdapter, 'key' | 'label' | 'version'> = {
