@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { UserNotFoundError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { UserNotFoundError } from '../../../errors.js';
 
 export default async function removeUser(
   root: Root,

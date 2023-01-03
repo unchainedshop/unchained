@@ -1,5 +1,5 @@
 
-import { SortDirection } from '@unchainedshop/types/api';
+import { SortDirection } from '@unchainedshop/types/api.js';
 import {
   buildSortOptions,
   checkId,
@@ -19,7 +19,7 @@ import {
   slugify,
   systemLocale,
 } from '@unchainedshop/utils';
-import generateHashId from '../src/generate-random-hash'
+import generateHashId from '../lib/generate-random-hash.js'
 
 describe('Utils', () => {
 

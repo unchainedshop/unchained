@@ -1,5 +1,5 @@
-import { AssortmentProduct, AssortmentsModule } from '@unchainedshop/types/assortments';
-import { Collection, Filter } from '@unchainedshop/types/common';
+import { AssortmentProduct, AssortmentsModule } from '@unchainedshop/types/assortments.js';
+import { Collection, Filter } from '@unchainedshop/types/common.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
 

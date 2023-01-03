@@ -1,9 +1,9 @@
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 import {
   AssortmentPathLink as AssortmentPathLinkType,
   AssortmentLink as AssortmentLinkType,
   AssortmentText,
-} from '@unchainedshop/types/assortments';
+} from '@unchainedshop/types/assortments.js';
 
 type HelperType<P, T> = (assortmentPathLink: AssortmentPathLinkType, params: P, context: Context) => T;
 

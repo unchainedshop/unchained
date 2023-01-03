@@ -1,5 +1,5 @@
-import { Db } from '@unchainedshop/types/common';
-import { User } from '@unchainedshop/types/user';
+import { Db } from '@unchainedshop/types/common.js';
+import { User } from '@unchainedshop/types/user.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const UsersCollection = async (db: Db) => {

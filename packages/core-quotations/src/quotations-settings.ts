@@ -1,4 +1,4 @@
-import { QuotationsSettingsOptions } from '@unchainedshop/types/quotations';
+import { QuotationsSettingsOptions } from '@unchainedshop/types/quotations.js';
 import { generateRandomHash } from '@unchainedshop/utils';
 
 export const quotationsSettings = {

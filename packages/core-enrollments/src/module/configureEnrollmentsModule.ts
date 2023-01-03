@@ -1,21 +1,21 @@
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   Enrollment,
   EnrollmentQuery,
   EnrollmentsModule,
   EnrollmentsSettingsOptions,
-} from '@unchainedshop/types/enrollments';
+} from '@unchainedshop/types/enrollments.js';
 import type { Locale } from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { Query } from '@unchainedshop/types/common';
-import { EnrollmentsCollection } from '../db/EnrollmentsCollection';
-import { EnrollmentsSchema } from '../db/EnrollmentsSchema';
-import { EnrollmentStatus } from '../db/EnrollmentStatus';
-import { EnrollmentDirector } from '../enrollments-index';
-import { enrollmentsSettings } from '../enrollments-settings';
+import { Query } from '@unchainedshop/types/common.js';
+import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
+import { EnrollmentsSchema } from '../db/EnrollmentsSchema.js';
+import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
+import { EnrollmentDirector } from '../enrollments-index.js';
+import { enrollmentsSettings } from '../enrollments-settings.js';
 
 const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_ADD_PERIOD',

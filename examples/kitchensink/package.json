@@ -29,8 +29,8 @@
     "lint": "prettier -w .",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
-    "start": "node --es-module-specifier-resolution node lib/boot.js",
-    "dev:run": "node --es-module-specifier-resolution node --loader ts-node/esm boot.ts",
+    "start": "node lib/boot.js",
+    "dev:run": "node --loader ts-node/esm boot.ts",
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {

@@ -1,6 +1,6 @@
-import { SimpleProductHelperTypes } from '@unchainedshop/types/products';
-import { WarehousingContext } from '@unchainedshop/types/warehousing';
-import { PlanProduct } from './product-plan-types';
+import { SimpleProductHelperTypes } from '@unchainedshop/types/products.js';
+import { WarehousingContext } from '@unchainedshop/types/warehousing.js';
+import { PlanProduct } from './product-plan-types.js';
 
 export const SimpleProduct: SimpleProductHelperTypes = {
   ...PlanProduct,

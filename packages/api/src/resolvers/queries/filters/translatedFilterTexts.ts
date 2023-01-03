@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api';
+import { Root, Context } from '@unchainedshop/types/api.js';
 
 export default async function translatedFilterTexts(
   root: Root,

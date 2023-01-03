@@ -1,11 +1,11 @@
-import { Context } from '@unchainedshop/types/api';
-import { Product } from '@unchainedshop/types/products';
+import { Context } from '@unchainedshop/types/api.js';
+import { Product } from '@unchainedshop/types/products.js';
 import {
   ProductReview as ProductReviewType,
   ProductReviewVoteType,
   ProductVote,
-} from '@unchainedshop/types/products.reviews';
-import { User } from '@unchainedshop/types/user';
+} from '@unchainedshop/types/products.reviews.js';
+import { User } from '@unchainedshop/types/user.js';
 
 type HelperType<P, T> = (product: ProductReviewType, params: P, context: Context) => T;
 

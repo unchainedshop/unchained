@@ -1,9 +1,9 @@
-import { BookmarkServices } from './bookmarks';
-import { CountryServices } from './countries';
-import { FileServices } from './files';
-import { OrderServices } from './orders';
-import { ProductServices } from './products';
-import { UserServices } from './user';
+import { BookmarkServices } from './bookmarks.js';
+import { CountryServices } from './countries.js';
+import { FileServices } from './files.js';
+import { OrderServices } from './orders.js';
+import { ProductServices } from './products.js';
+import { UserServices } from './user.js';
 
 export interface Services {
   bookmarks: BookmarkServices;

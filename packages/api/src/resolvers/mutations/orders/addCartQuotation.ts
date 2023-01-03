@@ -1,14 +1,14 @@
 import { log } from '@unchainedshop/logger';
 import { QuotationStatus } from '@unchainedshop/core-quotations';
-import { Context, Root } from '@unchainedshop/types/api';
-import { Configuration } from '@unchainedshop/types/common';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { Configuration } from '@unchainedshop/types/common.js';
 import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
   OrderQuantityTooLowError,
   InvalidIdError,
-} from '../../../errors';
-import { getOrderCart } from '../utils/getOrderCart';
+} from '../../../errors.js';
+import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function addCartQuotation(
   root: Root,

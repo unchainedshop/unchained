@@ -1,7 +1,7 @@
 // import { ProductStatus } from '@unchainedshop/core-products';
-import { Query } from '@unchainedshop/types/common';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters';
+import { Query } from '@unchainedshop/types/common.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
 
 const defaultSelector = ({ includeInactive }: SearchQuery, { modules }: UnchainedCore) => {
   const selector: Query = !includeInactive

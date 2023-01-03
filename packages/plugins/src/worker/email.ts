@@ -1,6 +1,6 @@
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
-import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';

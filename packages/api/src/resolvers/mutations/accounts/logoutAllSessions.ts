@@ -1,4 +1,4 @@
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 
 export default async function logoutAllSessions(root: Root, _: any, context: Context) {

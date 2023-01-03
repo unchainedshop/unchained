@@ -1,5 +1,5 @@
-import { Db } from '@unchainedshop/types/common';
-import { DeliveryProvider } from '@unchainedshop/types/delivery';
+import { Db } from '@unchainedshop/types/common.js';
+import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const DeliveryProvidersCollection = async (db: Db) => {

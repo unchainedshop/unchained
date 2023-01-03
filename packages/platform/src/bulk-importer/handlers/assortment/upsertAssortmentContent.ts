@@ -1,5 +1,5 @@
-import { AssortmentText } from '@unchainedshop/types/assortments';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { AssortmentText } from '@unchainedshop/types/assortments.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export default async ({ assortmentId, content }, { modules }: UnchainedCore) => {
   await Promise.all(

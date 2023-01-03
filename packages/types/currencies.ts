@@ -1,6 +1,6 @@
-import { SortOption } from './api';
-import { TimestampFields, _ID } from './common';
-import { ModuleMutations } from './core';
+import { SortOption } from './api.js';
+import { TimestampFields, _ID } from './common.js';
+import { ModuleMutations } from './core.js';
 
 export type Currency = {
   _id?: _ID;

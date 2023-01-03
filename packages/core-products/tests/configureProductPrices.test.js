@@ -1,6 +1,6 @@
-import { getDecimals, normalizeRate } from '../src/module/configureProductPrices';
-import { getPriceLevels } from '../src/module/utils/getPriceLevels';
-import { getPriceRange } from '../src/module/utils/getPriceRange';
+import { getDecimals, normalizeRate } from '../lib/module/configureProductPrices.js';
+import { getPriceLevels } from '../lib/module/utils/getPriceLevels.js';
+import { getPriceRange } from '../lib/module/utils/getPriceRange.js';
 import product from './mock/product'
 
 describe('Rate conversion', () => {

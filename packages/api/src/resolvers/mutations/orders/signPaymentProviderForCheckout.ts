@@ -1,14 +1,14 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
-import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
+import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments.js';
 import {
   InvalidIdError,
   OrderPaymentConfigurationError,
   OrderPaymentNotFoundError,
   OrderPaymentTypeError,
   OrderWrongPaymentStatusError,
-} from '../../../errors';
+} from '../../../errors.js';
 
 export default async function signPaymentProviderForCheckout(
   root: Root,

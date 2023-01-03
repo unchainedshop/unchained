@@ -1,6 +1,6 @@
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
-import { getOrderCart } from '../utils/getOrderCart';
+import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function addCartDiscount(
   root: Root,

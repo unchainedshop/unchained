@@ -1,7 +1,7 @@
 import { EventEmitter } from 'stream';
-import { SortOption } from './api';
-import { IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common';
-import { UnchainedCore } from './core';
+import { SortOption } from './api.js';
+import { IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common.js';
+import { UnchainedCore } from './core.js';
 
 export enum WorkStatus {
   NEW = 'NEW',

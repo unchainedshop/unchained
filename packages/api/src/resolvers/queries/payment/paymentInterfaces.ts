@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { PaymentProviderType } from '@unchainedshop/types/payments';
-import { Context, Root } from '@unchainedshop/types/api';
+import { PaymentProviderType } from '@unchainedshop/types/payments.js';
+import { Context, Root } from '@unchainedshop/types/api.js';
 
 export default async function paymentInterfaces(
   root: Root,

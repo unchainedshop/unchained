@@ -1,4 +1,4 @@
-import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments';
+import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments.js';
 import { EnrollmentDirector, EnrollmentAdapter } from '@unchainedshop/core-enrollments';
 
 const rangeMatcher = (date = new Date()) => {

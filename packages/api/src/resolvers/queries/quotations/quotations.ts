@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root, SortOption } from '@unchainedshop/types/api';
-import { QuotationQuery } from '@unchainedshop/types/quotations';
+import { Context, Root, SortOption } from '@unchainedshop/types/api.js';
+import { QuotationQuery } from '@unchainedshop/types/quotations.js';
 
 export default async function quotations(
   root: Root,

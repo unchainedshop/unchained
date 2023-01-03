@@ -1,18 +1,18 @@
-import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common';
-import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core';
+import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common.js';
+import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 
 import {
   DeliveryPricingCalculation,
   DeliveryPricingContext,
   IDeliveryPricingSheet,
-} from './delivery.pricing';
-import { Order } from './orders';
-import { OrderDelivery } from './orders.deliveries';
-import { OrderPosition } from './orders.positions';
-import { Product } from './products';
-import { User } from './user';
-import { WarehousingProvider } from './warehousing';
-import { Work } from './worker';
+} from './delivery.pricing.js';
+import { Order } from './orders.js';
+import { OrderDelivery } from './orders.deliveries.js';
+import { OrderPosition } from './orders.positions.js';
+import { Product } from './products.js';
+import { User } from './user.js';
+import { WarehousingProvider } from './warehousing.js';
+import { Work } from './worker.js';
 
 export enum DeliveryProviderType {
   SHIPPING = 'SHIPPING',

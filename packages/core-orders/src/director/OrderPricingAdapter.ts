@@ -2,10 +2,10 @@ import {
   IOrderPricingSheet,
   OrderPricingAdapterContext,
   OrderPricingCalculation,
-} from '@unchainedshop/types/orders.pricing';
-import { IPricingAdapter } from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/orders.pricing.js';
+import { IPricingAdapter } from '@unchainedshop/types/pricing.js';
 import { BasePricingAdapter } from '@unchainedshop/utils';
-import { OrderPricingSheet } from './OrderPricingSheet';
+import { OrderPricingSheet } from './OrderPricingSheet.js';
 
 const basePricingAdapter = BasePricingAdapter<OrderPricingAdapterContext, OrderPricingCalculation>();
 

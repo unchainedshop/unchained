@@ -1,4 +1,4 @@
-import { IDiscountAdapter } from '@unchainedshop/types/discount';
+import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 import { OrderDiscountDirector, OrderDiscountAdapter } from '@unchainedshop/core-orders';
 
 const HalfPrice: IDiscountAdapter = {

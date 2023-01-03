@@ -1,4 +1,4 @@
-import buildHashedFilename from "../lib/buildHashedFilename";
+import buildHashedFilename from "../lib/buildHashedFilename.js";
 
 
 describe('File Uploader', () => {

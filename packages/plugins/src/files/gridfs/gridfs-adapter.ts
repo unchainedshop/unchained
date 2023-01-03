@@ -1,12 +1,12 @@
 /// <reference lib="dom" />
-import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
 import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 import mimeType from 'mime-types';
 import { URL } from 'url';
 import { Readable, pipeline as rawPipeline } from 'stream';
 import { promisify } from 'util';
 import { ReadableStream } from 'node:stream/web';
-import sign from './sign';
+import sign from './sign.js';
 
 const pipeline = promisify(rawPipeline);
 

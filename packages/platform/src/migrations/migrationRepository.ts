@@ -1,5 +1,5 @@
-import { Migration, MigrationRepository } from '@unchainedshop/types/core';
-import { Db } from '@unchainedshop/types/common';
+import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
+import { Db } from '@unchainedshop/types/common.js';
 
 export const createMigrationRepository = (db: Db): MigrationRepository<Migration> => {
   const migrations = new Map();

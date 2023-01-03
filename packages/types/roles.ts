@@ -1,4 +1,4 @@
-import { Context } from './api';
+import { Context } from './api.js';
 
 export interface RoleInterface {
   name: string;

@@ -1,4 +1,4 @@
-import { PaymentCredentialsHelperTypes } from '@unchainedshop/types/payments';
+import { PaymentCredentialsHelperTypes } from '@unchainedshop/types/payments.js';
 
 export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   async user(obj, _, { modules }) {

@@ -1,5 +1,5 @@
-import { FindOptions, Query } from '@unchainedshop/types/common';
-import { FilterAdapterActions } from '@unchainedshop/types/filters';
+import { FindOptions, Query } from '@unchainedshop/types/common.js';
+import { FilterAdapterActions } from '@unchainedshop/types/filters.js';
 
 export const productFulltextSearch = (
   params: {

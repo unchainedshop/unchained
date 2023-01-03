@@ -1,6 +1,6 @@
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
-import { CurrencyNotFoundError, InvalidIdError } from '../../../errors';
+import { CurrencyNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function removeCurrency(
   root: Root,

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context } from '@unchainedshop/types/api';
-import { UserNotFoundError, NoPermissionError } from '../../../errors';
+import { Context } from '@unchainedshop/types/api.js';
+import { UserNotFoundError, NoPermissionError } from '../../../errors.js';
 
 const impersonate = async (root, { userId }, context: Context) => {
   log(`mutation impersonate ${userId}`);

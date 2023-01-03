@@ -1,4 +1,4 @@
-import { MigrateBookmarksService } from '@unchainedshop/types/bookmarks';
+import { MigrateBookmarksService } from '@unchainedshop/types/bookmarks.js';
 
 export const migrateBookmarksService: MigrateBookmarksService = async (
   { fromUser, toUser, shouldMerge },

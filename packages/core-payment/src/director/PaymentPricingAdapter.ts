@@ -2,10 +2,10 @@ import {
   IPaymentPricingSheet,
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
-} from '@unchainedshop/types/payments.pricing';
-import { IPricingAdapter } from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/payments.pricing.js';
+import { IPricingAdapter } from '@unchainedshop/types/pricing.js';
 import { BasePricingAdapter } from '@unchainedshop/utils';
-import { PaymentPricingSheet } from './PaymentPricingSheet';
+import { PaymentPricingSheet } from './PaymentPricingSheet.js';
 
 const basePricingAdapter = BasePricingAdapter<PaymentPricingAdapterContext, PaymentPricingCalculation>();
 

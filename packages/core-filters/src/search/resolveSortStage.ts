@@ -1,5 +1,5 @@
-import { FindOptions } from '@unchainedshop/types/common';
-import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters';
+import { FindOptions } from '@unchainedshop/types/common.js';
+import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
 
 const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';

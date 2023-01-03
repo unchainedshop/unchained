@@ -1,5 +1,5 @@
-import { Query } from '@unchainedshop/types/common';
-import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters';
+import { Query } from '@unchainedshop/types/common.js';
+import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
 
 const defaultSelector = ({ filterIds, filterQuery, includeInactive }: SearchQuery) => {
   const selector: Query = {};

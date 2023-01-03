@@ -1,8 +1,8 @@
 import { Roles, Role } from '@unchainedshop/roles';
 
-import { all } from './all';
-import { loggedIn } from './loggedIn';
-import { admin } from './admin';
+import { all } from './all.js';
+import { loggedIn } from './loggedIn.js';
+import { admin } from './admin.js';
 
 const roles = {
   ADMIN: Roles.adminRole,

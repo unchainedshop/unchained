@@ -1,12 +1,12 @@
-import makeFetcher from './makeFetcher';
-import status from './status';
-import init from './init';
-import secureFields from './secureFields';
-import authorize from './authorize';
-import validate from './validate';
-import settle from './settle';
-import cancel from './cancel';
-import authorizeAuthenticated from './authorizeAuthenticated';
+import makeFetcher from './makeFetcher.js';
+import status from './status.js';
+import init from './init.js';
+import secureFields from './secureFields.js';
+import authorize from './authorize.js';
+import validate from './validate.js';
+import settle from './settle.js';
+import cancel from './cancel.js';
+import authorizeAuthenticated from './authorizeAuthenticated.js';
 
 export default function createDatatransAPI(endpoint: string, merchantId: string, secret: string) {
   const fetchDatatrans = makeFetcher(endpoint, merchantId, secret);

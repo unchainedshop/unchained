@@ -1,4 +1,4 @@
-import { OrdersSettingsOptions } from '@unchainedshop/types/orders';
+import { OrdersSettingsOptions } from '@unchainedshop/types/orders.js';
 import { generateRandomHash } from '@unchainedshop/utils';
 
 export const defaultValidateOrderPosition = async ({ product }, { modules }) => {

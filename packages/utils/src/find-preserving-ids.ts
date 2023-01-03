@@ -1,4 +1,4 @@
-import { Collection, FindOptions, Query } from '@unchainedshop/types/common';
+import { Collection, FindOptions, Query } from '@unchainedshop/types/common.js';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 

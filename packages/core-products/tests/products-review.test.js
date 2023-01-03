@@ -1,4 +1,4 @@
-import {buildFindSelector} from "../src/module/configureProductReviewsModule"
+import {buildFindSelector} from "../lib/module/configureProductReviewsModule"
 describe('Product Review', () => {
   describe("buildFindSelector", () => {
     it('Return correct filter object object when no parameter is passed', async () => {

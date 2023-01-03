@@ -2,7 +2,7 @@ import { DeliveryPricingAdapter, DeliveryPricingDirector } from '@unchainedshop/
 import {
   DeliveryPricingAdapterContext,
   IDeliveryPricingAdapter,
-} from '@unchainedshop/types/delivery.pricing';
+} from '@unchainedshop/types/delivery.pricing.js';
 
 // https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
 export const SwissTaxCategories = {

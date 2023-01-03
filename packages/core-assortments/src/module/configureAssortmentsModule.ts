@@ -1,12 +1,12 @@
-import { Query, Tree } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { Query, Tree } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import {
   AssortmentsModule,
   Assortment,
   AssortmentLink,
   AssortmentQuery,
   AssortmentsSettingsOptions,
-} from '@unchainedshop/types/assortments';
+} from '@unchainedshop/types/assortments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
@@ -15,19 +15,19 @@ import {
   findPreservingIds,
   buildSortOptions,
 } from '@unchainedshop/utils';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
-import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase';
-import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase';
-import addMigrations from '../migrations/addMigrations';
-import { AssortmentsCollection } from '../db/AssortmentsCollection';
-import { AssortmentsSchema } from '../db/AssortmentsSchema';
-import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule';
-import { configureAssortmentLinksModule } from './configureAssortmentLinksModule';
-import { assortmentsSettings } from '../assortments-settings';
-import { configureAssortmentProductsModule } from './configureAssortmentProductsModule';
-import { configureAssortmentTextsModule } from './configureAssortmentTextsModule';
-import { configureAssortmentMediaModule } from './configureAssortmentMediaModule';
-import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
+import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
+import addMigrations from '../migrations/addMigrations.js';
+import { AssortmentsCollection } from '../db/AssortmentsCollection.js';
+import { AssortmentsSchema } from '../db/AssortmentsSchema.js';
+import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule.js';
+import { configureAssortmentLinksModule } from './configureAssortmentLinksModule.js';
+import { assortmentsSettings } from '../assortments-settings.js';
+import { configureAssortmentProductsModule } from './configureAssortmentProductsModule.js';
+import { configureAssortmentTextsModule } from './configureAssortmentTextsModule.js';
+import { configureAssortmentMediaModule } from './configureAssortmentMediaModule.js';
+import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.js';
 
 const ASSORTMENT_EVENTS = [
   'ASSORTMENT_CREATE',

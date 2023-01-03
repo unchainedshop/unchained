@@ -1,6 +1,6 @@
-import { Context } from '@unchainedshop/types/api';
-import { PaymentProvider } from '@unchainedshop/types/payments';
-import { Enrollment } from '@unchainedshop/types/enrollments';
+import { Context } from '@unchainedshop/types/api.js';
+import { PaymentProvider } from '@unchainedshop/types/payments.js';
+import { Enrollment } from '@unchainedshop/types/enrollments.js';
 
 type HelperType<T> = (enrollmentPayment: Enrollment['payment'], _: never, context: Context) => T;
 

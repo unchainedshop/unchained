@@ -1,9 +1,9 @@
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 import { JSONResolver, TimestampResolver, DateTimeResolver, DateResolver } from 'graphql-scalars';
-import Query from './queries';
-import Mutation from './mutations';
-import Types from './type';
-import CustomScalars from './scalars';
+import Query from './queries/index.js';
+import Mutation from './mutations/index.js';
+import Types from './type/index.js';
+import CustomScalars from './scalars/index.js';
 
 export default {
   ...Types,

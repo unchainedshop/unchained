@@ -1,4 +1,4 @@
-import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
 import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
 
 import https from 'https';
@@ -6,7 +6,7 @@ import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
 import Minio from 'minio';
-import AssumeRoleProvider from 'minio/dist/main/AssumeRoleProvider';
+import AssumeRoleProvider from 'minio/dist/main/AssumeRoleProvider.js';
 import { Readable } from 'stream';
 import { URL } from 'url';
 

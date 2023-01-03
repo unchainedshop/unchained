@@ -1,7 +1,7 @@
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { OrderCheckoutError } from '../../../errors';
-import { getOrderCart } from '../utils/getOrderCart';
+import { OrderCheckoutError } from '../../../errors.js';
+import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function checkoutCart(
   root: Root,

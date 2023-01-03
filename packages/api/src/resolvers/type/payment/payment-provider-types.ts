@@ -1,5 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
-import { PaymentError, PaymentProvider as PaymentProviderType } from '@unchainedshop/types/payments';
+import { Context } from '@unchainedshop/types/api.js';
+import { PaymentError, PaymentProvider as PaymentProviderType } from '@unchainedshop/types/payments.js';
 
 export interface PaymentProviderHelperTypes {
   interface: (

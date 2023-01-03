@@ -1,6 +1,6 @@
-import { UnchainedCore } from '@unchainedshop/types/core';
-import upsertFilterContent from './upsertFilterContent';
-import upsertFilterOptionContent from './upsertFilterOptionContent';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import upsertFilterContent from './upsertFilterContent.js';
+import upsertFilterOptionContent from './upsertFilterOptionContent.js';
 
 export default async function updateFilter(
   payload: any,

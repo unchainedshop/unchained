@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { Configuration } from '@unchainedshop/types/common';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { Configuration } from '@unchainedshop/types/common.js';
+import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function requestQuotation(
   root: Root,

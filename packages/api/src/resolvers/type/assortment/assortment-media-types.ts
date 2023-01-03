@@ -1,9 +1,9 @@
-import { Context } from '@unchainedshop/types/api';
+import { Context } from '@unchainedshop/types/api.js';
 import {
   AssortmentMedia as AssortmentMediaType,
   AssortmentMediaText,
-} from '@unchainedshop/types/assortments.media';
-import { File } from '@unchainedshop/types/files';
+} from '@unchainedshop/types/assortments.media.js';
+import { File } from '@unchainedshop/types/files.js';
 
 type HelperType<P, T> = (assortmentMedia: AssortmentMediaType, params: P, context: Context) => T;
 

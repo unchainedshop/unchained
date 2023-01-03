@@ -1,7 +1,7 @@
-import { Db, Update, _ID, GridFSBucket } from './common';
-import { Modules, ModuleOptions } from './modules';
-import { Services } from './services';
-import { IRoleOptionConfig } from './roles';
+import { Db, Update, _ID, GridFSBucket } from './common.js';
+import { Modules, ModuleOptions } from './modules.js';
+import { Services } from './services.js';
+import { IRoleOptionConfig } from './roles.js';
 
 export interface BulkImporter {
   createBulkImporter: (options: any) => any;

@@ -1,7 +1,7 @@
 import { hashPassword } from '@unchainedshop/api';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const logger = console;

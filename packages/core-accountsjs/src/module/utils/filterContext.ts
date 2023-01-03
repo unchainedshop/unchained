@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 const EXCLUDED_CONTEXT_FIELDS = ['modules', 'services', 'bulkImporter', 'loaders', 'req', 'res'];
 

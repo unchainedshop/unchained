@@ -1,8 +1,8 @@
-import { Db } from '@unchainedshop/types/common';
-import { FiltersSettingsOptions } from '@unchainedshop/types/filters';
+import { Db } from '@unchainedshop/types/common.js';
+import { FiltersSettingsOptions } from '@unchainedshop/types/filters.js';
 import crypto from 'crypto';
 import memoizee from 'memoizee';
-import { FiltersCollection } from '../db/FiltersCollection';
+import { FiltersCollection } from '../db/FiltersCollection.js';
 
 const updateIfHashChanged = async (Collection, selector, doc) => {
   const _id = Object.values(selector).join(':');

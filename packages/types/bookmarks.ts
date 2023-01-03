@@ -1,7 +1,7 @@
-import { Query, TimestampFields, _ID } from './common';
-import { ModuleMutations, UnchainedCore } from './core';
+import { Query, TimestampFields, _ID } from './common.js';
+import { ModuleMutations, UnchainedCore } from './core.js';
 
-import { User } from './user';
+import { User } from './user.js';
 
 export type UserProductFilter = {
   userId: string;

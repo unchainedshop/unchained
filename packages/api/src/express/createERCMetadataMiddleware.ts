@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedContextResolver } from '@unchainedshop/types/api';
+import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
 import { systemLocale } from '@unchainedshop/utils';
 import { IncomingMessage } from 'http';
 import localePkg from 'locale';

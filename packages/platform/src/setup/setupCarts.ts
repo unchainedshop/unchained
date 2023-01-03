@@ -1,5 +1,5 @@
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { SetupCartsOptions } from '@unchainedshop/types/platform';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { SetupCartsOptions } from '@unchainedshop/types/platform.js';
 
 const { UNCHAINED_DISABLE_PROVIDER_INVALIDATION, UNCHAINED_ASSIGN_CART_FOR_USERS } = process.env;
 

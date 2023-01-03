@@ -1,13 +1,13 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { UserData } from '@unchainedshop/types/accounts';
-import { hashPassword } from '../../../hashPassword';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { UserData } from '@unchainedshop/types/accounts.js';
+import { hashPassword } from '../../../hashPassword.js';
 import {
   AuthOperationFailedError,
   EmailAlreadyExistsError,
   UsernameAlreadyExistsError,
   UsernameOrEmailRequiredError,
-} from '../../../errors';
+} from '../../../errors.js';
 
 export default async function enrollUser(root: Root, params: UserData, context: Context) {
   const { modules } = context;

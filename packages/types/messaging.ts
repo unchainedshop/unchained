@@ -1,4 +1,4 @@
-import { UnchainedCore } from './core';
+import { UnchainedCore } from './core.js';
 
 export type EmailTemplateType = {
   type: 'EMAIL';

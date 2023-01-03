@@ -1,7 +1,7 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 
-import { IQuotationAdapter } from '@unchainedshop/types/quotations';
-import { QuotationError } from './QuotationError';
+import { IQuotationAdapter } from '@unchainedshop/types/quotations.js';
+import { QuotationError } from './QuotationError.js';
 
 export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'version'> = {
   orderIndex: 0,

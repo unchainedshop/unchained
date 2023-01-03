@@ -1,17 +1,17 @@
-import { Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { Query } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import {
   ProductReview,
   ProductReviewQuery,
   ProductReviewsModule,
   ProductReviewVoteType,
   ProductVote,
-} from '@unchainedshop/types/products.reviews';
+} from '@unchainedshop/types/products.reviews.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
-import { ProductReviewsCollection } from '../db/ProductReviewsCollection';
-import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
+import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema.js';
 
 const PRODUCT_REVIEW_EVENTS = [
   'PRODUCT_REVIEW_CREATE',

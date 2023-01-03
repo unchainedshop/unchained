@@ -1,18 +1,18 @@
-import { Collection } from '@unchainedshop/types/common';
-import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core';
+import { Collection } from '@unchainedshop/types/common.js';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   PaymentContext,
   PaymentModule,
   PaymentProvider,
   PaymentProviderQuery,
-} from '@unchainedshop/types/payments';
+} from '@unchainedshop/types/payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { PaymentPricingDirector } from '../director/PaymentPricingDirector';
-import { PaymentPricingSheet } from '../director/PaymentPricingSheet';
-import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema';
-import { PaymentDirector } from '../director/PaymentDirector';
-import { paymentSettings } from '../payment-settings';
+import { PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
+import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
+import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema.js';
+import { PaymentDirector } from '../director/PaymentDirector.js';
+import { paymentSettings } from '../payment-settings.js';
 
 const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_CREATE',

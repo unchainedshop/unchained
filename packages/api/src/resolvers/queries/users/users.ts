@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root, SortOption } from '@unchainedshop/types/api';
-import { UserQuery } from '@unchainedshop/types/user';
+import { Context, Root, SortOption } from '@unchainedshop/types/api.js';
+import { UserQuery } from '@unchainedshop/types/user.js';
 
 export default async function users(
   root: Root,

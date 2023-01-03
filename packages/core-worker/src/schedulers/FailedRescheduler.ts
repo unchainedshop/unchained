@@ -1,7 +1,7 @@
-import { IScheduler, Work } from '@unchainedshop/types/worker';
+import { IScheduler, Work } from '@unchainedshop/types/worker.js';
 import { log } from '@unchainedshop/logger';
-import { WorkerDirector } from '../director/WorkerDirector';
-import { WorkerEventTypes } from '../director/WorkerEventTypes';
+import { WorkerDirector } from '../director/WorkerDirector.js';
+import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 
 export const FailedRescheduler: IScheduler = {
   key: 'shop.unchained.scheduler.failed',

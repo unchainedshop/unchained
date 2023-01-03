@@ -1,11 +1,11 @@
-import { Context } from '@unchainedshop/types/api';
-import { DeliveryProvider } from '@unchainedshop/types/delivery';
-import { Order } from '@unchainedshop/types/orders';
-import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/types/orders.positions';
-import { OrderPrice } from '@unchainedshop/types/orders.pricing';
-import { Product } from '@unchainedshop/types/products';
-import { Quotation } from '@unchainedshop/types/quotations';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing';
+import { Context } from '@unchainedshop/types/api.js';
+import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { Order } from '@unchainedshop/types/orders.js';
+import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/types/orders.positions.js';
+import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
+import { Product } from '@unchainedshop/types/products.js';
+import { Quotation } from '@unchainedshop/types/quotations.js';
+import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
 import crypto from 'crypto';
 
 type HelperType<P, T> = (orderPosition: OrderPosition, params: P, context: Context) => T;

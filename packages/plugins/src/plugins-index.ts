@@ -1,75 +1,75 @@
-import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express/index.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import express from 'express';
 
 // Delivery
-import './delivery/post';
-import './delivery/pick-mup';
-import './delivery/send-message';
-import './delivery/stores';
+import './delivery/post.js';
+import './delivery/pick-mup.js';
+import './delivery/send-message.js';
+import './delivery/stores.js';
 
 // Payment
-import './payment/invoice';
-import './payment/invoice-prepaid';
-import './payment/paypal-checkout';
-import './payment/worldline-saferpay';
-import { datatransHandler } from './payment/datatrans-v2';
-import { configureCryptopayModule, cryptopayHandler } from './payment/cryptopay';
-import { appleIAPHandler, configureAppleTransactionsModule } from './payment/apple-iap';
-import { stripeHandler } from './payment/stripe';
-import { postfinanceCheckoutHandler } from './payment/postfinance-checkout';
+import './payment/invoice.js';
+import './payment/invoice-prepaid.js';
+import './payment/paypal-checkout.js';
+import './payment/worldline-saferpay/index.js';
+import { datatransHandler } from './payment/datatrans-v2/index.js';
+import { configureCryptopayModule, cryptopayHandler } from './payment/cryptopay/index.js';
+import { appleIAPHandler, configureAppleTransactionsModule } from './payment/apple-iap/index.js';
+import { stripeHandler } from './payment/stripe.js';
+import { postfinanceCheckoutHandler } from './payment/postfinance-checkout/index.js';
 
 // Warehousing
-import './warehousing/store';
-import './warehousing/eth-minter';
+import './warehousing/store.js';
+import './warehousing/eth-minter.js';
 
 // Pricing
-import './pricing/discount-half-price-manual';
-import './pricing/discount-100-off';
-import './pricing/free-payment';
-import './pricing/free-delivery';
-import './pricing/order-items';
-import './pricing/order-discount';
-import './pricing/order-delivery';
-import './pricing/order-payment';
-import './pricing/product-catalog-price';
-import './pricing/product-price-rateconversion';
-import './pricing/product-discount';
-import './pricing/product-swiss-tax';
-import './pricing/delivery-swiss-tax';
+import './pricing/discount-half-price-manual.js';
+import './pricing/discount-100-off.js';
+import './pricing/free-payment.js';
+import './pricing/free-delivery.js';
+import './pricing/order-items.js';
+import './pricing/order-discount.js';
+import './pricing/order-delivery.js';
+import './pricing/order-payment.js';
+import './pricing/product-catalog-price.js';
+import './pricing/product-price-rateconversion.js';
+import './pricing/product-discount.js';
+import './pricing/product-swiss-tax.js';
+import './pricing/delivery-swiss-tax.js';
 
 // Filter & Search
-import './filters/strict-equal';
-import './filters/local-search';
+import './filters/strict-equal.js';
+import './filters/local-search.js';
 
 // Quotations
-import './quotations/manual';
+import './quotations/manual.js';
 
 // Enrollments
-import './enrollments/licensed';
+import './enrollments/licensed.js';
 
 // Event Queue
-import './events/node-event-emitter';
+import './events/node-event-emitter.js';
 
 // Workers
-import './worker/bulk-import';
-import './worker/zombie-killer';
-import './worker/message';
-import './worker/external';
-import './worker/http-request';
-import './worker/heartbeat';
-import './worker/email';
-import './worker/sms';
-import './worker/update-ecb-rates';
-import './worker/update-coinbase-rates';
-import { configureExportToken } from './worker/export-token';
-import { configureGenerateOrderAutoscheduling } from './worker/enrollment-order-generator';
-import { configureUpdateTokenOwnership } from './worker/update-token-ownership';
+import './worker/bulk-import.js';
+import './worker/zombie-killer.js';
+import './worker/message.js';
+import './worker/external.js';
+import './worker/http-request.js';
+import './worker/heartbeat.js';
+import './worker/email.js';
+import './worker/sms.js';
+import './worker/update-ecb-rates.js';
+import './worker/update-coinbase-rates.js';
+import { configureExportToken } from './worker/export-token.js';
+import { configureGenerateOrderAutoscheduling } from './worker/enrollment-order-generator.js';
+import { configureUpdateTokenOwnership } from './worker/update-token-ownership.js';
 
 // Asset Management
-import './files/gridfs/gridfs-adapter';
-import { gridfsHandler } from './files/gridfs/gridfs-webhook';
-import { configureGridFSFileUploadModule } from './files/gridfs';
+import './files/gridfs/gridfs-adapter.js';
+import { gridfsHandler } from './files/gridfs/gridfs-webhook.js';
+import { configureGridFSFileUploadModule } from './files/gridfs/index.js';
 
 const {
   CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',

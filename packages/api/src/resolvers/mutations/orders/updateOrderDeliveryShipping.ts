@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
-import { OrderDeliveryNotFoundError, InvalidIdError, OrderDeliveryTypeError } from '../../../errors';
+import { OrderDeliveryNotFoundError, InvalidIdError, OrderDeliveryTypeError } from '../../../errors.js';
 
 export default async function updateOrderDeliveryShipping(
   root: Root,

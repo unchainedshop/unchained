@@ -1,7 +1,7 @@
-import { IWarehousingAdapter } from '@unchainedshop/types/warehousing';
+import { IWarehousingAdapter } from '@unchainedshop/types/warehousing.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 
-import { WarehousingError } from './WarehousingError';
+import { WarehousingError } from './WarehousingError.js';
 
 export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 'version'> = {
   orderIndex: 0,

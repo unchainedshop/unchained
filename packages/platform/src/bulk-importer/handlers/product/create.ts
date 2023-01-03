@@ -1,8 +1,8 @@
-import { UnchainedCore } from '@unchainedshop/types/core';
-import upsertVariations from './upsertVariations';
-import upsertMedia from './upsertMedia';
-import upsertProductContent from './upsertProductContent';
-import transformSpecificationToProductStructure from './transformSpecificationToProductStructure';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import upsertVariations from './upsertVariations.js';
+import upsertMedia from './upsertMedia.js';
+import upsertProductContent from './upsertProductContent.js';
+import transformSpecificationToProductStructure from './transformSpecificationToProductStructure.js';
 
 export default async function createProduct(
   payload: any,

@@ -1,4 +1,4 @@
-import { SortOption } from './api';
+import { SortOption } from './api.js';
 import {
   Configuration,
   FindOptions,
@@ -7,8 +7,8 @@ import {
   LogFields,
   TimestampFields,
   _ID,
-} from './common';
-import { UnchainedCore } from './core';
+} from './common.js';
+import { UnchainedCore } from './core.js';
 
 export enum QuotationStatus {
   REQUESTED = 'REQUESTED',

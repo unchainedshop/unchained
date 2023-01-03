@@ -1,5 +1,5 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { Product } from '@unchainedshop/types/products';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { Product } from '@unchainedshop/types/products.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function createProduct(

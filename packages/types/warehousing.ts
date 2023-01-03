@@ -1,11 +1,11 @@
-import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID, Locale } from './common';
-import { ModuleMutations, UnchainedCore } from './core';
+import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID, Locale } from './common.js';
+import { ModuleMutations, UnchainedCore } from './core.js';
 
-import { DeliveryProvider } from './delivery';
-import { Order } from './orders';
-import { OrderPosition } from './orders.positions';
-import { Product } from './products';
-import { User } from './user';
+import { DeliveryProvider } from './delivery.js';
+import { Order } from './orders.js';
+import { OrderPosition } from './orders.positions.js';
+import { Product } from './products.js';
+import { User } from './user.js';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',

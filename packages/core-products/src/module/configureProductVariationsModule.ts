@@ -2,9 +2,9 @@ import {
   ProductVariation,
   ProductVariationsModule,
   ProductVariationText,
-} from '@unchainedshop/types/products.variations';
-import { Filter, Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+} from '@unchainedshop/types/products.variations.js';
+import { Filter, Query } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -13,8 +13,8 @@ import {
   generateDbMutations,
   generateDbObjectId,
 } from '@unchainedshop/utils';
-import { ProductVariationsCollection } from '../db/ProductVariationsCollection';
-import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema';
+import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
+import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
 
 const { Locale } = localePkg;
 

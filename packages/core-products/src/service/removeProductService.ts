@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
-import { RemoveProductService } from '@unchainedshop/types/products';
-import { ProductStatus } from '../db/ProductStatus';
+import { RemoveProductService } from '@unchainedshop/types/products.js';
+import { ProductStatus } from '../db/ProductStatus.js';
 
 export const removeProductService: RemoveProductService = async ({ productId }, unchainedApi) => {
   const { modules } = unchainedApi;

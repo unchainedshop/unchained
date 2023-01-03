@@ -1,5 +1,5 @@
-import { Role, Roles } from "../src/roles";
-import { has, isFunction, permissions } from "../src/roles-index";
+import { Role, Roles } from "../lib/roles";
+import { has, isFunction, permissions } from "../lib/roles-index";
 
 describe('Role', () => {
   beforeEach(() => {

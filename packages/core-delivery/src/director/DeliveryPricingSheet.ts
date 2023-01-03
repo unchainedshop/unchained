@@ -3,8 +3,8 @@ import {
   DeliveryPricingCalculation,
   DeliveryPricingRowCategory,
   IDeliveryPricingSheet,
-} from '@unchainedshop/types/delivery.pricing';
-import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/delivery.pricing.js';
+import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing.js';
 
 export const DeliveryPricingSheet = (
   params: PricingSheetParams<DeliveryPricingCalculation>,

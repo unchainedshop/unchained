@@ -1,9 +1,9 @@
-import { FindOptions, LogFields, TimestampFields, _ID } from './common';
-import { UnchainedCore } from './core';
-import { IDeliveryPricingSheet } from './delivery.pricing';
-import { Order } from './orders';
-import { OrderDiscount } from './orders.discounts';
-import { OrderPrice, OrderPricingDiscount } from './orders.pricing';
+import { FindOptions, LogFields, TimestampFields, _ID } from './common.js';
+import { UnchainedCore } from './core.js';
+import { IDeliveryPricingSheet } from './delivery.pricing.js';
+import { Order } from './orders.js';
+import { OrderDiscount } from './orders.discounts.js';
+import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 
 export enum OrderDeliveryStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status

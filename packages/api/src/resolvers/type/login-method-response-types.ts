@@ -1,5 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
-import { User } from '@unchainedshop/types/user';
+import { Context } from '@unchainedshop/types/api.js';
+import { User } from '@unchainedshop/types/user.js';
 
 export const LoginMethodResponse = {
   user: async ({ id }: { id: string }, _: never, { modules }: Context) => {

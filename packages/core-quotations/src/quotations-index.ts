@@ -1,8 +1,8 @@
-export { configureQuotationsModule } from './module/configureQuotationsModule';
+export { configureQuotationsModule } from './module/configureQuotationsModule.js';
 
-export { QuotationStatus } from './db/QuotationStatus';
+export { QuotationStatus } from './db/QuotationStatus.js';
 
-export { QuotationAdapter } from './director/QuotationAdapter';
-export { QuotationDirector } from './director/QuotationDirector';
+export { QuotationAdapter } from './director/QuotationAdapter.js';
+export { QuotationDirector } from './director/QuotationDirector.js';
 
-export { quotationsSettings } from './quotations-settings';
+export { quotationsSettings } from './quotations-settings.js';

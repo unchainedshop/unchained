@@ -1,8 +1,8 @@
-import { Collection } from '@unchainedshop/types/common';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { Filter } from '@unchainedshop/types/filters';
-import { intersectSet } from '../utils/intersectSet';
-import { FilterProductIds, SearchConfiguration } from './search';
+import { Collection } from '@unchainedshop/types/common.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { Filter } from '@unchainedshop/types/filters.js';
+import { intersectSet } from '../utils/intersectSet.js';
+import { FilterProductIds, SearchConfiguration } from './search.js';
 
 export const productFacetedSearch = (
   Filters: Collection<Filter>,

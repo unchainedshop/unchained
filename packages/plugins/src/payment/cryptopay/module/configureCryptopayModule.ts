@@ -1,6 +1,6 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { Decimal128 } from 'mongodb';
-import { CryptopayTransaction, CryptopayTransactionsCollection } from '../db/CryptopayTransactions';
+import { CryptopayTransaction, CryptopayTransactionsCollection } from '../db/CryptopayTransactions.js';
 
 export interface CryptopayModule {
   getWalletAddress: (addressId: string) => Promise<CryptopayTransaction>;

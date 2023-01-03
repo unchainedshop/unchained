@@ -1,5 +1,5 @@
-import { Db } from '@unchainedshop/types/common';
-import { File } from '@unchainedshop/types/files';
+import { Db } from '@unchainedshop/types/common.js';
+import { File } from '@unchainedshop/types/files.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const MediaObjectsCollection = async (db: Db) => {

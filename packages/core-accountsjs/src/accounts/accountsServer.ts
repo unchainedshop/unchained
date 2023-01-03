@@ -1,7 +1,7 @@
 import { AccountsServer, ServerHooks } from '@accounts/server';
 import crypto from 'crypto';
 import { randomValueHex } from '@unchainedshop/utils';
-import { User } from '@unchainedshop/types/user';
+import { User } from '@unchainedshop/types/user.js';
 
 export class UnchainedAccountsServer extends AccountsServer<
   User & { id: string; deactivated: boolean }

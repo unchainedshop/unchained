@@ -1,7 +1,7 @@
-import { Context, Root } from '@unchainedshop/types/api';
-import { PaymentProvider } from '@unchainedshop/types/payments';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { PaymentProvider } from '@unchainedshop/types/payments.js';
 import { log } from '@unchainedshop/logger';
-import { ProviderConfigurationInvalid } from '../../../errors';
+import { ProviderConfigurationInvalid } from '../../../errors.js';
 
 export default async (
   root: Root,

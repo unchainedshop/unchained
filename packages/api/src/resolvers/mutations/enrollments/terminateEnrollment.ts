@@ -1,7 +1,7 @@
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { log } from '@unchainedshop/logger';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors';
+import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.js';
 
 export default async function terminateEnrollment(
   root: Root,

@@ -4,9 +4,9 @@ import {
   DeliveryPricingContext,
   IDeliveryPricingAdapter,
   IDeliveryPricingDirector,
-} from '@unchainedshop/types/delivery.pricing';
+} from '@unchainedshop/types/delivery.pricing.js';
 import { BasePricingDirector } from '@unchainedshop/utils';
-import { DeliveryPricingSheet } from './DeliveryPricingSheet';
+import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
 
 const baseDirector = BasePricingDirector<
   DeliveryPricingContext,

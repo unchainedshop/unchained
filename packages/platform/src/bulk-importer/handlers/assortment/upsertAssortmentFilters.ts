@@ -1,6 +1,6 @@
-import { AssortmentFilter } from '@unchainedshop/types/assortments';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
+import { AssortmentFilter } from '@unchainedshop/types/assortments.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 
 const upsert = async (assortmentFilter: AssortmentFilter, { modules }: UnchainedCore) => {
   if (

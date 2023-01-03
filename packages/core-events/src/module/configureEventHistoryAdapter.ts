@@ -1,5 +1,5 @@
-import { ModuleMutations } from '@unchainedshop/types/core';
-import { Event, EmitAdapter } from '@unchainedshop/types/events';
+import { ModuleMutations } from '@unchainedshop/types/core.js';
+import { Event, EmitAdapter } from '@unchainedshop/types/events.js';
 import { getEmitHistoryAdapter, setEmitHistoryAdapter } from '@unchainedshop/events';
 
 export const configureEventHistoryAdapter = (mutations: ModuleMutations<Event>) => {

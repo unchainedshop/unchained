@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { ProductNotFoundError, ProductWrongStatusError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { ProductNotFoundError, ProductWrongStatusError, InvalidIdError } from '../../../errors.js';
 
 export default async function unpublishProduct(
   root: Root,

@@ -4,9 +4,9 @@ import {
   ProductPricingAdapterContext,
   ProductPricingCalculation,
   ProductPricingContext,
-} from '@unchainedshop/types/products.pricing';
+} from '@unchainedshop/types/products.pricing.js';
 import { BasePricingDirector } from '@unchainedshop/utils';
-import { ProductPricingSheet } from './ProductPricingSheet';
+import { ProductPricingSheet } from './ProductPricingSheet.js';
 
 const baseDirector = BasePricingDirector<
   ProductPricingContext,

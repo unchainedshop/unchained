@@ -1,4 +1,4 @@
-import {buildFindSelector} from '../src/module/configureCurrenciesModule'
+import {buildFindSelector} from "../lib/module/configureCurrenciesModule.js"
 
 describe('Currency', () => {
   

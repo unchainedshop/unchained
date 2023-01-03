@@ -1,4 +1,4 @@
-import { Product } from '@unchainedshop/types/products';
+import { Product } from '@unchainedshop/types/products.js';
 
 export const getPriceLevels = (params: {
   product?: Product;

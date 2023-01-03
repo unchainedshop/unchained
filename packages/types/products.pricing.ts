@@ -1,14 +1,14 @@
-import { Order } from './orders';
-import { OrderDiscount } from './orders.discounts';
+import { Order } from './orders.js';
+import { OrderDiscount } from './orders.discounts.js';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
-} from './pricing';
-import { Product, ProductConfiguration } from './products';
-import { User } from './user';
+} from './pricing.js';
+import { Product, ProductConfiguration } from './products.js';
+import { User } from './user.js';
 
 export enum ProductPricingRowCategory {
   Item = 'ITEM',

@@ -1,5 +1,5 @@
-import buildHashedFilename from './buildHashedFilename';
+import buildHashedFilename from './buildHashedFilename.js';
 
-export { FileDirector } from './director/FileDirector';
-export { FileAdapter } from './director/FileAdapter';
+export { FileDirector } from './director/FileDirector.js';
+export { FileAdapter } from './director/FileAdapter.js';
 export { buildHashedFilename };

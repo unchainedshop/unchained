@@ -4,9 +4,9 @@ import {
   OrderPricingAdapterContext,
   OrderPricingCalculation,
   OrderPricingContext,
-} from '@unchainedshop/types/orders.pricing';
+} from '@unchainedshop/types/orders.pricing.js';
 import { BasePricingDirector } from '@unchainedshop/utils';
-import { OrderPricingSheet } from './OrderPricingSheet';
+import { OrderPricingSheet } from './OrderPricingSheet.js';
 
 const baseDirector = BasePricingDirector<
   OrderPricingContext,

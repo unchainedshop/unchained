@@ -1,4 +1,4 @@
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function activeWorkTypes(root: Root, _: any, { modules, userId }: Context) {

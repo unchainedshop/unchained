@@ -14,9 +14,9 @@ Below is a simple filter plugin that will filter products based on there attribu
 
 ```typescript
 
-import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/types/filters';
-import { Query, FindOptions } from '@unchainedshop/types/common';
-import { Context } from '@unchainedshop/types/api';
+import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/types/filters.js';
+import { Query, FindOptions } from '@unchainedshop/types/common.js';
+import { Context } from '@unchainedshop/types/api.js';
 
 const ShopAttributeFilter: IFilterAdapter = {
   key: 'ch.shop.filter',
@@ -151,9 +151,9 @@ Incase you only want to change implementation of only few functions and keep the
 Below is a simplified implementation of the `ShopAttributeFilter` above, this time it will use the default implantation and override `transformProductSelector` function only.
 
 ```typescript
-import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/types/filters';
-import { Query } from '@unchainedshop/types/common';
-import { Context } from '@unchainedshop/types/api';
+import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/types/filters.js';
+import { Query } from '@unchainedshop/types/common.js';
+import { Context } from '@unchainedshop/types/api.js';
 
 const ShopAttributeFilter: IFilterAdapter = {
   ...FilterAdapter,

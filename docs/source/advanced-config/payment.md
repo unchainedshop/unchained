@@ -20,10 +20,10 @@ import {
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
   PaymentPricingCalculation,
-} from '@unchainedshop/types/payments.pricing';
+} from '@unchainedshop/types/payments.pricing.js';
 
-import { LogOptions } from '@unchainedshop/types/logs';
-import { Discount } from '@unchainedshop/types/discount';
+import { LogOptions } from '@unchainedshop/types/logs.js';
+import { Discount } from '@unchainedshop/types/discount.js';
 
 const TRANSACTION_FEE = 29;
 
@@ -124,7 +124,7 @@ Below is an example implementation of `Pre-Paid INVOICE` payment provider type t
 
 ```typescript
 
-import type { IPaymentAdapter } from '@unchainedshop/types/payments';
+import type { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import {
   PaymentDirector,
   PaymentAdapter,

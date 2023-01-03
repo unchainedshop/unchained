@@ -1,8 +1,8 @@
-import { Context } from '@unchainedshop/types/api';
-import { Country } from '@unchainedshop/types/countries';
-import { Currency } from '@unchainedshop/types/currencies';
-import { Enrollment as EnrollmentType, EnrollmentPlan } from '@unchainedshop/types/enrollments';
-import { User } from '@unchainedshop/types/user';
+import { Context } from '@unchainedshop/types/api.js';
+import { Country } from '@unchainedshop/types/countries.js';
+import { Currency } from '@unchainedshop/types/currencies.js';
+import { Enrollment as EnrollmentType, EnrollmentPlan } from '@unchainedshop/types/enrollments.js';
+import { User } from '@unchainedshop/types/user.js';
 
 type HelperType<P, T> = (enrollment: EnrollmentType, params: P, context: Context) => T;
 

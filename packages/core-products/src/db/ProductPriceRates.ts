@@ -1,5 +1,5 @@
-import { ProductPriceRate } from '@unchainedshop/types/products.pricing';
-import { Db } from '@unchainedshop/types/common';
+import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
+import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const ProductPriceRates = async (db: Db) => {

@@ -1,4 +1,4 @@
-import { IFileAdapter } from '@unchainedshop/types/files';
+import { IFileAdapter } from '@unchainedshop/types/files.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {

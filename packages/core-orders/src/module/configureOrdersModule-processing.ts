@@ -1,14 +1,14 @@
-import { Collection } from '@unchainedshop/types/common';
-import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
-import { OrderPayment } from '@unchainedshop/types/orders.payments';
-import { OrderPosition } from '@unchainedshop/types/orders.positions';
+import { Collection } from '@unchainedshop/types/common.js';
+import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders.js';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
-import { ProductType } from '@unchainedshop/types/products';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { ordersSettings } from '../orders-settings';
+import { ProductType } from '@unchainedshop/types/products.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { ordersSettings } from '../orders-settings.js';
 
 const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
 

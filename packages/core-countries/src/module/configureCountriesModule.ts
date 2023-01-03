@@ -1,5 +1,5 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
-import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/countries';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/countries.js';
 import countryFlags from 'emoji-flags';
 import countryI18n from 'i18n-iso-countries';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -9,9 +9,9 @@ import {
   systemLocale,
   buildSortOptions,
 } from '@unchainedshop/utils';
-import { SortDirection, SortOption } from '@unchainedshop/types/api';
-import { CountriesCollection } from '../db/CountriesCollection';
-import { CountriesSchema } from '../db/CountriesSchema';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { CountriesCollection } from '../db/CountriesCollection.js';
+import { CountriesSchema } from '../db/CountriesSchema.js';
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 

@@ -1,9 +1,9 @@
-import { Quotation as QuotationType } from '@unchainedshop/types/quotations';
-import { Context } from '@unchainedshop/types/api';
-import { User } from '@unchainedshop/types/user';
-import { Product } from '@unchainedshop/types/products';
-import { Country } from '@unchainedshop/types/countries';
-import { Currency } from '@unchainedshop/types/currencies';
+import { Quotation as QuotationType } from '@unchainedshop/types/quotations.js';
+import { Context } from '@unchainedshop/types/api.js';
+import { User } from '@unchainedshop/types/user.js';
+import { Product } from '@unchainedshop/types/products.js';
+import { Country } from '@unchainedshop/types/countries.js';
+import { Currency } from '@unchainedshop/types/currencies.js';
 
 type HelperType<P, T> = (quotation: QuotationType, params: P, context: Context) => T;
 

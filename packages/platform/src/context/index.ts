@@ -1,2 +1,2 @@
-export { default as withAccessToken } from './withAccessToken';
-export { default as setAccessToken } from './setAccessToken';
+export { default as withAccessToken } from './withAccessToken.js';
+export { default as setAccessToken } from './setAccessToken.js';

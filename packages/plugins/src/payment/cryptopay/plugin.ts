@@ -1,13 +1,13 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { ethers } from 'ethers';
-import BIP32Factory from 'bip32';
+import { BIP32Factory } from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import * as bitcoin from 'bitcoinjs-lib';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { OrderPricingSheet } from '@unchainedshop/core-orders';
-import { CryptopayModule } from './module/configureCryptopayModule';
+import { CryptopayModule } from './module/configureCryptopayModule.js';
 
 const logger = createLogger('unchained:core-payment:cryptopay');
 

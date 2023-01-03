@@ -1,5 +1,5 @@
-import { PlanProductHelperTypes } from '@unchainedshop/types/products';
-import { Product } from './product-types';
+import { PlanProductHelperTypes } from '@unchainedshop/types/products.js';
+import { Product } from './product-types.js';
 
 export const PlanProduct: PlanProductHelperTypes = {
   ...Product,

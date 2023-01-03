@@ -1,12 +1,12 @@
-export { configureWorkerModule } from './module/configureWorkerModule';
+export { configureWorkerModule } from './module/configureWorkerModule.js';
 
-export { WorkerDirector } from './director/WorkerDirector';
-export { WorkerAdapter } from './director/WorkerAdapter';
-export { WorkStatus } from './director/WorkStatus';
-export { WorkerEventTypes } from './director/WorkerEventTypes';
+export { WorkerDirector } from './director/WorkerDirector.js';
+export { WorkerAdapter } from './director/WorkerAdapter.js';
+export { WorkStatus } from './director/WorkStatus.js';
+export { WorkerEventTypes } from './director/WorkerEventTypes.js';
 
-export { FailedRescheduler } from './schedulers/FailedRescheduler';
+export { FailedRescheduler } from './schedulers/FailedRescheduler.js';
 
-export { BaseWorker } from './workers/BaseWorker';
-export { EventListenerWorker } from './workers/EventListenerWorker';
-export { IntervalWorker } from './workers/IntervalWorker';
+export { BaseWorker } from './workers/BaseWorker.js';
+export { EventListenerWorker } from './workers/EventListenerWorker.js';
+export { IntervalWorker } from './workers/IntervalWorker.js';

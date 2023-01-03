@@ -1,12 +1,12 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments.js';
 import {
   OrderNotFoundError,
   OrderWrongPaymentStatusError,
   OrderWrongStatusError,
   InvalidIdError,
-} from '../../../errors';
+} from '../../../errors.js';
 
 export default async function payOrder(root: Root, { orderId }: { orderId: string }, context: Context) {
   const { modules, userId } = context;

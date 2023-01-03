@@ -1,9 +1,9 @@
-import range from "../src/filter-value-parsers/range";
-import switchFilter from '../src/filter-value-parsers/switch'
-import { buildFindSelector } from "../src/module/configureFiltersModule";
-import { defaultSelector, resolveAssortmentSelector } from "../src/search/resolveAssortmentSelector";
-import { intersectSet } from "../src/utils/intersectSet";
-import { parseQueryArray } from "../src/utils/parseQueryArray";
+import range from "../lib/filter-value-parsers/range.js";
+import switchFilter from "../lib/filter-value-parsers/switch.js"
+import { buildFindSelector } from "../lib/module/configureFiltersModule.js";
+import { defaultSelector, resolveAssortmentSelector } from "../lib/search/resolveAssortmentSelector.js";
+import { intersectSet } from "../lib/utils/intersectSet.js";
+import { parseQueryArray } from "../lib/utils/parseQueryArray.js";
 
 
 describe('Filters', () => {

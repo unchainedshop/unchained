@@ -1,9 +1,9 @@
 // Import the function to be tested.
-import {admin} from '../src/roles/admin'
-import {actions} from '../src/roles';
+import {admin} from '../lib/roles/admin.js'
+import {actions} from '../lib/roles/index.js';
 import {jest} from '@jest/globals'
-import {checkAction, ensureActionExists, ensureIsFunction} from '../src/acl'
-import { NoPermissionError, PermissionSystemError } from '../src/errors';
+import {checkAction, ensureActionExists, ensureIsFunction} from '../lib/acl.js'
+import { NoPermissionError, PermissionSystemError } from '../lib/errors.js';
 import { Roles } from '@unchainedshop/roles';
 
 describe('API', () => {

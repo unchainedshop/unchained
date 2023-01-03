@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { Context, Root } from '@unchainedshop/types/api';
-import { EnrollmentPlan, Enrollment } from '@unchainedshop/types/enrollments';
-import { Address, Contact } from '@unchainedshop/types/common';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { EnrollmentPlan, Enrollment } from '@unchainedshop/types/enrollments.js';
+import { Address, Contact } from '@unchainedshop/types/common.js';
+import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.js';
 
 type UpdateEnrollmentParams = {
   enrollmentId: string;

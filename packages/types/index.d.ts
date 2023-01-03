@@ -1,14 +1,14 @@
 import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
-import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts';
-import { Context } from './api';
-import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments';
+import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts.js';
+import { Context } from './api.js';
+import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments.js';
 
-import { BookmarkServices, BookmarksModule } from './bookmarks';
-import { Db, IBaseAdapter, IBaseDirector, Locale, Locales, TimestampFields } from './common';
+import { BookmarkServices, BookmarksModule } from './bookmarks.js';
+import { Db, IBaseAdapter, IBaseDirector, Locale, Locales, TimestampFields } from './common.js';
 
-import { CountriesModule, Country, CountryServices } from './countries';
-import { CurrenciesModule } from './currencies';
+import { CountriesModule, Country, CountryServices } from './countries.js';
+import { CurrenciesModule } from './currencies.js';
 import {
   DeliveryError as DeliveryErrorType,
   DeliveryModule,
@@ -17,22 +17,22 @@ import {
   DeliverySettings,
   IDeliveryAdapter,
   IDeliveryDirector,
-} from './delivery';
+} from './delivery.js';
 import {
   DeliveryPricingCalculation,
   IDeliveryPricingAdapter,
   IDeliveryPricingDirector,
   IDeliveryPricingSheet,
-} from './delivery.pricing';
-import { IDiscountAdapter, IDiscountDirector } from './discount';
+} from './delivery.pricing.js';
+import { IDiscountAdapter, IDiscountDirector } from './discount.js';
 import {
   EnrollmentsModule,
   EnrollmentsSettingsOptions,
   EnrollmentStatus as EnrollmentStatusType,
   IEnrollmentAdapter,
   IEnrollmentDirector,
-} from './enrollments';
-import { EventDirector, EventsModule } from './events';
+} from './enrollments.js';
+import { EventDirector, EventsModule } from './events.js';
 import {
   FileServices,
   FilesSettings,
@@ -40,7 +40,7 @@ import {
   FilesModule,
   IFileAdapter,
   IFileDirector,
-} from './files';
+} from './files.js';
 import {
   FiltersModule,
   FilterType as FilterTypeType,
@@ -48,23 +48,23 @@ import {
   IFilterDirector,
   FiltersSettings,
   FiltersSettingsOptions,
-} from './filters';
-import { LanguagesModule } from './languages';
-import { IMessagingDirector, MessagingModule } from './messaging';
+} from './filters.js';
+import { LanguagesModule } from './languages.js';
+import { IMessagingDirector, MessagingModule } from './messaging.js';
 import {
   OrderServices,
   OrdersModule,
   OrdersSettingsOptions,
   OrderStatus as OrderStatusType,
-} from './orders';
-import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries';
-import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments';
+} from './orders.js';
+import { OrderDeliveryStatus as OrderDeliveryStatusType } from './orders.deliveries.js';
+import { OrderPaymentStatus as OrderPaymentStatusType } from './orders.payments.js';
 import {
   IOrderPricingAdapter,
   IOrderPricingDirector,
   IOrderPricingSheet,
   OrderPricingCalculation,
-} from './orders.pricing';
+} from './orders.pricing.js';
 import {
   IPaymentAdapter,
   IPaymentDirector,
@@ -73,13 +73,13 @@ import {
   PaymentSettingsOptions,
   PaymentSettings,
   PaymentProviderType as PaymentProviderTypeType,
-} from './payments';
+} from './payments.js';
 import {
   IPaymentPricingAdapter,
   IPaymentPricingDirector,
   IPaymentPricingSheet,
   PaymentPricingCalculation,
-} from './payments.pricing';
+} from './payments.pricing.js';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
@@ -89,20 +89,20 @@ import {
   PricingCalculation,
   PricingSheetParams,
   IBasePricingSheet,
-} from './pricing';
+} from './pricing.js';
 import {
   ProductServices,
   ProductsModule,
   ProductStatus as ProductStatusType,
   ProductType,
   ProductsSettings,
-} from './products';
+} from './products.js';
 import {
   IProductPricingAdapter,
   IProductPricingDirector,
   IProductPricingSheet,
   ProductPricingCalculation,
-} from './products.pricing';
+} from './products.pricing.js';
 import {
   IQuotationAdapter,
   IQuotationDirector,
@@ -110,15 +110,15 @@ import {
   QuotationsModule,
   QuotationsSettingsOptions,
   QuotationStatus as QuotationStatusType,
-} from './quotations';
-import { UserServices, UsersModule } from './user';
+} from './quotations.js';
+import { UserServices, UsersModule } from './user.js';
 import {
   IWarehousingAdapter,
   IWarehousingDirector,
   WarehousingError as WarehousingErrorType,
   WarehousingModule,
   WarehousingProviderType as WarehousingProviderTypeType,
-} from './warehousing';
+} from './warehousing.js';
 import {
   IScheduler,
   IWorker,
@@ -127,8 +127,8 @@ import {
   WorkerModule,
   WorkerSchedule,
   WorkStatus as WorkerStatusType,
-} from './worker';
-import { UnchainedCoreOptions, ModuleInput } from './core';
+} from './worker.js';
+import { UnchainedCoreOptions, ModuleInput } from './core.js';
 
 declare module '@unchainedshop/utils' {
   function resolveBestSupported(language: string, locales: Locales): Locale;

@@ -1,6 +1,10 @@
-import { ProductMedia, ProductMediaModule, ProductMediaText } from '@unchainedshop/types/products.media';
-import { Query } from '@unchainedshop/types/common';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import {
+  ProductMedia,
+  ProductMediaModule,
+  ProductMediaText,
+} from '@unchainedshop/types/products.media.js';
+import { Query } from '@unchainedshop/types/common.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -10,9 +14,9 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { ProductsModule } from '@unchainedshop/types/products';
-import { ProductMediaCollection } from '../db/ProductMediaCollection';
-import { ProductMediaSchema } from '../db/ProductMediaSchema';
+import { ProductsModule } from '@unchainedshop/types/products.js';
+import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
+import { ProductMediaSchema } from '../db/ProductMediaSchema.js';
 
 const { Locale } = localePkg;
 

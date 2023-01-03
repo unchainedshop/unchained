@@ -1,13 +1,21 @@
-import { SortOption } from './api';
-import { Address, Configuration, Contact, FindOptions, LogFields, TimestampFields, _ID } from './common';
-import { UnchainedCore } from './core';
-import { OrderDeliveriesModule } from './orders.deliveries';
-import { OrderDiscount, OrderDiscountsModule } from './orders.discounts';
-import { OrderPaymentsModule } from './orders.payments';
-import { OrderPositionsModule } from './orders.positions';
-import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing';
-import { Product } from './products';
-import { User } from './user';
+import { SortOption } from './api.js';
+import {
+  Address,
+  Configuration,
+  Contact,
+  FindOptions,
+  LogFields,
+  TimestampFields,
+  _ID,
+} from './common.js';
+import { UnchainedCore } from './core.js';
+import { OrderDeliveriesModule } from './orders.deliveries.js';
+import { OrderDiscount, OrderDiscountsModule } from './orders.discounts.js';
+import { OrderPaymentsModule } from './orders.payments.js';
+import { OrderPositionsModule } from './orders.positions.js';
+import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
+import { Product } from './products.js';
+import { User } from './user.js';
 
 export enum OrderStatus {
   PENDING = 'PENDING',

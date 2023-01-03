@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 
-import { OrderDiscountNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors';
+import { OrderDiscountNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors.js';
 
 export default async function removeCartDiscount(
   root: Root,

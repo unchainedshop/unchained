@@ -1,16 +1,20 @@
-import { UnchainedServerOptions } from '@unchainedshop/types/api';
+import { UnchainedServerOptions } from '@unchainedshop/types/api.js';
 import type { ApolloServer } from '@apollo/server';
 import fs from 'fs';
 import path from 'path';
-import createGraphQLServer from './createGraphQLServer';
-import { createContextResolver, setCurrentContextResolver, getCurrentContextResolver } from './context';
+import createGraphQLServer from './createGraphQLServer.js';
+import {
+  createContextResolver,
+  setCurrentContextResolver,
+  getCurrentContextResolver,
+} from './context.js';
 
-export * from './context';
-export * as acl from './acl';
-export * as errors from './errors';
-export * as express from './express';
-export { hashPassword } from './hashPassword';
-export * as roles from './roles';
+export * from './context.js';
+export * as acl from './acl.js';
+export * as errors from './errors.js';
+export * as express from './express/index.js';
+export { hashPassword } from './hashPassword.js';
+export * as roles from './roles/index.js';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
 export const loadJSON = (filename) => {

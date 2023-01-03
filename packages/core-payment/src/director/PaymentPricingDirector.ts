@@ -4,9 +4,9 @@ import {
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
   PaymentPricingContext,
-} from '@unchainedshop/types/payments.pricing';
+} from '@unchainedshop/types/payments.pricing.js';
 import { BasePricingDirector } from '@unchainedshop/utils';
-import { PaymentPricingSheet } from './PaymentPricingSheet';
+import { PaymentPricingSheet } from './PaymentPricingSheet.js';
 
 const baseDirector = BasePricingDirector<
   PaymentPricingContext,

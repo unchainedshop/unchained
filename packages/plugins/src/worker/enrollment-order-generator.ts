@@ -1,14 +1,14 @@
-import { Enrollment } from '@unchainedshop/types/enrollments';
-import { OrderPosition } from '@unchainedshop/types/orders.positions';
-import { Product } from '@unchainedshop/types/products';
-import { IWorkerAdapter } from '@unchainedshop/types/worker';
+import { Enrollment } from '@unchainedshop/types/enrollments.js';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { Product } from '@unchainedshop/types/products.js';
+import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import {
   EnrollmentDirector,
   enrollmentsSettings,
   EnrollmentStatus,
 } from '@unchainedshop/core-enrollments';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/types/core';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 const generateOrder = async (
   enrollment: Enrollment,

@@ -1,7 +1,7 @@
-import { IDeliveryAdapter, IDeliveryDirector } from '@unchainedshop/types/delivery';
+import { IDeliveryAdapter, IDeliveryDirector } from '@unchainedshop/types/delivery.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
-import { DeliveryError } from './DeliveryError';
+import { DeliveryError } from './DeliveryError.js';
 
 const baseDirector = BaseDirector<IDeliveryAdapter>('DeliveryDirector');
 

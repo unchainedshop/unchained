@@ -1,4 +1,4 @@
-import { Filter, _ID } from '@unchainedshop/types/common';
+import { Filter, _ID } from '@unchainedshop/types/common.js';
 
 export const generateDbFilterById = <T extends { _id?: _ID }>(
   id: unknown,

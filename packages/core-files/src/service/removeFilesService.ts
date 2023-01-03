@@ -1,6 +1,6 @@
-import { Query } from '@unchainedshop/types/common';
-import { RemoveFilesService } from '@unchainedshop/types/files';
-import { getFileAdapter } from '../utils/getFileAdapter';
+import { Query } from '@unchainedshop/types/common.js';
+import { RemoveFilesService } from '@unchainedshop/types/files.js';
+import { getFileAdapter } from '../utils/getFileAdapter.js';
 
 export const removeFilesService: RemoveFilesService = async ({ fileIds }, unchainedAPI) => {
   const {

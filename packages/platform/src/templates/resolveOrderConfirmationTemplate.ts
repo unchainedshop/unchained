@@ -1,7 +1,7 @@
-import { TemplateResolver } from '@unchainedshop/types/messaging';
-import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing';
-import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData';
-import { getOrderPositionsData } from './utils/getOrderPositionsData';
+import { TemplateResolver } from '@unchainedshop/types/messaging.js';
+import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
+import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData.js';
+import { getOrderPositionsData } from './utils/getOrderPositionsData.js';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 

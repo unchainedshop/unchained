@@ -1,10 +1,10 @@
-export { configureProductsModule } from './module/configureProductsModule';
+export { configureProductsModule } from './module/configureProductsModule.js';
 
-export { productServices } from './service/productServices';
-export { productsSettings } from './products-settings';
+export { productServices } from './service/productServices.js';
+export { productsSettings } from './products-settings.js';
 
-export { ProductPricingAdapter } from './director/ProductPricingAdapter';
-export { ProductPricingDirector } from './director/ProductPricingDirector';
+export { ProductPricingAdapter } from './director/ProductPricingAdapter.js';
+export { ProductPricingDirector } from './director/ProductPricingDirector.js';
 
-export { ProductStatus } from './db/ProductStatus';
-export { ProductTypes } from './db/ProductsSchema';
+export { ProductStatus } from './db/ProductStatus.js';
+export { ProductTypes } from './db/ProductsSchema.js';

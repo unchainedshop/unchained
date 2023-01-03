@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
+import { Context, Root } from '@unchainedshop/types/api.js';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
-import { UserWeb3AddressNotFoundError, UserWeb3AddressSignatureError } from '../../../errors';
+import { UserWeb3AddressNotFoundError, UserWeb3AddressSignatureError } from '../../../errors.js';
 
 export default async function verifyWeb3Address(
   root: Root,

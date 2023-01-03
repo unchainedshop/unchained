@@ -1,4 +1,4 @@
-import { MigrateOrderCartsService } from '@unchainedshop/types/orders';
+import { MigrateOrderCartsService } from '@unchainedshop/types/orders.js';
 
 export const migrateOrderCartsService: MigrateOrderCartsService = async (
   { fromUser, toUser, shouldMerge, countryContext },

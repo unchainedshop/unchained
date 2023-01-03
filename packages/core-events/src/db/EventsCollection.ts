@@ -1,5 +1,5 @@
-import { Db } from '@unchainedshop/types/common';
-import { Event } from '@unchainedshop/types/events';
+import { Db } from '@unchainedshop/types/common.js';
+import { Event } from '@unchainedshop/types/events.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 const TWO_DAYS_SEC = 172800;

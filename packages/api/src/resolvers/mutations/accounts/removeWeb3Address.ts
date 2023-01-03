@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { UserWeb3AddressNotFoundError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { UserWeb3AddressNotFoundError } from '../../../errors.js';
 
 export default async function removeWeb3Address(
   root: Root,

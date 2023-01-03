@@ -1,11 +1,11 @@
-import { Configuration, FindOptions, TimestampFields, _ID } from './common';
-import { UnchainedCore } from './core';
-import { Order } from './orders';
-import { OrderDelivery } from './orders.deliveries';
-import { OrderDiscount } from './orders.discounts';
-import { OrderPrice, OrderPricingDiscount } from './orders.pricing';
-import { Product } from './products';
-import { IProductPricingSheet, ProductPricingCalculation } from './products.pricing';
+import { Configuration, FindOptions, TimestampFields, _ID } from './common.js';
+import { UnchainedCore } from './core.js';
+import { Order } from './orders.js';
+import { OrderDelivery } from './orders.deliveries.js';
+import { OrderDiscount } from './orders.discounts.js';
+import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
+import { Product } from './products.js';
+import { IProductPricingSheet, ProductPricingCalculation } from './products.pricing.js';
 
 export type OrderPosition = {
   _id?: _ID;

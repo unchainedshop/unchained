@@ -1,5 +1,5 @@
 import { Filter } from 'mongodb';
-import { SortOption } from './api';
+import { SortOption } from './api.js';
 import {
   Address,
   Contact,
@@ -10,11 +10,11 @@ import {
   Update,
   UpdateOptions,
   _ID,
-} from './common';
-import { UnchainedCore } from './core';
-import { Country } from './countries';
-import { File } from './files';
-import { Language } from './languages';
+} from './common.js';
+import { UnchainedCore } from './core.js';
+import { Country } from './countries.js';
+import { File } from './files.js';
+import { Language } from './languages.js';
 
 export interface UserProfile {
   displayName?: string;

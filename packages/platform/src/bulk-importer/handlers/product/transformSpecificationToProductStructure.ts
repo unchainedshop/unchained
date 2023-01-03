@@ -1,4 +1,4 @@
-import convertTagsToLowerCase from '../utils/convertTagsToLowerCase';
+import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 
 export default (specification) => {
   const {

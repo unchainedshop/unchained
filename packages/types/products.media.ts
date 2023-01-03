@@ -1,6 +1,6 @@
-import { Context } from './api';
-import { FindOptions, TimestampFields, _ID } from './common';
-import { File } from './files';
+import { Context } from './api.js';
+import { FindOptions, TimestampFields, _ID } from './common.js';
+import { File } from './files.js';
 
 export type ProductMedia = {
   _id?: _ID;

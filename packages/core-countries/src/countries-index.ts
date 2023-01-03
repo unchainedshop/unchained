@@ -1,3 +1,3 @@
-export { configureCountriesModule } from './module/configureCountriesModule';
+export { configureCountriesModule } from './module/configureCountriesModule.js';
 
-export { countryServices } from './service/countryServices';
+export { countryServices } from './service/countryServices.js';

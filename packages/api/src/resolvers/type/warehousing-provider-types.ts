@@ -1,4 +1,4 @@
-import { WarehousingProviderHelperTypes } from '@unchainedshop/types/warehousing';
+import { WarehousingProviderHelperTypes } from '@unchainedshop/types/warehousing.js';
 
 export const WarehousingProvider: WarehousingProviderHelperTypes = {
   interface(obj, _, context) {

@@ -1,11 +1,11 @@
-export { configurePaymentModule } from './module/configurePaymentModule';
+export { configurePaymentModule } from './module/configurePaymentModule.js';
 
-export { paymentSettings } from './payment-settings';
+export { paymentSettings } from './payment-settings.js';
 
-export { PaymentDirector } from './director/PaymentDirector';
-export { PaymentAdapter } from './director/PaymentAdapter';
-export { PaymentError } from './director/PaymentError';
-export { PaymentProviderType } from './director/PaymentProviderType';
+export { PaymentDirector } from './director/PaymentDirector.js';
+export { PaymentAdapter } from './director/PaymentAdapter.js';
+export { PaymentError } from './director/PaymentError.js';
+export { PaymentProviderType } from './director/PaymentProviderType.js';
 
-export { PaymentPricingAdapter } from './director/PaymentPricingAdapter';
-export { PaymentPricingDirector } from './director/PaymentPricingDirector';
+export { PaymentPricingAdapter } from './director/PaymentPricingAdapter.js';
+export { PaymentPricingDirector } from './director/PaymentPricingDirector.js';

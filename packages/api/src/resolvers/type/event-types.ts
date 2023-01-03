@@ -1,5 +1,5 @@
-import { Context } from '@unchainedshop/types/api';
-import { Event as EventType } from '@unchainedshop/types/events';
+import { Context } from '@unchainedshop/types/api.js';
+import { Event as EventType } from '@unchainedshop/types/events.js';
 
 export type HelperType<P, T> = (work: EventType, params: P, context: Context) => T;
 

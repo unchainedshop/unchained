@@ -1,6 +1,6 @@
-import { DeliveryProvider } from '@unchainedshop/types/delivery';
-import { Product } from '@unchainedshop/types/products';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing';
+import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { Product } from '@unchainedshop/types/products.js';
+import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
 import crypto from 'crypto';
 
 export const Stock = {

@@ -1,5 +1,5 @@
-import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations';
-import { Db } from '@unchainedshop/types/common';
+import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations.js';
+import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 export const ProductVariationsCollection = async (db: Db) => {

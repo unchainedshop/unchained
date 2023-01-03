@@ -1,3 +1,3 @@
-export { configureAccountsModule } from './module/configureAccountsModule';
+export { configureAccountsModule } from './module/configureAccountsModule.js';
 
-export { accountsSettings } from './accounts-settings';
+export { accountsSettings } from './accounts-settings.js';

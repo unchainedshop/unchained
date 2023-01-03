@@ -3,8 +3,8 @@ import {
   OrderPricingCalculation,
   OrderPricingRowCategory,
   IOrderPricingSheet,
-} from '@unchainedshop/types/orders.pricing';
-import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing';
+} from '@unchainedshop/types/orders.pricing.js';
+import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing.js';
 
 export const OrderPricingSheet = (
   params: PricingSheetParams<OrderPricingCalculation>,

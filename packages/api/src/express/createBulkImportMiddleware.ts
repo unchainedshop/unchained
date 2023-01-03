@@ -1,8 +1,8 @@
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedContextResolver } from '@unchainedshop/types/api';
+import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
 import fs from 'fs';
-import { checkAction } from '../acl';
-import { actions } from '../roles';
+import { checkAction } from '../acl.js';
+import { actions } from '../roles/index.js';
 
 const logger = createLogger('unchained:bulk-import');
 

@@ -1,6 +1,6 @@
-import { Tree } from "@unchainedshop/types/common";
-import { buildFindSelector } from "../src/module/configureAssortmentsModule";
-import { divideTreeByLevels, concatItemsByLevels, fillToSameLengthArray, fillUp } from "../src/utils/tree-zipper/zipTreeByDeepness";
+import { Tree } from "@unchainedshop/types/common.js";
+import { buildFindSelector } from "../lib/module/configureAssortmentsModule.js";
+import { divideTreeByLevels, concatItemsByLevels, fillToSameLengthArray, fillUp } from "../lib/utils/tree-zipper/zipTreeByDeepness.js";
 
 
 

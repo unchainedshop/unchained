@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { AssortmentLinkNotFoundError, InvalidIdError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import { AssortmentLinkNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function removeAssortmentLink(
   root: Root,

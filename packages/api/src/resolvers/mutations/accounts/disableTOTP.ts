@@ -1,6 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api';
-import { TwoFactorCodeDidNotMatchError, TwoFactorNotSetError, UserNotFoundError } from '../../../errors';
+import { Context, Root } from '@unchainedshop/types/api.js';
+import {
+  TwoFactorCodeDidNotMatchError,
+  TwoFactorNotSetError,
+  UserNotFoundError,
+} from '../../../errors.js';
 
 export default async function disableTOTP(
   root: Root,

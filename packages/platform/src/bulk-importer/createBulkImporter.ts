@@ -1,9 +1,9 @@
 import mongodb from 'mongodb';
-import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/types/platform';
-import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core';
-import * as AssortmentHandlers from './handlers/assortment';
-import * as FilterHandlers from './handlers/filter';
-import * as ProductHandlers from './handlers/product';
+import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/types/platform.js';
+import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core.js';
+import * as AssortmentHandlers from './handlers/assortment/index.js';
+import * as FilterHandlers from './handlers/filter/index.js';
+import * as ProductHandlers from './handlers/product/index.js';
 
 let bulkOperationHandlers: Record<string, BulkImportHandler> = {};
 

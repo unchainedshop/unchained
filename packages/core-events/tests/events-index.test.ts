@@ -1,4 +1,4 @@
-import { buildFindSelector } from "../src/module/configureEventsModule";
+import { buildFindSelector } from "../lib/module/configureEventsModule.js";
 
 describe('Event', () => {
   describe('buildFindSelector', () => {

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api';
-import { InvalidIdError } from '../../../errors';
+import { Root, Context } from '@unchainedshop/types/api.js';
+import { InvalidIdError } from '../../../errors.js';
 
 export default async function filter(
   root: Root,

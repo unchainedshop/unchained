@@ -1,11 +1,11 @@
 /// <reference lib="dom" />
-import { Context } from '@unchainedshop/types/api';
-import { IPaymentAdapter } from '@unchainedshop/types/payments';
+import { Context } from '@unchainedshop/types/api.js';
+import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core';
-import { AppleTransactionsModule } from './module/configureAppleTransactionsModule';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { AppleTransactionsModule } from './module/configureAppleTransactionsModule.js';
 
 const logger = createLogger('unchained:core-payment:iap');
 

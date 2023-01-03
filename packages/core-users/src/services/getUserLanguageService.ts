@@ -1,4 +1,4 @@
-import { GetUserLanguageService } from '@unchainedshop/types/user';
+import { GetUserLanguageService } from '@unchainedshop/types/user.js';
 
 export const getUserLanguageService: GetUserLanguageService = async (user, { modules }) => {
   const userLocale = modules.users.userLocale(user);

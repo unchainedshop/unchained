@@ -1,6 +1,6 @@
-import { CheckPermissionArgs } from '@unchainedshop/types/roles';
+import { CheckPermissionArgs } from '@unchainedshop/types/roles.js';
 import { Roles } from '@unchainedshop/roles';
-import { NoPermissionError, PermissionSystemError } from './errors';
+import { NoPermissionError, PermissionSystemError } from './errors.js';
 
 const defaultOptions = {
   showKey: true,

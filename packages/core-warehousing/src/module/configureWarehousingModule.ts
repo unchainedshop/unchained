@@ -1,17 +1,17 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import {
   WarehousingContext,
   WarehousingModule,
   WarehousingProvider,
   WarehousingProviderQuery,
   WarehousingProviderType,
-} from '@unchainedshop/types/warehousing';
+} from '@unchainedshop/types/warehousing.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection';
-import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema';
-import { WarehousingDirector } from '../director/WarehousingDirector';
-import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection';
+import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection.js';
+import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema.js';
+import { WarehousingDirector } from '../director/WarehousingDirector.js';
+import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',

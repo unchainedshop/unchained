@@ -1,5 +1,5 @@
-import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries';
-import { Modules } from '@unchainedshop/types/modules';
+import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries.js';
+import { Modules } from '@unchainedshop/types/modules.js';
 import LRU from 'lru-cache';
 
 const { NODE_ENV } = process.env;

@@ -1,5 +1,5 @@
-import { Collection, Filter } from '@unchainedshop/types/common';
-import { FiltersModule, FilterText } from '@unchainedshop/types/filters';
+import { Collection, Filter } from '@unchainedshop/types/common.js';
+import { FiltersModule, FilterText } from '@unchainedshop/types/filters.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findLocalizedText, generateDbObjectId } from '@unchainedshop/utils';

@@ -1,6 +1,6 @@
-import { Context } from './api';
-import { TimestampFields, _ID } from './common';
-import { Product, ProductAssignment, ProductConfiguration } from './products';
+import { Context } from './api.js';
+import { TimestampFields, _ID } from './common.js';
+import { Product, ProductAssignment, ProductConfiguration } from './products.js';
 
 export enum ProductVariationType {
   COLOR = 'COLOR',

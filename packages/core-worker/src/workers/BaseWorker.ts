@@ -1,8 +1,8 @@
-import { IWorker, Work } from '@unchainedshop/types/worker';
+import { IWorker, Work } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';
-import { WorkerDirector } from '../director/WorkerDirector';
+import { WorkerDirector } from '../director/WorkerDirector.js';
 
 const { UNCHAINED_WORKER_ID } = process.env;
 

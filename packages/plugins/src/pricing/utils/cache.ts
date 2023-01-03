@@ -1,7 +1,9 @@
-import 'abort-controller/polyfill';
+import 'abort-controller/polyfill.js';
 import LRUCache from 'lru-cache';
 
 class Cache {
+  cache;
+
   constructor(ttlSeconds = 60) {
     this.cache = new LRUCache({
       max: 500,

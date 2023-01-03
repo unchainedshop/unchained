@@ -1,4 +1,4 @@
-import { Db } from '@unchainedshop/types/common';
+import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 import {
   Assortment,
@@ -7,7 +7,7 @@ import {
   AssortmentLink,
   AssortmentFilter,
   AssortmentProductIdCacheRecord,
-} from '@unchainedshop/types/assortments';
+} from '@unchainedshop/types/assortments.js';
 
 export const AssortmentsCollection = async (db: Db) => {
   const Assortments = db.collection<Assortment>('assortments');

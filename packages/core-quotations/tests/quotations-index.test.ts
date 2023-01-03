@@ -1,4 +1,4 @@
-import {buildFindSelector} from '../src/module/configureQuotationsModule'
+import {buildFindSelector} from "../lib/module/configureQuotationsModule.js"
 
 describe('Quotation', () => {
   describe("buildFindSelector", () => {
