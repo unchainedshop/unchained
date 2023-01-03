@@ -25,12 +25,16 @@ export const BaseDirector = <AdapterType extends IBaseAdapter>(
 
     registerAdapter: (Adapter) => {
       log(
-        `${directorName} -> Registered ${keyField !== 'key' ? `${Adapter[keyField]} ` : ' '} ${
+        `${directorName} -> Registered ${keyField !== 'key' ? `${Adapter[keyField]}` : ''} ${
           Adapter.key
         } ${Adapter.version} (${Adapter.label})`,
       );
-
       Adapters.set(Adapter[keyField], Adapter);
+    },
+
+    unregisterAdapter: (key) => {
+      log(`${directorName} -> Unregistered ${key}`);
+      return Adapters.delete(key);
     },
   };
 };
