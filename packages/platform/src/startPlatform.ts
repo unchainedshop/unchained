@@ -43,6 +43,7 @@ export const startPlatform = async ({
   typeDefs = [],
   resolvers = [],
   options = {},
+  adminUiConfig = {},
   rolesOptions = {},
   bulkImporter: bulkImporterOptions,
   schema,
@@ -109,6 +110,7 @@ export const startPlatform = async ({
     playground,
     tracing,
     cacheControl,
+    adminUiConfig,
   });
 
   // Setup work queues for scheduled work

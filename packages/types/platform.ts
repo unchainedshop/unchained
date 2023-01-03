@@ -1,4 +1,5 @@
 import { BulkOperationBase } from 'mongodb';
+import { AdminUiConfig } from './api.js';
 import { UnchainedCore, UnchainedCoreOptions } from './core.js';
 import { WorkerSchedule } from './worker.js';
 
@@ -63,4 +64,5 @@ export type PlatformOptions = {
   playground?: boolean;
   tracing?: boolean;
   cacheControl?: any;
+  adminUiConfig?: AdminUiConfig;
 };
