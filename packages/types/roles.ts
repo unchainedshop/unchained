@@ -38,6 +38,6 @@ export interface RolesInterface {
 }
 
 export interface IRoleOptionConfig {
-  additionalRoles?: Record<string, (role: RolesInterface) => void>;
+  additionalRoles?: Record<string, (role: RolesInterface, actions: Record<string, string>) => void>;
   additionalActions?: Array<string>;
 }
