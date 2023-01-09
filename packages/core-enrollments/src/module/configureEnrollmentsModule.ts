@@ -438,7 +438,7 @@ export const configureEnrollmentsModule = async ({
 
     updateBillingAddress: updateEnrollmentField('billingAddress'),
     updateContact: updateEnrollmentField('contact'),
-    updateContext: updateEnrollmentField('context'),
+    updateContext: updateEnrollmentField('meta'),
     updateDelivery: updateEnrollmentField('delivery'),
     updatePayment: updateEnrollmentField('payment'),
 
