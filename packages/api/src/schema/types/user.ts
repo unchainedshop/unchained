@@ -108,11 +108,28 @@ export default [
       roles: [String!]
       tags: [LowerCaseString!]
       cart(orderNumber: String): Order
-      orders(includeCarts: Boolean = false, sort: [SortOptionInput!], queryString: String): [Order!]!
-      quotations(sort: [SortOptionInput!], queryString: String): [Quotation!]!
+      orders(
+        limit: Int
+        offset: Int
+        queryString: String
+        sort: [SortOptionInput!]
+        includeCarts: Boolean = false
+      ): [Order!]!
+      quotations(
+        sort: [SortOptionInput!]
+        queryString: String
+        limit: Int = 10
+        offset: Int = 0
+      ): [Quotation!]!
       bookmarks: [Bookmark!]!
       paymentCredentials: [PaymentCredentials!]!
-      enrollments(sort: [SortOptionInput!], queryString: String): [Enrollment!]!
+      enrollments(
+        limit: Int
+        offset: Int
+        queryString: String
+        status: [String!]
+        sort: [SortOptionInput!]
+      ): [Enrollment!]!
       allowedActions: [RoleAction!]!
       tokens: [Token!]!
     }
