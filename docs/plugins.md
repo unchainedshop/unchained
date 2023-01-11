@@ -56,8 +56,6 @@ actions: functions that returns object with the following properties
 		- isOverDue: Boolean sets the logic when a subscription end time is due
 		- isValidForActivation: Boolean sets the logic when a subscription can be activated
 		- nextPeriod: return a timestamp value denoting the next subscription period
-		- shouldTriggerAction: Not implemented at the  moment but is used to trigger a different action, like and a work to a work queue based on certain logic
- logs(message, options)
 
 
 enrollment Errors enum EnrollmentError {

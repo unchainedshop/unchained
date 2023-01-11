@@ -67,10 +67,6 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
           isTrial: false,
         };
       },
-
-      shouldTriggerAction: async () => {
-        throw new Error(`Not implemented on EnrollmentAdapter`);
-      },
     };
   },
 

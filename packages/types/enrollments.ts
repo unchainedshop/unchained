@@ -189,7 +189,6 @@ export interface EnrollmentAdapterActions {
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
   nextPeriod: () => Promise<EnrollmentPeriod>;
-  shouldTriggerAction: (params: { period: EnrollmentPeriod; action?: any }) => Promise<boolean>;
 }
 
 export type IEnrollmentAdapter = IBaseAdapter & {
