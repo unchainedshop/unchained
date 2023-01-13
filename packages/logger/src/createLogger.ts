@@ -57,7 +57,7 @@ export const createLogger = (moduleName: string, moreTransports: Array<Transport
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   return createWinstonLogger({
     format: format.combine(
-      format.errors({ stack: true }),
+      format.errors({ stack: process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test' }),
       format.timestamp(),
       format.label({ label: moduleName }),
     ),

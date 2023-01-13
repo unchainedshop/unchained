@@ -16,9 +16,7 @@ const logGraphQLServerError = (error: GraphQLFormattedError) => {
     } = error;
 
     const nativeError = new Error(message);
-    if (stacktrace && process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
-      nativeError.stack = (stacktrace as string[]).join('\n');
-    }
+    nativeError.stack = (stacktrace as string[]).join('\n');
     nativeError.name = parameters.code as string;
     log(nativeError, {
       level: LogLevel.Error,
