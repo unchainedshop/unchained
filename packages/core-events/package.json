@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-events",
-  "version": "1.2.52",
+  "version": "1.2.53",
   "main": "lib/events-index.js",
   "exports": {
     ".": "./lib/events-index.js",

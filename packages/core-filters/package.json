@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-filters",
-  "version": "1.2.52",
+  "version": "1.2.53",
   "main": "lib/filters-index.js",
   "exports": {
     ".": "./lib/filters-index.js",

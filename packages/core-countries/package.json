@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-countries",
-  "version": "1.2.52",
+  "version": "1.2.53",
   "main": "lib/countries-index.js",
   "exports": {
     ".": "./lib/countries-index.js",
