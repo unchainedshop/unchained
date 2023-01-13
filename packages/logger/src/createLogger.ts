@@ -8,7 +8,7 @@ const { stringify } = require('safe-stable-stringify');
 
 const { DEBUG = '', LOG_LEVEL = LogLevel.Info, UNCHAINED_LOG_FORMAT = 'unchained' } = process.env;
 
-const { combine, label, timestamp, colorize, printf, json } = format;
+const { combine, colorize, json } = format;
 
 const debugStringContainsModule = (debugString: string, moduleName: string) => {
   if (!debugString) return false;
@@ -28,15 +28,21 @@ const debugStringContainsModule = (debugString: string, moduleName: string) => {
   return loggingMatched || false;
 };
 
-const myFormat = printf(({ level, message, label: _label, timestamp: _timestamp, ...rest }) => { //eslint-disable-line
+const myFormat = format.printf(({ level, message, label, timestamp, stack, ...rest }) => {
   const otherPropsString: string = stringify(rest);
-  return `[${_label}] ${level}: ${message} ${otherPropsString}`;
+  return [
+    `${timestamp} [${label}] ${level}:`,
+    `${message}`,
+    `${otherPropsString}`,
+    stack ? `\n${stack}` : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
 });
 
 const UnchainedLogFormats = {
-  unchained: (moduleName: string) =>
-    combine(timestamp(), label({ label: moduleName }), colorize(), myFormat),
-  json,
+  unchained: combine(colorize(), myFormat),
+  json: json(),
 };
 
 if (!UnchainedLogFormats[UNCHAINED_LOG_FORMAT.toLowerCase()]) {
@@ -50,9 +56,14 @@ export { transports, format };
 export const createLogger = (moduleName: string, moreTransports: Array<TransportStream> = []) => {
   const loggingMatched = debugStringContainsModule(DEBUG, moduleName);
   return createWinstonLogger({
+    format: format.combine(
+      format.errors({ stack: true }),
+      format.timestamp(),
+      format.label({ label: moduleName }),
+    ),
     transports: [
       new transports.Console({
-        format: UnchainedLogFormats[UNCHAINED_LOG_FORMAT](moduleName),
+        format: UnchainedLogFormats[UNCHAINED_LOG_FORMAT],
         stderrLevels: [LogLevel.Error],
         consoleWarnLevels: [LogLevel.Warning],
         level: loggingMatched ? LogLevel.Debug : LOG_LEVEL,
