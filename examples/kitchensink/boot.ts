@@ -6,6 +6,7 @@ import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { startPlatform, connectPlatformToExpress4 } from '@unchainedshop/platform';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
+import { log } from '@unchainedshop/logger';
 import serveStatic from 'serve-static';
 
 import seed from './seed.js';
@@ -67,7 +68,7 @@ const start = async () => {
   app.use(serveStatic('static', { index: ['index.html'] }));
 
   await httpServer.listen({ port: process.env.PORT || 3000 });
-  console.log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
+  log(`🚀 Server ready at http://localhost:${process.env.PORT || 3000}`);
 };
 
 start();

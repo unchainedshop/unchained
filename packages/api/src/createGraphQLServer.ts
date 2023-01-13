@@ -14,18 +14,15 @@ const logGraphQLServerError = (error: GraphQLFormattedError) => {
       extensions: { stacktrace, ...parameters },
       ...rest
     } = error;
-    log(`${message} ${parameters && parameters.code}`, {
+
+    const nativeError = new Error(message);
+    nativeError.stack = (stacktrace as string[]).join('\n');
+    nativeError.name = parameters.code as string;
+    log(nativeError, {
       level: LogLevel.Error,
       ...parameters,
       ...rest,
     });
-    if (stacktrace && process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
-      const nativeError = new Error(message);
-      nativeError.stack = (stacktrace as string[]).join('\n');
-      nativeError.name = parameters.code as string;
-      // eslint-disable-next-line
-      console.error(nativeError);
-    }
   } catch (e) {} // eslint-disable-line
 };
 
