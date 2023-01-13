@@ -2,7 +2,7 @@ import { Context, SortOption } from '@unchainedshop/types/api.js';
 import { Bookmark } from '@unchainedshop/types/bookmarks.js';
 import { Contact } from '@unchainedshop/types/common.js';
 import { Country } from '@unchainedshop/types/countries.js';
-import { Enrollment } from '@unchainedshop/types/enrollments.js';
+import { Enrollment, EnrollmentStatus } from '@unchainedshop/types/enrollments.js';
 import { File } from '@unchainedshop/types/files.js';
 import { Language } from '@unchainedshop/types/languages.js';
 import { Order } from '@unchainedshop/types/orders.js';
@@ -33,7 +33,16 @@ export interface UserHelperTypes {
   cart: HelperType<{ orderNumber?: string }, Order>;
   country: HelperType<{ localeContext: Locale }, Country>;
   emails: HelperType<any, Array<string>>;
-  enrollments: HelperType<{ sort?: Array<SortOption>; queryString?: string }, Array<Enrollment>>;
+  enrollments: HelperType<
+    {
+      sort?: Array<SortOption>;
+      queryString?: string;
+      limit?: number;
+      offset?: number;
+      status?: Array<EnrollmentStatus>;
+    },
+    Array<Enrollment>
+  >;
   isGuest: HelperType<any, boolean>;
   isInitialPassword: HelperType<any, boolean>;
   isTwoFactorEnabled: HelperType<any, boolean>;
@@ -45,7 +54,15 @@ export interface UserHelperTypes {
   // locale: HelperType<{ localeContext: Locale }, Locale>;
   name: HelperType<any, string>;
   orders: HelperType<
-    { includeCarts: boolean; sort?: Array<SortOption>; queryString?: string },
+    {
+      includeCarts: boolean;
+      sort?: Array<SortOption>;
+      queryString?: string;
+      status?: string;
+      userId?: string;
+      limit?: number;
+      offset?: number;
+    },
     Array<Order>
   >;
   paymentCredentials: HelperType<any, Array<PaymentCredentials>>;
@@ -54,7 +71,10 @@ export interface UserHelperTypes {
   web3Addresses: HelperType<any, Array<Web3Address>>;
   primaryEmail: HelperType<any, Email>;
   profile: HelperType<any, UserProfile>;
-  quotations: HelperType<{ sort?: Array<SortOption>; queryString?: string }, Array<Quotation>>;
+  quotations: HelperType<
+    { sort?: Array<SortOption>; queryString?: string; userId?: string; limit?: number; offset?: number },
+    Array<Quotation>
+  >;
   roles: HelperType<any, Array<string>>;
   tags: HelperType<any, Array<string>>;
   username: HelperType<any, string>;
@@ -147,6 +167,7 @@ export const User: UserHelperTypes = {
   enrollments: async (user, params, context) => {
     await checkAction(context, viewUserEnrollments, [user, params]);
     return context.modules.enrollments.findEnrollments({
+      ...(params || {}),
       userId: user._id,
     });
   },
@@ -166,10 +187,8 @@ export const User: UserHelperTypes = {
   orders: async (user, params, context) => {
     await checkAction(context, viewUserOrders, [user, params]);
     return context.modules.orders.findOrders({
+      ...(params || {}),
       userId: user._id,
-      includeCarts: params.includeCarts,
-      sort: params.sort,
-      queryString: params.queryString,
     });
   },
 
@@ -198,9 +217,8 @@ export const User: UserHelperTypes = {
   quotations: async (user, params, context) => {
     await checkAction(context, viewUserQuotations, [user, params]);
     return context.modules.quotations.findQuotations({
+      ...(params || {}),
       userId: user._id,
-      sort: params.sort,
-      queryString: params.queryString,
     });
   },
 };
