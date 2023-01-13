@@ -34,7 +34,6 @@
     "@babel/runtime": "^7.20.7",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@unchainedshop/api": "^1.2.53",
-    "@unchainedshop/client-oauth2": "^4.3.3",
     "@unchainedshop/core-delivery": "^1.2.53",
     "@unchainedshop/core-payment": "^1.2.53",
     "@unchainedshop/mongodb": "^1.2.53",
