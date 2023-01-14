@@ -4,6 +4,7 @@ import { FileServices } from './files.js';
 import { OrderServices } from './orders.js';
 import { ProductServices } from './products.js';
 import { UserServices } from './user.js';
+import { MessagingServices } from './messaging.js';
 
 export interface Services {
   bookmarks: BookmarkServices;
@@ -12,4 +13,5 @@ export interface Services {
   orders: OrderServices;
   products: ProductServices;
   users: UserServices;
+  messaging: MessagingServices;
 }

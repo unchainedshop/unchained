@@ -10,7 +10,7 @@ import { configureEventsModule } from '@unchainedshop/core-events';
 import { configureFilesModule, fileServices } from '@unchainedshop/core-files';
 import { configureFiltersModule } from '@unchainedshop/core-filters';
 import { configureLanguagesModule } from '@unchainedshop/core-languages';
-import { configureMessagingModule } from '@unchainedshop/core-messaging';
+import { configureMessagingModule, messagingServices } from '@unchainedshop/core-messaging';
 import { configureOrdersModule, orderServices } from '@unchainedshop/core-orders';
 import { configurePaymentModule } from '@unchainedshop/core-payment';
 import { configureProductsModule, productServices } from '@unchainedshop/core-products';
@@ -158,6 +158,7 @@ export const initCore = async ({
       orders: orderServices,
       products: productServices,
       users: userServices,
+      messaging: messagingServices,
       ...services,
     },
     bulkImporter,
