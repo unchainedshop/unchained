@@ -33,7 +33,8 @@
   "dependencies": {
     "@unchainedshop/logger": "^2.0.0-rc.4",
     "mjml": "^4.13.0",
-    "mustache": "^4.2.0"
+    "mustache": "^4.2.0",
+    "web-push": "^3.5.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
