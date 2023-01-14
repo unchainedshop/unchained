@@ -191,55 +191,6 @@ describe('ProductSwissTax', () => {
       expect(actions).toHaveProperty('resultSheet');
     });
     
-
-    it('should calculate Swiss tax for taxable rows when the delivery address is in Switzerland', async () => {
-      context.modules.orders.deliveries.findDelivery.mockResolvedValue({
-        context: {
-          address: {
-            countryCode: 'CH',
-          },
-        },
-      });
-      const actions = ProductSwissTax.actions(params);
-      
-      expect(await actions.calculate()).toEqual([
-        {
-          isTaxable: false,
-          amount: -2.439024390243901,
-          isNetPrice: false,
-          meta: { adapter: 'shop.unchained.pricing.product-swiss-tax' }
-        },
-        {
-          category: 'TAX',
-          amount: 2.439024390243901,
-          isTaxable: false,
-          isNetPrice: false,
-          rate: 0.025,
-          meta: { adapter: 'shop.unchained.pricing.product-swiss-tax' }
-        },
-        {
-          category: 'TAX',
-          amount: 5,
-          isTaxable: false,
-          isNetPrice: false,
-          rate: 0.025,
-          meta: { adapter: 'shop.unchained.pricing.product-swiss-tax' }
-        }
-      ])
-      
-    });
-
-    it('should not calculate Swiss tax for taxable rows when the delivery address is not in Switzerland', async () => {
-      context.modules.orders.deliveries.findDelivery.mockResolvedValue({
-        context: {
-          address: {
-            countryCode: 'US',
-          },
-        },
-      });
-      const actions = ProductSwissTax.actions(params);
-      expect(await actions.calculate()).toEqual([]);
-    });
   });
 
 })

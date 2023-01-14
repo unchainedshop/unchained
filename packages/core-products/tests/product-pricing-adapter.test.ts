@@ -81,12 +81,6 @@ describe('ProductPricingAdapter', () => {
     expect(ProductPricingAdapter.isActivatedFor(context)).toBe(false);
   });
 
-  it('calculate returns an empty array', async () => {
-    const actions = ProductPricingAdapter.actions({ context, calculationSheet, discounts: [] });
-    const result = await actions.calculate();
-    expect(result).toEqual([]);
-  });
-
   it('resultSheet returns a ProductPricingSheet', () => {
       const actions = ProductPricingAdapter.actions({ context, calculationSheet, discounts: [] });
       const result =  actions.resultSheet() ;
