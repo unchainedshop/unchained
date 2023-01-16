@@ -47,7 +47,7 @@ export interface UnchainedHTTPServerContext {
   res: OutgoingMessage;
 }
 
-interface CustomAdminUiProperties {
+export interface CustomAdminUiProperties {
   entityName: string;
   inlineFragment: string;
 }

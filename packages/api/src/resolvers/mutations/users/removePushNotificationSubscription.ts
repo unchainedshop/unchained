@@ -6,7 +6,7 @@ const removePushNotificationSubscription = async (_, __, context: Context): Prom
   log(`mutation removePushNotificationSubscription ${userId}   ${userAgent}`);
 
   try {
-    const isEnabled = await modules.users.pushEnabledByUser({ userId });
+    const isEnabled = await modules.users.pushEnabledByUser({ userId, userAgent });
     if (isEnabled) throw new Error('Push Notification is not enabled by User');
 
     await modules.users.updateUser(

@@ -41,15 +41,3 @@ export type IMessagingDirector = {
   registerTemplate: (templateName: string, templateResolver: TemplateResolver) => void;
   getTemplate: (templateName: string) => TemplateResolver;
 };
-
-export type SaveSubscriptionObject = (
-  { subscription, userId, userAgent },
-  context: UnchainedCore,
-) => Promise<void>;
-
-export type PushEnabledByUserParams = ({ userId }, context: UnchainedCore) => Promise<boolean>;
-
-export type DeleteUserSubscriptionObjectParams = (
-  { userId, userAgent },
-  context: UnchainedCore,
-) => Promise<void>;

@@ -13,7 +13,7 @@ const savePushNotificationSubscription = async (
       { _id: userId },
       {
         $push: {
-          pushNotifications: {
+          pushSubscriptions: {
             userAgent,
             ...subscription,
           },

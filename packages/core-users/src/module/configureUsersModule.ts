@@ -244,9 +244,9 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-    pushEnabledByUser: async ({ userId }) => {
+    pushEnabledByUser: async ({ userId, userAgent }) => {
       const user = await Users.findOne(
-        { userId, pushSubscriptions: { $ne: null } },
+        { userId, pushSubscriptions: { userAgent } },
         { projection: { _id: 1 } },
       );
       return !!user;

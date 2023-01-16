@@ -157,6 +157,7 @@ import prepareUserAvatarUpload from './users/prepareUserAvatarUpload.js';
 import rejectOrder from './orders/rejectOrder.js';
 import removePushNotificationSubscription from './users/removePushNotificationSubscription.js';
 import savePushNotificationSubscription from './users/savePushNotificationSubscription.js';
+import pushNotificationEnabled from './users/pushNotificationEnabled.js';
 
 export default {
   logout,
@@ -164,6 +165,7 @@ export default {
   loginAsGuest,
   createWebAuthnCredentialCreationOptions,
   createWebAuthnCredentialRequestOptions,
+  pushNotificationEnabled: acl(actions.updateUser)(pushNotificationEnabled),
   savePushNotificationSubscription: acl(actions.updateUser)(savePushNotificationSubscription),
   removePushNotificationSubscription: acl(actions.updateUser)(removePushNotificationSubscription),
   addWebAuthnCredentials: acl(actions.updateUser)(addWebAuthnCredentials),

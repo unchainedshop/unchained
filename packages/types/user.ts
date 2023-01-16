@@ -53,7 +53,7 @@ export interface Web3Address {
   verified: boolean;
 }
 
-type PushSubscriptionObject = {
+export interface PushSubscriptionObject {
   userAgent: string;
   endpoint: string;
   expirationTime?: number;
@@ -61,7 +61,7 @@ type PushSubscriptionObject = {
     auth: string;
     p256dh: string;
   };
-};
+}
 
 export type User = {
   _id?: _ID;
@@ -105,7 +105,7 @@ export type UsersModule = {
     },
   ) => Promise<Array<User>>;
   userExists: (query: { userId: string }) => Promise<boolean>;
-  pushEnabledByUser: (query: { userId: string }) => Promise<boolean>;
+  pushEnabledByUser: (query: { userId: string; userAgent: string }) => Promise<boolean>;
 
   // Transformations
   primaryEmail: (user: User) => Email;
