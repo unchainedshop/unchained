@@ -1,6 +1,8 @@
 import {jest} from '@jest/globals'
 import { SwissTaxCategories, getTaxRate, isDeliveryAddressInSwitzerland, ProductSwissTax } from '../src/pricing/product-swiss-tax';
 
+
+describe("delivery-swiss-tax", () => {
 describe('SwissTaxCategories', () => {
   it('DEFAULT rate', () => {
     expect(SwissTaxCategories.DEFAULT.rate()).toBe(0.077);
@@ -138,52 +140,50 @@ describe('isDeliveryAddressInSwitzerland', () => {
 });
 
 
-describe('ProductSwissTax', () => {
-  describe('actions', () => {
-    let calculationSheet;
-    let params;
-    let context;
-    
+describe('Actions', () => {
 
-    beforeEach(() => {
-      calculationSheet = {
-        addTax: jest.fn(({amount}) => console.log('add tax called', amount)),
-        filterBy: jest.fn().mockReturnValue([
-          { isTaxable: true, amount: 100, isNetPrice: false },
-          { isTaxable: true, amount: 200, isNetPrice: true },
-        ]),
-      };
-      context = {
-        product: {
-          tags: ['swiss-tax-category:reduced']
-        },
-        order: {
-          deliveryId: 'delivery-1',
-        },
-        currency: 'CH',
-        quantity: 3,
-        modules: {
-          orders: {
-            deliveries: {
-              findDelivery: jest.fn().mockReturnValue({
-                context: {
-                  address: {
-                    countryCode: 'CH',
-                  },
+  let calculationSheet;
+  let params;
+  let context;
+  
+
+  beforeEach(() => {
+    calculationSheet = {
+      addTax: jest.fn(({amount}) => console.log('add tax called', amount)),
+      filterBy: jest.fn().mockReturnValue([
+        { isTaxable: true, amount: 100, isNetPrice: false },
+        { isTaxable: true, amount: 200, isNetPrice: true },
+      ]),
+    };
+    context = {
+      product: {
+        tags: ['swiss-tax-category:reduced']
+      },
+      order: {
+        deliveryId: 'delivery-1',
+      },
+      currency: 'CH',
+      quantity: 3,
+      modules: {
+        orders: {
+          deliveries: {
+            findDelivery: jest.fn().mockReturnValue({
+              context: {
+                address: {
+                  countryCode: 'CH',
                 },
-              }),
-            },
+              },
+            }),
           },
         },
-      };
-      params = {
-        context,
-        calculationSheet,
-      };
-    });
-
+      },
+    };
+    params = {
+      context,
+      calculationSheet,
+    };
+  });
     it('should return the correct pricing adapter actions', () => {
-
       const actions = ProductSwissTax.actions(params);
       expect(actions).toHaveProperty('calculate');
       expect(actions).toHaveProperty('getCalculation');
@@ -191,7 +191,5 @@ describe('ProductSwissTax', () => {
       expect(actions).toHaveProperty('resultSheet');
     });
     
-  });
-
+  })
 })
-

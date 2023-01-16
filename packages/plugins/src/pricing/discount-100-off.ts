@@ -1,7 +1,7 @@
 import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 import { OrderDiscountDirector, OrderDiscountAdapter } from '@unchainedshop/core-orders';
 
-const HundredOff: IDiscountAdapter = {
+export const HundredOff: IDiscountAdapter = {
   ...OrderDiscountAdapter,
 
   key: 'shop.unchained.discount.100-off',
