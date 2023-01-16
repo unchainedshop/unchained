@@ -1,6 +1,6 @@
 import { HalfPrice  } from '../src/pricing/discount-half-price';
 import {jest} from '@jest/globals'
-describe('HundredOff', () => {
+describe('HalfPrice', () => {
   it('isManualAdditionAllowed', async () => {
     expect(await HalfPrice.isManualAdditionAllowed()).toBeFalsy();
   });
