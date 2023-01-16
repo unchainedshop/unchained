@@ -2,7 +2,7 @@ import {jest} from '@jest/globals'
 import { SwissTaxCategories, getTaxRate, isDeliveryAddressInSwitzerland, ProductSwissTax } from '../src/pricing/product-swiss-tax';
 
 
-describe("delivery-swiss-tax", () => {
+describe("ProductSwissTax", () => {
 describe('SwissTaxCategories', () => {
   it('DEFAULT rate', () => {
     expect(SwissTaxCategories.DEFAULT.rate()).toBe(0.077);

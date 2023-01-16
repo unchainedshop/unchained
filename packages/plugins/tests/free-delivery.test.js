@@ -1,15 +1,15 @@
 import {  DeliveryFreePrice } from '../src/pricing/free-delivery';
 
 
-describe("free-delivery", () => {
-describe("isActive", () => {
+describe("DeliveryFreePrice", () => {
+
   it('should return true', () => {
     expect(DeliveryFreePrice.isActivatedFor()).toBeTruthy();
   
   });
-})
 
-describe('Instance', () => {
+
+
 
     it('should have the correct properties', () => {
       
@@ -25,5 +25,5 @@ describe('Instance', () => {
       
     });
     
-  })
+
 })

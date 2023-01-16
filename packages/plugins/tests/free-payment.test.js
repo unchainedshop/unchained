@@ -1,15 +1,13 @@
 import {  PaymentFreePrice } from '../src/pricing/free-payment';
 
 
-describe("free-payment", () => {
-describe("isActive", () => {
+describe("PaymentFreePrice", () => {
+
   it('should return true', () => {
     expect(PaymentFreePrice.isActivatedFor()).toBeTruthy();
   
   });
-})
 
-describe('Instance', () => {
     it('should have the correct properties', () => {
       
       const props = {
@@ -24,5 +22,4 @@ describe('Instance', () => {
       
     });
     
-  })
 })

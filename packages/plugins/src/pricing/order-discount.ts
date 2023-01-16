@@ -1,7 +1,7 @@
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
 import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
 
-const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
+export const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   if (total === 0 || !pricing) {
     return {
       ratio: 1,
@@ -22,14 +22,14 @@ const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   };
 };
 
-const resolveAmountAndTax = ({ ratio, taxDivisor }, amount) => {
+export const resolveAmountAndTax = ({ ratio, taxDivisor }, amount) => {
   const shareAmount = Number.isFinite(ratio) ? amount * ratio : 0;
   const shareTaxAmount =
     Number.isFinite(taxDivisor) && taxDivisor !== 0 ? shareAmount - shareAmount / taxDivisor : 0;
   return [shareAmount, shareTaxAmount];
 };
 
-const applyDiscountToMultipleShares = (shares, amount) => {
+export const applyDiscountToMultipleShares = (shares, amount) => {
   return shares.reduce(
     ([currentDiscountAmount, currentTaxAmount], share) => {
       const [shareAmount, shareTaxAmount] = resolveAmountAndTax(share, amount);
@@ -39,7 +39,7 @@ const applyDiscountToMultipleShares = (shares, amount) => {
   );
 };
 
-const calculateAmountToSplit = (configuration, amount) => {
+export const calculateAmountToSplit = (configuration, amount) => {
   const deductionAmount = configuration.rate ? amount * configuration.rate : configuration.fixedRate;
 
   const leftInDiscount = Math.max(0, deductionAmount - (configuration.alreadyDeductedForDiscount || 0));
