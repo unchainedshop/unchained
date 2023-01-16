@@ -60,6 +60,7 @@ import './worker/http-request.js';
 import './worker/heartbeat.js';
 import './worker/email.js';
 import './worker/sms.js';
+import './worker/push-notification.js';
 import './worker/update-ecb-rates.js';
 import './worker/update-coinbase-rates.js';
 import { configureExportToken } from './worker/export-token.js';

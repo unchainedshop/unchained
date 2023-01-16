@@ -73,6 +73,16 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
         }),
         options,
       );
+
+      return {
+        success: true,
+        result: {
+          title,
+          body,
+          url,
+        },
+        error: null,
+      };
     } catch (err) {
       return {
         success: false,

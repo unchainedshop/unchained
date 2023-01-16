@@ -155,6 +155,8 @@ import prepareProductMediaUpload from './products/prepareProductMediaUpload.js';
 import prepareAssortmentMediaUpload from './assortments/prepareAssortmentMediaUpload.js';
 import prepareUserAvatarUpload from './users/prepareUserAvatarUpload.js';
 import rejectOrder from './orders/rejectOrder.js';
+import removePushNotificationSubscription from './users/removePushNotificationSubscription.js';
+import savePushNotificationSubscription from './users/savePushNotificationSubscription.js';
 
 export default {
   logout,
@@ -162,6 +164,8 @@ export default {
   loginAsGuest,
   createWebAuthnCredentialCreationOptions,
   createWebAuthnCredentialRequestOptions,
+  savePushNotificationSubscription: acl(actions.updateUser)(savePushNotificationSubscription),
+  removePushNotificationSubscription: acl(actions.updateUser)(removePushNotificationSubscription),
   addWebAuthnCredentials: acl(actions.updateUser)(addWebAuthnCredentials),
   removeWebAuthnCredentials: acl(actions.updateUser)(removeWebAuthnCredentials),
   addWeb3Address: acl(actions.updateUser)(addWeb3Address),

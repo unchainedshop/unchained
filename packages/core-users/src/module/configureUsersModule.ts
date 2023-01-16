@@ -244,6 +244,13 @@ export const configureUsersModule = async ({
       });
       return user;
     },
+    pushEnabledByUser: async ({ userId }) => {
+      const user = await Users.findOne(
+        { userId, pushSubscriptions: { $ne: null } },
+        { projection: { _id: 1 } },
+      );
+      return !!user;
+    },
 
     updateProfile: async (userId, updatedData) => {
       const userFilter = generateDbFilterById(userId);

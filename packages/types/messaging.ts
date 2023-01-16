@@ -27,15 +27,6 @@ export type ArbitraryTemplateType = {
   input: any;
 };
 
-export type PushNotificationTemplateType = {
-  type: 'PUSH';
-  input: {
-    subscription: any;
-    title: string;
-    body: string;
-    url: string;
-  };
-};
 export type TemplateResolver = (
   params: { template: string; [x: string]: any },
   unchainedAPI: UnchainedCore,
@@ -51,27 +42,14 @@ export type IMessagingDirector = {
   getTemplate: (templateName: string) => TemplateResolver;
 };
 
-export type SaveSubscriptionObjectParams = (
+export type SaveSubscriptionObject = (
   { subscription, userId, userAgent },
   context: UnchainedCore,
 ) => Promise<void>;
 
-export type PushEnabledByUserParams = (
-  { subscription, userId, userAgent },
-  context: UnchainedCore,
-) => Promise<void>;
+export type PushEnabledByUserParams = ({ userId }, context: UnchainedCore) => Promise<boolean>;
 
 export type DeleteUserSubscriptionObjectParams = (
   { userId, userAgent },
   context: UnchainedCore,
 ) => Promise<void>;
-
-export interface PushNotificationServices {
-  saveUserSubscriptionObject: SaveSubscriptionObjectParams;
-  pushEnabledByUser: PushEnabledByUserParams;
-  deleteUserSubscriptionObject: DeleteUserSubscriptionObjectParams;
-}
-
-export interface MessagingServices {
-  pushNotification: PushNotificationServices;
-}

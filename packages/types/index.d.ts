@@ -50,7 +50,7 @@ import {
   FiltersSettingsOptions,
 } from './filters.js';
 import { LanguagesModule } from './languages.js';
-import { IMessagingDirector, MessagingModule, MessagingServices } from './messaging.js';
+import { IMessagingDirector, MessagingModule } from './messaging.js';
 import {
   OrderServices,
   OrdersModule,
@@ -316,7 +316,6 @@ declare module '@unchainedshop/core-messaging' {
   function configureMessagingModule(params: ModuleInput<Record<string, never>>): MessagingModule;
 
   const MessagingDirector: IMessagingDirector;
-  const messagingServices: MessagingServices;
 
   const messagingLogger: any;
 }

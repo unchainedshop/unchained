@@ -885,6 +885,9 @@ export default [
       Tokenize
       """
       exportToken(tokenId: ID!, quantity: Int! = 1, recipientWalletAddress: String!): Token!
+
+      savePushNotificationSubscription(subscription: JSON!): Boolean!
+      removePushNotificationSubscription: Boolean!
     }
   `,
 ];

@@ -83,7 +83,6 @@ export default [
       nonce: Int
       verified: Boolean!
     }
-
     type User {
       _id: ID!
       created: DateTime!
