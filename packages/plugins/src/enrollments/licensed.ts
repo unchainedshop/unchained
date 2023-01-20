@@ -1,7 +1,7 @@
 import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments.js';
 import { EnrollmentDirector, EnrollmentAdapter } from '@unchainedshop/core-enrollments';
 
-const rangeMatcher = (date = new Date()) => {
+export const rangeMatcher = (date = new Date()) => {
   const timestamp = date.getTime();
   return ({ start, end }) => {
     const startTimestamp = new Date(start).getTime();

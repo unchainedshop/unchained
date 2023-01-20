@@ -1,20 +1,18 @@
-import { PricingSheetParams } from '@unchainedshop/types/pricing';
-import { IProductPricingSheet, ProductPricingCalculation } from '@unchainedshop/types/products.pricing';
 import {ProductPricingSheet} from '../src/director/ProductPricingSheet'
 
-const TAX: ProductPricingCalculation = { category: 'TAX', amount: 50, isNetPrice: false, isTaxable: false };
-const TAX2: ProductPricingCalculation = { category: 'TAX', amount: 25, isNetPrice: false, isTaxable: false };
-const DISCOUNT: ProductPricingCalculation = { category: 'DISCOUNT', amount: 20, isNetPrice: false, isTaxable: false, discountId: 'for-all'  };
-const DISCOUNT2: ProductPricingCalculation = { category: 'DISCOUNT', amount: 20, isNetPrice: false, isTaxable: false, discountId: 'for-all'  };
-const DISCOUNT3: ProductPricingCalculation = { category: 'DISCOUNT', amount: 20, isNetPrice: false, isTaxable: false, discountId: 'special'  };
-const ITEM1: ProductPricingCalculation = { category: 'ITEM', amount: 200, isNetPrice: true, isTaxable: false };
-const ITEM2: ProductPricingCalculation = { category: 'ITEM', amount: 200, isNetPrice: true, isTaxable: false };
-const calculations: ProductPricingCalculation[] = [TAX, TAX2, DISCOUNT, DISCOUNT2, DISCOUNT3, ITEM1, ITEM2];
+const TAX = { category: 'TAX', amount: 50, isNetPrice: false, isTaxable: false };
+const TAX2 = { category: 'TAX', amount: 25, isNetPrice: false, isTaxable: false };
+const DISCOUNT = { category: 'DISCOUNT', amount: 20, isNetPrice: false, isTaxable: false, discountId: 'for-all'  };
+const DISCOUNT2 = { category: 'DISCOUNT', amount: 20, isNetPrice: false, isTaxable: false, discountId: 'for-all'  };
+const DISCOUNT3 = { category: 'DISCOUNT', amount: 20, isNetPrice: false, isTaxable: false, discountId: 'special'  };
+const ITEM1 = { category: 'ITEM', amount: 200, isNetPrice: true, isTaxable: false };
+const ITEM2 = { category: 'ITEM', amount: 200, isNetPrice: true, isTaxable: false };
+const calculations = [TAX, TAX2, DISCOUNT, DISCOUNT2, DISCOUNT3, ITEM1, ITEM2];
 
 describe('ProductPricingSheet', () => {
-    let pricingSheet: IProductPricingSheet
+    let pricingSheet
 
-    const pricingSheetParams: PricingSheetParams<ProductPricingCalculation> = {
+    const pricingSheetParams = {
         calculation:  calculations,
         currency: 'CHF',
         quantity: 2,

@@ -1,8 +1,7 @@
-import { IDiscountAdapter } from '@unchainedshop/types/discount';
 import { BaseDiscountAdapter } from '../src/director/BaseDiscountAdapter';
 describe("BaseDiscountAdapter instantiation", () => {
-  const adapter: Omit<IDiscountAdapter, 'key' | 'label' | 'version'> = BaseDiscountAdapter;
-  const context: any = null
+  const adapter = BaseDiscountAdapter;
+  const context = null
   it("should initialize with default values", () => {
     expect(adapter.orderIndex).toEqual(0);
     expect(adapter.log).toEqual(expect.any(Function));
@@ -44,7 +43,7 @@ describe("BaseDiscountAdapter instantiation", () => {
 
     it('discountForPricingAdapterKey', async () => {
       const result = await adapter.actions(context);
-      const calculationSheet: any = {}
+      const calculationSheet = {}
       expect(await result.discountForPricingAdapterKey({calculationSheet, pricingAdapterKey: 'key'})).toEqual(null)
     })
 

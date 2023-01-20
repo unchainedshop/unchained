@@ -1,23 +1,22 @@
-import { IBaseAdapter, IBaseDirector } from '@unchainedshop/types/common';
 import { BaseDirector } from '../src/director/BaseDirector';
 import {jest} from "@jest/globals"
 
 
-const adapter1: IBaseAdapter = {
+const adapter1 = {
   key: 'adapter1',
   label: 'Adapter 1',
   version: '1',
   log: jest.fn(),
 };
 
-const adapter2: IBaseAdapter = {
+const adapter2 = {
   key: 'adapter2',
   label: 'Adapter 2',
   version: '2',
   log: jest.fn(),
 };
 
-const adapter3: IBaseAdapter = {
+const adapter3 = {
   key: 'adapter3',
   label: 'Adapter 3',
   version: '3',
@@ -25,7 +24,7 @@ const adapter3: IBaseAdapter = {
 };
 
 describe('BaseDirector', () => {
-  let director: IBaseDirector<IBaseAdapter>;
+  let director;
 
   beforeEach(() => {
     director = BaseDirector('TestDirector');
