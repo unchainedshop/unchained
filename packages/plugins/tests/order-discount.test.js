@@ -1,4 +1,4 @@
-import {   applyDiscountToMultipleShares,   resolveRatioAndTaxDivisorForPricingSheet, resolveAmountAndTax } from '../src/pricing/order-discount';
+import {   applyDiscountToMultipleShares,   resolveRatioAndTaxDivisorForPricingSheet, resolveAmountAndTax, calculateAmountToSplit } from '../src/pricing/order-discount';
 
 
 describe("OrderDiscount helpers ", () => {
@@ -105,5 +105,101 @@ describe("resolveAmountAndTax", () => {
   });
 
 })
+
+describe('calculateAmountToSplit', () => {
+  it('calculates the correct amount to split when using a rate', () => {
+    const configuration = {
+      rate: 0.1,
+      alreadyDeductedForDiscount: 0,
+      amountLeft: 100,
+    };
+    const amount = 1000;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(100);
+  });
+
+  it('calculates the correct amount to split when using a fixed rate', () => {
+    const configuration = {
+      fixedRate: 50,
+      alreadyDeductedForDiscount: 0,
+      amountLeft: 100,
+    };
+    const amount = 1000;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(50);
+  });
+
+  it('calculates the correct amount to split when alreadyDeductedForDiscount is non-zero', () => {
+    const configuration = {
+      rate: 0.1,
+      alreadyDeductedForDiscount: 10,
+      amountLeft: 100,
+    };
+    const amount = 1000;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(90);
+  });
+
+
+  it('calculates the correct amount to split when amountLeft is less than the amount to deduct', () => {
+    const configuration = {
+      rate: 0.1,
+      alreadyDeductedForDiscount: 0,
+      amountLeft: 50,
+    };
+    const amount = 1000;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(50);
+  });
+
+  it('returns 0 when the amount to deduct is less than or equal to alreadyDeductedForDiscount', () => {
+    const configuration = {
+      rate: 0.1,
+      alreadyDeductedForDiscount: 100,
+      amountLeft: 100,
+    };
+    const amount = 1000;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(0);
+  });
+
+  it('returns 0 when the amount is less than or equal to 0', () => {
+    const configuration = {
+      rate: 0.1,
+      alreadyDeductedForDiscount: 0,
+      amountLeft: 100,
+    };
+    const amount = 0;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(0);
+  });
+
+  it('returns 0 when amountLeft is 0', () => {
+    const configuration = {
+      rate: 0.1,
+      alreadyDeductedForDiscount: 0,
+      amountLeft: 0,
+    };
+    const amount = 1000;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(0);
+  });
+
+  it('returns 0 when amount is negative', () => {
+    const configuration = {
+      rate: 0.1,
+      alreadyDeductedForDiscount: 0,
+      amountLeft: 100,
+    };
+    const amount = -1000;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(0);
+  });
+
+  it('returns 0 when configuration rate is negative', () => {
+    const configuration = {
+      rate: -0.1,
+      alreadyDeductedForDiscount: 0,
+      amountLeft: 100,
+    };
+    const amount = 1000;
+    expect(calculateAmountToSplit(configuration, amount)).toBe(0);
+  });
+
+
+});
+
 
 })

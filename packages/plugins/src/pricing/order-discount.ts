@@ -29,6 +29,8 @@ export const resolveAmountAndTax = ({ ratio, taxDivisor }, amount) => {
   return [shareAmount, shareTaxAmount];
 };
 
+//TODO: move to separate file because its used in multiple places
+
 export const applyDiscountToMultipleShares = (shares, amount) => {
   return shares.reduce(
     ([currentDiscountAmount, currentTaxAmount], share) => {
