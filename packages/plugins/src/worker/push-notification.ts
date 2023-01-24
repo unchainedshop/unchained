@@ -7,12 +7,25 @@ const { PUSH_NOTIFICATION_PUBLIC_KEY, PUSH_NOTIFICATION_PRIVATE_KEY } = process.
 
 const logger = createLogger('unchained:plugins:worker:push-notification');
 
+type NotificationOptions = {
+  vapidDetails: {
+    subject: string;
+    publicKey: string;
+    privateKey: string;
+  };
+  TTL: number;
+  urgency?: 'very-low' | 'low' | 'normal' | 'high';
+  topic?: string;
+};
+
 const PushNotificationWorkerPlugin: IWorkerAdapter<
   {
     subscription: any;
     title: string;
     body: string;
     url: string;
+    urgency?: 'very-low' | 'low' | 'normal' | 'high';
+    topic?: string;
   },
   any
 > = {
@@ -25,7 +38,7 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
 
   type: 'PUSH',
 
-  doWork: async ({ subscription, title, body, url }) => {
+  doWork: async ({ subscription, title, body, url, urgency, topic }) => {
     logger.debug(`${PushNotificationWorkerPlugin.key} -> doWork: ${title} -> ${body}`);
     if (!PUSH_NOTIFICATION_PUBLIC_KEY)
       return {
@@ -54,7 +67,7 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
       };
     }
 
-    const options = {
+    const options: NotificationOptions = {
       vapidDetails: {
         subject: url,
         publicKey: PUSH_NOTIFICATION_PUBLIC_KEY,
@@ -62,6 +75,14 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
       },
       TTL: 60,
     };
+
+    if (urgency) {
+      options.urgency = urgency;
+    }
+
+    if (topic) {
+      options.topic = topic;
+    }
 
     try {
       await webPush.sendNotification(

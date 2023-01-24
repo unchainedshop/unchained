@@ -16,6 +16,13 @@ import { Country } from './countries.js';
 import { File } from './files.js';
 import { Language } from './languages.js';
 
+export interface PushSubscription {
+  id: string;
+  userAgent: string;
+  expirationTime: number;
+  endpoint: string;
+}
+
 export interface UserProfile {
   displayName?: string;
   birthday?: Date;

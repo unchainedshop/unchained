@@ -14,6 +14,7 @@ import {
   UserProfile,
   Web3Address,
   WebAuthnCredentials,
+  PushSubscription,
 } from '@unchainedshop/types/user.js';
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
@@ -78,7 +79,7 @@ export interface UserHelperTypes {
   roles: HelperType<any, Array<string>>;
   tags: HelperType<any, Array<string>>;
   username: HelperType<any, string>;
-  webPushEnabled: HelperType<any, boolean>;
+  pushSubscriptions: HelperType<any, Array<PushSubscription>>;
 }
 
 const {
@@ -222,7 +223,13 @@ export const User: UserHelperTypes = {
       userId: user._id,
     });
   },
-  webPushEnabled: async (_, __, { modules, userId, userAgent }) => {
-    return modules.users.pushEnabledByUser({ userId, userAgent });
+  pushSubscriptions: async (user, _, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user]);
+    return (user?.pushSubscriptions || []).map(({ keys, userAgent, expirationTime, endpoint }) => ({
+      id: keys.p256dh,
+      userAgent,
+      expirationTime,
+      endpoint,
+    }));
   },
 };
