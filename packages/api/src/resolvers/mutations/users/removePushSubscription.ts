@@ -1,9 +1,9 @@
 import { Context } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 
-const removePushNotificationSubscription = async (_, __, context: Context): Promise<any> => {
+const removePushSubscription = async (_, __, context: Context): Promise<any> => {
   const { modules, userId, userAgent } = context;
-  log(`mutation removePushNotificationSubscription ${userId}   ${userAgent}`);
+  log(`mutation removePushSubscription ${userId}   ${userAgent}`);
 
   try {
     const isEnabled = await modules.users.pushEnabledByUser({ userId, userAgent });
@@ -25,4 +25,4 @@ const removePushNotificationSubscription = async (_, __, context: Context): Prom
   }
 };
 
-export default removePushNotificationSubscription;
+export default removePushSubscription;

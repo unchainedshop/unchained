@@ -78,6 +78,7 @@ export interface UserHelperTypes {
   roles: HelperType<any, Array<string>>;
   tags: HelperType<any, Array<string>>;
   username: HelperType<any, string>;
+  webPushEnabled: HelperType<any, boolean>;
 }
 
 const {
@@ -220,5 +221,8 @@ export const User: UserHelperTypes = {
       ...(params || {}),
       userId: user._id,
     });
+  },
+  webPushEnabled: async (_, __, { modules, userId, userAgent }) => {
+    return modules.users.pushEnabledByUser({ userId, userAgent });
   },
 };

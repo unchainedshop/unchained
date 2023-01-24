@@ -1,13 +1,9 @@
 import { Context } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 
-const savePushNotificationSubscription = async (
-  _,
-  { subscription },
-  context: Context,
-): Promise<boolean> => {
+const addPushSubscription = async (_, { subscription }, context: Context): Promise<boolean> => {
   const { modules, userId, userAgent } = context;
-  log(`mutation savePushNotificationSubscription ${userId} ${userAgent} `);
+  log(`mutation addPushSubscription ${userId} ${userAgent} `);
   try {
     await modules.users.updateUser(
       { _id: userId },
@@ -28,4 +24,4 @@ const savePushNotificationSubscription = async (
   }
 };
 
-export default savePushNotificationSubscription;
+export default addPushSubscription;

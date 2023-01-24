@@ -94,6 +94,7 @@ export default [
       isInitialPassword: Boolean!
       webAuthnCredentials: [WebAuthnCredentials!]!
       web3Addresses: [Web3Address!]!
+      webPushEnabled: Boolean!
       name: String!
       avatar: Media
       profile: UserProfile

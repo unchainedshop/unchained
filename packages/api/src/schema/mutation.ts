@@ -887,19 +887,14 @@ export default [
       exportToken(tokenId: ID!, quantity: Int! = 1, recipientWalletAddress: String!): Token!
 
       """
-      Store user Push notification subscription object
+      Store user W3C Push subscription object
       """
-      savePushNotificationSubscription(subscription: JSON!): Boolean!
+      addPushSubscription(subscription: JSON!): Boolean!
 
       """
-      Remove user push notification subscription object
+      Remove user W3C push subscription object
       """
-      removePushNotificationSubscription: Boolean!
-
-      """
-      Check if current user has enabled push notification for the current browser
-      """
-      pushNotificationEnabled: Boolean!
+      removePushSubscription: Boolean!
     }
   `,
 ];
