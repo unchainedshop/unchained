@@ -21,9 +21,8 @@ type NotificationOptions = {
 const PushNotificationWorkerPlugin: IWorkerAdapter<
   {
     subscription: any;
-    title: string;
-    body: string;
-    url: string;
+    payload: string;
+    subject: string;
     urgency?: 'very-low' | 'low' | 'normal' | 'high';
     topic?: string;
   },
@@ -38,8 +37,8 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
 
   type: 'PUSH',
 
-  doWork: async ({ subscription, title, body, url, urgency, topic }) => {
-    logger.debug(`${PushNotificationWorkerPlugin.key} -> doWork: ${title} -> ${body}`);
+  doWork: async ({ subscription, subject, payload, urgency = null, topic = null }) => {
+    logger.debug(`${PushNotificationWorkerPlugin.key} -> doWork: Push -> ${subject}`);
     if (!PUSH_NOTIFICATION_PUBLIC_KEY)
       return {
         success: false,
@@ -69,7 +68,7 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
 
     const options: NotificationOptions = {
       vapidDetails: {
-        subject: url,
+        subject,
         publicKey: PUSH_NOTIFICATION_PUBLIC_KEY,
         privateKey: PUSH_NOTIFICATION_PRIVATE_KEY,
       },
@@ -85,23 +84,10 @@ const PushNotificationWorkerPlugin: IWorkerAdapter<
     }
 
     try {
-      await webPush.sendNotification(
-        subscription,
-        JSON.stringify({
-          title,
-          body,
-          url,
-        }),
-        options,
-      );
+      await webPush.sendNotification(subscription, payload, options);
 
       return {
         success: true,
-        result: {
-          title,
-          body,
-          url,
-        },
         error: null,
       };
     } catch (err) {

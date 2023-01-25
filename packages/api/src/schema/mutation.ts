@@ -894,7 +894,7 @@ export default [
       """
       Remove user W3C push subscription object
       """
-      removePushSubscription: Boolean!
+      removePushSubscription(p256dh: String!): Boolean!
     }
   `,
 ];
