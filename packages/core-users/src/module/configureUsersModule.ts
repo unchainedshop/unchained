@@ -374,7 +374,7 @@ export const configureUsersModule = async ({
       });
     },
 
-    addPushSubscription: async (userId, subscription, userAgent, unsubscribeFromOtherUsers) => {
+    addPushSubscription: async (userId, subscription, { userAgent, unsubscribeFromOtherUsers }) => {
       if (unsubscribeFromOtherUsers) {
         await Users.updateMany(
           {},

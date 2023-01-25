@@ -136,8 +136,10 @@ export type UsersModule = {
   addPushSubscription: (
     userId: string,
     subscription: any,
-    userAgent: string,
-    unsubscribeFromOtherUsers: boolean,
+    options?: {
+      userAgent: string;
+      unsubscribeFromOtherUsers: boolean;
+    },
   ) => Promise<void>;
   removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
 };

@@ -9,7 +9,10 @@ const addPushSubscription = async (
   const { modules, userId, userAgent } = context;
   log(`mutation addPushSubscription ${userId} ${userAgent} `);
   try {
-    await modules.users.addPushSubscription(userId, subscription, userAgent, unsubscribeFromOtherUsers);
+    await modules.users.addPushSubscription(userId, subscription, {
+      userAgent,
+      unsubscribeFromOtherUsers,
+    });
     return true;
   } catch (e) {
     log(e.message);
