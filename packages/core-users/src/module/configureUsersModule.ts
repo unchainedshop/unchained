@@ -244,14 +244,6 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-    pushEnabledByUser: async ({ userId, userAgent }) => {
-      const user = await Users.findOne(
-        { userId, pushSubscriptions: { userAgent } },
-        { projection: { _id: 1 } },
-      );
-      return !!user;
-    },
-
     updateProfile: async (userId, updatedData) => {
       const userFilter = generateDbFilterById(userId);
       const { meta, profile } = updatedData;
@@ -380,6 +372,42 @@ export const configureUsersModule = async ({
       await emit('USER_UPDATE', {
         user: removeConfidentialServiceHashes(user),
       });
+    },
+
+    addPushSubscription: async (userId, subscription, userAgent, unsubscribeFromOtherUsers) => {
+      if (unsubscribeFromOtherUsers) {
+        await Users.updateMany(
+          {},
+          {
+            $pull: {
+              pushSubscriptions: { keys: { p256dh: subscription?.keys?.p256dh } },
+            },
+          },
+        );
+      }
+      await Users.updateOne(
+        { _id: userId },
+        {
+          $push: {
+            pushSubscriptions: {
+              userAgent,
+              ...subscription,
+            },
+          },
+        },
+        {},
+      );
+    },
+    removePushSubscription: async (userId, p256dh) => {
+      await Users.updateOne(
+        { _id: userId },
+        {
+          $pull: {
+            pushSubscriptions: { keys: { p256dh } },
+          },
+        },
+        {},
+      );
     },
   };
 };

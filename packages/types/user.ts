@@ -112,8 +112,6 @@ export type UsersModule = {
     },
   ) => Promise<Array<User>>;
   userExists: (query: { userId: string }) => Promise<boolean>;
-  pushEnabledByUser: (query: { userId: string; userAgent: string }) => Promise<boolean>;
-
   // Transformations
   primaryEmail: (user: User) => Email;
   userLocale: (user: User) => Locale;
@@ -135,6 +133,13 @@ export type UsersModule = {
   updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>) => Promise<User>;
   updateUser: (selector: Query, modifier: Update<User>, options: UpdateOptions) => Promise<void>;
+  addPushSubscription: (
+    userId: string,
+    subscription: any,
+    userAgent: string,
+    unsubscribeFromOtherUsers: boolean,
+  ) => Promise<void>;
+  removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
 };
 
 /*

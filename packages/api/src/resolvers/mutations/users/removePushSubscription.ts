@@ -6,15 +6,7 @@ const removePushSubscription = async (_, { p256dh }, context: Context): Promise<
   log(`mutation removePushSubscription ${userId}   ${userAgent}`);
 
   try {
-    await modules.users.updateUser(
-      { _id: userId },
-      {
-        $pull: {
-          pushSubscriptions: { keys: { p256dh } },
-        },
-      },
-      {},
-    );
+    await modules.users.removePushSubscription(userId, p256dh);
     return true;
   } catch (e) {
     log(e.message);
