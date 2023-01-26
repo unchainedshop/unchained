@@ -35,7 +35,7 @@ const config = {
 ```
 
 
-After we defined all the additional fragments along with there type, we simply pass it to unchained platform 
+After we defined all the additional fragments along with their type, we simply pass them to unchained platform 
 like shown below.
 
 ```
@@ -49,4 +49,4 @@ await startPlatform({
 Note that `entityName` should be an Entity supported by Unchained.
 
 
-Thats it, now the new custom entity data will be visible (Read-only) in Admin UI.
+That's it, now the new custom entity data will be visible (Read-only) in Admin UI.
