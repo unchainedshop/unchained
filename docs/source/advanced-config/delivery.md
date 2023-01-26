@@ -5,9 +5,9 @@ description: Customize delivery
 
 ## 1. DeliveryAdapter
 
-In order to register available delivery options, you either have to use the built in ones or have to add a plugin to the supported delivery provider by implementing the [IDeliveryAdapter](https://docs.unchained.shop/types/types/delivery.IDeliveryAdapter.html) interface and registering the adapter on the global [DeliveryDirector](https://docs.unchained.shop/types/types/delivery.IDeliveryDirector.html)
+In order to register available delivery options, you either have to use the builtin ones or have to add a plugin to the supported delivery provider by implementing the [IDeliveryAdapter](https://docs.unchained.shop/types/types/delivery.IDeliveryAdapter.html) interface and registering the adapter on the global [DeliveryDirector](https://docs.unchained.shop/types/types/delivery.IDeliveryDirector.html)
 
-There can be multiple delivery adapter implementation for a shop and all of them will be executed based on there `orderIndex` value. Delivery adapters with lowe `orderIndex` are executed first.
+There can be multiple delivery adapter implementation for a shop and all of them will be executed based on their `orderIndex` value. Delivery adapters with lowe `orderIndex` are executed first.
 
 Below we have sample delivery adapter 
 
@@ -107,9 +107,9 @@ const ShopPickUp: IDeliveryAdapter = {
 
 Delivery pricing adapter is used to do the actual delivery cost calculation. The adapter is run for every single item included in an order.
 in order to add a custom delivery price logic for orders you need to implement [IDeliveryPricingAdapter](https://docs.unchained.shop/types/types/delivery_pricing.IDeliveryPricingAdapter.html).
-There can be more than one delivery pricing plugin configurations and all of them will be executed based on there `orderIndex` value. Delivery pricing adapter with lower `orderIndex` will be executed first
+There can be more than one delivery pricing plugin configurations and all of them will be executed based on their `orderIndex` value. Delivery pricing adapter with lower `orderIndex` will be executed first
 
-below is a an example of delivery price for the above delivery adapter that will charge $50  as a delivery fee for orders that use `ShopPickUp` (the above adapter) for there delivery provider.
+below is an example of delivery price for the above delivery adapter that will charge $50  as a delivery fee for orders that use `ShopPickUp` (the above adapter) for their delivery provider.
 
 ```typescript
 
@@ -164,4 +164,4 @@ export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
 - **isActivatedFor: [DeliveryPricingAdapterContext](https://docs.unchained.shop/types/interfaces/delivery_pricing.DeliveryPricingAdapterContext.html)**: defines to which delivery adapters this delivery price adapter calculations should take place.
 - **getCalculation: [Calculation[]](https://docs.unchained.shop/types/interfaces/pricing.PricingSheetParams.html#calculation)**: returns all the fees that will are included for calculation through the adapter.
 - **getContext: [DeliveryPricingAdapterContext](https://docs.unchained.shop/types/interfaces/delivery_pricing.DeliveryPricingAdapterContext.html)**: returns the pricing adapter context
-- **calculate: [Calculation[]](https://docs.unchained.shop/types/interfaces/pricing.PricingSheetParams.html#calculation)**: calculated the delivery price based on the the logic provided and returns the calculation breakdown (result sheet)
+- **calculate: [Calculation[]](https://docs.unchained.shop/types/interfaces/pricing.PricingSheetParams.html#calculation)**: calculated the delivery price based on the logic provided and returns the calculation breakdown (result sheet)
