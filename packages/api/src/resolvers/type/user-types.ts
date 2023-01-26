@@ -226,7 +226,7 @@ export const User: UserHelperTypes = {
   pushSubscriptions: async (user, _, context) => {
     await checkAction(context, viewUserPrivateInfos, [user]);
     return (user?.pushSubscriptions || []).map(({ keys, userAgent, expirationTime, endpoint }) => ({
-      id: keys.p256dh,
+      _id: keys.p256dh,
       userAgent,
       expirationTime,
       endpoint,

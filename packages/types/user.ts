@@ -17,7 +17,7 @@ import { File } from './files.js';
 import { Language } from './languages.js';
 
 export interface PushSubscription {
-  id: string;
+  _id: string;
   userAgent: string;
   expirationTime: number;
   endpoint: string;

@@ -28,7 +28,7 @@ export default [
     }
 
     type PushSubscription {
-      id: ID!
+      _id: ID!
       userAgent: String
       expirationTime: Int
       endpoint: String!
