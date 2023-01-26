@@ -65,7 +65,7 @@ Now you have a fully functional storefront using unchained instance for API. Che
 
 See it in action by adding `Assortments` and `Products` etc... using the Unchained Admin UI .
 
-## Step 3: Deploy youe storefront with Vercel
+## Step 3: Deploy your storefront with Vercel
 
 Once you have set up the storefront template and run it locally successfully the last step we need to do is go live. while you can use any hosting provider for this demo we will be using Vercel to handle the deployment since the storefront is also written with next.js.
 
