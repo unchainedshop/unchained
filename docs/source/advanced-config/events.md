@@ -3,21 +3,21 @@ title: 'Events'
 description: Configure the Events Module
 ---
 
-Unchained supports the publish-subscribe (pub/sub) event model to keep track of events emitted in each module. By default it uses nodejs EventEmitter module to handle events but can easily extended to use any event tracker module by extending the `EventAdapter` class which we will briefly see later.
+Unchained supports the publish-subscribe (pub/sub) event model to keep track of events emitted in each module. By default it uses nodejs EventEmitter module to handle events but can easily be extended to use any event tracker module by extending the `EventAdapter` class which we will briefly see later.
 
 The `@unchainedshop/core-events` module exports three utility functions that can be used to interact with the registered event tracker, or register new custom events.
 
 - `registerEvents`: adds custom events that will be tracked. it takes array of event names.
-- `emit(eventName, payload)`: used to emit events, either pre-built events or custom events registered using `registerEvents`. It take two arguments, name of the event we want to emit and an object of the data associated with the event.
-- `subscribe(eventName: callback)`: used for subscribing to events emitted by `emit` function. It takes two arguments, name of the event we want to subscribe to and a call back that will be takes one argument holding data for the associated event.
+- `emit(eventName, payload)`: used to emit events, either pre-built events or custom events registered using `registerEvents`. It takes two arguments, name of the event we want to emit and an object of the data associated with the event.
+- `subscribe(eventName: callback)`: used for subscribing to events emitted by `emit` function. It takes two arguments, name of the event we want to subscribe to and a call back that will take one argument holding data for the associated event.
 
 Note: to get list of pre-built or custom events registered on unchained use `EventType` resolver inside GraphQL playground.
 
 Every event emitted from the engine is an object that has one property `payload` which is also an object that has different properties based on the event. We recommend you follow the same pattern when implementing custom events.
 
-## Built in Events
+## Built-in Events
 
-Bellow are events tracked under each module under the box:
+Below are events tracked under each module under the box:
 
 #### `core-assortments`:
 
