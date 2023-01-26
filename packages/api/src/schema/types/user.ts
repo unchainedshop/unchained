@@ -30,7 +30,7 @@ export default [
     type PushSubscription {
       _id: ID!
       userAgent: String
-      expirationTime: Int
+      expirationTime: Timestamp
       endpoint: String!
     }
 
