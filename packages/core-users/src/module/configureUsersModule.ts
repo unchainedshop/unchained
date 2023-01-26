@@ -399,7 +399,7 @@ export const configureUsersModule = async ({
           { _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': subscription?.keys?.p256 },
           {
             $pull: {
-              pushSubscriptions: { keys: { p256dh: subscription?.keys?.p256dh } },
+              'pushSubscriptions.keys.p256dh': subscription?.keys?.p256,
             },
           },
         );
