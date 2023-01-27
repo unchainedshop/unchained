@@ -22,6 +22,7 @@ export default [
       userRoles: [String!]!
       externalLinks: [Link]!
       adminUiConfig: AdminUiConfig!
+      vapidPublicKey: String
     }
   `,
 ];

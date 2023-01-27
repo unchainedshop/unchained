@@ -27,6 +27,13 @@ export default [
       user: User
     }
 
+    type PushSubscription {
+      _id: ID!
+      userAgent: String
+      expirationTime: Timestamp
+      endpoint: String!
+    }
+
     type UserProfile {
       displayName: String
       phoneMobile: String
@@ -83,7 +90,6 @@ export default [
       nonce: Int
       verified: Boolean!
     }
-
     type User {
       _id: ID!
       created: DateTime!
@@ -95,6 +101,7 @@ export default [
       isInitialPassword: Boolean!
       webAuthnCredentials: [WebAuthnCredentials!]!
       web3Addresses: [Web3Address!]!
+      pushSubscriptions: [PushSubscription!]!
       name: String!
       avatar: Media
       profile: UserProfile

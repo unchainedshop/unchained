@@ -16,6 +16,13 @@ import { Country } from './countries.js';
 import { File } from './files.js';
 import { Language } from './languages.js';
 
+export interface PushSubscription {
+  _id: string;
+  userAgent: string;
+  expirationTime: number;
+  endpoint: string;
+}
+
 export interface UserProfile {
   displayName?: string;
   birthday?: Date;
@@ -53,6 +60,16 @@ export interface Web3Address {
   verified: boolean;
 }
 
+export interface PushSubscriptionObject {
+  userAgent: string;
+  endpoint: string;
+  expirationTime?: number;
+  keys: {
+    auth: string;
+    p256dh: string;
+  };
+}
+
 export type User = {
   _id?: _ID;
   deleted?: Date;
@@ -67,6 +84,7 @@ export type User = {
   roles: Array<string>;
   services: any;
   tags?: Array<string>;
+  pushSubscriptions: Array<PushSubscriptionObject>;
   username?: string;
   meta?: any;
 } & TimestampFields;
@@ -94,7 +112,6 @@ export type UsersModule = {
     },
   ) => Promise<Array<User>>;
   userExists: (query: { userId: string }) => Promise<boolean>;
-
   // Transformations
   primaryEmail: (user: User) => Email;
   userLocale: (user: User) => Locale;
@@ -116,6 +133,15 @@ export type UsersModule = {
   updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>) => Promise<User>;
   updateUser: (selector: Query, modifier: Update<User>, options: UpdateOptions) => Promise<void>;
+  addPushSubscription: (
+    userId: string,
+    subscription: any,
+    options?: {
+      userAgent: string;
+      unsubscribeFromOtherUsers: boolean;
+    },
+  ) => Promise<void>;
+  removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
 };
 
 /*

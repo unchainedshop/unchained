@@ -885,6 +885,16 @@ export default [
       Tokenize
       """
       exportToken(tokenId: ID!, quantity: Int! = 1, recipientWalletAddress: String!): Token!
+
+      """
+      Store user W3C Push subscription object
+      """
+      addPushSubscription(subscription: JSON!, unsubscribeFromOtherUsers: Boolean): User!
+
+      """
+      Remove user W3C push subscription object
+      """
+      removePushSubscription(p256dh: String!): User!
     }
   `,
 ];
