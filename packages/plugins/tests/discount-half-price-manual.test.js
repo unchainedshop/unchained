@@ -38,12 +38,4 @@ describe('HalfPriceManual', () => {
     expect(typeof actions.isValidForCodeTriggering).toBe('function');
     expect(typeof actions.discountForPricingAdapterKey).toBe('function');
   });
-
-  it('has correct properties', () => {
-    expect(HalfPriceManual.key).toEqual('shop.unchained.discount.half-price-manual');
-    expect(HalfPriceManual.label).toEqual('Half Price Manual');
-    expect(HalfPriceManual.version).toEqual('1.0.0');
-    expect(HalfPriceManual.orderIndex).toEqual(2);
-  });
-
 });

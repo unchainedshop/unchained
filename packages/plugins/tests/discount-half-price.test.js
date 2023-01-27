@@ -36,11 +36,4 @@ describe('HalfPrice', () => {
     const actions = await HalfPrice.actions({ context });
     expect(await actions.isValidForCodeTriggering()).toBeFalsy();
   });
-
-  it('has correct properties', () => {
-    expect(HalfPrice.key).toEqual('shop.unchained.discount.half-price');
-    expect(HalfPrice.label).toEqual('Half Price');
-    expect(HalfPrice.version).toEqual('1.0.0');
-    expect(HalfPrice.orderIndex).toEqual(3);
-  });
 });

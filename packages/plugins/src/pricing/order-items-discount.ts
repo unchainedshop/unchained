@@ -1,6 +1,6 @@
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
 import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
-//TODO: move into separate file and share multiple places
+// TODO: move into separate file and share multiple places
 const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   if (total === 0 || !pricing) {
     return {
@@ -16,15 +16,14 @@ const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
   };
 };
 
-
-//TODO: move into separate file and share multiple places
+// TODO: move into separate file and share multiple places
 const resolveAmountAndTax = ({ ratio, taxDivisor }, amount) => {
   const shareAmount = Number.isFinite(ratio) ? amount * ratio : 0;
   const shareTaxAmount = Number.isFinite(taxDivisor) ? shareAmount - shareAmount / taxDivisor : 0;
   return [shareAmount, shareTaxAmount];
 };
 
-//TODO: move into separate file and share multiple places
+// TODO: move into separate file and share multiple places
 const applyDiscountToMultipleShares = (shares, amount) => {
   return shares.reduce(
     ([currentDiscountAmount, currentTaxAmount], share) => {
@@ -35,7 +34,7 @@ const applyDiscountToMultipleShares = (shares, amount) => {
   );
 };
 
-//TODO: move into separate file and share multiple places
+// TODO: move into separate file and share multiple places
 const calculateAmountToSplit = (configuration, amount) => {
   const deductionAmount = configuration.rate
     ? amount * configuration.rate
