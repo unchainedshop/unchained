@@ -37,6 +37,7 @@ module.exports = {
             'plugins/postfinance-checkout',
             'plugins/twilio',
             'plugins/worldline-saferpay',
+            'plugins/push-notification'
           ],
           Configuration: [
             'config/booting',

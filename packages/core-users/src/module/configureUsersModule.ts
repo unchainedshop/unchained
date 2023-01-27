@@ -375,26 +375,19 @@ export const configureUsersModule = async ({
     },
 
     addPushSubscription: async (userId, subscription, { userAgent, unsubscribeFromOtherUsers }) => {
-      const subscriptionAlreadyExists = await Users.findOne({
-        _id: { $ne: userId },
-        'pushSubscriptions.keys.p256dh': subscription?.keys?.p256,
-      });
-
-      if (!subscriptionAlreadyExists)
-        await Users.updateOne(
-          { _id: userId },
-          {
-            $push: {
-              pushSubscriptions: {
-                userAgent,
-                ...subscription,
-              },
+      const updateResult = await Users.updateOne(
+        { _id: userId },
+        {
+          $push: {
+            pushSubscriptions: {
+              userAgent,
+              ...subscription,
             },
           },
-          {},
-        );
-
-      if (unsubscribeFromOtherUsers) {
+        },
+        {},
+      );
+      if (updateResult.modifiedCount === 1 && unsubscribeFromOtherUsers) {
         await Users.updateMany(
           { _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': subscription?.keys?.p256 },
           {
