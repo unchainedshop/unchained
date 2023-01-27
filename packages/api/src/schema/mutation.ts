@@ -889,12 +889,12 @@ export default [
       """
       Store user W3C Push subscription object
       """
-      addPushSubscription(subscription: JSON!, unsubscribeFromOtherUsers: Boolean): Boolean!
+      addPushSubscription(subscription: JSON!, unsubscribeFromOtherUsers: Boolean): User!
 
       """
       Remove user W3C push subscription object
       """
-      removePushSubscription(p256dh: String!): Boolean!
+      removePushSubscription(p256dh: String!): User!
     }
   `,
 ];

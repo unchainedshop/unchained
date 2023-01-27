@@ -376,7 +376,7 @@ export const configureUsersModule = async ({
 
     addPushSubscription: async (userId, subscription, { userAgent, unsubscribeFromOtherUsers }) => {
       const updateResult = await Users.updateOne(
-        { _id: userId },
+        { _id: userId, 'pushSubscriptions.keys.p256dh': { $ne: subscription?.keys?.p256dh } },
         {
           $push: {
             pushSubscriptions: {
@@ -389,10 +389,10 @@ export const configureUsersModule = async ({
       );
       if (updateResult.modifiedCount === 1 && unsubscribeFromOtherUsers) {
         await Users.updateMany(
-          { _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': subscription?.keys?.p256 },
+          { _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': subscription?.keys?.p256dh },
           {
             $pull: {
-              'pushSubscriptions.keys.p256dh': subscription?.keys?.p256,
+              pushSubscriptions: { keys: { p256dh: subscription?.keys?.p256dh } },
             },
           },
         );
@@ -403,7 +403,7 @@ export const configureUsersModule = async ({
         { _id: userId },
         {
           $pull: {
-            'pushSubscriptions.keys.p256dh': p256dh,
+            pushSubscriptions: { keys: { p256dh } },
           },
         },
         {},

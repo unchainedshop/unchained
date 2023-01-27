@@ -1,17 +1,13 @@
 import { Context } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 
-const removePushSubscription = async (_, { p256dh }, context: Context): Promise<any> => {
+const removePushSubscription = async (_, { p256dh }, context: Context) => {
   const { modules, userId, userAgent } = context;
-  log(`mutation removePushSubscription ${userId}   ${userAgent}`);
+  log(`mutation removePushSubscription ${userId} ${userAgent}`, { userId });
 
-  try {
-    await modules.users.removePushSubscription(userId, p256dh);
-    return true;
-  } catch (e) {
-    log(e.message);
-    return false;
-  }
+  await modules.users.removePushSubscription(userId, p256dh);
+
+  return modules.users.findUserById(userId);
 };
 
 export default removePushSubscription;

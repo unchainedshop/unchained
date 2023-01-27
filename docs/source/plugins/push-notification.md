@@ -24,7 +24,7 @@ shopInfo {
 To manage a user's push subscriptions, you can use the following mutations:
 
 - `addPushSubscription(subscription: JSON!, unsubscribeFromOtherUsers: Boolean)`: Attaches a push subscription object to a user if doesn't already exists. it also accepts a optional parameter to remove other subscriptions from the same application.
--  `removePushSubscription(p256Dh: String!)`: removes a push subscription object of a user from the application identified by the `p256Dh`.
+-  `removePushSubscription(p256dh: String!)`: removes a push subscription object of a user from the application identified by the `p256dh`.
 
 All the push subscription of a user are are exposed through `user.pushSubscriptions`
 
