@@ -3,9 +3,9 @@ title: 'Modules'
 description: Configure custom module
 ---
 
-The unchained engine has several modules with out the box functionalities. The developer can the use this with default configuration or minimum configuration.
+The unchained engine has several modules with out-of-the-box functionalities. The developer can use this with default configuration or minimum configuration.
 
-The modules can be extended with your additional functionality to the core engine for out of the box solution where the out of the box functionalities is not solve a particular problem. On such cases it is possible to add a custom module that will be available through out the engine context just like the built in modules.
+The modules can be extended with your additional functionality to the core engine for out-of-the-box solution where the out-of-the-box functionalities do not solve a particular problem. In such cases it is possible to add a custom module that will be available throughout the engine context just like the built-in modules.
 
 Below is an example custom module that will be used to change currency of a cart after creation.
 

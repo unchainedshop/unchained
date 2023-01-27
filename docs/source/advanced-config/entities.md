@@ -15,14 +15,14 @@ The Bulk API stores the data in the Unchained Work Queue before processing and e
 4. Performance: Only downloads assets that are not downloaded yet and tries to optimize the actual write calls to the database by using MongoDB bulk operations, making sync processing fast
 5. Push-based: Immediate representation of changes
 
-In some situations, it's propably wise to develop a sync microservice: You have a source system that
+In some situations, it's probably wise to develop a sync microservice: You have a source system that
 
 - generates "Pull-based" data feeds, or
 - can not adopt to the JSON described below
 
 ### Endpoint
 
-There is two ways to send bulk import events, one is through GraphQL by adding a BULK_IMPORT work type with an input like this:
+There are two ways to send bulk import events, one is through GraphQL by adding a BULK_IMPORT work type with an input like this:
 
 ```
 {
@@ -362,8 +362,8 @@ Set by Unchained:
 
 ## Creating custom handlers
 
-While unchained provider a lot of bulk import handles already and other are being built, you can write your own handler for an entity if the need arises.
-in order to write custom handler you need to create an object that implements [BulkImportHandler](https://docs.unchained.shop/types/types/platform.BulkImportHandler.html) structure. where the parent key represents the entity example `PRODUCT` and each of its fields represent operation name and it's corresponding handler function that implements [BulkImportOperation](https://docs.unchained.shop/types/types/platform.BulkImportOperation.html).
+While unchained provides a lot of bulk import handles already and other are being built, you can write your own handler for an entity if the need arises.
+in order to write custom handler you need to create an object that implements [BulkImportHandler](https://docs.unchained.shop/types/types/platform.BulkImportHandler.html) structure. where the parent key represents the entity example `PRODUCT` and each of its fields represent operation name and its corresponding handler function that implements [BulkImportOperation](https://docs.unchained.shop/types/types/platform.BulkImportOperation.html).
 
 ```
 {
@@ -388,7 +388,7 @@ import handlers from 'location/of/bulk-import-handler'
 
 ```
 
-Now when the engine detects a `BULK_IMPORT` event with the entities defined above along with the operation, it will execute that particular handler and perform what ever is defined in it.
+Now when the engine detects a `BULK_IMPORT` event with the entities defined above along with the operation, it will execute that particular handler and perform whatever is defined in it.
 
 
 example.
