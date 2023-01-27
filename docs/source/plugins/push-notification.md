@@ -43,6 +43,69 @@ The push notification worker automatically picks up any work items with type `PU
 Note that even if the user enabled push notification Email notification will also be triggered along with each notification because push notification might not be viewed or noticed by a user at the time of sending.
 
 # Configuration
+
+## Trigger
+
+Triggering a push notification is not any different from sending email since the push service is just another worker. so for additional resource look at [Configuring email template](../config/email-template/).
+
+the only difference is push notification worker expects a input type that is slightly different. bellow are all the input values accepted,
+- `subscription`: actual user subscription object stored. it should have the following structure
+
+```
+ {
+  endpoint: string;
+  expirationTime?: number;
+  keys: {
+    auth: string;
+    p256dh: string;
+  }
+```
+- `subject (required) `: url or the site the message is going to be sent.
+- `payload (required)`: stringified JSON object with `title` and `body` keys of the message,
+- `urgency`:  is to indicate to the push service whether to send the notification immediately or prioritize the recipient’s device power considerations for delivery. Provide one of the following values: `very-low`, `low`, `normal`, or `high`. To attempt to deliver the notification immediately, specify `high`
+- `topic`: optionally provide an identifier that the push service uses to coalesce notifications. Use a maximum of 32 characters from the URL or filename-safe Base64 characters sets.
+
+
+Here is an example template resolver that will trigger a PUSH notification to a user if they are subscribed
+
+```js
+import { MessagingDirector } from "@unchainedshop/core-messaging";
+export const helloThere: TemplateResolver = async (
+  {  },
+  context: UnchainedCore
+) => {
+  const { modules, userId } = context;
+
+  const user = await modules.users.findUserById(userId);
+  
+
+  const pushNotifications =
+      ? (user?.pushSubscriptions || [])?.map(({ ...subscription }) => ({
+  type: "PUSH",
+  input: {
+    subscription,
+    subject: "https://unchained.shop",
+    payload: JSON.stringify({
+      body: "Enjoy your unchained engine",
+      title: "Welcome",              
+    })
+  },
+}))
+      : [];
+
+  return [
+    ...pushNotifications,
+  ].filter(Boolean);
+};
+
+
+MessagingDirector.registerTemplate('ACCOUNT_ACTION', helloThere);
+
+```
+
+
+
+
 ## Environment variables
 
 
