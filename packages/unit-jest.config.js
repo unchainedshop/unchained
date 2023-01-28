@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
@@ -9,5 +10,8 @@ module.exports = {
         useESM: true,
       },
     ],
+  },
+  moduleNameMapper: {
+    '(.+)\\.js': '$1',
   },
 };
