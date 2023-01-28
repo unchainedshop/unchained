@@ -1,4 +1,4 @@
-import { buildFindSelector } from "../lib/module/configureLanguagesModule.js";
+import { buildFindSelector } from "../src/module/configureLanguagesModule.js";
 
 describe('Languages', () => {
   describe('buildFindSelector', () => {
