@@ -1,4 +1,5 @@
-import { getDecimals, normalizeRate } from '../../../lib/module/configureProductPrices.js';
+import { getDecimals, normalizeRate } from "../configureProductPrices.js";
+
 
 
 describe('Rate conversion', () => {

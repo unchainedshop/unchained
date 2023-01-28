@@ -1,4 +1,4 @@
-import {applyRate} from './product-discount'
+import {applyRate} from './product-discount.js'
 describe('applyRate', () => {
   it('applies the rate correctly when a rate is provided', () => {
     const configuration = {

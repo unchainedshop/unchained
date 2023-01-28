@@ -1,5 +1,5 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing.js';
-import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
+import { ProductPricingAdapter, ProductPricingDirector } from '@unchainedshop/core-products';
 
 export const roundToNext = (value, precision) => Math.ceil(value / precision) * precision;
 // TODO: Move to types

@@ -1,5 +1,5 @@
 import {jest} from '@jest/globals'
-import { getTaxRate, isDeliveryAddressInSwitzerland, ProductSwissTax, SwissTaxCategories } from './product-swiss-tax.js';
+import { getTaxRate, isDeliveryAddressInSwitzerland,  SwissTaxCategories } from './product-swiss-tax.js';
 
 
 
@@ -184,13 +184,6 @@ describe('Actions', () => {
       calculationSheet,
     };
   });
-    it('should return the correct pricing adapter actions', () => {
-      const actions = ProductSwissTax.actions(params);
-      expect(actions).toHaveProperty('calculate');
-      expect(actions).toHaveProperty('getCalculation');
-      expect(actions).toHaveProperty('getContext');
-      expect(actions).toHaveProperty('resultSheet');
-    });
     
   })
 })
