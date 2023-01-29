@@ -1,6 +1,6 @@
 import { buildFindSelector } from "./configureProductReviewsModule.js";
 
-xdescribe('Product', () => {
+describe('Product', () => {
   describe("buildFindSelector", () => {
     it('Return correct filter object object when no parameter is passed', async () => {
       expect(buildFindSelector({}as any)).toEqual({ "deleted": null })
