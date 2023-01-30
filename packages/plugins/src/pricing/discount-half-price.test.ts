@@ -2,7 +2,7 @@ import { HalfPrice } from './discount-half-price.js';
 
 describe('HalfPrice', () => {
   it('isManualAdditionAllowed', async () => {
-    expect(await HalfPrice.isManualAdditionAllowed(undefined)).toBeFalsy();
+    expect(await HalfPrice.isManualAdditionAllowed('')).toBeFalsy();
   });
 
   it('isManualRemovalAllowed', async () => {
@@ -35,6 +35,6 @@ describe('HalfPrice', () => {
     const context = {};
     const actions = await HalfPrice.actions({ context } as any);
     
-    expect(await actions.isValidForCodeTriggering(undefined)).toBeFalsy();
+    expect(await actions.isValidForCodeTriggering({code: ''})).toBeFalsy();
   });
 });

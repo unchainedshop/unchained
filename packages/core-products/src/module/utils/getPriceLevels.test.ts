@@ -1,5 +1,5 @@
 import { getPriceLevels } from "./getPriceLevels.js";
-import product  from '../../../tests/mock/product.js'
+import product  from '../../mock/product.js'
 
 
 describe('Price level', () => {

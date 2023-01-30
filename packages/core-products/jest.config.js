@@ -14,4 +14,5 @@ export default {
   moduleNameMapper: {
     '(.+)\\.js': '$1',
   },
+  rootDir: '.',
 };
