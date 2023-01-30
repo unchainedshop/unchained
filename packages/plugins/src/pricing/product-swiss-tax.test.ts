@@ -138,49 +138,4 @@ describe('isDeliveryAddressInSwitzerland', () => {
 });
 
 
-describe('Actions', () => {
-
-  let calculationSheet;
-  let params;
-  let context;
-  
-
-  beforeEach(() => {
-    calculationSheet = {
-      addTax: import.meta.jest.fn(({amount}) => console.log('add tax called', amount)),
-      filterBy: import.meta.jest.fn().mockReturnValue([
-        { isTaxable: true, amount: 100, isNetPrice: false },
-        { isTaxable: true, amount: 200, isNetPrice: true },
-      ]),
-    };
-    context = {
-      product: {
-        tags: ['swiss-tax-category:reduced']
-      },
-      order: {
-        deliveryId: 'delivery-1',
-      },
-      currency: 'CH',
-      quantity: 3,
-      modules: {
-        orders: {
-          deliveries: {
-            findDelivery: import.meta.jest.fn().mockReturnValue({
-              context: {
-                address: {
-                  countryCode: 'CH',
-                },
-              },
-            }),
-          },
-        },
-      },
-    };
-    params = {
-      context,
-      calculationSheet,
-    };
-  });
-    
-  })
 })
