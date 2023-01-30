@@ -9,7 +9,7 @@ import nodemailer from 'nodemailer';
 
 const logger = createLogger('unchained:plugins:worker:email');
 
-const checkEmailInterceptionEnabled = () => {
+export const checkEmailInterceptionEnabled = () => {
   return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
 };
 

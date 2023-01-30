@@ -39,7 +39,7 @@
     "test:watch": "cross-env DEBUG=jest-mongodb:* jest --runInBand --watch --no-watchman --verbose tests/**",
     "dev": "run-p --print-label dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
-    "dev:watch-packages": "workspaces-run --only-fs 'packages/**' --parallel -- npm run watch",
+    "dev:watch-packages": "workspaces-run --ignore '@unchainedshop/shared' --only-fs 'packages/**' --parallel -- npm run watch",
     "publish-packages": "(npm run build || true) && npm publish -ws",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "build": "npm run build --workspaces --if-present",

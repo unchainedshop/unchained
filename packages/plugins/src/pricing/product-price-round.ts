@@ -1,8 +1,8 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing.js';
-import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
+import { ProductPricingAdapter, ProductPricingDirector } from '@unchainedshop/core-products';
 
-const roundToNext = (value, precision) => Math.ceil(value / precision) * precision;
-
+export const roundToNext = (value, precision) => Math.ceil(value / precision) * precision;
+// TODO: Move to types
 // String is referencing to a currency
 interface PriceRoundSettings {
   configurations: Record<string, number>;
@@ -10,7 +10,7 @@ interface PriceRoundSettings {
   skip: Array<string>;
 }
 
-const ProductPriceRoundSettings: PriceRoundSettings = {
+export const ProductPriceRoundSettings: PriceRoundSettings = {
   configurations: {},
   defaultPrecision: 50,
   skip: [],

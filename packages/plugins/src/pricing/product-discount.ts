@@ -5,9 +5,9 @@ import {
 } from '@unchainedshop/types/products.pricing.js';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 
-const applyRate = (configuration: DiscountConfiguration, amount) => {
+export const applyRate = (configuration: DiscountConfiguration, amount) => {
   const { rate, fixedRate } = configuration;
-  return rate ? amount * rate : Math.min(fixedRate, amount);
+  return rate ? amount * rate : Math.min(fixedRate || 0, amount);
 };
 const ProductDiscount: IProductPricingAdapter = {
   ...ProductPricingAdapter,

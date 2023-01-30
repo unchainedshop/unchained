@@ -10,4 +10,7 @@ module.exports = {
       },
     ],
   },
+  moduleNameMapper: {
+    '(.+)\\.js': '$1',
+  },
 };
