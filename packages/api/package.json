@@ -54,6 +54,7 @@
     "@unchainedshop/logger": "^2.0.0-rc.4",
     "@unchainedshop/roles": "^2.0.0-rc.4",
     "@unchainedshop/utils": "^2.0.0-rc.4",
+    "@unchainedshop/shared": "*",
     "accounting": "0.4.1",
     "dataloader": "^2.1.0",
     "graphql-scalars": "^1.20.1",

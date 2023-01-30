@@ -15,11 +15,10 @@ import {
   resolveBestCountry,
   resolveBestSupported,
   resolveUserRemoteAddress,
-  
   slugify,
   systemLocale,
 } from '@unchainedshop/utils';
-import generateHashId from '../lib/generate-random-hash.js'
+import generateHashId from './generate-random-hash.js'
 
 describe('Utils', () => {
 
