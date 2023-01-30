@@ -1,6 +1,5 @@
-
-import {jest} from '@jest/globals'
 import { HalfPrice } from './discount-half-price.js';
+
 describe('HalfPrice', () => {
   it('isManualAdditionAllowed', async () => {
     expect(await HalfPrice.isManualAdditionAllowed(undefined)).toBeFalsy();
@@ -14,7 +13,7 @@ describe('HalfPrice', () => {
     const context = {
       modules: {
         users: {
-          findUserById: jest.fn(() => Promise.resolve({ tags: ['half-price'] }))
+          findUserById: import.meta.jest.fn(() => Promise.resolve({ tags: ['half-price'] }))
         }
       },
       order: { userId: 'user-id' }

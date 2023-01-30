@@ -36,7 +36,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
     "@accounts/types": "^0.33.2",
-    "@apollo/server": "^4.3.0",
+    "@apollo/server": "^4.3.2",
     "@types/locale": "^0.1.1",
     "@types/node": "^18.11.18",
     "mongodb": "^4.13.0",

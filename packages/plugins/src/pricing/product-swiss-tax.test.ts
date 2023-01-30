@@ -1,7 +1,4 @@
-import {jest} from '@jest/globals'
 import { getTaxRate, isDeliveryAddressInSwitzerland,  SwissTaxCategories } from './product-swiss-tax.js';
-
-
 
 describe("ProductSwissTax", () => {
 describe('SwissTaxCategories', () => {
@@ -89,7 +86,7 @@ describe('isDeliveryAddressInSwitzerland', () => {
     modules:  {
       orders: {
         deliveries: {
-          findDelivery: jest.fn(async({orderDeliveryId}) =>{ 
+          findDelivery: import.meta.jest.fn(async({orderDeliveryId}) =>{ 
             if(orderDeliveryId === 'CH' || orderDeliveryId === 'LI' )
            return {context: { address: { countryCode: 'CH'}}}
            if(orderDeliveryId === null)
@@ -150,8 +147,8 @@ describe('Actions', () => {
 
   beforeEach(() => {
     calculationSheet = {
-      addTax: jest.fn(({amount}) => console.log('add tax called', amount)),
-      filterBy: jest.fn().mockReturnValue([
+      addTax: import.meta.jest.fn(({amount}) => console.log('add tax called', amount)),
+      filterBy: import.meta.jest.fn().mockReturnValue([
         { isTaxable: true, amount: 100, isNetPrice: false },
         { isTaxable: true, amount: 200, isNetPrice: true },
       ]),
@@ -168,7 +165,7 @@ describe('Actions', () => {
       modules: {
         orders: {
           deliveries: {
-            findDelivery: jest.fn().mockReturnValue({
+            findDelivery: import.meta.jest.fn().mockReturnValue({
               context: {
                 address: {
                   countryCode: 'CH',

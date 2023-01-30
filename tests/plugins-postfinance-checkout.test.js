@@ -208,7 +208,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
       const mockedOrderModule = {
         payments: {
           findOrderPayment: ({ orderPaymentId }) => { return orderPaymentId === 'pfcheckout-payment' ? { orderId: 'pfcheckout-order' } : {} },
-          markAsPaid: jest.fn(),
+          markAsPaid: import.meta.jest.fn(),
         },
         findOrder: ({ orderId }) => { return orderId === 'pfcheckout-order' ? { orderId, currency: SimpleOrder.currency } : {} },
         pricingSheet: ({ orderId }) => {

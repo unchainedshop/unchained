@@ -1,26 +1,24 @@
-import {jest} from "@jest/globals"
 import { BaseDirector } from "./BaseDirector.js";
-
 
 const adapter1 = {
   key: 'adapter1',
   label: 'Adapter 1',
   version: '1',
-  log: jest.fn(),
+  log: import.meta.jest.fn(),
 };
 
 const adapter2 = {
   key: 'adapter2',
   label: 'Adapter 2',
   version: '2',
-  log: jest.fn(),
+  log: import.meta.jest.fn(),
 };
 
 const adapter3 = {
   key: 'adapter3',
   label: 'Adapter 3',
   version: '3',
-  log: jest.fn(),
+  log: import.meta.jest.fn(),
 };
 
 describe('BaseDirector', () => {
@@ -41,7 +39,7 @@ describe('BaseDirector', () => {
     });
   
     xit('should generate a log message when an adapter is registered', () => {
-      const spy = jest.spyOn(console, 'log')
+      const spy = import.meta.jest.spyOn(console, 'log')
        expect(spy).toHaveBeenCalledWith(
         'TestDirector -> Registered  adapter1 1.0.0 (Adapter 1)',
       ); 
