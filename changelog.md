@@ -1,16 +1,17 @@
-# Unchained Engine vNEXT
+# Unchained Engine v2.0
 
-This is a major feature release bringing WebAuthn and Virtual Products including NFT/Token Minting to Unchained Engine. It's also the first version of Unchained Engine that can be extended to run on other Node.js frameworks than Express.
+This is a major feature release bringing Web Authentication API, Web3 Login, Web Push API and Virtual Products including an NFT/Token Minting gateway to Unchained Engine. It's also the first version of Unchained Engine that can be extended to run on other Node.js frameworks than Express.
 
-Unchained Engine 2.0 requires Node 16+ now and uses native fetch, this also breaks Meteor compatibility for the moment. The legacy example will be pinned to v1 for the moment.
+We are jumping on the ESM train and Unchained Engine 2.0 now requires Node 18+ and uses native fetch. This also breaks Meteor compatibility for the moment. The legacy example will be pinned to v1 for the moment. We will continue to push maintenance and small fixes to both release lines v1.x and v2.x.
 
 ## GRAPHQL API BREAKING CHANGES
 - Tags are now always LowerCase and use an own scalar
 - Order.documents has been removed because it was not used since 3 years
-- Completely breaks Meteor support (sorry to whom it may concern) for now because Node.js 16+ required, checkout the Kitchensink example for an ESM, non-meteor node app that uses Unchained Engine.
 - The fields createdBy, updatedBy, deletedBy and authorId got removed completely from the database and the whole API surface, reasoning behind is that the value most of the time did not represent who actually did what and kept us back using the inner UnchainedCore as type. It just did not deliver on what it promised, it just added bloat. The only place where authorId is still used is in product reviews where users can add reviews and are actual authors of text.
 
 ## Major
+- New built-in support for two standard W3C API's: Web Authentication API, Push API
+- New Web3 Experimantal Features: NFT/Token Minting Plugins, Web3 Login through Metamask
 - Unchained now uses Apollo Server 4.
 - We have dropped `expressApp` and instead now export a new function `connectPlatformToExpress4`. That Express implementation can be looked up here and is still the default: https://github.com/unchainedshop/unchained/tree/master/packages/api/src/express. The new structure and internals allows somebody to wire the engine with a serverless/lambda environment or any other Node.js based framework.
 - `@unchainedshop/plugins` now has a default export and an Express middleware setup function. Using those functions is dramatically simplifying batteries-included setups.  Checkout the kitchensink example's boot.ts which is now less than 60 lines of code. 

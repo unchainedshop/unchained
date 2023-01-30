@@ -1,4 +1,5 @@
 {
     "name": "@unchainedshop/shared",
-    "private": true
-  }
+    "private": true,
+    "version": "2.0.0"
+}
