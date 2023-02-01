@@ -84,7 +84,7 @@ export const configureAssortmentProductsModule = ({
         created: new Date(),
       };
 
-      if (!sortKey) {
+      if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastAssortmentProduct = (await AssortmentProducts.findOne(
           { assortmentId },

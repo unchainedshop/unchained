@@ -81,7 +81,7 @@ export const configureAssortmentLinksModule = ({
           if (parentIds.includes(childAssortmentId)) throw Error('CyclicGraphNotSupported');
         });
 
-      if (!sortKey) {
+      if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastAssortmentLink = (await AssortmentLinks.findOne(
           { parentAssortmentId },
