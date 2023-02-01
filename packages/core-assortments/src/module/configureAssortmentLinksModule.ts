@@ -71,7 +71,7 @@ export const configureAssortmentLinksModule = ({
         createdBy: userId,
       };
 
-      if (!sortKey) {
+      if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastAssortmentLink = (await AssortmentLinks.findOne(
           { parentAssortmentId },

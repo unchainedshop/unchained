@@ -108,7 +108,7 @@ export const configureProductMediaModule = async ({
     create: async (doc: ProductMedia, userId) => {
       let { sortKey } = doc;
 
-      if (!sortKey) {
+      if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastProductMedia = (await ProductMedias.findOne(
           {

@@ -59,7 +59,7 @@ export const configureAssortmentFiltersModule = ({
         createdBy: userId,
       };
 
-      if (!doc.sortKey) {
+      if (sortKey === undefined || sortKey === null) {
         // Get next sort key
         const lastAssortmentFilter = (await AssortmentFilters.findOne(
           { assortmentId },
