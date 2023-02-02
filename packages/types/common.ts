@@ -1,43 +1,8 @@
-import {
-  Collection,
-  CreateIndexesOptions,
-  Db,
-  Document,
-  Filter,
-  FindOptions,
-  IndexDirection,
-  ModifyResult,
-  ObjectId,
-  Projection,
-  Sort,
-  UpdateFilter,
-  UpdateOptions,
-  GridFSBucket,
-} from 'mongodb';
+import type { CreateIndexesOptions, Document, IndexDirection } from 'mongodb';
 import type { Locale, Locales } from 'locale';
 
 export { Locale, Locales };
-
-/*
- * MongoDb
- */
-export type {
-  Collection,
-  Db,
-  Document,
-  Filter,
-  FindOptions,
-  ModifyResult,
-  ObjectId,
-  Projection,
-  Sort,
-  UpdateFilter as Update,
-  UpdateOptions,
-  GridFSBucket,
-};
-
 export type _ID = string;
-
 export type Query = { [x: string]: any };
 
 export type Indexes<T extends Document> = Array<{

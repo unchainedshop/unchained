@@ -1,4 +1,4 @@
-import { MongoClient, Collection } from 'mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 import { execute, toPromise, gql } from '@apollo/client/core';
 import { createUploadLink } from 'apollo-upload-client';
 import { FormData } from 'formdata-node';
@@ -16,7 +16,7 @@ import seedBookmarks from './seeds/bookmark';
 import seedEnrollment from './seeds/enrollments';
 import seedWorkQueue from './seeds/work';
 
-Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...args) {
+mongodb.Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...args) {
   try {
     const { insertedId } = await this.insertOne(doc, ...args);
     return this.findOne({ _id: insertedId }, ...args);
@@ -35,7 +35,7 @@ export const disconnect = async () => {
 
 export const connect = async () => {
   const connectionUri = (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
-  connection = await MongoClient.connect(connectionUri, {
+  connection = await mongodb.MongoClient.connect(connectionUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     keepAlive: true,

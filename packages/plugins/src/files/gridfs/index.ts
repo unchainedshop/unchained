@@ -1,4 +1,4 @@
-import mongodb from 'mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 
 export const configureGridFSFileUploadModule = ({ db }) => {
   // eslint-disable-next-line

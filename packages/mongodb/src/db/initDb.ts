@@ -1,5 +1,5 @@
 import { mkdirSync } from 'fs';
-import { Db, MongoClient } from 'mongodb';
+import * as mongodb from 'mongodb';
 
 let mongod;
 
@@ -25,11 +25,17 @@ export const stopDb = async () => {
   await mongod.stop();
 };
 
-const initDbNative = async (): Promise<Db> => {
+const initDbNative = async (): Promise<mongodb.Db> => {
   const url = process.env.MONGO_URL || (await startDb());
-  const client = new MongoClient(url);
+  const client = new mongodb.MongoClient(url);
   await client.connect();
   const db = client.db();
+  return db;
+};
+
+const initDbMeteor = async (): Promise<mongodb.Db> => {
+  const { MongoInternals } = require('meteor/mongo'); // eslint-disable-line
+  const db = MongoInternals.defaultRemoteCollectionDriver().mongo.db; // eslint-disable-line
   return db;
 };
 
@@ -49,12 +55,6 @@ if (isMeteor) {
     };
   };
 }
-
-const initDbMeteor = async (): Promise<Db> => {
-  const { MongoInternals } = require('meteor/mongo'); // eslint-disable-line
-  const db = MongoInternals.defaultRemoteCollectionDriver().mongo.db; // eslint-disable-line
-  return db;
-};
 
 const initDb = isMeteor ? initDbMeteor : initDbNative;
 

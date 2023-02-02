@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { Decimal128 } from 'mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 import { CryptopayTransaction, CryptopayTransactionsCollection } from '../db/CryptopayTransactions.js';
 
 export interface CryptopayModule {
@@ -64,7 +64,7 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
           decimals: null,
           mostRecentBlockHeight: 0,
           blockHeight: 0,
-          amount: Decimal128.fromString('0'),
+          amount: mongodb.Decimal128.fromString('0'),
           created: new Date(),
         },
         $set: {
@@ -112,7 +112,7 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
           decimals,
           blockHeight,
           mostRecentBlockHeight: blockHeight,
-          amount: Decimal128.fromString(amount),
+          amount: mongodb.Decimal128.fromString(amount),
           updated: new Date(),
         },
       },

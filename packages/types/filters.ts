@@ -1,15 +1,7 @@
-import { Db } from 'mongodb';
+import type { Db, FindOptions, Document } from 'mongodb';
 import { SortOption } from './api.js';
 import { Assortment } from './assortments.js';
-import {
-  FindOptions,
-  Document,
-  IBaseAdapter,
-  IBaseDirector,
-  Query,
-  TimestampFields,
-  _ID,
-} from './common.js';
+import { IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Product } from './products.js';
 

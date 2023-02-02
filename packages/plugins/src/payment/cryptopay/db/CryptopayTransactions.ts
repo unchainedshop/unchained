@@ -1,11 +1,11 @@
 import { Db, TimestampFields, _ID } from '@unchainedshop/types/common.js';
-import { Decimal128 } from 'mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 
 export type CryptopayTransaction = {
   _id?: _ID;
   blockHeight: number;
   mostRecentBlockHeight: number;
-  amount: Decimal128;
+  amount: mongodb.Decimal128;
   currency: string;
   decimals: number;
   contract: string;

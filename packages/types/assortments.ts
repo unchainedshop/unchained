@@ -1,4 +1,4 @@
-import { Db } from 'mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 import { SortOption } from './api.js';
 import { AssortmentMediaModule } from './assortments.media.js';
 import { Filter, FindOptions, Query, TimestampFields, Tree, _ID } from './common.js';
@@ -328,5 +328,5 @@ export interface AssortmentsSettings {
   slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
-  configureSettings: (options?: AssortmentsSettingsOptions, db?: Db) => void;
+  configureSettings: (options?: AssortmentsSettingsOptions, db?: mongodb.Db) => void;
 }

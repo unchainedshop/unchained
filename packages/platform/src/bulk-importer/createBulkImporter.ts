@@ -1,4 +1,4 @@
-import mongodb from 'mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/types/platform.js';
 import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core.js';
 import * as AssortmentHandlers from './handlers/assortment/index.js';
@@ -28,10 +28,12 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
   const isMeteor = typeof Meteor === 'object';
 
   // eslint-disable-next-line
-  let { GridFSBucket } = mongodb;
+  let GridFSBucket;
   if (isMeteor) {
     const { MongoInternals } = require('meteor/mongo'); // eslint-disable-line
     GridFSBucket = MongoInternals.NpmModule.GridFSBucket;
+  } else {
+    GridFSBucket = mongodb.GridFSBucket;
   }
 
   // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
