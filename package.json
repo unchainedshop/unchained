@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -46,7 +46,7 @@
     "test:unit-watch": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit --watch --config ./packages/unit-jest.config.js  "
   },
   "devDependencies": {
-    "@apollo/client": "^3.7.5",
+    "@apollo/client": "^3.7.6",
     "@babel/core": "^7.20.12",
     "@babel/eslint-parser": "^7.19.1",
     "@babel/preset-env": "^7.20.2",
@@ -55,8 +55,8 @@
     "@types/lodash.clone": "^4.5.7",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
-    "@typescript-eslint/eslint-plugin": "^5.49.0",
-    "@typescript-eslint/parser": "^5.49.0",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
     "apollo-upload-client": "^17.0.0",
     "cross-env": "^7.0.3",
     "dotenv-extended": "^2.9.0",
@@ -73,7 +73,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.3",
     "ts-jest": "^29.0.5",
-    "typescript": "^4.9.4",
+    "typescript": "^4.9.5",
     "workspaces-run": "^1.0.1"
   }
 }
