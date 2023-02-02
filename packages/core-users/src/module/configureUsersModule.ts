@@ -1,5 +1,5 @@
 import localePkg from 'locale';
-import { Query } from '@unchainedshop/types/common.js';
+import { Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
@@ -392,9 +392,9 @@ export const configureUsersModule = async ({
           { _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': subscription?.keys?.p256dh },
           {
             $pull: {
-              pushSubscriptions: { keys: { p256dh: subscription?.keys?.p256dh } },
+              pushSubscriptions: { 'keys.p256dh': subscription?.keys?.p256dh },
             },
-          },
+          } as Filter<User>,
         );
       }
     },
@@ -403,9 +403,9 @@ export const configureUsersModule = async ({
         { _id: userId },
         {
           $pull: {
-            pushSubscriptions: { keys: { p256dh } },
+            pushSubscriptions: { 'keys.p256dh': p256dh },
           },
-        },
+        } as Filter<User>,
         {},
       );
     },
