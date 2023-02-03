@@ -98,6 +98,12 @@ const GenerateOrderWorker: IWorkerAdapter<any, any> = {
             const director = await EnrollmentDirector.actions({ enrollment }, unchainedAPI);
             const period = await director.nextPeriod();
             if (period) {
+              if (period.isTrial) {
+                await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
+                  ...period,
+                });
+                return null;
+              }
               const configuration = await director.configurationForOrder({
                 ...input,
                 period,
