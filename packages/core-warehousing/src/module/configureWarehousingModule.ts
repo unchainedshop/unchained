@@ -193,8 +193,7 @@ export const configureWarehousingModule = async ({
 
       // Tokenize linearly so that after every tokenized item, the db is updated
       await tokenizers.reduce(async (lastPromise, tokenizer) => {
-        const last = await lastPromise;
-        if (last) return last;
+        await lastPromise;
         const tokenSurrogates = await tokenizer();
         await TokenSurrogates.insertMany(tokenSurrogates);
         return true;
