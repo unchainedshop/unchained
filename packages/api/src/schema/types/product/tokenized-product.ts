@@ -3,8 +3,8 @@ export default [
     input UpdateProductTokenizationInput {
       contractAddress: String!
       contractStandard: SmartContractStandard!
-      tokenId: String
-      supply: Int
+      tokenId: String!
+      supply: Int!
       ercMetadataProperties: JSON
     }
 
@@ -14,8 +14,8 @@ export default [
     }
 
     type ContractConfiguration @cacheControl(maxAge: 180) {
-      tokenId: String
-      supply: Int
+      tokenId: String!
+      supply: Int!
       ercMetadataProperties: JSON
     }
 

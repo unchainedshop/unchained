@@ -38,7 +38,7 @@ const ProductTokenizationSchema = new SimpleSchema(
   {
     contractAddress: String,
     contractStandard: String,
-    ercMetadataProperties: { type: Object, blackbox: true },
+    ercMetadataProperties: { type: Object, blackbox: true, optional: true },
     tokenId: String,
     supply: Number,
   },
