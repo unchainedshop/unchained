@@ -169,8 +169,8 @@ export const configureWarehousingModule = async ({
         buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
       ).toArray();
 
-      await Promise.all(
-        items.map(async ({ orderPosition, product }) => {
+      const tokenizers = await Promise.all(
+        items.flatMap(({ orderPosition, product }) => {
           const warehousingContext: WarehousingContext = {
             order,
             orderPosition,
@@ -178,23 +178,27 @@ export const configureWarehousingModule = async ({
             quantity: orderPosition.quantity,
             referenceDate: order.ordered,
           };
-          await virtualProviders.reduce(async (lastPromise, provider) => {
-            const last = await lastPromise;
-            if (last) return last;
-            const currentDirector = await WarehousingDirector.actions(
+          return virtualProviders.map(async (provider) => {
+            const director = await WarehousingDirector.actions(
               provider,
               warehousingContext,
               unchainedAPI,
             );
-            const isActive = await currentDirector.isActive();
-            if (isActive) {
-              const tokenSurrogates = await currentDirector.tokenize();
-              await TokenSurrogates.insertMany(tokenSurrogates);
-            }
-            return true;
-          }, Promise.resolve(false));
+            const isActive = await director.isActive();
+            if (isActive) return director.tokenize;
+            return (async () => []) as typeof director.tokenize;
+          });
         }),
       );
+
+      // Tokenize linearly so that after every tokenized item, the db is updated
+      await tokenizers.reduce(async (lastPromise, tokenizer) => {
+        const last = await lastPromise;
+        if (last) return last;
+        const tokenSurrogates = await tokenizer();
+        await TokenSurrogates.insertMany(tokenSurrogates);
+        return true;
+      }, Promise.resolve(false));
     },
 
     tokenMetadata: async (chainTokenId, { token, product, locale, referenceDate }, unchainedAPI) => {
