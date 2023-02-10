@@ -38,7 +38,7 @@ export type FilesModule = ModuleMutations<File> & {
  */
 
 export type LinkFileService = (
-  params: { fileId: string; size: number; type: string },
+  params: { fileId: string; size: number; type?: string },
   unchainedAPI: UnchainedCore,
 ) => Promise<File>;
 
