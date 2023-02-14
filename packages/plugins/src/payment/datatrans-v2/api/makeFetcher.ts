@@ -44,6 +44,9 @@ export default (
     return fetch(`${endpoint}${path}`, {
       method: body ? 'POST' : 'GET',
       body: body ? JSON.stringify(body) : undefined,
+      // eslint-disable-next-line
+      // @ts-ignore
+      duplex: body ? 'half' : undefined,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Basic ${Buffer.from(token, 'utf-8').toString('base64')}`,

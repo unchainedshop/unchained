@@ -256,6 +256,9 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           'http://localhost:4010/payment/postfinance-checkout',
           {
             method: 'POST',
+            // eslint-disable-next-line
+            // @ts-ignore
+            duplex: 'half',
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',

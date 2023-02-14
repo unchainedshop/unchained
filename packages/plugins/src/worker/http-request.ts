@@ -7,6 +7,9 @@ const postFetch = async (url, { data, headers }) => {
   return fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
+    // eslint-disable-next-line
+    // @ts-ignore
+    duplex: 'half',
     headers: { 'Content-Type': 'application/json', ...headers },
   });
 };

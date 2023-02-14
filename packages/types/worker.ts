@@ -98,7 +98,7 @@ export type WorkerModule = {
     data: WorkResult<any> & {
       finished?: Date;
       started?: Date;
-      worker: string;
+      worker?: string;
     },
   ) => Promise<Work | null>;
 

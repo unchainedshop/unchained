@@ -148,6 +148,9 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}`,
@@ -174,6 +177,9 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}WRONG`,
@@ -197,6 +203,9 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}`,
@@ -218,6 +227,9 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}`,
@@ -253,6 +265,9 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
             'datatrans-signature': `t=12424123412,s0=${sign}`,

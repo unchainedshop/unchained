@@ -16,6 +16,9 @@ const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
     headers: {
       'content-type': 'application/json',
     },
+    // eslint-disable-next-line
+    // @ts-ignore
+    duplex: 'half',
     body: JSON.stringify({
       operationName: 'consume',
       variables: {

@@ -27,6 +27,9 @@ const verifyReceipt = async ({ receiptData, password }): Promise<any> => {
   const result = await fetch(environments[APPLE_IAP_ENVIRONMENT], {
     body: JSON.stringify(payload),
     method: 'POST',
+    // eslint-disable-next-line
+    // @ts-ignore
+    duplex: 'half',
     headers: {
       'Content-Type': 'application/json',
     },

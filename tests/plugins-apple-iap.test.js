@@ -296,6 +296,9 @@ let graphqlFetch;
           headers: {
             "Content-Type": "application/json",
           },
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           body: JSON.stringify(initialBuy),
         });
         expect(result.status).toBe(200);
@@ -310,6 +313,9 @@ let graphqlFetch;
           headers: {
             "Content-Type": "application/json",
           },
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           body: JSON.stringify(didRecover),
         });
         expect(result.status).toBe(200);
@@ -327,6 +333,9 @@ let graphqlFetch;
           headers: {
             "Content-Type": "application/json",
           },
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           body: JSON.stringify(didChangeRenewalStatus),
         });
         expect(result.status).toBe(200);

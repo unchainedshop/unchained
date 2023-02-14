@@ -29,6 +29,9 @@ export class SaferpayConnection {
     const res = await fetch(this.buildUrl(uri), {
       method: 'POST',
       body: JSON.stringify(data),
+      // eslint-disable-next-line
+      // @ts-ignore
+      duplex: 'half',
       headers: this.getHeaders(),
     });
     return res.json();

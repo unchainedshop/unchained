@@ -232,6 +232,9 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
+        // eslint-disable-next-line
+        // @ts-ignore
+        duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
           contract: null,
@@ -252,6 +255,9 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
+        // eslint-disable-next-line
+        // @ts-ignore
+        duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
           contract: null,
@@ -272,6 +278,9 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
+        // eslint-disable-next-line
+        // @ts-ignore
+        duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
           contract: null,
@@ -292,6 +301,9 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
+        // eslint-disable-next-line
+        // @ts-ignore
+        duplex: 'half',
         body: JSON.stringify({
           currency: 'ETH',
           contract: SHIBCurrency.contractAddress,
@@ -312,6 +324,9 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
+        // eslint-disable-next-line
+        // @ts-ignore
+        duplex: 'half',
         body: JSON.stringify({
           currency: 'ETH',
           contract: SHIBCurrency.contractAddress,

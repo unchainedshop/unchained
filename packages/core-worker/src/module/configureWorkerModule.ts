@@ -2,7 +2,7 @@ import os from 'os';
 import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { Work, WorkerModule } from '@unchainedshop/types/worker.js';
-import { log, LogLevel } from '@unchainedshop/logger';
+import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection } from '@unchainedshop/types/api.js';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
@@ -12,6 +12,8 @@ import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { WorkStatus } from '../director/WorkStatus.js';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
+
+const logger = createLogger('unchained:core-worker');
 
 export const buildQuerySelector = ({
   created,
@@ -126,10 +128,19 @@ export const configureWorkerModule = async ({
 
     const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
-    log(`Finished work ${workId}`, {
-      level: LogLevel.Verbose,
-      work,
-    });
+    const duration = new Date(work.finished).getTime() - new Date(work.started).getTime();
+    if (work.success) {
+      logger.info(`${work.type} finished with success (${duration}ms)`, {
+        workId,
+        worker,
+      });
+    } else {
+      logger.warn(`${work.type} finished with errors (${duration}ms) / ${work.retries} remaining`, {
+        workId,
+        worker,
+      });
+    }
+    logger.debug(`work details:`, { work });
 
     WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work });
 
@@ -199,7 +210,7 @@ export const configureWorkerModule = async ({
         return WorkStatus.FAILED;
       }
 
-      log('Unexpected work status', { level: LogLevel.Warning });
+      logger.error(`${work.type} is in unexpected state`, { workId: work._id });
 
       throw new Error('Unexpected work status');
     },
@@ -221,11 +232,9 @@ export const configureWorkerModule = async ({
         created,
       });
 
-      log(
-        `WorkerDirector -> Work added ${workId} (${type} / ${new Date(
-          scheduled || created,
-        ).toISOString()} / ${retries})`,
-      );
+      logger.info(`${type} scheduled @ ${new Date(scheduled || created).toISOString()}`, {
+        workId,
+      });
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
@@ -312,11 +321,9 @@ export const configureWorkerModule = async ({
         );
 
         if (!result.lastErrorObject.updatedExisting) {
-          log(
-            `WorkerDirector -> Work added again (ensure) ${type} ${new Date(
-              scheduled,
-            ).toISOString()} ${retries}`,
-          );
+          logger.info(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
+            workId,
+          });
 
           WorkerDirector.events.emit(WorkerEventTypes.ADDED, {
             work: result.value,
