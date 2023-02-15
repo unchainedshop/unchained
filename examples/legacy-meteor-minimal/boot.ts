@@ -69,7 +69,7 @@ import loginWithSingleSignOn from './login-with-single-sign-on';
 import seed from './seed';
 
 Meteor.startup(async () => {
-  const unchainedApi = await startPlatform({
+  const unchainedAPI = await startPlatform({
     expressApp: WebApp.connectHandlers,
     introspection: true,
     playground: true,
@@ -110,12 +110,12 @@ Meteor.startup(async () => {
     context: withAccessToken(),
   });
 
-  seed(unchainedApi);
+  seed(unchainedAPI);
 
   // The following lines will activate SSO from Unchained Cloud to your instance,
   // if you want to further secure your app and close this rabbit hole,
   // remove the following lines
-  const singleSignOn = loginWithSingleSignOn(unchainedApi);
+  const singleSignOn = loginWithSingleSignOn(unchainedAPI);
   WebApp.connectHandlers.use('/', singleSignOn);
   WebApp.connectHandlers.use('/.well-known/unchained/cloud-sso', singleSignOn);
   // until here

@@ -410,10 +410,10 @@ type Duration = {
 
 const handlers: Record<string, BulkImportHandler> = {
   SYNC_PROGRESS: {
-      'log-duration': async function reportSyncTime(duration: Duration, options: { logger?: any; }, unchainedApi: UnchainedCore,) {
+      'log-duration': async function reportSyncTime(duration: Duration, options: { logger?: any; }, unchainedAPI: UnchainedCore,) {
                     options.logger.debug('replace all discount groups', duration);
 
-                    await unchainedApi.modules.durationLogger.insertSyncDurationReport(duration);
+                    await unchainedAPI.modules.durationLogger.insertSyncDurationReport(duration);
 
                     return {
                       entity: 'SYNC_PROGRESS',

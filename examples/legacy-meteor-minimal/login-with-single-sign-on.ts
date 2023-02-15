@@ -69,9 +69,9 @@ const loginWithSingleSignOn = async (remoteToken, unchainedAPI: Context) => {
   }
 };
 
-export default (unchainedApi) => (req, res, next) => {
+export default (unchainedAPI) => (req, res, next) => {
   if (req.query?.token) {
-    loginWithSingleSignOn(req.query.token, unchainedApi).then((authCookie) => {
+    loginWithSingleSignOn(req.query.token, unchainedAPI).then((authCookie) => {
       if (res?.setHeader) {
         res.writeHead(303, {
           'Set-Cookie': authCookie,

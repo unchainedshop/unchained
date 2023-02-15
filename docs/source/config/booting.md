@@ -25,13 +25,13 @@ The main entry point for unchained engine is `startPlatform` imported from `@unc
 ```typescript
 import { startPlatform } from '@unchainedshop/platform'
 
-const unchainedApi = await startPlatform({})
+const unchainedAPI = await startPlatform({})
 
 ```
 `startPlatform` returns the unchained api that lets you control all the modules and services defined. for example you can create seed the database with configurations like add currency, language, payment provider, admin accounts etc...
 
 ```typescript
-await unchainedApi.modules.accounts.createUser(
+await unchainedAPI.modules.accounts.createUser(
   {
     email: 'admin@unchained.local',
     guest: false,
@@ -229,7 +229,7 @@ Read more about unchained context and how to access it in **Accessing Unchained 
 Services allow you to add utility functions that can be used throughout the engine context. Unchained provides build in services or utility functions for most of the modules. It is also possible to register a custom service just like modules and access it like built in ones. this is useful in encapsulating a certain operation in a single function and utilize it everywhere and keep your code DRY. 
 You can access built in or custom services from unchained context anywhere in the application like so:
 ```
-unchainedApiContext.services.serviceName.[function name]
+unchainedAPIContext.services.serviceName.[function name]
 ```
 #### Custom Service
   It is possible to create a custom service for your need and have it available throughout the engine context like the built-in services. Custom services function can accept first arguments that will be used in the service and will also receive unchained context as there second argument

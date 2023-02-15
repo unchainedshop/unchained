@@ -75,7 +75,7 @@ const start = async () => {
   const app = express();
   app.use(cookieParser());
 
-  const unchainedApi = await startPlatform({
+  const unchainedAPI = await startPlatform({
     expressApp: app,
     introspection: true,
     playground: true,
@@ -116,12 +116,12 @@ const start = async () => {
     context: withAccessToken(),
   });
 
-  await seed(unchainedApi);
+  await seed(unchainedAPI);
 
   // The following lines will activate SSO from Unchained Cloud to your instance,
   // if you want to further secure your app and close this rabbit hole,
   // remove the following lines
-  const singleSignOn = loginWithSingleSignOn(unchainedApi);
+  const singleSignOn = loginWithSingleSignOn(unchainedAPI);
   app.use('/', singleSignOn);
   app.use('/.well-known/unchained/cloud-sso', singleSignOn);
   app.use(serveStatic('static', { index: ['index.html'] }));

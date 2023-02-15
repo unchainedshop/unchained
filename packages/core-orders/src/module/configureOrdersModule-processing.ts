@@ -7,6 +7,7 @@ import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
+import { UnchainedCore } from '@unchainedshop/types/core';
 import { ordersSettings } from '../orders-settings';
 
 const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
@@ -47,7 +48,7 @@ export const configureOrderModuleProcessing = ({
     return errors;
   };
 
-  const itemValidationErrors = async (order: Order, { modules }: Context) => {
+  const itemValidationErrors = async (order: Order, unchainedAPI: UnchainedCore) => {
     // Check if items are valid
     const orderPositions = await findOrderPositions(order);
     if (orderPositions.length === 0) {
@@ -63,20 +64,30 @@ export const configureOrderModuleProcessing = ({
           orderId: orderPosition.orderId,
         });
 
-        const product = await modules.products.findProduct({
+        const product = await unchainedAPI.modules.products.findProduct({
           productId: orderPosition.productId,
         });
 
-        if (!modules.products.isActive(product)) {
-          errors.push(new Error('This product is not available anymore'));
+        try {
+          await ordersSettings.validateOrderPosition(
+            {
+              order,
+              product,
+              configuration: orderPosition.configuration,
+              quantityDiff: 0,
+            },
+            unchainedAPI,
+          );
+        } catch (e) {
+          errors.push(e);
         }
 
         const quotation =
           orderPosition.quotationId &&
-          (await modules.quotations.findQuotation({
+          (await unchainedAPI.modules.quotations.findQuotation({
             quotationId: orderPosition.quotationId,
           }));
-        if (quotation && !modules.quotations.isProposalValid(quotation)) {
+        if (quotation && !unchainedAPI.modules.quotations.isProposalValid(quotation)) {
           errors.push(new Error('Quotation expired or fullfiled, please request a new offer'));
         }
         return errors;

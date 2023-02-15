@@ -222,6 +222,6 @@ export interface OrdersSettingsOptions {
   orderNumberHashFn?: (order: Order, index: number) => string;
   validateOrderPosition?: (
     validationParams: OrderSettingsOrderPositionValidation,
-    context: Context,
+    context: UnchainedCore,
   ) => Promise<void>;
 }

@@ -76,9 +76,9 @@ Triggering a worker is done by adding a work to the work queue using the worker 
 ```typescript
 import { Context } from '@unchainedshop/types/api';
 
-const someResolverFunction = (, unchainedApiContext: Context) =>  {
+const someResolverFunction = (, unchainedAPIContext: Context) =>  {
   
-unchainedApiContext.modules.worker.addWork(
+unchainedAPIContext.modules.worker.addWork(
       {
         type: 'HEARTBEAT',
         retries: 0,

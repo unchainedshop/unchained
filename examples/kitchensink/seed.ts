@@ -16,8 +16,8 @@ const {
 const seedPassword =
   UNCHAINED_SEED_PASSWORD === 'generate' ? uuidv4().split('-').pop() : UNCHAINED_SEED_PASSWORD;
 
-export default async (unchainedApi) => {
-  const { modules } = unchainedApi;
+export default async (unchainedAPI) => {
+  const { modules } = unchainedAPI;
   try {
     if ((await modules.users.count({ username: 'admin' })) > 0) {
       return;
