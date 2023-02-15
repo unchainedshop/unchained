@@ -65,7 +65,7 @@ import '@unchainedshop/plugins/lib/events/node-event-emitter';
 import seed from './seed';
 
 Meteor.startup(async () => {
-  const unchainedApi = await startPlatform({
+  const unchainedAPI = await startPlatform({
     introspection: true,
     playground: true,
     tracing: true,
@@ -102,7 +102,15 @@ Meteor.startup(async () => {
     context: withAccessToken(),
   });
 
-  seed(unchainedApi);
+  seed(unchainedAPI);
+
+  // The following lines will activate SSO from Unchained Cloud to your instance,
+  // if you want to further secure your app and close this rabbit hole,
+  // remove the following lines
+  const singleSignOn = loginWithSingleSignOn(unchainedAPI);
+  WebApp.connectHandlers.use('/', singleSignOn);
+  WebApp.connectHandlers.use('/.well-known/unchained/cloud-sso', singleSignOn);
+  // until here
 
   setupGridFSWebhook(WebApp.connectHandlers);
   setupCryptopay(WebApp.connectHandlers);
@@ -112,5 +120,5 @@ Meteor.startup(async () => {
   setupAppleIAP(WebApp.connectHandlers);
 
   configureGenerateOrderAutoscheduling();
-  configureExportToken(unchainedApi);
+  configureExportToken(unchainedAPI);
 });

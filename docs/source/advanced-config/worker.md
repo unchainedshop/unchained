@@ -74,7 +74,7 @@ WorkerDirector.registerAdapter(Heartbeat);
 Triggering a worker is done by adding a work to the work queue using the worker module found on unchained context. below is an example that demonstrate adding the work adapter we have created above
 
 ```typescript  
-unchainedApiContext.modules.worker.addWork(
+unchainedAPI.modules.worker.addWork(
     {
       type: 'HEARTBEAT',
       retries: 0,

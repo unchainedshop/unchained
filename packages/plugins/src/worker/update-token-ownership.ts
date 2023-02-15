@@ -62,11 +62,11 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
   },
 };
 
-export const configureUpdateTokenOwnership = (unchainedApi: UnchainedCore) => {
+export const configureUpdateTokenOwnership = (unchainedAPI: UnchainedCore) => {
   WorkerDirector.events.on(WorkerEventTypes.FINISHED, async ({ work }: { work: Work }) => {
     if (work.type === 'UPDATE_TOKEN_OWNERSHIP' && work.success) {
       await Promise.all(
-        (work.result?.tokens || []).map(unchainedApi.modules.warehousing.updateTokenOwnership),
+        (work.result?.tokens || []).map(unchainedAPI.modules.warehousing.updateTokenOwnership),
       );
     }
   });

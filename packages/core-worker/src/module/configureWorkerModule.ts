@@ -232,7 +232,7 @@ export const configureWorkerModule = async ({
         created,
       });
 
-      logger.info(`${type} scheduled @ ${new Date(scheduled || created).toISOString()}`, {
+      logger.info(`${type} scheduled @ ${new Date(scheduled).toISOString()}`, {
         workId,
       });
 

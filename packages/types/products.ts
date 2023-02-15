@@ -399,7 +399,7 @@ export type ProductsModule = {
 
 export type RemoveProductService = (
   params: { productId: string },
-  context: UnchainedCore,
+  unchainedAPI: UnchainedCore,
 ) => Promise<boolean>;
 
 export interface ProductServices {

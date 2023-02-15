@@ -16,10 +16,10 @@ export const ExportTokenWorker: IWorkerAdapter<void, void> = {
   },
 };
 
-export const configureExportToken = (unchainedApi: UnchainedCore) => {
+export const configureExportToken = (unchainedAPI: UnchainedCore) => {
   WorkerDirector.events.on(WorkerEventTypes.FINISHED, async ({ work }) => {
     if (work.type === 'EXPORT_TOKEN' && work.success) {
-      await unchainedApi.modules.warehousing.updateTokenOwnership({
+      await unchainedAPI.modules.warehousing.updateTokenOwnership({
         tokenId: work.input.token._id,
         userId: null,
         walletAddress: work.input.recipientWalletAddress,
