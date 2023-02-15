@@ -2,7 +2,7 @@ import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import fs from 'fs';
-import path from 'path';
+import { join } from 'path';
 import os from 'os';
 import open from 'open';
 import nodemailer from 'nodemailer';
@@ -13,8 +13,21 @@ export const checkEmailInterceptionEnabled = () => {
   return process.env.NODE_ENV !== 'production' && !process.env.UNCHAINED_DISABLE_EMAIL_INTERCEPTION;
 };
 
+const buildLink = ({ filename, content, href, contentType, encoding, path }) => {
+  if (path) {
+    return `<a href="${join(process.cwd(), path)}">${filename}</a>`;
+  }
+  if (href) {
+    return `<a href="${href}">${filename}</a>`;
+  }
+  if (content && encoding === 'base64') {
+    return `<a target="_blank" href="${`data:${contentType};base64,${content}=`}">${filename}</a>`;
+  }
+  return '';
+};
+
 function writeFile(filename, data, done) {
-  fs.mkdtemp(path.join(os.tmpdir(), 'email-'), (err1, folder) => {
+  fs.mkdtemp(join(os.tmpdir(), 'email-'), (err1, folder) => {
     if (err1) return done(err1);
     const temporaryFolderPath = `${folder}/${filename}`;
     return fs.writeFile(temporaryFolderPath, data, (err2) => {
@@ -34,12 +47,7 @@ const openInBrowser = (options) => {
     <b>Reply-To:&nbsp;</b>${options.replyTo}<br/>
     <br/>
     <b>subject:&nbsp;</b>${options.subject}<br/>
-    <b>attachments:&nbsp;</b>${(options.attachments || [])
-      .map(({ filename: attachmentFilename, path: attachmentPath }) => {
-        const absoluteFilePath = path.join(process.cwd(), attachmentPath);
-        return `<a href="${absoluteFilePath}">${attachmentFilename}</a>`;
-      })
-      .join(',&nbsp;')}<br/>
+    <b>attachments:&nbsp;</b>${(options.attachments || []).map(buildLink).join(',&nbsp;')}<br/>
     <hr/>
     ${(options.html || options.text).replace(/(\r\n|\n|\r)/gm, '<br/>')}
     `;
@@ -94,7 +102,10 @@ const EmailWorkerPlugin: IWorkerAdapter<
         return { success: true, result: { intercepted: true } };
       }
       if (!process.env.MAIL_URL) {
-        return { success: false, error: { name: 'NO_MAIL_URL_SET', message: 'MAIL_URL is not set' } };
+        return {
+          success: false,
+          error: { name: 'NO_MAIL_URL_SET', message: 'MAIL_URL is not set' },
+        };
       }
       const transporter = nodemailer.createTransport(process.env.MAIL_URL);
       const result = await transporter.sendMail(sendMailOptions);
