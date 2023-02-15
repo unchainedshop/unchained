@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/types/api';
-import { Collection } from '@unchainedshop/types/common';
+import { Collection, Update } from '@unchainedshop/types/common';
 import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries';
 import { OrderPayment } from '@unchainedshop/types/orders.payments';
@@ -10,22 +10,117 @@ import { generateDbFilterById } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core';
 import { ordersSettings } from '../orders-settings';
 
-const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
+const ORDER_PROCESSING_EVENTS: string[] = [
+  'ORDER_CHECKOUT',
+  'ORDER_CONFIRMED',
+  'ORDER_REJECTED',
+  'ORDER_FULLFILLED',
+];
 
 export const configureOrderModuleProcessing = ({
   Orders,
   OrderPositions,
   OrderDeliveries,
   OrderPayments,
-  updateStatus,
 }: {
   Orders: Collection<Order>;
   OrderPositions: Collection<OrderPosition>;
   OrderDeliveries: Collection<OrderDelivery>;
   OrderPayments: Collection<OrderPayment>;
-  updateStatus: OrdersModule['updateStatus'];
 }): OrderProcessing => {
   registerEvents(ORDER_PROCESSING_EVENTS);
+
+  const findNewOrderNumber = async (order: Order, index = 0) => {
+    const newHashID = ordersSettings.orderNumberHashFn(order, index);
+    if ((await Orders.countDocuments({ orderNumber: newHashID }, { limit: 1 })) === 0) {
+      return newHashID;
+    }
+    return findNewOrderNumber(order, index + 1);
+  };
+
+  const updateStatus: OrdersModule['updateStatus'] = async (
+    orderId,
+    { status, info },
+    requestContext,
+  ) => {
+    const selector = generateDbFilterById(orderId);
+    const order = await Orders.findOne(selector, {});
+
+    if (order.status === status) return order;
+
+    const date = new Date();
+    const $set: Partial<Order> = {
+      status,
+      updated: new Date(),
+      updatedBy: requestContext.userId,
+    };
+
+    switch (status) {
+      // explicitly use fallthrough here!
+      case OrderStatus.FULLFILLED:
+        if (!order.fullfilled) {
+          $set.fullfilled = date;
+        }
+      case OrderStatus.REJECTED: // eslint-disable-line no-fallthrough
+        if (!order.rejected) {
+          $set.rejected = date;
+        }
+      case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
+        if (!order.confirmed) {
+          $set.confirmed = date;
+        }
+      case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
+        if (!order.ordered) {
+          $set.ordered = date;
+        }
+        if (!order.orderNumber) {
+          // Order Numbers can be set by the user
+          $set.orderNumber = await findNewOrderNumber(order);
+        }
+        break;
+      default:
+        break;
+    }
+
+    const modifier: Update<Order> = {
+      $set,
+      $push: {
+        log: {
+          date,
+          status,
+          info,
+        },
+      },
+    };
+
+    log(`New Status: ${status}`, { orderId });
+
+    await Orders.updateOne(selector, modifier);
+
+    const updatedOrder = await Orders.findOne(selector, {});
+    if (order.status === null) {
+      // The first time that an order transitions away from cart is a checkout event
+      await emit('ORDER_CHECKOUT', { order });
+    }
+    switch (status) {
+      case OrderStatus.FULLFILLED:
+        await emit('ORDER_FULLFILLED', { order });
+        break;
+      case OrderStatus.REJECTED:
+        await emit('ORDER_REJECTED', { order });
+        break;
+      case OrderStatus.CONFIRMED:
+        await emit('ORDER_CONFIRMED', { order });
+        break;
+      case OrderStatus.PENDING:
+        await emit('ORDER_CHECKOUT', { order });
+        break;
+      default:
+        break;
+    }
+
+    return updatedOrder;
+  };
 
   const findOrderPositions = async (order: Order) =>
     OrderPositions.find({
@@ -147,25 +242,21 @@ export const configureOrderModuleProcessing = ({
     status: OrderStatus | null,
     order: Order,
     requestContext: Context,
-  ): Promise<OrderStatus> => {
+  ): Promise<OrderStatus | null> => {
     if (status === null) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
-        await emit('ORDER_CHECKOUT', { order });
         return OrderStatus.PENDING;
       }
     }
 
     if (status === OrderStatus.PENDING) {
       if (await isAutoConfirmationEnabled(order, requestContext)) {
-        await emit('ORDER_CONFIRMED', { order });
         return OrderStatus.CONFIRMED;
       }
     }
 
     if (status === OrderStatus.CONFIRMED) {
-      const isFullfilled = await isAutoFullfillmentEnabled(order, requestContext);
-      if (isFullfilled) {
-        await emit('ORDER_FULLFILLED', { order });
+      if (await isAutoFullfillmentEnabled(order, requestContext)) {
         return OrderStatus.FULLFILLED;
       }
     }
@@ -273,25 +364,6 @@ export const configureOrderModuleProcessing = ({
           countryCode,
         },
         requestContext as Context,
-      );
-    },
-
-    setCartOwner: async ({ orderId, userId }) => {
-      await Orders.updateOne(generateDbFilterById(orderId), {
-        $set: {
-          userId,
-        },
-      });
-    },
-
-    moveCartPositions: async ({ fromOrderId, toOrderId }) => {
-      await OrderPositions.updateMany(
-        { orderId: fromOrderId },
-        {
-          $set: {
-            orderId: toOrderId,
-          },
-        },
       );
     },
 
@@ -502,5 +574,7 @@ export const configureOrderModuleProcessing = ({
 
       return order;
     },
+
+    updateStatus,
   };
 };

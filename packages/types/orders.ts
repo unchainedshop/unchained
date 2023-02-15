@@ -115,11 +115,14 @@ export interface OrderProcessing {
     params: { user: User; countryCode?: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
-  moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<OrderTransactionContext>;
   sendOrderRejectionToCustomer: OrderContextParams<OrderTransactionContext>;
+  updateStatus: (
+    orderId: string,
+    params: { status: OrderStatus; info?: string },
+    requestContext: Context,
+  ) => Promise<Order>;
 }
 
 export interface OrderMutations {
@@ -140,6 +143,9 @@ export interface OrderMutations {
   initProviders: (order: Order, requestContext: Context) => Promise<Order>;
   invalidateProviders: (unchainedAPI: UnchainedCore, maxAgeDays: number) => Promise<void>;
 
+  setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
+  moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
+
   setDeliveryProvider: (
     orderId: string,
     deliveryProviderId: string,
@@ -158,12 +164,6 @@ export interface OrderMutations {
   ) => Promise<Order>;
   updateContact: (orderId: string, contact: Contact, requestContext: Context) => Promise<Order>;
   updateContext: (orderId: string, context: any, requestContext: Context) => Promise<boolean>;
-  updateStatus: (
-    orderId: string,
-    params: { status: OrderStatus; info?: string },
-    requestContext: Context,
-  ) => Promise<Order>;
-
   updateCalculation: (orderId: string, requestContext: Context) => Promise<Order>;
 }
 
