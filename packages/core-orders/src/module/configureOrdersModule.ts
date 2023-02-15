@@ -1,6 +1,5 @@
-import { Update } from '@unchainedshop/types/common.js';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
-import { Order, OrderStatus, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders.js';
+import { Order, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';

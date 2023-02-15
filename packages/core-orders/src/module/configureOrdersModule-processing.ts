@@ -1,4 +1,4 @@
-import { Collection } from '@unchainedshop/types/common.js';
+import { Collection, Update } from '@unchainedshop/types/common.js';
 import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
@@ -107,9 +107,6 @@ export const configureOrderModuleProcessing = ({
       case OrderStatus.CONFIRMED:
         await emit('ORDER_CONFIRMED', { order });
         break;
-      case OrderStatus.PENDING:
-        await emit('ORDER_CHECKOUT', { order });
-        break;
       default:
         break;
     }
@@ -206,10 +203,6 @@ export const configureOrderModuleProcessing = ({
       (await modules.orders.deliveries.isBlockingOrderConfirmation(orderDelivery, unchainedAPI));
     if (isBlockingOrderConfirmation) return false;
 
-    if (order.status === OrderStatus.FULLFILLED || order.status === OrderStatus.CONFIRMED) {
-      return false;
-    }
-
     return true;
   };
 
@@ -253,7 +246,7 @@ export const configureOrderModuleProcessing = ({
     }
 
     if (status === OrderStatus.CONFIRMED) {
-      if (await isAutoFullfillmentEnabled(order, requestContext)) {
+      if (await isAutoFullfillmentEnabled(order, unchainedAPI)) {
         return OrderStatus.FULLFILLED;
       }
     }

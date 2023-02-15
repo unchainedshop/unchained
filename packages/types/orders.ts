@@ -129,11 +129,7 @@ export interface OrderProcessing {
   processOrder: OrderContextParams<OrderTransactionContext>;
   sendOrderConfirmationToCustomer: OrderContextParams<OrderTransactionContext>;
   sendOrderRejectionToCustomer: OrderContextParams<OrderTransactionContext>;
-  updateStatus: (
-    orderId: string,
-    params: { status: OrderStatus; info?: string },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
+  updateStatus: (orderId: string, params: { status: OrderStatus; info?: string }) => Promise<Order>;
 }
 
 export interface OrderMutations {
