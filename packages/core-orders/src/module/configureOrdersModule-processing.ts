@@ -112,9 +112,6 @@ export const configureOrderModuleProcessing = ({
       case OrderStatus.CONFIRMED:
         await emit('ORDER_CONFIRMED', { order });
         break;
-      case OrderStatus.PENDING:
-        await emit('ORDER_CHECKOUT', { order });
-        break;
       default:
         break;
     }
