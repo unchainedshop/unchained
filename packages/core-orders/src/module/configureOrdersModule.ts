@@ -4,7 +4,6 @@ import { Order, OrderStatus, OrdersModule, OrdersSettingsOptions } from '@unchai
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { log } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/utils';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
 import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.js';
@@ -50,71 +49,6 @@ export const configureOrdersModule = async ({
 
   const findOrderPayment = async (order: Order) =>
     OrderPayments.findOne(generateDbFilterById(order.paymentId), {});
-
-  const findNewOrderNumber = async (order: Order, index = 0) => {
-    const newHashID = ordersSettings.orderNumberHashFn(order, index);
-    if ((await Orders.countDocuments({ orderNumber: newHashID }, { limit: 1 })) === 0) {
-      return newHashID;
-    }
-    return findNewOrderNumber(order, index + 1);
-  };
-
-  const updateStatus: OrdersModule['updateStatus'] = async (orderId, { status, info }) => {
-    const selector = generateDbFilterById(orderId);
-    const order = await Orders.findOne(selector, {});
-
-    if (order.status === status) return order;
-
-    const date = new Date();
-    const $set: Partial<Order> = {
-      status,
-      updated: new Date(),
-    };
-
-    switch (status) {
-      // explicitly use fallthrough here!
-      case OrderStatus.FULLFILLED:
-        if (!order.fullfilled) {
-          $set.fullfilled = date;
-        }
-      case OrderStatus.REJECTED: // eslint-disable-line no-fallthrough
-        if (!order.rejected) {
-          $set.rejected = date;
-        }
-      case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
-        if (!order.confirmed) {
-          $set.confirmed = date;
-        }
-      case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
-        if (!order.ordered) {
-          $set.ordered = date;
-        }
-        if (!order.orderNumber) {
-          // Order Numbers can be set by the user
-          $set.orderNumber = await findNewOrderNumber(order);
-        }
-        break;
-      default:
-        break;
-    }
-
-    const modifier: Update<Order> = {
-      $set,
-      $push: {
-        log: {
-          date,
-          status,
-          info,
-        },
-      },
-    };
-
-    log(`New Status: ${status}`, { orderId });
-
-    await Orders.updateOne(selector, modifier);
-
-    return Orders.findOne(selector, {});
-  };
 
   const updateDiscounts = async (order: Order, unchainedAPI: UnchainedCore) => {
     const { modules } = unchainedAPI;
@@ -300,15 +234,14 @@ export const configureOrdersModule = async ({
     OrderDeliveries,
     OrderPayments,
     OrderPositions,
-    updateStatus,
   });
   const orderMutations = configureOrderModuleMutations({
     Orders,
     OrderDeliveries,
     OrderPayments,
+    OrderPositions,
     initProviders,
     updateCalculation,
-    updateStatus,
   });
 
   const orderDiscountsModule = configureOrderDiscountsModule({

@@ -6,6 +6,8 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
+import { Context } from '@unchainedshop/types/api';
+import { OrderPosition } from '@unchainedshop/types/orders.positions';
 import { OrdersSchema } from '../db/OrdersSchema.js';
 
 const ORDER_EVENTS: string[] = [
@@ -20,15 +22,15 @@ export const configureOrderModuleMutations = ({
   Orders,
   OrderDeliveries,
   OrderPayments,
+  OrderPositions,
   initProviders,
-  updateStatus,
   updateCalculation,
 }: {
   Orders: Collection<Order>;
   OrderDeliveries: Collection<OrderDelivery>;
   OrderPayments: Collection<OrderPayment>;
+  OrderPositions: Collection<OrderPosition>;
   initProviders: OrdersModule['initProviders'];
-  updateStatus: OrdersModule['updateStatus'];
   updateCalculation: OrdersModule['updateCalculation'];
 }): OrderMutations => {
   registerEvents(ORDER_EVENTS);
@@ -82,6 +84,25 @@ export const configureOrderModuleMutations = ({
       }).toArray();
 
       await Promise.all(orders.map((order) => initProviders(order, unchainedAPI)));
+    },
+
+    setCartOwner: async ({ orderId, userId }) => {
+      await Orders.updateOne(generateDbFilterById(orderId), {
+        $set: {
+          userId,
+        },
+      });
+    },
+
+    moveCartPositions: async ({ fromOrderId, toOrderId }) => {
+      await OrderPositions.updateMany(
+        { orderId: fromOrderId },
+        {
+          $set: {
+            orderId: toOrderId,
+          },
+        },
+      );
     },
 
     setDeliveryProvider: async (orderId, deliveryProviderId, unchainedAPI) => {
@@ -212,7 +233,6 @@ export const configureOrderModuleMutations = ({
       return false;
     },
 
-    updateStatus,
     updateCalculation,
   };
 };

@@ -10,22 +10,112 @@ import { ProductType } from '@unchainedshop/types/products.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { ordersSettings } from '../orders-settings.js';
 
-const ORDER_PROCESSING_EVENTS: string[] = ['ORDER_CHECKOUT', 'ORDER_CONFIRMED', 'ORDER_FULLFILLED'];
+const ORDER_PROCESSING_EVENTS: string[] = [
+  'ORDER_CHECKOUT',
+  'ORDER_CONFIRMED',
+  'ORDER_REJECTED',
+  'ORDER_FULLFILLED',
+];
 
 export const configureOrderModuleProcessing = ({
   Orders,
   OrderPositions,
   OrderDeliveries,
   OrderPayments,
-  updateStatus,
 }: {
   Orders: Collection<Order>;
   OrderPositions: Collection<OrderPosition>;
   OrderDeliveries: Collection<OrderDelivery>;
   OrderPayments: Collection<OrderPayment>;
-  updateStatus: OrdersModule['updateStatus'];
 }): OrderProcessing => {
   registerEvents(ORDER_PROCESSING_EVENTS);
+
+  const findNewOrderNumber = async (order: Order, index = 0) => {
+    const newHashID = ordersSettings.orderNumberHashFn(order, index);
+    if ((await Orders.countDocuments({ orderNumber: newHashID }, { limit: 1 })) === 0) {
+      return newHashID;
+    }
+    return findNewOrderNumber(order, index + 1);
+  };
+
+  const updateStatus: OrdersModule['updateStatus'] = async (orderId, { status, info }) => {
+    const selector = generateDbFilterById(orderId);
+    const order = await Orders.findOne(selector, {});
+
+    if (order.status === status) return order;
+
+    const date = new Date();
+    const $set: Partial<Order> = {
+      status,
+      updated: new Date(),
+    };
+
+    switch (status) {
+      // explicitly use fallthrough here!
+      case OrderStatus.FULLFILLED:
+        if (!order.fullfilled) {
+          $set.fullfilled = date;
+        }
+      case OrderStatus.REJECTED: // eslint-disable-line no-fallthrough
+        if (!order.rejected) {
+          $set.rejected = date;
+        }
+      case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
+        if (!order.confirmed) {
+          $set.confirmed = date;
+        }
+      case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
+        if (!order.ordered) {
+          $set.ordered = date;
+        }
+        if (!order.orderNumber) {
+          // Order Numbers can be set by the user
+          $set.orderNumber = await findNewOrderNumber(order);
+        }
+        break;
+      default:
+        break;
+    }
+
+    const modifier: Update<Order> = {
+      $set,
+      $push: {
+        log: {
+          date,
+          status,
+          info,
+        },
+      },
+    };
+
+    log(`New Status: ${status}`, { orderId });
+
+    await Orders.updateOne(selector, modifier);
+
+    const updatedOrder = await Orders.findOne(selector, {});
+    if (order.status === null) {
+      // The first time that an order transitions away from cart is a checkout event
+      await emit('ORDER_CHECKOUT', { order });
+    }
+    switch (status) {
+      case OrderStatus.FULLFILLED:
+        await emit('ORDER_FULLFILLED', { order });
+        break;
+      case OrderStatus.REJECTED:
+        await emit('ORDER_REJECTED', { order });
+        break;
+      case OrderStatus.CONFIRMED:
+        await emit('ORDER_CONFIRMED', { order });
+        break;
+      case OrderStatus.PENDING:
+        await emit('ORDER_CHECKOUT', { order });
+        break;
+      default:
+        break;
+    }
+
+    return updatedOrder;
+  };
 
   const findOrderPositions = async (order: Order) =>
     OrderPositions.find({
@@ -116,6 +206,10 @@ export const configureOrderModuleProcessing = ({
       (await modules.orders.deliveries.isBlockingOrderConfirmation(orderDelivery, unchainedAPI));
     if (isBlockingOrderConfirmation) return false;
 
+    if (order.status === OrderStatus.FULLFILLED || order.status === OrderStatus.CONFIRMED) {
+      return false;
+    }
+
     return true;
   };
 
@@ -145,25 +239,21 @@ export const configureOrderModuleProcessing = ({
     status: OrderStatus | null,
     order: Order,
     unchainedAPI: UnchainedCore,
-  ): Promise<OrderStatus> => {
+  ): Promise<OrderStatus | null> => {
     if (status === null) {
       if ((await missingInputDataForCheckout(order)).length === 0) {
-        await emit('ORDER_CHECKOUT', { order });
         return OrderStatus.PENDING;
       }
     }
 
     if (status === OrderStatus.PENDING) {
       if (await isAutoConfirmationEnabled(order, unchainedAPI)) {
-        await emit('ORDER_CONFIRMED', { order });
         return OrderStatus.CONFIRMED;
       }
     }
 
     if (status === OrderStatus.CONFIRMED) {
-      const isFullfilled = await isAutoFullfillmentEnabled(order, unchainedAPI);
-      if (isFullfilled) {
-        await emit('ORDER_FULLFILLED', { order });
+      if (await isAutoFullfillmentEnabled(order, requestContext)) {
         return OrderStatus.FULLFILLED;
       }
     }
@@ -272,25 +362,6 @@ export const configureOrderModuleProcessing = ({
       );
     },
 
-    setCartOwner: async ({ orderId, userId }) => {
-      await Orders.updateOne(generateDbFilterById(orderId), {
-        $set: {
-          userId,
-        },
-      });
-    },
-
-    moveCartPositions: async ({ fromOrderId, toOrderId }) => {
-      await OrderPositions.updateMany(
-        { orderId: fromOrderId },
-        {
-          $set: {
-            orderId: toOrderId,
-          },
-        },
-      );
-    },
-
     processOrder: async (initialOrder, params, unchainedAPI) => {
       const { modules } = unchainedAPI;
       const { paymentContext, deliveryContext, nextStatus: forceNextStatus } = params;
@@ -345,14 +416,10 @@ export const configureOrderModuleProcessing = ({
           // we have to stop here shortly to complete the confirmation
           // before auto delivery is started, else we have no chance to create
           // numbers that are needed for delivery
-          order = await updateStatus(
-            orderId,
-            {
-              status: OrderStatus.CONFIRMED,
-              info: 'before delivery',
-            },
-            unchainedAPI,
-          );
+          order = await updateStatus(orderId, {
+            status: OrderStatus.CONFIRMED,
+            info: 'before delivery',
+          });
 
           await modules.orders.deliveries.send(
             orderDelivery,
@@ -433,11 +500,7 @@ export const configureOrderModuleProcessing = ({
         nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }
 
-      order = await updateStatus(
-        order._id,
-        { status: nextStatus, info: 'order processed' },
-        unchainedAPI,
-      );
+      order = await updateStatus(order._id, { status: nextStatus, info: 'order processed' });
 
       if (initialOrder.status !== order.status) {
         if (order.status === OrderStatus.REJECTED) {
@@ -485,5 +548,7 @@ export const configureOrderModuleProcessing = ({
 
       return order;
     },
+
+    updateStatus,
   };
 };

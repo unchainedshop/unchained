@@ -80,6 +80,7 @@ Below are events tracked under each module under the box:
 | ORDER_ADD_DISCOUNT          | Discount is added to an order                  | `{ discount: {} }`                             |
 | ORDER_CONFIRMED             | Order is confirmed                             | `{ order: {} }`                                |
 | ORDER_FULLFILLED            | All requested items are fullfiled for an order | `{ order: {} }`                                |
+| ORDER_REJECTED              | Order is rejected                              | `{ order: {} }`                                |
 | ORDER_UPDATE_PAYMENT        | Order payment provider is updated              | `{ orderPayment: {} }`                         |
 | ORDER_CREATE                | New Order is created                           | `{ order: {} }`                                |
 | ORDER_UPDATE                | Order information is updated                   | `{ order: {}, field: string }`                 |
