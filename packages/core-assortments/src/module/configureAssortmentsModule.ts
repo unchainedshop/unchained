@@ -222,13 +222,18 @@ export const configureAssortmentsModule = async ({
     ).toArray();
 
     // Process serially to reduce load
-    await assortments.reduce(async (acc, assortment) => {
-      await acc;
+    const totalInvalidatedAssortments = await assortments.reduce(async (acc, assortment) => {
+      const total = await acc;
       const invalidatedAssortments = await invalidateProductIdCache(assortment, options);
-      log(`Invalidated productId cache for ${invalidatedAssortments} assortments`, {
+      return total + invalidatedAssortments;
+    }, Promise.resolve(0));
+
+    log(
+      `Invalidated productId cache for ${totalInvalidatedAssortments} of ${assortments.length} base assortments`,
+      {
         level: LogLevel.Debug,
-      });
-    }, Promise.resolve());
+      },
+    );
   };
 
   /*
