@@ -30,7 +30,7 @@
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
     "start": "node lib/boot.js",
-    "dev:run": "node --no-warnings --loader ts-node/esm boot.ts",
+    "dev:run": "node --experimental-fetch --no-warnings --loader ts-node/esm boot.ts",
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
