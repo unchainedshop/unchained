@@ -22,6 +22,30 @@ export interface UserData {
   username?: string;
 }
 
+export type AccessToken = {
+  access_token: string;
+  expires_in: string;
+  token_type: string;
+  id_token: string;
+  error: string;
+};
+
+export type GoogleToken = {
+  given_name?: string;
+  family_name?: string;
+  name?: string;
+  azp: string;
+  aud: string;
+  sub: string;
+  hd: string;
+  email: string;
+  email_verified: boolean;
+  at_hash: string;
+  exp: number;
+  iss: string;
+  iat: number;
+};
+
 /*
  * Settings
  */
@@ -58,6 +82,18 @@ export interface AccountsWebAuthnModule {
     extensionOptions?: any,
   ) => Promise<any>;
   verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
+}
+
+export interface AccountsOauth2Module {
+  parseGoogleIdToken: (idToken: string) => GoogleToken;
+  getGoogleUserInfo: (idToken: string) => Promise<any>;
+  getGoogleAccessToken: (params: {
+    code: string;
+    redirectUri: string;
+    clientId: string;
+    clientSecret: string;
+  }) => Promise<AccessToken>;
+  requestAccessToken: (service: string, authorizationCode: string) => Promise<AccessToken | null>;
 }
 
 export type LoginWithParams<N, T> = {
@@ -159,4 +195,5 @@ export interface AccountsModule {
   disableTOTP: (userId: string, code: string) => Promise<boolean>;
 
   webAuthn: AccountsWebAuthnModule;
+  oauth2: AccountsOauth2Module;
 }

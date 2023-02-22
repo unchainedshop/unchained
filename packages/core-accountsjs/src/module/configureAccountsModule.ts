@@ -10,6 +10,7 @@ import { evaluateContext } from './utils/evaluateContext.js';
 import { filterContext } from './utils/filterContext.js';
 import { hashPassword } from './utils/hashPassword.js';
 import { configureAccountsWebAuthnModule } from './configureAccountsWebAuthnModule.js';
+import { configureAccountsOauth2Module } from './configureAccountsOauth2Module.js';
 
 export const configureAccountsModule = async ({
   db,
@@ -32,6 +33,7 @@ export const configureAccountsModule = async ({
   accountsSettings.configureSettings(options || {}, { accountsPassword, accountsServer });
 
   const webAuthn = await configureAccountsWebAuthnModule({ db, options });
+  const oauth2 = await configureAccountsOauth2Module();
 
   return {
     dbManager,
@@ -217,5 +219,6 @@ export const configureAccountsModule = async ({
     },
 
     webAuthn,
+    oauth2,
   };
 };

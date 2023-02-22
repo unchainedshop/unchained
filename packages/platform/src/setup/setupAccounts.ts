@@ -3,6 +3,7 @@ import { randomValueHex } from '@unchainedshop/utils';
 import { accountsSettings } from '@unchainedshop/core-accountsjs';
 import moniker from 'moniker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+import crypto from 'crypto';
 
 export const setupAccounts = (unchainedAPI: UnchainedCore) => {
   const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();
@@ -68,6 +69,59 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         params.webAuthnPublicKeyCredentials,
       );
       return user;
+    },
+  };
+
+  accountsServer.services.google = {
+    async authenticate({ oauthAccessToken }: { oauthAccessToken: any; provider: string }): Promise<any> {
+      if (!oauthAccessToken) {
+        return undefined;
+      }
+
+      const userOAuthInfo = await unchainedAPI.modules.accounts.oauth2.parseGoogleIdToken(
+        oauthAccessToken.id_token,
+      );
+
+      if (!userOAuthInfo) {
+        throw new Error('OAuth authentication failed');
+      }
+
+      try {
+        const user = await unchainedAPI.modules.users.findUser({
+          'emails.address': userOAuthInfo.email,
+        });
+
+        if (user) return user;
+
+        const newUserId = await unchainedAPI.modules.accounts.createUser(
+          {
+            email: userOAuthInfo.email,
+            password: crypto.createHash('sha256').update(new Date().toISOString()).digest('hex'),
+            profile: {
+              address: {
+                firstName: userOAuthInfo?.given_name,
+                lastName: userOAuthInfo?.family_name,
+              },
+              displayName: userOAuthInfo?.name,
+            },
+          },
+          { skipPasswordEnrollment: true },
+        );
+        await unchainedAPI.modules.users.updateUser(
+          { _id: newUserId },
+          {
+            $push: {
+              'services.oauth': { ...oauthAccessToken, ...userOAuthInfo },
+            },
+          },
+          { upsert: true },
+        );
+
+        return await unchainedAPI.modules.users.findUser({ _id: newUserId });
+      } catch (error) {
+        console.error(error);
+        throw new Error('OAuth authentication failed');
+      }
     },
   };
 
