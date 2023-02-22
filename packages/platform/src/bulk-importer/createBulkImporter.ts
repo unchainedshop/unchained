@@ -55,7 +55,8 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
 
     const bulk = (collectionName: string) => {
       const Collection = db.collection(collectionName);
-      bulkOperations[collectionName] = Collection.initializeOrderedBulkOp();
+      if (!bulkOperations[collectionName])
+        bulkOperations[collectionName] = Collection.initializeOrderedBulkOp();
       return bulkOperations[collectionName];
     };
 
@@ -100,11 +101,13 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
       },
       execute: async () => {
         logger.info(`Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`);
+
+        const processedBulkOperations = await Promise.allSettled(
+          Object.values(bulkOperations).map((o: any) => o.execute()),
+        );
         const operationResults = {
           processedOperations,
-          processedBulkOperations: (
-            await Promise.all(Object.values(bulkOperations).map((o: any) => o.execute()))
-          ).map((r) => r.result),
+          processedBulkOperations,
         };
         if (preparationIssues?.length) {
           logger.error(
