@@ -18,6 +18,11 @@ export default [
       loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
 
       """
+      Log the user with Oauth2 service provider
+      """
+      loginWithOAuth(provider: String!, authorizationCode: String!): LoginMethodResponse
+
+      """
       Web3
       """
       addWeb3Address(address: String!): User!
