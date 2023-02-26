@@ -82,6 +82,19 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
 
         return true;
       },
+      revokeAccessToken: async (authorizationCode) => {
+        const response = await fetch(
+          `https://accounts.google.com/o/oauth2/revoke?token=${authorizationCode}`,
+        );
+
+        const tokenInfo = await response.json();
+
+        if (tokenInfo.error) {
+          return false;
+        }
+
+        return true;
+      },
     };
   },
 };

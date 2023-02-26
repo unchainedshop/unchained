@@ -20,6 +20,9 @@ export const accountsServices: AccountsServices = {
       parseAccessToken: (accessToken) => {
         return director.parseAccessToken(accessToken);
       },
+      revokeAccessToken: async (authorizationCode) => {
+        return director.revokeAccessToken(authorizationCode);
+      },
     };
   },
 };

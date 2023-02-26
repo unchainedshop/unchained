@@ -44,6 +44,9 @@ export const Oauth2Director: IOauthDirector = {
       parseAccessToken: (accessToken) => {
         return adapter.parseAccessToken(accessToken);
       },
+      revokeAccessToken: async (authorizationCode) => {
+        return adapter.revokeAccessToken(authorizationCode);
+      },
 
       getAccessToken: async (value) => {
         try {

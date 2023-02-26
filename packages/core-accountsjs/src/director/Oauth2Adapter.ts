@@ -27,6 +27,9 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
       parseAccessToken: (accessToken: any) => {
         return null;
       },
+      revokeAccessToken: (authorizationCode: string) => {
+        return null;
+      },
     };
   },
 

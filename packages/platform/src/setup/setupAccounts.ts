@@ -119,7 +119,11 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           {
             $push: {
               'services.oauth': {
-                [provider.toLowerCase()]: { ...userOAuthInfo, accessToken: userAccessToken },
+                [provider.toLowerCase()]: {
+                  ...userOAuthInfo,
+                  accessToken: userAccessToken,
+                  authorizationCode,
+                },
               },
             },
           },
