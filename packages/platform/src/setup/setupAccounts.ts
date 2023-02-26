@@ -84,9 +84,11 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         return undefined;
       }
 
-      const oauth2Service = unchainedAPI.services.accounts.oauth2(unchainedAPI);
+      const oauth2Service = await unchainedAPI.services.accounts.oauth2(provider, unchainedAPI);
 
-      const userOAuthInfo = await oauth2Service.getAccessToken(provider, authorizationCode);
+      const userAccessToken = await oauth2Service.getAccessToken(authorizationCode);
+      const userOAuthInfo = oauth2Service.parseAccessToken(userAccessToken);
+
       if (!userOAuthInfo) {
         throw new Error('OAuth authentication failed');
       }
@@ -116,7 +118,9 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           { _id: newUserId },
           {
             $push: {
-              'services.oauth': { ...userOAuthInfo },
+              'services.oauth': {
+                [provider.toLowerCase()]: { ...userOAuthInfo, accessToken: userAccessToken },
+              },
             },
           },
           { upsert: true },

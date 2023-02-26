@@ -1,4 +1,4 @@
-import { AccessToken, GoogleToken, IOauth2Adapter } from '@unchainedshop/types/accounts.js';
+import { AccessToken, IOauth2Adapter } from '@unchainedshop/types/accounts.js';
 
 import { Oauth2Director, Oauth2Adapter } from '@unchainedshop/core-accountsjs';
 
@@ -25,7 +25,7 @@ const getGoogleAccessToken = async ({
   return response.json();
 };
 
-const parseGoogleIdToken = (idToken: string): GoogleToken => {
+const parseGoogleIdToken = (idToken: string): any => {
   const [, base64UserInfo] = idToken.split('.');
   const buff = Buffer.from(base64UserInfo, 'base64');
   return JSON.parse(buff.toString());
@@ -38,9 +38,9 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
   version: '1',
   provider: 'GOOGLE',
 
-  actions: (config, context) => {
+  actions: () => {
     return {
-      ...Oauth2Adapter.actions(config, context),
+      ...Oauth2Adapter.actions(),
       configurationError: () => {
         return '';
       },
@@ -48,13 +48,15 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
         return true;
       },
       getAccessToken: async (authorizationCode) => {
-        const oauthAccessToken = await getGoogleAccessToken({
+        return getGoogleAccessToken({
           code: authorizationCode,
           clientId: process.env.OAUTH_CLIENT_ID,
           redirectUri: process.env.OAUTH_REDIRECT_URL,
           clientSecret: process.env.OAUTH_CLIENT_SECRET,
         });
-        return parseGoogleIdToken(oauthAccessToken.id_token);
+      },
+      parseAccessToken: (accessToken) => {
+        return parseGoogleIdToken(accessToken.id_token);
       },
       getAccountData: async (token: string) => {
         const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo?alt=json', {
@@ -66,6 +68,19 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
         });
 
         return response.json();
+      },
+      isTokenValid: async (accessToken) => {
+        const response = await fetch(
+          `https://oauth2.googleapis.com/tokeninfo?id_token=${accessToken?.id_token}`,
+        );
+
+        const tokenInfo = await response.json();
+
+        if (tokenInfo.error) {
+          return false;
+        }
+
+        return true;
       },
     };
   },

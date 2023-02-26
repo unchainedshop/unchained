@@ -31,22 +31,6 @@ export type AccessToken = {
   error: string;
 };
 
-export type GoogleToken = {
-  given_name?: string;
-  family_name?: string;
-  name?: string;
-  azp: string;
-  aud: string;
-  sub: string;
-  hd: string;
-  email: string;
-  email_verified: boolean;
-  at_hash: string;
-  exp: number;
-  iss: string;
-  iat: number;
-};
-
 /*
  * Services
  */
@@ -56,10 +40,12 @@ export interface Oauth2AdapterActions {
   isActive: () => boolean;
   getAccessToken: (authorizationCode: string) => Promise<any>;
   getAccountData: (token: string) => Promise<any>;
+  isTokenValid: (token) => Promise<boolean>;
+  parseAccessToken: (accessToken: any) => any;
 }
 export type IOauth2Adapter = IBaseAdapter & {
   provider?: string;
-  actions: (provider: string, context: UnchainedCore) => Oauth2AdapterActions;
+  actions: () => Oauth2AdapterActions;
 };
 
 export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
@@ -68,6 +54,8 @@ export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
     isActive: () => boolean;
     getAccessToken: (authorizationCode: string) => Promise<any>;
     getAccountData: (token: string) => Promise<any>;
+    isTokenValid: (token) => Promise<boolean>;
+    parseAccessToken: (accessToken: any) => any;
   }>;
 };
 
@@ -88,12 +76,14 @@ export interface AccountsSettings {
 }
 
 export interface Oauth2Service {
-  getAccessToken: (provider: string, authorizationCode: string) => Promise<any>;
-  getAccountData: (provider: string, token: string) => Promise<any>;
+  getAccessToken: (authorizationCode: string) => Promise<any>;
+  getAccountData: (token: string) => Promise<any>;
+  isTokenValid: (token) => Promise<boolean>;
+  parseAccessToken: (accessToken: any) => any;
 }
 
 export interface AccountsServices {
-  oauth2: (unchainedApi: UnchainedCore) => Oauth2Service;
+  oauth2: (provider: string, unchainedApi: UnchainedCore) => Promise<Oauth2Service>;
 }
 
 /*
@@ -115,18 +105,6 @@ export interface AccountsWebAuthnModule {
     extensionOptions?: any,
   ) => Promise<any>;
   verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
-}
-
-export interface AccountsOauth2Module {
-  parseGoogleIdToken: (idToken: string) => GoogleToken;
-  getGoogleUserInfo: (idToken: string) => Promise<any>;
-  getGoogleAccessToken: (params: {
-    code: string;
-    redirectUri: string;
-    clientId: string;
-    clientSecret: string;
-  }) => Promise<AccessToken>;
-  requestAccessToken: (service: string, authorizationCode: string) => Promise<AccessToken | null>;
 }
 
 export type LoginWithParams<N, T> = {

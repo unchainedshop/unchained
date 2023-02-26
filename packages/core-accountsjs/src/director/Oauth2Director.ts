@@ -16,7 +16,7 @@ export const Oauth2Director: IOauthDirector = {
       throw new Error(`Oauth Plugin for ${provider} not available`);
     }
 
-    const adapter = Adapter.actions(null, null);
+    const adapter = Adapter.actions();
 
     return {
       configurationError: () => {
@@ -37,6 +37,12 @@ export const Oauth2Director: IOauthDirector = {
           });
           return false;
         }
+      },
+      isTokenValid: async (token) => {
+        return adapter.isTokenValid(token);
+      },
+      parseAccessToken: (accessToken) => {
+        return adapter.parseAccessToken(accessToken);
       },
 
       getAccessToken: async (value) => {

@@ -21,6 +21,12 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
       getAccountData: async (token: string) => {
         return null;
       },
+      isTokenValid: async (token) => {
+        return false;
+      },
+      parseAccessToken: (accessToken: any) => {
+        return null;
+      },
     };
   },
 

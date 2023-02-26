@@ -5,14 +5,21 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Oauth2Director } from '../director/Oauth2Director.js';
 
 export const accountsServices: AccountsServices = {
-  oauth2: (unchainedAPI: UnchainedCore) => ({
-    getAccessToken: async (provider, authorizationCode) => {
-      const director = await Oauth2Director.actions(provider);
-      return director.getAccessToken(authorizationCode);
-    },
-    getAccountData: async (provider, token) => {
-      const director = await Oauth2Director.actions(provider);
-      return director.getAccountData(token);
-    },
-  }),
+  oauth2: async (provider: string, unchainedAPI: UnchainedCore) => {
+    const director = await Oauth2Director.actions(provider);
+    return {
+      getAccessToken: async (authorizationCode) => {
+        return director.getAccessToken(authorizationCode);
+      },
+      getAccountData: async (token) => {
+        return director.getAccountData(token);
+      },
+      isTokenValid: async (token) => {
+        return director.isTokenValid(token);
+      },
+      parseAccessToken: (accessToken) => {
+        return director.parseAccessToken(accessToken);
+      },
+    };
+  },
 };
