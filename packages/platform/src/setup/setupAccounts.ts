@@ -74,21 +74,19 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
   accountsServer.services.oauth2 = {
     async authenticate({
-      oauthAccessToken,
+      authorizationCode,
       provider,
     }: {
-      oauthAccessToken: any;
+      authorizationCode: any;
       provider: string;
     }): Promise<any> {
-      if (!oauthAccessToken || !provider) {
+      if (!authorizationCode || !provider) {
         return undefined;
       }
-      let userOAuthInfo;
-      if (provider.toUpperCase() === 'GOOGLE')
-        userOAuthInfo = await unchainedAPI.modules.accounts.oauth2.parseGoogleIdToken(
-          oauthAccessToken.id_token,
-        );
 
+      const oauth2Service = unchainedAPI.services.accounts.oauth2(unchainedAPI);
+
+      const userOAuthInfo = await oauth2Service.getAccessToken(provider, authorizationCode);
       if (!userOAuthInfo) {
         throw new Error('OAuth authentication failed');
       }
@@ -118,7 +116,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           { _id: newUserId },
           {
             $push: {
-              'services.oauth': { ...oauthAccessToken, ...userOAuthInfo },
+              'services.oauth': { ...userOAuthInfo },
             },
           },
           { upsert: true },
@@ -126,7 +124,6 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
         return await unchainedAPI.modules.users.findUser({ _id: newUserId });
       } catch (error) {
-        console.error(error);
         throw new Error('OAuth authentication failed');
       }
     },

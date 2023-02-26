@@ -1,4 +1,5 @@
 import { User as AccountsUser } from '@accounts/types';
+import { IBaseAdapter, IBaseDirector } from './common.js';
 import { UnchainedCore } from './core.js';
 import { User, UserProfile } from './user.js';
 
@@ -47,6 +48,30 @@ export type GoogleToken = {
 };
 
 /*
+ * Services
+ */
+
+export interface Oauth2AdapterActions {
+  configurationError: (transactionContext?: any) => string;
+  isActive: () => boolean;
+  getAccessToken: (authorizationCode: string) => Promise<any>;
+  getAccountData: (token: string) => Promise<any>;
+}
+export type IOauth2Adapter = IBaseAdapter & {
+  provider?: string;
+  actions: (provider: string, context: UnchainedCore) => Oauth2AdapterActions;
+};
+
+export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
+  actions: (provider: string) => Promise<{
+    configurationError: (transactionContext?: any) => string;
+    isActive: () => boolean;
+    getAccessToken: (authorizationCode: string) => Promise<any>;
+    getAccountData: (token: string) => Promise<any>;
+  }>;
+};
+
+/*
  * Settings
  */
 
@@ -62,10 +87,18 @@ export interface AccountsSettings {
   configureSettings: (options: AccountsSettingsOptions, context: any) => void;
 }
 
+export interface Oauth2Service {
+  getAccessToken: (provider: string, authorizationCode: string) => Promise<any>;
+  getAccountData: (provider: string, token: string) => Promise<any>;
+}
+
+export interface AccountsServices {
+  oauth2: (unchainedApi: UnchainedCore) => Oauth2Service;
+}
+
 /*
  * Module
  */
-
 export interface AccountsWebAuthnModule {
   findMDSMetadataForAAGUID: (aaguid: string) => Promise<any>;
 
@@ -195,5 +228,4 @@ export interface AccountsModule {
   disableTOTP: (userId: string, code: string) => Promise<boolean>;
 
   webAuthn: AccountsWebAuthnModule;
-  oauth2: AccountsOauth2Module;
 }

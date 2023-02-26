@@ -1,3 +1,4 @@
+import { AccountsServices } from './accounts.js';
 import { BookmarkServices } from './bookmarks.js';
 import { CountryServices } from './countries.js';
 import { FileServices } from './files.js';
@@ -12,4 +13,5 @@ export interface Services {
   orders: OrderServices;
   products: ProductServices;
   users: UserServices;
+  accounts: AccountsServices;
 }
