@@ -28,25 +28,30 @@ const getGoggleAuthorizationCode = async ({
 };
 
 const normalizeProfileData = (data): UserOauthData => {
-  const { names, genders, addresses, emailAddresses, phoneNumbers, birthdays, photos } = data;
+  const {
+    names = [],
+    genders = [],
+    addresses = [],
+    emailAddresses = [],
+    phoneNumbers = [],
+    birthdays = [],
+    photos = [],
+  } = data;
 
   return {
-    firstName: names?.[0]?.givenName,
-    lastName: names?.[0]?.familyName,
-    displayName: names?.[0]?.displayName,
-    gender: genders?.[0]?.value,
+    firstName: names[0]?.givenName,
+    lastName: names[0]?.familyName,
+    displayName: names[0]?.displayName,
+    gender: genders[0]?.value,
     email: emailAddresses[0]?.value,
-    birthDate: birthdays?.[0]?.date
+    birthDate: birthdays[0]?.date
       ? new Date(
-          birthdays?.[0]?.date?.year,
-          birthdays?.[0]?.date?.month,
-          birthdays?.[0]?.date?.day,
-          0,
-          0,
-          0,
+          birthdays[0].date?.year ?? 0,
+          birthdays[0].date?.month ?? 0,
+          birthdays[0].date?.day ?? 1,
         )
       : undefined,
-    phoneNumber: phoneNumbers?.[0]?.canonicalForm,
+    phoneNumber: phoneNumbers[0]?.canonicalForm,
     address: addresses[0]?.formattedValue,
     avatarUrl: photos[0]?.url,
   };

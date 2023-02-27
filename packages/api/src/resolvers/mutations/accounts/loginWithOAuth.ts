@@ -8,8 +8,6 @@ const loginWithOAuth = async (
 ): Promise<any | null> => {
   log(`mutation loginWithOauth ${provider} ${authorizationCode}`);
 
-  /* const oauthAccessToken = await modules.accounts.oauth2.requestAccessToken(provider, authorizationCode);
-  if (oauthAccessToken?.access_token) */
   return context.modules.accounts.loginWithService(
     {
       service: 'oauth2',
