@@ -33,11 +33,19 @@ export type AccessToken = {
 
 export type UserOauthData = {
   email: string;
-  firstName: string;
   lastName: string;
   avatarUrl: string;
-  fullName: string;
-  exp: number;
+  firstName: string;
+  address?: string;
+  gender?: string;
+  birthDate?: Date;
+  phoneNumber?: string;
+  displayName?: string;
+  city?: string;
+  countryCode?: string;
+  postalCode?: string;
+  regionCode?: string;
+  company?: string;
 };
 
 /*
@@ -48,9 +56,8 @@ export interface Oauth2AdapterActions {
   configurationError: (transactionContext?: any) => string;
   isActive: () => boolean;
   getAuthorizationCode: (authorizationCode: string) => Promise<any>;
-  getAccountData: (token: string) => Promise<any>;
+  getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
-  parseAccessToken: (accessToken: any) => UserOauthData;
   revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
 }
@@ -64,9 +71,8 @@ export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
     configurationError: (transactionContext?: any) => string;
     isActive: () => boolean;
     getAuthorizationCode: (authorizationCode: string) => Promise<any>;
-    getAccountData: (token: string) => Promise<any>;
+    getAccountData: (token: string) => Promise<UserOauthData>;
     isTokenValid: (token) => Promise<boolean>;
-    parseAccessToken: (accessToken: any) => UserOauthData;
     revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
     refreshToken?: (refreshToken: string) => Promise<any>;
   }>;
@@ -90,9 +96,8 @@ export interface AccountsSettings {
 
 export interface Oauth2Service {
   getAuthorizationCode: (authorizationCode: string) => Promise<any>;
-  getAccountData: (token: string) => Promise<any>;
+  getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
-  parseAccessToken: (accessToken: any) => UserOauthData;
   revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
 }

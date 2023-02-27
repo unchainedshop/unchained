@@ -10,7 +10,7 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
   actions: () => {
     return {
       configurationError: () => {
-        return Oauth2Error.NOT_IMPLEMENTED;
+        throw new Error(Oauth2Error.NOT_IMPLEMENTED);
       },
       isActive: () => {
         return true;
@@ -18,20 +18,17 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
       getAuthorizationCode: async (authorizationCode: string) => {
         return null;
       },
-      getAccountData: async (token: string) => {
+      getAccountData: async (userAuthorizationToken: any) => {
         return null;
       },
       isTokenValid: async (token) => {
         return false;
       },
-      parseAccessToken: (accessToken: any) => {
-        return null;
-      },
       revokeAccessToken: (authorizationCode: string) => {
         return null;
       },
-      refreshToken: async (refreshToken: string) => {
-        return Oauth2Error.NOT_IMPLEMENTED;
+      refreshToken: async (userAuthorizationToken: any) => {
+        throw new Error(Oauth2Error.NOT_IMPLEMENTED);
       },
     };
   },

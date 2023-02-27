@@ -23,10 +23,9 @@ export const Oauth2Director: IOauthDirector = {
         try {
           return adapter.configurationError();
         } catch (error) {
-          return Oauth2Error.ADAPTER_NOT_FOUND;
+          throw new Error(Oauth2Error.ADAPTER_NOT_FOUND);
         }
       },
-
       isActive: () => {
         try {
           return adapter.isActive();
@@ -40,9 +39,6 @@ export const Oauth2Director: IOauthDirector = {
       },
       isTokenValid: async (token) => {
         return adapter.isTokenValid(token);
-      },
-      parseAccessToken: (accessToken) => {
-        return adapter.parseAccessToken(accessToken);
       },
       revokeAccessToken: async (authorizationCode) => {
         return adapter.revokeAccessToken(authorizationCode);
@@ -59,19 +55,19 @@ export const Oauth2Director: IOauthDirector = {
           return false;
         }
       },
-      refreshToken: async (refreshToken) => {
-        return adapter.refreshToken(refreshToken);
+      refreshToken: async (userAuthorizationToken) => {
+        return adapter.refreshToken(userAuthorizationToken);
       },
 
-      getAccountData: async (token) => {
+      getAccountData: async (userAuthorizationToken: any) => {
         try {
-          return adapter.getAccountData(token);
+          return adapter.getAccountData(userAuthorizationToken);
         } catch (error) {
           log('Oauth2 Director -> Error while getting account data', {
             level: LogLevel.Warning,
             ...error,
           });
-          return false;
+          return null;
         }
       },
     };

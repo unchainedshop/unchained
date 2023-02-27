@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { AccessToken, IOauth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
 
 import { Oauth2Director, Oauth2Adapter } from '@unchainedshop/core-accountsjs';
@@ -8,7 +9,7 @@ const getGoggleAuthorizationCode = async ({
   clientId,
   clientSecret,
 }): Promise<AccessToken> => {
-  const response = await fetch('https://www.googleapis.com/oauth2/v4/token?access_type=offline', {
+  const response = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -24,6 +25,31 @@ const getGoggleAuthorizationCode = async ({
   });
 
   return response.json();
+};
+
+const normalizeProfileData = (data): UserOauthData => {
+  const { names, genders, addresses, emailAddresses, phoneNumbers, birthdays, photos } = data;
+
+  return {
+    firstName: names?.[0]?.givenName,
+    lastName: names?.[0]?.familyName,
+    displayName: names?.[0]?.displayName,
+    gender: genders?.[0]?.value,
+    email: emailAddresses[0]?.value,
+    birthDate: birthdays?.[0]?.date
+      ? new Date(
+          birthdays?.[0]?.date?.year,
+          birthdays?.[0]?.date?.month,
+          birthdays?.[0]?.date?.day,
+          0,
+          0,
+          0,
+        )
+      : undefined,
+    phoneNumber: phoneNumbers?.[0]?.canonicalForm,
+    address: addresses[0]?.formattedValue,
+    avatarUrl: photos[0]?.url,
+  };
 };
 
 const parseGoogleIdToken = (idToken: string): UserOauthData => {
@@ -66,19 +92,20 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
           clientSecret: process.env.OAUTH_CLIENT_SECRET,
         });
       },
-      parseAccessToken: (accessToken) => {
-        return parseGoogleIdToken(accessToken.id_token);
-      },
-      getAccountData: async (token: string) => {
-        const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo?alt=json', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+      getAccountData: async ({ access_token, id_token }: any) => {
+        const response = await fetch(
+          'https://people.googleapis.com/v1/people/me?personFields=genders,emailAddresses,phoneNumbers,addresses,birthdays,metadata,names,photos,locations',
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
           },
-        });
+        );
+        if (response.status === 403) return parseGoogleIdToken(id_token);
 
-        return response.json();
+        const profileInfoJSON = await response.json();
+
+        return normalizeProfileData(profileInfoJSON);
       },
       isTokenValid: async (accessToken) => {
         const response = await fetch(

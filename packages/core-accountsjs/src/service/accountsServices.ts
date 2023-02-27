@@ -11,17 +11,17 @@ export const accountsServices: AccountsServices = {
       getAuthorizationCode: async (authorizationCode) => {
         return director.getAuthorizationCode(authorizationCode);
       },
-      getAccountData: async (token) => {
-        return director.getAccountData(token);
+      getAccountData: async (userAuthorizationToken: any) => {
+        return director.getAccountData(userAuthorizationToken);
       },
       isTokenValid: async (token) => {
         return director.isTokenValid(token);
       },
-      parseAccessToken: (accessToken) => {
-        return director.parseAccessToken(accessToken);
-      },
       revokeAccessToken: async (authorizationCode) => {
         return director.revokeAccessToken(authorizationCode);
+      },
+      refreshToken: async (userAuthorizationToken) => {
+        return director.refreshToken(userAuthorizationToken);
       },
     };
   },

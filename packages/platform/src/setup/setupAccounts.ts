@@ -86,10 +86,10 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
       const oauth2Service = await services.accounts.oauth2(provider, unchainedAPI);
 
-      const userAccessToken = await oauth2Service.getAuthorizationCode(authorizationCode);
-      if (!userAccessToken) throw new Error('Unable to authorize user');
+      const userAuthorizationToken = await oauth2Service.getAuthorizationCode(authorizationCode);
+      if (!userAuthorizationToken) throw new Error('Unable to authorize user');
 
-      const userOAuthInfo = oauth2Service.parseAccessToken(userAccessToken);
+      const userOAuthInfo = await oauth2Service.getAccountData(userAuthorizationToken);
 
       if (!userOAuthInfo) {
         throw new Error('OAuth authentication failed');
@@ -112,8 +112,17 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
               address: {
                 firstName: userOAuthInfo?.firstName,
                 lastName: userOAuthInfo?.lastName,
+                addressLine: userOAuthInfo?.address,
+                city: userOAuthInfo?.city,
+                countryCode: userOAuthInfo?.countryCode,
+                regionCode: userOAuthInfo?.regionCode,
+                postalCode: userOAuthInfo?.postalCode,
+                company: userOAuthInfo?.company,
               },
-              displayName: userOAuthInfo?.fullName,
+              gender: userOAuthInfo?.gender,
+              phoneMobile: userOAuthInfo?.phoneNumber,
+              displayName: userOAuthInfo?.displayName,
+              birthday: userOAuthInfo.birthDate,
             },
           },
           { skipPasswordEnrollment: true },
@@ -125,7 +134,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
               'services.oauth': {
                 [provider.toLowerCase()]: {
                   ...userOAuthInfo,
-                  accessToken: userAccessToken,
+                  userAuthorizationToken,
                   authorizationCode,
                 },
               },
