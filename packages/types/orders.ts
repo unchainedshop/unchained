@@ -36,7 +36,6 @@ export type Order = {
   currency: string;
   deliveryId?: string;
   fullfilled?: Date;
-  orderCode?: string;
   ordered?: Date;
   orderNumber?: string;
   originEnrollmentId?: string;
