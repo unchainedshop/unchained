@@ -1,14 +1,14 @@
-import { AccessToken, IOauth2Adapter } from '@unchainedshop/types/accounts.js';
+import { AccessToken, IOauth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
 
 import { Oauth2Director, Oauth2Adapter } from '@unchainedshop/core-accountsjs';
 
-const getGoogleAccessToken = async ({
+const getGoggleAuthorizationCode = async ({
   code,
   redirectUri,
   clientId,
   clientSecret,
 }): Promise<AccessToken> => {
-  const response = await fetch('https://www.googleapis.com/oauth2/v4/token', {
+  const response = await fetch('https://www.googleapis.com/oauth2/v4/token?access_type=offline', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -19,16 +19,27 @@ const getGoogleAccessToken = async ({
       grant_type: 'authorization_code',
       client_secret: clientSecret,
       redirect_uri: redirectUri,
+      access_type: 'offline',
     }),
   });
 
   return response.json();
 };
 
-const parseGoogleIdToken = (idToken: string): any => {
+const parseGoogleIdToken = (idToken: string): UserOauthData => {
   const [, base64UserInfo] = idToken.split('.');
   const buff = Buffer.from(base64UserInfo, 'base64');
-  return JSON.parse(buff.toString());
+  const data = JSON.parse(buff.toString());
+
+  return {
+    email: data?.email,
+    firstName: data?.given_name,
+    lastName: data?.family_name,
+    avatarUrl: data?.picture,
+    fullName: data?.name,
+    exp: data?.exp,
+    ...data,
+  };
 };
 
 const GoogleOauth2Adapter: IOauth2Adapter = {
@@ -36,7 +47,7 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
   key: 'google-oauth2',
   label: 'Google Oauth',
   version: '1',
-  provider: 'GOOGLE',
+  provider: 'google',
 
   actions: () => {
     return {
@@ -47,8 +58,8 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
       isActive: () => {
         return true;
       },
-      getAccessToken: async (authorizationCode) => {
-        return getGoogleAccessToken({
+      getAuthorizationCode: async (authorizationCode) => {
+        return getGoggleAuthorizationCode({
           code: authorizationCode,
           clientId: process.env.OAUTH_CLIENT_ID,
           redirectUri: process.env.OAUTH_REDIRECT_URL,

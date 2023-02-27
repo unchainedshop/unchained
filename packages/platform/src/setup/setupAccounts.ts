@@ -3,7 +3,6 @@ import { randomValueHex } from '@unchainedshop/utils';
 import { accountsSettings } from '@unchainedshop/core-accountsjs';
 import moniker from 'moniker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import crypto from 'crypto';
 
 export const setupAccounts = (unchainedAPI: UnchainedCore) => {
   const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();
@@ -83,10 +82,13 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       if (!authorizationCode || !provider) {
         return undefined;
       }
+      const { services, modules } = unchainedAPI;
 
-      const oauth2Service = await unchainedAPI.services.accounts.oauth2(provider, unchainedAPI);
+      const oauth2Service = await services.accounts.oauth2(provider, unchainedAPI);
 
-      const userAccessToken = await oauth2Service.getAccessToken(authorizationCode);
+      const userAccessToken = await oauth2Service.getAuthorizationCode(authorizationCode);
+      if (!userAccessToken) throw new Error('Unable to authorize user');
+
       const userOAuthInfo = oauth2Service.parseAccessToken(userAccessToken);
 
       if (!userOAuthInfo) {
@@ -103,13 +105,15 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         const newUserId = await unchainedAPI.modules.accounts.createUser(
           {
             email: userOAuthInfo.email,
-            password: crypto.createHash('sha256').update(new Date().toISOString()).digest('hex'),
+            guest: false,
+            initialPassword: undefined,
+            password: undefined,
             profile: {
               address: {
-                firstName: userOAuthInfo?.given_name,
-                lastName: userOAuthInfo?.family_name,
+                firstName: userOAuthInfo?.firstName,
+                lastName: userOAuthInfo?.lastName,
               },
-              displayName: userOAuthInfo?.name,
+              displayName: userOAuthInfo?.fullName,
             },
           },
           { skipPasswordEnrollment: true },
@@ -129,6 +133,31 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           },
           { upsert: true },
         );
+
+        if (userOAuthInfo.avatarUrl) {
+          const file = await services.files.uploadFileFromURL(
+            {
+              directoryName: 'user-avatars',
+              fileInput: {
+                fileLink: userOAuthInfo.avatarUrl,
+                fileName: `${userOAuthInfo.firstName}-avatar`,
+              },
+              meta: { userId: newUserId },
+            },
+            unchainedAPI,
+          );
+
+          if (user?.avatarId) {
+            await services.files.removeFiles(
+              {
+                fileIds: [user.avatarId as string],
+              },
+              unchainedAPI,
+            );
+          }
+
+          modules.users.updateAvatar(newUserId, file._id);
+        }
 
         return await unchainedAPI.modules.users.findUser({ _id: newUserId });
       } catch (error) {

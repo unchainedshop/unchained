@@ -8,8 +8,8 @@ export const accountsServices: AccountsServices = {
   oauth2: async (provider: string, unchainedAPI: UnchainedCore) => {
     const director = await Oauth2Director.actions(provider);
     return {
-      getAccessToken: async (authorizationCode) => {
-        return director.getAccessToken(authorizationCode);
+      getAuthorizationCode: async (authorizationCode) => {
+        return director.getAuthorizationCode(authorizationCode);
       },
       getAccountData: async (token) => {
         return director.getAccountData(token);

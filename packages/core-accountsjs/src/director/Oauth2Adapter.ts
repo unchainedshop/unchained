@@ -15,7 +15,7 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
       isActive: () => {
         return true;
       },
-      getAccessToken: async (authorizationCode: string) => {
+      getAuthorizationCode: async (authorizationCode: string) => {
         return null;
       },
       getAccountData: async (token: string) => {
@@ -29,6 +29,9 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
       },
       revokeAccessToken: (authorizationCode: string) => {
         return null;
+      },
+      refreshToken: async (refreshToken: string) => {
+        return Oauth2Error.NOT_IMPLEMENTED;
       },
     };
   },

@@ -31,6 +31,15 @@ export type AccessToken = {
   error: string;
 };
 
+export type UserOauthData = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string;
+  fullName: string;
+  exp: number;
+};
+
 /*
  * Services
  */
@@ -38,11 +47,12 @@ export type AccessToken = {
 export interface Oauth2AdapterActions {
   configurationError: (transactionContext?: any) => string;
   isActive: () => boolean;
-  getAccessToken: (authorizationCode: string) => Promise<any>;
+  getAuthorizationCode: (authorizationCode: string) => Promise<any>;
   getAccountData: (token: string) => Promise<any>;
   isTokenValid: (token) => Promise<boolean>;
-  parseAccessToken: (accessToken: any) => any;
+  parseAccessToken: (accessToken: any) => UserOauthData;
   revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
+  refreshToken?: (refreshToken: string) => Promise<any>;
 }
 export type IOauth2Adapter = IBaseAdapter & {
   provider?: string;
@@ -53,11 +63,12 @@ export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
   actions: (provider: string) => Promise<{
     configurationError: (transactionContext?: any) => string;
     isActive: () => boolean;
-    getAccessToken: (authorizationCode: string) => Promise<any>;
+    getAuthorizationCode: (authorizationCode: string) => Promise<any>;
     getAccountData: (token: string) => Promise<any>;
     isTokenValid: (token) => Promise<boolean>;
-    parseAccessToken: (accessToken: any) => any;
+    parseAccessToken: (accessToken: any) => UserOauthData;
     revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
+    refreshToken?: (refreshToken: string) => Promise<any>;
   }>;
 };
 
@@ -78,11 +89,12 @@ export interface AccountsSettings {
 }
 
 export interface Oauth2Service {
-  getAccessToken: (authorizationCode: string) => Promise<any>;
+  getAuthorizationCode: (authorizationCode: string) => Promise<any>;
   getAccountData: (token: string) => Promise<any>;
   isTokenValid: (token) => Promise<boolean>;
-  parseAccessToken: (accessToken: any) => any;
+  parseAccessToken: (accessToken: any) => UserOauthData;
   revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
+  refreshToken?: (refreshToken: string) => Promise<any>;
 }
 
 export interface AccountsServices {

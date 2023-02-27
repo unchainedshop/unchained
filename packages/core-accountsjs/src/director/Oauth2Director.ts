@@ -11,7 +11,7 @@ export const Oauth2Director: IOauthDirector = {
   ...baseDirector,
 
   actions: async (provider) => {
-    const Adapter = baseDirector.getAdapter(provider?.toUpperCase());
+    const Adapter = baseDirector.getAdapter(provider);
     if (!Adapter) {
       throw new Error(`Oauth Plugin for ${provider} not available`);
     }
@@ -48,9 +48,9 @@ export const Oauth2Director: IOauthDirector = {
         return adapter.revokeAccessToken(authorizationCode);
       },
 
-      getAccessToken: async (value) => {
+      getAuthorizationCode: async (value) => {
         try {
-          return adapter.getAccessToken(value);
+          return adapter.getAuthorizationCode(value);
         } catch (error) {
           log('Oauth2 Director -> Error while get accounts access information', {
             level: LogLevel.Warning,
@@ -58,6 +58,9 @@ export const Oauth2Director: IOauthDirector = {
           });
           return false;
         }
+      },
+      refreshToken: async (refreshToken) => {
+        return adapter.refreshToken(refreshToken);
       },
 
       getAccountData: async (token) => {
