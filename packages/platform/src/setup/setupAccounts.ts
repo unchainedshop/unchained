@@ -87,17 +87,18 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       const oauth2Service = await services.accounts.oauth2(provider, unchainedAPI);
 
       const userAuthorizationToken = await oauth2Service.getAuthorizationCode(authorizationCode);
+
       if (!userAuthorizationToken) throw new Error('Unable to authorize user');
 
       const userOAuthInfo = await oauth2Service.getAccountData(userAuthorizationToken);
 
-      if (!userOAuthInfo) {
+      if (!userOAuthInfo || !userOAuthInfo?.email) {
         throw new Error('OAuth authentication failed');
       }
 
       try {
         const user = await unchainedAPI.modules.users.findUser({
-          'emails.address': userOAuthInfo.email,
+          'emails.address': userOAuthInfo?.email?.toLocaleLowerCase(),
         });
 
         if (user) return user;
@@ -122,7 +123,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
               gender: userOAuthInfo?.gender,
               phoneMobile: userOAuthInfo?.phoneNumber,
               displayName: userOAuthInfo?.displayName,
-              birthday: userOAuthInfo.birthDate,
+              birthday: userOAuthInfo?.birthDate,
             },
           },
           { skipPasswordEnrollment: true },
@@ -132,7 +133,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           {
             $push: {
               'services.oauth': {
-                [provider.toLowerCase()]: {
+                [provider]: {
                   ...userOAuthInfo,
                   userAuthorizationToken,
                   authorizationCode,
@@ -143,7 +144,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           { upsert: true },
         );
 
-        if (userOAuthInfo.avatarUrl) {
+        if (userOAuthInfo?.avatarUrl) {
           const file = await services.files.uploadFileFromURL(
             {
               directoryName: 'user-avatars',
