@@ -809,7 +809,8 @@ export default [
       removeBookmark(bookmarkId: ID!): Bookmark!
 
       """
-      Add work to the work queue. Each type has its own input shape
+      Add work to the work queue. Each type has its own input shape. If you pinpoint the worker by setting it
+      during creation, the work will be only run by the worker who identifies as that worker.
       """
       addWork(
         type: WorkType!
@@ -818,6 +819,7 @@ export default [
         originalWorkId: ID
         scheduled: Timestamp
         retries: Int! = 20
+        worker: String
       ): Work
 
       """
@@ -825,11 +827,6 @@ export default [
       Optional worker to identify the worker.
       """
       allocateWork(types: [WorkType], worker: String): Work
-
-      """
-      Trigger a registered plugin for "type" to actually do the work with given "input".
-      """
-      doWork(type: WorkType!, input: JSON): WorkOutput
 
       """
       Register a work attempt manually.

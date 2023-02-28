@@ -48,6 +48,7 @@ export interface WorkData {
   priority?: number;
   retries?: number;
   scheduled?: Date;
+  worker?: string;
 }
 
 export interface WorkResult<Result> {
@@ -87,7 +88,7 @@ export type WorkerModule = {
 
   allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
 
-  doWork: (work: Work, unchainedAPI: UnchainedCore) => Promise<WorkResult<any>>;
+  processWork: (worker: string, unchainedAPI: UnchainedCore) => Promise<Work>;
 
   rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
 

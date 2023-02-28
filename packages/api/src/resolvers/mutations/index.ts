@@ -131,7 +131,6 @@ import addWork from './worker/addWork.js';
 import allocateWork from './worker/allocateWork.js';
 import finishWork from './worker/finishWork.js';
 import removeWork from './worker/removeWork.js';
-import doWork from './worker/doWork.js';
 import heartbeat from './users/heartbeat.js';
 import createEnrollment from './enrollments/createEnrollment.js';
 import terminateEnrollment from './enrollments/terminateEnrollment.js';
@@ -330,7 +329,6 @@ export default {
   allocateWork: acl(actions.manageWorker)(allocateWork),
   finishWork: acl(actions.manageWorker)(finishWork),
   removeWork: acl(actions.manageWorker)(removeWork),
-  doWork: acl(actions.manageWorker)(doWork),
   signPaymentProviderForCredentialRegistration: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCredentialRegistration,
   ),

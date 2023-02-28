@@ -284,22 +284,6 @@ describe('Worker Module', () => {
 
       expect(allocateWorkResult.errors).toBeUndefined();
 
-      const doWorkResult = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation doWork($type: WorkType!, $input: JSON) {
-            doWork(type: $type, input: $input) {
-              result
-              error
-              success
-            }
-          }
-        `,
-        variables: { type: 'HEARTBEAT' },
-      });
-
-      expect(doWorkResult.errors).toBeUndefined();
-      expect(doWorkResult.data.doWork.success).toBe(true);
-
       const finishWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation finishWork(
@@ -322,7 +306,9 @@ describe('Worker Module', () => {
         `,
         variables: {
           workId: addWorkResult.data.addWork._id,
-          ...doWorkResult.data.doWork,
+          success: true,
+          result: {},
+          worker: "TEST-GRAPHQL"
         },
       });
 
