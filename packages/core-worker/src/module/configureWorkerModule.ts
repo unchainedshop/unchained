@@ -173,7 +173,7 @@ export const configureWorkerModule = async ({
     return work;
   };
 
-  const processWork: WorkerModule['processWork'] = async (workerId, unchainedAPI) => {
+  const processNextWork: WorkerModule['processNextWork'] = async (workerId, unchainedAPI) => {
     const work = await allocateWork({
       types: WorkerDirector.getActivePluginTypes(false),
       worker: workerId,
@@ -366,7 +366,7 @@ export const configureWorkerModule = async ({
       }
     },
 
-    processWork,
+    processNextWork,
 
     finishWork,
 

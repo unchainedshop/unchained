@@ -75,7 +75,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
         const processRecursively = async (recursionCounter = 0) => {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
-          const doneWork = await unchainedAPI.modules.worker.processWork(workerId, unchainedAPI);
+          const doneWork = await unchainedAPI.modules.worker.processNextWork(workerId, unchainedAPI);
           if (doneWork) return processRecursively(recursionCounter + 1);
           return null;
         };

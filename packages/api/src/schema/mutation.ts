@@ -829,6 +829,14 @@ export default [
       allocateWork(types: [WorkType], worker: String): Work
 
       """
+      This will pick up non-external work, execute, await result and finish
+      it up on the target system. This function allows you to do work queue "ticks"
+      from outside instead of waiting for default Cron and Event Listener to trigger
+      and can be helpful in serverless environments.
+      """
+      processNextWork(worker: String): Work
+
+      """
       Register a work attempt manually.
       Note: Usually, work attempts are handled internally by the inbuilt cron
       worker. This mutation is part of the interface for "outside" workers.
