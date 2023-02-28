@@ -75,16 +75,18 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     async authenticate({
       authorizationCode,
       provider,
+      redirectURL,
     }: {
       authorizationCode: any;
       provider: string;
+      redirectURL: string;
     }): Promise<any> {
       if (!authorizationCode || !provider) {
         return undefined;
       }
       const { services, modules } = unchainedAPI;
 
-      const oauth2Service = await services.accounts.oauth2(provider, unchainedAPI);
+      const oauth2Service = await services.accounts.oauth2({ provider, redirectURL }, unchainedAPI);
 
       const userAuthorizationToken = await oauth2Service.getAuthorizationCode(authorizationCode);
 

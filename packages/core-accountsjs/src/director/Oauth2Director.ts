@@ -10,13 +10,13 @@ const baseDirector = BaseDirector<IOauth2Adapter>('Oauth2Director', {
 export const Oauth2Director: IOauthDirector = {
   ...baseDirector,
 
-  actions: async (provider) => {
+  actions: async ({ provider, redirectURL }, context) => {
     const Adapter = baseDirector.getAdapter(provider);
     if (!Adapter) {
       throw new Error(`Oauth Plugin for ${provider} not available`);
     }
 
-    const adapter = Adapter.actions();
+    const adapter = Adapter.actions({ redirectURL }, context);
 
     return {
       configurationError: () => {

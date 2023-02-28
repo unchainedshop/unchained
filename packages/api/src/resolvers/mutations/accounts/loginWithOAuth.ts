@@ -3,7 +3,11 @@ import { log } from '@unchainedshop/logger';
 
 const loginWithOAuth = async (
   _,
-  { provider, authorizationCode }: { provider: string; authorizationCode: string },
+  {
+    provider,
+    authorizationCode,
+    redirectURL,
+  }: { provider: string; authorizationCode: string; redirectURL: string },
   context: Context,
 ): Promise<any | null> => {
   log(`mutation loginWithOauth ${provider} ${authorizationCode}`);
@@ -13,6 +17,7 @@ const loginWithOAuth = async (
       service: 'oauth2',
       authorizationCode,
       provider,
+      redirectURL,
     },
     context,
   );

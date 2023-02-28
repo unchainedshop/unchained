@@ -20,7 +20,11 @@ export default [
       """
       Log the user with Oauth2 service provider
       """
-      loginWithOAuth(provider: String!, authorizationCode: String!): LoginMethodResponse
+      loginWithOAuth(
+        provider: String!
+        authorizationCode: String!
+        redirectURL: String
+      ): LoginMethodResponse
 
       """
       Web3

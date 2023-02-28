@@ -61,13 +61,21 @@ export interface Oauth2AdapterActions {
   revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
 }
+export type OauthConfig = {
+  clientId: string;
+  scopes: string[];
+};
 export type IOauth2Adapter = IBaseAdapter & {
-  provider?: string;
-  actions: () => Oauth2AdapterActions;
+  provider: string;
+  config: OauthConfig;
+  actions: (params: { redirectURL: string }, unchainedAPI: UnchainedCore) => Oauth2AdapterActions;
 };
 
 export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
-  actions: (provider: string) => Promise<{
+  actions: (
+    params: { provider: string; redirectURL: string },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<{
     configurationError: (transactionContext?: any) => string;
     isActive: () => boolean;
     getAuthorizationCode: (authorizationCode: string) => Promise<any>;
@@ -103,7 +111,10 @@ export interface Oauth2Service {
 }
 
 export interface AccountsServices {
-  oauth2: (provider: string, unchainedApi: UnchainedCore) => Promise<Oauth2Service>;
+  oauth2: (
+    params: { provider: string; redirectURL: string },
+    unchainedApi: UnchainedCore,
+  ) => Promise<Oauth2Service>;
 }
 
 /*

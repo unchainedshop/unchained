@@ -6,8 +6,9 @@ import { Oauth2Error } from './Oauth2Error.js';
 
 export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | 'orderIndex'> = {
   provider: '',
+  config: null,
 
-  actions: () => {
+  actions: ({ redirectURL }) => {
     return {
       configurationError: () => {
         throw new Error(Oauth2Error.NOT_IMPLEMENTED);

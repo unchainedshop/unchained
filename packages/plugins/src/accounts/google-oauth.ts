@@ -3,6 +3,8 @@ import { AccessToken, IOauth2Adapter, UserOauthData } from '@unchainedshop/types
 
 import { Oauth2Director, Oauth2Adapter } from '@unchainedshop/core-accountsjs';
 
+const { GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET } = process.env;
+
 const getGoggleAuthorizationCode = async ({
   code,
   redirectUri,
@@ -37,23 +39,26 @@ const normalizeProfileData = (data): UserOauthData => {
     birthdays = [],
     photos = [],
   } = data;
+  const [name] = names;
+  const [gender] = genders;
+  const [email] = emailAddresses;
+  const [birthday] = birthdays;
+  const [phone] = phoneNumbers;
+  const [address] = addresses;
+  const [photo] = photos;
 
   return {
-    firstName: names[0]?.givenName,
-    lastName: names[0]?.familyName,
-    displayName: names[0]?.displayName,
-    gender: genders[0]?.value,
-    email: emailAddresses[0]?.value,
-    birthDate: birthdays[0]?.date
-      ? new Date(
-          birthdays[0].date?.year ?? 0,
-          birthdays[0].date?.month ?? 0,
-          birthdays[0].date?.day ?? 1,
-        )
+    firstName: name?.givenName,
+    lastName: name?.familyName,
+    displayName: name?.displayName,
+    gender: gender?.value,
+    email: email?.value,
+    birthDate: birthday?.date
+      ? new Date(birthday?.date?.year ?? 0, birthdays?.date?.month ?? 0, birthday?.date?.day ?? 0)
       : undefined,
-    phoneNumber: phoneNumbers[0]?.canonicalForm,
-    address: addresses[0]?.formattedValue,
-    avatarUrl: photos[0]?.url,
+    phoneNumber: phone?.canonicalForm,
+    address: address?.formattedValue,
+    avatarUrl: photo?.url,
   };
 };
 
@@ -79,10 +84,24 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
   label: 'Google Oauth',
   version: '1',
   provider: 'google',
+  config: {
+    clientId: GOOGLE_OAUTH_CLIENT_ID,
+    scopes: [
+      'genders',
+      'emailAddresses',
+      'phoneNumbers',
+      'addresses',
+      'birthdays',
+      'metadata',
+      'names',
+      'photos',
+      'locations',
+    ],
+  },
 
-  actions: () => {
+  actions: ({ redirectURL }, context) => {
     return {
-      ...Oauth2Adapter.actions(),
+      ...Oauth2Adapter.actions({ redirectURL }, context),
       configurationError: () => {
         return '';
       },
@@ -92,14 +111,16 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
       getAuthorizationCode: async (authorizationCode) => {
         return getGoggleAuthorizationCode({
           code: authorizationCode,
-          clientId: process.env.OAUTH_CLIENT_ID,
-          redirectUri: process.env.OAUTH_REDIRECT_URL,
-          clientSecret: process.env.OAUTH_CLIENT_SECRET,
+          clientId: GoogleOauth2Adapter.config.clientId,
+          redirectUri: redirectURL,
+          clientSecret: GOOGLE_OAUTH_CLIENT_SECRET,
         });
       },
       getAccountData: async ({ access_token, id_token }: any) => {
         const response = await fetch(
-          'https://people.googleapis.com/v1/people/me?personFields=genders,emailAddresses,phoneNumbers,addresses,birthdays,metadata,names,photos,locations',
+          `https://people.googleapis.com/v1/people/me?personFields=${GoogleOauth2Adapter.config.scopes.join(
+            ',',
+          )}`,
           {
             headers: {
               Authorization: `Bearer ${access_token}`,
@@ -107,8 +128,8 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
           },
         );
         if (response.status === 403) return parseGoogleIdToken(id_token);
-
         const profileInfoJSON = await response.json();
+        if (profileInfoJSON?.error) throw new Error(profileInfoJSON?.error.message);
 
         return normalizeProfileData(profileInfoJSON);
       },

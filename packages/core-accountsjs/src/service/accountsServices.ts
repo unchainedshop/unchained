@@ -5,8 +5,9 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Oauth2Director } from '../director/Oauth2Director.js';
 
 export const accountsServices: AccountsServices = {
-  oauth2: async (provider: string, unchainedAPI: UnchainedCore) => {
-    const director = await Oauth2Director.actions(provider);
+  oauth2: async (params: { provider: string; redirectURL: string }, unchainedAPI: UnchainedCore) => {
+    const { provider, redirectURL } = params;
+    const director = await Oauth2Director.actions({ provider, redirectURL }, unchainedAPI);
     return {
       getAuthorizationCode: async (authorizationCode) => {
         return director.getAuthorizationCode(authorizationCode);
