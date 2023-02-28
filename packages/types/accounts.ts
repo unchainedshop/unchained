@@ -58,7 +58,7 @@ export interface Oauth2AdapterActions {
   getAuthorizationCode: (authorizationCode: string) => Promise<any>;
   getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
-  revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
+  revokeAccessToken: (authorizationToken: any) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
 }
 export type OauthConfig = {
@@ -81,7 +81,7 @@ export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
     getAuthorizationCode: (authorizationCode: string) => Promise<any>;
     getAccountData: (token: string) => Promise<UserOauthData>;
     isTokenValid: (token) => Promise<boolean>;
-    revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
+    revokeAccessToken: (authorizationToken: any) => Promise<boolean>;
     refreshToken?: (refreshToken: string) => Promise<any>;
   }>;
 };
@@ -106,7 +106,7 @@ export interface Oauth2Service {
   getAuthorizationCode: (authorizationCode: string) => Promise<any>;
   getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
-  revokeAccessToken: (authorizationCode: string) => Promise<boolean>;
+  revokeAccessToken: (authorizationToken: any) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
 }
 

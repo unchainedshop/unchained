@@ -18,8 +18,8 @@ export const accountsServices: AccountsServices = {
       isTokenValid: async (token) => {
         return director.isTokenValid(token);
       },
-      revokeAccessToken: async (authorizationCode) => {
-        return director.revokeAccessToken(authorizationCode);
+      revokeAccessToken: async (authorizationToken) => {
+        return director.revokeAccessToken(authorizationToken);
       },
       refreshToken: async (userAuthorizationToken) => {
         return director.refreshToken(userAuthorizationToken);

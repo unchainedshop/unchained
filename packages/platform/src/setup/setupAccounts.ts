@@ -89,10 +89,12 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       const oauth2Service = await services.accounts.oauth2({ provider, redirectURL }, unchainedAPI);
 
       const userAuthorizationToken = await oauth2Service.getAuthorizationCode(authorizationCode);
+      console.log(userAuthorizationToken);
 
       if (!userAuthorizationToken) throw new Error('Unable to authorize user');
 
       const userOAuthInfo = await oauth2Service.getAccountData(userAuthorizationToken);
+      console.log(userOAuthInfo);
 
       if (!userOAuthInfo || !userOAuthInfo?.email) {
         throw new Error('OAuth authentication failed');

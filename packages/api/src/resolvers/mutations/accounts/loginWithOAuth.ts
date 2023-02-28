@@ -21,7 +21,6 @@ const loginWithOAuth = async (
     },
     context,
   );
-  /* return null; */
 };
 
 export default loginWithOAuth;

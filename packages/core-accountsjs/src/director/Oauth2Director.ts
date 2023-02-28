@@ -40,8 +40,8 @@ export const Oauth2Director: IOauthDirector = {
       isTokenValid: async (token) => {
         return adapter.isTokenValid(token);
       },
-      revokeAccessToken: async (authorizationCode) => {
-        return adapter.revokeAccessToken(authorizationCode);
+      revokeAccessToken: async (authorizationToken) => {
+        return adapter.revokeAccessToken(authorizationToken);
       },
 
       getAuthorizationCode: async (value) => {
