@@ -1,4 +1,4 @@
-import { IWorker, Work } from '@unchainedshop/types/worker.js';
+import { IWorker } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';
@@ -75,27 +75,8 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
         const processRecursively = async (recursionCounter = 0) => {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
-
-          const work = await unchainedAPI.modules.worker.allocateWork({
-            types: WorkerDirector.getActivePluginTypes(false),
-            worker: workerId,
-          });
-
-          let doneWork: Work | null = null;
-
-          if (work) {
-            const output = await unchainedAPI.modules.worker.doWork(work, unchainedAPI);
-
-            doneWork = await unchainedAPI.modules.worker.finishWork(work._id, {
-              ...output,
-              finished: work.finished || new Date(),
-              started: work.started,
-              worker: workerId,
-            });
-          }
-
+          const doneWork = await unchainedAPI.modules.worker.processNextWork(workerId, unchainedAPI);
           if (doneWork) return processRecursively(recursionCounter + 1);
-
           return null;
         };
 

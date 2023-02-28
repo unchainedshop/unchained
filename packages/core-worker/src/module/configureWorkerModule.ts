@@ -98,6 +98,32 @@ export const configureWorkerModule = async ({
 
   const mutations = generateDbMutations<Work>(WorkQueue, WorkQueueSchema) as ModuleMutations<Work>;
 
+  const allocateWork: WorkerModule['allocateWork'] = async ({ types, worker = UNCHAINED_WORKER_ID }) => {
+    // Find a work item that is scheduled for now and is not started.
+    // Also:
+    // - Restrict by types and worker if provided
+    // - Sort by default queue order
+    const query = buildQuerySelector({
+      status: [WorkStatus.NEW],
+      scheduled: { end: new Date() },
+      worker: { $in: [null, worker] },
+      ...(types ? { type: { $in: types } } : {}),
+    });
+    const result = await WorkQueue.findOneAndUpdate(
+      query,
+      {
+        $set: { started: new Date(), worker },
+      },
+      { sort: buildSortOptions(defaultSort), returnDocument: 'after' },
+    );
+
+    WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
+      work: result.value,
+    });
+
+    return result.value;
+  };
+
   const finishWork: WorkerModule['finishWork'] = async (
     workId,
     {
@@ -145,6 +171,26 @@ export const configureWorkerModule = async ({
     WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work });
 
     return work;
+  };
+
+  const processNextWork: WorkerModule['processNextWork'] = async (workerId, unchainedAPI) => {
+    const work = await allocateWork({
+      types: WorkerDirector.getActivePluginTypes(false),
+      worker: workerId,
+    });
+
+    if (work) {
+      const output = await WorkerDirector.doWork(work, unchainedAPI);
+
+      return finishWork(work._id, {
+        ...output,
+        finished: work.finished || new Date(),
+        started: work.started,
+        worker: workerId,
+      });
+    }
+
+    return null;
   };
 
   return {
@@ -216,7 +262,15 @@ export const configureWorkerModule = async ({
     },
 
     // Mutations
-    addWork: async ({ type, input, priority = 0, scheduled, originalWorkId, retries = 20 }) => {
+    addWork: async ({
+      type,
+      input,
+      priority = 0,
+      scheduled,
+      originalWorkId,
+      worker = null,
+      retries = 20,
+    }) => {
       if (!WorkerDirector.getAdapter(type)) {
         throw new Error(`No plugin registered for type ${type}`);
       }
@@ -230,6 +284,7 @@ export const configureWorkerModule = async ({
         originalWorkId,
         retries,
         created,
+        worker,
       });
 
       logger.info(`${type} scheduled @ ${new Date(scheduled || created).toISOString()}`, {
@@ -260,31 +315,7 @@ export const configureWorkerModule = async ({
       return work;
     },
 
-    allocateWork: async ({ types, worker = UNCHAINED_WORKER_ID }) => {
-      // Find a work item that is scheduled for now and is not started.
-      // Also:
-      // - Restrict by types and worker if provided
-      // - Sort by default queue order
-      const query = buildQuerySelector({
-        status: [WorkStatus.NEW],
-        scheduled: { end: new Date() },
-        worker: { $in: [null, worker] },
-        ...(types ? { type: { $in: types } } : {}),
-      });
-      const result = await WorkQueue.findOneAndUpdate(
-        query,
-        {
-          $set: { started: new Date(), worker },
-        },
-        { sort: buildSortOptions(defaultSort), returnDocument: 'after' },
-      );
-
-      WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
-        work: result.value,
-      });
-
-      return result.value;
-    },
+    allocateWork,
 
     ensureOneWork: async ({ type, input, priority = 0, scheduled, originalWorkId, retries = 20 }) => {
       const created = new Date();
@@ -335,9 +366,7 @@ export const configureWorkerModule = async ({
       }
     },
 
-    doWork: (work, unchainedAPI) => {
-      return WorkerDirector.doWork(work, unchainedAPI);
-    },
+    processNextWork,
 
     finishWork,
 

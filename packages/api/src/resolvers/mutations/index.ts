@@ -130,8 +130,8 @@ import removeBookmark from './bookmarks/removeBookmark.js';
 import addWork from './worker/addWork.js';
 import allocateWork from './worker/allocateWork.js';
 import finishWork from './worker/finishWork.js';
+import processNextWork from './worker/processNextWork.js';
 import removeWork from './worker/removeWork.js';
-import doWork from './worker/doWork.js';
 import heartbeat from './users/heartbeat.js';
 import createEnrollment from './enrollments/createEnrollment.js';
 import terminateEnrollment from './enrollments/terminateEnrollment.js';
@@ -202,15 +202,12 @@ export default {
     markPaymentCredentialsPreferred,
   ),
   removePaymentCredentials: acl(actions.managePaymentCredentials)(removePaymentCredentials),
-
   createLanguage: acl(actions.manageLanguages)(createLanguage),
   updateLanguage: acl(actions.manageLanguages)(updateLanguage),
   removeLanguage: acl(actions.manageLanguages)(removeLanguage),
-
   createCountry: acl(actions.manageCountries)(createCountry),
   updateCountry: acl(actions.manageCountries)(updateCountry),
   removeCountry: acl(actions.manageCountries)(removeCountry),
-
   createProduct: acl(actions.manageProducts)(createProduct),
   publishProduct: acl(actions.manageProducts)(publishProduct),
   unpublishProduct: acl(actions.manageProducts)(unpublishProduct),
@@ -237,11 +234,9 @@ export default {
   createProductVariationOption: acl(actions.manageProducts)(createProductVariationOption),
   addProductAssignment: acl(actions.manageProducts)(addProductAssignment),
   removeProductAssignment: acl(actions.manageProducts)(removeProductAssignment),
-
   createCurrency: acl(actions.manageCurrencies)(createCurrency),
   updateCurrency: acl(actions.manageCurrencies)(updateCurrency),
   removeCurrency: acl(actions.manageCurrencies)(removeCurrency),
-
   createCart: acl(actions.createCart)(createCart),
   addCartProduct: acl(actions.updateCart)(addCartProduct),
   addMultipleCartProducts: acl(actions.updateCart)(addMultipleCartProducts),
@@ -265,32 +260,26 @@ export default {
   rejectOrder: acl(actions.markOrderRejected)(rejectOrder),
   payOrder: acl(actions.markOrderPaid)(payOrder),
   deliverOrder: acl(actions.markOrderDelivered)(deliverOrder),
-
   createEnrollment: acl(actions.createEnrollment)(createEnrollment),
   terminateEnrollment: acl(actions.updateEnrollment)(terminateEnrollment),
   activateEnrollment: acl(actions.updateEnrollment)(activateEnrollment),
   updateEnrollment: acl(actions.updateEnrollment)(updateEnrollment),
-
   createPaymentProvider: acl(actions.managePaymentProviders)(createPaymentProvider),
   updatePaymentProvider: acl(actions.managePaymentProviders)(updatePaymentProvider),
   removePaymentProvider: acl(actions.managePaymentProviders)(removePaymentProvider),
-
   createDeliveryProvider: acl(actions.manageDeliveryProviders)(createDeliveryProvider),
   updateDeliveryProvider: acl(actions.manageDeliveryProviders)(updateDeliveryProvider),
   removeDeliveryProvider: acl(actions.manageDeliveryProviders)(removeDeliveryProvider),
-
   createWarehousingProvider: acl(actions.manageWarehousingProviders)(createWarehousingProvider),
   updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
   exportToken: acl(actions.updateToken)(exportToken),
-
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),
   removeFilter: acl(actions.manageFilters)(removeFilter),
   updateFilterTexts: acl(actions.manageFilters)(updateFilterTexts),
   removeFilterOption: acl(actions.manageFilters)(removeFilterOption),
   createFilterOption: acl(actions.manageFilters)(createFilterOption),
-
   createAssortment: acl(actions.manageAssortments)(createAssortment),
   addAssortmentMedia: acl(actions.manageAssortments)(addAssortmentMedia),
   prepareAssortmentMediaUpload: acl(actions.manageAssortments)(prepareAssortmentMediaUpload),
@@ -310,27 +299,23 @@ export default {
   addAssortmentFilter: acl(actions.manageAssortments)(addAssortmentFilter),
   removeAssortmentFilter: acl(actions.manageAssortments)(removeAssortmentFilter),
   reorderAssortmentFilters: acl(actions.manageAssortments)(reorderAssortmentFilters),
-
   createProductReview: acl(actions.reviewProduct)(createProductReview),
   updateProductReview: acl(actions.updateProductReview)(updateProductReview),
   removeProductReview: acl(actions.updateProductReview)(removeProductReview),
   addProductReviewVote: acl(actions.voteProductReview)(addProductReviewVote),
   removeProductReviewVote: acl(actions.voteProductReview)(removeProductReviewVote),
-
   requestQuotation: acl(actions.requestQuotation)(requestQuotation),
   rejectQuotation: acl(actions.answerQuotation)(rejectQuotation),
   verifyQuotation: acl(actions.manageQuotations)(verifyQuotation),
   makeQuotationProposal: acl(actions.manageQuotations)(makeQuotationProposal),
-
   bookmark: acl(actions.bookmarkProduct)(bookmark),
   createBookmark: acl(actions.manageBookmarks)(createBookmark),
   removeBookmark: acl(actions.manageBookmarks)(removeBookmark),
-
   addWork: acl(actions.manageWorker)(addWork),
   allocateWork: acl(actions.manageWorker)(allocateWork),
   finishWork: acl(actions.manageWorker)(finishWork),
   removeWork: acl(actions.manageWorker)(removeWork),
-  doWork: acl(actions.manageWorker)(doWork),
+  processNextWork: acl(actions.manageWorker)(processNextWork),
   signPaymentProviderForCredentialRegistration: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCredentialRegistration,
   ),

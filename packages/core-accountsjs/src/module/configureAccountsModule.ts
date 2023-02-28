@@ -213,15 +213,6 @@ export const configureAccountsModule = async ({
 
     disableTOTP: async (userId, code) => {
       await accountsPassword.twoFactor.unset(userId, code);
-      // https://github.com/accounts-js/accounts/issues/1181
-      const wait = async (time: number) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(true);
-          }, time);
-        });
-      };
-      await wait(500);
       return true;
     },
 
