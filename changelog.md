@@ -1,3 +1,23 @@
+# Unchained Engine v2.1
+
+This release contains various bugfixes and improvements
+
+## Minor
+- Add `Mutation.processNextWork` to help trigger work from outside and removed `Mutation.doWork` (was not functional)
+- Customize the Cookie Path with `UNCHAINED_COOKIE_PATH`
+- Better Order Numbers with Hashid's that don't contain competitive 1,l,0 (O was already removed before)
+- Improved logging for the work the queue
+- Re-introducded corsOrigins adjustable through `connectPlatformToExpress4`
+
+## Patch
+- Fixed various typing bugs
+- We found out that a later version of Node.js 16 also supports WHATWG fetch. So the Kitchensink has been made compatible with Node.js 16 again. https://nodejs.org/en/blog/release/v16.15.0/
+- Mail Interceptor can now show some attachments
+- Fixed double emitting ORDER_CHECKOUT even
+- Fixed not running through customizable product validation fn at checkout
+- Fixed a severe GridFS plugin bug that can lead to server crashes (DOS)
+- Fixed ERC metadata not optional causing issues with traditional warehousing plugins
+
 # Unchained Engine v2.0
 
 This is a major feature release bringing Web Authentication API, Web3 Login, Web Push API and Virtual Products including an NFT/Token Minting gateway to Unchained Engine. It's also the first version of Unchained Engine that can be extended to run on other Node.js frameworks than Express.
@@ -23,7 +43,7 @@ We are jumping on the ESM train and Unchained Engine 2.0 now requires Node 18+ a
 - API has been extended to support the new tokenization concept: `User.tokens`, `Mutation.exportToken`, `Query.token`, `Mutation.updateProductTokenization`
 - A new ERC Metadata Server is built into Unchained allowing to generate Ethereum compatible ERC-1155 and ERC-721 metadata JSON files for tokenized products.
 
-## Minor
+## Minor
 - Currencies now have a field `decimals` to define how many decimals are there. This is needed for general currency conversion between cryptocurrencies and Fiat and also helps to display the amount of arbitrary currencies better on frontends.
 - The currency conversion plugin now depends on decimals and works across any currency pairs when there is conversion rates stored.
 - Conversion rates are now fetched based on a regular job and not live when needed, this improves performance and stability
@@ -93,7 +113,7 @@ app in ESM mode.
 - [docs] Add typedocs and fix controlpanel references
 - [core] Improved types
 
-## Patches
+## Patch
 - [core] Fix TOTP high severity bug
 - [core] Fix SSO with Unchained Cloud
 - [core] Fix discount pricing calculation issues
@@ -133,7 +153,7 @@ app in ESM mode.
   `productsCount`, `quotationsCount`, `subscriptionsCount`,
   `usersCount`,`warehousingProvidersCount`,`eventsCount`
 
-## Patches
+## Patch
 
 - [core] Improved Typescript Support
 - [core] A bug has been fixed that accidentally made order positions immutable for further changes
@@ -463,7 +483,7 @@ developers to easily add new resolvers and access the core API's through typescr
 - [api, pricing] Price simulating functions can now take a forced currency
 - [tests] Index creation is now reused of example project instead of mocked in db setup
 
-## Patches
+## Patch
 
 - [accountsjs] Regression, default token expiration now after 30 days instead of 20 minutes
 - [bulk] Regression, removal did not work
@@ -481,7 +501,7 @@ developers to easily add new resolvers and access the core API's through typescr
 
 - [users] enrollUser now supports hashed passwords and uses the existing password field for it
 
-## Patches
+## Patch
 
 - [controlpanel] Fix enrollUser and setPassword
 
@@ -494,7 +514,7 @@ developers to easily add new resolvers and access the core API's through typescr
 - [platform] If you used `Users.createUser` before, that function is now async
 - [api] setPassword mutation now also supports plain passwords if needed.
 
-## Patches
+## Patch
 
 - [controlpanel] Fix bug in Currency edit form
 - [controlpanel] Fix bug with Assortment list not showing the assortments
@@ -537,7 +557,7 @@ meteor remove accounts-base accounts-password accounts-oauth
   addresses into account
 - [api] Better integration tests that cover more business logic than before
 
-## Patches
+## Patch
 
 - [great-purge-of-meteor] Remove accounts-base and accounts-password from platform package
 - [great-purge-of-meteor] Implement new accountsjs package
@@ -552,7 +572,7 @@ meteor remove accounts-base accounts-password accounts-oauth
 
 # v0.54.1
 
-## Patches
+## Patch
 
 - [platform] Fix importing bulk assortments should remove old links
 - [pricing] Fix critical issue with discounts resolving to a total cart value of 0
@@ -572,7 +592,7 @@ meteor remove accounts-base accounts-password accounts-oauth
 
 - [core] Compound indexes for text entities
 
-## Patches
+## Patch
 
 - [api] Fix rare case where MESSAGE work type lead to an exception
 
@@ -587,7 +607,7 @@ Hotfix for broken product text editing through controlpanel
 - [cp] Update deps
 - [docs] Add API Reference
 
-## Patches
+## Patch
 
 - [api] Fix updateProductText not updating text
 
@@ -611,7 +631,7 @@ products) at the same time.
 - [api] Add a new field Product.defaultOrderQuantity
 - [api] Also support "token" in cookies instead of only meteor_login_token
 
-## Patches
+## Patch
 
 - [great-purge-of-meteor] Remove dburles:factory
 - [pricing] Fix currencyCode in pricing when using multiple currencies for the same country
@@ -679,7 +699,7 @@ Additionally it's possible to override full-text search of Assortments through s
 - [ci] Added CodeQL Security Scanning #218
 - [ci] More tests
 
-## Patches
+## Patch
 
 - [api] Fix edge case with Query.search when slugs is set to null
 - [api] Fix privileges when using Mutation.updateProductReview, Mutation.answerQuotation,
@@ -737,7 +757,7 @@ for now:
 - [worker] It's now possible to define an autoscheduling rule for jobs and the system automatically takes
   care of setting up the jobs
 
-## Patches
+## Patch
 
 - [examples] Fix a regression bug (simple-schema / seeds) when trying to start the minimal example the
   first time
@@ -796,7 +816,7 @@ for now:
   MongoDB native feature (<https://docs.mongodb.com/manual/tutorial/expire-data/>). This should improve
   db log performance and disk usage
 
-## Patches
+## Patch
 
 - [api] Fixes removeDiscount regression crashing apollo
 - [worker] Now experimental interval worker which does not depend on SyncedCron

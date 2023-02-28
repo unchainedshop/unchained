@@ -5,7 +5,8 @@ import e from 'express';
 
 export default function createApolloMiddleware(
   contextResolver,
-  { apolloGraphQLServer, corsOrigins = undefined },
+  apolloGraphQLServer,
+  { corsOrigins = undefined } = {},
 ) {
   const originFn =
     corsOrigins && Array.isArray(corsOrigins)

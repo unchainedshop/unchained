@@ -35,10 +35,14 @@ export const useMiddlewareWithCurrentContext = (expressApp, path, ...middleware)
 export const connect = (
   expressApp: e.Express,
   { apolloGraphQLServer }: { apolloGraphQLServer: ApolloServer },
+  options?: { corsOrigins?: any },
 ) => {
   const contextResolver = getCurrentContextResolver();
 
-  expressApp.use(GRAPHQL_API_PATH, createApolloMiddleware(contextResolver, { apolloGraphQLServer }));
+  expressApp.use(
+    GRAPHQL_API_PATH,
+    createApolloMiddleware(contextResolver, apolloGraphQLServer, options),
+  );
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware(contextResolver));
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware(contextResolver));
   expressApp.use(
