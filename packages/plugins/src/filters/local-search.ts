@@ -1,6 +1,7 @@
 import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
 import { IFilterAdapter } from '@unchainedshop/types/filters.js';
 import { Query } from '@unchainedshop/types/common.js';
+import escapeStringRegexp from 'escape-string-regexp';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 
@@ -25,12 +26,12 @@ const LocalSearch: IFilterAdapter = {
         const selector: Query = AMAZON_DOCUMENTDB_COMPAT_MODE
           ? {
               $or: [
-                { title: { $regex: `${queryString}`, $options: 'im' } },
-                { subtitle: { $regex: `${queryString}`, $options: 'im' } },
-                { vendor: { $regex: `${queryString}`, $options: 'im' } },
-                { brand: { $regex: `${queryString}`, $options: 'im' } },
-                { description: { $regex: `${queryString}`, $options: 'im' } },
-                { labels: { $regex: `${queryString}`, $options: 'im' } },
+                { title: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
+                { subtitle: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
+                { vendor: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
+                { brand: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
+                { description: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
+                { labels: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
               ],
             }
           : {
