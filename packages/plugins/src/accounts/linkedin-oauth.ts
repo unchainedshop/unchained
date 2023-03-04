@@ -76,8 +76,6 @@ const LinkedInOauthAdapter: IOauth2Adapter = {
 
         const profileInfoJSON = await response.json();
 
-        console.log(profileInfoJSON);
-
         return normalizeProfileData(profileInfoJSON);
       },
       isTokenValid: async ({ access_token }) => {
