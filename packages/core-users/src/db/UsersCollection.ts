@@ -8,6 +8,28 @@ export const UsersCollection = async (db: Db) => {
   await buildDbIndexes<User>(Users, [
     {
       index: {
+        deleted: 1,
+        created: 1,
+        guest: 1,
+      },
+      options: {},
+    },
+    {
+      index: {
+        guest: 1,
+      },
+      options: {
+        sparse: true,
+      },
+    },
+    {
+      index: {
+        created: 1,
+      },
+      options: {},
+    },
+    {
+      index: {
         username: 1,
       },
       options: {
