@@ -84,6 +84,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       if (!authorizationCode || !provider) {
         return undefined;
       }
+
       const { services, modules } = unchainedAPI;
 
       const oauth2Service = await services.accounts.oauth2({ provider, redirectUrl }, unchainedAPI);
@@ -96,9 +97,10 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       if (!userOAuthInfo || !userOAuthInfo?.email) {
         throw new Error('OAuth authentication failed');
       }
+      const lowerCasedProviderName = provider.toLowerCase();
 
       const user = await unchainedAPI.modules.users.findUser({
-        [`services.oauth.${provider}.email`]: userOAuthInfo.email,
+        [`services.oauth.${lowerCasedProviderName}.${userOAuthInfo.email}`]: { $exists: true },
       });
       if (user) return user;
 
@@ -131,8 +133,8 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         { _id: newUserId },
         {
           $push: {
-            'services.oauth': {
-              [provider]: {
+            [`services.oauth.${lowerCasedProviderName}`]: {
+              [userOAuthInfo.email]: {
                 ...userOAuthInfo,
                 userAuthorizationToken,
                 authorizationCode,
