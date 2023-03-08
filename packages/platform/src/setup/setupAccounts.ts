@@ -75,108 +75,100 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     async authenticate({
       authorizationCode,
       provider,
-      redirectURL,
+      redirectUrl,
     }: {
       authorizationCode: any;
       provider: string;
-      redirectURL: string;
+      redirectUrl: string;
     }): Promise<any> {
       if (!authorizationCode || !provider) {
         return undefined;
       }
       const { services, modules } = unchainedAPI;
 
-      const oauth2Service = await services.accounts.oauth2({ provider, redirectURL }, unchainedAPI);
+      const oauth2Service = await services.accounts.oauth2({ provider, redirectUrl }, unchainedAPI);
 
       const userAuthorizationToken = await oauth2Service.getAuthorizationCode(authorizationCode);
-      console.log(userAuthorizationToken);
 
       if (!userAuthorizationToken) throw new Error('Unable to authorize user');
 
       const userOAuthInfo = await oauth2Service.getAccountData(userAuthorizationToken);
-      console.log(userOAuthInfo);
-
       if (!userOAuthInfo || !userOAuthInfo?.email) {
         throw new Error('OAuth authentication failed');
       }
 
-      try {
-        const user = await unchainedAPI.modules.users.findUser({
-          'emails.address': userOAuthInfo?.email?.toLocaleLowerCase(),
-        });
+      const user = await unchainedAPI.modules.users.findUser({
+        [`services.oauth.${provider}.email`]: userOAuthInfo.email,
+      });
+      if (user) return user;
 
-        if (user) return user;
-
-        const newUserId = await unchainedAPI.modules.accounts.createUser(
-          {
-            email: userOAuthInfo.email,
-            guest: false,
-            initialPassword: undefined,
-            password: undefined,
-            profile: {
-              address: {
-                firstName: userOAuthInfo?.firstName,
-                lastName: userOAuthInfo?.lastName,
-                addressLine: userOAuthInfo?.address,
-                city: userOAuthInfo?.city,
-                countryCode: userOAuthInfo?.countryCode,
-                regionCode: userOAuthInfo?.regionCode,
-                postalCode: userOAuthInfo?.postalCode,
-                company: userOAuthInfo?.company,
-              },
-              gender: userOAuthInfo?.gender,
-              phoneMobile: userOAuthInfo?.phoneNumber,
-              displayName: userOAuthInfo?.displayName,
-              birthday: userOAuthInfo?.birthDate,
+      const newUserId = await unchainedAPI.modules.accounts.createUser(
+        {
+          email: userOAuthInfo.email,
+          guest: false,
+          initialPassword: undefined,
+          password: undefined,
+          profile: {
+            address: {
+              firstName: userOAuthInfo?.firstName,
+              lastName: userOAuthInfo?.lastName,
+              addressLine: userOAuthInfo?.address,
+              city: userOAuthInfo?.city,
+              countryCode: userOAuthInfo?.countryCode,
+              regionCode: userOAuthInfo?.regionCode,
+              postalCode: userOAuthInfo?.postalCode,
+              company: userOAuthInfo?.company,
             },
+            gender: userOAuthInfo?.gender,
+            phoneMobile: userOAuthInfo?.phoneNumber,
+            displayName: userOAuthInfo?.displayName,
+            birthday: userOAuthInfo?.birthDate,
           },
-          { skipPasswordEnrollment: true },
-        );
-        await unchainedAPI.modules.users.updateUser(
-          { _id: newUserId },
-          {
-            $push: {
-              'services.oauth': {
-                [provider]: {
-                  ...userOAuthInfo,
-                  userAuthorizationToken,
-                  authorizationCode,
-                },
+        },
+        { skipPasswordEnrollment: true },
+      );
+      await unchainedAPI.modules.users.updateUser(
+        { _id: newUserId },
+        {
+          $push: {
+            'services.oauth': {
+              [provider]: {
+                ...userOAuthInfo,
+                userAuthorizationToken,
+                authorizationCode,
               },
             },
           },
-          { upsert: true },
+        },
+        { upsert: true },
+      );
+
+      if (userOAuthInfo?.avatarUrl) {
+        const file = await services.files.uploadFileFromURL(
+          {
+            directoryName: 'user-avatars',
+            fileInput: {
+              fileLink: userOAuthInfo.avatarUrl,
+              fileName: `${userOAuthInfo.firstName}-avatar`,
+            },
+            meta: { userId: newUserId },
+          },
+          unchainedAPI,
         );
 
-        if (userOAuthInfo?.avatarUrl) {
-          const file = await services.files.uploadFileFromURL(
+        if (user?.avatarId) {
+          await services.files.removeFiles(
             {
-              directoryName: 'user-avatars',
-              fileInput: {
-                fileLink: userOAuthInfo.avatarUrl,
-                fileName: `${userOAuthInfo.firstName}-avatar`,
-              },
-              meta: { userId: newUserId },
+              fileIds: [user.avatarId as string],
             },
             unchainedAPI,
           );
-
-          if (user?.avatarId) {
-            await services.files.removeFiles(
-              {
-                fileIds: [user.avatarId as string],
-              },
-              unchainedAPI,
-            );
-          }
-
-          modules.users.updateAvatar(newUserId, file._id);
         }
 
-        return await unchainedAPI.modules.users.findUser({ _id: newUserId });
-      } catch (error) {
-        throw new Error('OAuth authentication failed');
+        modules.users.updateAvatar(newUserId, file._id);
       }
+
+      return unchainedAPI.modules.users.findUser({ _id: newUserId });
     },
   };
 

@@ -50,9 +50,9 @@ const LinkedInOauthAdapter: IOauth2Adapter = {
     scopes: ['r_liteprofile', 'r_emailaddress', 'email', 'openid', 'profile'],
   },
 
-  actions: ({ redirectURL }, context) => {
+  actions: ({ redirectUrl }, context) => {
     return {
-      ...Oauth2Adapter.actions({ redirectURL }, context),
+      ...Oauth2Adapter.actions({ redirectUrl }, context),
       configurationError: () => {
         return '';
       },
@@ -63,7 +63,7 @@ const LinkedInOauthAdapter: IOauth2Adapter = {
         return getLinkedInAuthorizationCode({
           code: authorizationCode,
           clientId: LinkedInOauthAdapter.config.clientId,
-          redirectUri: redirectURL,
+          redirectUri: redirectUrl,
           clientSecret: LINKED_IN_OAUTH_CLIENT_SECRET,
         });
       },

@@ -23,7 +23,7 @@ export default [
       loginWithOAuth(
         provider: String!
         authorizationCode: String!
-        redirectURL: String
+        redirectUrl: String!
       ): LoginMethodResponse
 
       """

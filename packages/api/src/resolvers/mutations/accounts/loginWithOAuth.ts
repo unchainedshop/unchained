@@ -1,26 +1,38 @@
 import { Context } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import {
+  AuthOperationFailedError,
+  EmailAlreadyExistsError,
+  UsernameAlreadyExistsError,
+  UsernameOrEmailRequiredError,
+} from '../../../errors.js';
 
 const loginWithOAuth = async (
   _,
   {
     provider,
     authorizationCode,
-    redirectURL,
-  }: { provider: string; authorizationCode: string; redirectURL: string },
+    redirectUrl,
+  }: { provider: string; authorizationCode: string; redirectUrl: string },
   context: Context,
 ): Promise<any | null> => {
   log(`mutation loginWithOauth ${provider} ${authorizationCode}`);
-
-  return context.modules.accounts.loginWithService(
-    {
-      service: 'oauth2',
-      authorizationCode,
-      provider,
-      redirectURL,
-    },
-    context,
-  );
+  try {
+    return context.modules.accounts.loginWithService(
+      {
+        service: 'oauth2',
+        authorizationCode,
+        provider,
+        redirectUrl,
+      },
+      context,
+    );
+  } catch (e) {
+    if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({});
+    else if (e.code === 'UsernameAlreadyExists') throw new UsernameAlreadyExistsError({});
+    else if (e.code === 'UsernameOrEmailRequired') throw new UsernameOrEmailRequiredError({});
+    else throw new AuthOperationFailedError({});
+  }
 };
 
 export default loginWithOAuth;

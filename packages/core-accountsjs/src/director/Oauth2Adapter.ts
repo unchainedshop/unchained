@@ -8,7 +8,7 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
   provider: '',
   config: null,
 
-  actions: ({ redirectURL }) => {
+  actions: ({ redirectUrl }) => {
     return {
       configurationError: () => {
         throw new Error(Oauth2Error.NOT_IMPLEMENTED);
@@ -24,9 +24,6 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
       },
       isTokenValid: async (token) => {
         return false;
-      },
-      revokeAccessToken: (authorizationCode: string) => {
-        return null;
       },
       refreshToken: async (userAuthorizationToken: any) => {
         throw new Error(Oauth2Error.NOT_IMPLEMENTED);

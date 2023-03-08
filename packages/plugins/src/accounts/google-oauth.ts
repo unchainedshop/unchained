@@ -99,9 +99,9 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
     ],
   },
 
-  actions: ({ redirectURL }, context) => {
+  actions: ({ redirectUrl }, context) => {
     return {
-      ...Oauth2Adapter.actions({ redirectURL }, context),
+      ...Oauth2Adapter.actions({ redirectUrl }, context),
       configurationError: () => {
         return '';
       },
@@ -112,7 +112,7 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
         return getGoggleAuthorizationCode({
           code: authorizationCode,
           clientId: GoogleOauth2Adapter.config.clientId,
-          redirectUri: redirectURL,
+          redirectUri: redirectUrl,
           clientSecret: GOOGLE_OAUTH_CLIENT_SECRET,
         });
       },
@@ -136,19 +136,6 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
       isTokenValid: async (accessToken) => {
         const response = await fetch(
           `https://oauth2.googleapis.com/tokeninfo?id_token=${accessToken?.id_token}`,
-        );
-
-        const tokenInfo = await response.json();
-
-        if (tokenInfo.error) {
-          return false;
-        }
-
-        return true;
-      },
-      revokeAccessToken: async (authorizationCode) => {
-        const response = await fetch(
-          `https://accounts.google.com/o/oauth2/revoke?token=${authorizationCode}`,
         );
 
         const tokenInfo = await response.json();

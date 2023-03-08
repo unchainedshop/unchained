@@ -58,7 +58,6 @@ export interface Oauth2AdapterActions {
   getAuthorizationCode: (authorizationCode: string) => Promise<any>;
   getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
-  revokeAccessToken: (authorizationToken: any) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
 }
 export type OauthConfig = {
@@ -68,12 +67,12 @@ export type OauthConfig = {
 export type IOauth2Adapter = IBaseAdapter & {
   provider: string;
   config: OauthConfig;
-  actions: (params: { redirectURL: string }, unchainedAPI: UnchainedCore) => Oauth2AdapterActions;
+  actions: (params: { redirectUrl: string }, unchainedAPI: UnchainedCore) => Oauth2AdapterActions;
 };
 
 export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
   actions: (
-    params: { provider: string; redirectURL: string },
+    params: { provider: string; redirectUrl: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<{
     configurationError: (transactionContext?: any) => string;
@@ -81,7 +80,6 @@ export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
     getAuthorizationCode: (authorizationCode: string) => Promise<any>;
     getAccountData: (token: string) => Promise<UserOauthData>;
     isTokenValid: (token) => Promise<boolean>;
-    revokeAccessToken: (authorizationToken: any) => Promise<boolean>;
     refreshToken?: (refreshToken: string) => Promise<any>;
   }>;
 };
@@ -106,13 +104,12 @@ export interface Oauth2Service {
   getAuthorizationCode: (authorizationCode: string) => Promise<any>;
   getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
-  revokeAccessToken: (authorizationToken: any) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
 }
 
 export interface AccountsServices {
   oauth2: (
-    params: { provider: string; redirectURL: string },
+    params: { provider: string; redirectUrl: string },
     unchainedApi: UnchainedCore,
   ) => Promise<Oauth2Service>;
 }
