@@ -105,6 +105,8 @@ export interface Oauth2Service {
   getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
+  linkOauthProvider: (authorizationCode: string) => Promise<any>;
+  unLinkOauthProvider: (provider: string, email: string) => Promise<any>;
 }
 
 export interface AccountsServices {

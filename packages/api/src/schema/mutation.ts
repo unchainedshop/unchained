@@ -34,6 +34,11 @@ export default [
       removeWeb3Address(address: String!): User!
 
       """
+      Oauth2
+      """
+      linkOauthProvider(authorizationCode: String!): User!
+
+      """
       Create a new user.
       """
       createUser(

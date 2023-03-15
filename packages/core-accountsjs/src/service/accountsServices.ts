@@ -12,6 +12,11 @@ export const accountsServices: AccountsServices = {
       getAuthorizationCode: async (authorizationCode) => {
         return director.getAuthorizationCode(authorizationCode);
       },
+      linkOauthProvider: async (authorizationCode) => {
+        const authorizationToken = await director.getAuthorizationCode(authorizationCode);
+        const userData = await director.getAccountData(authorizationToken);
+      },
+
       getAccountData: async (userAuthorizationToken: any) => {
         return director.getAccountData(userAuthorizationToken);
       },
