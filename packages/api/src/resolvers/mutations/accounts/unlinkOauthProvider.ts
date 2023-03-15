@@ -6,9 +6,9 @@ export default async function unlinkOauthProvider(
   { provider, authorizationCode }: { provider: string; authorizationCode: string },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId } = context;
 
-  log(`mutation unlinkOauthProvider ${user.username}`, {
+  log(`mutation unlinkOauthProvider ${provider} ${authorizationCode}`, {
     userId,
   });
 

@@ -159,6 +159,7 @@ import removePushSubscription from './users/removePushSubscription.js';
 import addPushSubscription from './users/addPushSubscription.js';
 import loginWithOAuth from './accounts/loginWithOAuth.js';
 import linkOauthProvider from './accounts/linkOauthProvider.js';
+import unlinkOauthProvider from './accounts/unlinkOauthProvider.js';
 
 export default {
   logout,
@@ -174,6 +175,7 @@ export default {
   removeWeb3Address: acl(actions.updateUser)(removeWeb3Address),
   verifyWeb3Address: acl(actions.updateUser)(verifyWeb3Address),
   linkOauthProvider: acl(actions.updateUser)(linkOauthProvider),
+  unlinkOauthProvider: acl(actions.updateUser)(unlinkOauthProvider),
   verifyEmail,
   loginWithPassword,
   loginWithWebAuthn,

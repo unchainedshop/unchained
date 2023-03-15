@@ -55,7 +55,7 @@ export const accountsServices: AccountsServices = {
           { _id: userId },
           {
             $pull: {
-              [`services.oauth.${provider?.toLowerCase()}`]: authorizationCode,
+              [`services.oauth.${provider?.toLowerCase()}`]: { authorizationCode },
             },
           },
           { upsert: true },
