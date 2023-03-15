@@ -55,7 +55,7 @@ export type UserOauthData = {
 export interface Oauth2AdapterActions {
   configurationError: (transactionContext?: any) => string;
   isActive: () => boolean;
-  getAuthorizationCode: (authorizationCode: string) => Promise<any>;
+  getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
   getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
@@ -67,17 +67,17 @@ export type OauthConfig = {
 export type IOauth2Adapter = IBaseAdapter & {
   provider: string;
   config: OauthConfig;
-  actions: (params: { redirectUrl: string }, unchainedAPI: UnchainedCore) => Oauth2AdapterActions;
+  actions: (param: any, unchainedAPI: UnchainedCore) => Oauth2AdapterActions;
 };
 
 export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
   actions: (
-    params: { provider: string; redirectUrl: string },
+    params: { provider: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<{
     configurationError: (transactionContext?: any) => string;
     isActive: () => boolean;
-    getAuthorizationCode: (authorizationCode: string) => Promise<any>;
+    getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
     getAccountData: (token: string) => Promise<UserOauthData>;
     isTokenValid: (token) => Promise<boolean>;
     refreshToken?: (refreshToken: string) => Promise<any>;
@@ -101,19 +101,23 @@ export interface AccountsSettings {
 }
 
 export interface Oauth2Service {
-  getAuthorizationCode: (authorizationCode: string) => Promise<any>;
+  getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
   getAccountData: (token: string) => Promise<UserOauthData>;
   isTokenValid: (token) => Promise<boolean>;
   refreshToken?: (refreshToken: string) => Promise<any>;
-  linkOauthProvider: (authorizationCode: string) => Promise<any>;
-  unLinkOauthProvider: (provider: string, email: string) => Promise<any>;
+  unLinkOauthProvider: (userId: string, authorizationCode: string) => Promise<User>;
+  linkOauthProvider: (
+    userId: string,
+    {
+      data,
+      authorizationToken,
+      authorizationCode,
+    }: { data: UserOauthData; authorizationToken: string; authorizationCode: string },
+  ) => Promise<User>;
 }
 
 export interface AccountsServices {
-  oauth2: (
-    params: { provider: string; redirectUrl: string },
-    unchainedApi: UnchainedCore,
-  ) => Promise<Oauth2Service>;
+  oauth2: (params: { provider: string }, unchainedApi: UnchainedCore) => Promise<Oauth2Service>;
 }
 
 /*

@@ -50,16 +50,16 @@ const LinkedInOauthAdapter: IOauth2Adapter = {
     scopes: ['r_liteprofile', 'r_emailaddress', 'email', 'openid', 'profile'],
   },
 
-  actions: ({ redirectUrl }, context) => {
+  actions: (_, context) => {
     return {
-      ...Oauth2Adapter.actions({ redirectUrl }, context),
+      ...Oauth2Adapter.actions(null, context),
       configurationError: () => {
         return '';
       },
       isActive: () => {
         return true;
       },
-      getAuthorizationCode: async (authorizationCode) => {
+      getAuthorizationCode: async (authorizationCode, redirectUrl) => {
         return getLinkedInAuthorizationCode({
           code: authorizationCode,
           clientId: LinkedInOauthAdapter.config.clientId,

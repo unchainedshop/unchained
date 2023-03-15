@@ -1,5 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
+import { AuthOperationFailedError, EmailAlreadyExistsError } from '../../../errors.js';
 
 export default async function linkOauthProvider(
   root: Root,
@@ -10,38 +11,32 @@ export default async function linkOauthProvider(
   }: { provider: string; redirectUrl: string; authorizationCode: string },
   context: Context,
 ) {
-  const { modules, userId, user, services } = context;
+  const { userId, user } = context;
 
   log(`mutation linkOauthProvider ${user.username}`, {
     userId,
   });
-  const oauthService = await services.accounts.oauth2({ provider, redirectUrl }, context);
+  try {
+    const { services } = context;
 
-  const userAuthorizationToken = await oauthService.getAuthorizationCode(authorizationCode);
+    const oauth2Service = await services.accounts.oauth2({ provider }, context);
 
-  if (!userAuthorizationToken) throw new Error('Unable to authorize user');
+    const authorizationToken = await oauth2Service.getAuthorizationCode(authorizationCode, redirectUrl);
 
-  const userOAuthInfo = await oauthService.getAccountData(userAuthorizationToken);
-  if (!userOAuthInfo || !userOAuthInfo?.email) {
-    throw new Error('OAuth authentication failed');
+    if (!authorizationToken) throw new Error('Unable to authorize user');
+
+    const data = await oauth2Service.getAccountData(authorizationToken);
+    if (!data || !data?.email) {
+      throw new Error('OAuth authentication failed');
+    }
+    return oauth2Service.linkOauthProvider(userId, {
+      data,
+      authorizationToken,
+      authorizationCode,
+    });
+    if (user) return true;
+  } catch (e) {
+    if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({});
+    else throw new AuthOperationFailedError({});
   }
-  const lowerCasedProviderName = provider.toLocaleLowerCase();
-
-  await modules.users.updateUser(
-    { _id: userId },
-    {
-      $push: {
-        [`services.oauth.${lowerCasedProviderName}`]: {
-          [userOAuthInfo.email]: {
-            ...userOAuthInfo,
-            userAuthorizationToken,
-            authorizationCode,
-          },
-        },
-      },
-    },
-    {},
-  );
-
-  return modules.users.findUserById(userId);
 }

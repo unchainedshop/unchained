@@ -10,13 +10,13 @@ const baseDirector = BaseDirector<IOauth2Adapter>('Oauth2Director', {
 export const Oauth2Director: IOauthDirector = {
   ...baseDirector,
 
-  actions: async ({ provider, redirectUrl }, context) => {
+  actions: async ({ provider }, context) => {
     const Adapter = baseDirector.getAdapter(provider);
     if (!Adapter) {
       throw new Error(`Oauth Plugin for ${provider} not available`);
     }
 
-    const adapter = Adapter.actions({ redirectUrl }, context);
+    const adapter = Adapter.actions(null, context);
 
     return {
       configurationError: () => {
@@ -41,9 +41,9 @@ export const Oauth2Director: IOauthDirector = {
         return adapter.isTokenValid(token);
       },
 
-      getAuthorizationCode: async (value) => {
+      getAuthorizationCode: async (value, redirectUrl) => {
         try {
-          return adapter.getAuthorizationCode(value);
+          return adapter.getAuthorizationCode(value, redirectUrl);
         } catch (error) {
           log('Oauth2 Director -> Error while get accounts access information', {
             level: LogLevel.Warning,

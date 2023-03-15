@@ -8,7 +8,7 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
   provider: '',
   config: null,
 
-  actions: ({ redirectUrl }) => {
+  actions: () => {
     return {
       configurationError: () => {
         throw new Error(Oauth2Error.NOT_IMPLEMENTED);
@@ -16,7 +16,7 @@ export const Oauth2Adapter: Omit<IOauth2Adapter, 'key' | 'label' | 'version' | '
       isActive: () => {
         return true;
       },
-      getAuthorizationCode: async (authorizationCode: string) => {
+      getAuthorizationCode: async (authorizationCode: string, redirectUrl: string) => {
         return null;
       },
       getAccountData: async (userAuthorizationToken: any) => {

@@ -3,28 +3,17 @@ import { Context, Root } from '@unchainedshop/types/api.js';
 
 export default async function unlinkOauthProvider(
   root: Root,
-  { provider, email }: { provider: string; email: string },
+  { provider, authorizationCode }: { provider: string; authorizationCode: string },
   context: Context,
 ) {
-  const { modules, userId, user } = context;
+  const { modules, services, userId, user } = context;
 
   log(`mutation unlinkOauthProvider ${user.username}`, {
     userId,
   });
 
-  const lowerCasedProviderName = provider.toLocaleLowerCase();
-
-  await modules.users.updateUser(
-    { _id: userId },
-    {
-      $pull: {
-        [`services.oauth.${lowerCasedProviderName}.${email}`]: {
-          $exists: true,
-        },
-      },
-    },
-    {},
-  );
+  const oauthService = await services.accounts.oauth2({ provider }, context);
+  await oauthService.unLinkOauthProvider(userId, authorizationCode);
 
   return modules.users.findUserById(userId);
 }

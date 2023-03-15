@@ -36,7 +36,7 @@ export default [
       """
       Oauth2
       """
-      linkOauthProvider(authorizationCode: String!): User!
+      linkOauthProvider(provider: String!, authorizationCode: String!, redirectUrl: String!): User!
 
       """
       Create a new user.

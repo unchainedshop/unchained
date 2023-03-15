@@ -1,4 +1,5 @@
 import { Filter } from 'mongodb';
+import { UserOauthData } from './accounts.js';
 import { SortOption } from './api.js';
 import {
   Address,
@@ -60,6 +61,10 @@ export interface Web3Address {
   verified: boolean;
 }
 
+export interface OauthLink {
+  provider: string;
+  data: UserOauthData & { authorizationCode: string }[];
+}
 export interface PushSubscriptionObject {
   userAgent: string;
   endpoint: string;

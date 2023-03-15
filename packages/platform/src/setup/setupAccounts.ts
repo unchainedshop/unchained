@@ -80,6 +80,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       authorizationCode: any;
       provider: string;
       redirectUrl: string;
+      skipCreation: boolean;
     }): Promise<any> {
       if (!authorizationCode || !provider) {
         return undefined;
@@ -87,9 +88,12 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
       const { services, modules } = unchainedAPI;
 
-      const oauth2Service = await services.accounts.oauth2({ provider, redirectUrl }, unchainedAPI);
+      const oauth2Service = await services.accounts.oauth2({ provider }, unchainedAPI);
 
-      const authorizationToken = await oauth2Service.getAuthorizationCode(authorizationCode);
+      const authorizationToken = await oauth2Service.getAuthorizationCode(
+        authorizationCode,
+        redirectUrl,
+      );
 
       if (!authorizationToken) throw new Error('Unable to authorize user');
 
@@ -130,20 +134,11 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         },
         { skipPasswordEnrollment: true },
       );
-
-      await unchainedAPI.modules.users.updateUser(
-        { _id: newUserId },
-        {
-          $push: {
-            [`services.oauth.${lowerCasedProviderName}`]: {
-              data,
-              authorizationToken,
-              authorizationCode,
-            },
-          },
-        },
-        { upsert: true },
-      );
+      await oauth2Service.linkOauthProvider(newUserId, {
+        data,
+        authorizationToken,
+        authorizationCode,
+      });
 
       if (data?.avatarUrl) {
         const file = await services.files.uploadFileFromURL(
@@ -167,7 +162,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
           );
         }
 
-        modules.users.updateAvatar(newUserId, file._id);
+        await modules.users.updateAvatar(newUserId, file._id);
       }
 
       return unchainedAPI.modules.users.findUser({ _id: newUserId });

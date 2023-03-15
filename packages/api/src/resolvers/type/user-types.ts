@@ -15,6 +15,7 @@ import {
   Web3Address,
   WebAuthnCredentials,
   PushSubscription,
+  OauthLink,
 } from '@unchainedshop/types/user.js';
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
@@ -80,6 +81,7 @@ export interface UserHelperTypes {
   tags: HelperType<any, Array<string>>;
   username: HelperType<any, string>;
   pushSubscriptions: HelperType<any, Array<PushSubscription>>;
+  linkedOauthProviders: HelperType<any, Array<OauthLink>>;
 }
 
 const {
@@ -215,7 +217,6 @@ export const User: UserHelperTypes = {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return user.services?.web3 || [];
   },
-
   quotations: async (user, params, context) => {
     await checkAction(context, viewUserQuotations, [user, params]);
     return context.modules.quotations.findQuotations({
@@ -231,5 +232,18 @@ export const User: UserHelperTypes = {
       expirationTime,
       endpoint,
     }));
+  },
+  linkedOauthProviders: async (user, params, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+
+    return Object.entries(user.services.oauth || {}).map(([provider, oauthInfo]: any[]) => {
+      return {
+        provider,
+        data: oauthInfo.map(({ data, authorizationCode }) => ({
+          authorizationCode,
+          ...data,
+        })),
+      };
+    });
   },
 };

@@ -90,6 +90,30 @@ export default [
       nonce: Int
       verified: Boolean!
     }
+
+    type UserOauthData {
+      authorizationCode: String
+      email: String!
+      lastName: String
+      avatarUrl: String
+      firstName: String
+      address: String
+      gender: String
+      birthDate: Date
+      phoneNumber: String
+      displayName: String
+      city: String
+      countryCode: String
+      postalCode: String
+      regionCode: String
+      company: String
+    }
+
+    type OauthLink {
+      provider: String!
+      data: [UserOauthData!]!
+    }
+
     type User {
       _id: ID!
       created: DateTime!
@@ -139,6 +163,7 @@ export default [
       ): [Enrollment!]!
       allowedActions: [RoleAction!]!
       tokens: [Token!]!
+      linkedOauthProviders: [OauthLink!]!
     }
   `,
 ];

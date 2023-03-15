@@ -99,16 +99,16 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
     ],
   },
 
-  actions: ({ redirectUrl }, context) => {
+  actions: (_, context) => {
     return {
-      ...Oauth2Adapter.actions({ redirectUrl }, context),
+      ...Oauth2Adapter.actions(null, context),
       configurationError: () => {
         return '';
       },
       isActive: () => {
         return true;
       },
-      getAuthorizationCode: async (authorizationCode) => {
+      getAuthorizationCode: async (authorizationCode, redirectUrl) => {
         return getGoggleAuthorizationCode({
           code: authorizationCode,
           clientId: GoogleOauth2Adapter.config.clientId,
