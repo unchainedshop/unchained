@@ -96,7 +96,6 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       );
 
       if (!authorizationToken) throw new Error('Unable to authorize user');
-
       const data = await oauth2Service.getAccountData(authorizationToken);
       if (!data || !data?.email) {
         throw new Error('OAuth authentication failed');

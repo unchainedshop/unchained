@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { AccessToken, IOauth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
+import { IOauth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
 
 import { Oauth2Director, Oauth2Adapter } from '@unchainedshop/core-accountsjs';
 
@@ -10,7 +10,7 @@ const getGoggleAuthorizationCode = async ({
   redirectUri,
   clientId,
   clientSecret,
-}): Promise<AccessToken> => {
+}): Promise<any> => {
   const response = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: {
@@ -145,6 +145,40 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
         }
 
         return true;
+      },
+      refreshToken: async ({ access_token, refresh_token }) => {
+        const response = await fetch('https://oauth2.googleapis.com/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            client_id: GoogleOauth2Adapter.config.clientId,
+            grant_type: 'refresh_token',
+            client_secret: GOOGLE_OAUTH_CLIENT_SECRET,
+            refresh_token,
+            access_type: 'offline',
+          }),
+        });
+
+        const refreshedAccessToken = await response.json();
+        await context.modules.users.updateUser(
+          {
+            'services.oauth.google.authorizationToken.access_token': access_token,
+          },
+          {
+            $set: {
+              'services.oauth.google': {
+                authorizationToken: { refresh_token, ...refreshedAccessToken },
+              },
+            },
+          },
+          {
+            upsert: false,
+          },
+        );
+
+        return refreshedAccessToken;
       },
     };
   },

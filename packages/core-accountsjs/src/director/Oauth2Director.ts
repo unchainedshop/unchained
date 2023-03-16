@@ -43,7 +43,8 @@ export const Oauth2Director: IOauthDirector = {
 
       getAuthorizationCode: async (value, redirectUrl) => {
         try {
-          return adapter.getAuthorizationCode(value, redirectUrl);
+          const code = await adapter.getAuthorizationCode(value, redirectUrl);
+          return code;
         } catch (error) {
           log('Oauth2 Director -> Error while get accounts access information', {
             level: LogLevel.Warning,
@@ -58,7 +59,8 @@ export const Oauth2Director: IOauthDirector = {
 
       getAccountData: async (userAuthorizationToken: any) => {
         try {
-          return adapter.getAccountData(userAuthorizationToken);
+          const data = await adapter.getAccountData(userAuthorizationToken);
+          return data;
         } catch (error) {
           log('Oauth2 Director -> Error while getting account data', {
             level: LogLevel.Warning,

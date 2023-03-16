@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { AccessToken, IOauth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
+import { IOauth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
 
 import { Oauth2Director, Oauth2Adapter } from '@unchainedshop/core-accountsjs';
 
@@ -10,7 +10,7 @@ const getLinkedInAuthorizationCode = async ({
   redirectUri,
   clientId,
   clientSecret,
-}): Promise<AccessToken> => {
+}): Promise<any> => {
   const response = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
     method: 'POST',
     headers: {

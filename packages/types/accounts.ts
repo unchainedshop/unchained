@@ -26,6 +26,7 @@ export interface UserData {
 export type AccessToken = {
   access_token: string;
   expires_in: string;
+  refresh_token: string;
   token_type: string;
   id_token: string;
   error: string;
@@ -56,9 +57,9 @@ export interface Oauth2AdapterActions {
   configurationError: (transactionContext?: any) => string;
   isActive: () => boolean;
   getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
-  getAccountData: (token: string) => Promise<UserOauthData>;
-  isTokenValid: (token) => Promise<boolean>;
-  refreshToken?: (refreshToken: string) => Promise<any>;
+  getAccountData: (token: any) => Promise<UserOauthData>;
+  isTokenValid: (token: any) => Promise<boolean>;
+  refreshToken?: (token: any) => Promise<any>;
 }
 export type OauthConfig = {
   clientId: string;
@@ -78,9 +79,9 @@ export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
     configurationError: (transactionContext?: any) => string;
     isActive: () => boolean;
     getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
-    getAccountData: (token: string) => Promise<UserOauthData>;
-    isTokenValid: (token) => Promise<boolean>;
-    refreshToken?: (refreshToken: string) => Promise<any>;
+    getAccountData: (token: any) => Promise<UserOauthData>;
+    isTokenValid: (token: any) => Promise<boolean>;
+    refreshToken?: (refreshToken: any) => Promise<any>;
   }>;
 };
 
@@ -102,9 +103,9 @@ export interface AccountsSettings {
 
 export interface Oauth2Service {
   getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
-  getAccountData: (token: string) => Promise<UserOauthData>;
-  isTokenValid: (token) => Promise<boolean>;
-  refreshToken?: (refreshToken: string) => Promise<any>;
+  getAccountData: (token: any) => Promise<UserOauthData>;
+  isTokenValid: (token: any) => Promise<boolean>;
+  refreshToken?: (token: any) => Promise<any>;
   unLinkOauthProvider: (userId: string, authorizationCode: string) => Promise<User>;
   linkOauthProvider: (
     userId: string,
