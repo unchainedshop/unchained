@@ -18,3 +18,10 @@ The (growing) list of available Unchained Engine plugins
 | <u>PostFinance</u>                     | Payment with PostCard (Switzerland only)                                                                                | https://www.postfinance.ch/en/private.html   |
 | <u>Stripe</u>                          | Stripe check-out                                                                                                        | https://stripe.com/en-ch                     |
 | [Cryptopay](./cryptopay)               | Self-hosted, decentralized (Chainlink price feeds) crypto payments in arbitrary cryptocurrencies (BTC, ETH, ERC20, ...) |                                              |
+| <u>[Web-push notification](./push-notification)</u>                 | Push notification messaging  |                 https://web.dev/notifications/                             |
+| <u>[SMS](./twilio)</u>                     |  Twillo                       | https://www.twilio.com/en-us/messaging/channels/sms   |
+| <u>[Email](../advanced-config/messaging)</u>                     |  Node Mailer                       | https://nodemailer.com/about/   |
+| <u>Bulk-Importer</u>                     |  Migrate and/or import data from any source     |    |
+|<u> S3 compatible object storage </u> | Minio |  https://min.io/  |
+|<u> Event driven communication between modules </u>| All actions emmit a corresponding event where any interested modules in the engine can subscribe too | https://nodejs.org/api/events.html  |
+
