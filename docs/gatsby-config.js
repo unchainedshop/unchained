@@ -7,8 +7,16 @@ module.exports = {
       resolve: '@unchainedshop/gatsby-theme-apollo-docs',
       options: {
         ...themeOptions,
+        navConfig: {
+          ...themeOptions.navConfig,
+          'Admin UI': {
+            url: '/admin-ui/overview',
+            description: 'Manage your application with a user friendly UI',
+            omitLandingPage: false
+          },
+        },
         root: __dirname,
-        subtitle: 'Unchained Engine',
+        subtitle: 'Unchained platform',
         description: 'A guide to using the Unchained Engine',
         githubRepo: 'unchainedshop/unchained',
         defaultVersion: '2',
@@ -78,6 +86,12 @@ module.exports = {
             '[GraphQL API Reference](https://docs.unchained.shop/api)',
             '[GraphQL API Playground](https://engine.unchained.shop/graphql)',
             '[JS Reference](https://docs.unchained.shop/types)',
+          ],
+          'Admin-UI': [
+            'admin-ui/overview',
+            'admin-ui/order',
+            'admin-ui/product',
+            'admin-ui/assortment',
           ],
         },
       },
