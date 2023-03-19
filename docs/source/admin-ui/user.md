@@ -19,3 +19,6 @@ sidebar_title: Manage Users
 ![diagram](../images/admin-ui/user/2fa-authentication.png)
 
 ![diagram](../images/admin-ui/user/user-order.png)
+
+![diagram](../images/admin-ui/user/current-user-setting.png)
+
