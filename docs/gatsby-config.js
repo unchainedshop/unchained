@@ -92,6 +92,7 @@ module.exports = {
             'admin-ui/order',
             'admin-ui/product',
             'admin-ui/assortment',
+            'admin-ui/filter',
           ],
         },
       },
