@@ -1,6 +1,6 @@
 ---
-title: Filter
-sidebar_title: Manage filters
+title: Currency
+sidebar_title: Manage currencies
 ---
 
 You can add multiple currency support including an ethereum token to your e-commerce and Admin UI provides a friendly interface for. Once you have added a currency and activate it, you will be able to use it on the entire system from product to order pricing plugins.
