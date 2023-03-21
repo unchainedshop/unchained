@@ -6,7 +6,6 @@ sidebar_title: Manage workers
 Unchained engine utilizes a worker module to perform various task related with a shops operation. you can manage workers configured in the engine using admin ui and perform tasks such as
 - View and filter work queue
 - Add work
-- Do work
 - allocate work
 - delete work 
 
@@ -18,6 +17,10 @@ You can view all the active and complete workers in the engine by navigating to 
 
 ![diagram](../images/admin-ui/work-queue/work-queue-list.png)
 
+## Work detail
+By clicking on the work list item you can explore more details about a specific worker, such as it's status, start and end time, duration, input and result and any error that occurred during execution among many other.
+
+![diagram](../images/admin-ui/work-queue/work-detail.png)
 
 ## Add work
 You can add work to the work queue by clicking on the **manage** button found in the work list page. in order to add a worker the Worker adapter must be configured in the engine and activated. 
@@ -31,14 +34,12 @@ Add work provides fields for you to select the Worker **type** and any optional 
 when adding a new worker it will have a status of **New** automatically
 
 ![diagram](../images/admin-ui/work-queue/add-work-form.png)
-
-## Do work
-You can also use a previously run worker to work new job for you by using the do work option. in this case you will only need to provide the worker in question and any input parameter it might expect and the worker will be added to the work queue automatically.
-
-![diagram](../images/admin-ui/work-queue/do-work-form.png)
-
 ## Allocate work
+If you want to start a worker or multiple that is in work queue that has a status of **NEW** manually, using allocate work to start the worker.
 
 ![diagram](../images/admin-ui/work-queue/allocate-work-form.png)
 
-![diagram](../images/admin-ui/work-queue/work-detail.png)
+## Delete work
+Only a work with a status of **NEW** can be deleted in unchained and you can delete a work by opening it's detail page and clicking on the delete button found. 
+
+![diagram](../images/admin-ui/work-queue/delete-work.png)
