@@ -103,7 +103,7 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
         logger.info(`Execute bulk operations for: ${Object.keys(bulkOperations).join(', ')}`);
 
         const processedBulkOperations = await Promise.allSettled(
-          Object.values(bulkOperations).map((o: any) => o.execute()),
+          Object.values(bulkOperations).map(async (o: any) => o.execute()),
         );
         const operationResults = {
           processedOperations,
