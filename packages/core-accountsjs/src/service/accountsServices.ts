@@ -21,7 +21,7 @@ export const accountsServices: AccountsServices = {
       refreshToken: async (userAuthorizationToken) => {
         return director.refreshToken(userAuthorizationToken);
       },
-      linkOauthProvider: async (userId, { data, authorizationToken, authorizationCode }) => {
+      linkOAuthProvider: async (userId, { data, authorizationToken, authorizationCode }) => {
         if (!userId || !data?.email)
           throw new Error('Invalid parameter userId and data.email are required');
         if (!authorizationToken || !authorizationCode)

@@ -2,7 +2,7 @@ import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { AuthOperationFailedError, EmailAlreadyExistsError } from '../../../errors.js';
 
-export default async function linkOauthProvider(
+export default async function linkOAuthProvider(
   root: Root,
   {
     provider,
@@ -13,7 +13,7 @@ export default async function linkOauthProvider(
 ) {
   const { userId, user } = context;
 
-  log(`mutation linkOauthProvider ${user.username}`, {
+  log(`mutation linkOAuthProvider ${user.username}`, {
     userId,
   });
   try {
@@ -29,7 +29,7 @@ export default async function linkOauthProvider(
     if (!data || !data?.email) {
       throw new Error('OAuth authentication failed');
     }
-    return oauth2Service.linkOauthProvider(userId, {
+    return oauth2Service.linkOAuthProvider(userId, {
       data,
       authorizationToken,
       authorizationCode,

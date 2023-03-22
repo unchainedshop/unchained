@@ -107,7 +107,7 @@ export interface Oauth2Service {
   isTokenValid: (token: any) => Promise<boolean>;
   refreshToken?: (token: any) => Promise<any>;
   unLinkOauthProvider: (userId: string, authorizationCode: string) => Promise<User>;
-  linkOauthProvider: (
+  linkOAuthProvider: (
     userId: string,
     {
       data,
