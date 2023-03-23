@@ -11,6 +11,30 @@ import { ProductStatus } from '@unchainedshop/core-products';
 
 const { Locale } = localePkg;
 
+function getLocaleStrings(localeObj) {
+  return [localeObj.normalized, localeObj.language, systemLocale.normalized, systemLocale.language];
+}
+
+function findMatchingText(texts, localeStrings) {
+  return localeStrings.reduce((acc, localeString) => {
+    if (acc) return acc;
+    return texts.find((p) => p.locale === localeString);
+  }, null);
+}
+
+function getFilteredQueries({ queries, texts, filterFn }) {
+  return queries.map(({ locale, ...queryParams }) => {
+    const localeObj = new Locale(locale);
+
+    const filteredTexts = texts.filter(filterFn(queryParams));
+    if (!filteredTexts.length) return null;
+
+    const localeStrings = getLocaleStrings(localeObj);
+    const filterText = findMatchingText(filteredTexts, localeStrings);
+    return filterText || filteredTexts[0];
+  });
+}
+
 export default async (
   req: IncomingMessage,
   res: OutgoingMessage,
@@ -47,20 +71,12 @@ export default async (
           },
         );
 
-        const systemLocaleStrings = [systemLocale.normalized, systemLocale.language];
+        const filterFn =
+          ({ assortmentId }) =>
+          (text) =>
+            text.assortmentId === assortmentId;
 
-        return queries.map(({ assortmentId, locale }) => {
-          const localeObj = new Locale(locale);
-          const assortmentTexts = texts.filter((text) => text.assortmentId === assortmentId);
-          if (!assortmentTexts.length) return null;
-          const localeStrings = [localeObj.normalized, localeObj.language, ...systemLocaleStrings];
-
-          const assortmentText = localeStrings.reduce<AssortmentText>((acc, localeString) => {
-            if (acc) return acc;
-            return assortmentTexts.find((p) => p.locale === localeString);
-          }, null);
-          return assortmentText || assortmentTexts[0];
-        });
+        return getFilteredQueries({ queries, texts, filterFn });
       },
     ),
 
@@ -95,26 +111,16 @@ export default async (
         },
       );
 
-      const systemLocaleStrings = [systemLocale.normalized, systemLocale.language];
+      const filterFn =
+        ({ filterId, filterOptionValue }) =>
+        (text) =>
+          text.filterId === filterId && text.filterOptionValue === filterOptionValue;
 
-      return queries.map(({ filterId, filterOptionValue, locale }) => {
-        const localeObj = new Locale(locale);
-        const filterTexts = texts.filter(
-          (text) => text.filterId === filterId && text.filterOptionValue === filterOptionValue,
-        );
-        if (!filterTexts.length) return null;
-        const localeStrings = [localeObj.normalized, localeObj.language, ...systemLocaleStrings];
-
-        const filterText = localeStrings.reduce<FilterText>((acc, localeString) => {
-          if (acc) return acc;
-          return filterTexts.find((p) => p.locale === localeString);
-        }, null);
-        return filterText || filterTexts[0];
-      });
+      return getFilteredQueries({ queries, texts, filterFn });
     }),
 
     productLoader: new DataLoader<{ productId: string }, Product>(async (queries) => {
-      const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
+      const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))]; // you don't need lodash, _.unique my ass
 
       const products = await unchainedAPI.modules.products.findProducts({
         productIds,
@@ -144,20 +150,12 @@ export default async (
           },
         );
 
-        const systemLocaleStrings = [systemLocale.normalized, systemLocale.language];
+        const filterFn =
+          ({ productId }) =>
+          (text) =>
+            text.productId === productId;
 
-        return queries.map(({ productId, locale }) => {
-          const localeObj = new Locale(locale);
-          const productTexts = texts.filter((text) => text.productId === productId);
-          if (!productTexts.length) return null;
-          const localeStrings = [localeObj.normalized, localeObj.language, ...systemLocaleStrings];
-
-          const productText = localeStrings.reduce<ProductText>((acc, localeString) => {
-            if (acc) return acc;
-            return productTexts.find((p) => p.locale === localeString);
-          }, null);
-          return productText || productTexts[0];
-        });
+        return getFilteredQueries({ queries, texts, filterFn });
       },
     ),
   };
