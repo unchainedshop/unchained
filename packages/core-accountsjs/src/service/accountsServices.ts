@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AccountsServices } from '@unchainedshop/types/accounts.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { Oauth2Director } from '../director/Oauth2Director.js';
+import { Oauth2Director } from '../director/OAuth2Director.js';
 
 export const accountsServices: AccountsServices = {
   oauth2: async (params: { provider: string }, unchainedAPI: UnchainedCore) => {

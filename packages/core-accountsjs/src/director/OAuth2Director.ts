@@ -1,7 +1,7 @@
 import { BaseDirector } from '@unchainedshop/utils';
 import { IOauth2Adapter, IOauthDirector } from '@unchainedshop/types/accounts.js';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { Oauth2Error } from './Oauth2Error.js';
+import { Oauth2Error } from './OAuth2Error.js';
 
 const baseDirector = BaseDirector<IOauth2Adapter>('Oauth2Director', {
   adapterKeyField: 'provider',
