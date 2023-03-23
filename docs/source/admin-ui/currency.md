@@ -3,7 +3,8 @@ title: Currency
 sidebar_title: Manage currencies
 ---
 
-You can add multiple currency support including an ethereum token to your e-commerce and Admin UI provides a friendly interface for. Once you have added a currency and activate it, you will be able to use it on the entire system from product to order pricing plugins.
+You can add multiple currency support including a blockchain token to your e-commerce and Admin UI provides a friendly interface for. Once you have added a currency and activate it, you will be able to use it on the entire system from product to order pricing plugins.
+If you add a crypto currency, you can optionally configure a contract address that can be used to distinguish tokens on a blockchain. A cryptocurrency payment plugin (for ex. [cryptopay](../plugins/cryptopay)) can then optionally read that information and knows which currency is actually meant.
 
 In admin ui you can: 
 - View all the currencies and search and/or filter them.
