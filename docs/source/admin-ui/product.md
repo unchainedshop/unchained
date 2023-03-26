@@ -85,24 +85,106 @@ Toggling a product status is as easy as toggling the button showing current stat
 
 
 ### Scoped update options
+Based on the product type there are additional configuration options available for a product. Below are all the available options for each product type
 
-![diagram](../images/admin-ui/product/product-bundle-setting.png)
+1. **Price or Commerce**
+
+**Applicable to products with type**
+- Simple
+- Tokenized
+- Bundle
+- Plan /subscription
+
+Since its a shop every product has a price and you can add one or multiple prices to a given product using the commerce tab available on the product detail page. 
+on the product commerce form you will be required to provide the following information
+- **Max Quantity**:- refers to the maximum number of product that should be in an order for the price to be used for a product. if left empty or 0 then it will be used as the default price for a product unless there is another price entry with max quantity set. On that case that price will be used the number of products in a order satisfy it.
+- **Price**:- Actual price  of the product. Note decimal pricing is not supported to you should enter price for a product by multiplying it with 100. for example if a product price is $35 then entry on the price field should be 3500 and if the price is $3.5 it should be entered as 350.
+- **Vat suspect**:- determines if tax should be added on the product price when calculating total price of a product. the applied tax can be different based on the ProductPricing plugin in configured on the engine.
+- **Net price**:- Determines wether the price is final or tax, discount, delivery and other additional costs should be added to it when calculating total price
+- **Country**:- if you have different price for a product based on the customers order location you can select the country where a given price is applicable using this field.
+In order to add a select a country for a price you need to add the country in question using the  [new country form](./country/#add-country) first.
+- **Currency**:- Currency of the price. you can have multiple currency prices configured for a product and based on the order currency the corresponding price will be applied.
+In order to add a select a currency for a price you need to add the currency using the  [new currency form](./currency/#add-new-currency) first.
 
 
+**Requirements of pricing**
+- There must be one price entry with max quantity set to 0 that can be used as the default price.
+- It is not possible to add multiple product price with the same max quantity, country and currency and it will create a conflict.
 
 ![diagram](../images/admin-ui/product/product-price-setting.png)
 
-![diagram](../images/admin-ui/product/product-subscription-setting.png)
+
+### Specialized configuration options
+
+Below are configuration options available only for a specific product type.
+
+1. **Supply**
+
+Available on **SimpleProduct**
+
+Because Simple product is standard physical you may need to provide additional information that outlines the dimensions of a product. by navigating to the `supply` tab found on a product detail page You can add dimensions related information such as weight, length, width and height of a product.
 
 ![diagram](../images/admin-ui/product/product-supply-setting.png)
 
+2. **Warehousing**
 
-![diagram](../images/admin-ui/product/product-variation-assignment.png)
+Available on **SimpleProduct**
 
-![diagram](../images/admin-ui/product/product-variation-setting.png)
+Physical or Simple product are stored in some type of warehouse and using the `warehousing` tab found on a product detail page you can add storage information such as **SKU** code and **Base unit** of measure.
 
 ![diagram](../images/admin-ui/product/product-warehousing-setting.png)
 
 
+
+
+3. **Bundles**
+
+Available on **BundleProduct**
+
+Bundle products are products available on a shop as a group and you can mange a bundle product bundles by navigating to the `Bundles` tab available on a product detail page.
+
+You can add and remove on or many products as a bundle along with the quantity assigned for the bundle using the form provided
+
+![diagram](../images/admin-ui/product/product-bundle-setting.png)
+
+
+4. **Variation**
+
+Available on **ConfigurableProduct**
+
+Configurable product is a grouping of similar products with different characteristic and you can add all the different variation of a product you want to sell in your shop using the `variations` tab found on the product detail page.
+![diagram](../images/admin-ui/product/product-variation-create-setting.png)
+
+- **Adding variation option**
+
+Variation is the top level category of differentiation for example if you are selling laptop on your shop and there are various brand of laptops available brand of the laptop say HP can be the top level title of variation. 
+
+However to add the actual differentiating factor of a configurable product  you need to create the variation option using the form provided under the `variations` tab of a product detail page. Continuing with the above example if you have different rams of HP laptops you create a variation option for each type.
+![diagram](../images/admin-ui/product/product-variation-setting.png)
+
+
+
+5. **Assignments**
+
+Available on **ConfigurableProduct**
+
+After creating variation and variation options of a configurable product the next step is assigning the actual product that satisfies the variation configuration. You can manage assigns of a product for each variation option by using the `assignments` tab found the product detail page.
+
+![diagram](../images/admin-ui/product/product-variation-assignment.png)
+
+
+
+6. **Token**
+
+Available on **TokenizedProduct**
+
+Since Tokenized product is a digital asset there are unique information specific to digital assets you should add that defines the token. 
+such as:
+- **Contract Standard**:- Token standard used to create the digital asset.
+- **Contract address**:- Address of the token on the blockchain it is found 
+- **Supply**:- Total tokens in circulation 
+- **Token Id**:- Unique identifier of the token
+
+**Based on the contract standard of the token implementation some fields might be optional**
 
 ![diagram](../images/admin-ui/product/token-setting.png)
