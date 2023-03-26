@@ -59,7 +59,7 @@ By navigating to the **Media** tab found in assortment detail page you can Uploa
 ![diagram](../images/admin-ui/assortment/assortment-media-setting.png)
 
 ### Manage assortment Filters
-By navigating to the **Filter** tab found in assortment detail page you can Add or remove links to [filters](./filter.md) to a assortment.
+By navigating to the **Filter** tab found in assortment detail page you can Add or remove links to [filters](./filter) to a assortment.
 ![diagram](../images/admin-ui/assortment/assortment-filter-setting.png)
 
 ### Manage assortment Links
