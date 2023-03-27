@@ -3,11 +3,11 @@ title: Work Queue
 sidebar_title: Manage workers
 ---
 
-Unchained engine utilizes a worker module to perform various task related with a shops operation. you can manage workers configured in the engine using admin ui and perform tasks such as
-- View and filter work queue
-- Add work
-- allocate work
-- delete work 
+Unchained engine uses a worker module to execute various tasks related to the shop's operations. The admin UI provides a way to manage these workers, allowing you to perform tasks such as:
+- Viewing and filtering the work queue
+- Adding work to the queue
+- Allocating work to specific workers
+- Deleting work from the queue
 
 ## View work queue
 You can view all the active and complete workers in the engine by navigating to **activities > work queue**. In this page you are able to search and/or filter the work queue using different methods such as

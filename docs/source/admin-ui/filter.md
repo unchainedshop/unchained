@@ -2,54 +2,62 @@
 title: Filter
 sidebar_title: Manage filters
 ---
-Filters give you the capability to make products and categories in your e-commerce shop easily accessible. Because Unchained has a built in support for defining filters for categories and products admin UI provides the a user friendly user interface you can use to manage filters. 
-Such as:
-- View filters
-- Add Filter
+Filters are an essential feature for making products and categories easily accessible on your e-commerce shop. Unchained provides built-in support for defining filters for categories and products, and the admin UI offers a user-friendly interface for managing them.
+
+Some of the actions you can perform using the filter management interface include:
+- View existing filters
+- Add new filters
 - Add filter options
-- update filter
-- Update filter option
-- Delete filter
-- Delete filter option
-- activate/deactivate filter
+- Update existing filters
+- Update filter options
+- Delete filters
+- Delete filter options
+- Activate/deactivate filters
+
+With these capabilities, you can create a customized browsing experience for your customers, making it easier for them to find the products they are looking for.
 
 **Before a filter becomes usable for a category you need to link it by going to the assortment detail page.**
 ## View filters
-By navigating to **filters** page you can view all the filters that exist in your shop which you can search and/or filter and change the language.
+By navigating to the "Filters" page in your shop's admin UI, you can view all the filters that currently exist in your shop. You can search and/or filter the filters by various criteria, such as filter name or status, and change the language of the filter.
+
 ![diagram](../images/admin-ui/filter/filters-list.png)
 
 ## Add filter
-By clicking on the **add** button found in the filters list page you can add a filter using the form presented. 
-The form has the following input fields
-- `Title` -  name/title of the filter 
-- `key` -  Unique identifier og the filter
-- `type` - the kind of filter **SWITCH** is similar to a boolean/toggle, **SINGLE_CHOICE** the filter options should behave like a radio button for example, **MULTIPLE_CHOICE** if multiple options of the filter can be applied at the same time and **RANGE** is when you want to have for example a date filter where a user can select a start end end date range filter.
-- `options` -  the actual filter options that will be applied to filter content. as you can noticed from the type field a filter can have one or multiple options.
+To add a new filter in your e-commerce shop, go to the filters list page and click on the "add" button. This will present a form where you can input the following details:
+- **Title**: The name or title of the filter.
+- **Key**: A unique identifier for the filter.
+- **Type**: The type of filter you want to create, which can be one of the following:
+    - `SWITCH`: A boolean/toggle type filter.
+    - `SINGLE_CHOICE`: A filter with options that behave like radio buttons, where only one option can be selected at a time.
+    - `MULTIPLE_CHOICE`: A filter with options that can be applied together to filter content.
+    - `RANGE`: A filter that allows users to select a range of values, such as a date range filter.
+- **Options**: The filter options that will be applied to filter content. Depending on the type of filter, there can be one or multiple options.
 
 
 ![diagram](../images/admin-ui/filter/new-filter-form.png)
 
 ## View and edit filter
-By clicking on a filter from the list you can view and/or edit a particular filter. in addition if your shop is localized you can also add localized title and subtitle to the filter.
-Note that in-order to add a localized text for a specific language you need to [add the language](./language/#add-language) first by navigating to the language page.
+
+To view or edit a specific filter, simply click on it from the list on the filters page. From there, you can also add localized titles and subtitles to the filter if your shop is localized. However, to add localized text for a specific language, you must first [add the language](./language/#add-language) by going to the [language page](./language).
 
 ![diagram](../images/admin-ui/filter/filter-detail-text.png)
 ## Activate/deactivate filter
-On the filter detail page you will find a button at the top right corner that displays current status of a filter. You can use this button to toggle the status of a filter to active or inactive depending on it's current status.
+To manage the status of a filter, go to the filter detail page and locate the button at the top right corner that displays the current status. This button can be used to toggle the status of a filter between active and inactive, depending on its current status.
+
+Ensuring the proper status of your filters is important for managing your e-commerce shop effectively. Active filters will be available for customers to use when searching for products, while inactive filters will not be visible to customers.
 
 ![diagram](../images/admin-ui/filter/filter-activate-deactivate.png)
 
 ## View and edit filter options
-The option tab found in the filter detail page enables you to edit the title and subtitle of an option.
-It is also possible yo add localized text to filter options for a specific language but you need to [add the language](./language/#add-language) first by navigating to the language page.
+The option tab can be accessed from the filter detail page, and it allows you to make changes to the title and subtitle of a filter option. If your e-commerce shop is set up for multiple languages, you can also add localized text for specific languages to your filter options. Keep in mind that you must first [add the desired language](./language/#add-language) by going to the [language](./language) page before adding localized text.
 
 ![diagram](../images/admin-ui/filter/filter-edit-option.png)
 
 ## Add filter option
-You can add additional option to a filter after it's been created by navigating to the filter detail options tab.
+To add more options to a filter that has already been created, you can go to the options tab on the filter detail page.
 
 ![diagram](../images/admin-ui/filter/filter-add-option.png)
 
 ## Delete filter
 
-You can delete a filter in two places either on the list view of filters page or by opening the detail page of a given filter. However, be sure your change doesn't cause integrity issue before deleting a filter as the operation is not reversible.
+To delete a filter, there are two options available. The first option is to delete the filter from the list view on the filters page. The second option is to delete the filter from the detail page of the specific filter. However, before deleting a filter, ensure that deleting it won't cause any integrity issues, as the operation is not reversible.

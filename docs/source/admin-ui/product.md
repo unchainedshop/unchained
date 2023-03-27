@@ -43,45 +43,53 @@ Unchained Engine is a powerful e-commerce platform that enables merchants to cre
 **Use case**: A clothing store might sell a configurable product that allows customers to choose the size, color, and style of a shirt. The price of the shirt would vary based on the selected options. Customers would choose their options, see the updated price, and add the item to their cart.
 
 ## View and filter and/or search products
-On the products list view page you can browse all the products oin your e-commerce site. You can narrow the scope of products displayed using any of the filter options such as tags and/or status or searching for a specific product.
+Product list view page provides a comprehensive list of all the products available on your e-commerce site. You can efficiently manage your product catalog by using various filter options like tags and status, or searching for a specific product. By utilizing these filters, you can narrow down your search and streamline your product management process.
 ![diagram](../images/admin-ui/product/products-list.png)
 
 ## Add product
-You can adding a product to your shop by clicking on the **Add** button found on the product list view where you will be presented with a form similar to the one below. 
-In order to create a product you should provide the product title and it's type where type is any of the supported type that the product you are selling in your shop list above.
+To add a new product to your e-commerce store, navigate to the product list view and click on the "Add" button. This will open a form where you can provide the necessary details for the new product. The form will include fields for the product title and type, where the type should be selected from the list of supported product types for your store.
 
 ![diagram](../images/admin-ui/product/new-product-form.png)
 
 ## Edit Product
-After opening detail view of a product You can update a lot of information of a product based on it's type
+Once you have opened the detail view of a product, you can update various information about the product depending on its type. Here are some of the common actions that you can perform:
 
+- **Edit product information**: You can update the product title, description, and other general information about the product.
+- **Add localized variations of product information**: If you are selling products in multiple regions or languages, you can add localized variations of the product information to make it easier for customers to understand the product.
+- **Add media to a product**: You can add images and videos to showcase the product and help customers visualize it better.
+- **Price a product**: You can set the price of the product, and configure discounts and promotions if required.
+- **Add token information of a token product type**: If you are selling tokenized products, you can add token-specific information such as the token address, token ID, and other relevant details.
+- **Create a bundle product**: If you are selling a bundle of products, you can add or remove products from the bundle, and adjust the pricing accordingly.
+- **Add product variations**: If you are selling configurable products, you can add variations such as size, color, and style, and set different prices for each variation.
+- **Add subscription plan configuration to a product**: If you are selling plan products, you can configure the subscription plan details such as billing cycle, start and end dates, and payment method.
+- **Activate or deactivate a product**: You can activate or deactivate a product depending on its availability.
 ### Global update options
 Below are updatable options found on every product type
-1. **texts**: On this tab you are able to update all the text data of a product including title, subtitle and description etc... Additionally you can also add a localized text to all of the supported language in your shop by selecting the language you want at the top right of the form. 
+1. **texts**: The "texts" tab on the product detail view allows you to update all the textual information of a product such as its title, subtitle, and description. You can also add localized text for all the supported languages in your shop by selecting the language at the top right of the form. This ensures that customers from different regions can view the product information in their preferred language.
 
-**Note: In order to add a localized text you first need to add the language on using the [new language form](./language/#add-language).**
+It is important to note that before adding a localized text, you need to ensure that the language is added to your shop's supported languages. You can add a new language by using the [Add language](./language/#add-language) form available in the [Language](./language) section. Once the language is added, you can then add the localized text for the specific language in the Texts tab of the product detail view.
 
 ![diagram](../images/admin-ui/product/product-text-setting.png)
 
-2. **Media**: On many you want to attach a media file to a product to to convey additional information about the product and/or make the shop user interface friendly. By going to the media tab found on product detail page you can manage media files of a product of a product such as adding, updating or deleting. Additionally you can also add a localized text to all of the supported language in your shop by selecting the language you want at the top right of the form. 
+2. **Media**: The "media" tab on the product detail page allows you to manage the media files associated with a product. You can add, update, or delete media files to provide additional information about the product or to make the user interface more appealing. You can also add localized text in all the supported languages of your shop by selecting the language you want at the top right of the form. Please note that in order to add localized text, you must first [add language](./language/#add-language) using the new language form.
+
 ![diagram](../images/admin-ui/product/product-media-setting.png)
 
-3. **Tags**: Tags are useful when you want to add additional information of a product that distinguishes it from other for example. you can add or remove tags to a product by clicking on the tag button found at the top of the page.
+3. **Tags**: Tags are useful for providing additional information about a product that distinguishes it from others. You can add or remove tags for a product by clicking on the "Tags" button found at the top of the product detail page.
 
 ![diagram](../images/admin-ui/product/product-tag-settings.png)
 
-4. **Sequence**: You can change the sort order for a product by changing its sequence where a product with the smallest sequence will be returned first
+4. **Sequence**: You can reorder the products on the product list page by adjusting their sequence. Products with a lower sequence number will appear first in the list. To change the sequence, toggling "Sort" value found at the top of the page.
 
 ![diagram](../images/admin-ui/product/product-sequence-setting.png)
 
-5. **Status**: By default only active products are returned and all the operations are also performed on a product when it's active. However if you don't want to remove a product from your shop but also don't want to display it to customers for any reason you can change it's status to draft.
-Toggling a product status is as easy as toggling the button showing current status of a product and selecting a status.
+5. **Status**: The default behavior of products in the shop is to be active and displayed to customers. However, if you need to temporarily hide a product from customers while keeping it in the shop, you can change its status to draft. To do so, you simply toggle the button displaying the current status of the product and select "draft" as the new status. All operations on a product, such as updating or deleting, can be performed regardless of its status, but only active products are returned by default.
 
 ![diagram](../images/admin-ui/product/publish-draft-product.png)
 
-6. **Delete**: You can remove a product by clicking on the delete button available on a product detail page. a product is deletable only when it is in a **DRAFT** state, so if you want to delete a product that is active change its status to do so.
+6. **Delete**: You can remove a product by clicking on the delete button available on a product detail page. A product is deletable only when it is in draft status. If a product is active then it cannot be deleted. In this case, you can change the product status to draft if you don't want to display it to customers but still want to keep it in your shop.as **DRAFT** state, so if you want to delete a product that is active change its status to do so.
 
-**Note: be sure your change doesn't cause integrity issue and that the removal of the product does not affect operation of the shop such as active orders before deleting as the operation is not reversible.**
+**Note: When deleting a product, it is important to ensure that the deletion does not cause any integrity issues or affect the shop's operations, such as active orders. It is essential to be cautious as this operation is not reversible.**
 
 
 ### Scoped update options
@@ -122,7 +130,13 @@ Below are configuration options available only for a specific product type.
 
 Available on **SimpleProduct**
 
-Because Simple product is standard physical you may need to provide additional information that outlines the dimensions of a product. by navigating to the `supply` tab found on a product detail page You can add dimensions related information such as weight, length, width and height of a product.
+For a Simple product, you may need to provide additional information that outlines the dimensions of the product. This information can be added by navigating to the "Supply" tab found on the product detail page.
+
+On the product Supply form, you will be required to provide the following information:
+- **Weight**: Weight of the product.
+- **Length**: Length of the product.
+- **Width**: Width of the product.
+- **Height**: Height of the product.
 
 ![diagram](../images/admin-ui/product/product-supply-setting.png)
 
@@ -130,20 +144,26 @@ Because Simple product is standard physical you may need to provide additional i
 
 Available on **SimpleProduct**
 
-Physical or Simple product are stored in some type of warehouse and using the `warehousing` tab found on a product detail page you can add storage information such as **SKU** code and **Base unit** of measure.
+Physical or Simple products are typically stored in a warehouse and you may need to provide additional information about the product's storage. You can add this information by navigating to the "warehousing" tab on a product detail page. Here you can add the following storage-related information:
+- **SKU code**: A unique identifier assigned to a product for tracking purposes.
+- **Base unit of measure**: The unit of measure used for tracking the quantity of a product in the warehouse. For example, if a product is sold by weight, the base unit of measure could be grams or kilograms.
 
 ![diagram](../images/admin-ui/product/product-warehousing-setting.png)
-
-
 
 
 3. **Bundles**
 
 Available on **BundleProduct**
 
-Bundle products are products available on a shop as a group and you can mange a bundle product bundles by navigating to the `Bundles` tab available on a product detail page.
+Bundle products are a collection of products that are sold together as a single item. You can manage the bundle products by navigating to the ""Bundles" tab on the product detail page.
 
-You can add and remove on or many products as a bundle along with the quantity assigned for the bundle using the form provided
+On the Bundle configuration page, you can specify the products that make up the bundle by selecting them from a list of available products. You can also set a custom name and description for the bundle.
+
+Additionally, you can set a custom price for the bundle, which will override the prices of the individual products. You can also choose whether the bundle price is fixed or calculated based on the sum of the prices of the individual products.
+
+If a product that is part of a bundle is removed or becomes inactive, the bundle will be automatically updated to reflect the change.
+
+On the "Bundles" tab of a Bundle product, you can add or remove one or multiple products to be included in the bundle along with the quantity assigned to each product using the provided form.
 
 ![diagram](../images/admin-ui/product/product-bundle-setting.png)
 
@@ -152,14 +172,18 @@ You can add and remove on or many products as a bundle along with the quantity a
 
 Available on **ConfigurableProduct**
 
-Configurable product is a grouping of similar products with different characteristic and you can add all the different variation of a product you want to sell in your shop using the `variations` tab found on the product detail page.
+A configurable product is a grouping of similar products with different characteristics, and you can add all the different variations of a product you want to sell in your shop using the "Variations" tab found on the product detail page.
+
 ![diagram](../images/admin-ui/product/product-variation-create-setting.png)
 
 - **Adding variation option**
 
-Variation is the top level category of differentiation for example if you are selling laptop on your shop and there are various brand of laptops available brand of the laptop say HP can be the top level title of variation. 
+Variation is the highest level of product differentiation, such as brand or type, for a configurable product. For instance, if you're selling laptops on your shop and there are various brands available, the brand name, such as HP, can be the top-level variation. 
 
-However to add the actual differentiating factor of a configurable product  you need to create the variation option using the form provided under the `variations` tab of a product detail page. Continuing with the above example if you have different rams of HP laptops you create a variation option for each type.
+However, to add specific differentiation factors to a configurable product, you'll need to create variation options using the form available under the variations tab on the product detail page.
+
+For example, suppose you have different HP laptop models with varying RAM sizes. In that case, you'll create a variation option for each RAM size, allowing customers to select the exact model they want to purchase.
+
 ![diagram](../images/admin-ui/product/product-variation-setting.png)
 
 
@@ -168,7 +192,11 @@ However to add the actual differentiating factor of a configurable product  you 
 
 Available on **ConfigurableProduct**
 
-After creating variation and variation options of a configurable product the next step is assigning the actual product that satisfies the variation configuration. You can manage assigns of a product for each variation option by using the `assignments` tab found the product detail page.
+After creating variation and variation options of a configurable product, the next step is to assign the actual product that satisfies the variation configuration. To manage the assignments of a product for each variation option, you can use the "assignments" tab found on the product detail page.
+
+In the assignments tab, you will see a list of all the variation options you have created for the configurable product. You can then assign the specific product that matches that variation option. For example, if you have a variation option for RAM size and you have products with different RAM sizes, you can assign the product with 4GB RAM to the "4GB" variation option.
+
+To assign a product to a variation option, simply select the variation option from the list and then select the product that matches that variation option. Once you have assigned all the products to their respective variation options, the configurable product will be ready for sale on your shop.
 
 ![diagram](../images/admin-ui/product/product-variation-assignment.png)
 
@@ -178,13 +206,12 @@ After creating variation and variation options of a configurable product the nex
 
 Available on **TokenizedProduct**
 
-Since Tokenized product is a digital asset there are unique information specific to digital assets you should add that defines the token. 
-such as:
-- **Contract Standard**:- Token standard used to create the digital asset.
-- **Contract address**:- Address of the token on the blockchain it is found 
-- **Supply**:- Total tokens in circulation 
-- **Token Id**:- Unique identifier of the token
+To provide additional information that defines a Tokenized product, which is a digital asset, there are specific details that need to be added. These include:
+- **Contract Standard**: This refers to the token standard that was used to create the digital asset.
+- **Contract Address**: This is the address of the token on the blockchain where it can be found.
+- **Supply**: This indicates the total number of tokens in circulation.
+- **Token ID**: This is the unique identifier of the token.
 
-**Based on the contract standard of the token implementation some fields might be optional**
+**Note that some fields might be optional depending on the contract standard used for the token implementation.**
 
 ![diagram](../images/admin-ui/product/token-setting.png)

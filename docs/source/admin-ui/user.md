@@ -2,61 +2,63 @@
 title: Users
 sidebar_title: Manage Users
 ---
-Customer information is a critical part of an e-commerce site and admin ui gives you a comprehensive interface that lets you view and/or manage user data based on your access right.
-By default every user that is logged  in can mange the account there own account but a special role such as and admin or a custom configured role is needed if you want to view and manage 
-other users data.
 
-There are two types of users in admin UI, Guest and non-guest or registered. Guest user is created when you use `loginAsGuest` API to login in. this is beneficial when you want to enables unregistered customer in your shop to still be able to utilize adding to cart and/or bookmark a product without registering. But when a user finally decides to checkout and order they will need to register to complete the process.
+Admin UI provides a comprehensive interface for managing customer information on an e-commerce site, allowing you to view and/or manage user data based on your access rights. By default, every logged-in user can manage their own account, but to view and manage other users' data, a special role such as an admin or custom-configured role is required.
 
-If you have the right privlage to view and/or manage other users information including guest you can do so by navigating to **Users** page. where you can 
-- View all the users in the shop with filter and search capability
-- Add new User
-- View detail user information such as (profile info, orders, quotations, subscriptions and payment credentials)
+There are two types of users in Admin UI: guests and registered users. A guest user is created when the `loginAsGuest` API is used to log in. This is useful when you want to enable unregistered customers in your shop to still be able to add items to their cart and/or bookmark products without registering. However, when a user decides to checkout and order, they will need to register to complete the process.
+
+If you have the appropriate privileges to view and/or manage other users' information, including guest users, you can do so by navigating to the "Users" page, where you can:
+- View all users in the shop with filter and search capabilities
+- Add a new user
+- View detailed user information such as profile info, orders, quotations, subscriptions, and payment credentials
 - Edit user profile information
-- delete user
-- view all the orders made by a user
-- view all the quotations made by a user
-- view all the subscriptions made by a user
-- view all the payment credentials of a user
-
+- Delete a user
+- View all orders made by a user
+- View all quotations made by a user
+- View all subscriptions made by a user
+- View all payment credentials of a user
 
 ## View all Users
-After navigating to Users page you will be presented an intuitive user interface where you:
-- Filter and/or search users
+When you navigate to the Users page, you will be presented with an intuitive user interface that allows you to perform several actions such as:
+- Filter and search through the list of users in the shop based on different criteria such as name, email, date of registration, etc. This makes it easier to find specific users quickly.
 
 ![diagram](../images/admin-ui/user/users-list.png)
 
 
 ## Add new user
-On the list view there is an **Add** button which you can use to add a new user in your shop if you have the access right to do so. you will be presented with a form similar to the one below. after adding a user successfully you will be redirected to the newly added user detail page where you can view and/or edit additional information such profile picture, additional email and more.
+To add a new user to your shop, navigate to the Users page and click on the "Add" button located on the list view. You must have the necessary access rights to perform this action. The Add button will take you to a form where you can fill in the necessary details for the new user. Once the user has been added successfully, you will be redirected to the newly created user's detail page. On this page, you can view and edit additional information such as the user's profile picture, additional email addresses, and more.
 
 ![diagram](../images/admin-ui/user/new-user-form.png)
 
 ##  View and/or edit user detail
-When you open a user from a list you will be redirected to a user detail page when you will be able to view details of that particular user listed below
+To provide a more comprehensive documentation, here are the details that you can view on the user detail page when you open a user from the list:
+- Profile Information: You can view the user's name, email address, phone number, and other details that were provided during registration.
+- Orders: You can view all the orders that were placed by the user, including the order date, status, total amount, and payment information.
+- Quotations: You can view all the quotations that were sent to the user, including the quotation date, status, and total amount.
+- Subscriptions: You can view all the subscriptions that were created by the user, including the subscription date, status, and payment information.
+- Payment Credentials: You can view all the payment credentials that were added by the user, including the payment method and the last four digits of the card number.
+
+Additionally, if you have the access right to edit user information, you can also make changes to the user's profile, add or remove payment credentials, and manage the user's subscriptions.
 
 
 1. ### Profile information of a user
-on this tab information such as name, address, birthday and other personal information of a user is displayed and if you have the rights you can also edit them using the edit button available
+On the Profile tab, you can view personal information such as the user's name, address, birthday, and other related details. If you have the necessary permissions, you can also edit this information by clicking on the edit button provided.
 
 ![diagram](../images/admin-ui/user/user-profile-setting.png)
 
 2. ### Account information of a user
-On this tab all the below information of the user accounts are displayed and can be edited if you have the rights to do so.
-    - Email addresses:- Editable list of email addresses linked with the user
-    - Web3 addresses:- list of editable blockchain addresses linked with a user account
-    - Tags:- Editable list of tags
+The Account tab on the user detail page displays information such as email addresses, web3 addresses, and tags associated with the user's account. If you have the appropriate access rights, you can edit these details. The following information is displayed on this tab:
+    - **Email addresses**: This is an editable list of email addresses linked to the user's account.
+    - **Web3 addresses**: This is a list of blockchain addresses associated with the user's account. This list is also editable.
+    - **Tags**: This is an editable list of tags associated with the user's account.
     ![diagram](../images/admin-ui/user/manage-web3-addresses.png)
-    - Roles:- roles of the user
-    - Password change form:- Used to change the current password for that particular user in addition by default a user with **Admin** role but it can be another custom configured role can change the password of any user using the set-password form visible to only an account with a special permission
+    - **Roles**:- The user's assigned roles in the shop.
+    - **Password change**:- used to change the user's current password. By default, a user with an "Admin" role has the ability to change any user's password using the "Set Password" form, which is only visible to accounts with the appropriate permissions.
     ![diagram](../images/admin-ui/user/set-password.png)
-
-    - 2FA authentication:- Used to activate or deactivate [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) authentication of a user
-    - Web Authn:- Used to view devices to used for [Web authn](https://webauthn.guide/) authentication method
-
+    - **2FA authentication**:- Used to activate or deactivate [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) authentication of a user
+![diagram](../images/admin-ui/user/2fa-authentication.png)
+    - **Web Authn**:- The "WebAuthn" tab in the user detail page displays information about the devices used for [Web authn](https://webauthn.guide/) authentication method. [Web authn](https://webauthn.guide/) is a modern authentication method that allows users to authenticate themselves with their devices, such as smartphones or security keys. The tab provides information about the devices used for [Web authn](https://webauthn.guide/) authentication, such as their names, types, and statuses.
     ![diagram](../images/admin-ui/user/user-account-setting-1.png)
-
-    ![diagram](../images/admin-ui/user/2fa-authentication.png)
 
 
 3. ### Additional information of a user
