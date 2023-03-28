@@ -3,18 +3,26 @@ title: Authentication and registration
 sidebar_title: Authentication and registration
 ---
 
-Unchained engine supports multiple authentication flows users can use to register and access it. The admin ui is designed to support most of this authentication and authorization flows with the exception of some that are better suited to a storefront instead of a control panel.
+Unchained engine offers several authentication flows to users to register and access the platform. The admin UI is designed to support most of these authentication and authorization flows. However, some authentication flows are more suitable for a storefront than a control panel, and hence, the admin UI may not support them.
 
 # Registration
 Users can create an account by clicking on the sign up button found on the log in page using either [web authentication](https://webauthn.guide/) or normal email and password registration flow
+To create a user account, users can click on the "sign up" button located on the login page. Two registration options are available:
+1. [Web Authentication](https://webauthn.guide/): This method allows users to register their account using their device's built-in security features, such as a fingerprint scanner or facial recognition. This provides an added layer of security, as it eliminates the need for a password.
+2. Email and Password Registration Flow: Users can also choose to create an account using the traditional email and password registration process. They will need to enter a valid email address and a secure password of their choice to proceed.
+
+It is important to note that both registration options require users to provide valid and accurate information to create an account. Additionally, users should be advised to choose a strong and unique password to protect their account from unauthorized access.
 
 ## Email and password registration
-You can create an account by providing a unique `email` and `password` an an optional `username`
+To create a user account, users need to provide their email and choose a strong and unique password. An optional username may also be provided, depending on the platform's policies.
+
+When creating an account, it is essential that users choose a unique and valid email address to ensure that they receive necessary communications and account verification emails. Additionally, users should create a strong and unique password that is difficult for others to guess or hack. Passwords should be a combination of uppercase and lowercase letters, numbers, and special characters.
+
+In some cases, platforms may also offer the option for users to choose a username instead of using their email address. If provided, the username should also be unique and not already in use by another user on the platform.
+
+Overall, when creating an account, it is important to provide accurate and valid information, as well as to adhere to the platform's policies and terms of service. Users should also be aware of the platform's security measures and how their personal information will be stored and protected.
 
 ![diagram](../images/admin-ui/authentication-and-registration/sign-up-form.png)
-
-if all the validation passes you will be automatically redirected to the home page and successfully logged in
-
 ## Web Authn registration
 
 Unchained supports one of the latest and most safest registration method. [Web authn](https://webauthn.guide/) 
@@ -26,19 +34,15 @@ To register using [Web authn](https://webauthn.guide/) go to the sign up page an
 
 
 # Authentication
-You can authenticate yourself on admin UI using either email and password plus [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) (if enabled) or with [Web authn](https://webauthn.guide/) also if enabled
+To access the admin UI, users need to authenticate themselves by providing their credentials. There are two options for authentication: email and password plus [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password), or [Web authn](https://webauthn.guide/).
+
 ## Login with email and password (TOTP)
 
-To login into your account in admin UI, first, enter email or username and click continue. if your username is found in the system you will be prompted with a password field.
+To log in with email and password, users should first enter their email or username and click continue. If their email or username is found in the system, they will be prompted to enter their password.
+
+If [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) has not been enabled, users will be redirected to the home page as a logged-in user after entering a valid password. However, if [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) has been enabled, users will be required to enter the time-based generated number as the last step in the authentication process. Once the correct number is entered, users will be redirected to the home page as a logged-in user.
 ![diagram](../images/admin-ui/authentication-and-registration/log-in-email.png)
-
-Once you enter a valid password if you have not enabled [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) you will be redirected to the home page as a logged in user. 
-On the other hand,if you have enabled TOTP you will be provided another input to enter the time-based generated number as a last step in which, after entering the correct number you will be redirected to the home page as a logged in user.
-
-![diagram](../images/admin-ui/authentication-and-registration/log-in-password.png)
-
-
 ## Login with Web authn
-If you have previously configured [Web authn](https://webauthn.guide/) for your account you will only need to provide a valid username on the same input you would enter your email if you was login in with email and password method. Admin UI will determine if the submitted user has enabled [Web authn](https://webauthn.guide/) or not in the background, in which on a successful valid username submission you will be prompted to authenticate yourself using the same medium you have configured  [Web authn](https://webauthn.guide/) with previously. 
+Alternatively, users can choose to authenticate themselves using [Web authn](https://webauthn.guide/), provided that it has been enabled. This authentication method uses public key cryptography to authenticate users, and it is considered more secure than traditional authentication methods. Users will be required to follow the prompts and provide the necessary information to complete the authentication process.
 
-After a successful authentication you will be redirected to the home page as a logged in user.
+In summary, users can authenticate themselves on admin UI using either email and password plus [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) (if enabled) or with [Web authn](https://webauthn.guide/) (if enabled). The [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) authentication method requires users to enter a time-based generated number as the last step in the authentication process, while Web authn uses public key cryptography to authenticate users.
