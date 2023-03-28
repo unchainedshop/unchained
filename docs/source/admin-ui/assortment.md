@@ -21,7 +21,7 @@ In addition to these features, you can search, filter, and sort assortments usin
 
 ![diagram](../images/admin-ui/assortment/assortment-list.png)
 
-### Add, edit and delete assortment
+## Add, edit and delete assortment
 1. ### Adding new Assortment
 If you want to create a new assortment, you can do so by clicking the "Add" button on the list view of assortments. This will take you to the assortment creation form page, where you can provide all the required information, including the name of the assortment, a brief description, and any other relevant details that are necessary. This form is easy to use and will guide you through the process of creating a new assortment quickly and efficiently.
 ![diagram](../images/admin-ui/assortment/new-assortment-form.png)
@@ -33,37 +33,36 @@ If you have the necessary privileges, you can delete an assortment by using the 
 
 ![diagram](../images/admin-ui/assortment/assortment-text-setting.png)
 
-4. ### Activating or deactivating assortment
+## Activating or deactivating assortment
 When you access an assortment's detail page, you will see a button that displays the current status of the assortment. This button can be used to toggle the assortment's status between active and inactive. Simply click on the button to change the status. This feature is useful when you need to temporarily remove an assortment from the shop or reactivate an inactive assortment.
 
 
 ![diagram](../images/admin-ui/assortment/assortment-activate-deactivate.png)
 
-5. ### Root or leaf
+## Root or leaf
 If you need to change the placement of an assortment from root to leaf or vice versa, you can use the button that displays the current placement value to toggle to the other value. This feature allows you to modify the hierarchy of your assortments and organize them in a way that best suits your business needs. Simply click on the button to change the placement value, and the assortment will be moved accordingly. This is a convenient way to reorganize your assortments and ensure that they are properly classified and easy to navigate.
 
 ![diagram](../images/admin-ui/assortment/assortment-leaf-and-root-toggle.png)
 
-6. ### Make base
+## Make base
 Base assortments are top-level assortments that cannot be assigned as child assortments of another assortment. If an assortment was not initially added as a base assortment, you can make it base by navigating to the assortment detail page. From there, you can select the "Make Base" option, which will promote the assortment to a base assortment. This is useful when you need to restructure your assortments or if you have new assortments that need to be classified as base. Keep in mind that once an assortment has been made base, it cannot be assigned as a child of another assortment. Therefore, it is important to carefully consider your assortment structure and hierarchy before making any changes.
 
-7. ### Edit assortment tags
+## Edit assortment tags
 You can easily manage the tags assigned to an assortment using the tag section found at the top of the assortment detail page. From there, you can add or delete tags as needed to ensure that your assortment is properly classified and easy to find. This feature is useful when you need to quickly update the tags associated with an assortment or when you want to make sure that your assortments are properly organized and categorized. Simply click on the tag section to access the tag management options, and you can easily add or delete tags as needed.
 
 ![diagram](../images/admin-ui/assortment/assortment-tag-setting.png)
 
-
-### Manage assortment Medias
+## Manage assortment Medias
 To manage media files associated with an assortment, navigate to the "Media" tab on the assortment detail page. From there, you can upload, edit, and delete media files as needed. An assortment can have multiple media files assigned to it, which can include images, videos, or other types of media. Additionally, you can add localized text for each media file to ensure that it is properly translated and accessible for your customers in different regions. This feature is useful when you need to showcase your assortment and provide customers with visual information about your products. Simply click on the "Media" tab to access the media management options, and you can easily upload, edit, or delete media files as needed.
 
 ![diagram](../images/admin-ui/assortment/assortment-media-setting.png)
 
-### Manage assortment Filters
+## Manage assortment Filters
 To manage filters associated with an assortment, navigate to the "Filter" tab on the assortment detail page. From there, you can add or remove links to filters that are relevant to your assortment. This feature is useful when you want to make it easier for customers to find products within a specific category or with certain attributes. Simply click on the "Filter" tab to access the filter management options, and you can easily add or remove links to filters as needed. Keep in mind that filters need to be created before they can be linked to an assortment. If you haven't created any filters yet, you can do so by following the instructions provided in the [Filter](./filter) documentation.
 
 ![diagram](../images/admin-ui/assortment/assortment-filter-setting.png)
 
-### Manage assortment Links
+## Manage assortment Links
 To manage links to other assortments associated with an assortment, navigate to the "Links" tab on the assortment detail page. From there, you can add or remove links to other assortments as needed. This feature is useful when you want to create a hierarchy of related products or categories, and make it easy for customers to navigate through your assortment.
 
 Keep in mind that a non-root assortment can be assigned as a child to multiple assortments, as long as it is not a base assortment type. However, you should avoid creating cyclic relationships, where two or more assortments are part of the same link parent hierarchy. This type of relationship is not currently supported by Unchained, and can lead to unexpected issues.
@@ -82,7 +81,7 @@ a -> c
 ```
 ![diagram](../images/admin-ui/assortment/assortment-link-setting.png)
 
-### Manage assortment Products
+## Manage assortment Products
 To add products to an assortment, navigate to the "Products" tab on the assortment detail page. From there, you can assign multiple products to the assortment, which can help customers easily find the products they're interested in.
 
 It's important to note that a product can belong to multiple categories, so there is no restriction on assigning a product to multiple assortments. This can help you create a more flexible and intuitive product catalog, where customers can find products based on their needs and interests, rather than being limited by a strict category structure.
