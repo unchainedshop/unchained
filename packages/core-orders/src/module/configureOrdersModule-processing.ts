@@ -234,9 +234,7 @@ export const configureOrderModuleProcessing = ({
     unchainedAPI: UnchainedCore,
   ): Promise<OrderStatus | null> => {
     if (status === null) {
-      if ((await missingInputDataForCheckout(order)).length === 0) {
-        return OrderStatus.PENDING;
-      }
+      return OrderStatus.PENDING;
     }
 
     if (status === OrderStatus.PENDING) {
