@@ -1,5 +1,5 @@
 ---
-title: 'Quotation plugins'
+title: 'Quotations'
 description: 'Customizing quotation'
 ---
 

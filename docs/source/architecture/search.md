@@ -3,8 +3,6 @@ title: "Search Behavior"
 description: Learn about the search feature
 ---
 
-# Search Capabilities
-
 Unchained provides you with the ability to search and filter products and assortments.
 
 ### Products Search

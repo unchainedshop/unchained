@@ -40,7 +40,7 @@ These options are available:
   - `resolvers`: Object (GraphQL Resolvers that get merged with the default API)
   - `options`: Options for various submodules of Unchained. See the rest of the configuration section for details 
   - `rolesOptions`: [IRoleOptionConfig](https://docs.unchained.shop/types/interfaces/roles.IRoleOptionConfig.html): Enables you to customize the existing roles and actions, adjusting fine-grained permissions.
-  - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of Data Import and E-Commerce Engine. For more information about bulk import API refer [here](../advanced-config/entities#bulk-import-api)
+  - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of Data Import and E-Commerce Engine. For more information about bulk import API refer [here](../advanced-config/bulk-import)
   - `workQueueOptions`: [SetupWorkqueueOptions](https://docs.unchained.shop/types/interfaces/platform.SetupWorkqueueOptions.html) Configuration regarding the work queue, for example disabling it entirely in multi-pod setups
   - `adminUiConfig`: Customize the Unchained Admin UI
 

@@ -1,6 +1,6 @@
 ---
 title: 'Product Pricing'
-description: Configure the product price
+description: Add a product pricing plugins
 ---
 
 To manipulate a specific product price or the entire product price in your system you can create a custom plugin by extending
@@ -8,7 +8,8 @@ the `ProductPricingAdapter` and registering it on to the `ProductPricingDirector
 
 The sample code below will create a custom product price plugin that will round each product price to the next 50th.
 
-```
+```typescript
+
 import {
   ProductPricingAdapter,
   ProductPricingDirector,
@@ -50,7 +51,6 @@ class ProductPriceRound extends ProductPricingAdapter {
 }
 
 ProductPricingDirector.registerAdapter(ProductPriceRound);
-
 ```
 
 Explanation:
@@ -68,13 +68,13 @@ Returning `null` from here will stop the execution of any other `ProductPriceAda
 
 Next step is registering your `ProductPricingAdapter` on the `ProductPricingDirector` like so:
 
-```
+```typescript
 ProductPricingDirector.registerAdapter(ProductPriceRound);
 ```
 
 Finally you can import this file in the boot file like :
 
-```
+```typescript
 import '@unchainedshop/core-pricing/plugins/product-round-price';
 
 startPlatform({...})

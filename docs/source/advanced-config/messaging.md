@@ -1,5 +1,5 @@
 ---
-title: "Messaging plugins"
+title: "Messaging"
 description: Customize messaging 
 ---
 

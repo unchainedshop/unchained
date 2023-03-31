@@ -1,5 +1,5 @@
 ---
-title: 'Warehousing Plugin'
+title: 'Warehousing Providers'
 description: 'Customize warehousing'
 ---
 

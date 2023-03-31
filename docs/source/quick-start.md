@@ -89,4 +89,4 @@ GRAPHQL_ENDPOINT=https://domain-of-your-frontend/api/graphql
 
 Get to know the concepts
 
-- [Carts](concepts/carts)
+- [Carts](architecture/overview)

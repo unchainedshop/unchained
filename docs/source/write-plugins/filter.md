@@ -1,7 +1,8 @@
 ---
-title: "Filter plugins"
-description: Customize filter 
+title: "Filter"
+description: Customize filter and search
 ---
+
 Filter plugins are useful when you want to have a tailored filter functionality based on some requirements. you can have more than one FilterAdapter implementations and all of them will be executed sequentially based on there `orderIndex` index. Filter adapter with lower `orderIndex` will be first on the execution order and any modifications made on the previous Filter adapter will be available to filter that are executed after it. This is useful when you want to modularize your business logic.
 
 When creating a filter make sure you don't use the same key for different filters.

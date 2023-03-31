@@ -1,6 +1,6 @@
 ---
-title: 'Worker plugin'
-description: 'Add custom worker'
+title: 'Work Queue'
+description: 'Add custom background workers'
 ---
 
 ## WorkAdapter

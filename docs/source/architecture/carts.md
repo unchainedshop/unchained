@@ -3,8 +3,6 @@ title: "Cart Behavior"
 description: Learn about the cart and it's advanced features
 ---
 
-# Orderable Items
-
 In Unchained, you can add products and quotations to carts, but only products will remain in the cart in the end. When adding products to the cart, they are transformed according to the following rules:
 
 Products:

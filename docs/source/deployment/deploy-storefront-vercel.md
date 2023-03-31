@@ -53,7 +53,7 @@ GRAPHQL_ENDPOINT=https://domain-of-your-frontend/api/graphql
 
 Get to know the concepts
 
-- [Carts](../concepts/carts)
+- [Architecture](../architecture/overview)
 
 4. set the required `env` production environment
 
@@ -64,9 +64,3 @@ GRAPHQL_ENDPOINT=https://domain-of-your-frontend/api/graphql
 ```
 
 5. deploy the storefront
-
-## Next steps
-
-Get to know the concepts
-
-- [Carts](../concepts/carts)

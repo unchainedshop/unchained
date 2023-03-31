@@ -1,6 +1,6 @@
 ---
-title: 'PIM Connector Framework'
-description: Import Data from any PIM
+title: 'Bulk Import API'
+description: Import Data from PIM / ERP
 ---
 
 We have created a special API to upload large amounts of data, for example from a PIM or ERP system, to the Unchained Engine.

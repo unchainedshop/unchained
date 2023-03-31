@@ -1,5 +1,5 @@
 ---
-title: 'Extending the Schema'
+title: 'Extend the GraphQL API'
 description: Extending the schema to hold custom types
 ---
 
