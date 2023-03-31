@@ -83,7 +83,7 @@ module.exports = {
             'advanced-config/admin-ui',
           ],
           'API Reference': [
-            '[GraphQL API Reference](https://docs.unchained.shop/api)',
+            '[GraphQL API Reference](/api)',
             '[GraphQL API Playground](https://engine.unchained.shop/graphql)',
             '[JS Reference](https://docs.unchained.shop/types)',
           ],

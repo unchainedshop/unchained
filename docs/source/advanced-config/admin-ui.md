@@ -19,16 +19,16 @@ const config = {
     {
       entityName: 'User',
       inlineFragment: `...on User {
-                        _id
-                        isTwoFactorEnabled
-                        avatar {
-                          _id
-                          name
-                          size
-                          type
-                          url
-                        }
-                      }`
+        _id
+        isTwoFactorEnabled
+        avatar {
+          _id
+          name
+          size
+          type
+          url
+        }
+      }`
     }
   ]
 }
