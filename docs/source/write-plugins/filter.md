@@ -109,7 +109,7 @@ Lets look into each `field` & `function` defined by `IFilterAdapter` and what th
 In the above example we are adding `status: 'ACTIVE'` selector if there is any filter configuration key provided on the filter, also expect the attribute value to match the configuration key: value.
 Note: filters with higher `orderIndex` will get this value as there argument
   default value: `{ status: { '$in': [ 'ACTIVE', null ] } }`
-- `transformFilterSelector`: modifies selectors that are going to be used to filter products list. it gets filters that are added by filter adapters with lowe `orderIndex` as it's argument and is expected to return valid mongodb selector expression.
+- `transformFilterSelector`: This transform fn allows you to customize the selector that returns the filters that should show up for a given search query. By default it uses the assortment's filter links to return those filters. Sometimes there is no assortment scope (global search for products) or you want to make a specific filter appear just everywhere. In those cases this can be helpful by returning additional filters through the selector.
 - `transformSortStage`: Used to modify sort options that will to be applied for filter. default sort option value is `{ index: 1 }` which is for mongodb automatically assigned index value, but it can be changed to use any field in a collection.
 in the example above we are adding a sort `{ created: -1 }` to the previous sort option and filter adapters with higher `orderIndex` will get this value as there parameter.
 
