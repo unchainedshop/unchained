@@ -271,7 +271,7 @@ export const configureWorkerModule = async ({
       worker = null,
       retries = 20,
     }) => {
-      if (!WorkerDirector.getAdapter(type)) {
+      if (!WorkerDirector.getAdapterByType(type)) {
         throw new Error(`No plugin registered for type ${type}`);
       }
 

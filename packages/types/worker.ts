@@ -134,7 +134,8 @@ export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   getActivePluginTypes: (external?: boolean) => Array<string>;
-
+  getAdapterByType: (type: string) => IWorkerAdapter<any, any>;
+  disableAutoscheduling: (type: string) => void;
   configureAutoscheduling: (
     adapter: IWorkerAdapter<any, any>,
     workScheduleConfiguration: WorkScheduleConfiguration,

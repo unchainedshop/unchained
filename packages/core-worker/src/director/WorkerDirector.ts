@@ -13,7 +13,7 @@ export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 const AutoScheduleMap = new Map<string, WorkScheduleConfiguration>();
 
 const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
-  adapterKeyField: 'type',
+  adapterKeyField: 'key',
 });
 
 export const WorkerDirector: IWorkerDirector = {
@@ -31,12 +31,16 @@ export const WorkerDirector: IWorkerDirector = {
   },
 
   registerAdapter: (Adapter) => {
-    if (WorkerDirector.getAdapter(Adapter.type))
+    if (WorkerDirector.getAdapterByType(Adapter.type))
       throw new Error(
         `WorkerDirector: There is already a adapter registered with type: ${Adapter.type}`,
       );
 
     baseDirector.registerAdapter(Adapter);
+  },
+
+  disableAutoscheduling: (type) => {
+    AutoScheduleMap.delete(type);
   },
 
   configureAutoscheduling: (adapter, workQueue) => {
@@ -46,10 +50,20 @@ export const WorkerDirector: IWorkerDirector = {
       `WorkerDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${schedule}`,
     );
   },
+
   getAutoSchedules: () => Array.from(AutoScheduleMap),
 
+  getAdapterByType: (type: string) => {
+    const adapters = WorkerDirector.getAdapters({
+      adapterFilter: (Adapter) => {
+        return type === Adapter.type;
+      },
+    });
+    return adapters?.[0];
+  },
+
   doWork: async ({ type, input, _id: workId }, unchainedAPI) => {
-    const adapter = WorkerDirector.getAdapter(type);
+    const adapter = WorkerDirector.getAdapterByType(type);
 
     if (!adapter) {
       log(`WorkerDirector: No registered adapter for type: ${type}`);
