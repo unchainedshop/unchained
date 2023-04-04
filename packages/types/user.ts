@@ -61,7 +61,7 @@ export interface Web3Address {
   verified: boolean;
 }
 
-export interface OauthLink {
+export interface OAuthAccount {
   provider: string;
   data: UserOauthData & { authorizationCode: string }[];
 }

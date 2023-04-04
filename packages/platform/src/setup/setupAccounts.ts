@@ -133,7 +133,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         },
         { skipPasswordEnrollment: true },
       );
-      await oauth2Service.linkOAuthProvider(newUserId, {
+      await oauth2Service.linkOAuthAccount(newUserId, {
         data,
         authorizationToken,
         authorizationCode,

@@ -1,14 +1,14 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
 
-export default async function unlinkOAuthProvider(
+export default async function unlinkOAuthAccount(
   root: Root,
   { provider, authorizationCode }: { provider: string; authorizationCode: string },
   context: Context,
 ) {
   const { modules, services, userId } = context;
 
-  log(`mutation unlinkOAuthProvider ${provider} ${authorizationCode}`, {
+  log(`mutation unlinkOAuthAccount ${provider} ${authorizationCode}`, {
     userId,
   });
 

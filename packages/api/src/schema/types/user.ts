@@ -109,7 +109,7 @@ export default [
       company: String
     }
 
-    type OauthLink {
+    type OAuthAccount {
       provider: String!
       data: [UserOauthData!]!
     }
@@ -163,7 +163,7 @@ export default [
       ): [Enrollment!]!
       allowedActions: [RoleAction!]!
       tokens: [Token!]!
-      linkedOauthProviders: [OauthLink!]!
+      oAuthAccounts: [OAuthAccount!]!
     }
   `,
 ];
