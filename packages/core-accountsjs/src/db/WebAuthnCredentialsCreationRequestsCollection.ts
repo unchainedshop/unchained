@@ -1,10 +1,10 @@
-import { Db } from '@unchainedshop/types/common.js';
+import type { mongodb } from '@unchainedshop/mongodb';
 import { WebAuthnCredentialsCreationRequest } from '@unchainedshop/types/accounts.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 type Collection = WebAuthnCredentialsCreationRequest & { _id: number };
 
-export const WebAuthnCredentialsCreationRequestsCollection = async (db: Db) => {
+export const WebAuthnCredentialsCreationRequestsCollection = async (db: mongodb.Db) => {
   const WebAuthnCredentialsCreationRequests = db.collection<Collection>(
     'accounts_webauthn_credentials_creation_requests',
   );

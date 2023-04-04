@@ -28,7 +28,6 @@
       }
     ],
     "import/extensions": [0],
-    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
-    "import/no-unresolved": ["error", { "ignore": ["meteor/"] }]
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }]
   }
 }

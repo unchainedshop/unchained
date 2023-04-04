@@ -23,18 +23,7 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
 };
 
 export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImporter => {
-  // eslint-disable-next-line
-  // @ts-ignore
-  const isMeteor = typeof Meteor === 'object';
-
-  // eslint-disable-next-line
-  let GridFSBucket;
-  if (isMeteor) {
-    const { MongoInternals } = require('meteor/mongo'); // eslint-disable-line
-    GridFSBucket = MongoInternals.NpmModule.GridFSBucket;
-  } else {
-    GridFSBucket = mongodb.GridFSBucket;
-  }
+  const { GridFSBucket } = mongodb;
 
   // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
   const BulkImportPayloads = new GridFSBucket(db, {
