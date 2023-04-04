@@ -1,56 +1,15 @@
 ---
-title: "Extending DB"
+title: "Extend DB Entity Schemas"
 description: Adding and extending database collections
 ---
-
-
-
-There might come a time where you might want to store additional data for your shop. Wether you want to create a new collection or extend the existing database collection to include additional fields unchained engine has you covered.
-
-## Adding new collection
-
-If you want add new collection there is not much configuration steps you need to follow. All you need to do import the `MongoClient` with the correct db URI and you have access to all native mongodb functions.
-By default if you are running unchained locally the database URI is at 
-
-```typescript
-mongodb://localhost:4011/unchained
-```
-
-```typescript
-
-import {MongoClient } from "mongodb"
-
-  const mongoClient = new MongoClient("mongodb://localhost:4011/unchained", {
-    useUnifiedTopology: true,
-    ignoreUndefined: true,
-  })
-
-  const mongo = await mongoClient.connect();
-  const db = mongo.db()
-
-```
-
-In the above code we imported `MongoClient`, created an instance by providing the our database URI, connected to the database and finally retrieved the underling database by calling the instance function `db`.
-
-Now that we have the db instance we can call all the native mongo functions on it, including creating, finding, deleting etc... on the code bellow we are creating a collection `example_collection` and added an index to it using built in helper function `buildDbIndexes` to use in our shop.
-
-```typescript
-import { buildDbIndexes } from '@unchainedshop/utils';
-...
-const ExampleCollection = await db.collection('example_collection')
-  await buildDbIndexes(ExampleCollection, [
-    { index: { exampleId: 1 } },
-  ]);
-  
-```
-
-
 ## Extending existing collection
-Every collection used in Unchained engine provides a simple API to extend it's field definitions. In order to extend one of the default collection you first have to import its corresponding Schema. 
+Every MongoDB collection used in Unchained engine provides a simple API to extend it's field definitions.
 
-Every collection schema is defined using [`simple-schema`](https://www.npmjs.com/package/simpl-schema) which mean you can use any of the functions defined there on all import of unchained collection schema definition and expect the same result.
+If you add new fields to existing schemas with custom code you should also make sure that you extend the [`simple-schema`](https://www.npmjs.com/package/simpl-schema) definition, because sometimes, Unchained sanitizes data based on those definitions.
 
-As an example lets import the `Users` collection schema definition `UsersSchema` and add a new `age` field.
+In order to do that you first have to import its corresponding Schema.
+
+As an example lets import the `Users` collection schema definition `UsersSchema` and add a new `age` field:
 
 ```typescript
 import { UsersSchema } from "@unchainedshop/utils/src/db/UsersSchema"
@@ -62,6 +21,7 @@ UsersSchema.extend(
   { requiredByDefault: false },
 );
 ```
+
 For more schema configuration options refer to [`simple-schema`](https://www.npmjs.com/package/simpl-schema)
 Below are all of the built in collections  schema definitions and import location.
 

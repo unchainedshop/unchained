@@ -1,9 +1,11 @@
 ---
-title: 'Events'
-description: Configure the Events Module
+title: 'Event System'
+description: How to use the built-in Event system
 ---
 
-Unchained supports the publish-subscribe (pub/sub) event model to keep track of events emitted in each module. By default it uses nodejs EventEmitter module to handle events but can easily be extended to use any event tracker module by extending the `EventAdapter` class which we will briefly see later.
+Unchained supports the publish-subscribe (pub/sub) event model to keep track of events emitted in each module. By default it uses nodejs EventEmitter module to handle events but the system can be extended to connect to distributed event queues.
+
+You can subscribe to events to trigger any custom logic you can think of. It is especially useful to track data server-side for analytics purposes or to trigger additional e-mails based on special workflows.
 
 The `@unchainedshop/core-events` module exports three utility functions that can be used to interact with the registered event tracker, or register new custom events.
 
@@ -198,61 +200,3 @@ emit('CUSTOM_EVENT_ONE', { from: "fcustom event one"});;
 ```
 
 NOTE: before you can subscribe to an event, make sure it's registered first. Otherwise error will be thrown.
-
-## Setup custom event tracker
-
-We can easily swap the default event tracker module (EventEmitter) used by unchained with out own module by implementing `EventAdapter` interface and registering it on `EventDirector` on system boot time. Both classes are exported from the `core-events` module.
-
-```
-import redis from 'redis';
-import EventDirector, { EventAdapter } from '@unchainedshop/core-events';
-
-const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
-
-class RedisEventEmitter extends EventAdapter {
-  redisPublisher = redis.createClient({
-    port: REDIS_PORT,
-    host: REDIS_HOST,
-  });
-
-  redisSubscriber = redis.createClient({
-    port: REDIS_PORT,
-    host: REDIS_HOST,
-  });
-
-  publish(eventName, payload) {
-    this.redisPublisher.publish(eventName, JSON.stringify(payload));
-  }
-
-  subscribe(eventName, callback) {
-    this.redisSubscriber.on('message', (_channelName, payload) =>
-      callback(payload)
-    );
-      this.redisSubscriber.subscribe(eventName);
-    }
-  }
-}
-
-const handler = new RedisEventEmitter();
-
-EventDirector.setEventAdapter(handler);
-
-
-  startPlatform({...});
-  ...
-  registerEvents([
-      'CUSTOM_EVENT_ONE',
-      'CUSTOM_EVENT_TWO',
-      'CUSTOM_EVENT_THREE',
-  ])
-
-
-```
-
-Explanation:
-
-We have decided to use `redis` for event tracking. In order to do that we have to create new class extending the `EventAddapter` interface and implement the two functions required `subscribe` & `publish`.
-
-in this functions we defined how redis implements the pub/sub model.
-
-Next all we need to is register it in `EventDirector` class using the static function `setEventAdapter`.
