@@ -1,4 +1,4 @@
-import { FindOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 import { TimestampFields } from './common.js';
 
 export type AssortmentMedia = {

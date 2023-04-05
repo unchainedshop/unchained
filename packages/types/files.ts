@@ -1,4 +1,4 @@
-import { FindOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
 

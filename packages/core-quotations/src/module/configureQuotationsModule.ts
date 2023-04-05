@@ -1,7 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-
 import {
   Quotation,
   QuotationQuery,
@@ -225,7 +223,7 @@ export const configureQuotationsModule = async ({
       return quotationCount;
     },
     openQuotationWithProduct: async ({ productId }) => {
-      const selector: Query = { productId };
+      const selector: mongodb.Filter<Quotation> = { productId };
       selector.status = { $in: [QuotationStatus.REQUESTED, QuotationStatus.PROPOSED] };
 
       return Quotations.findOne(selector);

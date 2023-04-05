@@ -1,5 +1,11 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { FilterAdapterActions, IFilterAdapter, IFilterDirector } from '@unchainedshop/types/filters.js';
+import {
+  Filter,
+  FilterAdapterActions,
+  IFilterAdapter,
+  IFilterDirector,
+} from '@unchainedshop/types/filters.js';
+import { Product } from '@unchainedshop/types/products.js';
 import { BaseDirector } from '@unchainedshop/utils';
 
 const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
@@ -48,20 +54,20 @@ export const FilterDirector: IFilterDirector = {
         }, params.productIds);
       },
 
-      transformProductSelector: async <T extends mongodb.Document>(defaultSelector, options) => {
-        return reduceAdapters<mongodb.UpdateFilter<T>>(async (lastSelector, adapter) => {
+      transformProductSelector: async (defaultSelector, options) => {
+        return reduceAdapters<mongodb.Filter<Product>>(async (lastSelector, adapter) => {
           return adapter.transformProductSelector(await lastSelector, options);
         }, defaultSelector || null);
       },
 
-      transformSortStage: async <T extends mongodb.Document>(defaultStage, options) => {
-        return reduceAdapters<mongodb.FindOptions<T>['sort']>(async (lastSortStage, adapter) => {
+      transformSortStage: async (defaultStage, options) => {
+        return reduceAdapters<mongodb.FindOptions<Product>['sort']>(async (lastSortStage, adapter) => {
           return adapter.transformSortStage(await lastSortStage, options);
         }, defaultStage || null);
       },
 
-      transformFilterSelector: async <T extends mongodb.Document>(defaultSelector) => {
-        return reduceAdapters<mongodb.UpdateFilter<T>>(async (lastSelector, adapter) => {
+      transformFilterSelector: async (defaultSelector) => {
+        return reduceAdapters<mongodb.Filter<Filter>>(async (lastSelector, adapter) => {
           return adapter.transformFilterSelector(await lastSelector);
         }, defaultSelector || null);
       },

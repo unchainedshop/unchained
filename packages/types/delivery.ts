@@ -1,5 +1,5 @@
-import { FindOptions } from 'mongodb';
-import { IBaseAdapter, IBaseDirector, Query, TimestampFields } from './common.js';
+import type { Filter, FindOptions } from 'mongodb';
+import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 
 import {
@@ -113,17 +113,15 @@ export interface DeliveryInterface {
 
 export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   // Queries
-  count: (query: DeliveryProviderQuery) => Promise<number>;
+  count: (query: Filter<DeliveryProvider>) => Promise<number>;
   findProvider: (
-    query:
-      | {
-          deliveryProviderId: string;
-        }
-      | Query,
+    query: {
+      deliveryProviderId: string;
+    } & Filter<DeliveryProvider>,
     options?: FindOptions,
   ) => Promise<DeliveryProvider>;
   findProviders: (
-    query: DeliveryProviderQuery,
+    query: Filter<DeliveryProvider>,
     options?: FindOptions,
   ) => Promise<Array<DeliveryProvider>>;
 

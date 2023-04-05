@@ -1,7 +1,7 @@
-import { mongodb } from '@unchainedshop/mongodb';
+import type { Filter, FindOptions, Db } from 'mongodb';
 import { SortOption } from './api.js';
 import { AssortmentMediaModule } from './assortments.media.js';
-import { Query, TimestampFields, Tree } from './common.js';
+import { TimestampFields, Tree } from './common.js';
 
 export type Assortment = {
   _id?: string;
@@ -59,7 +59,7 @@ export type AssortmentText = {
 export type AssortmentQuery = {
   queryString?: string;
   assortmentIds?: Array<string>;
-  assortmentSelector?: Query;
+  assortmentSelector?: Filter<Assortment>;
   includeInactive?: boolean;
   includeLeaves?: boolean;
   slugs?: Array<string>;
@@ -88,7 +88,7 @@ export type AssortmentsModule = {
       offset?: number;
       sort?: Array<SortOption>;
     },
-    options?: mongodb.FindOptions,
+    options?: FindOptions,
   ) => Promise<Array<Assortment>>;
 
   findProductIds: (params: {
@@ -136,7 +136,7 @@ export type AssortmentsModule = {
       params: {
         assortmentId: string;
       },
-      options?: mongodb.FindOptions,
+      options?: FindOptions,
     ) => Promise<Array<AssortmentFilter>>;
     findFilterIds: (params: { assortmentId: string }) => Promise<Array<string>>;
 
@@ -144,7 +144,7 @@ export type AssortmentsModule = {
     create: (doc: AssortmentFilter) => Promise<AssortmentFilter>;
 
     delete: (assortmentFilterId: string) => Promise<Array<{ _id: string }>>;
-    deleteMany: (selector: mongodb.Filter<AssortmentFilter>) => Promise<number>;
+    deleteMany: (selector: Filter<AssortmentFilter>) => Promise<number>;
 
     update: (assortmentFilterId: string, doc: AssortmentFilter) => Promise<AssortmentFilter>;
 
@@ -175,7 +175,7 @@ export type AssortmentsModule = {
         assortmentId?: string;
         parentAssortmentId?: string;
       },
-      options?: mongodb.FindOptions,
+      options?: FindOptions,
     ) => Promise<Array<AssortmentLink>>;
 
     // Mutations
@@ -187,7 +187,7 @@ export type AssortmentsModule = {
     ) => Promise<AssortmentLink>;
 
     deleteMany: (
-      selector: mongodb.Filter<AssortmentLink>,
+      selector: Filter<AssortmentLink>,
       options?: { skipInvalidation?: boolean },
     ) => Promise<number>;
 
@@ -223,7 +223,7 @@ export type AssortmentsModule = {
       params: {
         assortmentId: string;
       },
-      options?: mongodb.FindOptions,
+      options?: FindOptions,
     ) => Promise<Array<AssortmentProduct>>;
 
     findProductSiblings: (params: {
@@ -243,7 +243,7 @@ export type AssortmentsModule = {
     ) => Promise<Array<{ _id: string; assortmentId: string }>>;
 
     deleteMany: (
-      selector: mongodb.Filter<AssortmentProduct>,
+      selector: Filter<AssortmentProduct>,
       options?: { skipInvalidation?: boolean },
     ) => Promise<number>;
 
@@ -271,10 +271,10 @@ export type AssortmentsModule = {
   search: {
     findFilteredAssortments: (params: {
       assortmentIds: Array<string>;
-      assortmentSelector: Query;
+      assortmentSelector: Filter<Assortment>;
       limit: number;
       offset: number;
-      sort: mongodb.FindOptions['sort'];
+      sort: FindOptions['sort'];
     }) => Promise<Array<Assortment>>;
   };
 
@@ -284,7 +284,7 @@ export type AssortmentsModule = {
 
   texts: {
     // Queries
-    findTexts: (query: Query, options?: mongodb.FindOptions) => Promise<Array<AssortmentText>>;
+    findTexts: (query: Filter<AssortmentText>, options?: FindOptions) => Promise<Array<AssortmentText>>;
 
     findLocalizedText: (params: { assortmentId: string; locale?: string }) => Promise<AssortmentText>;
     searchTexts: ({ searchText }: { searchText: string }) => Promise<Array<string>>;
@@ -328,5 +328,5 @@ export interface AssortmentsSettings {
   slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
-  configureSettings: (options?: AssortmentsSettingsOptions, db?: mongodb.Db) => void;
+  configureSettings: (options?: AssortmentsSettingsOptions, db?: Db) => void;
 }

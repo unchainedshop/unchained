@@ -3,7 +3,6 @@ import {
   ProductMediaModule,
   ProductMediaText,
 } from '@unchainedshop/types/products.media.js';
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -12,6 +11,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
+  mongodb,
 } from '@unchainedshop/mongodb';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { ProductsModule } from '@unchainedshop/types/products.js';
@@ -86,7 +86,7 @@ export const configureProductMediaModule = async ({
     },
 
     findProductMedias: async ({ productId, tags, offset, limit }, options) => {
-      const selector: Query = productId ? { productId } : {};
+      const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
       if (tags?.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -148,7 +148,7 @@ export const configureProductMediaModule = async ({
     },
 
     deleteMediaFiles: async ({ productId, excludedProductIds, excludedProductMediaIds }) => {
-      const selector: Query = productId ? { productId } : {};
+      const selector: mongodb.Filter<ProductMedia> = productId ? { productId } : {};
 
       if (!productId && excludedProductIds) {
         selector.productId = { $nin: excludedProductIds };

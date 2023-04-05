@@ -162,7 +162,7 @@ export const configureAssortmentTextsModule = ({
     makeSlug,
 
     deleteMany: async ({ assortmentId, excludedAssortmentIds }) => {
-      const selector: mongodb.UpdateFilter<AssortmentText> = {};
+      const selector: mongodb.Filter<AssortmentText> = {};
       if (assortmentId) {
         selector.assortmentId = assortmentId;
       } else if (excludedAssortmentIds) {

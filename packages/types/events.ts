@@ -1,6 +1,6 @@
-import { FindOptions } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import { Query, TimestampFields } from './common.js';
+import { TimestampFields } from './common.js';
 import { ModuleCreateMutation } from './core.js';
 
 export type EventPayload = {
@@ -39,7 +39,7 @@ export interface EventDirector {
 }
 
 export interface EventsModule extends ModuleCreateMutation<Event> {
-  findEvent: (params: Query & { eventId: string }, options?: FindOptions) => Promise<Event>;
+  findEvent: (params: Filter<Event> & { eventId: string }, options?: FindOptions) => Promise<Event>;
 
   findEvents: (
     params: EventQuery & {

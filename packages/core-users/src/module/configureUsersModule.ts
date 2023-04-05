@@ -1,5 +1,4 @@
 import localePkg from 'locale';
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
@@ -38,10 +37,10 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
 };
 
 export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
-  const selector: Query = { ...rest, deleted: null };
+  const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {
-    selector.$text = { $search: queryString };
+    (selector as any).$text = { $search: queryString };
   }
   return selector;
 };

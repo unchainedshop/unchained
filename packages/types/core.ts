@@ -1,4 +1,4 @@
-import { Db, GridFSBucket, UpdateFilter } from 'mongodb';
+import type { Db, GridFSBucket, UpdateFilter } from 'mongodb';
 import { Modules, ModuleOptions } from './modules.js';
 import { Services } from './services.js';
 import { IRoleOptionConfig } from './roles.js';

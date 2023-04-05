@@ -1,6 +1,6 @@
-import type { FindOptions } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 import { Context } from './api.js';
-import { IBaseAdapter, IBaseDirector, Query, TimestampFields } from './common.js';
+import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderPayment } from './orders.payments.js';
@@ -37,11 +37,6 @@ export type PaymentCredentials = {
   isPreferred?: boolean;
   meta: any;
 } & TimestampFields;
-
-export type PaymentProviderQuery = {
-  type?: PaymentProviderType;
-  deleted?: Date;
-};
 
 export enum PaymentError {
   ADAPTER_NOT_FOUND = 'ADAPTER_NOT_FOUND',
@@ -128,15 +123,15 @@ export type PaymentModule = {
 
   paymentProviders: ModuleMutationsWithReturnDoc<PaymentProvider> & {
     // Queries
-    count: (query: PaymentProviderQuery) => Promise<number>;
+    count: (query: Filter<PaymentProvider>) => Promise<number>;
     findProvider: (
-      query: Query & {
+      query: Filter<PaymentProvider> & {
         paymentProviderId: string;
       },
       options?: FindOptions,
     ) => Promise<PaymentProvider>;
     findProviders: (
-      query: PaymentProviderQuery,
+      query: Filter<PaymentProvider>,
       options?: FindOptions,
     ) => Promise<Array<PaymentProvider>>;
 
@@ -229,7 +224,10 @@ export type PaymentModule = {
       options?: FindOptions,
     ) => Promise<PaymentCredentials>;
 
-    findPaymentCredentials: (query: Query, options?: FindOptions) => Promise<Array<PaymentCredentials>>;
+    findPaymentCredentials: (
+      query: Filter<PaymentCredentials>,
+      options?: FindOptions,
+    ) => Promise<Array<PaymentCredentials>>;
 
     // Mutations
     markPreferred: (query: { userId: string; paymentCredentialsId: string }) => Promise<void>;

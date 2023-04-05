@@ -1,10 +1,5 @@
 import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import {
-  PaymentContext,
-  PaymentModule,
-  PaymentProvider,
-  PaymentProviderQuery,
-} from '@unchainedshop/types/payments.js';
+import { PaymentContext, PaymentModule, PaymentProvider } from '@unchainedshop/types/payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
@@ -19,7 +14,7 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_REMOVE',
 ];
 
-export const buildFindSelector = ({ type }: PaymentProviderQuery = {}) => {
+export const buildFindSelector = ({ type }: mongodb.Filter<PaymentProvider> = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 

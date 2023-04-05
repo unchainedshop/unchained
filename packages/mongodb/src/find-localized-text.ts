@@ -1,6 +1,6 @@
 import 'abort-controller/polyfill.js';
 import { systemLocale } from '@unchainedshop/utils';
-import { Collection, Document, UpdateFilter } from 'mongodb';
+import { Collection, Document, Filter } from 'mongodb';
 
 export const extendSelectorWithLocale = (selector, locale) => {
   const localeSelector = {
@@ -11,7 +11,7 @@ export const extendSelectorWithLocale = (selector, locale) => {
 
 export const findLocalizedText = async <T extends Document>(
   collection: Collection<T>,
-  selector: UpdateFilter<T>,
+  selector: Filter<T>,
   locale: typeof systemLocale,
 ): Promise<T> => {
   const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale), {

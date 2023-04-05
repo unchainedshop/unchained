@@ -1,8 +1,8 @@
-import { Query } from '@unchainedshop/types/common.js';
-import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
+import { Filter, FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
+import { mongodb } from '@unchainedshop/mongodb';
 
 const defaultSelector = ({ filterIds, filterQuery, includeInactive }: SearchQuery) => {
-  const selector: Query = {};
+  const selector: mongodb.Filter<Filter> = {};
   const keys = (filterQuery || []).map((filter) => filter.key);
   if (Array.isArray(filterIds)) {
     // return predefined list

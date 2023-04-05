@@ -1,5 +1,5 @@
-import { IncomingMessage, OutgoingMessage } from 'http';
-import { ApolloServerOptions } from '@apollo/server';
+import type { IncomingMessage, OutgoingMessage } from 'http';
+import type { ApolloServerOptions } from '@apollo/server';
 import type { Locale } from 'locale';
 import { User } from './user.js';
 import { UnchainedCore } from './core.js';

@@ -1,4 +1,3 @@
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
@@ -16,12 +15,12 @@ const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYM
 export const buildFindByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as mongodb.Filter<OrderPayment>;
 
-export const buildFindByContextDataSelector = (context: any): Query => {
+export const buildFindByContextDataSelector = (context: any): mongodb.Filter<OrderPayment> => {
   const contextKeys = Object.keys(context);
 
   if (contextKeys.length === 0) return null;
 
-  const selector: Query = contextKeys.reduce(
+  const selector: mongodb.Filter<OrderPayment> = contextKeys.reduce(
     (currentSelector, key) =>
       context[key] !== undefined
         ? {

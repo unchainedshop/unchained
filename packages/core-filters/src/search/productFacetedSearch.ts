@@ -13,7 +13,7 @@ export const productFacetedSearch = (
   const { query, filterSelector, forceLiveCollection } = searchConfiguration;
 
   return async (productIds: Array<string>) => {
-    if (!query || query.length === 0) return productIds;
+    if (!query || !query.filterQuery) return productIds;
 
     const filters = filterSelector ? await Filters.find(filterSelector).toArray() : [];
 

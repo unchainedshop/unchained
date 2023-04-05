@@ -1,4 +1,4 @@
-import { EventEmitter } from 'stream';
+import type { EventEmitter } from 'stream';
 import { SortOption } from './api.js';
 import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';

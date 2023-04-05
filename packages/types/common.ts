@@ -1,7 +1,6 @@
 import type { Locale, Locales } from 'locale';
 
 export { Locale, Locales };
-export type Query = { [x: string]: any };
 
 /*
  * Data definitions

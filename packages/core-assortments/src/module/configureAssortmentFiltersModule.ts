@@ -1,5 +1,4 @@
 import { AssortmentFilter, AssortmentsModule } from '@unchainedshop/types/assortments.js';
-import { Query } from '@unchainedshop/types/common.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 
@@ -85,7 +84,7 @@ export const configureAssortmentFiltersModule = ({
     },
 
     delete: async (assortmentFilterId) => {
-      const selector: Query = generateDbFilterById(assortmentFilterId);
+      const selector: mongodb.Filter<AssortmentFilter> = generateDbFilterById(assortmentFilterId);
 
       const assortmentFilter = await AssortmentFilters.findOne(selector, {
         projection: { _id: 1 },

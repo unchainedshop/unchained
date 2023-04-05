@@ -1,4 +1,3 @@
-import { Query } from '@unchainedshop/types/common.js';
 import { Order, OrderTransformations } from '@unchainedshop/types/orders.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { OrderPricingSheet } from '../director/OrderPricingSheet.js';
@@ -118,7 +117,7 @@ export const configureOrderModuleTransformations = ({
       return order.status === null;
     },
     cart: async ({ orderNumber, countryContext }, user) => {
-      const selector: Query = {
+      const selector: mongodb.Filter<Order> = {
         countryCode: countryContext || user.lastLogin.countryContext,
         status: { $eq: null },
         userId: user._id,

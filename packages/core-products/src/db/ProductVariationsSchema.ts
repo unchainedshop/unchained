@@ -11,6 +11,8 @@ export const ProductVariationsSchema = new SimpleSchema(
     productId: { type: String, required: true },
     key: String,
     type: String,
+    tags: Array,
+    'tags.$': String,
     options: Array,
     'options.$': String,
     ...Schemas.timestampFields,

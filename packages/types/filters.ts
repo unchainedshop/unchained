@@ -1,7 +1,7 @@
-import type { Db, FindOptions, Document } from 'mongodb';
+import type { Db, FindOptions, Document, Filter as MongoDBFilter } from 'mongodb';
 import { SortOption } from './api.js';
 import { Assortment } from './assortments.js';
-import { IBaseAdapter, IBaseDirector, Query, TimestampFields } from './common.js';
+import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Product } from './products.js';
 
@@ -47,7 +47,7 @@ export type FilterQuery = {
   includeInactive?: boolean;
 };
 
-export type SearchQuery = Query & {
+export type SearchQuery = {
   assortmentIds?: Array<string>;
   filterIds?: Array<string>;
   filterQuery?: SearchFilterQuery;
@@ -85,7 +85,7 @@ export type FiltersModule = {
 
   filterExists: (params: { filterId: string }) => Promise<boolean>;
 
-  invalidateCache: (query: Query, unchainedAPI: UnchainedCore) => Promise<void>;
+  invalidateCache: (query: MongoDBFilter<Filter>, unchainedAPI: UnchainedCore) => Promise<void>;
 
   // Mutations
   create: (
@@ -140,7 +140,7 @@ export type FiltersModule = {
 
   texts: {
     // Queries
-    findTexts: (query: Query, options?: FindOptions) => Promise<Array<FilterText>>;
+    findTexts: (query: MongoDBFilter<FilterText>, options?: FindOptions) => Promise<Array<FilterText>>;
 
     findLocalizedText: (params: {
       filterId: string;
@@ -181,8 +181,8 @@ export interface FilterAdapterActions {
       assortmentIds: Array<string>;
     },
     options?: {
-      filterSelector: Query;
-      assortmentSelector: Query;
+      filterSelector: MongoDBFilter<Filter>;
+      assortmentSelector: MongoDBFilter<Assortment>;
       sortStage: FindOptions['sort'];
     },
   ) => Promise<Array<string>>;
@@ -192,14 +192,20 @@ export interface FilterAdapterActions {
       productIds: Array<string>;
     },
     options?: {
-      filterSelector: Query;
-      productSelector: Query;
+      filterSelector: MongoDBFilter<Filter>;
+      productSelector: MongoDBFilter<Product>;
       sortStage: FindOptions['sort'];
     },
   ) => Promise<Array<string>>;
 
-  transformFilterSelector: (query: Query, options?: any) => Promise<Query>;
-  transformProductSelector: (query: Query, options?: { key?: string; value?: any }) => Promise<Query>;
+  transformFilterSelector: (
+    query: MongoDBFilter<Filter>,
+    options?: any,
+  ) => Promise<MongoDBFilter<Filter>>;
+  transformProductSelector: (
+    query: MongoDBFilter<Product>,
+    options?: { key?: string; value?: any },
+  ) => Promise<MongoDBFilter<Product>>;
   transformSortStage: (
     sort: FindOptions['sort'],
     options?: { key: string; value?: any },

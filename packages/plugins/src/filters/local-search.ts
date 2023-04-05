@@ -1,7 +1,9 @@
 import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
 import { IFilterAdapter } from '@unchainedshop/types/filters.js';
-import { Query } from '@unchainedshop/types/common.js';
 import escapeStringRegexp from 'escape-string-regexp';
+import { mongodb } from '@unchainedshop/mongodb';
+import { ProductText } from '@unchainedshop/types/products.js';
+import { AssortmentText } from '@unchainedshop/types/assortments.js';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 
@@ -23,7 +25,7 @@ const LocalSearch: IFilterAdapter = {
 
         if (!queryString) return productIds;
 
-        const selector: Query = AMAZON_DOCUMENTDB_COMPAT_MODE
+        const selector: mongodb.Filter<ProductText> = AMAZON_DOCUMENTDB_COMPAT_MODE
           ? {
               $or: [
                 { title: { $regex: `${escapeStringRegexp(queryString)}`, $options: 'im' } },
@@ -59,7 +61,7 @@ const LocalSearch: IFilterAdapter = {
           return assortmentIds;
         }
 
-        const selector: Query = {
+        const selector: mongodb.Filter<AssortmentText> = {
           $text: { $search: queryString },
         };
 
@@ -77,6 +79,7 @@ const LocalSearch: IFilterAdapter = {
       },
 
       async transformFilterSelector(last) {
+        // TODO: Fix type searchQuery
         const { query = {} } = params.searchQuery;
         const { queryString, filterIds, includeInactive } = query;
 

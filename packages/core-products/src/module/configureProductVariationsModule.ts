@@ -3,7 +3,6 @@ import {
   ProductVariationsModule,
   ProductVariationText,
 } from '@unchainedshop/types/products.variations.js';
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -79,7 +78,7 @@ export const configureProductVariationsModule = async ({
   return {
     // Queries
     findProductVariationByKey: async ({ productId, key }) => {
-      const selector: Query = {
+      const selector: mongodb.Filter<ProductVariation> = {
         productId,
         key,
       };
@@ -91,7 +90,7 @@ export const configureProductVariationsModule = async ({
     },
 
     findProductVariations: async ({ productId, tags, offset, limit }) => {
-      const selector: Query = { productId };
+      const selector: mongodb.Filter<ProductVariation> = { productId };
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -245,7 +244,7 @@ export const configureProductVariationsModule = async ({
       }) => {
         const parsedLocale = new Locale(locale);
 
-        const selector: Query = { productVariationId };
+        const selector: mongodb.Filter<ProductVariationText> = { productVariationId };
         selector.productVariationOptionValue = productVariationOptionValue ?? { $eq: null };
         const text = await findLocalizedText<ProductVariationText>(
           ProductVariationTexts,

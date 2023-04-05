@@ -1,9 +1,13 @@
 import os from 'os';
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { Work, WorkerModule } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  buildSortOptions,
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { SortDirection } from '@unchainedshop/types/api.js';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
 import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
@@ -23,7 +27,7 @@ export const buildQuerySelector = ({
   workId,
   queryString,
   ...rest
-}: Query & {
+}: mongodb.Filter<Work> & {
   created?: { end?: Date; start?: Date };
   scheduled?: { end?: Date; start?: Date };
   status?: Array<WorkStatus>;
@@ -60,7 +64,8 @@ export const buildQuerySelector = ({
     ),
   };
 
-  let query: Query = statusQuery.$or.length > 0 ? statusQuery : { deleted: { $exists: false } };
+  let query: mongodb.Filter<Work> =
+    statusQuery.$or.length > 0 ? statusQuery : { deleted: { $exists: false } };
 
   if (created) {
     query.created = created?.end
@@ -79,7 +84,7 @@ export const buildQuerySelector = ({
   if (workId) {
     query = generateDbFilterById(workId, query);
   }
-  if (queryString) query.$text = { $search: queryString };
+  if (queryString) (query as any).$text = { $search: queryString };
 
   return { ...query, ...rest };
 };

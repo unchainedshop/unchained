@@ -1,4 +1,3 @@
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
@@ -302,7 +301,7 @@ export const configureOrderPositionsModule = ({
       );
 
       // Search for existing position
-      const selector: Query = {
+      const selector: mongodb.Filter<OrderPosition> = {
         orderId,
         productId: resolvedProduct._id,
         originalProductId: product._id,

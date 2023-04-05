@@ -89,7 +89,7 @@ export const configureFilterTextsModule = ({
     upsertLocalizedText,
 
     deleteMany: async ({ filterId, excludedFilterIds }) => {
-      const selector: mongodb.UpdateFilter<FilterText> = {};
+      const selector: mongodb.Filter<FilterText> = {};
       if (filterId) {
         selector.filterId = filterId;
       } else if (excludedFilterIds) {
