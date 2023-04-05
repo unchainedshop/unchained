@@ -32,7 +32,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/utils": "^2.1.1",
-    "mongodb": "^4.14.0"
+    "mongodb": "^4.15.0"
   },
   "optionalDependencies": {
     "mongodb-memory-server": "^8.10.0"
