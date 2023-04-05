@@ -1,4 +1,3 @@
-import { Db } from '@unchainedshop/types/common.js';
 import { AppleTransaction, AppleTransactionsCollection } from '../db/AppleTransactionsCollection.js';
 
 export interface AppleTransactionsModule {
@@ -7,11 +6,7 @@ export interface AppleTransactionsModule {
   createTransaction: (doc: AppleTransaction, userId: string) => Promise<string | null>;
 }
 
-export const configureAppleTransactionsModule = async ({
-  db,
-}: {
-  db: Db;
-}): Promise<AppleTransactionsModule> => {
+export const configureAppleTransactionsModule = async ({ db }): Promise<AppleTransactionsModule> => {
   const AppleTransactions = await AppleTransactionsCollection(db);
 
   return {

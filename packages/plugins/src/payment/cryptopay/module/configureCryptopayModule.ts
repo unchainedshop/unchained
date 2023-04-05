@@ -1,4 +1,3 @@
-import { Db } from '@unchainedshop/types/common.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { CryptopayTransaction, CryptopayTransactionsCollection } from '../db/CryptopayTransactions.js';
 
@@ -23,7 +22,7 @@ export interface CryptopayModule {
   getNextDerivationNumber: (currency: string) => Promise<number>;
 }
 
-export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule => {
+export const configureCryptopayModule = ({ db }): CryptopayModule => {
   const CryptoTransactions = CryptopayTransactionsCollection(db);
 
   const getWalletAddress: CryptopayModule['getWalletAddress'] = async (addressId) => {

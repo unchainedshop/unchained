@@ -36,7 +36,7 @@ export const configureFilterTextsModule = ({
       },
     };
 
-    const selector: Filter<FilterText> = {
+    const selector: mongodb.Filter<FilterText> = {
       filterId,
       filterOptionValue: filterOptionValue || { $eq: null },
       locale,

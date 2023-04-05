@@ -1,11 +1,12 @@
-import { FindOptions, Query } from '@unchainedshop/types/common.js';
+import { Query } from '@unchainedshop/types/common.js';
 import { FilterAdapterActions } from '@unchainedshop/types/filters.js';
+import { mongodb } from '@unchainedshop/mongodb';
 
 export const productFulltextSearch = (
   params: {
     filterSelector: Query;
     productSelector: Query;
-    sortStage: FindOptions['sort'];
+    sortStage: mongodb.FindOptions['sort'];
   },
   filterActions: FilterAdapterActions,
 ) => {

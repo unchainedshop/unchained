@@ -1,7 +1,7 @@
 import { AssortmentFilter, AssortmentsModule } from '@unchainedshop/types/assortments.js';
-import { Collection, Document, FindOptions, Query } from '@unchainedshop/types/common.js';
+import { Query } from '@unchainedshop/types/common.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 
 const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_ADD_FILTER',
@@ -12,7 +12,7 @@ const ASSORTMENT_FILTER_EVENTS = [
 export const configureAssortmentFiltersModule = ({
   AssortmentFilters,
 }: {
-  AssortmentFilters: Collection<AssortmentFilter>;
+  AssortmentFilters: mongodb.Collection<AssortmentFilter>;
 }): AssortmentsModule['filters'] => {
   registerEvents(ASSORTMENT_FILTER_EVENTS);
 
@@ -21,7 +21,7 @@ export const configureAssortmentFiltersModule = ({
       return AssortmentFilters.findOne(generateDbFilterById(assortmentFilterId), {});
     },
 
-    findFilters: async ({ assortmentId }, options?: FindOptions<Document>) => {
+    findFilters: async ({ assortmentId }, options?: mongodb.FindOptions<mongodb.Document>) => {
       const filters = AssortmentFilters.find({ assortmentId }, options);
       return filters.toArray();
     },

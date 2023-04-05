@@ -1,5 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { Query, Update } from '@unchainedshop/types/common.js';
+import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 
 import {
@@ -10,7 +10,12 @@ import {
 } from '@unchainedshop/types/quotations.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  buildSortOptions,
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { QuotationsCollection } from '../db/QuotationsCollection.js';
 import { QuotationsSchema } from '../db/QuotationsSchema.js';
 import { QuotationStatus } from '../db/QuotationStatus.js';
@@ -113,7 +118,7 @@ export const configureQuotationsModule = async ({
         break;
     }
 
-    const modifier: Update<Quotation> = {
+    const modifier: mongodb.UpdateFilter<Quotation> = {
       $set,
       $push: {
         log: {

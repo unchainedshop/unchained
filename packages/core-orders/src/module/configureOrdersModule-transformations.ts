@@ -1,11 +1,12 @@
-import { Collection, FindOptions, Query } from '@unchainedshop/types/common.js';
+import { Query } from '@unchainedshop/types/common.js';
 import { Order, OrderTransformations } from '@unchainedshop/types/orders.js';
+import { mongodb } from '@unchainedshop/mongodb';
 import { OrderPricingSheet } from '../director/OrderPricingSheet.js';
 
 export const configureOrderModuleTransformations = ({
   Orders,
 }: {
-  Orders: Collection<Order>;
+  Orders: mongodb.Collection<Order>;
 }): OrderTransformations => {
   return {
     discounted: async (order, orderDiscount, unchainedAPI) => {
@@ -127,7 +128,7 @@ export const configureOrderModuleTransformations = ({
         selector.orderNumber = orderNumber;
       }
 
-      const options: FindOptions = {
+      const options: mongodb.FindOptions = {
         sort: {
           updated: -1,
         },

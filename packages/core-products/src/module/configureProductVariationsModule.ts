@@ -3,7 +3,7 @@ import {
   ProductVariationsModule,
   ProductVariationText,
 } from '@unchainedshop/types/products.variations.js';
-import { Filter, Query } from '@unchainedshop/types/common.js';
+import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -12,6 +12,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
+  mongodb,
 } from '@unchainedshop/mongodb';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
 import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
@@ -157,7 +158,7 @@ export const configureProductVariationsModule = async ({
     },
 
     deleteVariations: async ({ productId, excludedProductIds }) => {
-      const selector: Filter<ProductVariation> = {};
+      const selector: mongodb.Filter<ProductVariation> = {};
       if (productId) {
         selector.productId = productId;
       } else if (excludedProductIds) {

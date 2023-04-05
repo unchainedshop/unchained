@@ -1,7 +1,7 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { Collection, FindOptions, Query } from '@unchainedshop/types/common.js';
+import { Query } from '@unchainedshop/types/common.js';
 import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders.js';
-import { generateDbFilterById, buildSortOptions } from '@unchainedshop/mongodb';
+import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: Query = {};
@@ -26,7 +26,7 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
 export const configureOrdersModuleQueries = ({
   Orders,
 }: {
-  Orders: Collection<Order>;
+  Orders: mongodb.Collection<Order>;
 }): OrderQueries => {
   return {
     // Queries
@@ -43,7 +43,7 @@ export const configureOrdersModuleQueries = ({
 
     findOrders: async ({ limit, offset, queryString, sort, ...query }, options) => {
       const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.DESC }];
-      const findOptions: FindOptions = {
+      const findOptions: mongodb.FindOptions = {
         skip: offset,
         limit,
         sort: buildSortOptions(sort || defaultSortOption),

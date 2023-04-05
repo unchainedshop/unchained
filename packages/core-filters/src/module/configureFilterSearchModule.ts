@@ -1,6 +1,6 @@
-import { Collection } from '@unchainedshop/types/common.js';
 import { Filter, FiltersModule } from '@unchainedshop/types/filters.js';
 import { Product } from '@unchainedshop/types/products.js';
+import { mongodb } from '@unchainedshop/mongodb';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch.js';
 import { cleanQuery } from '../search/cleanQuery.js';
@@ -21,7 +21,7 @@ export const configureFilterSearchModule = ({
   Filters,
   filterProductIds,
 }: {
-  Filters: Collection<Filter>;
+  Filters: mongodb.Collection<Filter>;
   filterProductIds: FilterProductIds;
 }): FiltersModule['search'] => {
   return {

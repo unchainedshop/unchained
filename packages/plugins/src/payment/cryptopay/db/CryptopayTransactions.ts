@@ -1,4 +1,4 @@
-import { Db, TimestampFields, _ID } from '@unchainedshop/types/common.js';
+import { TimestampFields, _ID } from '@unchainedshop/types/common.js';
 import { mongodb } from '@unchainedshop/mongodb';
 
 export type CryptopayTransaction = {
@@ -12,6 +12,6 @@ export type CryptopayTransaction = {
   orderPaymentId?: string;
 } & TimestampFields;
 
-export const CryptopayTransactionsCollection = (db: Db) => {
+export const CryptopayTransactionsCollection = (db: mongodb.Db) => {
   return db.collection<CryptopayTransaction>('cryptopay_transactions');
 };
