@@ -1,5 +1,6 @@
-import { Collection, Indexes, Document } from '@unchainedshop/types/common.js';
+import { Indexes } from '@unchainedshop/types/common.js';
 import { log, LogLevel } from '@unchainedshop/logger';
+import { Collection, Document } from 'mongodb';
 
 const buildIndexes = <T>(
   collection: Collection<T>,

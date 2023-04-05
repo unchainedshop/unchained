@@ -1,8 +1,7 @@
-import { Collection, Filter } from '@unchainedshop/types/common.js';
 import { FiltersModule, FilterText } from '@unchainedshop/types/filters.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { findLocalizedText, generateDbObjectId } from '@unchainedshop/utils';
+import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 
 const { Locale } = localePkg;
 
@@ -11,7 +10,7 @@ const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXTS'];
 export const configureFilterTextsModule = ({
   FilterTexts,
 }: {
-  FilterTexts: Collection<FilterText>;
+  FilterTexts: mongodb.Collection<FilterText>;
 }): FiltersModule['texts'] => {
   registerEvents(FILTER_TEXT_EVENTS);
 
@@ -90,7 +89,7 @@ export const configureFilterTextsModule = ({
     upsertLocalizedText,
 
     deleteMany: async ({ filterId, excludedFilterIds }) => {
-      const selector: Filter<FilterText> = {};
+      const selector: mongodb.UpdateFilter<FilterText> = {};
       if (filterId) {
         selector.filterId = filterId;
       } else if (excludedFilterIds) {

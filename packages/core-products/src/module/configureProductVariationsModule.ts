@@ -12,7 +12,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from '@unchainedshop/utils';
+} from '@unchainedshop/mongodb';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
 import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
 

@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common.js';
 import { Currency } from '@unchainedshop/types/currencies.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
 
 export const CurrenciesCollection = async (db: Db) => {
   const Currencies = db.collection<Currency>('currencies');

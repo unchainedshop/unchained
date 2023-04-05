@@ -8,7 +8,7 @@ import {
   ProductVote,
 } from '@unchainedshop/types/products.reviews.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
 import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema.js';

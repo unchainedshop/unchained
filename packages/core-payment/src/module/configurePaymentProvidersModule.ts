@@ -7,7 +7,7 @@ import {
   PaymentProviderQuery,
 } from '@unchainedshop/types/payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
 import { PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
 import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema.js';

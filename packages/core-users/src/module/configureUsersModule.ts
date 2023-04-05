@@ -1,5 +1,5 @@
 import localePkg from 'locale';
-import { Filter, Query } from '@unchainedshop/types/common.js';
+import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
@@ -7,10 +7,10 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   generateDbMutations,
-  Schemas,
-  systemLocale,
   buildSortOptions,
-} from '@unchainedshop/utils';
+  mongodb,
+} from '@unchainedshop/mongodb';
+import { Schemas, systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -394,7 +394,7 @@ export const configureUsersModule = async ({
             $pull: {
               pushSubscriptions: { 'keys.p256dh': subscription?.keys?.p256dh },
             },
-          } as Filter<User>,
+          } as mongodb.UpdateFilter<User>,
         );
       }
     },
@@ -405,7 +405,7 @@ export const configureUsersModule = async ({
           $pull: {
             pushSubscriptions: { 'keys.p256dh': p256dh },
           },
-        } as Filter<User>,
+        } as mongodb.UpdateFilter<User>,
         {},
       );
     },

@@ -3,7 +3,7 @@ import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { Work, WorkerModule } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
 import { SortDirection } from '@unchainedshop/types/api.js';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
 import { WorkQueueSchema } from '../db/WorkQueueSchema.js';

@@ -3,7 +3,7 @@ import {
   PaymentModule,
 } from '@unchainedshop/types/payments.js';
 import { Collection } from '@unchainedshop/types/common.js';
-import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 
 export const configurePaymentCredentialsModule = (
   PaymentCredentials: Collection<PaymentCredentialsType>,

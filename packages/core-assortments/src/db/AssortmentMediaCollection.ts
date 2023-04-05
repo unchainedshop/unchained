@@ -3,7 +3,7 @@ import {
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media.js';
 import { Db } from '@unchainedshop/types/common.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
 
 export const AssortmentMediaCollection = async (db: Db) => {
   const AssortmentMedia = db.collection<AssortmentMediaType>('assortment_media');

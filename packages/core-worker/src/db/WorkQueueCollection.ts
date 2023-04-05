@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common.js';
 import { Work } from '@unchainedshop/types/worker.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
 
 const ONE_DAY_IN_SECONDS = 86400;
 

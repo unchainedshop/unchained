@@ -10,7 +10,7 @@ import {
 } from '@unchainedshop/types/quotations.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
 import { QuotationsCollection } from '../db/QuotationsCollection.js';
 import { QuotationsSchema } from '../db/QuotationsSchema.js';
 import { QuotationStatus } from '../db/QuotationStatus.js';

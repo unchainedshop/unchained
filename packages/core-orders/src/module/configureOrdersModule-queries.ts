@@ -1,7 +1,7 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { Collection, FindOptions, Query } from '@unchainedshop/types/common.js';
 import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders.js';
-import { generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
+import { generateDbFilterById, buildSortOptions } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
   const selector: Query = {};

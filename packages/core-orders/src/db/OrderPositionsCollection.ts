@@ -1,6 +1,6 @@
 import { Db } from '@unchainedshop/types/common.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
 
 export const OrderPositionsCollection = async (db: Db) => {
   const OrderPositions = db.collection<OrderPosition>('order_positions');

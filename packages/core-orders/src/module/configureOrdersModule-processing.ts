@@ -5,7 +5,7 @@ import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById } from '@unchainedshop/utils';
+import { generateDbFilterById } from '@unchainedshop/mongodb';
 import { ProductType } from '@unchainedshop/types/products.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { ordersSettings } from '../orders-settings.js';

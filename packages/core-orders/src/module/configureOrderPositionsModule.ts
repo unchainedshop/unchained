@@ -4,7 +4,7 @@ import { OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, generateDbObjectId } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations, generateDbObjectId } from '@unchainedshop/mongodb';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema.js';
 import { ordersSettings } from '../orders-settings.js';
 

@@ -1,7 +1,7 @@
 import { AssortmentLink, AssortmentsModule } from '@unchainedshop/types/assortments.js';
 import { Collection } from '@unchainedshop/types/common.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
 

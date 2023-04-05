@@ -12,7 +12,7 @@ import {
   generateDbFilterById,
   generateDbMutations,
   buildSortOptions,
-} from '@unchainedshop/utils';
+} from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
 import { ProductsCollection } from '../db/ProductsCollection.js';

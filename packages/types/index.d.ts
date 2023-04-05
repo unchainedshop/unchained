@@ -1,13 +1,10 @@
-import { IncomingMessage } from 'http';
-import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts.js';
 import { Context } from './api.js';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments.js';
 
 import { BookmarkServices, BookmarksModule } from './bookmarks.js';
-import { Db, IBaseAdapter, IBaseDirector, Locale, Locales, TimestampFields } from './common.js';
 
-import { CountriesModule, Country, CountryServices } from './countries.js';
+import { CountriesModule, CountryServices } from './countries.js';
 import { CurrenciesModule } from './currencies.js';
 import {
   DeliveryError as DeliveryErrorType,
@@ -80,16 +77,7 @@ import {
   IPaymentPricingSheet,
   PaymentPricingCalculation,
 } from './payments.pricing.js';
-import {
-  BasePricingAdapterContext,
-  BasePricingContext,
-  IPricingDirector,
-  IPricingAdapter,
-  IPricingSheet,
-  PricingCalculation,
-  PricingSheetParams,
-  IBasePricingSheet,
-} from './pricing.js';
+import { PricingSheetParams } from './pricing.js';
 import {
   ProductServices,
   ProductsModule,
@@ -129,67 +117,6 @@ import {
   WorkStatus as WorkerStatusType,
 } from './worker.js';
 import { UnchainedCoreOptions, ModuleInput } from './core.js';
-
-declare module '@unchainedshop/utils' {
-  function resolveBestSupported(language: string, locales: Locales): Locale;
-  function resolveBestCountry(
-    contextCountry: string,
-    headerCountry: string | string[],
-    countries: Array<Country>,
-  ): string;
-  function resolveUserRemoteAddress(req: IncomingMessage): {
-    remoteAddress: string;
-    remotePort: string;
-  };
-
-  function objectInvert(obj: Record<string, string>): Record<string, string>;
-
-  const systemLocale: Locale;
-
-  const Schemas: {
-    timestampFields: TimestampFields;
-    User: SimpleSchema;
-    Address: SimpleSchema;
-    Contact: SimpleSchema;
-  };
-
-  // Director
-  const BaseAdapter: IBaseAdapter;
-  const BaseDirector: <Adapter extends IBaseAdapter>(
-    directorName: string,
-    options?: {
-      adapterSortKey?: string;
-      adapterKeyField?: string;
-    },
-  ) => IBaseDirector<Adapter>;
-
-  const BaseDiscountAdapter: Omit<IDiscountAdapter, 'key' | 'label' | 'version'>;
-  const BaseDiscountDirector: (directorName: string) => IDiscountDirector;
-
-  const BasePricingAdapter: <
-    AdapterContext extends BasePricingAdapterContext,
-    Calculation extends PricingCalculation,
-  >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
-
-  const BasePricingDirector: <
-    PricingContext extends BasePricingContext,
-    AdapterPricingContext extends BasePricingAdapterContext,
-    Calculation extends PricingCalculation,
-    Adapter extends IPricingAdapter<AdapterPricingContext, Calculation, IPricingSheet<Calculation>>,
-  >(
-    directorName: string,
-  ) => IPricingDirector<
-    PricingContext,
-    Calculation,
-    AdapterPricingContext,
-    IPricingSheet<Calculation>,
-    Adapter
-  >;
-
-  const BasePricingSheet: <Calculation extends PricingCalculation>(
-    params: PricingSheetParams<Calculation>,
-  ) => IBasePricingSheet<Calculation>;
-}
 
 /*
  * Director packages
@@ -437,8 +364,4 @@ declare module '@unchainedshop/api' {
   const acl: any;
   const errors: any;
   const roles: APIRoles;
-}
-
-declare module '@unchainedshop/mongodb' {
-  function initDb(): Promise<Db>;
 }

@@ -1,5 +1,6 @@
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { Filter } from '@unchainedshop/types/common.js';
+import type { mongodb } from '@unchainedshop/mongodb';
+
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
 import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events.js';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
@@ -32,7 +33,7 @@ export const configureEventsModule = async ({
     ...mutations,
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? generateDbFilterById(eventId) : rest;
-      return Events.findOne(selector as unknown as Filter<Event>, options);
+      return Events.findOne(selector as unknown as mongodb.Filter<Event>, options);
     },
 
     findEvents: async ({ limit, offset, sort, ...query }) => {

@@ -1,7 +1,7 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
+import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { CurrenciesCollection } from '../db/CurrenciesCollection.js';
 import { CurrenciesSchema } from '../db/CurrenciesSchema.js';

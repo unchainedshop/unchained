@@ -1,6 +1,6 @@
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 import { Db } from '@unchainedshop/types/common.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
 
 export const ProductReviewsCollection = async (db: Db) => {
   const ProductReviews = db.collection<ProductReview>('product_reviews');

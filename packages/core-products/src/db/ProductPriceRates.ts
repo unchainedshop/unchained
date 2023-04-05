@@ -1,6 +1,6 @@
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
 import { Db } from '@unchainedshop/types/common.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
 
 export const ProductPriceRates = async (db: Db) => {
   const ProductRates = db.collection<ProductPriceRate>('product_rates');

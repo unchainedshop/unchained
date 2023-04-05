@@ -9,7 +9,7 @@ import {
 import type { Locale } from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
 import { Query } from '@unchainedshop/types/common.js';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema.js';

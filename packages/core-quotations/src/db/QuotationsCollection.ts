@@ -1,5 +1,5 @@
 import { Db } from '@unchainedshop/types/common.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
 import { Quotation } from '@unchainedshop/types/quotations.js';
 
 export const QuotationsCollection = async (db: Db) => {

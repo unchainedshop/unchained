@@ -14,7 +14,7 @@ import {
   generateDbFilterById,
   findPreservingIds,
   buildSortOptions,
-} from '@unchainedshop/utils';
+} from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
