@@ -1,9 +1,10 @@
+import type { FindOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import { FindOptions, TimestampFields, _ID } from './common.js';
+import { TimestampFields } from './common.js';
 import { ModuleMutations } from './core.js';
 
 export type Language = {
-  _id?: _ID;
+  _id?: string;
   isoCode: string;
   isActive?: boolean;
 } & TimestampFields;

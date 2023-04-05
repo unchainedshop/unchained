@@ -1,4 +1,4 @@
-import { mongodb } from '@unchainedshop/mongodb';
+import type { BulkOperationBase } from 'mongodb';
 import { AdminUiConfig } from './api.js';
 import { UnchainedCore, UnchainedCoreOptions } from './core.js';
 import { WorkerSchedule } from './worker.js';
@@ -11,7 +11,7 @@ export type BulkImportOperationResult = {
 export type BulkImportOperation = (
   payload: any,
   options: {
-    bulk: (collection: string) => typeof mongodb.BulkOperationBase;
+    bulk: (collection: string) => typeof BulkOperationBase;
     createShouldUpsertIfIDExists?: boolean;
     skipCacheInvalidation?: boolean;
     logger?: any;

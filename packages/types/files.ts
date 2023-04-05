@@ -1,8 +1,9 @@
-import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common.js';
+import { FindOptions } from 'mongodb';
+import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
 
 export type File = {
-  _id?: _ID;
+  _id?: string;
   expires?: Date;
   path: string;
   meta?: Record<string, unknown>;
@@ -30,7 +31,7 @@ export type FilesModule = ModuleMutations<File> & {
 
   findFiles: (selector: any, options?: FindOptions) => Promise<Array<File>>;
 
-  deleteMany: (fileIds: Array<_ID>) => Promise<number>;
+  deleteMany: (fileIds: Array<string>) => Promise<number>;
 };
 
 /*
@@ -53,7 +54,7 @@ export type UploadFileFromStreamService = (
 ) => Promise<File>;
 
 export type RemoveFilesService = (
-  params: { fileIds: Array<_ID> },
+  params: { fileIds: Array<string> },
   unchainedAPI: UnchainedCore,
 ) => Promise<number>;
 
@@ -79,7 +80,7 @@ export interface FileServices {
  */
 
 export interface UploadFileData {
-  _id?: _ID;
+  _id?: string;
   directoryName: string;
   expiryDate: Date;
   fileName: string;

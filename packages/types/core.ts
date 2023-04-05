@@ -1,4 +1,4 @@
-import { Db, Update, _ID, GridFSBucket } from './common.js';
+import { Db, GridFSBucket, UpdateFilter } from 'mongodb';
 import { Modules, ModuleOptions } from './modules.js';
 import { Services } from './services.js';
 import { IRoleOptionConfig } from './roles.js';
@@ -43,15 +43,15 @@ export interface ModuleCreateMutation<T> {
 }
 
 export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
-  update: (_id: string, doc: Update<T> | T) => Promise<string>;
+  update: (_id: string, doc: UpdateFilter<T> | T) => Promise<string>;
   delete: (_id: string) => Promise<number>;
   deletePermanently: (_id: string) => Promise<number>;
 }
 
 export interface ModuleMutationsWithReturnDoc<T> {
   create: (doc: T) => Promise<T>;
-  update: (_id: _ID, doc: Update<T> | T) => Promise<T>;
-  delete: (_id: _ID) => Promise<T>;
+  update: (_id: string, doc: UpdateFilter<T> | T) => Promise<T>;
+  delete: (_id: string) => Promise<T>;
   deletePermanently: (_id: string) => Promise<T>;
 }
 

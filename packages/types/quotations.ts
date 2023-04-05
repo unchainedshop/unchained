@@ -1,13 +1,6 @@
+import type { FindOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import {
-  Configuration,
-  FindOptions,
-  IBaseAdapter,
-  IBaseDirector,
-  LogFields,
-  TimestampFields,
-  _ID,
-} from './common.js';
+import { Configuration, IBaseAdapter, IBaseDirector, LogFields, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 
 export enum QuotationStatus {
@@ -26,7 +19,7 @@ export enum QuotationError {
 }
 
 export type Quotation = {
-  _id?: _ID;
+  _id?: string;
   configuration?: Configuration;
   context?: any;
   countryCode?: string;

@@ -1,7 +1,7 @@
 import type { Db, FindOptions, Document } from 'mongodb';
 import { SortOption } from './api.js';
 import { Assortment } from './assortments.js';
-import { IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common.js';
+import { IBaseAdapter, IBaseDirector, Query, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Product } from './products.js';
 
@@ -13,7 +13,7 @@ export enum FilterType {
 }
 
 export type Filter = {
-  _id?: _ID;
+  _id?: string;
   isActive?: boolean;
   key: string;
   meta?: any;
@@ -34,9 +34,9 @@ export type FilterText = {
 } & TimestampFields;
 
 export type FilterProductIdCacheRecord = {
-  filterId: _ID;
+  filterId: string;
   filterOptionValue?: string;
-  productIds: _ID[];
+  productIds: string[];
 };
 
 export type SearchFilterQuery = Array<{ key: string; value?: string }>;

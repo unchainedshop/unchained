@@ -1,4 +1,5 @@
-import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common.js';
+import { FindOptions } from 'mongodb';
+import { IBaseAdapter, IBaseDirector, Query, TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 
 import {
@@ -25,7 +26,7 @@ export type DeliveryConfiguration = Array<{
 }>;
 
 export type DeliveryProvider = {
-  _id?: _ID;
+  _id?: string;
   type: DeliveryProviderType;
   adapterKey: string;
   configuration: DeliveryConfiguration;

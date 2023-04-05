@@ -1,5 +1,5 @@
 import { Context } from './api.js';
-import { TimestampFields, _ID } from './common.js';
+import { TimestampFields } from './common.js';
 import { Product, ProductAssignment, ProductConfiguration } from './products.js';
 
 export enum ProductVariationType {
@@ -8,7 +8,7 @@ export enum ProductVariationType {
 }
 
 export type ProductVariation = {
-  _id?: _ID;
+  _id?: string;
   key?: string;
   options: Array<string>;
   productId: string;
@@ -16,7 +16,7 @@ export type ProductVariation = {
 } & TimestampFields;
 
 export type ProductVariationText = {
-  _id?: _ID;
+  _id?: string;
   locale: string;
   productVariationId: string;
   productVariationOptionValue?: string;
@@ -55,7 +55,10 @@ export type ProductVariationsModule = {
   create: (doc: ProductVariation & { locale?: string; title?: string }) => Promise<ProductVariation>;
 
   delete: (productVariationId: string) => Promise<number>;
-  deleteVariations: (params: { productId?: string; excludedProductIds?: Array<_ID> }) => Promise<number>;
+  deleteVariations: (params: {
+    productId?: string;
+    excludedProductIds?: Array<string>;
+  }) => Promise<number>;
 
   update: (productMediaId: string, doc: ProductVariation) => Promise<ProductVariation>;
 

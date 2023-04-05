@@ -1,4 +1,4 @@
-import { Query, TimestampFields, _ID } from './common.js';
+import { Query, TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
 
 import { User } from './user.js';
@@ -9,7 +9,7 @@ export type UserProductFilter = {
 };
 
 export type Bookmark = {
-  _id?: _ID;
+  _id?: string;
   userId: string;
   productId: string;
 } & TimestampFields;

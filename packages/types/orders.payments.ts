@@ -1,4 +1,5 @@
-import { FindOptions, LogFields, TimestampFields, _ID } from './common.js';
+import type { FindOptions } from 'mongodb';
+import { LogFields, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderDiscount } from './orders.discounts.js';
@@ -12,7 +13,7 @@ export enum OrderPaymentStatus {
 }
 
 export type OrderPayment = {
-  _id?: _ID;
+  _id?: string;
   orderId: string;
   context?: any;
   paid?: Date;

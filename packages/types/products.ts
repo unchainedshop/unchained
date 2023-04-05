@@ -1,6 +1,8 @@
+import type { FindOptions, UpdateFilter } from 'mongodb';
+
 import { Context, SortOption } from './api.js';
 import { AssortmentPathLink, AssortmentProduct } from './assortments.js';
-import { FindOptions, Query, TimestampFields, Update, _ID } from './common.js';
+import { Query, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Country } from './countries.js';
 import { Currency } from './currencies.js';
@@ -116,7 +118,7 @@ export interface ProductWarehousing {
 }
 
 export type Product = {
-  _id?: _ID;
+  _id?: string;
   bundleItems: Array<ProductBundleItem>;
   commerce?: ProductCommerce;
   meta?: any;
@@ -134,7 +136,7 @@ export type Product = {
 } & TimestampFields;
 
 export type ProductText = {
-  _id?: _ID;
+  _id?: string;
   productId: string;
   description?: string;
   locale: string;
@@ -147,7 +149,7 @@ export type ProductText = {
 } & TimestampFields;
 
 export type ProductDiscount = {
-  _id?: _ID;
+  _id?: string;
   productId: string;
   code: string;
   total?: OrderPrice;
@@ -303,7 +305,7 @@ export type ProductsModule = {
   firstActiveProductBundle: (productId: string) => Promise<Product>;
   deleteProductPermanently: (params: { productId: string }) => Promise<number>;
 
-  update: (productId: string, doc: Update<Product>) => Promise<string>;
+  update: (productId: string, doc: UpdateFilter<Product>) => Promise<string>;
 
   publish: (product: Product) => Promise<boolean>;
   unpublish: (product: Product) => Promise<boolean>;

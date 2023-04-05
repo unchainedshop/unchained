@@ -1,8 +1,8 @@
-import { TimestampFields, _ID } from '@unchainedshop/types/common.js';
+import { TimestampFields } from '@unchainedshop/types/common.js';
 import { mongodb } from '@unchainedshop/mongodb';
 
 export type CryptopayTransaction = {
-  _id?: _ID;
+  _id?: string;
   blockHeight: number;
   mostRecentBlockHeight: number;
   amount: mongodb.Decimal128;

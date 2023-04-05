@@ -1,6 +1,6 @@
 import type { Filter, FindOptions, UpdateFilter, UpdateOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import { Address, Contact, Locale, Query, TimestampFields, _ID } from './common.js';
+import { Address, Contact, Locale, Query, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Country } from './countries.js';
 import { File } from './files.js';
@@ -61,9 +61,9 @@ export interface PushSubscriptionObject {
 }
 
 export type User = {
-  _id?: _ID;
+  _id?: string;
   deleted?: Date;
-  avatarId?: _ID;
+  avatarId?: string;
   emails: Array<Email>;
   guest: boolean;
   initialPassword: boolean;
@@ -91,7 +91,7 @@ export type UserQuery = Filter<User> & {
 export type UsersModule = {
   // Queries
   count: (query: UserQuery) => Promise<number>;
-  findUserById: (userId: _ID) => Promise<User>;
+  findUserById: (userId: string) => Promise<User>;
   findUserByToken: (query: { resetToken?: string; hashedToken?: string }) => Promise<User>;
   findUser: (selector: UserQuery & { sort?: Array<SortOption> }, options?: FindOptions) => Promise<User>;
   findUsers: (

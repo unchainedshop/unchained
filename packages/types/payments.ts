@@ -1,5 +1,6 @@
+import type { FindOptions } from 'mongodb';
 import { Context } from './api.js';
-import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common.js';
+import { IBaseAdapter, IBaseDirector, Query, TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderPayment } from './orders.payments.js';
@@ -22,14 +23,14 @@ export type PaymentConfiguration = Array<{
 }>;
 
 export type PaymentProvider = {
-  _id?: _ID;
+  _id?: string;
   type: PaymentProviderType;
   adapterKey: string;
   configuration: PaymentConfiguration;
 } & TimestampFields;
 
 export type PaymentCredentials = {
-  _id?: _ID;
+  _id?: string;
   paymentProviderId: string;
   userId: string;
   token?: string;

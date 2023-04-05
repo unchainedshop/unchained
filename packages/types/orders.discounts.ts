@@ -1,4 +1,5 @@
-import { FindOptions, TimestampFields, _ID } from './common.js';
+import type { FindOptions } from 'mongodb';
+import { TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { DiscountAdapterActions, DiscountConfiguration, DiscountContext } from './discount.js';
 import { Order } from './orders.js';
@@ -11,7 +12,7 @@ export enum OrderDiscountTrigger {
 }
 
 export type OrderDiscount = {
-  _id?: _ID;
+  _id?: string;
   orderId: string;
   code?: string;
   total?: OrderPrice;

@@ -1,8 +1,8 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { TimestampFields, _ID } from '@unchainedshop/types/common.js';
+import { TimestampFields } from '@unchainedshop/types/common.js';
 
 export type AppleTransaction = {
-  _id?: _ID;
+  _id?: string;
   matchedTransaction: any;
   orderId: string;
 } & TimestampFields;

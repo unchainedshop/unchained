@@ -1,14 +1,7 @@
-import type { CreateIndexesOptions, Document, IndexDirection } from 'mongodb';
 import type { Locale, Locales } from 'locale';
 
 export { Locale, Locales };
-export type _ID = string;
 export type Query = { [x: string]: any };
-
-export type Indexes<T extends Document> = Array<{
-  index: { [key in keyof T]?: IndexDirection }; // TODO: Support key with object path (e.g. 'product.proxy.assignments')
-  options?: CreateIndexesOptions;
-}>;
 
 /*
  * Data definitions
