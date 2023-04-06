@@ -122,17 +122,6 @@ import { UnchainedCoreOptions, ModuleInput } from './core.js';
  * Director packages
  */
 
-declare module '@unchainedshop/events' {
-  const emit: EventDirector['emit'];
-  const getEmitAdapter: EventDirector['getEmitAdapter'];
-  const getEmitHistoryAdapter: EventDirector['getEmitHistoryAdapter'];
-  const getRegisteredEvents: EventDirector['getRegisteredEvents'];
-  const registerEvents: EventDirector['registerEvents'];
-  const setEmitAdapter: EventDirector['setEmitAdapter'];
-  const setEmitHistoryAdapter: EventDirector['setEmitHistoryAdapter'];
-  const subscribe: EventDirector['subscribe'];
-}
-
 declare module '@unchainedshop/file-upload' {
   const FileAdapter: Omit<IFileAdapter, 'key' | 'lable' | 'version'>;
   const FileDirector: IFileDirector;
