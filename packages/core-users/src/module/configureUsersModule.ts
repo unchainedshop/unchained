@@ -137,19 +137,6 @@ export const configureUsersModule = async ({
     },
 
     // Mutations
-    addRoles: async (userId, roles) => {
-      const selector = generateDbFilterById(userId);
-      const updateResult = await Users.updateOne(selector, {
-        $addToSet: { roles: { $each: roles } },
-      });
-
-      const user = await Users.findOne(selector, {});
-      await emit('USER_ADD_ROLES', {
-        user: removeConfidentialServiceHashes(user),
-      });
-
-      return updateResult.modifiedCount;
-    },
 
     updateAvatar: async (_id, fileId) => {
       const userFilter = generateDbFilterById(_id);

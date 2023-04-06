@@ -106,9 +106,6 @@ export type UsersModule = {
   primaryEmail: (user: User) => Email;
   userLocale: (user: User) => Locale;
 
-  // Mutations
-  addRoles: (userId: string, roles: Array<string>) => Promise<number>;
-
   updateAvatar: (_id: string, fileId: string) => Promise<User>;
   updateGuest: (user: User, guest: boolean) => Promise<void>;
   updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;

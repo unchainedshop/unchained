@@ -1,5 +1,4 @@
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts.js';
-import { Context } from './api.js';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments.js';
 
 import { BookmarkServices, BookmarksModule } from './bookmarks.js';
@@ -109,7 +108,7 @@ import {
   WorkerSchedule,
   WorkStatus as WorkerStatusType,
 } from './worker.js';
-import { UnchainedCoreOptions, ModuleInput } from './core.js';
+import { ModuleInput } from './core.js';
 
 declare module '@unchainedshop/core-accountsjs' {
   function configureAccountsModule(
@@ -314,23 +313,4 @@ declare module '@unchainedshop/core-worker' {
     schedule: WorkerSchedule | string;
   }>;
   const FailedRescheduler: IScheduler;
-}
-
-declare module '@unchainedshop/core' {
-  function initCore(options: UnchainedCoreOptions): Promise<Context>;
-}
-
-type APIRoles = {
-  allRoles: any;
-  actions: any;
-  configureRoles(params: any): any;
-  updateUserRole(context: Context, roleName: string): any;
-};
-
-declare module '@unchainedshop/api' {
-  function hashPassword(password: string): string;
-
-  const acl: any;
-  const errors: any;
-  const roles: APIRoles;
 }

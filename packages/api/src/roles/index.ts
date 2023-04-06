@@ -1,5 +1,6 @@
 import { Roles, Role } from '@unchainedshop/roles';
 
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { all } from './all.js';
 import { loggedIn } from './loggedIn.js';
 import { admin } from './admin.js';
@@ -122,6 +123,4 @@ const configureRoles = ({ additionalRoles = {}, additionalActions = [] }) => {
   return allRoles;
 };
 
-const updateUserRole = (context, roleName) => Roles.addUserToRoles(context, roles[roleName].name);
-
-export { allRoles, actions, configureRoles, updateUserRole };
+export { allRoles, actions, configureRoles };
