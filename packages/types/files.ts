@@ -1,5 +1,5 @@
 import type { FindOptions } from 'mongodb';
-import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
+import { TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
 
 export type File = {
@@ -20,8 +20,6 @@ export type SignedFileUpload = File & {
 /*
  * Module
  */
-
-export type UploadFileCallback = (file: File, unchainedAPI: UnchainedCore) => Promise<void>;
 
 export type FilesModule = ModuleMutations<File> & {
   // Query
@@ -90,30 +88,6 @@ export interface UploadFileData {
   type: string;
   url: string;
 }
-
-export interface IFileAdapter extends IBaseAdapter {
-  createSignedURL: (
-    directoryName: string,
-    fileName: string,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<(UploadFileData & { putURL: string }) | null>;
-  removeFiles: (files: Array<File>, unchainedContext: UnchainedCore) => Promise<void>;
-  uploadFileFromStream: (
-    directoryName: string,
-    rawFile: any,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<UploadFileData | null>;
-  uploadFileFromURL: (
-    directoryName: string,
-    fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown> },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<UploadFileData | null>;
-}
-
-export type IFileDirector = IBaseDirector<IFileAdapter> & {
-  registerFileUploadCallback: (directoryName: string, callback: UploadFileCallback) => void;
-  getFileUploadCallback: (directoryName: string) => UploadFileCallback;
-};
 
 /* Settings */
 

@@ -29,15 +29,8 @@ import {
   IEnrollmentAdapter,
   IEnrollmentDirector,
 } from './enrollments.js';
-import { EventDirector, EventsModule } from './events.js';
-import {
-  FileServices,
-  FilesSettings,
-  FilesSettingsOptions,
-  FilesModule,
-  IFileAdapter,
-  IFileDirector,
-} from './files.js';
+import { EventsModule } from './events.js';
+import { FileServices, FilesSettings, FilesSettingsOptions, FilesModule } from './files.js';
 import {
   FiltersModule,
   FilterType as FilterTypeType,
@@ -117,19 +110,6 @@ import {
   WorkStatus as WorkerStatusType,
 } from './worker.js';
 import { UnchainedCoreOptions, ModuleInput } from './core.js';
-
-/*
- * Director packages
- */
-
-declare module '@unchainedshop/file-upload' {
-  const FileAdapter: Omit<IFileAdapter, 'key' | 'lable' | 'version'>;
-  const FileDirector: IFileDirector;
-}
-
-/*
- * Core packages
- */
 
 declare module '@unchainedshop/core-accountsjs' {
   function configureAccountsModule(
