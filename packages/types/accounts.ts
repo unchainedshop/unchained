@@ -36,6 +36,10 @@ export type AccessToken = {
  * Services
  */
 
+export type OAuthConfig = {
+  clientId: string;
+  scopes: string[];
+};
 export interface OAuth2AdapterActions {
   configurationError: (transactionContext?: any) => string;
   isActive: () => boolean;
@@ -44,10 +48,7 @@ export interface OAuth2AdapterActions {
   isTokenValid: (token: any) => Promise<boolean>;
   refreshToken?: (token: any) => Promise<any>;
 }
-export type OAuthConfig = {
-  clientId: string;
-  scopes: string[];
-};
+
 export type IOAuth2Adapter = IBaseAdapter & {
   provider: string;
   config: OAuthConfig;
@@ -62,6 +63,7 @@ export type IOAuthDirector = IBaseDirector<IOAuth2Adapter> & {
     getAccountData: (token: any) => Promise<any>;
     isTokenValid: (token: any) => Promise<boolean>;
     refreshToken?: (refreshToken: any) => Promise<any>;
+    getProviders: () => Promise<Array<IOAuth2Adapter>>;
   }>;
 };
 
@@ -90,16 +92,7 @@ export interface AccountsOAuth2Module {
   getAccountData: (provider: string, token: any) => Promise<any>;
   isTokenValid: (provider: string, token: any) => Promise<boolean>;
   refreshToken?: (provider: string, token: any) => Promise<any>;
-  // unlinkAccount: (provider: string, userId: string, authorizationCode: string) => Promise<User>;
-  // linkAccount: (
-  //   provider: string,
-  //   userId: string,
-  //   {
-  //     data,
-  //     authorizationToken,
-  //     authorizationCode,
-  //   }: { data: any; authorizationToken: string; authorizationCode: string },
-  // ) => Promise<User>;
+  getProviders: () => Promise<Array<IOAuth2Adapter>>;
 }
 
 /*

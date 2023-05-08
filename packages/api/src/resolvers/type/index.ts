@@ -68,6 +68,7 @@ import { Media } from './media-types.js';
 import { Token } from './token-types.js';
 import { Web3Address } from './web3-address.js';
 import { OAuthAccount } from './oauth-account.js';
+import { OAuthProvider } from './oauth-provider.js';
 
 const types = {
   Assortment,
@@ -140,6 +141,7 @@ const types = {
   Media,
   Web3Address,
   OAuthAccount,
+  OAuthProvider,
 };
 
 export default types;

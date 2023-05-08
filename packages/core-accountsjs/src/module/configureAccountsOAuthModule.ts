@@ -19,5 +19,9 @@ export const configureAccountsOAuthModule = (): AccountsOAuth2Module => {
       const director = await OAuth2Director.actions({ provider });
       return director.refreshToken(userAuthorizationToken);
     },
+    getProviders: async () => {
+      const providers = await OAuth2Director.getAdapters();
+      return providers;
+    },
   };
 };
