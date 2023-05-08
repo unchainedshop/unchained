@@ -50,7 +50,7 @@ export const OAuth2Director: IOAuthDirector = {
             level: LogLevel.Warning,
             ...error,
           });
-          return false;
+          return null;
         }
       },
       refreshToken: async (userAuthorizationToken) => {

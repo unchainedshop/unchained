@@ -28,12 +28,13 @@ const getLinkedInAuthorizationCode = async ({
 };
 
 const normalizeProfileData = (data): any => {
-  const { name, given_name, family_name, email, picture } = data;
+  const { name, given_name, family_name, email, email_verified, picture, sub } = data;
   return {
+    id: sub,
     displayName: name,
     firstName: given_name,
     lastName: family_name,
-    email,
+    email: email_verified ? email : undefined,
     avatarUrl: picture,
   };
 };

@@ -7,7 +7,7 @@ export const configureAccountsOAuthModule = (): AccountsOAuth2Module => {
       const director = await OAuth2Director.actions({ provider });
       return director.getAuthorizationToken(authorizationCode, redirectUrl);
     },
-    getAccountData: async (provider, userAuthorizationToken: any) => {
+    getAccountData: async (provider, userAuthorizationToken) => {
       const director = await OAuth2Director.actions({ provider });
       return director.getAccountData(userAuthorizationToken);
     },

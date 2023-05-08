@@ -39,7 +39,7 @@ export type AccessToken = {
 export interface OAuth2AdapterActions {
   configurationError: (transactionContext?: any) => string;
   isActive: () => boolean;
-  getAuthorizationToken: (authorizationCode: string, redirectUrl: string) => Promise<string>;
+  getAuthorizationToken: (authorizationCode: string, redirectUrl: string) => Promise<any>;
   getAccountData: (token: any) => Promise<any>;
   isTokenValid: (token: any) => Promise<boolean>;
   refreshToken?: (token: any) => Promise<any>;
@@ -58,7 +58,7 @@ export type IOAuthDirector = IBaseDirector<IOAuth2Adapter> & {
   actions: (params: { provider: string }) => Promise<{
     configurationError: (transactionContext?: any) => string;
     isActive: () => boolean;
-    getAuthorizationToken: (authorizationCode: string, redirectUrl: string) => Promise<string>;
+    getAuthorizationToken: (authorizationCode: string, redirectUrl: string) => Promise<any>;
     getAccountData: (token: any) => Promise<any>;
     isTokenValid: (token: any) => Promise<boolean>;
     refreshToken?: (refreshToken: any) => Promise<any>;
@@ -86,7 +86,7 @@ export interface AccountsOAuth2Module {
     provider: string,
     authorizationCode: string,
     redirectUrl: string,
-  ) => Promise<string>;
+  ) => Promise<any>;
   getAccountData: (provider: string, token: any) => Promise<any>;
   isTokenValid: (provider: string, token: any) => Promise<boolean>;
   refreshToken?: (provider: string, token: any) => Promise<any>;

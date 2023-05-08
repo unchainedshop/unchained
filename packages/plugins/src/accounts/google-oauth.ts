@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { IOAuth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
+import { IOAuth2Adapter } from '@unchainedshop/types/accounts.js';
 import { OAuth2Director, OAuth2Adapter } from '@unchainedshop/core-accountsjs';
 
 const { GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET } = process.env;
@@ -28,7 +28,7 @@ const getGoggleAuthorizationCode = async ({
   return response.json();
 };
 
-const normalizeProfileData = (data): UserOauthData => {
+const normalizeProfileData = (data) => {
   const {
     names = [],
     genders = [],
@@ -47,6 +47,7 @@ const normalizeProfileData = (data): UserOauthData => {
   const [photo] = photos;
 
   return {
+    id: data.sub,
     firstName: name?.givenName,
     lastName: name?.familyName,
     displayName: name?.displayName,
@@ -61,12 +62,13 @@ const normalizeProfileData = (data): UserOauthData => {
   };
 };
 
-const parseGoogleIdToken = (idToken: string): UserOauthData => {
+const parseGoogleIdToken = (idToken: string) => {
   const [, base64UserInfo] = idToken.split('.');
   const buff = Buffer.from(base64UserInfo, 'base64');
   const data = JSON.parse(buff.toString());
 
   return {
+    id: data.sub,
     email: data?.email,
     firstName: data?.given_name,
     lastName: data?.family_name,
@@ -161,21 +163,6 @@ const GoogleOAuth2Adapter: IOAuth2Adapter = {
         });
 
         const refreshedAccessToken = await response.json();
-        // await context.modules.users.updateUser(
-        //   {
-        //     'services.oauth.google.authorizationToken.access_token': access_token,
-        //   },
-        //   {
-        //     $set: {
-        //       'services.oauth.google': {
-        //         authorizationToken: { refresh_token, ...refreshedAccessToken },
-        //       },
-        //     },
-        //   },
-        //   {
-        //     upsert: false,
-        //   },
-        // );
 
         return refreshedAccessToken;
       },

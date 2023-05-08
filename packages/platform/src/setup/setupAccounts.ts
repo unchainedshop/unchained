@@ -87,7 +87,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         return undefined;
       }
 
-      const { modules } = unchainedAPI;
+      const { modules, services } = unchainedAPI;
 
       const authorizationToken = await modules.accounts.oAuth2.getAuthorizationToken(
         provider,
@@ -107,60 +107,71 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
       if (!user && !skipCreation) {
         // TODO: Explicit
-        // const newUserId = await unchainedAPI.modules.accounts.createUser(
-        //   {
-        //     username: data.username || `${data.id}@${provider}`,
-        //     email: data.email,
-        //     guest: false,
-        //     initialPassword: undefined,
-        //     password: undefined,
-        //     profile: {
-        //       address: {
-        //         firstName: data?.firstName,
-        //         lastName: data?.lastName,
-        //         addressLine: data?.address,
-        //         city: data?.city,
-        //         countryCode: data?.countryCode,
-        //         regionCode: data?.regionCode,
-        //         postalCode: data?.postalCode,
-        //         company: data?.company,
-        //       },
-        //       gender: data?.gender,
-        //       phoneMobile: data?.phoneNumber,
-        //       displayName: data?.displayName,
-        //       birthday: data?.birthDate,
-        //     },
-        //   },
-        //   { skipPasswordEnrollment: true },
-        // );
-        // await oauth2Service.linkOAuthAccount(newUserId, {
-        //   data,
-        //   authorizationToken,
-        //   authorizationCode,
-        // });
-        // if (data?.avatarUrl) {
-        //   const file = await services.files.uploadFileFromURL(
-        //     {
-        //       directoryName: 'user-avatars',
-        //       fileInput: {
-        //         fileLink: data.avatarUrl,
-        //         fileName: `${data.firstName}-avatar`,
-        //       },
-        //       meta: { userId: newUserId },
-        //     },
-        //     unchainedAPI,
-        //   );
-        //   if (user?.avatarId) {
-        //     await services.files.removeFiles(
-        //       {
-        //         fileIds: [user.avatarId as string],
-        //       },
-        //       unchainedAPI,
-        //     );
-        //   }
-        //   await modules.users.updateAvatar(newUserId, file._id);
-        // return unchainedAPI.modules.users.findUser({ _id: newUserId });
-        // }
+        const newUserId = await unchainedAPI.modules.accounts.createUser(
+          {
+            username: data.username || `${data.id}`,
+            email: data.email,
+            guest: false,
+            initialPassword: undefined,
+            password: undefined,
+            profile: {
+              address: {
+                firstName: data?.firstName,
+                lastName: data?.lastName,
+                addressLine: data?.address,
+                city: data?.city,
+                countryCode: data?.countryCode,
+                regionCode: data?.regionCode,
+                postalCode: data?.postalCode,
+                company: data?.company,
+              },
+              gender: data?.gender,
+              phoneMobile: data?.phoneNumber,
+              displayName: data?.displayName,
+              birthday: data?.birthDate,
+            },
+          },
+          { skipPasswordEnrollment: true },
+        );
+
+        await modules.users.updateUser(
+          { _id: newUserId },
+          {
+            $push: {
+              [`services.oauth.${provider}`]: {
+                id: data.id,
+                authorizationToken,
+                authorizationCode,
+                data,
+              },
+            },
+          },
+          { upsert: true },
+        );
+
+        if (data?.avatarUrl) {
+          const file = await services.files.uploadFileFromURL(
+            {
+              directoryName: 'user-avatars',
+              fileInput: {
+                fileLink: data.avatarUrl,
+                fileName: `${data.firstName}-avatar`,
+              },
+              meta: { userId: newUserId },
+            },
+            unchainedAPI,
+          );
+          if (user?.avatarId) {
+            await services.files.removeFiles(
+              {
+                fileIds: [user.avatarId as string],
+              },
+              unchainedAPI,
+            );
+          }
+          await modules.users.updateAvatar(newUserId, file._id);
+          return unchainedAPI.modules.users.findUser({ _id: newUserId });
+        }
       }
 
       return user;
