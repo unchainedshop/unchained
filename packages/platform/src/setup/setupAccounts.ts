@@ -76,6 +76,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       authorizationCode,
       provider,
       redirectUrl,
+      skipCreation,
     }: {
       authorizationCode: any;
       provider: string;
@@ -86,85 +87,83 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         return undefined;
       }
 
-      const { services, modules } = unchainedAPI;
+      const { modules } = unchainedAPI;
 
-      const oauth2Service = await services.accounts.oauth2({ provider }, unchainedAPI);
-
-      const authorizationToken = await oauth2Service.getAuthorizationCode(
+      const authorizationToken = await modules.accounts.oAuth2.getAuthorizationToken(
+        provider,
         authorizationCode,
         redirectUrl,
       );
 
       if (!authorizationToken) throw new Error('Unable to authorize user');
-      const data = await oauth2Service.getAccountData(authorizationToken);
-      if (!data || !data?.email) {
-        throw new Error('OAuth authentication failed');
+      const data = await modules.accounts.oAuth2.getAccountData(provider, authorizationToken);
+      if (!data?.id) {
+        throw new Error('OAuth authentication failed or no id returned from service');
       }
-      const lowerCasedProviderName = provider.toLowerCase();
 
       const user = await unchainedAPI.modules.users.findUser({
-        [`services.oauth.${lowerCasedProviderName}.data.email`]: data.email,
+        [`services.oauth.${provider}.id`]: data.id,
       });
 
-      if (user) return user;
-
-      const newUserId = await unchainedAPI.modules.accounts.createUser(
-        {
-          email: data.email,
-          guest: false,
-          initialPassword: undefined,
-          password: undefined,
-          profile: {
-            address: {
-              firstName: data?.firstName,
-              lastName: data?.lastName,
-              addressLine: data?.address,
-              city: data?.city,
-              countryCode: data?.countryCode,
-              regionCode: data?.regionCode,
-              postalCode: data?.postalCode,
-              company: data?.company,
-            },
-            gender: data?.gender,
-            phoneMobile: data?.phoneNumber,
-            displayName: data?.displayName,
-            birthday: data?.birthDate,
-          },
-        },
-        { skipPasswordEnrollment: true },
-      );
-      await oauth2Service.linkOAuthAccount(newUserId, {
-        data,
-        authorizationToken,
-        authorizationCode,
-      });
-
-      if (data?.avatarUrl) {
-        const file = await services.files.uploadFileFromURL(
-          {
-            directoryName: 'user-avatars',
-            fileInput: {
-              fileLink: data.avatarUrl,
-              fileName: `${data.firstName}-avatar`,
-            },
-            meta: { userId: newUserId },
-          },
-          unchainedAPI,
-        );
-
-        if (user?.avatarId) {
-          await services.files.removeFiles(
-            {
-              fileIds: [user.avatarId as string],
-            },
-            unchainedAPI,
-          );
-        }
-
-        await modules.users.updateAvatar(newUserId, file._id);
+      if (!user && !skipCreation) {
+        // TODO: Explicit
+        // const newUserId = await unchainedAPI.modules.accounts.createUser(
+        //   {
+        //     username: data.username || `${data.id}@${provider}`,
+        //     email: data.email,
+        //     guest: false,
+        //     initialPassword: undefined,
+        //     password: undefined,
+        //     profile: {
+        //       address: {
+        //         firstName: data?.firstName,
+        //         lastName: data?.lastName,
+        //         addressLine: data?.address,
+        //         city: data?.city,
+        //         countryCode: data?.countryCode,
+        //         regionCode: data?.regionCode,
+        //         postalCode: data?.postalCode,
+        //         company: data?.company,
+        //       },
+        //       gender: data?.gender,
+        //       phoneMobile: data?.phoneNumber,
+        //       displayName: data?.displayName,
+        //       birthday: data?.birthDate,
+        //     },
+        //   },
+        //   { skipPasswordEnrollment: true },
+        // );
+        // await oauth2Service.linkOAuthAccount(newUserId, {
+        //   data,
+        //   authorizationToken,
+        //   authorizationCode,
+        // });
+        // if (data?.avatarUrl) {
+        //   const file = await services.files.uploadFileFromURL(
+        //     {
+        //       directoryName: 'user-avatars',
+        //       fileInput: {
+        //         fileLink: data.avatarUrl,
+        //         fileName: `${data.firstName}-avatar`,
+        //       },
+        //       meta: { userId: newUserId },
+        //     },
+        //     unchainedAPI,
+        //   );
+        //   if (user?.avatarId) {
+        //     await services.files.removeFiles(
+        //       {
+        //         fileIds: [user.avatarId as string],
+        //       },
+        //       unchainedAPI,
+        //     );
+        //   }
+        //   await modules.users.updateAvatar(newUserId, file._id);
+        // return unchainedAPI.modules.users.findUser({ _id: newUserId });
+        // }
       }
 
-      return unchainedAPI.modules.users.findUser({ _id: newUserId });
+      return user;
     },
   };
 

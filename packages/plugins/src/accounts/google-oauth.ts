@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
-import { IOauth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
-
-import { Oauth2Director, Oauth2Adapter } from '@unchainedshop/core-accountsjs';
+import { IOAuth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
+import { OAuth2Director, OAuth2Adapter } from '@unchainedshop/core-accountsjs';
 
 const { GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET } = process.env;
 
@@ -78,8 +77,8 @@ const parseGoogleIdToken = (idToken: string): UserOauthData => {
   };
 };
 
-const GoogleOauth2Adapter: IOauth2Adapter = {
-  ...Oauth2Adapter,
+const GoogleOAuth2Adapter: IOAuth2Adapter = {
+  ...OAuth2Adapter,
   key: 'google-oauth2',
   label: 'Google Oauth',
   version: '1',
@@ -99,26 +98,26 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
     ],
   },
 
-  actions: (_, context) => {
+  actions: () => {
     return {
-      ...Oauth2Adapter.actions(null, context),
+      ...OAuth2Adapter.actions(null),
       configurationError: () => {
         return '';
       },
       isActive: () => {
         return true;
       },
-      getAuthorizationCode: async (authorizationCode, redirectUrl) => {
+      getAuthorizationToken: async (authorizationCode, redirectUrl) => {
         return getGoggleAuthorizationCode({
           code: authorizationCode,
-          clientId: GoogleOauth2Adapter.config.clientId,
+          clientId: GoogleOAuth2Adapter.config.clientId,
           redirectUri: redirectUrl,
           clientSecret: GOOGLE_OAUTH_CLIENT_SECRET,
         });
       },
       getAccountData: async ({ access_token, id_token }: any) => {
         const response = await fetch(
-          `https://people.googleapis.com/v1/people/me?personFields=${GoogleOauth2Adapter.config.scopes.join(
+          `https://people.googleapis.com/v1/people/me?personFields=${GoogleOAuth2Adapter.config.scopes.join(
             ',',
           )}`,
           {
@@ -146,14 +145,14 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
 
         return true;
       },
-      refreshToken: async ({ access_token, refresh_token }) => {
+      refreshToken: async ({ refresh_token }) => {
         const response = await fetch('https://oauth2.googleapis.com/token', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            client_id: GoogleOauth2Adapter.config.clientId,
+            client_id: GoogleOAuth2Adapter.config.clientId,
             grant_type: 'refresh_token',
             client_secret: GOOGLE_OAUTH_CLIENT_SECRET,
             refresh_token,
@@ -162,21 +161,21 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
         });
 
         const refreshedAccessToken = await response.json();
-        await context.modules.users.updateUser(
-          {
-            'services.oauth.google.authorizationToken.access_token': access_token,
-          },
-          {
-            $set: {
-              'services.oauth.google': {
-                authorizationToken: { refresh_token, ...refreshedAccessToken },
-              },
-            },
-          },
-          {
-            upsert: false,
-          },
-        );
+        // await context.modules.users.updateUser(
+        //   {
+        //     'services.oauth.google.authorizationToken.access_token': access_token,
+        //   },
+        //   {
+        //     $set: {
+        //       'services.oauth.google': {
+        //         authorizationToken: { refresh_token, ...refreshedAccessToken },
+        //       },
+        //     },
+        //   },
+        //   {
+        //     upsert: false,
+        //   },
+        // );
 
         return refreshedAccessToken;
       },
@@ -184,6 +183,6 @@ const GoogleOauth2Adapter: IOauth2Adapter = {
   },
 };
 
-Oauth2Director.registerAdapter(GoogleOauth2Adapter);
+OAuth2Director.registerAdapter(GoogleOAuth2Adapter);
 
-export default GoogleOauth2Adapter;
+export default GoogleOAuth2Adapter;

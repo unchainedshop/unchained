@@ -43,7 +43,7 @@ const BraintreeDirect: IPaymentAdapter = {
       }, null);
     };
 
-    const getAuthorizationCode = () => {
+    const getAccessToken = () => {
       return BRAINTREE_SANDBOX_TOKEN;
     };
 
@@ -53,7 +53,7 @@ const BraintreeDirect: IPaymentAdapter = {
     };
 
     const getGateway = (braintree) => {
-      const accessToken = getAuthorizationCode();
+      const accessToken = getAccessToken();
       if (accessToken) {
         // sandbox mode!
         return braintree.connect({
@@ -73,7 +73,7 @@ const BraintreeDirect: IPaymentAdapter = {
 
       configurationError: () => {
         const publicCredentialsValid =
-          getAuthorizationCode() || (getMerchantId() && getPublicKey() && getPrivateKey());
+          getAccessToken() || (getMerchantId() && getPublicKey() && getPrivateKey());
 
         if (!publicCredentialsValid) {
           return PaymentError.WRONG_CREDENTIALS;

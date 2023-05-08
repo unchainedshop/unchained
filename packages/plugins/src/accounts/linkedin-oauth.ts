@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
-import { IOauth2Adapter, UserOauthData } from '@unchainedshop/types/accounts.js';
-
-import { Oauth2Director, Oauth2Adapter } from '@unchainedshop/core-accountsjs';
+import { IOAuth2Adapter } from '@unchainedshop/types/accounts.js';
+import { OAuth2Director, OAuth2Adapter } from '@unchainedshop/core-accountsjs';
 
 const { LINKED_IN_OAUTH_CLIENT_ID, LINKED_IN_OAUTH_CLIENT_SECRET } = process.env;
 
@@ -28,7 +27,7 @@ const getLinkedInAuthorizationCode = async ({
   return response.json();
 };
 
-const normalizeProfileData = (data): UserOauthData => {
+const normalizeProfileData = (data): any => {
   const { name, given_name, family_name, email, picture } = data;
   return {
     displayName: name,
@@ -39,8 +38,8 @@ const normalizeProfileData = (data): UserOauthData => {
   };
 };
 
-const LinkedInOauthAdapter: IOauth2Adapter = {
-  ...Oauth2Adapter,
+const LinkedInOAuthAdapter: IOAuth2Adapter = {
+  ...OAuth2Adapter,
   key: 'linked-in-oauth2',
   label: 'LinkedIn Oauth',
   version: '1',
@@ -50,19 +49,19 @@ const LinkedInOauthAdapter: IOauth2Adapter = {
     scopes: ['r_liteprofile', 'r_emailaddress', 'email', 'openid', 'profile'],
   },
 
-  actions: (_, context) => {
+  actions: () => {
     return {
-      ...Oauth2Adapter.actions(null, context),
+      ...OAuth2Adapter.actions(null),
       configurationError: () => {
         return '';
       },
       isActive: () => {
         return true;
       },
-      getAuthorizationCode: async (authorizationCode, redirectUrl) => {
+      getAuthorizationToken: async (authorizationCode, redirectUrl) => {
         return getLinkedInAuthorizationCode({
           code: authorizationCode,
-          clientId: LinkedInOauthAdapter.config.clientId,
+          clientId: LinkedInOAuthAdapter.config.clientId,
           redirectUri: redirectUrl,
           clientSecret: LINKED_IN_OAUTH_CLIENT_SECRET,
         });
@@ -95,6 +94,6 @@ const LinkedInOauthAdapter: IOauth2Adapter = {
   },
 };
 
-Oauth2Director.registerAdapter(LinkedInOauthAdapter);
+OAuth2Director.registerAdapter(LinkedInOAuthAdapter);
 
-export default LinkedInOauthAdapter;
+export default LinkedInOAuthAdapter;

@@ -91,27 +91,16 @@ export default [
       verified: Boolean!
     }
 
-    type UserOauthData {
-      authorizationCode: String
-      email: String!
-      lastName: String
-      avatarUrl: String
-      firstName: String
-      address: String
-      gender: String
-      birthDate: Date
-      phoneNumber: String
-      displayName: String
-      city: String
-      countryCode: String
-      postalCode: String
-      regionCode: String
-      company: String
+    type OAuthProvider {
+      _id: String!
+      clientId: String!
+      scopes: [String!]!
     }
 
     type OAuthAccount {
-      provider: String!
-      data: [UserOauthData!]!
+      _id: ID!
+      provider: OAuthProvider!
+      authorizationCode: String!
     }
 
     type User {

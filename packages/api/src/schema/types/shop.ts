@@ -13,11 +13,6 @@ export default [
     type AdminUiConfig {
       customProperties: [AdminUiConfigCustomEntityInterface!]!
     }
-    type OauthProvider {
-      name: String!
-      clientId: String!
-      scopes: [String!]!
-    }
 
     type Shop @cacheControl(maxAge: 180) {
       _id: ID!
@@ -27,7 +22,7 @@ export default [
       userRoles: [String!]!
       externalLinks: [Link]!
       adminUiConfig: AdminUiConfig!
-      oauthProviders: [OauthProvider!]!
+      oAuthProviders: [OAuthProvider!]!
       vapidPublicKey: String
     }
   `,

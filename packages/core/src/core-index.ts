@@ -1,5 +1,5 @@
 import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core.js';
-import { configureAccountsModule, accountsServices } from '@unchainedshop/core-accountsjs';
+import { configureAccountsModule } from '@unchainedshop/core-accountsjs';
 import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
 import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
 import { configureCountriesModule, countryServices } from '@unchainedshop/core-countries';
@@ -158,7 +158,6 @@ export const initCore = async ({
       orders: orderServices,
       products: productServices,
       users: userServices,
-      accounts: accountsServices,
       ...services,
     },
     bulkImporter,

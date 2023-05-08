@@ -18,7 +18,7 @@ export default [
       loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
 
       """
-      Log the user with Oauth2 service provider
+      Log the user with OAuth2 service provider
       """
       loginWithOAuth(
         provider: String!
@@ -34,7 +34,7 @@ export default [
       removeWeb3Address(address: String!): User!
 
       """
-      Oauth2
+      OAuth2
       """
       linkOAuthAccount(provider: String!, authorizationCode: String!, redirectUrl: String!): User!
       unlinkOAuthAccount(provider: String!, authorizationCode: String!): User!

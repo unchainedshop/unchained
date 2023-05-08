@@ -235,15 +235,6 @@ export const User: UserHelperTypes = {
   },
   oAuthAccounts: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-
-    return Object.entries(user.services.oauth || {}).map(([provider, oauthInfo]: any[]) => {
-      return {
-        provider,
-        data: oauthInfo.map(({ data, authorizationCode }) => ({
-          authorizationCode,
-          ...data,
-        })),
-      };
-    });
+    return user.services?.oauth || [];
   },
 };

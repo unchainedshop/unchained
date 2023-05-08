@@ -32,54 +32,34 @@ export type AccessToken = {
   error: string;
 };
 
-export type UserOauthData = {
-  email: string;
-  lastName: string;
-  avatarUrl: string;
-  firstName: string;
-  address?: string;
-  gender?: string;
-  birthDate?: Date;
-  phoneNumber?: string;
-  displayName?: string;
-  city?: string;
-  countryCode?: string;
-  postalCode?: string;
-  regionCode?: string;
-  company?: string;
-};
-
 /*
  * Services
  */
 
-export interface Oauth2AdapterActions {
+export interface OAuth2AdapterActions {
   configurationError: (transactionContext?: any) => string;
   isActive: () => boolean;
-  getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
-  getAccountData: (token: any) => Promise<UserOauthData>;
+  getAuthorizationToken: (authorizationCode: string, redirectUrl: string) => Promise<string>;
+  getAccountData: (token: any) => Promise<any>;
   isTokenValid: (token: any) => Promise<boolean>;
   refreshToken?: (token: any) => Promise<any>;
 }
-export type OauthConfig = {
+export type OAuthConfig = {
   clientId: string;
   scopes: string[];
 };
-export type IOauth2Adapter = IBaseAdapter & {
+export type IOAuth2Adapter = IBaseAdapter & {
   provider: string;
-  config: OauthConfig;
-  actions: (param: any, unchainedAPI: UnchainedCore) => Oauth2AdapterActions;
+  config: OAuthConfig;
+  actions: (param: any) => OAuth2AdapterActions;
 };
 
-export type IOauthDirector = IBaseDirector<IOauth2Adapter> & {
-  actions: (
-    params: { provider: string },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<{
+export type IOAuthDirector = IBaseDirector<IOAuth2Adapter> & {
+  actions: (params: { provider: string }) => Promise<{
     configurationError: (transactionContext?: any) => string;
     isActive: () => boolean;
-    getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
-    getAccountData: (token: any) => Promise<UserOauthData>;
+    getAuthorizationToken: (authorizationCode: string, redirectUrl: string) => Promise<string>;
+    getAccountData: (token: any) => Promise<any>;
     isTokenValid: (token: any) => Promise<boolean>;
     refreshToken?: (refreshToken: any) => Promise<any>;
   }>;
@@ -101,24 +81,25 @@ export interface AccountsSettings {
   configureSettings: (options: AccountsSettingsOptions, context: any) => void;
 }
 
-export interface Oauth2Service {
-  getAuthorizationCode: (authorizationCode: string, redirectUrl: string) => Promise<any>;
-  getAccountData: (token: any) => Promise<UserOauthData>;
-  isTokenValid: (token: any) => Promise<boolean>;
-  refreshToken?: (token: any) => Promise<any>;
-  unLinkOauthProvider: (userId: string, authorizationCode: string) => Promise<User>;
-  linkOAuthAccount: (
-    userId: string,
-    {
-      data,
-      authorizationToken,
-      authorizationCode,
-    }: { data: UserOauthData; authorizationToken: string; authorizationCode: string },
-  ) => Promise<User>;
-}
-
-export interface AccountsServices {
-  oauth2: (params: { provider: string }, unchainedApi: UnchainedCore) => Promise<Oauth2Service>;
+export interface AccountsOAuth2Module {
+  getAuthorizationToken: (
+    provider: string,
+    authorizationCode: string,
+    redirectUrl: string,
+  ) => Promise<string>;
+  getAccountData: (provider: string, token: any) => Promise<any>;
+  isTokenValid: (provider: string, token: any) => Promise<boolean>;
+  refreshToken?: (provider: string, token: any) => Promise<any>;
+  // unlinkAccount: (provider: string, userId: string, authorizationCode: string) => Promise<User>;
+  // linkAccount: (
+  //   provider: string,
+  //   userId: string,
+  //   {
+  //     data,
+  //     authorizationToken,
+  //     authorizationCode,
+  //   }: { data: any; authorizationToken: string; authorizationCode: string },
+  // ) => Promise<User>;
 }
 
 /*
@@ -241,4 +222,5 @@ export interface AccountsModule {
   disableTOTP: (userId: string, code: string) => Promise<boolean>;
 
   webAuthn: AccountsWebAuthnModule;
+  oAuth2: AccountsOAuth2Module;
 }

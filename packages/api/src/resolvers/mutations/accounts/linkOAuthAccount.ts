@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { AuthOperationFailedError, EmailAlreadyExistsError } from '../../../errors.js';
+import { AuthOperationFailedError } from '../../../errors.js';
 
 export default async function linkOAuthAccount(
   root: Root,
@@ -17,26 +17,35 @@ export default async function linkOAuthAccount(
     userId,
   });
   try {
-    const { services } = context;
+    const { modules } = context;
 
-    const oauth2Service = await services.accounts.oauth2({ provider }, context);
-
-    const authorizationToken = await oauth2Service.getAuthorizationCode(authorizationCode, redirectUrl);
+    const authorizationToken = await modules.accounts.oAuth2.getAuthorizationToken(
+      provider,
+      authorizationCode,
+      redirectUrl,
+    );
 
     if (!authorizationToken) throw new Error('Unable to authorize user');
 
-    const data = await oauth2Service.getAccountData(authorizationToken);
-    if (!data || !data?.email) {
-      throw new Error('OAuth authentication failed');
-    }
-    return oauth2Service.linkOAuthAccount(userId, {
-      data,
-      authorizationToken,
-      authorizationCode,
-    });
-    if (user) return true;
+    const { id, ...data } = await modules.accounts.oAuth2.getAccountData(provider, authorizationToken);
+
+    await modules.users.updateUser(
+      { _id: userId },
+      {
+        $push: {
+          [`services.oauth.${provider}`]: {
+            id,
+            authorizationToken,
+            authorizationCode,
+            data,
+          },
+        },
+      },
+      { upsert: true },
+    );
+
+    return true;
   } catch (e) {
-    if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({});
-    else throw new AuthOperationFailedError({});
+    throw new AuthOperationFailedError({});
   }
 }

@@ -16,7 +16,7 @@ const loginWithOAuth = async (
   }: { provider: string; authorizationCode: string; redirectUrl: string },
   context: Context,
 ): Promise<any | null> => {
-  log(`mutation loginWithOauth ${provider} ${authorizationCode}`);
+  log(`mutation loginWithOAuth ${provider} ${authorizationCode}`);
   try {
     return context.modules.accounts.loginWithService(
       {

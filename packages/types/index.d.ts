@@ -1,11 +1,6 @@
 import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
-import {
-  AccountsModule,
-  AccountsServices,
-  AccountsSettings,
-  AccountsSettingsOptions,
-} from './accounts.js';
+import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts.js';
 import { Context } from './api.js';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments.js';
 
@@ -226,7 +221,6 @@ declare module '@unchainedshop/core-accountsjs' {
   ): Promise<AccountsModule>;
 
   const accountsSettings: AccountsSettings;
-  const accountsServices: AccountsServices;
 }
 
 declare module '@unchainedshop/core-assortments' {

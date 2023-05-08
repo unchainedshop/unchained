@@ -38,7 +38,7 @@ const checkAction = async (context, action, args = emptyArray, options: any = em
     action,
     key,
     message: `The user "${
-      context.userId || ''
+      context.userId || 'anonymous'
     }" has no permission to perform the action "${action}"${keyText}`,
   });
 };
