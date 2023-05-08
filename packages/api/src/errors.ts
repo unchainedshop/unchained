@@ -234,10 +234,7 @@ export const TwoFactorAlreadySetError = createError('TwoFactorAlreadySet', '2FA 
 
 export const TwoFactorNotSetError = createError('TwoFactorNotSet', '2FA not set for user');
 
-export const InvalidCredentialsError = createError(
-  'InvalidCredentials',
-  'Incorrect credential provided',
-);
+export const InvalidCredentialsError = createError('InvalidCredentials', 'Invalid credentials provided');
 
 export const InvalidResetTokenError = createError('InvalidResetTokenError', 'Token validation failed');
 
