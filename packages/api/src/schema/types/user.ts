@@ -90,6 +90,19 @@ export default [
       nonce: Int
       verified: Boolean!
     }
+
+    type OAuthProvider {
+      _id: String!
+      clientId: String!
+      scopes: [String!]!
+    }
+
+    type OAuthAccount {
+      _id: ID!
+      provider: OAuthProvider!
+      authorizationCode: String!
+    }
+
     type User {
       _id: ID!
       created: DateTime!
@@ -139,6 +152,7 @@ export default [
       ): [Enrollment!]!
       allowedActions: [RoleAction!]!
       tokens: [Token!]!
+      oAuthAccounts: [OAuthAccount!]!
     }
   `,
 ];

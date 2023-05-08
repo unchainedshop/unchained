@@ -60,6 +60,11 @@ export interface Web3Address {
   verified: boolean;
 }
 
+export interface OAuthAccount {
+  id: string;
+  provider: string;
+  authorizationCode: string;
+}
 export interface PushSubscriptionObject {
   userAgent: string;
   endpoint: string;

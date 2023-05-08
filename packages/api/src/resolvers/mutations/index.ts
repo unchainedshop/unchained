@@ -157,6 +157,9 @@ import prepareUserAvatarUpload from './users/prepareUserAvatarUpload.js';
 import rejectOrder from './orders/rejectOrder.js';
 import removePushSubscription from './users/removePushSubscription.js';
 import addPushSubscription from './users/addPushSubscription.js';
+import loginWithOAuth from './accounts/loginWithOAuth.js';
+import linkOAuthAccount from './accounts/linkOAuthAccount.js';
+import unlinkOAuthAccount from './accounts/unlinkOAuthAccount.js';
 
 export default {
   logout,
@@ -171,9 +174,12 @@ export default {
   addWeb3Address: acl(actions.updateUser)(addWeb3Address),
   removeWeb3Address: acl(actions.updateUser)(removeWeb3Address),
   verifyWeb3Address: acl(actions.updateUser)(verifyWeb3Address),
+  linkOAuthAccount: acl(actions.updateUser)(linkOAuthAccount),
+  unlinkOAuthAccount: acl(actions.updateUser)(unlinkOAuthAccount),
   verifyEmail,
   loginWithPassword,
   loginWithWebAuthn,
+  loginWithOAuth,
   impersonate: acl(actions.impersonate)(impersonate),
   buildSecretTOTPAuthURL: acl(actions.authTwoFactor)(buildSecretTOTPAuthURL),
   enableTOTP: acl(actions.authTwoFactor)(enableTOTP),
