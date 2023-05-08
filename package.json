@@ -65,7 +65,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "formdata-node": "^5.0.0",
+    "formdata-node": "^4.4.1",
     "graphql": "^16.6.0",
     "graphql-upload": "^16.0.2",
     "jest": "^29.5.0",
