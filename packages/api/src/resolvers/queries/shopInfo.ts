@@ -11,7 +11,7 @@ export default function shopInfo(
   externalLinks: Array<string>;
   adminUiConfig?: Record<string, any>;
   vapidPublicKey?: string;
-  oAuthProviders?: Promise<Array<IOAuth2Adapter>>;
+  oAuthProviders?: () => Promise<Array<IOAuth2Adapter>>;
 } {
   const { adminUiConfig } = context;
   log('query shopInfo', { userId: context.userId });

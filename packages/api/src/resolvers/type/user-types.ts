@@ -235,6 +235,11 @@ export const User: UserHelperTypes = {
   },
   oAuthAccounts: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return user.services?.oauth || [];
+    return Object.entries(user.services?.oauth || {}).flatMap(([provider, accounts]) => {
+      return (accounts as any).map((providerData) => ({
+        provider,
+        ...(providerData as any),
+      }));
+    });
   },
 };

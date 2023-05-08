@@ -20,8 +20,16 @@ export const configureAccountsOAuthModule = (): AccountsOAuth2Module => {
       return director.refreshToken(userAuthorizationToken);
     },
     getProviders: async () => {
-      const providers = await OAuth2Director.getAdapters();
+      const providers = await OAuth2Director.getAdapters({
+        adapterFilter: (adapter) => {
+          return adapter.actions({}).isActive();
+        },
+      });
       return providers;
+    },
+    getProvider: async (provider) => {
+      const providerObj = await OAuth2Director.getAdapter(provider);
+      return providerObj;
     },
   };
 };

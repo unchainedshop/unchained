@@ -57,7 +57,7 @@ const LinkedInOAuthAdapter: IOAuth2Adapter = {
         return '';
       },
       isActive: () => {
-        return true;
+        return Boolean(LINKED_IN_OAUTH_CLIENT_ID && LINKED_IN_OAUTH_CLIENT_SECRET);
       },
       getAuthorizationToken: async (authorizationCode, redirectUrl) => {
         return getLinkedInAuthorizationCode({

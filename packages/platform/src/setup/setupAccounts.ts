@@ -76,12 +76,10 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       authorizationCode,
       provider,
       redirectUrl,
-      skipCreation,
     }: {
       authorizationCode: any;
       provider: string;
       redirectUrl: string;
-      skipCreation: boolean;
     }): Promise<any> {
       if (!authorizationCode || !provider) {
         return undefined;
@@ -105,8 +103,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         [`services.oauth.${provider}.id`]: data.id,
       });
 
-      if (!user && !skipCreation) {
-        // TODO: Explicit
+      if (!user) {
         const newUserId = await unchainedAPI.modules.accounts.createUser(
           {
             username: data.username || `${data.id}`,

@@ -107,7 +107,7 @@ const GoogleOAuth2Adapter: IOAuth2Adapter = {
         return '';
       },
       isActive: () => {
-        return true;
+        return Boolean(GOOGLE_OAUTH_CLIENT_ID && GOOGLE_OAUTH_CLIENT_SECRET);
       },
       getAuthorizationToken: async (authorizationCode, redirectUrl) => {
         return getGoggleAuthorizationCode({

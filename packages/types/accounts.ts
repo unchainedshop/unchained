@@ -63,7 +63,6 @@ export type IOAuthDirector = IBaseDirector<IOAuth2Adapter> & {
     getAccountData: (token: any) => Promise<any>;
     isTokenValid: (token: any) => Promise<boolean>;
     refreshToken?: (refreshToken: any) => Promise<any>;
-    getProviders: () => Promise<Array<IOAuth2Adapter>>;
   }>;
 };
 
@@ -91,8 +90,9 @@ export interface AccountsOAuth2Module {
   ) => Promise<any>;
   getAccountData: (provider: string, token: any) => Promise<any>;
   isTokenValid: (provider: string, token: any) => Promise<boolean>;
-  refreshToken?: (provider: string, token: any) => Promise<any>;
+  refreshToken: (provider: string, token: any) => Promise<any>;
   getProviders: () => Promise<Array<IOAuth2Adapter>>;
+  getProvider: (provider: string) => Promise<IOAuth2Adapter>;
 }
 
 /*
