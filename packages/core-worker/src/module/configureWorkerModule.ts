@@ -174,8 +174,54 @@ export const configureWorkerModule = async ({
   };
 
   const processNextWork: WorkerModule['processNextWork'] = async (workerId, unchainedAPI) => {
+    const adapters = WorkerDirector.getAdapters();
+
+    const alreadyAllocatedWork = await WorkQueue.aggregate(
+      [
+        {
+          $match: {
+            started: {
+              $exists: true,
+            },
+            finished: {
+              $exists: false,
+            },
+            deleted: {
+              $exists: false,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: '$type',
+            count: {
+              $sum: 1,
+            },
+          },
+        },
+      ],
+      {
+        allowDiskUse: false,
+      },
+    ).toArray();
+
+    const allocationMap = Object.fromEntries(alreadyAllocatedWork.map((w) => [w._id, w.count]));
+
+    const types = adapters
+      .filter((adapter) => {
+        // Filter out the external
+        if (adapter.external) return false;
+        if (
+          adapter.maxParallelAllocations &&
+          adapter.maxParallelAllocations <= allocationMap[adapter.type]
+        )
+          return false;
+        return true;
+      })
+      .map((adapter) => adapter.type);
+
     const work = await allocateWork({
-      types: WorkerDirector.getActivePluginTypes(false),
+      types,
       worker: workerId,
     });
 

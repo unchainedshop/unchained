@@ -53,6 +53,7 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
   label: 'Bulk Import',
   version: '1.0.0',
   type: 'BULK_IMPORT',
+  maxParallelAllocations: 1, // Only ever process 1 BULK_IMPORT at a time!
 
   doWork: async (rawPayload, unchainedAPI) => {
     try {

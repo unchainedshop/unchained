@@ -21,7 +21,7 @@ export const WorkerDirector: IWorkerDirector = {
 
   events: new EventEmitter(),
 
-  getActivePluginTypes: (external) => {
+  getActivePluginTypes: ({ external } = {}) => {
     return WorkerDirector.getAdapters()
       .filter((adapter) => {
         if (external === null || external === undefined) return true;

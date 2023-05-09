@@ -41,7 +41,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
       reset: async (referenceDate = new Date()) => {
         await unchainedAPI.modules.worker.markOldWorkAsFailed({
-          types: WorkerDirector.getActivePluginTypes(false),
+          types: WorkerDirector.getActivePluginTypes({ external: false }),
           worker: workerId,
           referenceDate,
         });

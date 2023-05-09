@@ -128,12 +128,13 @@ export type WorkScheduleConfiguration = Omit<Partial<Work>, 'input'> & {
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;
   external: boolean;
+  maxParallelAllocations?: number;
 
   doWork: (input: Input, unchainedAPI: UnchainedCore, workId: string) => Promise<WorkResult<Output>>;
 };
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
-  getActivePluginTypes: (external?: boolean) => Array<string>;
+  getActivePluginTypes: (options?: { external?: boolean }) => Array<string>;
   getAdapterByType: (type: string) => IWorkerAdapter<any, any>;
   disableAutoscheduling: (type: string) => void;
   configureAutoscheduling: (
