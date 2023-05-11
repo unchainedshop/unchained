@@ -4,11 +4,7 @@ import { log } from '@unchainedshop/logger';
 import os from 'os';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 
-const { UNCHAINED_WORKER_ID } = process.env;
-
-const resolveWorkerId = (customWorkerId: string, type: string) =>
-  customWorkerId || UNCHAINED_WORKER_ID || `${os.hostname()}:${type}`;
-
+const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 interface WorkerParams {
   workerId: string;
   worker: IWorker<any>;
@@ -27,8 +23,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
   },
 
   actions: ({ workerId, worker }: WorkerParams, unchainedAPI) => {
-    const resolvedWorkerId = resolveWorkerId(workerId, worker.type);
-    log(`${worker.key} -> Initialized: ${resolvedWorkerId}`);
+    log(`${worker.key} -> Initialized: ${workerId || UNCHAINED_WORKER_ID} (${worker.type})`);
 
     const workerActions = {
       start() {
