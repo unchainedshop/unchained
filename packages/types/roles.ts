@@ -27,8 +27,8 @@ export interface RolesInterface {
   allow(
     context: Context,
     roles: Array<string>,
-    action: string,
-    args: CheckPermissionArgs,
+    action?: string,
+    args?: CheckPermissionArgs,
   ): Promise<boolean>;
   userHasPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<boolean>;
   addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
