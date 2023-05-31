@@ -106,7 +106,7 @@ export const configureWorkerModule = async ({
     const query = buildQuerySelector({
       status: [WorkStatus.NEW],
       scheduled: { end: new Date() },
-      worker: { $in: [null, worker] },
+      worker: { $in: [null, '', worker] },
       ...(types ? { type: { $in: types } } : {}),
     });
     const result = await WorkQueue.findOneAndUpdate(
@@ -439,7 +439,7 @@ export const configureWorkerModule = async ({
         buildQuerySelector({
           status: [WorkStatus.ALLOCATED],
           started: { $lte: referenceDate },
-          worker,
+          worker: { $in: [worker, '', null] }, // Don't mark work failed of other workers!
           type: { $in: types },
         }),
         { projection: { _id: true }, sort: { test: 1 } },
