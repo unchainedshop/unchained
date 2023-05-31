@@ -180,20 +180,32 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
-    removeProductByIdFromAllPositions: async ({ productId }, unchainedAPI) => {
+    removeProductByIdFromAllOpenPositions: async ({ productId }, unchainedAPI) => {
       log('Remove Position Product', { productId });
       const positions = await OrderPositions.find(
         { productId },
         { projection: { orderId: 1 } },
       ).toArray();
 
-      const result = await OrderPositions.deleteMany({ productId });
+      const draftOrderIds = (
+        await unchainedAPI.modules.orders.findOrders({ status: null }, { projection: { _id: 1 } })
+      ).map((o) => o._id);
+
+      const result = await OrderPositions.deleteMany({ productId, orderId: { $in: draftOrderIds } });
+
+      const orderIdsToRecalculate = new Set(
+        positions
+          .map((o) => o.orderId)
+          .filter((orderIdFromPosition) => draftOrderIds.includes(orderIdFromPosition)),
+      );
 
       await Promise.all(
-        positions.map(async ({ orderId }) => {
-          await updateCalculation(orderId, unchainedAPI);
+        [...orderIdsToRecalculate].map(async (orderIdToRecalculate) => {
+          await updateCalculation(orderIdToRecalculate, unchainedAPI);
         }),
       );
+
+      // if (bulkOperation)
       return result.deletedCount;
     },
 
