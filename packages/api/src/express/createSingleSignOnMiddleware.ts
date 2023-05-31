@@ -66,7 +66,7 @@ const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
 export default function singleSignOnMiddleware(contextResolver: UnchainedContextResolver) {
   return async (req: IncomingMessage & { query?: any }, res, next) => {
     try {
-      if (req.query?.token) {
+      if (req.query?.token && UNCHAINED_CLOUD_ENDPOINT) {
         const context = await contextResolver({ req, res });
         const authCookie = await loginWithSingleSignOn(req.query.token, context);
 
