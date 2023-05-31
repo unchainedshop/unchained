@@ -15,7 +15,7 @@ export const getUserContext = async (
   // there is a possible current user connected!
   const cookieName = process.env.UNCHAINED_COOKIE_NAME || 'unchained_token';
   const domain = process.env.UNCHAINED_COOKIE_DOMAIN;
-  const path = process.env.UNCHAINED_COOKIE_PATH;
+  const path = process.env.UNCHAINED_COOKIE_PATH || '/';
 
   let loginToken = req.cookies?.[cookieName];
 
@@ -24,7 +24,7 @@ export const getUserContext = async (
     const authCookie = cookie.serialize(cookieName, token || null, {
       domain,
       httpOnly: true,
-      path: path || undefined,
+      path,
       expires: token ? expires : undefined,
       maxAge: token ? undefined : -1,
       sameSite: 'lax',

@@ -2,6 +2,8 @@ import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 import { IOAuth2Adapter } from '@unchainedshop/types/accounts.js';
 
+const { EXTERNAL_LINKS = '[]' } = process.env;
+
 export default function shopInfo(
   root: Root,
   _: never,
@@ -18,7 +20,7 @@ export default function shopInfo(
 
   return {
     version: context.version,
-    externalLinks: JSON.parse(process.env.EXTERNAL_LINKS || '[]'),
+    externalLinks: JSON.parse(EXTERNAL_LINKS),
     adminUiConfig: {
       customProperties: adminUiConfig?.customProperties ?? [],
     },
