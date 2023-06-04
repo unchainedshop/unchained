@@ -816,7 +816,7 @@ export default [
       """
       Create a bookmark for a specific user
       """
-      createBookmark(productId: ID!, userId: ID!): Bookmark!
+      createBookmark(productId: ID!, userId: ID!, meta: JSON): Bookmark!
 
       """
       Remove an existing bookmark by ID
