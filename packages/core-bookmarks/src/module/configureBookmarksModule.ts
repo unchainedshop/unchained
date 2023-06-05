@@ -27,7 +27,6 @@ export const configureBookmarksModule = async ({
       const filter = generateDbFilterById(bookmarkId);
       return Bookmarks.findOne(filter, {});
     },
-
     find: async (query) => Bookmarks.find(query).toArray(),
 
     existsByUserIdAndProductId: async ({ productId, userId }) => {
@@ -66,6 +65,12 @@ export const configureBookmarksModule = async ({
     deleteByProductId: async (productId) => {
       const bookmarks = await Bookmarks.find({ productId }, { projection: { _id: true } }).toArray();
       const result = await Bookmarks.deleteMany({ productId });
+      await Promise.all(bookmarks.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })));
+      return result.deletedCount;
+    },
+    deleteByUserIdAndMeta: async ({ userId, meta }) => {
+      const bookmarks = await Bookmarks.find({ userId, meta }, { projection: { _id: true } }).toArray();
+      const result = await Bookmarks.deleteMany({ meta, userId });
       await Promise.all(bookmarks.map(async (b) => emit('BOOKMARK_REMOVE', { bookmarkId: b._id })));
       return result.deletedCount;
     },

@@ -12,6 +12,7 @@ export type Bookmark = {
   _id?: _ID;
   userId: string;
   productId: string;
+  meta?: any;
 } & TimestampFields;
 
 /*
@@ -27,6 +28,7 @@ export interface BookmarksModule extends ModuleMutations<Bookmark> {
   replaceUserId: (fromUserId: string, toUserId: string) => Promise<number>;
   deleteByUserId: (toUserId: string) => Promise<number>;
   deleteByProductId: (productId: string) => Promise<number>;
+  deleteByUserIdAndMeta: (meta: any) => Promise<number>;
 }
 
 /*

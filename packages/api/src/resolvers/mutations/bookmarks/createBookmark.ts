@@ -4,7 +4,7 @@ import { BookmarkAlreadyExistsError, InvalidIdError, ProductNotFoundError } from
 
 export default async function createBookmark(
   root: Root,
-  { productId, userId }: { productId: string; userId: string },
+  { productId, userId, meta }: { productId: string; userId: string; meta?: any },
   { modules, userId: currenctUserId }: Context,
 ) {
   log(`mutation createBookmark for ${userId}`, {
@@ -25,6 +25,7 @@ export default async function createBookmark(
   const bookmarkId = await modules.bookmarks.create({
     userId,
     productId,
+    meta,
   });
 
   return modules.bookmarks.findById(bookmarkId);
