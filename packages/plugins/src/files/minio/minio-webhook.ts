@@ -26,7 +26,6 @@ export const minioHandler = async (req, res) => {
     }
     res.writeHead(404);
     res.end();
-    return;
   } catch (e) {
     log(e.message, { level: LogLevel.Error });
     res.writeHead(503);

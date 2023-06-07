@@ -63,7 +63,6 @@ export const gridfsHandler = async (
     }
     res.statusCode = 404;
     res.end();
-    return;
   } catch (e) {
     log(e.message, { level: LogLevel.Error });
     if (e.code === 'ENOENT') {

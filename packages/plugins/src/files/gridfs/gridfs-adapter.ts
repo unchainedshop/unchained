@@ -109,7 +109,7 @@ export const GridFSAdapter: IFileAdapter = {
       expiryDate: null,
       fileName,
       size: length,
-      type: mimeType.lookup(fileName),
+      type: mimeType.lookup(fileName) || response.headers.get('content-type'),
       url,
     } as UploadFileData;
   },
