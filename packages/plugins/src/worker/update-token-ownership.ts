@@ -79,8 +79,4 @@ WorkerDirector.registerAdapter(UpdateTokenOwnership);
 
 WorkerDirector.configureAutoscheduling(RefreshTokens, {
   schedule: everyMinute,
-  retries: 5,
-  input: () => {
-    /* */
-  },
 });

@@ -155,6 +155,7 @@ export const configureGenerateOrderAutoscheduling = () => {
     WorkerDirector.configureAutoscheduling(GenerateOrderWorker, {
       schedule: enrollmentsSettings.autoSchedulingSchedule,
       input: enrollmentsSettings.autoSchedulingInput,
+      retries: 5,
     });
   }
 };

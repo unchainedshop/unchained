@@ -1,4 +1,4 @@
-import { IWorker } from '@unchainedshop/types/worker.js';
+import { IWorker, Work } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';
@@ -44,21 +44,23 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
       autorescheduleTypes: async ({ referenceDate }) => {
         return Promise.all(
-          WorkerDirector.getAutoSchedules().map(async ([type, work]) => {
-            const { schedule, input, priority, ...rest } = work;
-            const fixedSchedule = { ...schedule };
+          WorkerDirector.getAutoSchedules().map(async ([type, workConfig]) => {
+            const fixedSchedule = { ...workConfig.schedule };
             fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
             const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
             nextDate.setMilliseconds(0);
-            return unchainedAPI.modules.worker.ensureOneWork({
+            const workData: Work = {
+              worker: workConfig.worker || workerId,
               type,
-              input: input(),
               scheduled: nextDate,
-              worker: workerId,
-              priority: priority || 0,
-              ...rest,
-              retries: 0,
-            });
+              timeout: workConfig.timeout,
+              priority: workConfig.priority || 0,
+              retries: workConfig.retries || 0,
+            };
+            if (workConfig.input) {
+              workData.input = await workConfig.input(workData);
+            }
+            return unchainedAPI.modules.worker.ensureOneWork(workData);
           }),
         );
       },

@@ -122,7 +122,7 @@ export interface WorkerSchedule {
 }
 
 export type WorkScheduleConfiguration = Omit<Partial<Work>, 'input'> & {
-  input: () => any;
+  input?: (workData: Omit<Work, 'input'>) => Promise<any>;
   schedule: WorkerSchedule;
 };
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
