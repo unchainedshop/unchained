@@ -121,8 +121,11 @@ export interface WorkerSchedule {
   exceptions: Array<Record<string, any>>;
 }
 
-export type WorkScheduleConfiguration = Omit<Partial<Work>, 'input'> & {
-  input?: (workData: Omit<Work, 'input'>) => Promise<any>;
+export type WorkScheduleConfiguration = Pick<
+  Partial<Work>,
+  'timeout' | 'retries' | 'priority' | 'worker'
+> & {
+  input?: (workData: Omit<Work, 'input'>) => Promise<Record<string, any> | null>;
   schedule: WorkerSchedule;
 };
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
@@ -168,7 +171,7 @@ export type IWorker<P extends { workerId: string }> = {
     params: P,
     unchainedAPI: UnchainedCore,
   ) => {
-    autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work>>;
+    autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work | null>>;
     process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;
     reset: () => Promise<void>;
     start: () => void;

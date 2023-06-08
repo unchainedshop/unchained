@@ -59,6 +59,9 @@ export const BaseWorker: IWorker<WorkerParams> = {
             };
             if (workConfig.input) {
               workData.input = await workConfig.input(workData);
+              // A work input fn can skip auto scheduling a new record
+              // when it explicitly returns a falsish input instead of a dictionary
+              if (!workData.input) return null;
             }
             return unchainedAPI.modules.worker.ensureOneWork(workData);
           }),
