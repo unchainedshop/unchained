@@ -1,9 +1,28 @@
-import mongodb from 'mongodb';
-import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/types/platform.js';
+import mongodb, { BulkOperationBase } from 'mongodb';
 import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core.js';
 import * as AssortmentHandlers from './handlers/assortment/index.js';
 import * as FilterHandlers from './handlers/filter/index.js';
 import * as ProductHandlers from './handlers/product/index.js';
+
+export type BulkImportOperationResult = {
+  entity: string;
+  operation: string;
+  success: boolean;
+};
+export type BulkImportOperation = (
+  payload: any,
+  options: {
+    bulk: (collection: string) => BulkOperationBase;
+    createShouldUpsertIfIDExists?: boolean;
+    skipCacheInvalidation?: boolean;
+    logger?: any;
+  },
+  unchainedAPI: UnchainedCore,
+) => Promise<BulkImportOperationResult>;
+
+export type BulkImportHandler = {
+  [x: string]: BulkImportOperation;
+};
 
 let bulkOperationHandlers: Record<string, BulkImportHandler> = {};
 

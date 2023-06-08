@@ -1,4 +1,4 @@
-import { IWorker, Work } from '@unchainedshop/types/worker.js';
+import { IWorker, WorkData } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';
@@ -49,7 +49,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
             fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
             const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
             nextDate.setMilliseconds(0);
-            const workData: Work = {
+            const workData: WorkData = {
               worker: workConfig.worker || workerId,
               type,
               scheduled: nextDate,

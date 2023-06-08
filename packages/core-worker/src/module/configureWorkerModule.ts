@@ -1,7 +1,7 @@
 import os from 'os';
 import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkerModule } from '@unchainedshop/types/worker.js';
+import { Work, WorkData, WorkerModule } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection } from '@unchainedshop/types/api.js';
@@ -363,7 +363,15 @@ export const configureWorkerModule = async ({
 
     allocateWork,
 
-    ensureOneWork: async ({ type, input, priority = 0, scheduled, originalWorkId, retries = 20 }) => {
+    ensureOneWork: async ({
+      type,
+      input,
+      priority = 0,
+      scheduled,
+      timeout,
+      originalWorkId,
+      retries = 20,
+    }: WorkData) => {
       const created = new Date();
       const query = buildQuerySelector({
         type,
@@ -387,6 +395,7 @@ export const configureWorkerModule = async ({
               originalWorkId,
               scheduled,
               retries,
+              timeout,
               created,
             },
           },

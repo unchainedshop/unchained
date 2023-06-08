@@ -3,7 +3,11 @@ import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 import { BaseWorker } from './BaseWorker.js';
 
-export const EventListenerWorker: IWorker<{ workerId: string }> = {
+export interface EventListenerWorkerParams {
+  workerId: string;
+}
+
+export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {
   ...BaseWorker,
 
   key: 'shop.unchained.worker.event-listener',

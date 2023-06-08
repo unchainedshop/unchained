@@ -22,18 +22,18 @@ export enum WorkerEventTypes {
 
 export type Work = {
   _id?: _ID;
-  error?: any;
-  finished?: Date;
-  input?: any;
-  originalWorkId?: string;
   priority: number;
-  result?: any;
   retries: number;
   scheduled: Date;
+  type: string;
+  input: Record<string, any>;
+  error?: any;
+  finished?: Date;
+  originalWorkId?: string;
+  result?: any;
   started?: Date;
   success?: boolean;
   timeout?: number;
-  type: string;
   worker?: string;
 } & TimestampFields;
 
@@ -41,15 +41,10 @@ export type Work = {
  * Module
  */
 
-export interface WorkData {
-  type: string;
-  input: any;
-  originalWorkId?: string;
-  priority?: number;
-  retries?: number;
-  scheduled?: Date;
-  worker?: string;
-}
+export type WorkData = Pick<
+  Partial<Work>,
+  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker'
+> & { type: string };
 
 export interface WorkResult<Result> {
   success: boolean;
@@ -92,7 +87,7 @@ export type WorkerModule = {
 
   rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
 
-  ensureOneWork: (work: Work) => Promise<Work>;
+  ensureOneWork: (work: WorkData) => Promise<Work>;
 
   finishWork: (
     _id: string,
@@ -121,11 +116,8 @@ export interface WorkerSchedule {
   exceptions: Array<Record<string, any>>;
 }
 
-export type WorkScheduleConfiguration = Pick<
-  Partial<Work>,
-  'timeout' | 'retries' | 'priority' | 'worker'
-> & {
-  input?: (workData: Omit<Work, 'input'>) => Promise<Record<string, any> | null>;
+export type WorkScheduleConfiguration = Pick<WorkData, 'timeout' | 'retries' | 'priority' | 'worker'> & {
+  input?: (workData: Omit<WorkData, 'input'>) => Promise<Record<string, any> | null>;
   schedule: WorkerSchedule;
 };
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
@@ -179,12 +171,15 @@ export type IWorker<P extends { workerId: string }> = {
   };
 };
 
-export type IScheduler = {
+export type IScheduler<P> = {
   key: string;
   label: string;
   version: string;
 
-  actions: (unchainedAPI: UnchainedCore) => {
+  actions: (
+    params: P,
+    unchainedAPI: UnchainedCore,
+  ) => {
     start: () => void;
     stop: () => void;
   };

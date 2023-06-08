@@ -1,3 +1,17 @@
+# Unchained Engine v2.2
+
+This release contains various bugfixes and improvements and it breaks various type imports because we are currently in the process of moving types to their respective npm modules.
+
+## Minor
+- Remove `autoSchedulingInput` because there is no obvious way this is helpful and it has never been used in known projects
+- Move some platform types to platform package
+- The platform option `workQueueOptions` has been extended to take a retryInput. The retryInput fn can be used to alter input into work when the work is beeing retried. This allows stopping retries.
+- Extended the input fn option of auto-scheduling ``
+
+## Patch
+- Fix timeout field in worker's and types
+
+
 # Unchained Engine v2.1
 
 This release contains various bugfixes and improvements

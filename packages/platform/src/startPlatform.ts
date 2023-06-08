@@ -1,20 +1,42 @@
-import { SetupWorkqueueOptions, PlatformOptions, MessageTypes } from '@unchainedshop/types/platform.js';
 import { startAPIServer, roles } from '@unchainedshop/api';
 import { initCore } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core.js';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { WorkerDirector } from '@unchainedshop/core-worker';
-import { createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
+import { AdminUiConfig } from '@unchainedshop/types/api.js';
+import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
 import { runMigrations } from './migrations/runMigrations.js';
 import { setupAccounts } from './setup/setupAccounts.js';
-import { setupCarts } from './setup/setupCarts.js';
-import { setupTemplates } from './setup/setupTemplates.js';
-import { setupWorkqueue } from './setup/setupWorkqueue.js';
+import { SetupCartsOptions, setupCarts } from './setup/setupCarts.js';
+import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
+import { SetupWorkqueueOptions, setupWorkqueue } from './setup/setupWorkqueue.js';
 import { createMigrationRepository } from './migrations/migrationRepository.js';
 
 export { MessageTypes };
+
+export type PlatformOptions = {
+  typeDefs?: Array<string>;
+  resolvers?: any;
+  schema?: any;
+  plugins?: any[];
+  cache?: any;
+  bulkImporter?: {
+    handlers?: Record<string, BulkImportHandler>;
+  };
+  context?: any;
+  modules?: UnchainedCoreOptions['modules'];
+  services?: UnchainedCoreOptions['modules'];
+  options?: UnchainedCoreOptions['options'];
+  rolesOptions?: UnchainedCoreOptions['roleOptions'];
+  workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
+  introspection?: boolean;
+  playground?: boolean;
+  tracing?: boolean;
+  cacheControl?: any;
+  adminUiConfig?: AdminUiConfig;
+};
 
 const logger = createLogger('unchained');
 
