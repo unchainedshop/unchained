@@ -4,7 +4,7 @@ import { InvalidIdError, ProductNotFoundError, BookmarkNotFoundError } from '../
 
 export default async function bookmark(
   root: Root,
-  { productId, bookmarked }: { productId: string; bookmarked: string },
+  { productId, bookmarked, meta }: { productId: string; bookmarked: string; meta: JSON },
   { userId, modules }: Context,
 ) {
   log('mutation bookmark', { productId, userId });
@@ -14,9 +14,10 @@ export default async function bookmark(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  const foundBookmark = await modules.bookmarks.findByUserIdAndProductId({
+  const [foundBookmark] = await modules.bookmarks.find({
     productId,
     userId,
+    meta,
   });
 
   if (bookmarked) {
@@ -25,6 +26,7 @@ export default async function bookmark(
     const bookmarkId = await modules.bookmarks.create({
       productId,
       userId,
+      meta,
     });
 
     return modules.bookmarks.findById(bookmarkId);

@@ -5,7 +5,7 @@ import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils'
 import { BookmarksCollection } from '../db/BookmarksCollection.js';
 import { BookmarkSchema } from '../db/BookmarksSchema.js';
 
-const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARKS_UPDATE', 'BOOKMARK_REMOVE'];
+const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'];
 
 export const configureBookmarksModule = async ({
   db,
