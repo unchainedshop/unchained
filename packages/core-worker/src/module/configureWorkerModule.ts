@@ -417,6 +417,11 @@ export const configureWorkerModule = async ({
         }
         return result.value;
       } catch (e) {
+        /* TODO: 
+        If the findOneAndUpdate call failed because of _id conflict with a DELETED work,
+        we should permanently remove the conflicting deleted work 
+        and retry the findOneAndUpdate call.
+        */
         return null;
       }
     },

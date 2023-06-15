@@ -16,6 +16,10 @@ const baseDirector = BaseDirector<IWarehousingAdapter>('WarehousingDirector', {
   adapterSortKey: 'orderIndex',
 });
 
+declare global {
+  any;
+}
+
 export const WarehousingDirector: IWarehousingDirector = {
   ...baseDirector,
 
@@ -32,10 +36,9 @@ export const WarehousingDirector: IWarehousingDirector = {
     };
     const adapter = Adapter.actions(warehousingProvider.configuration, context);
 
-    const throughputTime = async () => {
+    const throughputTime = async (referenceDate) => {
       try {
         const { quantity } = context;
-        const referenceDate = getReferenceDate(context);
         const stock = await adapter.stock(referenceDate);
         const notInStockQuantity = Math.max(quantity - stock, 0);
         const productionTime = await adapter.productionTime(notInStockQuantity);
@@ -43,7 +46,7 @@ export const WarehousingDirector: IWarehousingDirector = {
         return Math.max(commissioningTime + productionTime, 0);
       } catch (error) {
         log(error.message, { level: LogLevel.Error, ...error });
-        return 0;
+        return NaN;
       }
     };
 
@@ -83,20 +86,31 @@ export const WarehousingDirector: IWarehousingDirector = {
         try {
           const { deliveryProvider } = context;
           const referenceDate = getReferenceDate(context);
-          const warehousingThroughputTime = await throughputTime();
 
+          const warehousingThroughputTime = await throughputTime(referenceDate);
+          if (!Number.isFinite(warehousingThroughputTime)) {
+            return {
+              shipping: null,
+              earliestDelivery: null,
+            };
+          }
+
+          // Calculate shipping date
+          const shippingTimestamp = referenceDate.getTime() + warehousingThroughputTime;
+          const shipping = new Date(shippingTimestamp);
+
+          // Calculate earliest delivery date
           const actions = await DeliveryDirector.actions(deliveryProvider, context, unchainedAPI);
           const deliveryThroughputTime = await actions.estimatedDeliveryThroughput(
             warehousingThroughputTime,
           );
-
-          const shippingTimestamp = referenceDate.getTime() + warehousingThroughputTime;
-          const earliestDeliveryTimestamp =
-            deliveryThroughputTime !== null ? shippingTimestamp + deliveryThroughputTime : null;
+          const earliestDelivery = Number.isFinite(deliveryThroughputTime)
+            ? new Date(shippingTimestamp + deliveryThroughputTime)
+            : null;
 
           return {
-            shipping: shippingTimestamp && new Date(shippingTimestamp),
-            earliestDelivery: earliestDeliveryTimestamp && new Date(earliestDeliveryTimestamp),
+            shipping,
+            earliestDelivery,
           };
         } catch (error) {
           log(error.message, { level: LogLevel.Error, ...error });
