@@ -114,12 +114,15 @@ export type IPricingDirector<
   PricingAdapterSheet extends IPricingSheet<Calculation>,
   Adapter extends IPricingAdapter<PricingAdapterContext, Calculation, PricingAdapterSheet>,
 > = IBaseDirector<Adapter> & {
-  buildPricingContext: (context: any, unchainedAPI: UnchainedCore) => Promise<PricingAdapterContext>;
+  buildPricingContext: (
+    context: PricingContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<PricingAdapterContext>;
   actions: (
     pricingContext: PricingContext,
     unchainedAPI: UnchainedCore,
     buildPricingContext?: (
-      pricingCtx: any,
+      pricingCtx: PricingContext,
       unchainedAPI: UnchainedCore,
     ) => Promise<PricingAdapterContext>,
   ) => Promise<

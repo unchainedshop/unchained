@@ -16,10 +16,6 @@ const baseDirector = BaseDirector<IWarehousingAdapter>('WarehousingDirector', {
   adapterSortKey: 'orderIndex',
 });
 
-declare global {
-  any;
-}
-
 export const WarehousingDirector: IWarehousingDirector = {
   ...baseDirector,
 
