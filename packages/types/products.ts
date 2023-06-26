@@ -301,7 +301,10 @@ export type ProductsModule = {
   delete: (productId: string) => Promise<number>;
   firstActiveProductProxy: (productId: string) => Promise<Product>;
   firstActiveProductBundle: (productId: string) => Promise<Product>;
-  deleteProductPermanently: (params: { productId: string }) => Promise<number>;
+  deleteProductPermanently: (
+    params: { productId: string },
+    options?: { keepReviews: boolean },
+  ) => Promise<number>;
 
   update: (productId: string, doc: Update<Product>) => Promise<string>;
 
