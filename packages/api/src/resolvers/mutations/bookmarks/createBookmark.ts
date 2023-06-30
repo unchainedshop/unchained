@@ -15,7 +15,7 @@ export default async function createBookmark(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  const [bookmark] = await modules.bookmarks.find({
+  const [bookmark] = await modules.bookmarks.findBookmarks({
     productId,
     userId,
     meta,

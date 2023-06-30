@@ -809,7 +809,9 @@ export default [
       makeQuotationProposal(quotationId: ID!, quotationContext: JSON): Quotation!
 
       """
-      toggle Bookmarks state of a product as currently logged in user
+      Toggle Bookmark state on a product as currently logged in user,
+      Does not work when multiple bookmarks with different explicit meta configurations exist.
+      In those cases please use createBookmark and removeBookmark
       """
       bookmark(productId: ID!, bookmarked: Boolean = true): Bookmark!
 

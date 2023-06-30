@@ -1,10 +1,15 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { InvalidIdError, ProductNotFoundError, BookmarkNotFoundError } from '../../../errors.js';
+import {
+  InvalidIdError,
+  ProductNotFoundError,
+  BookmarkNotFoundError,
+  MultipleBookmarksFound,
+} from '../../../errors.js';
 
 export default async function bookmark(
   root: Root,
-  { productId, bookmarked, meta }: { productId: string; bookmarked: string; meta: JSON },
+  { productId, bookmarked }: { productId: string; bookmarked: string },
   { userId, modules }: Context,
 ) {
   log('mutation bookmark', { productId, userId });
@@ -14,11 +19,20 @@ export default async function bookmark(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  const [foundBookmark] = await modules.bookmarks.find({
+  const foundBookmarks = await modules.bookmarks.findBookmarks({
     productId,
     userId,
-    meta,
   });
+
+  if (foundBookmarks.length > 1) {
+    throw new MultipleBookmarksFound({
+      productId,
+      userId,
+      bookmarkIds: foundBookmarks.map((b) => b._id),
+    });
+  }
+
+  const foundBookmark = foundBookmarks[0];
 
   if (bookmarked) {
     if (foundBookmark) return foundBookmark;
@@ -26,7 +40,6 @@ export default async function bookmark(
     const bookmarkId = await modules.bookmarks.create({
       productId,
       userId,
-      meta,
     });
 
     return modules.bookmarks.findById(bookmarkId);

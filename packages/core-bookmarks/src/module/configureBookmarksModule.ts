@@ -2,6 +2,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
+import { Query } from '@unchainedshop/types/common.js';
 import { BookmarksCollection } from '../db/BookmarksCollection.js';
 import { BookmarkSchema } from '../db/BookmarksSchema.js';
 
@@ -27,7 +28,7 @@ export const configureBookmarksModule = async ({
       const filter = generateDbFilterById(bookmarkId);
       return Bookmarks.findOne(filter, {});
     },
-    find: async (query) => Bookmarks.find(query).toArray(),
+    findBookmarks: async (query) => Bookmarks.find(query).toArray(),
 
     existsByUserIdAndProductId: async ({ productId, userId }) => {
       let selector = {};
@@ -44,16 +45,17 @@ export const configureBookmarksModule = async ({
     },
 
     // Mutations
-    replaceUserId: async (fromUserId, toUserId) => {
-      const result = await Bookmarks.updateMany(
-        { userId: fromUserId },
-        {
-          $set: {
-            userId: toUserId,
-            updated: new Date(),
-          },
+    replaceUserId: async (fromUserId, toUserId, bookmarkIds) => {
+      const selector: Query = { userId: fromUserId };
+      if (bookmarkIds) {
+        selector._id = { $in: bookmarkIds };
+      }
+      const result = await Bookmarks.updateMany(selector, {
+        $set: {
+          userId: toUserId,
+          updated: new Date(),
         },
-      );
+      });
       return result.upsertedCount;
     },
     deleteByUserId: async (userId) => {
