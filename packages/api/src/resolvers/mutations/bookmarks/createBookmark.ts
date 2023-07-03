@@ -5,19 +5,20 @@ import { BookmarkAlreadyExistsError, InvalidIdError, ProductNotFoundError } from
 export default async function createBookmark(
   root: Root,
   { productId, userId, meta }: { productId: string; userId: string; meta?: any },
-  { modules, userId: currenctUserId }: Context,
+  { modules, userId: currentUserId }: Context,
 ) {
   log(`mutation createBookmark for ${userId}`, {
     productId,
-    userId: currenctUserId,
+    userId: currentUserId,
   });
   if (!productId) throw new InvalidIdError({ productId });
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  const bookmark = await modules.bookmarks.findByUserIdAndProductId({
+  const [bookmark] = await modules.bookmarks.findBookmarks({
     productId,
     userId,
+    meta,
   });
 
   if (bookmark) throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });
@@ -28,5 +29,5 @@ export default async function createBookmark(
     meta,
   });
 
-  return modules.bookmarks.findById(bookmarkId);
+  return modules.bookmarks.findBookmarkById(bookmarkId);
 }

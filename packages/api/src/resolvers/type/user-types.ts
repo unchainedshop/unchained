@@ -149,7 +149,7 @@ export const User: UserHelperTypes = {
 
   bookmarks: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.modules.bookmarks.findByUserId(user._id);
+    return context.modules.bookmarks.findBookmarksByUserId(user._id);
   },
 
   async cart(user, params, context) {
