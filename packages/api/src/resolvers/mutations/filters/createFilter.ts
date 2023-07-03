@@ -16,6 +16,5 @@ export default async function createFilter(
       locale: localeContext.language,
     },
     context,
-    { skipInvalidation: false },
   );
 }

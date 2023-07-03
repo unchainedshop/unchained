@@ -12,9 +12,8 @@ export const removeProductService: RemoveProductService = async ({ productId }, 
     case null:
     case ProductStatus.DRAFT:
       await modules.bookmarks.deleteByProductId(productId);
-      await modules.assortments.products.delete(productId, {});
-      await modules.orders.positions.removeProductByIdFromAllPositions({ productId }, unchainedAPI);
-
+      await modules.assortments.products.delete(productId);
+      await modules.orders.positions.removeProductByIdFromAllOpenPositions(productId, unchainedAPI);
       await modules.products.delete(productId);
       break;
     default:

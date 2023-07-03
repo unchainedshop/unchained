@@ -48,8 +48,8 @@ export type OrderPositionsModule = {
   delete: (orderPositionId: string, unchainedAPI: UnchainedCore) => Promise<OrderPosition>;
 
   removePositions: ({ orderId }: { orderId: string }, unchainedAPI: UnchainedCore) => Promise<number>;
-  removeProductByIdFromAllPositions: (
-    { productId }: { productId: string },
+  removeProductByIdFromAllOpenPositions: (
+    productId: string,
     unchainedAPI: UnchainedCore,
   ) => Promise<number>;
 
