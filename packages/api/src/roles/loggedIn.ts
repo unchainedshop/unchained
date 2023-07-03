@@ -162,7 +162,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     { bookmarkId }: { bookmarkId: string },
     { userId, modules }: Context,
   ) => {
-    const bookmark = await modules.bookmarks.findById(bookmarkId);
+    const bookmark = await modules.bookmarks.findBookmarkById(bookmarkId);
     // return true if db entity not found in order
     // to let the resolver throw a good exception
     if (!bookmark) return true;

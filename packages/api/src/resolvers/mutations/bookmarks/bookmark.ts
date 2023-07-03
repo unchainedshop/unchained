@@ -42,7 +42,7 @@ export default async function bookmark(
       userId,
     });
 
-    return modules.bookmarks.findById(bookmarkId);
+    return modules.bookmarks.findBookmarkById(bookmarkId);
   }
 
   if (!foundBookmark) {

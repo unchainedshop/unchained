@@ -29,5 +29,5 @@ export default async function createBookmark(
     meta,
   });
 
-  return modules.bookmarks.findById(bookmarkId);
+  return modules.bookmarks.findBookmarkById(bookmarkId);
 }

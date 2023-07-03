@@ -22,27 +22,12 @@ export const configureBookmarksModule = async ({
   return {
     // Queries
     ...mutations,
-    findByUserId: async (userId) => Bookmarks.find({ userId }).toArray(),
-    findByUserIdAndProductId: async ({ userId, productId }) => Bookmarks.findOne({ userId, productId }),
-    findById: async (bookmarkId) => {
+    findBookmarksByUserId: async (userId) => Bookmarks.find({ userId }).toArray(),
+    findBookmarkById: async (bookmarkId) => {
       const filter = generateDbFilterById(bookmarkId);
       return Bookmarks.findOne(filter, {});
     },
     findBookmarks: async (query) => Bookmarks.find(query).toArray(),
-
-    existsByUserIdAndProductId: async ({ productId, userId }) => {
-      let selector = {};
-      if (productId && userId) {
-        selector = { userId, productId };
-      } else if (userId) {
-        selector = { userId };
-      }
-      const bookmarkCount = await Bookmarks.countDocuments(selector, {
-        limit: 1,
-      });
-
-      return !!bookmarkCount;
-    },
 
     // Mutations
     replaceUserId: async (fromUserId, toUserId, bookmarkIds) => {

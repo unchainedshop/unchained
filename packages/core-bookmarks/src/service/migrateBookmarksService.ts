@@ -19,10 +19,12 @@ export const migrateBookmarksService: MigrateBookmarksService = async (
   } else {
     const toBookmarks = await modules.bookmarks.findBookmarks({ userId: toUser._id });
     const toBookmarkHashes = toBookmarks.map(hashBookmark);
-    const newBookmarkIds = fromBookmarks.filter((fromBookmark) => {
-      const hash = hashBookmark(fromBookmark);
-      return !toBookmarkHashes.includes(hash);
-    });
+    const newBookmarkIds = fromBookmarks
+      .filter((fromBookmark) => {
+        const hash = hashBookmark(fromBookmark);
+        return !toBookmarkHashes.includes(hash);
+      })
+      .map((bookmark) => bookmark._id);
     await modules.bookmarks.replaceUserId(fromUser._id, toUser._id, newBookmarkIds);
   }
 };

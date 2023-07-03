@@ -20,12 +20,10 @@ export type Bookmark = {
  */
 
 export interface BookmarksModule extends ModuleMutations<Bookmark> {
-  findByUserId: (userId: string) => Promise<Array<Bookmark>>;
-  findByUserIdAndProductId: (filter: UserProductFilter) => Promise<Bookmark>;
-  findById: (bookmarkId: string) => Promise<Bookmark>;
+  findBookmarksByUserId: (userId: string) => Promise<Array<Bookmark>>;
+  findBookmarkById: (bookmarkId: string) => Promise<Bookmark>;
   findBookmarks: (query: Query) => Promise<Array<Bookmark>>;
-  existsByUserIdAndProductId: (filter: UserProductFilter) => Promise<boolean>;
-  replaceUserId: (fromUserId: string, toUserId: string) => Promise<number>;
+  replaceUserId: (fromUserId: string, toUserId: string, bookmarkIds?: Array<string>) => Promise<number>;
   deleteByUserId: (toUserId: string) => Promise<number>;
   deleteByProductId: (productId: string) => Promise<number>;
   deleteByUserIdAndMeta: (meta: any) => Promise<number>;
