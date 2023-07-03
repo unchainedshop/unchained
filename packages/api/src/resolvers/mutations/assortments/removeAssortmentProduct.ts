@@ -18,7 +18,7 @@ export default async function removeAssortmentProduct(
   });
   if (!assortmentProduct) throw new AssortmentProductNotFoundError({ assortmentProductId });
 
-  await modules.assortments.products.delete(assortmentProductId, { skipInvalidation: false });
+  await modules.assortments.products.delete(assortmentProductId);
 
   return assortmentProduct;
 }

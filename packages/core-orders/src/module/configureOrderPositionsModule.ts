@@ -180,32 +180,40 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
-    removeProductByIdFromAllOpenPositions: async ({ productId }, unchainedAPI) => {
+    removeProductByIdFromAllOpenPositions: async (productId, unchainedAPI) => {
       log('Remove Position Product', { productId });
-      const positions = await OrderPositions.find(
-        { productId },
-        { projection: { orderId: 1 } },
-      ).toArray();
 
-      const draftOrderIds = (
-        await unchainedAPI.modules.orders.findOrders({ status: null }, { projection: { _id: 1 } })
-      ).map((o) => o._id);
+      const positions = await OrderPositions.aggregate([
+        {
+          $match: {
+            productId,
+          },
+        },
+        {
+          $lookup: {
+            from: 'orders',
+            localField: 'orderId',
+            foreignField: '_id',
+            as: 'order',
+          },
+        },
+        {
+          $match: {
+            'order.status': null,
+          },
+        },
+      ]).toArray();
 
-      const result = await OrderPositions.deleteMany({ productId, orderId: { $in: draftOrderIds } });
+      const positionIds = positions.map((o) => o._id);
+      const result = await OrderPositions.deleteMany({ _id: { $in: positionIds } });
 
-      const orderIdsToRecalculate = new Set(
-        positions
-          .map((o) => o.orderId)
-          .filter((orderIdFromPosition) => draftOrderIds.includes(orderIdFromPosition)),
-      );
-
+      const orderIdsToRecalculate = positions.map((o) => o.orderId);
       await Promise.all(
-        [...orderIdsToRecalculate].map(async (orderIdToRecalculate) => {
+        [...new Set(orderIdsToRecalculate)].map(async (orderIdToRecalculate) => {
           await updateCalculation(orderIdToRecalculate, unchainedAPI);
         }),
       );
 
-      // if (bulkOperation)
       return result.deletedCount;
     },
 
