@@ -214,6 +214,14 @@ export const configureOrderPositionsModule = ({
         }),
       );
 
+      await Promise.all(
+        positions.map(async (orderPosition) => {
+          await emit('ORDER_REMOVE_CART_ITEM', {
+            orderPosition,
+          });
+        }),
+      );
+
       return result.deletedCount;
     },
 
