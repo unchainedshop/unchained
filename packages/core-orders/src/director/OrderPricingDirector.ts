@@ -18,36 +18,24 @@ const baseDirector = BasePricingDirector<
 export const OrderPricingDirector: IOrderPricingDirector = {
   ...baseDirector,
 
-  buildPricingContext: async ({ order, ...context }, unchainedAPI) => {
+  buildPricingContext: async (context, unchainedAPI) => {
     const { modules } = unchainedAPI;
+    const { order } = context;
+
     const user = await modules.users.findUserById(order.userId);
-
-    const orderDelivery = await modules.orders.deliveries.findDelivery({
-      orderDeliveryId: order.deliveryId,
-    });
-
-    const orderPayment = await modules.orders.payments.findOrderPayment({
-      orderPaymentId: order.paymentId,
-    });
-
-    const orderPositions = await modules.orders.positions.findOrderPositions({
-      orderId: order._id,
-    });
-
     const discounts = await modules.orders.discounts.findOrderDiscounts({
       orderId: order._id,
     });
 
     return {
+      ...unchainedAPI,
       country: order.countryCode,
       currency: order.currency,
-      ...context,
-      ...unchainedAPI,
       discounts,
       order,
-      orderDelivery,
-      orderPayment,
-      orderPositions,
+      orderDelivery: context.orderDelivery,
+      orderPayment: context.orderPayment,
+      orderPositions: context.orderPositions,
       user,
     };
   },

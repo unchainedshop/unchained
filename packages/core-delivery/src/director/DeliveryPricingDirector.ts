@@ -18,37 +18,45 @@ const baseDirector = BasePricingDirector<
 export const DeliveryPricingDirector: IDeliveryPricingDirector = {
   ...baseDirector,
 
-  async buildPricingContext({ item, ...context }, unchainedAPI) {
+  async buildPricingContext(context, unchainedAPI) {
     const { modules } = unchainedAPI;
 
-    if (!item)
-      return {
-        discounts: [],
-        ...context,
-        ...unchainedAPI,
-      };
+    if ('item' in context) {
+      const { item } = context;
+      const order = await modules.orders.findOrder({
+        orderId: item.orderId,
+      });
+      const provider = await modules.delivery.findProvider({
+        deliveryProviderId: item.deliveryProviderId,
+      });
+      const user = await modules.users.findUserById(order.userId);
+      const discounts = await modules.orders.discounts.findOrderDiscounts({
+        orderId: item.orderId,
+      });
 
-    const order = await modules.orders.findOrder({
-      orderId: item.orderId,
-    });
-    const provider = await modules.delivery.findProvider({
-      deliveryProviderId: item.deliveryProviderId,
-    });
-    const user = await modules.users.findUserById(order.userId);
-    const discounts = await modules.orders.discounts.findOrderDiscounts({
-      orderId: item.orderId,
-    });
+      return {
+        ...unchainedAPI,
+        country: order.countryCode,
+        currency: order.currency,
+        order,
+        provider,
+        user,
+        discounts,
+        orderDelivery: item,
+        providerContext: null,
+      };
+    }
 
     return {
-      country: order.countryCode,
-      currency: order.currency,
-      ...context,
       ...unchainedAPI,
-      order,
-      orderDelivery: item,
-      provider,
-      user,
-      discounts,
+      country: context.country,
+      currency: context.currency,
+      order: context.order,
+      provider: context.provider,
+      user: context.user,
+      discounts: [],
+      orderDelivery: null,
+      providerContext: context.providerContext,
     };
   },
 

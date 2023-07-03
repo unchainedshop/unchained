@@ -18,40 +18,45 @@ const baseDirector = BasePricingDirector<
 export const ProductPricingDirector: IProductPricingDirector = {
   ...baseDirector,
 
-  async buildPricingContext({ item: orderPosition, ...context }, unchainedAPI) {
+  async buildPricingContext(context, unchainedAPI) {
     const { modules } = unchainedAPI;
 
-    if (!orderPosition) {
+    if ('item' in context) {
+      const { item } = context;
+      const product = await modules.products.findProduct({
+        productId: item.productId,
+      });
+      const order = await modules.orders.findOrder({
+        orderId: item.orderId,
+      });
+      const user = await modules.users.findUserById(order.userId);
+      const discounts = await modules.orders.discounts.findOrderDiscounts({
+        orderId: item.orderId,
+      });
+
       return {
-        discounts: [],
-        ...context,
         ...unchainedAPI,
-      } as ProductPricingAdapterContext;
+        country: order.countryCode,
+        currency: order.currency,
+        discounts,
+        order,
+        product,
+        quantity: item.quantity,
+        configuration: item.configuration,
+        user,
+      };
     }
 
-    const product = await modules.products.findProduct({
-      productId: orderPosition.productId,
-    });
-
-    const order = await modules.orders.findOrder({
-      orderId: orderPosition.orderId,
-    });
-    const user = await modules.users.findUserById(order.userId);
-    const discounts = await modules.orders.discounts.findOrderDiscounts({
-      orderId: orderPosition.orderId,
-    });
-
     return {
-      country: order.countryCode,
-      currency: order.currency,
-      ...context,
       ...unchainedAPI,
-      discounts,
-      order,
-      product,
-      quantity: orderPosition.quantity,
-      configuration: orderPosition.configuration,
-      user,
+      country: context.country,
+      currency: context.currency,
+      discounts: [],
+      order: context.order,
+      product: context.product,
+      quantity: context.quantity,
+      configuration: context.configuration,
+      user: context.user,
     };
   },
 

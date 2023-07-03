@@ -1,14 +1,10 @@
-import { IWorker } from '@unchainedshop/types/worker.js';
+import { IWorker, WorkData } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import os from 'os';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 
-const { UNCHAINED_WORKER_ID } = process.env;
-
-const resolveWorkerId = (customWorkerId: string, type: string) =>
-  customWorkerId || UNCHAINED_WORKER_ID || `${os.hostname()}:${type}`;
-
+const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 interface WorkerParams {
   workerId: string;
   worker: IWorker<any>;
@@ -27,8 +23,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
   },
 
   actions: ({ workerId, worker }: WorkerParams, unchainedAPI) => {
-    const resolvedWorkerId = resolveWorkerId(workerId, worker.type);
-    log(`${worker.key} -> Initialized: ${resolvedWorkerId}`);
+    log(`${worker.key} -> Initialized: ${workerId || UNCHAINED_WORKER_ID} (${worker.type})`);
 
     const workerActions = {
       start() {
@@ -41,7 +36,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
       reset: async (referenceDate = new Date()) => {
         await unchainedAPI.modules.worker.markOldWorkAsFailed({
-          types: WorkerDirector.getActivePluginTypes(false),
+          types: WorkerDirector.getActivePluginTypes({ external: false }),
           worker: workerId,
           referenceDate,
         });
@@ -49,21 +44,26 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
       autorescheduleTypes: async ({ referenceDate }) => {
         return Promise.all(
-          WorkerDirector.getAutoSchedules().map(async ([type, work]) => {
-            const { schedule, input, priority, ...rest } = work;
-            const fixedSchedule = { ...schedule };
+          WorkerDirector.getAutoSchedules().map(async ([type, workConfig]) => {
+            const fixedSchedule = { ...workConfig.schedule };
             fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
             const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
             nextDate.setMilliseconds(0);
-            return unchainedAPI.modules.worker.ensureOneWork({
+            const workData: WorkData = {
+              worker: workConfig.worker || workerId,
               type,
-              input: input(),
               scheduled: nextDate,
-              worker: workerId,
-              priority: priority || 0,
-              ...rest,
-              retries: 0,
-            });
+              timeout: workConfig.timeout,
+              priority: workConfig.priority || 0,
+              retries: workConfig.retries || 0,
+            };
+            if (workConfig.input) {
+              workData.input = await workConfig.input(workData);
+              // A work input fn can skip auto scheduling a new record
+              // when it explicitly returns a falsish input instead of a dictionary
+              if (!workData.input) return null;
+            }
+            return unchainedAPI.modules.worker.ensureOneWork(workData);
           }),
         );
       },

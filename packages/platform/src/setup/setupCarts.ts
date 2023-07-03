@@ -1,6 +1,10 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { SetupCartsOptions } from '@unchainedshop/types/platform.js';
 
+export interface SetupCartsOptions {
+  invalidateProviders?: boolean;
+  providerInvalidationMaxAgeDays?: number;
+  assignCartForUsers?: boolean;
+}
 const { UNCHAINED_DISABLE_PROVIDER_INVALIDATION, UNCHAINED_ASSIGN_CART_FOR_USERS } = process.env;
 
 export const setupCarts = async (unchainedAPI: UnchainedCore, options: SetupCartsOptions = {}) => {

@@ -4,7 +4,7 @@ import { BaseWorker } from './BaseWorker.js';
 
 const { NODE_ENV } = process.env;
 
-interface WorkerParams {
+export interface IntervalWorkerParams {
   workerId: string;
   batchCount?: number;
   schedule: WorkerSchedule | string;
@@ -22,7 +22,7 @@ export const scheduleToInterval = (scheduleRaw: WorkerSchedule | string) => {
   return Math.min(1000 * 60 * 60, diff); // at least once every hour!
 };
 
-export const IntervalWorker: IWorker<WorkerParams> = {
+export const IntervalWorker: IWorker<IntervalWorkerParams> = {
   ...BaseWorker,
 
   key: 'shop.unchained.worker.cron',

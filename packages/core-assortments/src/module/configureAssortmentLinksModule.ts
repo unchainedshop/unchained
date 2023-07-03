@@ -106,7 +106,7 @@ export const configureAssortmentLinksModule = ({
 
       await emit('ASSORTMENT_ADD_LINK', { assortmentLink });
 
-      if (!options.skipInvalidation) {
+      if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [parentAssortmentId] });
       }
 
@@ -125,7 +125,7 @@ export const configureAssortmentLinksModule = ({
       await AssortmentLinks.updateOne(selector, modifier);
 
       const assortmentLink = await AssortmentLinks.findOne(selector, {});
-      if (!options.skipInvalidation) {
+      if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentLink.childAssortmentId] });
       }
       return assortmentLink;
@@ -142,7 +142,7 @@ export const configureAssortmentLinksModule = ({
         assortmentLinkId: assortmentLink._id,
       });
 
-      if (!options.skipInvalidation) {
+      if (!options?.skipInvalidation) {
         await invalidateCache({
           assortmentIds: [assortmentLink.childAssortmentId, assortmentLink.parentAssortmentId],
         });
@@ -169,7 +169,7 @@ export const configureAssortmentLinksModule = ({
         ),
       );
 
-      if (!options.skipInvalidation && assortmentLinks.length) {
+      if (!options?.skipInvalidation && assortmentLinks.length) {
         await invalidateCache({
           assortmentIds: assortmentLinks.flatMap((link) => [
             link.childAssortmentId,
@@ -199,7 +199,7 @@ export const configureAssortmentLinksModule = ({
         _id: { $in: changedAssortmentLinkIds },
       }).toArray();
 
-      if (!options.skipInvalidation && assortmentLinks.length) {
+      if (!options?.skipInvalidation && assortmentLinks.length) {
         await invalidateCache({ assortmentIds: assortmentLinks.map((link) => link.childAssortmentId) });
       }
 

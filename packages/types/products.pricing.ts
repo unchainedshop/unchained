@@ -9,6 +9,7 @@ import {
 } from './pricing.js';
 import { Product, ProductConfiguration } from './products.js';
 import { User } from './user.js';
+import { OrderPosition } from './orders.positions.js';
 
 export enum ProductPricingRowCategory {
   Item = 'ITEM',
@@ -31,16 +32,20 @@ export interface ProductPricingAdapterContext extends BasePricingAdapterContext 
   configuration: Array<ProductConfiguration>;
 }
 
-export type ProductPricingContext = {
-  country?: string;
-  currency?: string;
-  discounts?: Array<OrderDiscount>;
-  order?: Order;
-  product?: Product;
-  quantity?: number;
-  configuration: Array<ProductConfiguration>;
-  user?: User;
-};
+export type ProductPricingContext =
+  | {
+      country?: string;
+      currency?: string;
+      discounts?: Array<OrderDiscount>;
+      order?: Order;
+      product?: Product;
+      quantity?: number;
+      configuration: Array<ProductConfiguration>;
+      user?: User;
+    }
+  | {
+      item: OrderPosition;
+    };
 
 export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalculation> {
   addItem: (params: Omit<ProductPricingCalculation, 'category' | 'discountId'>) => void;

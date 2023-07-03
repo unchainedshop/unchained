@@ -23,12 +23,9 @@ export default async function addAssortmentProduct(
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
 
-  return modules.assortments.products.create(
-    {
-      assortmentId,
-      productId,
-      ...assortmentProduct,
-    },
-    { skipInvalidation: false },
-  );
+  return modules.assortments.products.create({
+    assortmentId,
+    productId,
+    ...assortmentProduct,
+  });
 }

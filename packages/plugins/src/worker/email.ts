@@ -2,7 +2,7 @@ import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import fs from 'fs';
-import { join } from 'path';
+import { join, isAbsolute } from 'path';
 import os from 'os';
 import open from 'open';
 import nodemailer from 'nodemailer';
@@ -15,7 +15,7 @@ export const checkEmailInterceptionEnabled = () => {
 
 const buildLink = ({ filename, content, href, contentType, encoding, path }) => {
   if (path) {
-    return `<a href="${join(process.cwd(), path)}">${filename}</a>`;
+    return `<a href="${isAbsolute(path) ? path : join(process.cwd(), path)}">${filename}</a>`;
   }
   if (href) {
     return `<a href="${href}">${filename}</a>`;

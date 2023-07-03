@@ -22,8 +22,8 @@ const Heartbeat: IWorkerAdapter<Arg, Result> = {
   key: 'shop.unchained.worker-plugin.heartbeat',
   label: 'Heartbeat plugin to check if workers are working',
   version: '1.0.0',
-
   type: 'HEARTBEAT',
+  maxParallelAllocations: 1,
 
   doWork: async (input: Arg): Promise<{ success: boolean; result: Result }> => {
     if (input?.wait) {

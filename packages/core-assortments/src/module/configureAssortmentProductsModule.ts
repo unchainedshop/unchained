@@ -107,7 +107,7 @@ export const configureAssortmentProductsModule = ({
 
       await emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
-      if (!options.skipInvalidation) {
+      if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
 
@@ -129,7 +129,7 @@ export const configureAssortmentProductsModule = ({
         assortmentProductId: assortmentProduct._id,
       });
 
-      if (!options.skipInvalidation) {
+      if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
 
@@ -150,7 +150,7 @@ export const configureAssortmentProductsModule = ({
         ),
       );
 
-      if (!options.skipInvalidation && assortmentProducts.length) {
+      if (!options?.skipInvalidation && assortmentProducts.length) {
         await invalidateCache({
           assortmentIds: assortmentProducts.map((product) => product.assortmentId),
         });
@@ -171,7 +171,7 @@ export const configureAssortmentProductsModule = ({
       await AssortmentProducts.updateOne(selector, modifier);
 
       const assortmentProduct = await AssortmentProducts.findOne(selector, {});
-      if (!options.skipInvalidation) {
+      if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
       return assortmentProduct;
@@ -194,7 +194,7 @@ export const configureAssortmentProductsModule = ({
         _id: { $in: changedAssortmentProductIds },
       }).toArray();
 
-      if (!options.skipInvalidation && assortmentProducts.length) {
+      if (!options?.skipInvalidation && assortmentProducts.length) {
         await invalidateCache({
           assortmentIds: assortmentProducts.map((product) => product.assortmentId),
         });

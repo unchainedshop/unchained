@@ -9,7 +9,16 @@ export type EmailTemplateType = {
     subject: string;
     text: string;
     html?: string;
-    attachments?: Array<{ filename: string; path: string }>;
+    attachments?: Array<
+      | { filename: string; path: string }
+      | {
+          filename: string;
+          content: string;
+          contentType: string;
+          encoding: string;
+        }
+      | { href: string; filename: string }
+    >;
   };
 };
 

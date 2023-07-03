@@ -7,15 +7,22 @@ function isString(input) {
   return typeof input === 'string' && Object.prototype.toString.call(input) === '[object String]';
 }
 
+const {
+  UNCHAINED_COOKIE_NAME = 'unchained_token',
+  UNCHAINED_COOKIE_PATH = '/',
+  UNCHAINED_COOKIE_DOMAIN,
+  NODE_ENV,
+} = process.env;
+
 export const getUserContext = async (
   req: IncomingMessage & { cookies?: any },
   res: OutgoingMessage,
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
-  const cookieName = process.env.UNCHAINED_COOKIE_NAME || 'unchained_token';
-  const domain = process.env.UNCHAINED_COOKIE_DOMAIN;
-  const path = process.env.UNCHAINED_COOKIE_PATH;
+  const cookieName = UNCHAINED_COOKIE_NAME;
+  const domain = UNCHAINED_COOKIE_DOMAIN;
+  const path = UNCHAINED_COOKIE_PATH;
 
   let loginToken = req.cookies?.[cookieName];
 
@@ -24,11 +31,11 @@ export const getUserContext = async (
     const authCookie = cookie.serialize(cookieName, token || null, {
       domain,
       httpOnly: true,
-      path: path || undefined,
+      path,
       expires: token ? expires : undefined,
       maxAge: token ? undefined : -1,
       sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      secure: NODE_ENV === 'production',
     });
     res.setHeader('Set-Cookie', authCookie);
   }

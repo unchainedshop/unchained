@@ -33,7 +33,7 @@ export const loadJSON = (filename) => {
 };
 const packageJson = loadJSON('../package.json');
 
-const UNCHAINED_API_VERSION = process.env.UNCHAINED_API_VERSION || packageJson?.version || '1.2.x';
+const { UNCHAINED_API_VERSION = packageJson?.version || '2.x' } = process.env;
 
 export const startAPIServer = async (options: UnchainedServerOptions): Promise<ApolloServer> => {
   const {

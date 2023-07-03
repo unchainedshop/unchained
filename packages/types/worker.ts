@@ -22,18 +22,18 @@ export enum WorkerEventTypes {
 
 export type Work = {
   _id?: string;
-  error?: any;
-  finished?: Date;
-  input?: any;
-  originalWorkId?: string;
   priority: number;
-  result?: any;
   retries: number;
   scheduled: Date;
+  type: string;
+  input: Record<string, any>;
+  error?: any;
+  finished?: Date;
+  originalWorkId?: string;
+  result?: any;
   started?: Date;
   success?: boolean;
   timeout?: number;
-  type: string;
   worker?: string;
 } & TimestampFields;
 
@@ -41,15 +41,10 @@ export type Work = {
  * Module
  */
 
-export interface WorkData {
-  type: string;
-  input: any;
-  originalWorkId?: string;
-  priority?: number;
-  retries?: number;
-  scheduled?: Date;
-  worker?: string;
-}
+export type WorkData = Pick<
+  Partial<Work>,
+  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker'
+> & { type: string };
 
 export interface WorkResult<Result> {
   success: boolean;
@@ -92,7 +87,7 @@ export type WorkerModule = {
 
   rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
 
-  ensureOneWork: (work: Work) => Promise<Work>;
+  ensureOneWork: (work: WorkData) => Promise<Work>;
 
   finishWork: (
     _id: string,
@@ -121,19 +116,20 @@ export interface WorkerSchedule {
   exceptions: Array<Record<string, any>>;
 }
 
-export type WorkScheduleConfiguration = Omit<Partial<Work>, 'input'> & {
-  input: () => any;
+export type WorkScheduleConfiguration = Pick<WorkData, 'timeout' | 'retries' | 'priority' | 'worker'> & {
+  input?: (workData: Omit<WorkData, 'input'>) => Promise<Record<string, any> | null>;
   schedule: WorkerSchedule;
 };
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;
   external: boolean;
+  maxParallelAllocations?: number;
 
   doWork: (input: Input, unchainedAPI: UnchainedCore, workId: string) => Promise<WorkResult<Output>>;
 };
 
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
-  getActivePluginTypes: (external?: boolean) => Array<string>;
+  getActivePluginTypes: (options?: { external?: boolean }) => Array<string>;
   getAdapterByType: (type: string) => IWorkerAdapter<any, any>;
   disableAutoscheduling: (type: string) => void;
   configureAutoscheduling: (
@@ -167,7 +163,7 @@ export type IWorker<P extends { workerId: string }> = {
     params: P,
     unchainedAPI: UnchainedCore,
   ) => {
-    autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work>>;
+    autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work | null>>;
     process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;
     reset: () => Promise<void>;
     start: () => void;
@@ -175,12 +171,15 @@ export type IWorker<P extends { workerId: string }> = {
   };
 };
 
-export type IScheduler = {
+export type IScheduler<P> = {
   key: string;
   label: string;
   version: string;
 
-  actions: (unchainedAPI: UnchainedCore) => {
+  actions: (
+    params: P,
+    unchainedAPI: UnchainedCore,
+  ) => {
     start: () => void;
     stop: () => void;
   };

@@ -47,7 +47,6 @@ export type DeliveryPricingContext =
       provider: DeliveryProvider;
       providerContext?: any;
       order: Order;
-      orderDelivery: OrderDelivery;
       user: User;
     }
   | { item: OrderDelivery };

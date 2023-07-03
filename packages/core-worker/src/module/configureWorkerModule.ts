@@ -1,6 +1,6 @@
 import os from 'os';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkerModule } from '@unchainedshop/types/worker.js';
+import { Work, WorkData, WorkerModule } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
@@ -111,7 +111,7 @@ export const configureWorkerModule = async ({
     const query = buildQuerySelector({
       status: [WorkStatus.NEW],
       scheduled: { end: new Date() },
-      worker: { $in: [null, worker] },
+      worker: { $in: [null, '', worker] },
       ...(types ? { type: { $in: types } } : {}),
     });
     const result = await WorkQueue.findOneAndUpdate(
@@ -179,8 +179,54 @@ export const configureWorkerModule = async ({
   };
 
   const processNextWork: WorkerModule['processNextWork'] = async (workerId, unchainedAPI) => {
+    const adapters = WorkerDirector.getAdapters();
+
+    const alreadyAllocatedWork = await WorkQueue.aggregate(
+      [
+        {
+          $match: {
+            started: {
+              $exists: true,
+            },
+            finished: {
+              $exists: false,
+            },
+            deleted: {
+              $exists: false,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: '$type',
+            count: {
+              $sum: 1,
+            },
+          },
+        },
+      ],
+      {
+        allowDiskUse: false,
+      },
+    ).toArray();
+
+    const allocationMap = Object.fromEntries(alreadyAllocatedWork.map((w) => [w._id, w.count]));
+
+    const types = adapters
+      .filter((adapter) => {
+        // Filter out the external
+        if (adapter.external) return false;
+        if (
+          adapter.maxParallelAllocations &&
+          adapter.maxParallelAllocations <= allocationMap[adapter.type]
+        )
+          return false;
+        return true;
+      })
+      .map((adapter) => adapter.type);
+
     const work = await allocateWork({
-      types: WorkerDirector.getActivePluginTypes(false),
+      types,
       worker: workerId,
     });
 
@@ -322,7 +368,15 @@ export const configureWorkerModule = async ({
 
     allocateWork,
 
-    ensureOneWork: async ({ type, input, priority = 0, scheduled, originalWorkId, retries = 20 }) => {
+    ensureOneWork: async ({
+      type,
+      input,
+      priority = 0,
+      scheduled,
+      timeout,
+      originalWorkId,
+      retries = 20,
+    }: WorkData) => {
       const created = new Date();
       const query = buildQuerySelector({
         type,
@@ -346,6 +400,7 @@ export const configureWorkerModule = async ({
               originalWorkId,
               scheduled,
               retries,
+              timeout,
               created,
             },
           },
@@ -367,6 +422,11 @@ export const configureWorkerModule = async ({
         }
         return result.value;
       } catch (e) {
+        /* TODO: 
+        If the findOneAndUpdate call failed because of _id conflict with a DELETED work,
+        we should permanently remove the conflicting deleted work 
+        and retry the findOneAndUpdate call.
+        */
         return null;
       }
     },
@@ -398,7 +458,7 @@ export const configureWorkerModule = async ({
         buildQuerySelector({
           status: [WorkStatus.ALLOCATED],
           started: { $lte: referenceDate },
-          worker,
+          worker: { $in: [worker, '', null] }, // Don't mark work failed of other workers!
           type: { $in: types },
         }),
         { projection: { _id: true }, sort: { test: 1 } },

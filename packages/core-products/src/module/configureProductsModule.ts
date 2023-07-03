@@ -113,15 +113,20 @@ export const configureProductsModule = async ({
   const productReviews = await configureProductReviewsModule({ db });
   const productVariations = await configureProductVariationsModule({ db });
 
-  const deleteProductPermanently: ProductsModule['deleteProductPermanently'] = async ({ productId }) => {
+  const deleteProductPermanently: ProductsModule['deleteProductPermanently'] = async (
+    { productId },
+    options,
+  ) => {
     const selector: mongodb.Filter<Product> = generateDbFilterById(productId, {
       status: ProductStatus.DELETED,
     });
 
     await productMedia.deleteMediaFiles({ productId });
     await productTexts.deleteMany({ productId });
-    await productReviews.deleteMany({ productId });
     await productVariations.deleteVariations({ productId });
+    if (!options?.keepReviews) {
+      await productReviews.deleteMany({ productId });
+    }
 
     const deletedResult = await Products.deleteOne(selector);
 
@@ -321,9 +326,12 @@ export const configureProductsModule = async ({
     // Mutations
     create: async ({ locale, title, type, sequence, ...productData }, { autopublish = false } = {}) => {
       if (productData._id) {
-        await deleteProductPermanently({
-          productId: productData._id as string,
-        });
+        await deleteProductPermanently(
+          {
+            productId: productData._id as string,
+          },
+          { keepReviews: true },
+        );
       }
 
       const productId = await mutations.create({

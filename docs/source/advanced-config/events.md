@@ -101,7 +101,8 @@ Below are events tracked under each module under the box:
 
 | Event name      | Emitted when...         | `payload`                |
 | :-------------- | :---------------------- | :----------------------- |
-| BOOKMARK_CREATE | New bookmark is created | `{ bookmarkId: string }` |
+| BOOKMARK_REMOVE | Bookmark is removed     | `{ bookmarkId: string }` |
+| BOOKMARK_UPDATE | Bookmark is updated     | `{ bookmarkId: string }` |
 | BOOKMARK_REMOVE | Bookmark is removed     | `{ bookmarkId: string }` |
 
 #### `core-country`

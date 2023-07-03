@@ -72,6 +72,9 @@ import './files/gridfs/gridfs-adapter.js';
 import { gridfsHandler } from './files/gridfs/gridfs-webhook.js';
 import { configureGridFSFileUploadModule } from './files/gridfs/index.js';
 
+import './accounts/google-oauth.js';
+import './accounts/linkedin-oauth.js';
+
 const {
   CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
   STRIPE_WEBHOOK_PATH = '/payment/stripe',

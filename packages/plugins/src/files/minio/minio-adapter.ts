@@ -11,7 +11,7 @@ import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
 import Minio from 'minio';
-import AssumeRoleProvider from 'minio/dist/main/AssumeRoleProvider.js';
+import { AssumeRoleProvider } from 'minio/dist/main/AssumeRoleProvider.js';
 import { Readable } from 'stream';
 import { URL } from 'url';
 
@@ -56,6 +56,8 @@ export async function connectToMinio() {
     if (MINIO_STS_ENDPOINT) {
       const ap = new AssumeRoleProvider({
         stsEndpoint: MINIO_STS_ENDPOINT,
+        accessKey: MINIO_ACCESS_KEY,
+        secretKey: MINIO_SECRET_KEY,
       });
       // eslint-disable-next-line
       // @ts-ignore

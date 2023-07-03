@@ -23,7 +23,6 @@ You have to set `CRYPTOPAY_SECRET`, `CRYPTOPAY_BTC_XPUB` (if you want to accept 
 | `CRYPTOPAY_BTC_TESTNET`   | `false`                                | Denotes whether the extended public key is a testnet public key. |
 | `CRYPTOPAY_ETH_XPUB`      |                                        | Extended Ethereum public key. |
 | `CRYPTOPAY_MAX_RATE_AGE`  | `360`                                  | Maximum age of an exchange rate (in seconds) such that it is still considered for the conversion. |
-| `CRYPTOPAY_MAX_CONV_DIFF` | `0.01`                                 | Configures how much lower the converted amount is allowed to be such that it is still considered as payed. 0.01 (1%) means that for a product with a price of $100, a converted amount of $99 would still be valid. Allows to incorporate the volatility of crypto exchange rates, but can also be set to 0.00 if always the full amount (or more) must be payed. |
 
 ### Ethereum Address Derivation
 
@@ -136,4 +135,3 @@ The gateway sends the current rate for BTC, ETH, and the configured ERC20 tokens
 | NAME                              | Default Value                          | Description                         |
 | --------------------------------- | -------------------------------------- | --------------------------------------- |
 | `CRYPTOPAY_SECRET`                |                                        | Shared secret for communication with the payment gateway. Has to be equal to `unchained.secret` in the payment gateway configuration (`cryptopay.yaml`). |
-| `CRYPTOPAY_PRICING_WEBHOOK_PATH`  | `/pricing/cryptopay`           | The path that is used for the pricing webhook. Has to correspond to the path in `unchained.price-webhook-url` of the payment gateway configuration (`cryptopay.yaml`). |

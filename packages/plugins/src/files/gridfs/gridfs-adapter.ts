@@ -15,7 +15,7 @@ import sign from './sign.js';
 
 const pipeline = promisify(rawPipeline);
 
-const { UNCHAINED_PUT_URL_EXPIRY, ROOT_URL } = process.env;
+const { UNCHAINED_PUT_URL_EXPIRY = '86400000', ROOT_URL } = process.env;
 
 const getExpiryDate = () =>
   new Date(new Date().getTime() + (parseInt(UNCHAINED_PUT_URL_EXPIRY, 10) || 24 * 60 * 60 * 1000));
@@ -114,7 +114,7 @@ export const GridFSAdapter: IFileAdapter = {
       expiryDate: null,
       fileName,
       size: length,
-      type: mimeType.lookup(fileName),
+      type: mimeType.lookup(fileName) || response.headers.get('content-type'),
       url,
     } as UploadFileData;
   },

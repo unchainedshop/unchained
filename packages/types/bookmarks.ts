@@ -13,6 +13,7 @@ export type Bookmark = {
   _id?: string;
   userId: string;
   productId: string;
+  meta?: any;
 } & TimestampFields;
 
 /*
@@ -20,14 +21,13 @@ export type Bookmark = {
  */
 
 export interface BookmarksModule extends ModuleMutations<Bookmark> {
-  findByUserId: (userId: string) => Promise<Array<Bookmark>>;
-  findByUserIdAndProductId: (filter: UserProductFilter) => Promise<Bookmark>;
-  findById: (bookmarkId: string) => Promise<Bookmark>;
-  find: (query: Filter<Bookmark>) => Promise<Array<Bookmark>>;
-  existsByUserIdAndProductId: (filter: UserProductFilter) => Promise<boolean>;
-  replaceUserId: (fromUserId: string, toUserId: string) => Promise<number>;
+  findBookmarksByUserId: (userId: string) => Promise<Array<Bookmark>>;
+  findBookmarkById: (bookmarkId: string) => Promise<Bookmark>;
+  findBookmarks: (query: Filter<Bookmark>) => Promise<Array<Bookmark>>;
+  replaceUserId: (fromUserId: string, toUserId: string, bookmarkIds?: Array<string>) => Promise<number>;
   deleteByUserId: (toUserId: string) => Promise<number>;
   deleteByProductId: (productId: string) => Promise<number>;
+  deleteByUserIdAndMeta: (meta: any) => Promise<number>;
 }
 
 /*

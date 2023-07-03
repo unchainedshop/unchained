@@ -32,7 +32,7 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
     const { modules } = unchainedAPI;
 
     const tokens = await modules.warehousing.findTokens({});
-    const users = await modules.users.findUsers({ includeGuests: true });
+    const users = await modules.users.findUsers({ includeGuests: true, 'services.web3.verified': true });
     const accounts = users.flatMap((user) => {
       return user?.services?.web3?.flatMap((service) => {
         if (service.verified) return [service.address];
@@ -79,8 +79,4 @@ WorkerDirector.registerAdapter(UpdateTokenOwnership);
 
 WorkerDirector.configureAutoscheduling(RefreshTokens, {
   schedule: everyMinute,
-  retries: 5,
-  input: () => {
-    /* */
-  },
 });

@@ -17,6 +17,7 @@ const findLoadedOptions = async (
   unchainedAPI: UnchainedCore,
 ) => {
   const { values, forceLiveCollection, productIdSet } = params;
+  const parse = createFilterValueParser(filter.type);
 
   const allOptions = (filter.type === FilterType.SWITCH && ['true', 'false']) || filter.options || [];
   const mappedOptions = await Promise.all(
@@ -30,7 +31,10 @@ const findLoadedOptions = async (
         unchainedAPI,
       );
       const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
-      if (!filteredProductIds.size) {
+      const normalizedValues = parse(values, [value]);
+      const isSelected = normalizedValues.indexOf(value) !== -1;
+
+      if (!filteredProductIds.size && !isSelected) {
         return null;
       }
       const filteredProductsCount = () =>
@@ -39,14 +43,9 @@ const findLoadedOptions = async (
         }).length;
 
       return {
-        definition: () => ({ filterOption: value, ...filter }),
+        definition: { filterOption: value, ...filter },
         filteredProductsCount,
-        isSelected: () => {
-          if (!values) return false;
-          const parse = createFilterValueParser(filter.type);
-          const normalizedValues = parse(values, [value]);
-          return normalizedValues.indexOf(value) !== -1;
-        },
+        isSelected,
       };
     }),
   );

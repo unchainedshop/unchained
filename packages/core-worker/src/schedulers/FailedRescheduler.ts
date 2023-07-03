@@ -1,15 +1,22 @@
-import { IScheduler, Work } from '@unchainedshop/types/worker.js';
+import { IScheduler, Work, WorkData } from '@unchainedshop/types/worker.js';
 import { log } from '@unchainedshop/logger';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 
-export const FailedRescheduler: IScheduler = {
+export interface FailedReschedulerParams {
+  retryInput?: (
+    workData: WorkData,
+    priorInput: Record<string, any>,
+  ) => Promise<Record<string, any> | null>;
+}
+
+export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
   key: 'shop.unchained.scheduler.failed',
   label: 'Reschedule failed works',
   version: '1.0.0',
 
-  actions: (unchainedAPI) => {
-    const handleFinishedWork = ({ work }: { work: Work }) => {
+  actions: ({ retryInput }, unchainedAPI) => {
+    const handleFinishedWork = async ({ work }: { work: Work }) => {
       if (!work.success && work.retries > 0) {
         const now = new Date();
         const workDelayMs = work.scheduled.getTime() - work.created.getTime();
@@ -28,14 +35,22 @@ export const FailedRescheduler: IScheduler = {
           }`,
         );
 
-        unchainedAPI.modules.worker.addWork({
+        const workData: WorkData = {
           type: work.type,
-          input: work.input,
           priority: work.priority,
           originalWorkId: work.originalWorkId || work._id,
           retries: work.retries - 1,
+          timeout: work.timeout,
           scheduled,
-        });
+        };
+
+        if (retryInput) {
+          workData.input = await retryInput(workData, work.input);
+        } else {
+          workData.input = work.input;
+        }
+
+        unchainedAPI.modules.worker.addWork(workData);
       }
     };
 

@@ -1,5 +1,7 @@
 import { Context } from '@unchainedshop/types/api.js';
 import { PaymentError, PaymentProvider as PaymentProviderType } from '@unchainedshop/types/payments.js';
+import crypto from 'crypto';
+import { PaymentPricingDirector } from '@unchainedshop/core-payment';
 
 export interface PaymentProviderHelperTypes {
   interface: (
@@ -17,6 +19,23 @@ export interface PaymentProviderHelperTypes {
     _: never,
     context: Context,
   ) => Promise<PaymentError>;
+  simulatedPrice: (
+    provider: PaymentProviderType,
+    params: {
+      currency?: string;
+      orderId: string;
+      useNetPrice?: boolean;
+      context: any;
+    },
+    context: Context,
+  ) => Promise<{
+    _id: string;
+    amount: number;
+    currencyCode: string;
+    countryCode: string;
+    isTaxable: boolean;
+    isNetPrice: boolean;
+  }>;
 }
 export const PaymentProvider: PaymentProviderHelperTypes = {
   interface(obj, _, { modules }) {
@@ -33,5 +52,57 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
   isActive(obj, _, requestContext) {
     const { modules } = requestContext;
     return modules.payment.paymentProviders.isActive(obj, requestContext);
+  },
+
+  async simulatedPrice(
+    paymentProvider,
+    { currency: currencyCode, orderId, useNetPrice, context: providerContext },
+    requestContext,
+  ) {
+    const { modules, services, countryContext: country, user } = requestContext;
+    const order = await modules.orders.findOrder({ orderId });
+
+    const currency =
+      currencyCode ||
+      (await services.countries.resolveDefaultCurrencyCode(
+        {
+          isoCode: country,
+        },
+        requestContext,
+      ));
+
+    const pricingDirector = await PaymentPricingDirector.actions(
+      {
+        country,
+        currency,
+        provider: paymentProvider,
+        order,
+        providerContext,
+        user,
+      },
+      requestContext,
+    );
+
+    const calculated = await pricingDirector.calculate();
+    if (!calculated || !calculated.length) return null;
+
+    const pricing = pricingDirector.calculationSheet();
+
+    const orderPrice = pricing.total({ useNetPrice }) as {
+      amount: number;
+      currency: string;
+    };
+
+    return {
+      _id: crypto
+        .createHash('sha256')
+        .update([paymentProvider._id, country, useNetPrice, order ? order._id : ''].join(''))
+        .digest('hex'),
+      amount: orderPrice.amount,
+      currencyCode: orderPrice.currency,
+      countryCode: country,
+      isTaxable: pricing.taxSum() > 0,
+      isNetPrice: useNetPrice,
+    };
   },
 };

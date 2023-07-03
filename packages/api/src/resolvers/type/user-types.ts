@@ -15,6 +15,7 @@ import {
   Web3Address,
   WebAuthnCredentials,
   PushSubscription,
+  OAuthAccount,
 } from '@unchainedshop/types/user.js';
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
@@ -80,6 +81,7 @@ export interface UserHelperTypes {
   tags: HelperType<any, Array<string>>;
   username: HelperType<any, string>;
   pushSubscriptions: HelperType<any, Array<PushSubscription>>;
+  oAuthAccounts: HelperType<any, Array<OAuthAccount>>;
 }
 
 const {
@@ -147,7 +149,7 @@ export const User: UserHelperTypes = {
 
   bookmarks: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.modules.bookmarks.findByUserId(user._id);
+    return context.modules.bookmarks.findBookmarksByUserId(user._id);
   },
 
   async cart(user, params, context) {
@@ -215,7 +217,6 @@ export const User: UserHelperTypes = {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return user.services?.web3 || [];
   },
-
   quotations: async (user, params, context) => {
     await checkAction(context, viewUserQuotations, [user, params]);
     return context.modules.quotations.findQuotations({
@@ -231,5 +232,14 @@ export const User: UserHelperTypes = {
       expirationTime,
       endpoint,
     }));
+  },
+  oAuthAccounts: async (user, params, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    return Object.entries(user.services?.oauth || {}).flatMap(([provider, accounts]) => {
+      return (accounts as any).map((providerData) => ({
+        provider,
+        ...(providerData as any),
+      }));
+    });
   },
 };

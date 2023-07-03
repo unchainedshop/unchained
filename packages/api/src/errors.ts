@@ -159,6 +159,11 @@ export const BookmarkAlreadyExistsError = createError(
   'Bookmark already exists',
 );
 export const BookmarkNotFoundError = createError('BookmarkNotFoundError', 'Bookmark not found');
+export const MultipleBookmarksFound = createError(
+  'MultipleBookmarksFound',
+  'The convenience bookmark mutation cannot be used because multiple bookmarks were explicitly created with different metadata',
+);
+
 export const QueryStringRequiredError = createError(
   'QueryStringRequiredError',
   'Query string is required when no assortments are in scope',
@@ -234,10 +239,7 @@ export const TwoFactorAlreadySetError = createError('TwoFactorAlreadySet', '2FA 
 
 export const TwoFactorNotSetError = createError('TwoFactorNotSet', '2FA not set for user');
 
-export const InvalidCredentialsError = createError(
-  'InvalidCredentials',
-  'Incorrect credential provided',
-);
+export const InvalidCredentialsError = createError('InvalidCredentials', 'Invalid credentials provided');
 
 export const InvalidResetTokenError = createError('InvalidResetTokenError', 'Token validation failed');
 

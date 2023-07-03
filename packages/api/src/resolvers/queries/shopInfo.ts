@@ -1,5 +1,8 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import { IOAuth2Adapter } from '@unchainedshop/types/accounts.js';
+
+const { EXTERNAL_LINKS = '[]' } = process.env;
 
 export default function shopInfo(
   root: Root,
@@ -10,16 +13,20 @@ export default function shopInfo(
   externalLinks: Array<string>;
   adminUiConfig?: Record<string, any>;
   vapidPublicKey?: string;
+  oAuthProviders?: () => Promise<Array<IOAuth2Adapter>>;
 } {
   const { adminUiConfig } = context;
   log('query shopInfo', { userId: context.userId });
+
   return {
     version: context.version,
-    externalLinks: JSON.parse(process.env.EXTERNAL_LINKS || '[]'),
+    externalLinks: JSON.parse(EXTERNAL_LINKS),
     adminUiConfig: {
       customProperties: adminUiConfig?.customProperties ?? [],
     },
-
+    async oAuthProviders() {
+      return context.modules.accounts.oAuth2.getProviders();
+    },
     vapidPublicKey: process.env?.PUSH_NOTIFICATION_PUBLIC_KEY,
   };
 }

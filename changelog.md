@@ -1,3 +1,20 @@
+# Unchained Engine v2.2
+
+This release contains various bugfixes and improvements and it breaks various type imports because we are currently in the process of moving types to their respective npm modules.
+
+## Minor
+- Extended the input fn option of auto-scheduling `input` to expect a promise and also take the pre-calculated workData as input extending the possibilities to alter auto-scheduling behavior. #588
+- Remove `autoSchedulingInput` because there is no obvious way this is helpful and it has never been used in known projects
+- Move some platform types to platform package
+- The platform option `workQueueOptions` has been extended to take a retryInput. The retryInput fn can be used to alter input into work when the work is beeing retried. This allows stopping retries. #588
+
+## Patch
+- Fix timeout field in worker's and types
+- Fix mime-type resolves now based on http response in GridFS when downloading from an URL (fallback scenario #559).
+- Fix worker not set automatically to the hostname, that was leading to stale external work jobs #561
+- Fix reschedule did not cancel old schedules #562
+
+
 # Unchained Engine v2.1
 
 This release contains various bugfixes and improvements

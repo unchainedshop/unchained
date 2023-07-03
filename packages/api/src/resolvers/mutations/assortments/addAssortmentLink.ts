@@ -34,16 +34,11 @@ export default async function addAssortmentLink(
       assortmentId: childAssortmentId,
     });
   try {
-    const result = await modules.assortments.links.create(
-      {
-        parentAssortmentId,
-        childAssortmentId,
-        ...assortmentLink,
-      },
-      {
-        skipInvalidation: false,
-      },
-    );
+    const result = await modules.assortments.links.create({
+      parentAssortmentId,
+      childAssortmentId,
+      ...assortmentLink,
+    });
     return result;
   } catch (e) {
     if (e?.message === 'CyclicGraphNotSupported')

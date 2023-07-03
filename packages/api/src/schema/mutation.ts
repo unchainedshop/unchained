@@ -18,11 +18,26 @@ export default [
       loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
 
       """
+      Log the user with OAuth2 service provider
+      """
+      loginWithOAuth(
+        provider: String!
+        authorizationCode: String!
+        redirectUrl: String!
+      ): LoginMethodResponse
+
+      """
       Web3
       """
       addWeb3Address(address: String!): User!
       verifyWeb3Address(address: String!, hash: String!): User!
       removeWeb3Address(address: String!): User!
+
+      """
+      OAuth2
+      """
+      linkOAuthAccount(provider: String!, authorizationCode: String!, redirectUrl: String!): User!
+      unlinkOAuthAccount(provider: String!, oAuthAccountId: ID!): User!
 
       """
       Create a new user.
@@ -794,14 +809,16 @@ export default [
       makeQuotationProposal(quotationId: ID!, quotationContext: JSON): Quotation!
 
       """
-      toggle Bookmarks state of a product as currently logged in user
+      Toggle Bookmark state on a product as currently logged in user,
+      Does not work when multiple bookmarks with different explicit meta configurations exist.
+      In those cases please use createBookmark and removeBookmark
       """
       bookmark(productId: ID!, bookmarked: Boolean = true): Bookmark!
 
       """
       Create a bookmark for a specific user
       """
-      createBookmark(productId: ID!, userId: ID!): Bookmark!
+      createBookmark(productId: ID!, userId: ID!, meta: JSON): Bookmark!
 
       """
       Remove an existing bookmark by ID

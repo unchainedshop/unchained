@@ -187,20 +187,48 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
-    removeProductByIdFromAllPositions: async ({ productId }, unchainedAPI) => {
+    removeProductByIdFromAllOpenPositions: async (productId, unchainedAPI) => {
       log('Remove Position Product', { productId });
-      const positions = await OrderPositions.find(
-        { productId },
-        { projection: { orderId: 1 } },
-      ).toArray();
 
-      const result = await OrderPositions.deleteMany({ productId });
+      const positions = await OrderPositions.aggregate([
+        {
+          $match: {
+            productId,
+          },
+        },
+        {
+          $lookup: {
+            from: 'orders',
+            localField: 'orderId',
+            foreignField: '_id',
+            as: 'order',
+          },
+        },
+        {
+          $match: {
+            'order.status': null,
+          },
+        },
+      ]).toArray();
 
+      const positionIds = positions.map((o) => o._id);
+      const result = await OrderPositions.deleteMany({ _id: { $in: positionIds } });
+
+      const orderIdsToRecalculate = positions.map((o) => o.orderId);
       await Promise.all(
-        positions.map(async ({ orderId }) => {
-          await updateCalculation(orderId, unchainedAPI);
+        [...new Set(orderIdsToRecalculate)].map(async (orderIdToRecalculate) => {
+          await updateCalculation(orderIdToRecalculate, unchainedAPI);
         }),
       );
+
+      await Promise.all(
+        positions.map(async (orderPosition) => {
+          await emit('ORDER_REMOVE_CART_ITEM', {
+            orderPosition,
+          });
+        }),
+      );
+
       return result.deletedCount;
     },
 
