@@ -4,13 +4,9 @@
     "rootDir": "src",
     "outDir": "lib",
     "paths": {
-      "postfinancecheckout": [
-        "./src/payment/postfinance-checkout/silence-postfinancecheckout.d.ts"
-      ],
+      "postfinancecheckout": ["./src/payment/postfinance-checkout/silence-postfinancecheckout.d.ts"]
     }
   },
   "exclude": ["**/*.test.ts", "**/*.test.js", "tests"],
-  "include": [
-    "./src"
-  ]
+  "include": ["./src", "../utils/src/roundToNext.test.ts"]
 }

@@ -1,3 +1,5 @@
+export * as calculation from './calculation.js';
+
 export { default as findLocalizedText } from './find-localized-text.js';
 export * from './locale-helpers.js';
 export { default as objectInvert } from './object-invert.js';

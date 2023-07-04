@@ -1,7 +1,5 @@
 import {configureProductPriceRounding, ProductPriceRoundSettings } from './product-price-round.js'
 
-
-
 describe('configureProductPriceRounding', () => {
   beforeEach(() => {
     ProductPriceRoundSettings.configurations = {};
