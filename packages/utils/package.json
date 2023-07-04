@@ -33,7 +33,7 @@
     "@unchainedshop/logger": "^2.3.0",
     "abort-controller": "3.0.0",
     "hashids": "^2.3.0",
-    "jest": "^29.5.0",
+    "jest": "^29.6.0",
     "locale": "0.1.0",
     "lru-cache": "^10.0.0",
     "simpl-schema": "=3.2.0"
