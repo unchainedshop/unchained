@@ -1,5 +1,5 @@
 import 'abort-controller/polyfill.js';
-import LRU from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 import { Collection, Filter, Locale, Document } from '@unchainedshop/types/common.js';
 import { systemLocale } from './locale-helpers.js';
 
@@ -7,7 +7,7 @@ const { NODE_ENV } = process.env;
 
 const ttl = NODE_ENV === 'production' ? 1000 * 10 : 0; // 10 seconds or 0 seconds
 
-const textCache = new LRU({ max: 50000, ttl });
+const textCache = new LRUCache({ max: 50000, ttl });
 
 const extendSelectorWithLocale = (selector, locale) => {
   const localeSelector = {

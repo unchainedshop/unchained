@@ -6,7 +6,7 @@ import {
 import Sheets from 'node-sheets';
 import { log, LogLevel } from '@unchainedshop/logger';
 import 'abort-controller/polyfill.js';
-import LRU from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 import { IWarehousingAdapter } from '@unchainedshop/types/warehousing.js';
 
 const { NODE_ENV, GOOGLE_SHEETS_ID, GOOGLE_SHEETS_PRIVATE_KEY_DATA } = process.env;
@@ -48,7 +48,7 @@ const updateGoogleCache = async (cache) => {
   return null;
 };
 
-const googleCache = new LRU({
+const googleCache = new LRUCache({
   max: 500,
   ttl, // 1 second in dev
   allowStale: true,

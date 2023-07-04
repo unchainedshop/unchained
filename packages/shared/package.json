@@ -1,5 +1,8 @@
 {
     "name": "@unchainedshop/shared",
     "private": true,
-    "version": "2.2.3"
+    "version": "2.3.0",
+    "dependencies": {
+        "typescript": "^5.1.6"
+    }
 }

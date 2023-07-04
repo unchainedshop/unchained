@@ -7,6 +7,14 @@ const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;
 
 const logger = createLogger('unchained:plugins:worker:sms');
 
+/* Potential: no need for twilio npm
+curl -X POST "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Messages.json" \
+--data-urlencode "From=+15017122661" \
+--data-urlencode "Body=Hi there" \
+--data-urlencode "To=+15558675310" \
+-u $TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN
+*/
+
 const SmsWorkerPlugin: IWorkerAdapter<
   {
     from?: string;

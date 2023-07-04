@@ -1,6 +1,6 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
-import { ethers } from 'ethers';
+import { HDNodeVoidWallet, HDNodeWallet, ethers } from 'ethers';
 import { BIP32Factory } from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import * as bitcoin from 'bitcoinjs-lib';
@@ -34,7 +34,7 @@ type CryptopayAddress = {
 const getDerivationPath = (currency: CryptopayCurrencies, index: number): string => {
   const address = `${(parseInt(CRYPTOPAY_DERIVATION_START, 10) || 0) + index}`;
   if (currency === CryptopayCurrencies.ETH) {
-    const pathComponents = ethers.utils.defaultPath.split('/');
+    const pathComponents = ethers.defaultPath.split('/');
     pathComponents[pathComponents.length - 1] = address;
     return pathComponents.join('/');
   }
@@ -170,7 +170,9 @@ const Cryptopay: IPaymentAdapter = {
         if (CRYPTOPAY_ETH_XPUB) {
           // we neuter for security reasons, it's still quite complicated for most ethereum clients to show an appropriate
           // xpub, that's why
-          const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB).neuter();
+          const hdWallet = ethers.HDNodeWallet.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
+          const hardenedMaster = (hdWallet as HDNodeWallet)?.neuter() || (hdWallet as HDNodeVoidWallet);
+
           const ethDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.ETH,
           );
