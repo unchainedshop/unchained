@@ -32,7 +32,7 @@ const findLoadedOptions = async (
       );
       const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
       const normalizedValues = values && parse(values, [value]);
-      const isSelected = normalizedValues?.indexOf(value) !== -1;
+      const isSelected = normalizedValues && normalizedValues.indexOf(value) !== -1;
 
       if (!filteredProductIds.size && !isSelected) {
         return null;
