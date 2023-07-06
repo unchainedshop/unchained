@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-accountsjs",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "main": "lib/accounts-index.js",
   "exports": {
     ".": "./lib/accounts-index.js",
@@ -37,15 +37,15 @@
     "@accounts/password": "^0.32.2",
     "@accounts/server": "0.33.1",
     "@graphql-modules/core": "0.7.17",
-    "@unchainedshop/logger": "^2.3.0",
-    "@unchainedshop/utils": "^2.3.0",
+    "@unchainedshop/logger": "^2.3.1",
+    "@unchainedshop/utils": "^2.3.1",
     "fido2-lib": "^3.4.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.16.19",
-    "@unchainedshop/types": "^2.3.0",
-    "jest": "^29.6.0",
+    "@unchainedshop/types": "^2.3.1",
+    "jest": "^29.6.1",
     "ts-jest": "^29.1.1",
     "typescript": "^5.1.6"
   }
