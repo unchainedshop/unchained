@@ -11,11 +11,10 @@ const getExchangeRates = async () => {
   })
     .then((res) => res.text())
     .then((text) => JSON.parse(xmlJs.xml2json(text)))
-    .then(
-      (json) =>
-        json.elements?.[0]?.elements
-          .filter((e) => e.name.toLowerCase() === 'cube')[0]
-          ?.elements[0]?.elements.map((element) => element.attributes),
+    .then((json) =>
+      json.elements?.[0]?.elements
+        .filter((e) => e.name.toLowerCase() === 'cube')[0]
+        ?.elements[0]?.elements.map((element) => element.attributes),
     );
 };
 
@@ -91,5 +90,5 @@ WorkerDirector.registerAdapter(UpdateECBRates);
 
 WorkerDirector.configureAutoscheduling(UpdateECBRates, {
   schedule: everyDayAtFour,
-  retries: 2,
+  retries: 5,
 });

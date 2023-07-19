@@ -121,7 +121,7 @@ describe("Cart Checkout Flow", () => {
         variables: {
           orderId,
           contact: {
-            emailAddress: "hello@unchained.shop",
+            emailAddress: "hello@unchained.local",
             telNumber: "+41999999999",
           },
           meta: {
@@ -132,7 +132,7 @@ describe("Cart Checkout Flow", () => {
 
       expect(data?.updateCart).toMatchObject({
         contact: {
-          emailAddress: "hello@unchained.shop",
+          emailAddress: "hello@unchained.local",
           telNumber: "+41999999999",
         },
       });

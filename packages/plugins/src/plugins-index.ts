@@ -62,6 +62,7 @@ import './worker/email.js';
 import './worker/sms.js';
 import './worker/push-notification.js';
 import './worker/update-ecb-rates.js';
+import './worker/error-notifications.js';
 import './worker/update-coinbase-rates.js';
 import { configureExportToken } from './worker/export-token.js';
 import { configureGenerateOrderAutoscheduling } from './worker/enrollment-order-generator.js';

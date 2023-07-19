@@ -23,7 +23,7 @@ export const ErrorNotifications: IWorkerAdapter<Arg, Result> = {
 
   doWork: async (args, context, workId) => {
     const work = await context.modules.worker.findWork({ workId });
-    const secondsPassed = args?.secondsPassed || 60 * 60 * 24;
+    const secondsPassed = args?.secondsPassed || 60;
     const to = new Date();
     const from = new Date(new Date(work.scheduled).getTime() - secondsPassed * 1000);
 
@@ -74,9 +74,9 @@ WorkerDirector.registerAdapter(ErrorNotifications);
 
 export default ErrorNotifications;
 
-export const configureErrorNotificationsAutoScheduling = () => {
-  WorkerDirector.configureAutoscheduling(ErrorNotifications, {
-    schedule: everyDayAtFourInTheNight,
-    retries: 0,
-  });
-};
+const ONE_DAY_IN_SECONDS = 24 * 60 * 60;
+WorkerDirector.configureAutoscheduling(ErrorNotifications, {
+  schedule: everyDayAtFourInTheNight,
+  input: async () => ({ secondsPassed: ONE_DAY_IN_SECONDS }),
+  retries: 0,
+});

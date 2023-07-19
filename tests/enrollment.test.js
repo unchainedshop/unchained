@@ -90,7 +90,7 @@ describe('Enrollments', () => {
             city: 'Zürich',
           },
           contact: {
-            emailAddress: 'hello@unchained.shop',
+            emailAddress: 'hello@unchained.local',
             telNumber: '+41999999999',
           },
           meta: {
@@ -440,7 +440,7 @@ describe('Enrollments', () => {
             countryCode: 'ch',
           },
           contact: {
-            emailAddress: 'mikael@unchained.shop',
+            emailAddress: 'mikael@unchained.local',
             telNumber: '+251912669988',
           },
           payment: {
@@ -464,7 +464,7 @@ describe('Enrollments', () => {
           countryCode: 'ch',
         },
         contact: {
-          emailAddress: 'mikael@unchained.shop',
+          emailAddress: 'mikael@unchained.local',
           telNumber: '+251912669988',
         },
         payment: {
