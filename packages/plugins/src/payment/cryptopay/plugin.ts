@@ -143,7 +143,7 @@ const Cryptopay: IPaymentAdapter = {
                 ({
                   address: _id,
                   currency,
-                } as CryptopayAddress),
+                }) as CryptopayAddress,
             ),
           );
           return JSON.stringify(existingAddressesWithNewExpiration);

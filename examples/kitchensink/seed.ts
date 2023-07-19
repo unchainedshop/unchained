@@ -114,8 +114,8 @@ export default async (unchainedAPI) => {
       \ncurrencies: ${currencies.map((c) => c.isoCode).join(',')}
       \nlanguages: ${languages.join(',')}
       \ndeliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})\npaymentProvider: ${
-      paymentProvider._id
-    } (${paymentProvider.adapterKey})
+        paymentProvider._id
+      } (${paymentProvider.adapterKey})
       \nuser: admin@unchained.local / ${seedPassword}`);
   } catch (e) {
     logger.error(e);

@@ -90,5 +90,5 @@ WorkerDirector.registerAdapter(UpdateECBRates);
 
 WorkerDirector.configureAutoscheduling(UpdateECBRates, {
   schedule: everyDayAtFour,
-  retries: 5,
+  retries: 2,
 });

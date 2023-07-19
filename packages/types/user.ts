@@ -34,7 +34,7 @@ export interface UserProfile {
 export interface UserLastLogin {
   timestamp?: Date;
   locale?: string;
-  countryContext?: string;
+  countryCode?: string;
   remoteAddress?: string;
   remotePort?: string;
   userAgent?: string;

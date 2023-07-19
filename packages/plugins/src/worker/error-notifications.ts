@@ -1,8 +1,6 @@
 import { IWorkerAdapter, WorkStatus } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
-import { LogLevel, createLogger, log } from '@unchainedshop/logger';
-
-const logger = createLogger('unchained:platform:error-notifications');
+import later from '@breejs/later';
 
 type Arg = {
   secondsPassed?: number;
@@ -11,6 +9,8 @@ type Arg = {
 type Result = {
   forked?: string;
 };
+
+const everyDayAtFourInTheNight = later.parse.cron('0 3 * * *');
 
 export const ErrorNotifications: IWorkerAdapter<Arg, Result> = {
   ...WorkerAdapter,
@@ -22,12 +22,8 @@ export const ErrorNotifications: IWorkerAdapter<Arg, Result> = {
   type: 'ERROR_NOTIFICATIONS',
 
   doWork: async (args, context, workId) => {
-    log(`ErrorNotificationsWorkerPlugin -> doWork`, {
-      level: LogLevel.Verbose,
-    });
-
     const work = await context.modules.worker.findWork({ workId });
-    const secondsPassed = args?.secondsPassed || 60;
+    const secondsPassed = args?.secondsPassed || 60 * 60 * 24;
     const to = new Date();
     const from = new Date(new Date(work.scheduled).getTime() - secondsPassed * 1000);
 
@@ -77,3 +73,10 @@ export const ErrorNotifications: IWorkerAdapter<Arg, Result> = {
 WorkerDirector.registerAdapter(ErrorNotifications);
 
 export default ErrorNotifications;
+
+export const configureErrorNotificationsAutoScheduling = () => {
+  WorkerDirector.configureAutoscheduling(ErrorNotifications, {
+    schedule: everyDayAtFourInTheNight,
+    retries: 0,
+  });
+};

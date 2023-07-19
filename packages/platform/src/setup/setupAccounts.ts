@@ -187,7 +187,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       remotePort,
       userAgent,
       locale: normalizedLocale,
-      countryContext,
+      countryCode: countryContext,
     });
 
     const user = await unchainedAPI.modules.users.findUserById(userId);

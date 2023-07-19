@@ -314,15 +314,18 @@ export const configureProductPricesModule = ({
             expiresAt: { $gte: referenceDate },
           })
           .toArray();
-        return rates.reduce((acc, rate) => {
-          const curRate = normalizeRate(baseCurrency, quoteCurrency, rate);
-          const lastMinRate = acc.min || curRate;
-          const lastMaxRate = acc.max || curRate;
-          return {
-            min: Math.min(curRate, lastMinRate),
-            max: Math.max(curRate, lastMaxRate),
-          };
-        }, {} as { min: number; max: number });
+        return rates.reduce(
+          (acc, rate) => {
+            const curRate = normalizeRate(baseCurrency, quoteCurrency, rate);
+            const lastMinRate = acc.min || curRate;
+            const lastMaxRate = acc.max || curRate;
+            return {
+              min: Math.min(curRate, lastMinRate),
+              max: Math.max(curRate, lastMaxRate),
+            };
+          },
+          {} as { min: number; max: number },
+        );
       },
       updateRates: async (rates) => {
         const priceRates = await ProductPriceRates(db);
