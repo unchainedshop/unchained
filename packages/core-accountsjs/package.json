@@ -36,7 +36,6 @@
     "@accounts/mongo-password": "^0.32.4",
     "@accounts/password": "^0.32.2",
     "@accounts/server": "0.33.1",
-    "@graphql-modules/core": "0.7.17",
     "@unchainedshop/logger": "^2.3.2",
     "@unchainedshop/utils": "^2.3.2",
     "fido2-lib": "^3.4.1",
