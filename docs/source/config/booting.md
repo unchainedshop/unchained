@@ -22,7 +22,7 @@ await unchainedAPI.modules.accounts.createUser(
   {
     email: 'admin@unchained.local',
     guest: false,
-    initialPassword: 'true',
+    initialPassword: true,
     password: hashPassword('admin'),
     roles: ['admin'],
     username: 'admin',

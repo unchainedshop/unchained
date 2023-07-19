@@ -20,7 +20,7 @@ const startAndWaitForApp = async () => {
           NODE_ENV: 'development',
           UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
           UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
-          EMAIL_WEBSITE_NAME: 'Unchained Website',
+          EMAIL_WEBSITE_NAME: 'Unchained',
           EMAIL_WEBSITE_URL: 'http://localhost:4010',
           EMAIL_FROM: 'noreply@unchained.local',
           DATATRANS_SECRET: 'secret',

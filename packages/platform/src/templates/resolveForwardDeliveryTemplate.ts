@@ -5,48 +5,6 @@ import { getOrderPositionsData } from './utils/getOrderPositionsData.js';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, ROOT_URL } = process.env;
 
-const mjmlTemplate = `
-<mjml>
-  <mj-body background-color="#FAFAFA">
-      <mj-section padding-bottom="32px" background-color="#fcfcfc">
-        <mj-column width="100%">
-          <mj-text align="center" font-size="20px" color="#232323" font-family="Helvetica Neue" font-weight="200">
-            <h2 >{{subject}}</h2>
-          </mj-text>
-          <mj-text align="left" font-size="20px" color="#232323" font-family="Helvetica Neue" font-weight="200">
-            <span>Order number: {{orderNumber}}</span><br/>
-            <span>Order date: {{orderDate}}</span>
-            <a href="{{adminUILink}}">{{adminUILink}}</a>
-          </mj-text>
-          <mj-text align="left" font-size="20px" color="#232323">Delivery address</mj-text>
-          <mj-text align="left">
-            {{address.firstName}} {{address.lastName}}<br/>
-            {{address.company}}<br/>
-            {{address.addressLine}}<br/>
-            {{address.addressLine2}}<br/>
-            {{address.postalCode}} {{address.city}} {{address.regionCode}}<br/>
-            {{address.countryCode}}<br/>
-          </mj-text>
-          <mj-divider border-width="1px" border-style="dashed" border-color="lightgrey" />
-          <mj-text align="left" font-size="20px" color="#232323">Articles</mj-text>
-          <mj-table>
-            <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-              <th style="padding: 0 15px 0 0;">Article</th>
-              <th style="padding: 0 15px;">Quantity</th>
-            </tr>
-            {{#items}}
-              <tr>
-                <td style="padding: 0 15px 0 0;">{{sku}} - {{name}}</td>
-                <td style="padding: 0 15px;">{{quantity}}</td>
-              </tr>
-            {{/items}}
-          </mj-table>
-        </mj-column>
-      </mj-section>
-  </mj-body>
-</mjml>
-`;
-
 const textTemplate = `
   {{subject}}\n
   \n
@@ -114,7 +72,6 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config,
         cc: configObject.cc,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),
-        html: modules.messaging.renderMjmlToHtml(mjmlTemplate, data),
         attachments,
       },
     },
