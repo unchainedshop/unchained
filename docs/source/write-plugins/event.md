@@ -8,40 +8,41 @@ We can easily swap the default event tracker module (EventEmitter) used by uncha
 Here is an example of redis-enabled Unchained Events:
 
 ```typescript
-import redis from 'redis';
-import EventDirector, { EventAdapter } from '@unchainedshop/core-events';
+import { createClient } from '@redis/client';
+import { EmitAdapter } from '@unchainedshop/types/events.js';
+import { setEmitAdapter } from '@unchainedshop/events';
 
 const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
 
-class RedisEventEmitter extends EventAdapter {
-  redisPublisher = redis.createClient({
-    port: REDIS_PORT,
-    host: REDIS_HOST,
+const subscribedEvents = new Set();
+
+const RedisEventEmitter = (): EmitAdapter => {
+  const redisPublisher = createClient({
+    url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
   });
 
-  redisSubscriber = redis.createClient({
-    port: REDIS_PORT,
-    host: REDIS_HOST,
+  const redisSubscriber = createClient({
+    url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
   });
 
-  publish(eventName, payload) {
-    this.redisPublisher.publish(eventName, JSON.stringify(payload));
-  }
+  return {
+    publish: (eventName, payload) => redisPublisher.publish(eventName, JSON.stringify(payload)),
+    subscribe: (eventName, callback) => {
+      if (!subscribedEvents.has(eventName)) {
+        redisSubscriber.subscribe(eventName, (payload) => {
+          callback(JSON.parse(payload));
+        });
+        subscribedEvents.add(eventName);
+      }
+    },
+  };
+};
 
-  subscribe(eventName, callback) {
-    this.redisSubscriber.on('message', (_channelName, payload) =>
-      callback(payload)
-    );
-      this.redisSubscriber.subscribe(eventName);
-    }
-  }
-}
+setEmitAdapter(RedisEventEmitter());
+```
 
-const handler = new RedisEventEmitter();
-
-EventDirector.setEventAdapter(handler);
-
-
+Register custom events:
+```typescript
   startPlatform({...});
   ...
   registerEvents([
@@ -49,8 +50,6 @@ EventDirector.setEventAdapter(handler);
       'CUSTOM_EVENT_TWO',
       'CUSTOM_EVENT_THREE',
   ])
-
-
 ```
 
 Explanation:
