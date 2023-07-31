@@ -14,6 +14,7 @@
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.21",
     "@unchainedshop/types": "^2.1.0",
     "cheerio": "1.0.0-rc.2",
+    "coffeescript": "^2.7.0",
     "gatsby": "2.24.47",
     "gatsby-telemetry": "^2.15.0",
     "react": "16.13.1",
