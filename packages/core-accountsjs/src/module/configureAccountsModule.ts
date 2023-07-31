@@ -103,9 +103,28 @@ export const configureAccountsModule = async ({
     createImpersonationToken: async (userId, rawContext) => {
       // TODO: rawContext does not contain user and locale date anymore
       // following the type but the code still depends on it
+      const { modules } = rawContext;
       const context = evaluateContext(filterContext(rawContext));
 
       const { user: tokenUser, token: loginToken } = await accountsServer.loginWithUser(userId);
+
+      await modules.users.updateUser(
+        {
+          _id: userId,
+          'services.resume.loginTokens': {
+            $elemMatch: {
+              hashedToken: modules.accounts.createHashLoginToken(loginToken.token),
+              when: loginToken.when,
+            },
+          },
+        },
+        {
+          $set: {
+            'services.resume.loginTokens.$.impersonatorId': context.userId,
+          },
+        },
+        {},
+      );
 
       await accountsServer.getHooks().emit('ImpersonationSuccess', {
         user: context.user,

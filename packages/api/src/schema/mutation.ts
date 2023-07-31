@@ -450,6 +450,11 @@ export default [
       impersonate(userId: ID!): LoginMethodResponse!
 
       """
+      End customer impersonated user session and resume the impersonator session
+      """
+      stopImpersonation: LoginMethodResponse!
+
+      """
       Reorder a media asset (first is primary)
       """
       reorderProductMedia(sortKeys: [ReorderProductMediaInput!]!): [ProductMedia!]!
