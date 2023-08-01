@@ -4,6 +4,7 @@ We have been working on reducing the bundle size lately and got rid of many thir
 
 ## Minor
 - Remove `renderMjmlToHtml` convenience method and pre-defined html templates because mjml is too heavy weight as a dependency and html e-mails cause more issues than they solve.
+- Support `MINIO_UPLOAD_PREFIX` to specifiy subdirectory in bucket in front of all uploads
 - Remove various dependencies from core packages.
 - Make updating of token ownerships more performant
 - Improve pricing types
