@@ -2,6 +2,7 @@ import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/ac
 
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleInput } from '@unchainedshop/types/core.js';
+import { Context } from '@unchainedshop/types/api.js';
 import { accountsSettings } from '../accounts-settings.js';
 import { accountsPassword } from '../accounts/accountsPassword.js';
 import { UnchainedAccountsServer } from '../accounts/accountsServer.js';
@@ -100,11 +101,10 @@ export const configureAccountsModule = async ({
       };
     },
 
-    createImpersonationToken: async (userId, rawContext) => {
+    createImpersonationToken: async (userId, rawContext: Context) => {
       // TODO: rawContext does not contain user and locale date anymore
       // following the type but the code still depends on it
       const { modules } = rawContext;
-      const context = evaluateContext(filterContext(rawContext));
 
       const { user: tokenUser, token: loginToken } = await accountsServer.loginWithUser(userId);
 
@@ -120,14 +120,14 @@ export const configureAccountsModule = async ({
         },
         {
           $set: {
-            'services.resume.loginTokens.$.impersonatorId': context.userId,
+            'services.resume.loginTokens.$.impersonatorId': rawContext.userId,
           },
         },
         {},
       );
 
       await accountsServer.getHooks().emit('ImpersonationSuccess', {
-        user: context.user,
+        user: rawContext.user,
         impersonationResult: {
           authorized: true,
           tokens: loginToken,

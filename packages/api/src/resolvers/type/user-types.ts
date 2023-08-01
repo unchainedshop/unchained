@@ -16,7 +16,6 @@ import {
   WebAuthnCredentials,
   PushSubscription,
   OAuthAccount,
-  User,
 } from '@unchainedshop/types/user.js';
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
@@ -84,7 +83,7 @@ export interface UserHelperTypes {
   username: HelperType<any, string>;
   pushSubscriptions: HelperType<any, Array<PushSubscription>>;
   oAuthAccounts: HelperType<any, Array<OAuthAccount>>;
-  impersonator: HelperType<any, User>;
+  impersonator: HelperType<any, UserType>;
   reviews: HelperType<
     {
       sort?: Array<SortOption>;
