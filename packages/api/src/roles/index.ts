@@ -101,6 +101,7 @@ const actions: Record<string, string> = [
   'authTwoFactor',
   'manageTwoFactor',
   'impersonate',
+  'viewUserProductReviews',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

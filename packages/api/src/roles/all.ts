@@ -55,6 +55,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
   role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
   role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);
+  role.allow(actions.viewUserProductReviews, isInLoginMutationResponse);
   role.allow(actions.reviewProduct, () => false);
   role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);
