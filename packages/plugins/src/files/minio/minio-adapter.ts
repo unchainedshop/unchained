@@ -23,6 +23,7 @@ const {
   MINIO_SECRET_KEY,
   MINIO_ENDPOINT,
   MINIO_BUCKET_NAME,
+  MINIO_UPLOAD_PREFIX,
   NODE_ENV,
   AMAZON_S3_SESSION_TOKEN,
 } = process.env;
@@ -72,8 +73,13 @@ export async function connectToMinio() {
   return null;
 }
 
+const generateMinioPath = (directoryName: string, fileName: string) => {
+  const prefix = MINIO_UPLOAD_PREFIX || '';
+  return [prefix, directoryName, fileName].filter(Boolean).join('/');
+};
+
 const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
-  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${hashedFilename}`;
+  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${generateMinioPath(directoryName, hashedFilename)}`;
 };
 
 const getMimeType = (extension) => {
@@ -131,7 +137,7 @@ export const MinioAdapter: IFileAdapter = {
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
-      `${directoryName}/${_id}`,
+      generateMinioPath(directoryName, _id),
       expiryOffsetInMs() / 1000,
     );
 
@@ -177,9 +183,15 @@ export const MinioAdapter: IFileAdapter = {
       'Content-Type': type,
     };
 
-    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream, undefined, metaData);
+    await client.putObject(
+      MINIO_BUCKET_NAME,
+      generateMinioPath(directoryName, _id),
+      stream,
+      undefined,
+      metaData,
+    );
 
-    const { size } = await getObjectStats(`${directoryName}/${_id}`);
+    const { size } = await getObjectStats(generateMinioPath(directoryName, _id));
 
     return {
       _id,
@@ -206,8 +218,14 @@ export const MinioAdapter: IFileAdapter = {
       'Content-Type': type,
     };
 
-    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream, undefined, metaData);
-    const { size } = await getObjectStats(`${directoryName}/${_id}`);
+    await client.putObject(
+      MINIO_BUCKET_NAME,
+      generateMinioPath(directoryName, _id),
+      stream,
+      undefined,
+      metaData,
+    );
+    const { size } = await getObjectStats(generateMinioPath(directoryName, _id));
 
     return {
       _id,
