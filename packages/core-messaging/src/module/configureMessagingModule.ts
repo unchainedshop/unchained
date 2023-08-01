@@ -9,7 +9,7 @@ export const configureMessagingModule: (options: ModuleInput<unknown>) => Messag
   return {
     renderToText(template, data) {
       try {
-        const rendered = mustache.render(template, data);
+        const rendered = mustache.render(template, data, undefined, { escape: (t) => t }); // No escape, it's a text mail
         return rendered;
       } catch (e) {
         if (e.getMessages) {
