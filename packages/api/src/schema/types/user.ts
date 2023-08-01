@@ -153,6 +153,7 @@ export default [
       allowedActions: [RoleAction!]!
       tokens: [Token!]!
       oAuthAccounts: [OAuthAccount!]!
+      impersonator: User
       reviews(limit: Int = 10, offset: Int = 0, sort: [SortOptionInput!]): [ProductReview!]!
       reviewsCount: Int!
     }

@@ -16,6 +16,7 @@ import {
   WebAuthnCredentials,
   PushSubscription,
   OAuthAccount,
+  User,
 } from '@unchainedshop/types/user.js';
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
@@ -83,6 +84,7 @@ export interface UserHelperTypes {
   username: HelperType<any, string>;
   pushSubscriptions: HelperType<any, Array<PushSubscription>>;
   oAuthAccounts: HelperType<any, Array<OAuthAccount>>;
+  impersonator: HelperType<any, User>;
   reviews: HelperType<
     {
       sort?: Array<SortOption>;
@@ -253,7 +255,7 @@ export const User: UserHelperTypes = {
       }));
     });
   },
-  async reviews(user, params, context) {
+async reviews(user, params, context) {
     const { modules } = context;
     await checkAction(context, viewUserProductReviews, [user, params]);
     return modules.products.reviews.findProductReviews({
@@ -267,5 +269,18 @@ export const User: UserHelperTypes = {
     return modules.products.reviews.count({
       authorId: user._id,
     });
+  },
+  impersonator: async (user, params, context) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    if (!user?.services || !user?.services?.resume || !user?.services?.resume?.loginTokens) return null;
+
+    const { loginTokens } = user.services.resume;
+    const impersonatedSession = loginTokens.find(
+      ({ hashedToken, impersonatorId }) =>
+        hashedToken === context.modules.accounts.createHashLoginToken(context.loginToken) &&
+        impersonatorId,
+    );
+    if (!impersonatedSession) return null;
+    return context.modules.users.findUserById(impersonatedSession.impersonatorId);
   },
 };
