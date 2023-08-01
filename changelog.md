@@ -1,3 +1,21 @@
+# Unchained Engine v2.3
+
+We have been working on reducing the bundle size lately and got rid of many third party dependencies. We will not stop here and continue that work. The ultimate goal is to make Unchained run on Deno natively. To achieve, we first have to make the core (`core-` packages) free of third party dependencies and free of Node package dependence and `api` basically only depend on Apollo.
+
+## Minor
+- Remove `renderMjmlToHtml` convenience method and pre-defined html templates because mjml is too heavy weight as a dependency and html e-mails cause more issues than they solve.
+- Remove various dependencies from core packages.
+- Make updating of token ownerships more performant
+- Improve pricing types
+- Support attachment preview in mail debug mode when using absolute file paths
+## Patch
+- Fix an issue with order pricing
+- Fix oder position removal issue #571
+- Fix bookmark edge cases #564
+- Fix an issue with filters not returned that are selected when they return 0 items
+- Fix countryCode not returned in lastLogin field of User
+
+
 # Unchained Engine v2.2
 
 This release contains various bugfixes and improvements and it breaks various type imports because we are currently in the process of moving types to their respective npm modules.
