@@ -1,6 +1,6 @@
+import fs from 'fs';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
-import fs from 'fs';
 import { checkAction } from '../acl.js';
 import { actions } from '../roles/index.js';
 

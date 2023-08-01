@@ -1,5 +1,5 @@
-import { AccountsServer, ServerHooks } from '@accounts/server';
 import crypto from 'crypto';
+import { AccountsServer, ServerHooks } from '@accounts/server';
 import { randomValueHex } from '@unchainedshop/utils';
 import { User } from '@unchainedshop/types/user.js';
 

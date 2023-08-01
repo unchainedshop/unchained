@@ -1,6 +1,6 @@
+import { pipeline, finished } from 'stream/promises';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { buildHashedFilename } from '@unchainedshop/file-upload';
-import { pipeline, finished } from 'stream/promises';
 import { Context } from '@unchainedshop/types/api.js';
 import express from 'express';
 import sign from './sign.js';

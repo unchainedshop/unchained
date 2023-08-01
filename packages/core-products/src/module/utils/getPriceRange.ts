@@ -1,5 +1,5 @@
-import { ProductPrice } from '@unchainedshop/types/products.js';
 import crypto from 'crypto';
+import { ProductPrice } from '@unchainedshop/types/products.js';
 
 export const getPriceRange = (params: {
   productId: string;

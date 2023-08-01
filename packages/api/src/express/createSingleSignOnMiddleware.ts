@@ -1,8 +1,8 @@
 /// <reference lib="dom" />
+import { IncomingMessage } from 'http';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { IncomingMessage } from 'http';
 import cookie from 'cookie';
 
 const { ROOT_URL, NODE_ENV, UNCHAINED_CLOUD_ENDPOINT } = process.env;

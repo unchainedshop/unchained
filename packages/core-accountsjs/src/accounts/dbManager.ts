@@ -1,6 +1,6 @@
+import { randomBytes } from 'crypto';
 import mongoPkg from '@accounts/mongo';
 import { DatabaseManager } from '@accounts/database-manager';
-import { randomBytes } from 'crypto';
 
 // eslint-disable-next-line
 // @ts-ignore

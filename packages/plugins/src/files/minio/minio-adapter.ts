@@ -1,14 +1,20 @@
-import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
-import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
-
 import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
+import { Readable } from 'stream';
+import { URL } from 'url';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
+import {
+  FileAdapter,
+  FileDirector,
+  buildHashedFilename,
+  resolveExpirationDate,
+} from '@unchainedshop/file-upload';
+
 import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
 import Minio from 'minio';
 import { AssumeRoleProvider } from 'minio/dist/main/AssumeRoleProvider.js';
-import { Readable } from 'stream';
-import { URL } from 'url';
+import { expiryOffsetInMs } from '@unchainedshop/file-upload/put-expiration.js';
 
 const {
   MINIO_ACCESS_KEY,
@@ -20,7 +26,6 @@ const {
   NODE_ENV,
   AMAZON_S3_SESSION_TOKEN,
 } = process.env;
-const PUT_URL_EXPIRY = 24 * 60 * 60;
 
 let client: Minio.Client;
 
@@ -111,8 +116,6 @@ const bufferToStream = (buffer: any) => {
   return stream;
 };
 
-const getExpiryDate = () => new Date(new Date().getTime() + PUT_URL_EXPIRY);
-
 export const MinioAdapter: IFileAdapter = {
   key: 'shop.unchained.file-upload-plugin.minio',
   label: 'Uploads files into an S3 bucket using minio',
@@ -123,13 +126,13 @@ export const MinioAdapter: IFileAdapter = {
   async createSignedURL(directoryName, fileName) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
-    const expiryDate = getExpiryDate();
+    const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
       `${directoryName}/${_id}`,
-      PUT_URL_EXPIRY,
+      expiryOffsetInMs() / 1000,
     );
 
     return {

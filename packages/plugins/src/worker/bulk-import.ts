@@ -1,7 +1,7 @@
+import fs from 'fs';
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger, LogLevel } from '@unchainedshop/logger';
-import fs from 'fs';
 import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';
 import { UnchainedCore } from '@unchainedshop/types/core.js';

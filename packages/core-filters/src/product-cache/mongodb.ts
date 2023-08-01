@@ -1,6 +1,6 @@
+import crypto from 'crypto';
 import { Db } from '@unchainedshop/types/common.js';
 import { FiltersSettingsOptions } from '@unchainedshop/types/filters.js';
-import crypto from 'crypto';
 import memoizee from 'memoizee';
 import { FiltersCollection } from '../db/FiltersCollection.js';
 

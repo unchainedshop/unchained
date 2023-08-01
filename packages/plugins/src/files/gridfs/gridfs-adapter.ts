@@ -1,19 +1,21 @@
 /// <reference lib="dom" />
-import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
-import { FileAdapter, FileDirector, buildHashedFilename } from '@unchainedshop/file-upload';
-import mimeType from 'mime-types';
 import { URL } from 'url';
 import { Readable, pipeline as rawPipeline } from 'stream';
 import { promisify } from 'util';
 import { ReadableStream } from 'node:stream/web';
+import mimeType from 'mime-types';
+import {
+  FileAdapter,
+  FileDirector,
+  buildHashedFilename,
+  resolveExpirationDate,
+} from '@unchainedshop/file-upload';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
 import sign from './sign.js';
 
 const pipeline = promisify(rawPipeline);
 
-const { UNCHAINED_PUT_URL_EXPIRY = '86400000', ROOT_URL } = process.env;
-
-const getExpiryDate = () =>
-  new Date(new Date().getTime() + (parseInt(UNCHAINED_PUT_URL_EXPIRY, 10) || 24 * 60 * 60 * 1000));
+const { ROOT_URL } = process.env;
 
 const bufferToStream = (buffer: any) => {
   const stream = new Readable();
@@ -31,7 +33,7 @@ export const GridFSAdapter: IFileAdapter = {
   ...FileAdapter,
 
   async createSignedURL(directoryName, fileName) {
-    const expiryDate = getExpiryDate();
+    const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
     const signature = sign(directoryName, _id, expiryDate.getTime());
 
@@ -66,7 +68,7 @@ export const GridFSAdapter: IFileAdapter = {
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
     }
 
-    const expiryDate = getExpiryDate();
+    const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
@@ -93,7 +95,7 @@ export const GridFSAdapter: IFileAdapter = {
     const { href } = new URL(fileLink);
     const fileName = fname || href.split('/').pop();
 
-    const expiryDate = getExpiryDate();
+    const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);

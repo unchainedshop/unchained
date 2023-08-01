@@ -1,6 +1,6 @@
+import { createRequire } from 'module';
 import { createLogger as createWinstonLogger, format, transports } from 'winston';
 import TransportStream from 'winston-transport';
-import { createRequire } from 'module';
 import { LogLevel } from './logger.types.js';
 
 const require = createRequire(import.meta.url);

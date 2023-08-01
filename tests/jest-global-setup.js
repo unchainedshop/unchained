@@ -1,7 +1,7 @@
+import { spawn } from 'child_process';
 import dotenv from 'dotenv-extended';
 
 import setupInMemoryMongoDB from '@shelf/jest-mongodb/lib/setup';
-import { spawn } from 'child_process';
 import { wipeDatabase } from './helpers';
 
 dotenv.load();

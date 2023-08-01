@@ -1,8 +1,8 @@
+import crypto from 'crypto';
 import { Context } from '@unchainedshop/types/api.js';
 import { OrderDeliveryDiscount as OrderDeliveryDiscountType } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
-import crypto from 'crypto';
 
 type HelperType<P, T> = (orderDelivery: OrderDeliveryDiscountType, params: P, context: Context) => T;
 
