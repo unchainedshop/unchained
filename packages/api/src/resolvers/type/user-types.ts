@@ -89,9 +89,9 @@ export interface UserHelperTypes {
       limit?: number;
       offset?: number;
     },
-    Promise<Array<ProductReview>>
+    Array<ProductReview>
   >;
-  reviewsCount: HelperType<any, Promise<number>>;
+  reviewsCount: HelperType<any, number>;
 }
 
 const {
