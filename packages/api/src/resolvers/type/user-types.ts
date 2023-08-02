@@ -89,8 +89,9 @@ export interface UserHelperTypes {
       limit?: number;
       offset?: number;
     },
-    Array<ProductReview>
+    Promise<Array<ProductReview>>
   >;
+  reviewsCount: HelperType<any, Promise<number>>;
 }
 
 const {
@@ -257,6 +258,13 @@ export const User: UserHelperTypes = {
     await checkAction(context, viewUserProductReviews, [user, params]);
     return modules.products.reviews.findProductReviews({
       ...(params || {}),
+      authorId: user._id,
+    });
+  },
+  async reviewsCount(user, params, context) {
+    const { modules } = context;
+    await checkAction(context, viewUserProductReviews, [user, params]);
+    return modules.products.reviews.count({
       authorId: user._id,
     });
   },

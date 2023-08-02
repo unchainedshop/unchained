@@ -45,6 +45,7 @@ export default [
         sort: [SortOptionInput!]
         queryString: String
       ): [ProductReview!]!
+      reviewsCount(queryString: String): Int!
     }
   `,
 ];
