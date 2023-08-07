@@ -117,6 +117,7 @@ const configureRoles = ({ additionalRoles = {}, additionalActions = [] }) => {
     allRoles[key] = new Role(key);
     val(allRoles[key], actions);
   });
+
   all(allRoles.ALL, actions);
   loggedIn(allRoles.LOGGEDIN, actions);
   admin(allRoles.ADMIN, actions);

@@ -1,5 +1,6 @@
 import { Context } from '@unchainedshop/types/api.js';
 import { User } from '@unchainedshop/types/user.js';
+import { ImpersonatingAdminUserError } from '../errors.js';
 
 export const loggedIn = (role: any, actions: Record<string, string>) => {
   const isMyself = (
@@ -205,6 +206,17 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     );
   };
 
+  const isNotAdmin = async (_, { userId }: { userId: string }, { modules }: Context) => {
+    if (!userId) {
+      return false;
+    }
+    const user = await modules.users.findUserById(userId);
+    if (user.roles.includes('admin')) {
+      throw new ImpersonatingAdminUserError({ userId });
+    }
+    return true;
+  };
+
   role.allow(actions.viewEvent, false);
   role.allow(actions.viewEvents, false);
   role.allow(actions.viewUser, isMyself);
@@ -243,4 +255,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.updateToken, isOwnedToken);
   role.allow(actions.viewToken, isOwnedToken);
   role.allow(actions.stopImpersonation, () => true);
+  role.allow(actions.impersonate, isNotAdmin);
 };

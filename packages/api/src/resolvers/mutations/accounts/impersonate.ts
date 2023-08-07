@@ -3,8 +3,6 @@ import { Context } from '@unchainedshop/types/api.js';
 import { UserNotFoundError } from '../../../errors.js';
 
 const impersonate = async (root, { userId }, context: Context) => {
-  console.log(context);
-  console.log(context.user, context.userId);
   log(`mutation impersonate ${userId}`);
 
   const userToImpersonate = await context.modules.users.findUserById(userId);
