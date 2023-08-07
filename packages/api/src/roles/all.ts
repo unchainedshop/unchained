@@ -101,4 +101,18 @@ export const all = (role, actions) => {
   role.allow(actions.viewFilters, () => true);
   role.allow(actions.viewTranslations, () => true);
   role.allow(actions.search, () => true);
+  role.allow(actions.logout, () => true);
+  role.allow(actions.logoutAllSessions, () => true);
+  role.allow(actions.loginAsGuest, () => true);
+  role.allow(actions.loginWithPassword, () => true);
+  role.allow(actions.loginWithWebAuthn, () => true);
+  role.allow(actions.loginWithOAuth, () => true);
+  role.allow(actions.verifyEmail, () => true);
+  role.allow(actions.useWebAuthn, () => true);
+  role.allow(actions.pageView, () => true);
+  role.allow(actions.createUser, () => true);
+  role.allow(actions.forgotPassword, () => true);
+  role.allow(actions.resetPassword, () => true);
+  role.allow(actions.changePassword, () => true);
+  role.allow(actions.heartbeat, () => true);
 };

@@ -102,7 +102,21 @@ const actions: Record<string, string> = [
   'manageTwoFactor',
   'impersonate',
   'stopImpersonation',
+  'logout',
+  'logoutAllSessions',
+  'loginAsGuest',
+  'loginWithPassword',
+  'loginWithWebAuthn',
+  'loginWithOAuth',
+  'verifyEmail',
+  'useWebAuthn',
+  'pageView',
+  'createUser',
+  'forgotPassword',
+  'resetPassword',
+  'changePassword',
   'viewUserProductReviews',
+  'heartbeat',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;
