@@ -9,6 +9,9 @@ We have been working on reducing the bundle size lately and got rid of many thir
 - Make updating of token ownerships more performant
 - Improve pricing types
 - Support attachment preview in mail debug mode when using absolute file paths
+- Update `mutation.impersonate` behavior to enable switching a session to an **impersonated** account and return to the **impersonator** account without the need to logout from the impersonated user account and login again to the initial user (**impersonator**).
+Note: By default impersonation is only allowed to **ADMIN** user.
+- Add `mutation.stopImpersonation` that will end an impersonated user account session and return back to the initial impersonator account. 
 ## Patch
 - Fix an issue with order pricing
 - Fix oder position removal issue #571
