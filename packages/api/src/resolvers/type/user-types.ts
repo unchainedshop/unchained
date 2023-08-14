@@ -254,7 +254,7 @@ export const User: UserHelperTypes = {
       }));
     });
   },
-async reviews(user, params, context) {
+  async reviews(user, params, context) {
     const { modules } = context;
     await checkAction(context, viewUserProductReviews, [user, params]);
     return modules.products.reviews.findProductReviews({
