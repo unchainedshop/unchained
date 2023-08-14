@@ -85,6 +85,7 @@ export default [
         sort: [SortOptionInput!]
         queryString: String
       ): [ProductReview!]!
+      reviewsCount(queryString: String): Int!
       catalogPriceRange(
         quantity: Int = 0
         vectors: [ProductAssignmentVectorInput!]

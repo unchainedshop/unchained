@@ -442,6 +442,13 @@ export interface ProductHelperTypes {
     Promise<Array<ProductReview>>
   >;
 
+  reviewsCount: HelperType<
+    {
+      queryString?: string;
+    },
+    Promise<number>
+  >;
+
   siblings: HelperType<
     {
       assortmentId?: string;
