@@ -83,7 +83,6 @@ export interface UserHelperTypes {
   username: HelperType<any, string>;
   pushSubscriptions: HelperType<any, Array<PushSubscription>>;
   oAuthAccounts: HelperType<any, Array<OAuthAccount>>;
-  impersonator: HelperType<any, UserType>;
   reviews: HelperType<
     {
       sort?: Array<SortOption>;
@@ -268,18 +267,5 @@ export const User: UserHelperTypes = {
     return modules.products.reviews.count({
       authorId: user._id,
     });
-  },
-  impersonator: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
-    if (!user?.services || !user?.services?.resume || !user?.services?.resume?.loginTokens) return null;
-
-    const { loginTokens } = user.services.resume;
-    const impersonatedSession = loginTokens.find(
-      ({ hashedToken, impersonatorId }) =>
-        hashedToken === context.modules.accounts.createHashLoginToken(context.loginToken) &&
-        impersonatorId,
-    );
-    if (!impersonatedSession) return null;
-    return context.modules.users.findUserById(impersonatedSession.impersonatorId);
   },
 };

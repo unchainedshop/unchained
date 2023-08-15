@@ -10,21 +10,21 @@ export default async function stopImpersonation(root: Root, _, context: Context)
   const impersonatedUser = await modules.users.findUserById(userId);
 
   if (!impersonatedUser) throw new UserNotFoundError({ userId });
-  const impersonator = impersonatedUser?.services?.resume?.loginTokens.find(
+  const impersonatedUserToken = impersonatedUser?.services?.resume?.loginTokens.find(
     ({ hashedToken, impersonatorId }) =>
       hashedToken === modules.accounts.createHashLoginToken(loginToken) && impersonatorId,
   );
 
-  if (!impersonator) throw new Error('Current session is not being impersonated');
+  if (!impersonatedUserToken) throw new Error('Current session is not being impersonated');
 
   await modules.accounts.logout({ loginToken }, context);
 
   const accountsServer = modules.accounts.getAccountsServer();
 
-  const { token } = await accountsServer.loginWithUser(impersonator.impersonatorId);
+  const { token } = await accountsServer.loginWithUser(impersonatedUserToken.impersonatorId);
 
   return {
-    id: impersonator.impersonatorId,
+    id: impersonatedUserToken.impersonatorId,
     token: token.token,
     tokenExpires: token.when,
   };
