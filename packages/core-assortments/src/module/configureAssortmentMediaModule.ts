@@ -75,7 +75,12 @@ export const configureAssortmentMediaModule = async ({
       },
     );
 
-    return AssortmentMediaTexts.findOne(selector, {});
+    const mediaTexts = await AssortmentMediaTexts.findOne(selector, {});
+    await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
+      assortmentMediaId,
+      mediaTexts,
+    });
+    return mediaTexts;
   };
 
   return {
@@ -234,11 +239,6 @@ export const configureAssortmentMediaModule = async ({
         const mediaTexts = await Promise.all(
           texts.map(({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
         );
-
-        await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
-          assortmentMediaId,
-          mediaTexts,
-        });
 
         return mediaTexts;
       },

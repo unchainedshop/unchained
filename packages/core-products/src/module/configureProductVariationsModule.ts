@@ -72,7 +72,13 @@ export const configureProductVariationsModule = async ({
       },
     );
 
-    return ProductVariationTexts.findOne(selector, {});
+    const productVariationTexts = await ProductVariationTexts.findOne(selector, {});
+    await emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
+      productVariationId,
+      productVariationOptionValue,
+      productVariationTexts,
+    });
+    return productVariationTexts;
   };
 
   return {
@@ -267,12 +273,6 @@ export const configureProductVariationsModule = async ({
             }),
           ),
         );
-
-        await emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
-          productVariationId,
-          productVariationOptionValue,
-          productVariationTexts,
-        });
 
         return productVariationTexts;
       },

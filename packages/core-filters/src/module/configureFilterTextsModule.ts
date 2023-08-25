@@ -47,7 +47,13 @@ export const configureFilterTextsModule = ({
       upsert: true,
     });
 
-    return FilterTexts.findOne(selector, {});
+    const filterTexts = await FilterTexts.findOne(selector, {});
+    await emit('FILTER_UPDATE_TEXTS', {
+      filterId: params.filterId,
+      filterOptionValue: params.filterOptionValue || null,
+      filterTexts,
+    });
+    return filterTexts;
   };
 
   return {
@@ -77,12 +83,6 @@ export const configureFilterTextsModule = ({
       const filterTexts = await Promise.all(
         texts.map(({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
       );
-
-      await emit('FILTER_UPDATE_TEXTS', {
-        filterId: params.filterId,
-        filterOptionValue: params.filterOptionValue || null,
-        filterTexts,
-      });
 
       return filterTexts;
     },

@@ -105,8 +105,13 @@ export const configureAssortmentTextsModule = ({
         },
       );
     }
+    const assortmentTexts = await AssortmentTexts.findOne(selector, {});
+    await emit('ASSORTMENT_UPDATE_TEXTS', {
+      assortmentId,
+      assortmentTexts,
+    });
 
-    return AssortmentTexts.findOne(selector, {});
+    return assortmentTexts;
   };
 
   return {
@@ -149,11 +154,6 @@ export const configureAssortmentTextsModule = ({
             texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentId, locale, text)),
           )
         : [];
-
-      await emit('ASSORTMENT_UPDATE_TEXTS', {
-        assortmentId,
-        assortmentTexts,
-      });
 
       return assortmentTexts;
     },

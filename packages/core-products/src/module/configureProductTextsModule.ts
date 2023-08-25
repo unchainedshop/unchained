@@ -107,7 +107,13 @@ export const configureProductTextsModule = ({
       );
     }
 
-    return ProductTexts.findOne(selector, {});
+    const productTexts = await ProductTexts.findOne(selector, {});
+    await emit('PRODUCT_UPDATE_TEXTS', {
+      productId,
+      productTexts,
+    });
+
+    return productTexts;
   };
 
   return {
@@ -146,11 +152,6 @@ export const configureProductTextsModule = ({
             texts.map(({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
           )
         : [];
-
-      await emit('PRODUCT_UPDATE_TEXTS', {
-        productId,
-        productTexts,
-      });
 
       return productTexts;
     },
