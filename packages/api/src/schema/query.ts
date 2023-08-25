@@ -5,6 +5,10 @@ export default [
       Currently logged in user
       """
       me: User
+      """
+      User impersonating current user session using the  impersonate API
+      """
+      impersonator: User
 
       """
       Get list of users, by default sorted by creation date (ascending) unless a queryString is set

@@ -3,6 +3,7 @@ import { checkResolver as acl } from '../../acl.js';
 import loginWithPassword from './accounts/loginWithPassword.js';
 import loginWithWebAuthn from './accounts/loginWithWebAuthn.js';
 import impersonate from './accounts/impersonate.js';
+import stopImpersonation from './accounts/stopImpersonation.js';
 import loginAsGuest from './accounts/loginAsGuest.js';
 import logout from './accounts/logout.js';
 import logoutAllSessions from './accounts/logoutAllSessions.js';
@@ -181,6 +182,7 @@ export default {
   loginWithWebAuthn,
   loginWithOAuth,
   impersonate: acl(actions.impersonate)(impersonate),
+  stopImpersonation: acl(actions.stopImpersonation)(stopImpersonation),
   buildSecretTOTPAuthURL: acl(actions.authTwoFactor)(buildSecretTOTPAuthURL),
   enableTOTP: acl(actions.authTwoFactor)(enableTOTP),
   disableTOTP: acl(actions.manageTwoFactor)(disableTOTP),
