@@ -338,7 +338,7 @@ export const configureProductsModule = async ({
       });
 
       const product = await Products.findOne(generateDbFilterById(productId), {});
-
+      await emit('PRODUCT_CREATE', { product });
       if (locale) {
         await productTexts.upsertLocalizedText(productId, locale, { title });
 
@@ -346,9 +346,6 @@ export const configureProductsModule = async ({
           await publishProduct(product);
         }
       }
-
-      await emit('PRODUCT_CREATE', { product });
-
       return product;
     },
 

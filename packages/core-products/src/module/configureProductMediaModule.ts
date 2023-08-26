@@ -73,10 +73,15 @@ export const configureProductMediaModule = async ({
       },
     );
 
-    return ProductMediaTexts.findOne({
+    const mediaTexts = await ProductMediaTexts.findOne({
       productMediaId,
       locale,
     });
+    await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
+      productMediaId,
+      mediaTexts,
+    });
+    return mediaTexts;
   };
 
   return {
@@ -237,11 +242,6 @@ export const configureProductMediaModule = async ({
             upsertLocalizedText(productMediaId, locale, localizations),
           ),
         );
-
-        await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
-          productMediaId,
-          mediaTexts,
-        });
 
         return mediaTexts;
       },
