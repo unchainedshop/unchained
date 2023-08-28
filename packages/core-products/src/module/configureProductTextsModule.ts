@@ -113,15 +113,15 @@ export const configureProductTextsModule = ({
       );
     }
 
-    const productTexts = await ProductTexts.findOne(selector, {});
+    const currentText = await ProductTexts.findOne(selector, {});
 
     if (isModified)
       await emit('PRODUCT_UPDATE_TEXTS', {
         productId,
-        text: productTexts,
+        text: currentText,
       });
 
-    return productTexts;
+    return currentText;
   };
 
   return {

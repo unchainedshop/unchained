@@ -75,7 +75,7 @@ export const configureAssortmentMediaModule = async ({
     );
     const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
-    const mediaTexts = await AssortmentMediaTexts.findOne(selector, {});
+    const currentText = await AssortmentMediaTexts.findOne(selector, {});
     if (isModified) {
       await AssortmentMediaTexts.updateOne(selector, {
         $set: {
@@ -84,10 +84,10 @@ export const configureAssortmentMediaModule = async ({
       });
       await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
         assortmentMediaId,
-        text: mediaTexts,
+        text: currentText,
       });
     }
-    return mediaTexts;
+    return currentText;
   };
 
   return {

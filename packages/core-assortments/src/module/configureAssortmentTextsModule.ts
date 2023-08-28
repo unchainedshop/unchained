@@ -110,15 +110,15 @@ export const configureAssortmentTextsModule = ({
         },
       );
     }
-    const assortmentTexts = await AssortmentTexts.findOne(selector, {});
+    const currentText = await AssortmentTexts.findOne(selector, {});
 
     if (isModified)
       await emit('ASSORTMENT_UPDATE_TEXTS', {
         assortmentId,
-        text: assortmentTexts,
+        text: currentText,
       });
 
-    return assortmentTexts;
+    return currentText;
   };
 
   return {

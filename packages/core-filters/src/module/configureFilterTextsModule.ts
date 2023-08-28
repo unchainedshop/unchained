@@ -47,7 +47,7 @@ export const configureFilterTextsModule = ({
     });
     const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
-    const filterTexts = await FilterTexts.findOne(selector, {});
+    const currentText = await FilterTexts.findOne(selector, {});
     if (isModified) {
       await FilterTexts.updateOne(selector, {
         $set: {
@@ -57,10 +57,10 @@ export const configureFilterTextsModule = ({
       await emit('FILTER_UPDATE_TEXTS', {
         filterId: params.filterId,
         filterOptionValue: params.filterOptionValue || null,
-        text: filterTexts,
+        text: currentText,
       });
     }
-    return filterTexts;
+    return currentText;
   };
 
   return {

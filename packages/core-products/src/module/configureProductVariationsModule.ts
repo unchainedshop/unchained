@@ -52,11 +52,10 @@ export const configureProductVariationsModule = async ({
       locale,
     };
 
-    await ProductVariationTexts.updateOne(
+    const updateResult = await ProductVariationTexts.updateOne(
       selector,
       {
         $set: {
-          updated: new Date(),
           ...text,
         },
         $setOnInsert: {
@@ -71,14 +70,22 @@ export const configureProductVariationsModule = async ({
         upsert: true,
       },
     );
+    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
-    const productVariationTexts = await ProductVariationTexts.findOne(selector, {});
-    await emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
-      productVariationId,
-      productVariationOptionValue,
-      productVariationTexts,
-    });
-    return productVariationTexts;
+    const currentText = await ProductVariationTexts.findOne(selector, {});
+    if (isModified) {
+      await ProductVariationTexts.updateOne(selector, {
+        $set: {
+          updated: new Date(),
+        },
+      });
+      await emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
+        productVariationId,
+        productVariationOptionValue,
+        text: currentText,
+      });
+    }
+    return currentText;
   };
 
   return {
