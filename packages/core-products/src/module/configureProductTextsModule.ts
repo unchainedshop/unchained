@@ -57,7 +57,6 @@ export const configureProductTextsModule = ({
 
     const modifier: any = {
       $set: {
-        updated: new Date(),
         title: text.title,
         ...textFields,
       },
@@ -81,7 +80,14 @@ export const configureProductTextsModule = ({
       upsert: true,
     });
 
-    if (updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0) {
+    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
+
+    if (isModified) {
+      await ProductTexts.updateOne(selector, {
+        $set: {
+          updated: new Date(),
+        },
+      });
       await Products.updateOne(generateDbFilterById(productId), {
         $set: {
           updated: new Date(),
@@ -108,10 +114,12 @@ export const configureProductTextsModule = ({
     }
 
     const productTexts = await ProductTexts.findOne(selector, {});
-    await emit('PRODUCT_UPDATE_TEXTS', {
-      productId,
-      productTexts,
-    });
+
+    if (isModified)
+      await emit('PRODUCT_UPDATE_TEXTS', {
+        productId,
+        text: productTexts,
+      });
 
     return productTexts;
   };

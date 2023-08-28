@@ -51,14 +51,14 @@ export const configureProductMediaModule = async ({
     locale,
     text,
   ) => {
-    await ProductMediaTexts.updateOne(
-      {
-        productMediaId,
-        locale,
-      },
+    const selector = {
+      productMediaId,
+      locale,
+    };
+    const updateResult = await ProductMediaTexts.updateOne(
+      selector,
       {
         $set: {
-          updated: new Date(),
           ...text,
         },
         $setOnInsert: {
@@ -77,10 +77,18 @@ export const configureProductMediaModule = async ({
       productMediaId,
       locale,
     });
-    await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
-      productMediaId,
-      mediaTexts,
-    });
+    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
+    if (isModified) {
+      await ProductMediaTexts.updateOne(selector, {
+        $set: {
+          updated: new Date(),
+        },
+      });
+      await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
+        productMediaId,
+        mediaTexts,
+      });
+    }
     return mediaTexts;
   };
 

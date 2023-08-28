@@ -24,7 +24,6 @@ export const configureFilterTextsModule = ({
 
     const modifier: any = {
       $set: {
-        updated: new Date(),
         title: text.title,
         subtitle: text.subtitle,
       },
@@ -43,16 +42,24 @@ export const configureFilterTextsModule = ({
       locale,
     };
 
-    await FilterTexts.updateOne(selector, modifier, {
+    const updateResult = await FilterTexts.updateOne(selector, modifier, {
       upsert: true,
     });
+    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
     const filterTexts = await FilterTexts.findOne(selector, {});
-    await emit('FILTER_UPDATE_TEXTS', {
-      filterId: params.filterId,
-      filterOptionValue: params.filterOptionValue || null,
-      filterTexts,
-    });
+    if (isModified) {
+      await FilterTexts.updateOne(selector, {
+        $set: {
+          updated: new Date(),
+        },
+      });
+      await emit('FILTER_UPDATE_TEXTS', {
+        filterId: params.filterId,
+        filterOptionValue: params.filterOptionValue || null,
+        text: filterTexts,
+      });
+    }
     return filterTexts;
   };
 

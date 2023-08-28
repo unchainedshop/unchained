@@ -56,11 +56,10 @@ export const configureAssortmentMediaModule = async ({
       locale,
     };
 
-    await AssortmentMediaTexts.updateOne(
+    const updateResult = await AssortmentMediaTexts.updateOne(
       selector,
       {
         $set: {
-          updated: new Date(),
           ...text,
         },
         $setOnInsert: {
@@ -74,12 +73,20 @@ export const configureAssortmentMediaModule = async ({
         upsert: true,
       },
     );
+    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
     const mediaTexts = await AssortmentMediaTexts.findOne(selector, {});
-    await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
-      assortmentMediaId,
-      mediaTexts,
-    });
+    if (isModified) {
+      await AssortmentMediaTexts.updateOne(selector, {
+        $set: {
+          updated: new Date(),
+        },
+      });
+      await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
+        assortmentMediaId,
+        text: mediaTexts,
+      });
+    }
     return mediaTexts;
   };
 
