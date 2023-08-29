@@ -79,6 +79,7 @@ export const configureProductTextsModule = ({
     const updateResult = await ProductTexts.updateOne(selector, modifier, {
       upsert: true,
     });
+    const currentText = await ProductTexts.findOne(selector, {});
 
     const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
@@ -111,15 +112,11 @@ export const configureProductTextsModule = ({
           },
         },
       );
-    }
-
-    const currentText = await ProductTexts.findOne(selector, {});
-
-    if (isModified)
       await emit('PRODUCT_UPDATE_TEXTS', {
         productId,
         text: currentText,
       });
+    }
 
     return currentText;
   };

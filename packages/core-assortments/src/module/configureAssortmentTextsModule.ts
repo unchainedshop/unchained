@@ -77,6 +77,7 @@ export const configureAssortmentTextsModule = ({
     const updateResult = await AssortmentTexts.updateOne(selector, modifier, {
       upsert: true,
     });
+    const currentText = await AssortmentTexts.findOne(selector, {});
     const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
     if (isModified) {
@@ -109,14 +110,11 @@ export const configureAssortmentTextsModule = ({
           },
         },
       );
-    }
-    const currentText = await AssortmentTexts.findOne(selector, {});
-
-    if (isModified)
       await emit('ASSORTMENT_UPDATE_TEXTS', {
         assortmentId,
         text: currentText,
       });
+    }
 
     return currentText;
   };
