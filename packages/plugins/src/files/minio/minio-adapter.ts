@@ -12,8 +12,8 @@ import {
 
 import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
-import Minio from 'minio';
-import { AssumeRoleProvider } from 'minio/dist/main/AssumeRoleProvider.js';
+import { Client } from 'minio';
+import { AssumeRoleProvider } from 'minio/dist/esm/AssumeRoleProvider.mjs';
 import { expiryOffsetInMs } from '@unchainedshop/file-upload/put-expiration.js';
 
 const {
@@ -28,7 +28,7 @@ const {
   AMAZON_S3_SESSION_TOKEN,
 } = process.env;
 
-let client: Minio.Client;
+let client: Client;
 
 export async function connectToMinio() {
   if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
@@ -41,7 +41,7 @@ export async function connectToMinio() {
 
   try {
     const resolvedUrl = new URL(MINIO_ENDPOINT);
-    const minioClient = new Minio.Client({
+    const minioClient = new Client({
       endPoint: resolvedUrl.hostname,
       useSSL: resolvedUrl.protocol === 'https:',
       port: parseInt(resolvedUrl.port, 10) || undefined,
