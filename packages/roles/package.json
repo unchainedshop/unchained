@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/roles",
-  "version": "2.4.0",
+  "version": "2.4.2",
   "description": "Roles package for unchained engine",
   "main": "lib/roles-index.js",
   "exports": {
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.17.14",
-    "@unchainedshop/types": "^2.4.0",
+    "@unchainedshop/types": "^2.4.2",
     "jest": "^29.6.4",
     "typescript": "^5.2.2"
   }
