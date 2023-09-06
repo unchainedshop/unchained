@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -46,7 +46,7 @@
     "test:unit-watch": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit --watch --config ./packages/unit-jest.config.js  "
   },
   "devDependencies": {
-    "@apollo/client": "^3.8.2",
+    "@apollo/client": "^3.8.3",
     "@babel/core": "^7.22.15",
     "@babel/eslint-parser": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
