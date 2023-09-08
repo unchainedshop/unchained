@@ -44,13 +44,9 @@ const OrderItems: IOrderPricingAdapter = {
 
         pricingAdapter.resultSheet().addItems({
           amount: totalAndTaxesOfAllItems.items,
+          taxAmount: totalAndTaxesOfAllItems.taxes,
+          meta: { adapter: OrderItems.key },
         });
-
-        if (totalAndTaxesOfAllItems.taxes !== 0) {
-          pricingAdapter.resultSheet().addTax({
-            amount: totalAndTaxesOfAllItems.taxes,
-          });
-        }
 
         return pricingAdapter.calculate();
       },

@@ -32,10 +32,9 @@ const OrderPayment: IOrderPricingAdapter = {
         const tax = pricing.taxSum();
         const paymentFees = pricing.gross();
 
-        pricingAdapter.resultSheet().addPayment({ amount: paymentFees });
-        if (tax !== 0) {
-          pricingAdapter.resultSheet().addTax({ amount: tax });
-        }
+        pricingAdapter
+          .resultSheet()
+          .addPayment({ amount: paymentFees, taxAmount: tax, meta: { adapter: OrderPayment.key } });
 
         return pricingAdapter.calculate();
       },
