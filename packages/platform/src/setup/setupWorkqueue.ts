@@ -1,4 +1,4 @@
-import { EventListenerWorker, FailedRescheduler, IntervalWorker } from '@unchainedshop/core-worker';
+import { FailedRescheduler, IntervalWorker } from '@unchainedshop/core-worker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { WorkData, WorkerSchedule } from '@unchainedshop/types/worker.js';
 
@@ -19,7 +19,6 @@ export const setupWorkqueue = (
 ) => {
   const handlers = [
     FailedRescheduler.actions({ retryInput }, unchainedAPI),
-    EventListenerWorker.actions({ workerId }, unchainedAPI),
     IntervalWorker.actions({ workerId, batchCount, schedule }, unchainedAPI),
   ];
 

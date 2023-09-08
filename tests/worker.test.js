@@ -21,7 +21,7 @@ describe('Worker Module', () => {
   });
 
   describe('Happy path', () => {
-    it('Standard work gets picked up by the EventListenerWorker.', async () => {
+    it('Standard work gets picked up by the IntervalWorker.', async () => {
       const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation addWork($type: WorkType!, $input: JSON) {
@@ -39,7 +39,7 @@ describe('Worker Module', () => {
       expect(addWorkResult.data.addWork.type).toBe('HEARTBEAT');
       expect(addWorkResult.errors).toBeUndefined();
 
-      await wait(100);
+      await wait(10000);
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
