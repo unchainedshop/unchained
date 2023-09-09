@@ -30,13 +30,31 @@ export const OrderPricingSheet = (
       }
     },
 
-    addDiscount({ amount, discountId, meta }: { amount: number; discountId: string; meta?: any }) {
+    addDiscount({
+      amount,
+      taxAmount,
+      discountId,
+      meta,
+    }: {
+      amount: number;
+      taxAmount: number;
+      discountId: string;
+      meta?: any;
+    }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Discounts,
         amount,
         discountId,
         meta,
       });
+
+      if (taxAmount !== 0) {
+        basePricingSheet.calculation.push({
+          category: OrderPricingRowCategory.Taxes,
+          amount: taxAmount,
+          meta: { ...(meta || {}), discountId, origin: OrderPricingRowCategory.Discounts },
+        });
+      }
     },
 
     addTax({ amount, meta }) {

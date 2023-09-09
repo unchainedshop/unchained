@@ -84,12 +84,13 @@ export const OrderDiscount: IOrderPricingAdapter = {
           amountLeft -= deliveryAndPaymentDiscountAmount;
           alreadyDeducted += itemsDiscountAmount;
 
-          const discountAmount = itemsDiscountAmount + deliveryAndPaymentDiscountAmount;
-          const taxAmount = itemsTaxAmount + deliveryAndPaymentTaxAmount;
+          const discountAmount = (itemsDiscountAmount + deliveryAndPaymentDiscountAmount) * -1;
+          const taxAmount = (itemsTaxAmount + deliveryAndPaymentTaxAmount) * -1;
 
           if (discountAmount) {
             pricingAdapter.resultSheet().addDiscount({
-              amount: discountAmount * -1,
+              amount: discountAmount,
+              taxAmount,
               discountId,
               isTaxable: false,
               isNetPrice: false,
@@ -97,15 +98,6 @@ export const OrderDiscount: IOrderPricingAdapter = {
                 adapter: OrderDiscount.key,
               },
             });
-            if (taxAmount !== 0) {
-              pricingAdapter.resultSheet().addTax({
-                amount: taxAmount * -1,
-                meta: {
-                  discountId,
-                  adapter: OrderDiscount.key,
-                },
-              });
-            }
           }
         });
 

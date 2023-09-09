@@ -80,11 +80,11 @@ export const Order: OrderHelperTypes = {
     return obj.status;
   },
 
-  total: async (obj, params: { category: string }, { modules }) => {
+  total: async (obj, params: { category: string; useNetPrice: boolean }, { modules }) => {
     const pricingSheet = modules.orders.pricingSheet(obj);
 
     if (pricingSheet.isValid()) {
-      const price = pricingSheet.total({ category: params.category, useNetPrice: false });
+      const price = pricingSheet.total(params);
 
       return {
         _id: crypto

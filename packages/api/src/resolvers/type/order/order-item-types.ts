@@ -29,7 +29,7 @@ export interface OrderItemHelperTypes {
   product: HelperType<never, Promise<Product>>;
   quotation: HelperType<never, Promise<Quotation>>;
   total: HelperType<{ category: string }, Promise<OrderPrice>>;
-  unitPrice: HelperType<never, Promise<OrderPrice>>;
+  unitPrice: HelperType<{ useNetPrice: boolean }, Promise<OrderPrice>>;
 }
 
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
@@ -138,13 +138,11 @@ export const OrderItem: OrderItemHelperTypes = {
     return null;
   },
 
-  unitPrice: async (obj, _, context) => {
+  unitPrice: async (obj, params, context) => {
     const pricingSheet = await getPricingSheet(obj, context);
 
     if (pricingSheet.isValid()) {
-      const price = pricingSheet.unitPrice({
-        useNetPrice: false,
-      });
+      const price = pricingSheet.unitPrice(params);
       return {
         _id: crypto
           .createHash('sha256')

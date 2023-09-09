@@ -24,7 +24,7 @@ export default [
       quantity: Int!
       originalProduct: Product!
       quotation: Quotation
-      unitPrice: Price
+      unitPrice(useNetPrice: Boolean = false): Price
       total(category: OrderItemPriceCategory): Price
       discounts: [OrderItemDiscount!]
       dispatches: [Dispatch!]
