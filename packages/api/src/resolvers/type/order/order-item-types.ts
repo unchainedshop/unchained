@@ -28,7 +28,7 @@ export interface OrderItemHelperTypes {
   originalProduct: HelperType<never, Promise<Product>>;
   product: HelperType<never, Promise<Product>>;
   quotation: HelperType<never, Promise<Quotation>>;
-  total: HelperType<{ category: string }, Promise<OrderPrice>>;
+  total: HelperType<{ category: string; useNetPrice: boolean }, Promise<OrderPrice>>;
   unitPrice: HelperType<{ useNetPrice: boolean }, Promise<OrderPrice>>;
 }
 
@@ -118,18 +118,15 @@ export const OrderItem: OrderItemHelperTypes = {
     return modules.quotations.findQuotation({ quotationId: obj.quotationId });
   },
 
-  total: async (obj, { category }, context) => {
+  total: async (obj, params, context) => {
     const pricingSheet = await getPricingSheet(obj, context);
 
     if (pricingSheet.isValid()) {
-      const { amount, currency } = pricingSheet.total({
-        category,
-        useNetPrice: false,
-      });
+      const { amount, currency } = pricingSheet.total(params);
       return {
         _id: crypto
           .createHash('sha256')
-          .update([`${obj._id}-${category}`, amount, currency].join(''))
+          .update([obj._id, JSON.stringify(params), amount, currency].join(''))
           .digest('hex'),
         amount,
         currency,

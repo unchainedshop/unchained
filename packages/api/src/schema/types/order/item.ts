@@ -25,7 +25,7 @@ export default [
       originalProduct: Product!
       quotation: Quotation
       unitPrice(useNetPrice: Boolean = false): Price
-      total(category: OrderItemPriceCategory): Price
+      total(category: OrderItemPriceCategory, useNetPrice: Boolean = false): Price
       discounts: [OrderItemDiscount!]
       dispatches: [Dispatch!]
       configuration: [ProductConfigurationParameter!]

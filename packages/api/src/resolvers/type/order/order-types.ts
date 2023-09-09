@@ -26,7 +26,7 @@ export interface OrderHelperTypes {
   payment: HelperType<never, Promise<OrderPayment>>;
   items: HelperType<never, Promise<Array<OrderPosition>>>;
   status: HelperType<never, string>;
-  total: HelperType<{ category: string }, Promise<OrderPrice>>;
+  total: HelperType<{ category: string; useNetPrice: boolean }, Promise<OrderPrice>>;
   user: HelperType<never, Promise<User>>;
 }
 
@@ -80,7 +80,7 @@ export const Order: OrderHelperTypes = {
     return obj.status;
   },
 
-  total: async (obj, params: { category: string; useNetPrice: boolean }, { modules }) => {
+  total: async (obj, params, { modules }) => {
     const pricingSheet = modules.orders.pricingSheet(obj);
 
     if (pricingSheet.isValid()) {
@@ -89,7 +89,7 @@ export const Order: OrderHelperTypes = {
       return {
         _id: crypto
           .createHash('sha256')
-          .update([obj._id, price.amount, price.currency].join(''))
+          .update([obj._id, JSON.stringify(params), price.amount, price.currency].join(''))
           .digest('hex'),
         ...price,
       };
