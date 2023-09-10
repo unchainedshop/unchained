@@ -69,7 +69,7 @@ export interface IPricingSheet<Calculation extends PricingCalculation>
   extends IBasePricingSheet<Calculation> {
   discountPrices: (discountId?: string) => Array<PricingDiscount>;
   discountSum: (discountId?: string) => number;
-  addDiscount: (params: { amount: number; taxAmount: number; discountId: string; meta?: any }) => void;
+  addDiscount: (params: { amount: number; discountId: string; meta?: any }) => void;
   getDiscountRows: (discountId: string) => Array<Calculation>;
 }
 

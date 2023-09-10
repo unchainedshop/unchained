@@ -14,26 +14,15 @@ export const PaymentPricingSheet = (
   const pricingSheet: IPaymentPricingSheet = {
     ...basePricingSheet,
 
-    addDiscount({ amount, isTaxable, isNetPrice, taxAmount, discountId, meta }) {
+    addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: PaymentPricingRowCategory.Discount,
         amount,
-        isTaxable: taxAmount ? false : isTaxable,
+        isTaxable,
         isNetPrice,
         discountId,
         meta,
       });
-
-      if (taxAmount) {
-        basePricingSheet.calculation.push({
-          category: PaymentPricingRowCategory.Tax,
-          baseCategory: PaymentPricingRowCategory.Discount,
-          amount,
-          isTaxable: false,
-          isNetPrice: false,
-          meta,
-        });
-      }
     },
 
     addFee({ amount, isTaxable, isNetPrice, meta }) {
@@ -60,12 +49,6 @@ export const PaymentPricingSheet = (
     taxSum() {
       return basePricingSheet.sum({
         category: PaymentPricingRowCategory.Tax,
-      });
-    },
-
-    feeSum() {
-      return basePricingSheet.sum({
-        category: PaymentPricingRowCategory.Payment,
       });
     },
 

@@ -14,26 +14,15 @@ export const DeliveryPricingSheet = (
   const pricingSheet: IDeliveryPricingSheet = {
     ...basePricingSheet,
 
-    addDiscount({ amount, isTaxable, isNetPrice, taxAmount, discountId, meta }) {
+    addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: DeliveryPricingRowCategory.Discount,
         amount,
-        isTaxable: taxAmount ? false : isTaxable,
+        isTaxable,
         isNetPrice,
         discountId,
         meta,
       });
-
-      if (taxAmount) {
-        basePricingSheet.calculation.push({
-          category: DeliveryPricingRowCategory.Tax,
-          baseCategory: DeliveryPricingRowCategory.Discount,
-          amount,
-          isTaxable: false,
-          isNetPrice: false,
-          meta,
-        });
-      }
     },
 
     addFee({ amount, isTaxable, isNetPrice, meta }) {
@@ -60,12 +49,6 @@ export const DeliveryPricingSheet = (
     taxSum() {
       return basePricingSheet.sum({
         category: DeliveryPricingRowCategory.Tax,
-      });
-    },
-
-    feeSum() {
-      return basePricingSheet.sum({
-        category: DeliveryPricingRowCategory.Delivery,
       });
     },
 

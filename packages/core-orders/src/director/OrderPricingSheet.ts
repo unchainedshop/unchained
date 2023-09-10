@@ -49,14 +49,6 @@ export const OrderPricingSheet = (
       }
     },
 
-    addTax({ amount, meta }) {
-      basePricingSheet.calculation.push({
-        category: OrderPricingRowCategory.Taxes,
-        amount,
-        meta,
-      });
-    },
-
     addDelivery({ amount, taxAmount, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Delivery,
@@ -98,12 +90,6 @@ export const OrderPricingSheet = (
       });
     },
 
-    itemsSum() {
-      return basePricingSheet.sum({
-        category: OrderPricingRowCategory.Items,
-      });
-    },
-
     discountSum(discountId) {
       return basePricingSheet.sum({
         category: OrderPricingRowCategory.Discounts,
@@ -138,24 +124,6 @@ export const OrderPricingSheet = (
       return basePricingSheet.filterBy({
         category: OrderPricingRowCategory.Discounts,
         discountId,
-      });
-    },
-
-    getItemsRows() {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Items,
-      });
-    },
-
-    getDeliveryRows() {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Delivery,
-      });
-    },
-
-    getPaymentRows() {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Payment,
       });
     },
   };

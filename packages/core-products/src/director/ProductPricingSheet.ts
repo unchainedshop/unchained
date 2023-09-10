@@ -14,6 +14,17 @@ export const ProductPricingSheet = (
   const pricingSheet: IProductPricingSheet = {
     ...basePricingSheet,
 
+    addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
+      basePricingSheet.calculation.push({
+        category: ProductPricingRowCategory.Discount,
+        amount,
+        isTaxable,
+        isNetPrice,
+        discountId,
+        meta,
+      });
+    },
+
     addItem({ amount, isTaxable, isNetPrice, meta }) {
       basePricingSheet.calculation.push({
         category: ProductPricingRowCategory.Item,
@@ -22,28 +33,6 @@ export const ProductPricingSheet = (
         isNetPrice,
         meta,
       });
-    },
-
-    addDiscount({ amount, isTaxable, isNetPrice, taxAmount, discountId, meta }) {
-      basePricingSheet.calculation.push({
-        category: ProductPricingRowCategory.Discount,
-        amount,
-        isTaxable: taxAmount ? false : isTaxable,
-        isNetPrice,
-        discountId,
-        meta,
-      });
-
-      if (taxAmount) {
-        basePricingSheet.calculation.push({
-          category: ProductPricingRowCategory.Tax,
-          baseCategory: ProductPricingRowCategory.Discount,
-          amount,
-          isTaxable: false,
-          isNetPrice: false,
-          meta,
-        });
-      }
     },
 
     addTax({ amount, rate, meta }) {
@@ -103,12 +92,6 @@ export const ProductPricingSheet = (
           };
         })
         .filter(Boolean);
-    },
-
-    getItemRows() {
-      return basePricingSheet.filterBy({
-        category: ProductPricingRowCategory.Item,
-      });
     },
 
     getDiscountRows(discountId: string) {

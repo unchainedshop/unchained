@@ -33,7 +33,6 @@ describe('ProductPricingSheet', () => {
         expect(typeof pricingSheet.discountSum).toBe('function');
         expect(typeof pricingSheet.unitPrice).toBe('function');
         expect(typeof pricingSheet.discountPrices).toBe('function');
-        expect(typeof pricingSheet.getItemRows).toBe('function');
         expect(typeof pricingSheet.getDiscountRows).toBe('function');
       });
 
@@ -73,11 +72,6 @@ describe('ProductPricingSheet', () => {
       })
       })
 
-      describe('getItemRows', () => {
-        it('should return all the items registered on the ProductPricingSheet', () => {            
-            expect(pricingSheet.getItemRows()).toEqual([ITEM1, ITEM2])
-          })
-      })
 
       describe('getRawPricingSheet', () => {
         it('should return all registered ProductPricingCalculation', () => {
@@ -127,15 +121,6 @@ describe('ProductPricingSheet', () => {
 
         it('should return empty array if discount with the provided discountId is not found', () => {            
           expect(pricingSheet.discountPrices('non-existing')).toEqual([])
-        })
-
-      })
-
-      describe('addItem', () => {
-        it('should add ProductPricingCalculation ITEM category successfully', () => {            
-          expect(pricingSheet.getItemRows()).toEqual([ITEM1, ITEM2])
-          pricingSheet.addItem({amount: 300, isNetPrice: true, isTaxable: true})
-          expect(pricingSheet.getItemRows()).toEqual([ITEM1, ITEM2, {amount: 300, isNetPrice: true, isTaxable: true, category: 'ITEM', meta: undefined}])          
         })
 
       })
