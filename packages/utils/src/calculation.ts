@@ -14,16 +14,16 @@ export const resolveRatioAndTaxDivisorForPricingSheet = (
     };
   }
   const tax = pricing.taxSum();
-  const net = pricing.net();
-  if (net + tax === 0) {
+  const gross = pricing.gross();
+  if (gross - tax === 0) {
     return {
       ratio: 0,
       taxDivisor: 0,
     };
   }
   return {
-    ratio: net / total,
-    taxDivisor: net / (net + tax),
+    ratio: gross / total,
+    taxDivisor: gross / (gross - tax),
   };
 };
 

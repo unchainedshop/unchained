@@ -26,9 +26,10 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
         // if you want to add percentual discounts,
         // add it to the order item calculation
 
-        const totalAmountOfItems = params.calculationSheet.sum({
+        const totalAmountOfItems = params.calculationSheet.total({
           category: OrderPricingRowCategory.Items,
-        });
+          useNetPrice: false,
+        }).amount;
 
         const itemShares = orderPositions.map((orderPosition) =>
           calcUtils.resolveRatioAndTaxDivisorForPricingSheet(

@@ -29,7 +29,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     },
 
     taxSum() {
-      throw new Error('Implement taxSum in your pricing sheet');
+      return 0;
     },
 
     gross() {
