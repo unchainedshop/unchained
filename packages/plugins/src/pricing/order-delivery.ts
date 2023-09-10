@@ -29,7 +29,7 @@ export const OrderDelivery: IOrderPricingAdapter = {
           params.context,
         );
         const tax = pricing.taxSum();
-        const shipping = pricing.gross();
+        const shipping = pricing.net();
 
         pricingAdapter
           .resultSheet()

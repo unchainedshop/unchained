@@ -85,11 +85,10 @@ export const Order: OrderHelperTypes = {
 
     if (pricingSheet.isValid()) {
       const price = pricingSheet.total(params);
-
       return {
         _id: crypto
           .createHash('sha256')
-          .update([obj._id, JSON.stringify(params), price.amount, price.currency].join(''))
+          .update([obj._id, JSON.stringify(params), JSON.stringify(price)].join(''))
           .digest('hex'),
         ...price,
       };

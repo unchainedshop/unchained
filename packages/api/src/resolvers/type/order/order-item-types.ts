@@ -122,14 +122,13 @@ export const OrderItem: OrderItemHelperTypes = {
     const pricingSheet = await getPricingSheet(obj, context);
 
     if (pricingSheet.isValid()) {
-      const { amount, currency } = pricingSheet.total(params);
+      const price = pricingSheet.total(params);
       return {
         _id: crypto
           .createHash('sha256')
-          .update([obj._id, JSON.stringify(params), amount, currency].join(''))
+          .update([obj._id, JSON.stringify(params), JSON.stringify(price)].join(''))
           .digest('hex'),
-        amount,
-        currency,
+        ...price,
       };
     }
     return null;

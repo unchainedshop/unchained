@@ -25,7 +25,7 @@ describe('roundToNext', () => {
 
 describe("resolveRatioAndTaxDivisorForPricingSheet", () => {
   it('total is 0 and pricing is provided', () => {
-    const pricing = {
+    const pricing: any = {
       taxSum: () => 10,
       gross: () => 20,
     };
@@ -34,7 +34,7 @@ describe("resolveRatioAndTaxDivisorForPricingSheet", () => {
   });
 
   it('gross - tax is 0', () => {
-    const pricing = {
+    const pricing: any = {
       taxSum: () => 10,
       gross: () => 10,
     };
@@ -43,7 +43,7 @@ describe("resolveRatioAndTaxDivisorForPricingSheet", () => {
   });
 
   it('gross - tax is not 0', () => {
-    const pricing = {
+    const pricing: any = {
       taxSum: () => 10,
       gross: () => 20,
     };
@@ -52,7 +52,7 @@ describe("resolveRatioAndTaxDivisorForPricingSheet", () => {
   });
 
   it('taxSum is 0', () => {
-    const pricing = {
+    const pricing: any = {
       taxSum: () => 0,
       gross: () => 20,
     };

@@ -1,9 +1,12 @@
-export type PricingInterface = { taxSum: () => number; gross: () => number };
+import { IBasePricingSheet, PricingCalculation } from '@unchainedshop/types/pricing.js';
 
 export const roundToNext = (value: number, precision: number) =>
   Math.ceil(value / precision) * precision;
 
-export const resolveRatioAndTaxDivisorForPricingSheet = (pricing: PricingInterface, total: number) => {
+export const resolveRatioAndTaxDivisorForPricingSheet = (
+  pricing: IBasePricingSheet<PricingCalculation>,
+  total: number,
+) => {
   if (total === 0 || !pricing) {
     return {
       ratio: 1,
@@ -11,16 +14,16 @@ export const resolveRatioAndTaxDivisorForPricingSheet = (pricing: PricingInterfa
     };
   }
   const tax = pricing.taxSum();
-  const gross = pricing.gross();
-  if (gross - tax === 0) {
+  const net = pricing.net();
+  if (net + tax === 0) {
     return {
       ratio: 0,
       taxDivisor: 0,
     };
   }
   return {
-    ratio: gross / total,
-    taxDivisor: gross / (gross - tax),
+    ratio: net / total,
+    taxDivisor: net / (net + tax),
   };
 };
 

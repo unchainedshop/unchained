@@ -97,11 +97,6 @@ export const OrderPricingSheet = (
       }
     },
 
-    gross() {
-      // tax is included 2 times, this is only true for Order Pricing!
-      return basePricingSheet.sum() - pricingSheet.taxSum();
-    },
-
     taxSum() {
       return basePricingSheet.sum({
         category: OrderPricingRowCategory.Taxes,

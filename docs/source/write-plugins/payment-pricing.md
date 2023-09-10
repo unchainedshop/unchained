@@ -64,7 +64,7 @@ export const ShopCommission: IPaymentPricingAdapter = {
               context.order.currency,
               params.context,
             );
-            const items = pricing.gross() - pricing.discountSum();
+            const items = pricing.net() - pricing.discountSum();
             return current + items;
           }, 0);
 
