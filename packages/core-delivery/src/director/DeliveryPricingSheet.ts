@@ -14,15 +14,26 @@ export const DeliveryPricingSheet = (
   const pricingSheet: IDeliveryPricingSheet = {
     ...basePricingSheet,
 
-    addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
+    addDiscount({ amount, isTaxable, isNetPrice, taxAmount, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: DeliveryPricingRowCategory.Discount,
         amount,
-        isTaxable,
+        isTaxable: taxAmount ? false : isTaxable,
         isNetPrice,
         discountId,
         meta,
       });
+
+      if (taxAmount) {
+        basePricingSheet.calculation.push({
+          category: DeliveryPricingRowCategory.Tax,
+          baseCategory: DeliveryPricingRowCategory.Discount,
+          amount,
+          isTaxable: false,
+          isNetPrice: false,
+          meta,
+        });
+      }
     },
 
     addFee({ amount, isTaxable, isNetPrice, meta }) {
@@ -88,22 +99,10 @@ export const DeliveryPricingSheet = (
         .filter(Boolean);
     },
 
-    getFeeRows() {
-      return basePricingSheet.filterBy({
-        category: DeliveryPricingRowCategory.Item,
-      });
-    },
-
     getDiscountRows(discountId) {
       return basePricingSheet.filterBy({
         category: DeliveryPricingRowCategory.Discount,
         discountId,
-      });
-    },
-
-    getTaxRows() {
-      return basePricingSheet.filterBy({
-        category: DeliveryPricingRowCategory.Tax,
       });
     },
   };

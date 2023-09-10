@@ -92,8 +92,6 @@ export const OrderDiscount: IOrderPricingAdapter = {
               amount: discountAmount,
               taxAmount,
               discountId,
-              isTaxable: false,
-              isNetPrice: false,
               meta: {
                 adapter: OrderDiscount.key,
               },

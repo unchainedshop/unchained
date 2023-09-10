@@ -55,7 +55,6 @@ export type PaymentPricingContext =
 export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation> & {
   feeSum: () => number;
   addFee: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta?: any }) => void;
-  getFeeRows: () => Array<PaymentPricingCalculation>;
 };
 
 export type IPaymentPricingAdapter = IPricingAdapter<

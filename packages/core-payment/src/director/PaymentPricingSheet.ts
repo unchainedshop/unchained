@@ -14,15 +14,26 @@ export const PaymentPricingSheet = (
   const pricingSheet: IPaymentPricingSheet = {
     ...basePricingSheet,
 
-    addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
+    addDiscount({ amount, isTaxable, isNetPrice, taxAmount, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: PaymentPricingRowCategory.Discount,
         amount,
-        isTaxable,
+        isTaxable: taxAmount ? false : isTaxable,
         isNetPrice,
         discountId,
         meta,
       });
+
+      if (taxAmount) {
+        basePricingSheet.calculation.push({
+          category: PaymentPricingRowCategory.Tax,
+          baseCategory: PaymentPricingRowCategory.Discount,
+          amount,
+          isTaxable: false,
+          isNetPrice: false,
+          meta,
+        });
+      }
     },
 
     addFee({ amount, isTaxable, isNetPrice, meta }) {
@@ -88,22 +99,10 @@ export const PaymentPricingSheet = (
         .filter(Boolean);
     },
 
-    getFeeRows() {
-      return basePricingSheet.filterBy({
-        category: PaymentPricingRowCategory.Item,
-      });
-    },
-
     getDiscountRows(discountId) {
       return basePricingSheet.filterBy({
         category: PaymentPricingRowCategory.Discount,
         discountId,
-      });
-    },
-
-    getTaxRows() {
-      return basePricingSheet.filterBy({
-        category: PaymentPricingRowCategory.Tax,
       });
     },
   };

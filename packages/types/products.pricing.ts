@@ -49,7 +49,6 @@ export type ProductPricingContext =
 
 export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalculation> {
   addItem: (params: Omit<ProductPricingCalculation, 'category' | 'discountId'>) => void;
-  itemSum: () => number;
   getItemRows: () => ProductPricingCalculation[];
   unitPrice: (params?: { useNetPrice: boolean }) => ProductPricingCalculation;
 }

@@ -57,6 +57,7 @@ export interface OrderPricingContext {
 
 export interface IOrderPricingSheet extends IPricingSheet<OrderPricingCalculation> {
   addDelivery: (params: { amount: number; taxAmount: number; meta?: any }) => void;
+  addDiscount: (params: { amount: number; taxAmount: number; meta?: any }) => void;
   addItems: (params: { amount: number; taxAmount: number; meta?: any }) => void;
   addPayment: (params: { amount: number; taxAmount: number; meta?: any }) => void;
 

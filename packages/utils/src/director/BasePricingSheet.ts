@@ -28,8 +28,12 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
         .reduce((sum: number, calculationRow: Calculation) => sum + calculationRow.amount, 0);
     },
 
+    addTax() {
+      throw new Error('Implement addTax in your pricing sheet');
+    },
+
     taxSum() {
-      return 0;
+      throw new Error('Implement taxSum in your pricing sheet');
     },
 
     gross() {

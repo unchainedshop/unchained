@@ -31,17 +31,7 @@ export const OrderPricingSheet = (
       }
     },
 
-    addDiscount({
-      amount,
-      taxAmount,
-      discountId,
-      meta,
-    }: {
-      amount: number;
-      taxAmount: number;
-      discountId: string;
-      meta?: any;
-    }) {
+    addDiscount({ amount, taxAmount, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Discounts,
         amount,
@@ -154,12 +144,6 @@ export const OrderPricingSheet = (
     getItemsRows() {
       return basePricingSheet.filterBy({
         category: OrderPricingRowCategory.Items,
-      });
-    },
-
-    getTaxRows() {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Taxes,
       });
     },
 

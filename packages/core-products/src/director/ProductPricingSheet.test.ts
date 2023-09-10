@@ -30,13 +30,11 @@ describe('ProductPricingSheet', () => {
         expect(typeof pricingSheet.addDiscount).toBe('function');
         expect(typeof pricingSheet.addTax).toBe('function');
         expect(typeof pricingSheet.taxSum).toBe('function');
-        expect(typeof pricingSheet.itemSum).toBe('function');
         expect(typeof pricingSheet.discountSum).toBe('function');
         expect(typeof pricingSheet.unitPrice).toBe('function');
         expect(typeof pricingSheet.discountPrices).toBe('function');
         expect(typeof pricingSheet.getItemRows).toBe('function');
         expect(typeof pricingSheet.getDiscountRows).toBe('function');
-        expect(typeof pricingSheet.getTaxRows).toBe('function');
       });
 
       it('gross() should return the GROSS sum of all ProductPricingCalculation', () => {
@@ -89,13 +87,6 @@ describe('ProductPricingSheet', () => {
 
       })
 
-      describe('getTaxRows', () => {
-        it('should return all the TAX registered on the ProductPricingSheet', () => {
-            
-            expect(pricingSheet.getTaxRows()).toEqual([TAX, TAX2])
-          })
-
-      })
 
       describe('getDiscountRows', () => {
         it('should return all the DISCOUNTS registered on the ProductPricingSheet', () => {
@@ -115,13 +106,6 @@ describe('ProductPricingSheet', () => {
         it('should return the sum of DISCOUNT calculation registered on the adapter', () => {
             expect(pricingSheet.discountSum()).toEqual(60)
           })
-
-      })
-
-      describe('itemSum', () => {
-        it('should return the sum of TAX calculation registered on the adapter', () => {            
-          expect(pricingSheet.itemSum()).toEqual(400)
-        })
 
       })
 
@@ -163,17 +147,6 @@ describe('ProductPricingSheet', () => {
           expect(pricingSheet.getDiscountRows('new')).toEqual([{amount: 300, isNetPrice: true, isTaxable: true, category: 'DISCOUNT', meta: undefined, discountId: 'new'}])          
         })
       })
-
-
-      describe('addTax', () => {
-        it('should add ProductPricingCalculation TAX category successfully', () => {            
-          expect(pricingSheet.getTaxRows()).toEqual([TAX, TAX2])
-          pricingSheet.addTax({amount: 50})
-          expect(pricingSheet.getTaxRows()).toEqual([TAX, TAX2, {amount: 50, isNetPrice: false, isTaxable: false, category: 'TAX'}])          
-        })
-      })
-      
-
 })
 
 

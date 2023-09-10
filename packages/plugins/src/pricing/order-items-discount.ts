@@ -47,27 +47,17 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
           );
           alreadyDeducted = +itemsDiscountAmount;
 
-          const discountAmount = itemsDiscountAmount;
-          const taxAmount = itemsTaxAmount;
+          const discountAmount = itemsDiscountAmount * -1;
+          const taxAmount = itemsTaxAmount * -1;
           if (discountAmount) {
             pricingAdapter.resultSheet().addDiscount({
-              amount: discountAmount * -1,
+              amount: discountAmount,
+              taxAmount,
               discountId,
-              isTaxable: false,
-              isNetPrice: false,
               meta: {
                 adapter: OrderItemsDiscount.key,
               },
             });
-            if (taxAmount !== 0) {
-              pricingAdapter.resultSheet().addTax({
-                amount: taxAmount * -1,
-                meta: {
-                  discountId,
-                  adapter: OrderItemsDiscount.key,
-                },
-              });
-            }
           }
         });
 
