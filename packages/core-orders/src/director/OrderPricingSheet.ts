@@ -25,7 +25,8 @@ export const OrderPricingSheet = (
         basePricingSheet.calculation.push({
           category: OrderPricingRowCategory.Taxes,
           amount: taxAmount,
-          meta: { ...(meta || {}), origin: OrderPricingRowCategory.Items },
+          baseCategory: OrderPricingRowCategory.Items,
+          meta: { ...(meta || {}) },
         });
       }
     },
@@ -51,8 +52,9 @@ export const OrderPricingSheet = (
       if (taxAmount !== 0) {
         basePricingSheet.calculation.push({
           category: OrderPricingRowCategory.Taxes,
+          baseCategory: OrderPricingRowCategory.Discounts,
           amount: taxAmount,
-          meta: { ...(meta || {}), discountId, origin: OrderPricingRowCategory.Discounts },
+          meta: { ...(meta || {}), discountId },
         });
       }
     },
@@ -76,7 +78,8 @@ export const OrderPricingSheet = (
         basePricingSheet.calculation.push({
           category: OrderPricingRowCategory.Taxes,
           amount: taxAmount,
-          meta: { ...(meta || {}), origin: OrderPricingRowCategory.Delivery },
+          baseCategory: OrderPricingRowCategory.Delivery,
+          meta: { ...(meta || {}) },
         });
       }
     },
@@ -92,14 +95,16 @@ export const OrderPricingSheet = (
         basePricingSheet.calculation.push({
           category: OrderPricingRowCategory.Taxes,
           amount: taxAmount,
-          meta: { ...(meta || {}), origin: OrderPricingRowCategory.Payment },
+          baseCategory: OrderPricingRowCategory.Payment,
+          meta: { ...(meta || {}) },
         });
       }
     },
 
-    taxSum() {
+    taxSum(filter) {
       return basePricingSheet.sum({
         category: OrderPricingRowCategory.Taxes,
+        ...(filter || {}),
       });
     },
 

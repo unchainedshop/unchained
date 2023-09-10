@@ -27,6 +27,7 @@ export type BasePricingContext =
 export interface PricingCalculation {
   category: string;
   amount: number;
+  baseCategory?: string;
   meta?: any;
 }
 
@@ -54,7 +55,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   net: () => number;
 
   sum: (filter?: Partial<Calculation>) => number;
-  taxSum: () => number;
+  taxSum: (filter?: Partial<Calculation>) => number;
   total: (params?: { category?: string; useNetPrice?: boolean }) => {
     amount: number;
     currency: string;

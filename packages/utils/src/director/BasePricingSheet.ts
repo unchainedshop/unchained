@@ -37,19 +37,16 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     },
 
     net() {
-      return this.gross() - this.taxSum();
+      return this.sum() - this.taxSum();
     },
 
     total({ category, useNetPrice } = { useNetPrice: false }) {
-      if (!category) {
-        return {
-          amount: Math.round(useNetPrice ? this.net() : this.gross()),
-          currency: params.currency,
-        };
-      }
-
+      const grossAmountForCategory = this.sum(category && { category });
+      const taxAmountForCategory = this.taxSum(category && { baseCategory: category });
       return {
-        amount: Math.round(this.sum({ category } as any)),
+        amount: Math.round(
+          useNetPrice ? grossAmountForCategory - taxAmountForCategory : grossAmountForCategory,
+        ),
         currency: params.currency,
       };
     },
