@@ -7,17 +7,19 @@ import {
 export const BasePricingSheet = <Calculation extends PricingCalculation>(
   params: PricingSheetParams<Calculation>,
 ): IBasePricingSheet<Calculation> => {
+  const calculation = params.calculation || [];
+
   const pricingSheet: IBasePricingSheet<Calculation> = {
-    calculation: params.calculation || [],
+    calculation,
     currency: params.currency,
     quantity: params.quantity,
 
     getRawPricingSheet() {
-      return this.calculation;
+      return calculation;
     },
 
     isValid() {
-      return this.calculation.length > 0;
+      return calculation.length > 0;
     },
 
     sum(filter) {
@@ -45,7 +47,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
         amount: Math.round(
           useNetPrice ? grossAmountForCategory - taxAmountForCategory : grossAmountForCategory,
         ),
-        currency: this.currency,
+        currency: params.currency,
       };
     },
 
@@ -56,7 +58,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
             (row: Calculation) =>
               !!row && (filter[filterKey] === undefined || row[filterKey] === filter[filterKey]),
           ),
-        this.calculation,
+        calculation,
       );
 
       return filteredCalculation;
@@ -64,12 +66,12 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
 
     resetCalculation(calculationSheet) {
       calculationSheet.filterBy().forEach(({ amount, ...row }: Calculation) => {
-        this.calculation.push({
+        pricingSheet.calculation.push({
           ...row,
           amount: amount * -1,
         } as Calculation);
       });
-      return this.calculation;
+      return pricingSheet.calculation;
     },
   };
 
