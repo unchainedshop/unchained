@@ -30,7 +30,7 @@ const OrderItems: IOrderPricingAdapter = {
               params.context,
             );
             const tax = pricing.taxSum();
-            const items = pricing.net();
+            const items = pricing.gross();
             return {
               taxes: current.taxes + tax,
               items: current.items + items,
