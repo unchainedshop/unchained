@@ -12,7 +12,7 @@ import { productsSettings } from '../products-settings.js';
 
 const { Locale } = localePkg;
 
-const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXTS'];
+const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
 
 export const configureProductTextsModule = ({
   Products,
@@ -106,7 +106,7 @@ export const configureProductTextsModule = ({
           },
         },
       );
-      await emit('PRODUCT_UPDATE_TEXTS', {
+      await emit('PRODUCT_UPDATE_TEXT', {
         productId,
         text: updateResult.value,
       });

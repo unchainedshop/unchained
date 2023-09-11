@@ -6,7 +6,7 @@ import { findLocalizedText, generateDbObjectId } from '@unchainedshop/utils';
 
 const { Locale } = localePkg;
 
-const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXTS'];
+const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXT'];
 
 export const configureFilterTextsModule = ({
   FilterTexts,
@@ -49,7 +49,7 @@ export const configureFilterTextsModule = ({
     });
 
     if (updateResult.ok) {
-      await emit('FILTER_UPDATE_TEXTS', {
+      await emit('FILTER_UPDATE_TEXT', {
         filterId: params.filterId,
         filterOptionValue: params.filterOptionValue || null,
         text: updateResult.value,

@@ -12,7 +12,7 @@ import { assortmentsSettings } from '../assortments-settings.js';
 
 const { Locale } = localePkg;
 
-const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
+const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
 export const configureAssortmentTextsModule = ({
   Assortments,
@@ -105,7 +105,7 @@ export const configureAssortmentTextsModule = ({
           },
         },
       );
-      await emit('ASSORTMENT_UPDATE_TEXTS', {
+      await emit('ASSORTMENT_UPDATE_TEXT', {
         assortmentId,
         text: updateResult.value,
       });

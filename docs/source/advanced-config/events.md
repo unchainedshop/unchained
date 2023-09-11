@@ -27,7 +27,7 @@ Below are events tracked under each module under the box:
 | :--------------------------- | :--------------------------------------- | :---------------------------------------------------------- |
 | ASSORTMENT_CREATE            | Assortment is created                    | `{ assortment: {} }`                                        |
 | ASSORTMENT_ADD_FILTER        | Assortment filter is created             | `{ assortmentFilter: {} }`                                  |
-| ASSORTMENT_ADD_LINK          | Assortment link is created               | `{ parentAssortmentId: string, childAssortmentId: string }` |
+| ASSORTMENT_ADD_LINK          | Assortment link is created               | `{ assortmentLink: {} }`                                    |
 | ASSORTMENT_ADD_PRODUCT       | Product is added to an assortment        | `{ assortmentProduct: {} }`                                 |
 | ASSORTMENT_REMOVE            | Assortment is deleted                    | `{ assortmentId: string }`                                  |
 | ASSORTMENT_REMOVE_FILTER     | Assortment filter is deleted             | `{ assortmentFilterId: string }`                            |
@@ -37,10 +37,10 @@ Below are events tracked under each module under the box:
 | ASSORTMENT_REORDER_LINKS     | Assortment link is updated               | `{ assortmentLinks: [] }`                                   |
 | ASSORTMENT_SET_BASE          | Assortment is set as base assortment     | `{ assortmentId: string }`                                  |
 | ASSORTMENT_UPDATE            | Assortment is updated                    | `{ assortmentId: string }`                                  |
-| ASSORTMENT_UPDATE_TEXTS      | Assortment text is updated               | `{ assortmentId: string, assortmentTexts: [] }`             |
+| ASSORTMENT_UPDATE_TEXT       | Assortment text is updated               | `{ assortmentId: string, text: {} }`                        |
 | ASSORTMENT_ADD_MEDIA         | Media is added for a product             | `{ assortmentMedia: {} }`                                   |
 | ASSORTMENT_REMOVE_MEDIA      | Media is deleted from a product          | `{ assortmentMediaId: string }`                             |
-| ASSORTMENT_UPDATE_MEDIA_TEXT | Product media text is updated            | `{assortmentMedia: {}, mediaTexts: {} }`                    |
+| ASSORTMENT_UPDATE_MEDIA_TEXT | Product media text is updated            | `{ assortmentMediaId: string, text: {} }`                   |
 
 #### `core-products`
 
@@ -56,7 +56,7 @@ Below are events tracked under each module under the box:
 | PRODUCT_VARIATION_OPTION_CREATE | Product variation option is created                          | `{ productVariation: {} }`                                                |
 | PRODUCT_REMOVE_BUNDLE_ITEM      | Bundle item is removed from a BUNDLE_PRODUCT type            | `{ productId: string, item: {} }`                                         |
 | PRODUCT_REMOVE                  | Product is deleted                                           | `{ productId: string }`                                                   |
-| PRODUCT_REMOVE_ASSIGNMENT       | Proxy assignment is removed from a CONFIGURABLE_PRODUCT type | `{ productId: string }`                                                   |
+| PRODUCT_REMOVE_ASSIGNMENT       | Proxy assignment is removed from a configurable product      | `{ productId: string }`                                                   |
 | PRODUCT_REMOVE_MEDIA            | Media is deleted from a product                              | `{ productMediaId: string }`                                              |
 | PRODUCT_REMOVE_REVIEW           | Product review is deleted                                    | `{ productReviewId: string }`                                             |
 | PRODUCT_REMOVE_REVIEW_VOTE      | Product review vote is removed                               | `{ productReviewId: string, type: string, userId: string }`               |
@@ -66,10 +66,10 @@ Below are events tracked under each module under the box:
 | PRODUCT_UNPUBLISH               | Product is unpublished                                       | `{ product: {} }`                                                         |
 | PRODUCT_PUBLISH                 | product is published                                         | `{ product: {} }`                                                         |
 | PRODUCT_UPDATE                  | product is updated                                           | `{ productId: string, type: string, [commerce,support,warehousing]: {} }` |
-| PRODUCT_UPDATE_MEDIA_TEXT       | Product media text is updated                                | `{productMedia: {}, mediaTexts: {} }`                                     |
+| PRODUCT_UPDATE_MEDIA_TEXT       | Product media text is updated                                | `{ productMediaId: string, text: {} }`                                    |
 | PRODUCT_UPDATE_REVIEW           | Product review is updated                                    | `{ productReview: {} }`                                                   |
-| PRODUCT_UPDATE_TEXTS            | Product text is updated                                      | `{ product: {}, productTexts: [] }`                                       |
-| PRODUCT_UPDATE_VARIATION_TEXTS  | product variation text is updated                            | `{ productVariation: {}, productVariationTexts: [] }`                     |
+| PRODUCT_UPDATE_TEXT             | Product text is updated                                      | `{ productId: {}, text: [] }`                                             |
+| PRODUCT_UPDATE_VARIATION_TEXT   | product variation text is updated                            | `{ productVariationId: string, productVariationOptionValue: string, text: {} }` |
 
 #### `core-orders`
 
@@ -136,6 +136,7 @@ Below are events tracked under each module under the box:
 | FILTER_CREATE | New filter is created | `{ filter: {} }`       |
 | FILTER_UPDATE | Filter is update      | `{ filter: {} }`       |
 | FILTER_REMOVE | Filter is removed     | `{ filterId: string }` |
+| FILTER_UPDATE_TEXT | Filter text updated     | `{ filterId: string, filterOptionValue: string, text: {} }` |
 
 #### `core-payment`
 

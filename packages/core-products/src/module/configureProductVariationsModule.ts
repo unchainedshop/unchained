@@ -21,7 +21,7 @@ const { Locale } = localePkg;
 const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_CREATE_VARIATION',
   'PRODUCT_REMOVE_VARIATION',
-  'PRODUCT_UPDATE_VARIATION_TEXTS',
+  'PRODUCT_UPDATE_VARIATION_TEXT',
   'PRODUCT_VARIATION_OPTION_CREATE',
   'PRODUCT_REMOVE_VARIATION_OPTION',
 ];
@@ -84,7 +84,7 @@ export const configureProductVariationsModule = async ({
           updated: new Date(),
         },
       });
-      await emit('PRODUCT_UPDATE_VARIATION_TEXTS', {
+      await emit('PRODUCT_UPDATE_VARIATION_TEXT', {
         productVariationId,
         productVariationOptionValue,
         text: currentText,
