@@ -1,5 +1,4 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import upsertAssortmentContent from './upsertAssortmentContent.js';
 import upsertAssortmentProducts from './upsertAssortmentProducts.js';
 import upsertAssortmentChildren from './upsertAssortmentChildren.js';
 import upsertAssortmentFilters from './upsertAssortmentFilters.js';

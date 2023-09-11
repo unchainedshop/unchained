@@ -220,7 +220,7 @@ export const configureFiltersModule = async ({
       });
 
       if (locale) {
-        await filterTexts.upsertLocalizedText({ filterId }, locale, { title });
+        await filterTexts.updateTexts({ filterId }, [{ title, locale }]);
       }
 
       const filter = await Filters.findOne(generateDbFilterById(filterId), {});
@@ -245,7 +245,7 @@ export const configureFiltersModule = async ({
         },
       });
 
-      await filterTexts.upsertLocalizedText({ filterId, filterOptionValue: value }, locale, { title });
+      await filterTexts.updateTexts({ filterId, filterOptionValue: value }, [{ title, locale }]);
 
       const filter = await Filters.findOne(selector, {});
       await invalidateProductIdCache(filter, unchainedAPI);

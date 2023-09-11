@@ -15,11 +15,11 @@ export const configureFilterTextsModule = ({
 }): FiltersModule['texts'] => {
   registerEvents(FILTER_TEXT_EVENTS);
 
-  const upsertLocalizedText: FiltersModule['texts']['upsertLocalizedText'] = async (
-    params,
-    locale,
-    text,
-  ) => {
+  const upsertLocalizedText = async (
+    params: { filterId: string; filterOptionValue?: string },
+    locale: string,
+    text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale'>,
+  ): Promise<FilterText> => {
     const { filterId, filterOptionValue } = params;
 
     const modifier: any = {
@@ -88,8 +88,6 @@ export const configureFilterTextsModule = ({
 
       return filterTexts;
     },
-
-    upsertLocalizedText,
 
     deleteMany: async ({ filterId, excludedFilterIds }) => {
       const selector: Filter<FilterText> = {};

@@ -340,7 +340,7 @@ export const configureProductsModule = async ({
       const product = await Products.findOne(generateDbFilterById(productId), {});
       await emit('PRODUCT_CREATE', { product });
       if (locale) {
-        await productTexts.upsertLocalizedText(productId, locale, { title });
+        await productTexts.updateTexts(productId, [{ locale, title }]);
 
         if (autopublish) {
           await publishProduct(product);

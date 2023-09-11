@@ -46,11 +46,11 @@ export const configureAssortmentMediaModule = async ({
     AssortmentMediaSchema,
   ) as ModuleMutations<AssortmentMediaType>;
 
-  const upsertLocalizedText: AssortmentMediaModule['texts']['upsertLocalizedText'] = async (
-    assortmentMediaId,
-    locale,
-    text,
-  ) => {
+  const upsertLocalizedText = async (
+    assortmentMediaId: string,
+    locale: string,
+    text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale'>,
+  ): Promise<AssortmentMediaText> => {
     const selector = {
       assortmentMediaId,
       locale,
@@ -242,8 +242,6 @@ export const configureAssortmentMediaModule = async ({
 
         return mediaTexts;
       },
-
-      upsertLocalizedText,
     },
   };
 };

@@ -14,7 +14,6 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { ProductsModule } from '@unchainedshop/types/products.js';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
 import { ProductMediaSchema } from '../db/ProductMediaSchema.js';
 
@@ -46,11 +45,11 @@ export const configureProductMediaModule = async ({
     hasCreateOnly: false,
   }) as ModuleMutations<ProductMedia>;
 
-  const upsertLocalizedText: ProductsModule['media']['texts']['upsertLocalizedText'] = async (
-    productMediaId,
-    locale,
-    text,
-  ) => {
+  const upsertLocalizedText = async (
+    productMediaId: string,
+    locale: string,
+    text: Omit<ProductMediaText, 'productMediaId' | 'locale'>,
+  ): Promise<ProductMediaText> => {
     const selector = {
       productMediaId,
       locale,
@@ -244,8 +243,6 @@ export const configureProductMediaModule = async ({
 
         return mediaTexts;
       },
-
-      upsertLocalizedText,
     },
   };
 };

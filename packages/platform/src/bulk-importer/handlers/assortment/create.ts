@@ -1,7 +1,6 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import upsertAssortmentChildren from './upsertAssortmentChildren.js';
-import upsertAssortmentContent from './upsertAssortmentContent.js';
 import upsertAssortmentFilters from './upsertAssortmentFilters.js';
 import upsertAssortmentProducts from './upsertAssortmentProducts.js';
 import upsertMedia from './upsertMedia.js';

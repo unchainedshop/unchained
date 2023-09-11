@@ -43,11 +43,11 @@ export const configureProductTextsModule = ({
     });
   };
 
-  const upsertLocalizedText: ProductsModule['texts']['upsertLocalizedText'] = async (
-    productId,
-    locale,
-    text,
-  ) => {
+  const upsertLocalizedText = async (
+    productId: string,
+    locale: string,
+    text: Omit<ProductText, 'productId' | 'locale'>,
+  ): Promise<ProductText> => {
     const { slug: textSlug, title = null, ...textFields } = text;
     const slug = await makeSlug({
       slug: textSlug,
@@ -155,7 +155,6 @@ export const configureProductTextsModule = ({
       return productTexts;
     },
 
-    upsertLocalizedText,
     makeSlug,
 
     deleteMany: async ({ productId, excludedProductIds }) => {
