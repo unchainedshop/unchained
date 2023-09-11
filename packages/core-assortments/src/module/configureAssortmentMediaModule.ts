@@ -55,11 +55,11 @@ export const configureAssortmentMediaModule = async ({
       assortmentMediaId,
       locale,
     };
-
-    const updateResult = await AssortmentMediaTexts.updateOne(
+    const currentText = await AssortmentMediaTexts.findOneAndUpdate(
       selector,
       {
         $set: {
+          updated: new Date(),
           ...text,
         },
         $setOnInsert: {
@@ -71,23 +71,16 @@ export const configureAssortmentMediaModule = async ({
       },
       {
         upsert: true,
+        returnDocument: 'after',
       },
     );
-    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
-
-    const currentText = await AssortmentMediaTexts.findOne(selector, {});
-    if (isModified) {
-      await AssortmentMediaTexts.updateOne(selector, {
-        $set: {
-          updated: new Date(),
-        },
-      });
+    if (currentText.ok) {
       await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
         assortmentMediaId,
-        text: currentText,
+        text: currentText.value,
       });
     }
-    return currentText;
+    return currentText.value;
   };
 
   return {
@@ -244,7 +237,7 @@ export const configureAssortmentMediaModule = async ({
       // Mutations
       updateMediaTexts: async (assortmentMediaId, texts) => {
         const mediaTexts = await Promise.all(
-          texts.map(({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
+          texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
         );
 
         return mediaTexts;

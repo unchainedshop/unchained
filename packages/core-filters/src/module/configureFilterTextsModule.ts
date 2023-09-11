@@ -24,6 +24,7 @@ export const configureFilterTextsModule = ({
 
     const modifier: any = {
       $set: {
+        updated: new Date(),
         title: text.title,
         subtitle: text.subtitle,
       },
@@ -42,25 +43,19 @@ export const configureFilterTextsModule = ({
       locale,
     };
 
-    const updateResult = await FilterTexts.updateOne(selector, modifier, {
+    const updateResult = await FilterTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
+      returnDocument: 'after',
     });
-    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
-    const currentText = await FilterTexts.findOne(selector, {});
-    if (isModified) {
-      await FilterTexts.updateOne(selector, {
-        $set: {
-          updated: new Date(),
-        },
-      });
+    if (updateResult.ok) {
       await emit('FILTER_UPDATE_TEXTS', {
         filterId: params.filterId,
         filterOptionValue: params.filterOptionValue || null,
-        text: currentText,
+        text: updateResult.value,
       });
     }
-    return currentText;
+    return updateResult.value;
   };
 
   return {
@@ -88,7 +83,7 @@ export const configureFilterTextsModule = ({
     // Mutations
     updateTexts: async (params, texts) => {
       const filterTexts = await Promise.all(
-        texts.map(({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
+        texts.map(async ({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
       );
 
       return filterTexts;

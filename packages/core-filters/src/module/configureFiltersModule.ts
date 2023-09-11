@@ -219,12 +219,11 @@ export const configureFiltersModule = async ({
         ...filterData,
       });
 
-      const filter = await Filters.findOne(generateDbFilterById(filterId), {});
-
       if (locale) {
         await filterTexts.upsertLocalizedText({ filterId }, locale, { title });
       }
 
+      const filter = await Filters.findOne(generateDbFilterById(filterId), {});
       if (!options?.skipInvalidation) {
         await invalidateProductIdCache(filter, unchainedAPI);
         filterProductIds.clear();

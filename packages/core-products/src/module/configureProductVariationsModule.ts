@@ -38,12 +38,11 @@ export const configureProductVariationsModule = async ({
     hasCreateOnly: false,
   }) as ModuleMutations<ProductVariation>;
 
-  const upsertLocalizedText = async ({
-    productVariationId,
-    productVariationOptionValue = null,
+  const upsertLocalizedText = async (
+    { productVariationId, productVariationOptionValue = null },
     locale,
-    ...text
-  }: ProductVariationText) => {
+    text,
+  ): Promise<ProductVariationText> => {
     const selector = {
       productVariationId,
       productVariationOptionValue: productVariationOptionValue || {
@@ -142,11 +141,13 @@ export const configureProductVariationsModule = async ({
         {},
       );
 
-      await upsertLocalizedText({
+      await upsertLocalizedText(
+        {
+          productVariationId,
+        },
         locale,
-        productVariationId,
-        title,
-      });
+        { title },
+      );
 
       await emit('PRODUCT_CREATE_VARIATION', {
         productVariation,
@@ -204,12 +205,14 @@ export const configureProductVariationsModule = async ({
         },
       });
 
-      await upsertLocalizedText({
+      await upsertLocalizedText(
+        {
+          productVariationId,
+          productVariationOptionValue: value,
+        },
         locale,
-        productVariationId,
-        productVariationOptionValue: value,
-        title,
-      });
+        { title },
+      );
 
       const productVariation = await ProductVariations.findOne(
         generateDbFilterById(productVariationId),
@@ -271,26 +274,22 @@ export const configureProductVariationsModule = async ({
       // Mutations
       updateVariationTexts: async (productVariationId, texts, productVariationOptionValue) => {
         const productVariationTexts = await Promise.all(
-          texts.map(({ locale, ...text }) =>
-            upsertLocalizedText({
-              ...text,
+          texts.map(async ({ locale, ...text }) =>
+            upsertLocalizedText(
+              {
+                productVariationId,
+                productVariationOptionValue,
+              },
               locale,
-              productVariationId,
-              productVariationOptionValue,
-            }),
+              text,
+            ),
           ),
         );
 
         return productVariationTexts;
       },
 
-      upsertLocalizedText: async ({ productVariationId, productVariationOptionValue }, locale, text) =>
-        upsertLocalizedText({
-          ...text,
-          productVariationId,
-          productVariationOptionValue,
-          locale,
-        }),
+      upsertLocalizedText,
     },
   };
 };

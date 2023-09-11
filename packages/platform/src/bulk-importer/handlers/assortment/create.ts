@@ -36,12 +36,14 @@ export default async function createAssortment(
   }
 
   logger.debug('create localized content for assortment', specification.content);
-  await upsertAssortmentContent(
-    {
-      content: specification.content,
-      assortmentId: _id,
-    },
-    unchainedAPI,
+  await modules.assortments.texts.updateTexts(
+    _id,
+    Object.entries(specification.content).map(([locale, localizedData]: [string, any]) => {
+      return {
+        locale,
+        ...localizedData,
+      };
+    }),
   );
 
   logger.debug('create assortment products', products);

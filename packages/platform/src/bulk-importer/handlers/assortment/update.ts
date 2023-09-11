@@ -22,12 +22,14 @@ export default async function updateAssortment(payload: any, { logger }, unchain
     await unchainedAPI.modules.assortments.update(_id, { ...specification });
     if (specification.content) {
       logger.debug('replace localized content for assortment', specification.content);
-      await upsertAssortmentContent(
-        {
-          content: specification.content,
-          assortmentId: _id,
-        },
-        unchainedAPI,
+      await modules.assortments.texts.updateTexts(
+        _id,
+        Object.entries(specification.content).map(([locale, localizedData]: [string, any]) => {
+          return {
+            locale,
+            ...localizedData,
+          };
+        }),
       );
     }
   }

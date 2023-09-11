@@ -1,4 +1,3 @@
-import { AssortmentMediaText } from '@unchainedshop/types/assortments.media.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import upsertAsset from '../../upsertAsset.js';
 
@@ -36,14 +35,12 @@ export default async ({ media, assortmentId }, unchainedAPI: UnchainedCore) => {
       if (!mediaObject) throw new Error(`Unable to create media object ${mediaObject._id}`);
 
       if (content) {
-        await Promise.all(
-          Object.entries(content).map(async ([locale, localizedData]: [string, AssortmentMediaText]) => {
-            return modules.assortments.media.texts.upsertLocalizedText(
-              mediaObject._id,
-              locale,
-              localizedData,
-            );
-          }),
+        await modules.assortments.media.texts.updateMediaTexts(
+          mediaObject._id,
+          Object.entries(content).map(([locale, localizedData]: [string, any]) => ({
+            locale,
+            ...localizedData,
+          })),
         );
       }
       return mediaObject;

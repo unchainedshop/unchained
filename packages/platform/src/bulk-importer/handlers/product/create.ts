@@ -1,7 +1,6 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import upsertVariations from './upsertVariations.js';
 import upsertMedia from './upsertMedia.js';
-import upsertProductContent from './upsertProductContent.js';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure.js';
 
 export default async function createProduct(
@@ -37,12 +36,14 @@ export default async function createProduct(
   }
 
   logger.debug('create localized content for product', specification.content);
-  await upsertProductContent(
-    {
-      content: specification.content,
-      productId: _id,
-    },
-    unchainedAPI,
+  await modules.products.texts.updateTexts(
+    _id,
+    Object.entries(specification.content).map(([locale, localizedData]: [string, any]) => {
+      return {
+        locale,
+        ...localizedData,
+      };
+    }),
   );
 
   logger.debug('create product variations', variations);
