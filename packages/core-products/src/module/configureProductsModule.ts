@@ -320,7 +320,7 @@ export const configureProductsModule = async ({
     },
 
     // Mutations
-    create: async ({ locale, title, type, sequence, ...productData }, { autopublish = false } = {}) => {
+    create: async ({ locale, title, type, sequence, ...productData }) => {
       if (productData._id) {
         await deleteProductPermanently(
           {
@@ -337,16 +337,11 @@ export const configureProductsModule = async ({
         ...productData,
       });
 
-      const product = await Products.findOne(generateDbFilterById(productId), {});
-
       if (locale) {
-        await productTexts.upsertLocalizedText(productId, locale, { title });
-
-        if (autopublish) {
-          await publishProduct(product);
-        }
+        await productTexts.updateTexts(productId, [{ locale, title }]);
       }
 
+      const product = await Products.findOne(generateDbFilterById(productId), {});
       await emit('PRODUCT_CREATE', { product });
 
       return product;

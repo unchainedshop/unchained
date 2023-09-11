@@ -14,7 +14,6 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { ProductsModule } from '@unchainedshop/types/products.js';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
 import { ProductMediaSchema } from '../db/ProductMediaSchema.js';
 
@@ -46,16 +45,17 @@ export const configureProductMediaModule = async ({
     hasCreateOnly: false,
   }) as ModuleMutations<ProductMedia>;
 
-  const upsertLocalizedText: ProductsModule['media']['texts']['upsertLocalizedText'] = async (
-    productMediaId,
-    locale,
-    text,
-  ) => {
-    await ProductMediaTexts.updateOne(
-      {
-        productMediaId,
-        locale,
-      },
+  const upsertLocalizedText = async (
+    productMediaId: string,
+    locale: string,
+    text: Omit<ProductMediaText, 'productMediaId' | 'locale'>,
+  ): Promise<ProductMediaText> => {
+    const selector = {
+      productMediaId,
+      locale,
+    };
+    const updateResult = await ProductMediaTexts.findOneAndUpdate(
+      selector,
       {
         $set: {
           updated: new Date(),
@@ -70,13 +70,16 @@ export const configureProductMediaModule = async ({
       },
       {
         upsert: true,
+        returnDocument: 'after',
       },
     );
-
-    return ProductMediaTexts.findOne({
-      productMediaId,
-      locale,
-    });
+    if (updateResult.ok) {
+      await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
+        productMediaId,
+        text: updateResult.value,
+      });
+    }
+    return updateResult.value;
   };
 
   return {
@@ -233,20 +236,13 @@ export const configureProductMediaModule = async ({
       // Mutations
       updateMediaTexts: async (productMediaId, texts) => {
         const mediaTexts = await Promise.all(
-          texts.map(({ locale, ...localizations }) =>
+          texts.map(async ({ locale, ...localizations }) =>
             upsertLocalizedText(productMediaId, locale, localizations),
           ),
         );
 
-        await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
-          productMediaId,
-          mediaTexts,
-        });
-
         return mediaTexts;
       },
-
-      upsertLocalizedText,
     },
   };
 };

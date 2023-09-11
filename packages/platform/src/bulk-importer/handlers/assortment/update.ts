@@ -1,5 +1,4 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import upsertAssortmentContent from './upsertAssortmentContent.js';
 import upsertAssortmentProducts from './upsertAssortmentProducts.js';
 import upsertAssortmentChildren from './upsertAssortmentChildren.js';
 import upsertAssortmentFilters from './upsertAssortmentFilters.js';
@@ -22,12 +21,14 @@ export default async function updateAssortment(payload: any, { logger }, unchain
     await unchainedAPI.modules.assortments.update(_id, { ...specification });
     if (specification.content) {
       logger.debug('replace localized content for assortment', specification.content);
-      await upsertAssortmentContent(
-        {
-          content: specification.content,
-          assortmentId: _id,
-        },
-        unchainedAPI,
+      await modules.assortments.texts.updateTexts(
+        _id,
+        Object.entries(specification.content).map(([locale, localizedData]: [string, any]) => {
+          return {
+            locale,
+            ...localizedData,
+          };
+        }),
       );
     }
   }

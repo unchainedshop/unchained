@@ -6,7 +6,7 @@ import { findLocalizedText, generateDbObjectId } from '@unchainedshop/utils';
 
 const { Locale } = localePkg;
 
-const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXTS'];
+const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXT'];
 
 export const configureFilterTextsModule = ({
   FilterTexts,
@@ -15,11 +15,11 @@ export const configureFilterTextsModule = ({
 }): FiltersModule['texts'] => {
   registerEvents(FILTER_TEXT_EVENTS);
 
-  const upsertLocalizedText: FiltersModule['texts']['upsertLocalizedText'] = async (
-    params,
-    locale,
-    text,
-  ) => {
+  const upsertLocalizedText = async (
+    params: { filterId: string; filterOptionValue?: string },
+    locale: string,
+    text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale'>,
+  ): Promise<FilterText> => {
     const { filterId, filterOptionValue } = params;
 
     const modifier: any = {
@@ -43,11 +43,19 @@ export const configureFilterTextsModule = ({
       locale,
     };
 
-    await FilterTexts.updateOne(selector, modifier, {
+    const updateResult = await FilterTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
+      returnDocument: 'after',
     });
 
-    return FilterTexts.findOne(selector, {});
+    if (updateResult.ok) {
+      await emit('FILTER_UPDATE_TEXT', {
+        filterId: params.filterId,
+        filterOptionValue: params.filterOptionValue || null,
+        text: updateResult.value,
+      });
+    }
+    return updateResult.value;
   };
 
   return {
@@ -75,19 +83,11 @@ export const configureFilterTextsModule = ({
     // Mutations
     updateTexts: async (params, texts) => {
       const filterTexts = await Promise.all(
-        texts.map(({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
+        texts.map(async ({ locale, ...text }) => upsertLocalizedText(params, locale, text)),
       );
-
-      await emit('FILTER_UPDATE_TEXTS', {
-        filterId: params.filterId,
-        filterOptionValue: params.filterOptionValue || null,
-        filterTexts,
-      });
 
       return filterTexts;
     },
-
-    upsertLocalizedText,
 
     deleteMany: async ({ filterId, excludedFilterIds }) => {
       const selector: Filter<FilterText> = {};

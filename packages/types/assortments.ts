@@ -295,12 +295,6 @@ export type AssortmentsModule = {
       texts: Array<Omit<AssortmentText, 'assortmentId'>>,
     ) => Promise<Array<AssortmentText>>;
 
-    upsertLocalizedText: (
-      assortmentId: string,
-      locale: string,
-      text: Omit<AssortmentText, 'assortmentId' | 'locale'>,
-    ) => Promise<AssortmentText>;
-
     makeSlug: (data: { slug?: string; title: string; assortmentId: string }) => Promise<string>;
 
     deleteMany: ({

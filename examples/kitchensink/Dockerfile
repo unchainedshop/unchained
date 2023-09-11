@@ -1,4 +1,4 @@
-FROM node:18 as bundler
+FROM node:18-bullseye as bundler
 
 # Install app dependencies
 RUN mkdir -p /source

@@ -379,12 +379,6 @@ export type ProductsModule = {
       texts: Array<Omit<ProductText, 'productId'>>,
     ) => Promise<Array<ProductText>>;
 
-    upsertLocalizedText: (
-      productId: string,
-      locale: string,
-      text: Omit<ProductText, 'productId' | 'locale'>,
-    ) => Promise<ProductText>;
-
     makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;
 
     deleteMany: ({

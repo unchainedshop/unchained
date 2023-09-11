@@ -12,7 +12,7 @@ import { productsSettings } from '../products-settings.js';
 
 const { Locale } = localePkg;
 
-const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXTS'];
+const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
 
 export const configureProductTextsModule = ({
   Products,
@@ -43,11 +43,11 @@ export const configureProductTextsModule = ({
     });
   };
 
-  const upsertLocalizedText: ProductsModule['texts']['upsertLocalizedText'] = async (
-    productId,
-    locale,
-    text,
-  ) => {
+  const upsertLocalizedText = async (
+    productId: string,
+    locale: string,
+    text: Omit<ProductText, 'productId' | 'locale'>,
+  ): Promise<ProductText> => {
     const { slug: textSlug, title = null, ...textFields } = text;
     const slug = await makeSlug({
       slug: textSlug,
@@ -57,8 +57,8 @@ export const configureProductTextsModule = ({
 
     const modifier: any = {
       $set: {
-        updated: new Date(),
         title: text.title,
+        updated: new Date(),
         ...textFields,
       },
       $setOnInsert: {
@@ -77,11 +77,12 @@ export const configureProductTextsModule = ({
 
     const selector = { productId, locale };
 
-    const updateResult = await ProductTexts.updateOne(selector, modifier, {
+    const updateResult = await ProductTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
+      returnDocument: 'after',
     });
 
-    if (updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0) {
+    if (updateResult.ok) {
       await Products.updateOne(generateDbFilterById(productId), {
         $set: {
           updated: new Date(),
@@ -105,9 +106,13 @@ export const configureProductTextsModule = ({
           },
         },
       );
+      await emit('PRODUCT_UPDATE_TEXT', {
+        productId,
+        text: updateResult.value,
+      });
     }
 
-    return ProductTexts.findOne(selector, {});
+    return updateResult.value;
   };
 
   return {
@@ -143,19 +148,13 @@ export const configureProductTextsModule = ({
     updateTexts: async (productId, texts) => {
       const productTexts = texts
         ? await Promise.all(
-            texts.map(({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
+            texts.map(async ({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
           )
         : [];
-
-      await emit('PRODUCT_UPDATE_TEXTS', {
-        productId,
-        productTexts,
-      });
 
       return productTexts;
     },
 
-    upsertLocalizedText,
     makeSlug,
 
     deleteMany: async ({ productId, excludedProductIds }) => {

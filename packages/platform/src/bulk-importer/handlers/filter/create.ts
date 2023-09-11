@@ -1,6 +1,4 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import upsertFilterContent from './upsertFilterContent.js';
-import upsertFilterOptionContent from './upsertFilterOptionContent.js';
 
 export default async function createFilter(
   payload: any,
@@ -46,11 +44,35 @@ export default async function createFilter(
     throw new Error(`Can't upsert filter ${_id}`);
   }
 
-  logger.debug('create localized content for filter', content);
-  await upsertFilterContent({ content, filterId: _id }, unchainedAPI);
+  if (content) {
+    logger.debug('create localized content for filter', content);
+    await modules.filters.texts.updateTexts(
+      { filterId: _id },
+      Object.entries(content).map(([locale, localizedData]: [string, any]) => {
+        return {
+          locale,
+          ...localizedData,
+        };
+      }),
+    );
+  }
 
-  logger.debug('create localized content for filter options', content);
-  await upsertFilterOptionContent({ options, filterId: _id }, unchainedAPI);
+  if (options) {
+    logger.debug('create localized content for filter options', content);
+    await Promise.all(
+      options.map(async ({ content: optionContent, value: optionValue }) =>
+        modules.filters.texts.updateTexts(
+          { filterId: _id, filterOptionValue: optionValue },
+          Object.entries(optionContent).map(([locale, localizedData]: [string, any]) => {
+            return {
+              locale,
+              ...localizedData,
+            };
+          }),
+        ),
+      ),
+    );
+  }
 
   return {
     entity: 'FILTER',

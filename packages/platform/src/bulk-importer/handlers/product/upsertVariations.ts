@@ -1,5 +1,5 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations.js';
+import { ProductVariation } from '@unchainedshop/types/products.variations.js';
 
 const upsert = async (productVariation: ProductVariation, unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;
@@ -26,32 +26,26 @@ export default async function upsertVariations({ variations, productId }, unchai
       );
 
       await Promise.all(
-        options.map(async ({ content: optionContent, value: optionValue }) => {
-          await Promise.all(
-            Object.entries(optionContent).map(
-              async ([locale, localizedData]: [string, ProductVariationText]) => {
-                return modules.products.variations.texts.upsertLocalizedText(
-                  {
-                    productVariationId: variation._id,
-                    productVariationOptionValue: optionValue,
-                  },
-                  locale,
-                  localizedData,
-                );
-              },
-            ),
-          );
-        }),
+        options.map(async ({ content: optionContent, value: optionValue }) =>
+          modules.products.variations.texts.updateVariationTexts(
+            variation._id,
+            Object.entries(optionContent).map(([locale, localizedData]: [string, any]) => {
+              return {
+                locale,
+                ...localizedData,
+              };
+            }),
+            optionValue,
+          ),
+        ),
       );
-      await Promise.all(
-        Object.entries(content).map(async ([locale, localizedData]: [string, ProductVariationText]) => {
-          return modules.products.variations.texts.upsertLocalizedText(
-            {
-              productVariationId: variation._id,
-            },
+      await modules.products.variations.texts.updateVariationTexts(
+        variation._id,
+        Object.entries(content).map(([locale, localizedData]: [string, any]) => {
+          return {
             locale,
-            localizedData,
-          );
+            ...localizedData,
+          };
         }),
       );
       return variation._id;
