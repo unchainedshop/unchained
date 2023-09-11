@@ -48,7 +48,7 @@
     "express": "^4.18.2"
   },
   "dependencies": {
-    "@metamask/eth-sig-util": "^6.0.0",
+    "@metamask/eth-sig-util": "^6.0.1",
     "@unchainedshop/core": "^2.5.0",
     "@unchainedshop/events": "^2.5.0",
     "@unchainedshop/logger": "^2.5.0",

@@ -230,7 +230,6 @@ export const configureFiltersModule = async ({
       }
 
       await emit('FILTER_CREATE', { filter });
-
       return filter;
     },
 
@@ -245,11 +244,15 @@ export const configureFiltersModule = async ({
         },
       });
 
-      await filterTexts.updateTexts({ filterId, filterOptionValue: value }, [{ title, locale }]);
-
       const filter = await Filters.findOne(selector, {});
       await invalidateProductIdCache(filter, unchainedAPI);
       filterProductIds.clear();
+
+      await emit('FILTER_UPDATE', { filterId, options: filter.options, updated: filter.updated });
+
+      if (locale) {
+        await filterTexts.updateTexts({ filterId, filterOptionValue: value }, [{ title, locale }]);
+      }
 
       return filter;
     },
@@ -275,6 +278,8 @@ export const configureFiltersModule = async ({
       const filter = await Filters.findOne(selector, {});
       await invalidateProductIdCache(filter, unchainedAPI);
       filterProductIds.clear();
+
+      await emit('FILTER_UPDATE', { filterId, options: filter.options, updated: filter.updated });
 
       return filter;
     },
