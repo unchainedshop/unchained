@@ -39,9 +39,15 @@ export const configureProductVariationsModule = async ({
   }) as ModuleMutations<ProductVariation>;
 
   const upsertLocalizedText = async (
-    { productVariationId, productVariationOptionValue = null },
-    locale,
-    text,
+    {
+      productVariationId,
+      productVariationOptionValue = null,
+    }: {
+      productVariationId: string;
+      productVariationOptionValue?: string;
+    },
+    locale: string,
+    text: Omit<ProductVariationText, 'locale' | 'productVariationId' | 'productVariationOptionValue'>,
   ): Promise<ProductVariationText> => {
     const selector = {
       productVariationId,
@@ -288,8 +294,6 @@ export const configureProductVariationsModule = async ({
 
         return productVariationTexts;
       },
-
-      upsertLocalizedText,
     },
   };
 };
