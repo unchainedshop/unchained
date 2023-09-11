@@ -101,7 +101,12 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
               Math.max(0, Math.min(amountLeft, leftInFeesToSplit)),
             );
           amountLeft -= deliveryAndPaymentDiscountAmount;
-          const discountAmount = (itemsDiscountAmount + deliveryAndPaymentDiscountAmount) * -1;
+          const discountAmount =
+            (itemsDiscountAmount +
+              deliveryAndPaymentDiscountAmount -
+              itemsTaxAmount -
+              deliveryAndPaymentTaxAmount) *
+            -1;
           const taxAmount = (itemsTaxAmount + deliveryAndPaymentTaxAmount) * -1;
           if (discountAmount) {
             pricingAdapter.resultSheet().addDiscount({

@@ -94,13 +94,11 @@ export const OrderPricingSheet = (
       });
     },
 
-    gross() {
-      // tax is included 2 times, this is only true for Order Pricing!
-      return basePricingSheet.sum() - this.taxSum();
-    },
-
-    net() {
-      return basePricingSheet.sum() - this.taxSum() - this.taxSum();
+    discountSum(discountId) {
+      return basePricingSheet.sum({
+        category: OrderPricingRowCategory.Discounts,
+        discountId,
+      });
     },
 
     total({ category, useNetPrice, discountId } = { useNetPrice: false }) {
