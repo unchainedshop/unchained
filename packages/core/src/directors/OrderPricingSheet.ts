@@ -27,6 +27,7 @@ export interface IOrderPricingSheet extends IPricingSheet<OrderPricingCalculatio
   addDiscount: (params: { amount: number; taxAmount: number; discountId: string; meta?: any }) => void;
   addItems: (params: { amount: number; taxAmount: number; meta?: any }) => void;
   addPayment: (params: { amount: number; taxAmount: number; meta?: any }) => void;
+  discountSum: (discountId?: string) => number;
 }
 
 export const OrderPricingSheet = (
@@ -97,13 +98,11 @@ export const OrderPricingSheet = (
       });
     },
 
-    gross() {
-      // tax is included 2 times, this is only true for Order Pricing!
-      return basePricingSheet.sum() - this.taxSum();
-    },
-
-    net() {
-      return basePricingSheet.sum() - this.taxSum() - this.taxSum();
+    discountSum(discountId) {
+      return basePricingSheet.sum({
+        category: OrderPricingRowCategory.Discounts,
+        discountId,
+      });
     },
 
     total({ category, useNetPrice, discountId } = { useNetPrice: false }) {
