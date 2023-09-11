@@ -360,7 +360,10 @@ export const configureProductsModule = async ({
 
       const productId = await mutations.update(_id, updateDoc);
 
-      await emit('PRODUCT_UPDATE', { productId, ...updateDoc }); // TODO: Should be produc inside?
+      const product = await Products.findOne(generateDbFilterById(productId), {});
+
+      // Deprecation notice: remove "...updateDoc", product should be inside product field
+      await emit('PRODUCT_UPDATE', { productId, ...updateDoc, product });
 
       return productId;
     },

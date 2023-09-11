@@ -87,12 +87,7 @@ export const OrderDiscount: IOrderPricingAdapter = {
           amountLeft -= deliveryAndPaymentDiscountAmount;
           alreadyDeducted += itemsDiscountAmount;
 
-          const discountAmount =
-            (itemsDiscountAmount +
-              deliveryAndPaymentDiscountAmount -
-              itemsTaxAmount -
-              deliveryAndPaymentTaxAmount) *
-            -1;
+          const discountAmount = (itemsDiscountAmount + deliveryAndPaymentDiscountAmount) * -1;
           const taxAmount = (itemsTaxAmount + deliveryAndPaymentTaxAmount) * -1;
 
           if (discountAmount) {
