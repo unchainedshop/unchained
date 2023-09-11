@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-assortments",
-  "version": "2.4.3",
+  "version": "2.5.0",
   "main": "lib/assortments-index.js",
   "exports": {
     ".": "./lib/assortments-index.js",
@@ -31,18 +31,18 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^2.4.3",
-    "@unchainedshop/file-upload": "^2.4.3",
-    "@unchainedshop/logger": "^2.4.3",
-    "@unchainedshop/utils": "^2.4.3",
+    "@unchainedshop/events": "^2.5.0",
+    "@unchainedshop/file-upload": "^2.5.0",
+    "@unchainedshop/logger": "^2.5.0",
+    "@unchainedshop/utils": "^2.5.0",
     "locale": "^0.1.0",
     "ramda": "^0.29.0",
     "simpl-schema": "=3.2.0"
   },
   "devDependencies": {
     "@types/locale": "^0.1.2",
-    "@types/node": "^18.17.14",
-    "@unchainedshop/types": "^2.4.3",
+    "@types/node": "^18.17.15",
+    "@unchainedshop/types": "^2.5.0",
     "cross-env": "^7.0.3",
     "jest": "^29.6.4",
     "ts-jest": "^29.1.1",
