@@ -360,7 +360,7 @@ export const configureProductsModule = async ({
 
       const productId = await mutations.update(_id, updateDoc);
 
-      await emit('PRODUCT_UPDATE', { productId, ...updateDoc });
+      await emit('PRODUCT_UPDATE', { productId, ...updateDoc }); // TODO: Should be produc inside?
 
       return productId;
     },

@@ -11,6 +11,18 @@ export const OrderPricingSheet = (
 ): IOrderPricingSheet => {
   const basePricingSheet: IBasePricingSheet<OrderPricingCalculation> = BasePricingSheet(params);
 
+  const addTaxIfAvailabile = (category: string, taxAmount?: number, meta?: any, discountId?: string) => {
+    if (taxAmount) {
+      basePricingSheet.calculation.push({
+        category: OrderPricingRowCategory.Taxes,
+        amount: taxAmount,
+        baseCategory: category,
+        discountId,
+        meta,
+      });
+    }
+  };
+
   const pricingSheet: IOrderPricingSheet = {
     ...basePricingSheet,
 
@@ -21,14 +33,7 @@ export const OrderPricingSheet = (
         meta,
       });
 
-      if (taxAmount !== 0) {
-        basePricingSheet.calculation.push({
-          category: OrderPricingRowCategory.Taxes,
-          amount: taxAmount,
-          baseCategory: OrderPricingRowCategory.Items,
-          meta,
-        });
-      }
+      addTaxIfAvailabile(OrderPricingRowCategory.Items, taxAmount, meta);
     },
 
     addDiscount({ amount, taxAmount, discountId, meta }) {
@@ -39,15 +44,7 @@ export const OrderPricingSheet = (
         meta,
       });
 
-      if (taxAmount !== 0) {
-        basePricingSheet.calculation.push({
-          category: OrderPricingRowCategory.Taxes,
-          baseCategory: OrderPricingRowCategory.Discounts,
-          amount: taxAmount,
-          discountId,
-          meta,
-        });
-      }
+      addTaxIfAvailabile(OrderPricingRowCategory.Discounts, taxAmount, meta, discountId);
     },
 
     addDelivery({ amount, taxAmount, meta }) {
@@ -57,14 +54,7 @@ export const OrderPricingSheet = (
         meta,
       });
 
-      if (taxAmount !== 0) {
-        basePricingSheet.calculation.push({
-          category: OrderPricingRowCategory.Taxes,
-          amount: taxAmount,
-          baseCategory: OrderPricingRowCategory.Delivery,
-          meta,
-        });
-      }
+      addTaxIfAvailabile(OrderPricingRowCategory.Delivery, taxAmount, meta);
     },
 
     addPayment({ amount, taxAmount, meta }) {
@@ -74,19 +64,7 @@ export const OrderPricingSheet = (
         meta,
       });
 
-      if (taxAmount !== 0) {
-        basePricingSheet.calculation.push({
-          category: OrderPricingRowCategory.Taxes,
-          amount: taxAmount,
-          baseCategory: OrderPricingRowCategory.Payment,
-          meta,
-        });
-      }
-    },
-
-    gross() {
-      // tax is included 2 times, this is only true for Order Pricing!
-      return basePricingSheet.sum() - pricingSheet.taxSum();
+      addTaxIfAvailabile(OrderPricingRowCategory.Payment, taxAmount, meta);
     },
 
     taxSum(filter) {
@@ -94,6 +72,15 @@ export const OrderPricingSheet = (
         category: OrderPricingRowCategory.Taxes,
         ...(filter || {}),
       });
+    },
+
+    gross() {
+      // tax is included 2 times, this is only true for Order Pricing!
+      return basePricingSheet.sum() - pricingSheet.taxSum();
+    },
+
+    net() {
+      return basePricingSheet.sum() - pricingSheet.taxSum() - pricingSheet.taxSum();
     },
 
     discountSum(discountId) {
