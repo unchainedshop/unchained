@@ -39,7 +39,7 @@ describe('Worker Module', () => {
       expect(addWorkResult.data.addWork.type).toBe('HEARTBEAT');
       expect(addWorkResult.errors).toBeUndefined();
 
-      await wait(10000);
+      await wait(1000);
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `

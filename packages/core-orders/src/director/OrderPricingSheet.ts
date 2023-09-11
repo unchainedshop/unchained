@@ -26,7 +26,7 @@ export const OrderPricingSheet = (
           category: OrderPricingRowCategory.Taxes,
           amount: taxAmount,
           baseCategory: OrderPricingRowCategory.Items,
-          meta: { ...(meta || {}) },
+          meta,
         });
       }
     },
@@ -44,7 +44,8 @@ export const OrderPricingSheet = (
           category: OrderPricingRowCategory.Taxes,
           baseCategory: OrderPricingRowCategory.Discounts,
           amount: taxAmount,
-          meta: { ...(meta || {}), discountId },
+          discountId,
+          meta,
         });
       }
     },
@@ -61,7 +62,7 @@ export const OrderPricingSheet = (
           category: OrderPricingRowCategory.Taxes,
           amount: taxAmount,
           baseCategory: OrderPricingRowCategory.Delivery,
-          meta: { ...(meta || {}) },
+          meta,
         });
       }
     },
@@ -78,7 +79,7 @@ export const OrderPricingSheet = (
           category: OrderPricingRowCategory.Taxes,
           amount: taxAmount,
           baseCategory: OrderPricingRowCategory.Payment,
-          meta: { ...(meta || {}) },
+          meta,
         });
       }
     },
