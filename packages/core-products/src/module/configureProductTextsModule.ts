@@ -58,6 +58,7 @@ export const configureProductTextsModule = ({
     const modifier: any = {
       $set: {
         title: text.title,
+        updated: new Date(),
         ...textFields,
       },
       $setOnInsert: {
@@ -76,19 +77,12 @@ export const configureProductTextsModule = ({
 
     const selector = { productId, locale };
 
-    const updateResult = await ProductTexts.updateOne(selector, modifier, {
+    const updateResult = await ProductTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
+      returnDocument: 'after',
     });
-    const currentText = await ProductTexts.findOne(selector, {});
 
-    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
-
-    if (isModified) {
-      await ProductTexts.updateOne(selector, {
-        $set: {
-          updated: new Date(),
-        },
-      });
+    if (updateResult.ok) {
       await Products.updateOne(generateDbFilterById(productId), {
         $set: {
           updated: new Date(),
@@ -114,11 +108,11 @@ export const configureProductTextsModule = ({
       );
       await emit('PRODUCT_UPDATE_TEXTS', {
         productId,
-        text: currentText,
+        text: updateResult.value,
       });
     }
 
-    return currentText;
+    return updateResult.value;
   };
 
   return {

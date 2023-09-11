@@ -57,6 +57,7 @@ export const configureAssortmentTextsModule = ({
 
     const modifier: any = {
       $set: {
+        updated: new Date(),
         ...textFields,
       },
       $setOnInsert: {
@@ -74,18 +75,12 @@ export const configureAssortmentTextsModule = ({
 
     const selector = { assortmentId, locale };
 
-    const updateResult = await AssortmentTexts.updateOne(selector, modifier, {
+    const updateResult = await AssortmentTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
+      returnDocument: 'after',
     });
-    const currentText = await AssortmentTexts.findOne(selector, {});
-    const isModified = updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0;
 
-    if (isModified) {
-      await AssortmentTexts.updateOne(selector, {
-        $set: {
-          updated: new Date(),
-        },
-      });
+    if (updateResult.ok) {
       const assortmentSelector = generateDbFilterById(assortmentId);
       await Assortments.updateOne(assortmentSelector, {
         $set: {
@@ -112,11 +107,11 @@ export const configureAssortmentTextsModule = ({
       );
       await emit('ASSORTMENT_UPDATE_TEXTS', {
         assortmentId,
-        text: currentText,
+        text: updateResult.value,
       });
     }
 
-    return currentText;
+    return updateResult.value;
   };
 
   return {
