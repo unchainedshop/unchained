@@ -76,11 +76,31 @@ export const OrderPricingSheet = (
 
     gross() {
       // tax is included 2 times, this is only true for Order Pricing!
-      return basePricingSheet.sum() - pricingSheet.taxSum();
+      return basePricingSheet.sum() - this.taxSum();
     },
 
     net() {
-      return basePricingSheet.sum() - pricingSheet.taxSum() - pricingSheet.taxSum();
+      return basePricingSheet.sum() - this.taxSum() - this.taxSum();
+    },
+
+    total({ category, useNetPrice } = { useNetPrice: false }) {
+      if (!category) {
+        // WORKAROUND WHEN NO CATEGORY IS GIVEN
+        return {
+          amount: Math.round(useNetPrice ? this.net() : this.gross()),
+          currency: params.currency,
+        };
+      }
+
+      const grossAmountForCategory = this.sum({ category });
+      const taxAmountForCategory = this.taxSum({ baseCategory: category });
+      const amount = Math.round(
+        useNetPrice ? grossAmountForCategory - taxAmountForCategory : grossAmountForCategory,
+      );
+      return {
+        amount,
+        currency: params.currency,
+      };
     },
 
     discountSum(discountId) {
