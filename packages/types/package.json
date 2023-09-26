@@ -38,13 +38,13 @@
     "@accounts/types": "^0.33.2",
     "@apollo/server": "^4.9.3",
     "@types/locale": "^0.1.2",
-    "@types/node": "^18.17.15",
-    "mongodb": "^4.17.1",
+    "@types/node": "^18.17.19",
+    "mongodb": "^5.9.0",
     "simpl-schema": "=3.2.0",
     "typedoc": "^0.25.1",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "graphql": "^16.8.0"
+    "graphql": "^16.8.1"
   }
 }

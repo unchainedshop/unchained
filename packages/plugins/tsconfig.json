@@ -8,5 +8,5 @@
     }
   },
   "exclude": ["**/*.test.ts", "**/*.test.js", "tests"],
-  "include": ["./src", "../utils/src/roundToNext.test.ts"]
+  "include": ["./src"]
 }

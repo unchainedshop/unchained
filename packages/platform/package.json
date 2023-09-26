@@ -45,10 +45,10 @@
     "moniker": "0.1.2"
   },
   "devDependencies": {
-    "@types/node": "^18.17.15",
+    "@types/node": "^18.17.19",
     "@unchainedshop/types": "^2.5.1",
     "cross-env": "^7.0.3",
-    "jest": "^29.6.4",
+    "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
   }

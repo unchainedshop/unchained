@@ -75,28 +75,6 @@ const LocalSearch: IFilterAdapter = {
 
         return assortments.map(({ assortmentId }) => assortmentId);
       },
-
-      async transformFilterSelector(last) {
-        const { query = {} } = params.searchQuery;
-        const { queryString, filterIds, includeInactive } = query;
-
-        if (queryString && !filterIds) {
-          // Global search without assortment scope:
-          // Return all filters
-          const selector = { ...last };
-          if (selector?.key) {
-            // Do not restrict to keys
-            delete selector.key;
-          }
-          if (!includeInactive) {
-            // Include only active filters
-            selector.isActive = true;
-          }
-          return selector;
-        }
-
-        return last;
-      },
     };
   },
 };
