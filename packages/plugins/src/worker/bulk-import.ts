@@ -8,16 +8,12 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
-const streamPayloadToBulkImporter = async (
-  bulkImporter,
-  createReadStream,
-  unchainedAPI: UnchainedCore,
-) => {
+const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI: UnchainedCore) => {
   logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
 
   const eventIterator = new EventIterator(
     (queue) => {
-      const readStream = createReadStream();
+      const readStream = unchainedAPI.services.files.streamFile(payloadId);
       const jsonStream = JSONStream.parse('events.*'); // rows, ANYTHING, doc
       jsonStream.on('data', queue.push);
       jsonStream.on('close', queue.stop);
@@ -65,20 +61,9 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
         skipCacheInvalidation,
       });
 
-      if (rawPayload.payloadFilePath) {
-        // stream payload from file system
-        await streamPayloadToBulkImporter(
-          bulkImporter,
-          () => fs.createReadStream(rawPayload.payloadFilePath),
-          unchainedAPI,
-        );
-      } else if (rawPayload.payloadId) {
+      if (rawPayload.payloadId) {
         // stream payload from gridfs
-        await streamPayloadToBulkImporter(
-          bulkImporter,
-          () => unchainedAPI.bulkImporter.BulkImportPayloads.openDownloadStream(rawPayload.payloadId),
-          unchainedAPI,
-        );
+        await streamPayloadToBulkImporter(bulkImporter, rawPayload.payloadId, unchainedAPI);
       } else {
         const { events } = rawPayload;
         if (!events?.length) throw new Error('No events submitted');

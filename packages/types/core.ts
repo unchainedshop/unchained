@@ -5,7 +5,6 @@ import { IRoleOptionConfig } from './roles.js';
 
 export interface BulkImporter {
   createBulkImporter: (options: any) => any;
-  BulkImportPayloads: GridFSBucket;
 }
 
 export interface UnchainedCore {
