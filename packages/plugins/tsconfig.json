@@ -2,10 +2,7 @@
   "extends": "../shared/base.tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "lib",
-    "paths": {
-      "postfinancecheckout": ["./src/payment/postfinance-checkout/silence-postfinancecheckout.d.ts"]
-    }
+    "outDir": "lib"
   },
   "exclude": ["**/*.test.ts", "**/*.test.js", "tests"],
   "include": ["./src"]

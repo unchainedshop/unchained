@@ -34,7 +34,7 @@ export const IntervalWorker: IWorker<IntervalWorkerParams> = {
     const baseWorkerActions = BaseWorker.actions({ workerId, worker: IntervalWorker }, unchainedAPI);
 
     const intervalDelay = scheduleToInterval(schedule);
-    let intervalHandle: NodeJS.Timer;
+    let intervalHandle: NodeJS.Timeout;
 
     return {
       ...baseWorkerActions,
