@@ -232,8 +232,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
@@ -255,8 +253,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
@@ -278,8 +274,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
@@ -301,8 +295,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'ETH',
@@ -324,8 +316,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'ETH',

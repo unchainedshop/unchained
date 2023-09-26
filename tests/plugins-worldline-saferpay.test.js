@@ -14,8 +14,6 @@ const simulatePayment = async (paymentPageUrl) => {
   });
   const response = await fetch(redirect.url, {
     method: 'POST',
-    // eslint-disable-next-line
-    // @ts-ignore
     duplex: 'half',
     body: new URLSearchParams({
       selectionId: '4_OnlinePaymentService&1510' // Twint, no user input required
