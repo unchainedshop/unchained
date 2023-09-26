@@ -1,8 +1,7 @@
 /// <reference lib="dom" />
 import { URL } from 'url';
-import { Readable, pipeline as rawPipeline } from 'stream';
-import { promisify } from 'util';
-import { ReadableStream } from 'node:stream/web';
+import { Readable, PassThrough } from 'stream';
+import { pipeline } from 'stream/promises';
 import mimeType from 'mime-types';
 import {
   FileAdapter,
@@ -12,8 +11,6 @@ import {
 } from '@unchainedshop/file-upload';
 import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
 import sign from './sign.js';
-
-const pipeline = promisify(rawPipeline);
 
 const { ROOT_URL } = process.env;
 
@@ -72,7 +69,7 @@ export const GridFSAdapter: IFileAdapter = {
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
-    await pipeline(stream, writeStream);
+    await pipeline(stream, new PassThrough(), writeStream);
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${_id}`;
 
@@ -101,7 +98,7 @@ export const GridFSAdapter: IFileAdapter = {
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
     const response = await fetch(href, { headers });
     if (!response.ok) throw new Error(`Unexpected response for ${href}: ${response.statusText}`);
-    await pipeline(response.body as ReadableStream, writeStream);
+    await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${_id}`;
 

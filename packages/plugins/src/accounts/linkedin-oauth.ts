@@ -12,6 +12,9 @@ const getLinkedInAuthorizationCode = async ({
 }): Promise<any> => {
   const response = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
     method: 'POST',
+    // eslint-disable-next-line
+    // @ts-ignore
+    duplex: 'half',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
