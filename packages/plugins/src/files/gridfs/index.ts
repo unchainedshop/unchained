@@ -16,7 +16,7 @@ export const configureGridFSFileUploadModule = ({ db }) => {
     createWriteStream: async (directoryName, fileId, fileName) => {
       const options = { bucketName: `file_uploads_${directoryName}`, chunkSizeBytes: 5 * 1024 * 1024 };
       const bucket = new GridFSBucket(db, options);
-      return bucket.openUploadStreamWithId(fileId, fileName);
+      return bucket.openUploadStreamWithId(fileId, fileName, { writeConcern: { w: 0, journal: false } });
     },
     createReadStream: async (directoryName, fileId) => {
       const options = { bucketName: `file_uploads_${directoryName}`, chunkSizeBytes: 5 * 1024 * 1024 };
