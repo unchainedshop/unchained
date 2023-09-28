@@ -83,7 +83,7 @@ export type WorkerModule = {
 
   allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
 
-  processNextWork: (worker: string, unchainedAPI: UnchainedCore) => Promise<Work>;
+  processNextWork: (unchainedAPI: UnchainedCore, workerId?: string) => Promise<Work>;
 
   rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
 
@@ -150,7 +150,7 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
  * Worker
  */
 
-export type IWorker<P extends { workerId: string }> = {
+export type IWorker<P extends { workerId?: string }> = {
   key: string;
   label: string;
   version: string;

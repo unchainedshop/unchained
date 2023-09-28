@@ -15,7 +15,7 @@ function debounce<T extends (...args: any) => any>(func: T, wait) {
 }
 
 export interface EventListenerWorkerParams {
-  workerId: string;
+  workerId?: string;
 }
 
 export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {

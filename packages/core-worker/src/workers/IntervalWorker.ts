@@ -5,9 +5,9 @@ import { BaseWorker } from './BaseWorker.js';
 const { NODE_ENV } = process.env;
 
 export interface IntervalWorkerParams {
-  workerId: string;
+  workerId?: string;
   batchCount?: number;
-  schedule: WorkerSchedule | string;
+  schedule?: WorkerSchedule | string;
 }
 
 const defaultSchedule = later.parse.text(
