@@ -16,7 +16,8 @@ import createStripeClient from 'stripe';
 
 const logger = createLogger('unchained:core-payment:stripe');
 
-const { STRIPE_SECRET, STRIPE_ENDPOINT_SECRET, EMAIL_WEBSITE_NAME } = process.env;
+const { STRIPE_SECRET, STRIPE_ENDPOINT_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } =
+  process.env;
 
 // eslint-disable-next-line
 // @ts-ignore
@@ -44,7 +45,12 @@ export const stripeHandler = async (request, response) => {
   try {
     if (event.type === 'payment_intent.succeeded') {
       const paymentIntent = event.data.object;
-      const orderPaymentId = paymentIntent.metadata?.orderPaymentId;
+      const { orderPaymentId, environment } = paymentIntent.metadata || {};
+
+      if ((STRIPE_WEBHOOK_ENVIRONMENT || environment) && environment !== STRIPE_WEBHOOK_ENVIRONMENT) {
+        response.end(JSON.stringify({ received: true, ignored: true }));
+        return;
+      }
 
       logger.verbose(`Webhook tries to checkout with orderPaymentId: ${orderPaymentId}`, {
         type: event.type,
@@ -78,7 +84,12 @@ export const stripeHandler = async (request, response) => {
       });
     } else if (event.type === 'setup_intent.succeeded') {
       const setupIntent = event.data.object;
-      const { paymentProviderId, userId } = setupIntent.metadata;
+      const { paymentProviderId, userId, environment } = setupIntent.metadata || {};
+
+      if ((STRIPE_WEBHOOK_ENVIRONMENT || environment) && environment !== STRIPE_WEBHOOK_ENVIRONMENT) {
+        response.end(JSON.stringify({ received: true, ignored: true }));
+        return;
+      }
 
       logger.verbose(
         `Webhook tries to register payment credential with paymentProviderId: ${paymentProviderId}`,
@@ -130,6 +141,7 @@ const createRegistrationIntent = async ({ userId, name, email, paymentProviderId
   const customer = await stripe.customers.create({
     metadata: {
       userId,
+      environment: STRIPE_WEBHOOK_ENVIRONMENT,
     },
     name,
     email,
@@ -139,6 +151,7 @@ const createRegistrationIntent = async ({ userId, name, email, paymentProviderId
     metadata: {
       userId,
       paymentProviderId,
+      environment: STRIPE_WEBHOOK_ENVIRONMENT,
     },
     ...options,
   });
@@ -158,6 +171,7 @@ const createOrderPaymentIntent = async ({ order, orderPayment, pricing }, option
     setup_future_usage: 'off_session', // Verify your integration in this guide by including this parameter
     metadata: {
       orderPaymentId: orderPayment._id,
+      environment: STRIPE_WEBHOOK_ENVIRONMENT,
     },
     ...options,
   });
