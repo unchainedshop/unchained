@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-accountsjs",
-  "version": "2.5.5",
+  "version": "2.5.6",
   "main": "lib/accounts-index.js",
   "exports": {
     ".": "./lib/accounts-index.js",

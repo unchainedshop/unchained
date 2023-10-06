@@ -5,6 +5,11 @@
 - Remove events `PRODUCT_UPDATE_VARIATION_TEXTS`, `PRODUCT_UPDATE_TEXTS`, `FILTER_UPDATE_TEXTS`, `ASSORTMENT_UPDATE_TEXTS` (triggered for every product when text changes)
 - Add new events `PRODUCT_UPDATE_VARIATION_TEXT`, `PRODUCT_UPDATE_TEXT`, `FILTER_UPDATE_TEXT`, `ASSORTMENT_UPDATE_TEXT` (triggered for every locale & product when text changes).
 - The `_CREATE` events for products, filters and assortments are now triggered AFTER creating the initial text objects so that you can safely use both events to update texts in external systems.
+- Allow to configure an "environment" for stripe which allows to drop events coming to the the engine that are intended to land on another engine not causing false negatives in webhooks.
+
+## Patch
+- Fix payment credential signing procedures that depend on a userId
+- Fix worker not cleaning regression
 
 # Unchained Engine v2.5
 

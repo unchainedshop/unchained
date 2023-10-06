@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-quotations",
-  "version": "2.5.5",
+  "version": "2.5.6",
   "main": "lib/quotations-index.js",
   "exports": {
     ".": "./lib/quotations-index.js",

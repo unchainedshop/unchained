@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-orders",
-  "version": "2.5.5",
+  "version": "2.5.6",
   "main": "lib/orders-index.js",
   "exports": {
     ".": "./lib/orders-index.js",
