@@ -51,6 +51,7 @@ export default async function signPaymentProviderForCheckout(
     const sign = await modules.payment.paymentProviders.sign(
       provider._id,
       {
+        userId,
         orderPayment,
         transactionContext,
       },

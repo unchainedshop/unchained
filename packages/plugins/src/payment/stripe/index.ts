@@ -51,7 +51,6 @@ const Stripe: IPaymentAdapter = {
         }
 
         const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
-        logger.verbose(setupIntent);
         if (setupIntent.status === 'succeeded') {
           return {
             token: setupIntent.payment_method,
@@ -67,7 +66,6 @@ const Stripe: IPaymentAdapter = {
       },
 
       sign: async (transactionContext = {}) => {
-        // eslint-disable-line
         const { orderPayment, order, paymentProviderId } = params.paymentContext;
 
         if (orderPayment) {

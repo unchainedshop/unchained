@@ -15,7 +15,7 @@ export const createRegistrationIntent = async (
   const customer = await stripe.customers.create({
     metadata: {
       userId,
-      environment: STRIPE_WEBHOOK_ENVIRONMENT,
+      environment: STRIPE_WEBHOOK_ENVIRONMENT ?? null,
     },
     name,
     email,
@@ -25,7 +25,7 @@ export const createRegistrationIntent = async (
     metadata: {
       userId,
       paymentProviderId,
-      environment: STRIPE_WEBHOOK_ENVIRONMENT,
+      environment: STRIPE_WEBHOOK_ENVIRONMENT ?? null,
     },
     ...options,
   });
@@ -45,7 +45,7 @@ export const createOrderPaymentIntent = async ({ order, orderPayment, pricing },
     setup_future_usage: 'off_session', // Verify your integration in this guide by including this parameter
     metadata: {
       orderPaymentId: orderPayment._id,
-      environment: STRIPE_WEBHOOK_ENVIRONMENT,
+      environment: STRIPE_WEBHOOK_ENVIRONMENT ?? null,
     },
     ...options,
   });

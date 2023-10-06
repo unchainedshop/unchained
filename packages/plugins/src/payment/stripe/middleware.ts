@@ -6,6 +6,17 @@ const logger = createLogger('unchained:core-payment:stripe:webhook');
 
 const { STRIPE_ENDPOINT_SECRET, STRIPE_WEBHOOK_ENVIRONMENT } = process.env;
 
+function checkEnvironment(metadata: any) {
+  const environmentInMetadata = metadata?.environment;
+  const environmentInEnv = STRIPE_WEBHOOK_ENVIRONMENT;
+
+  if (!environmentInMetadata && !environmentInEnv) {
+    return true;
+  }
+
+  return environmentInEnv === environmentInMetadata;
+}
+
 export const stripeHandler = async (request, response) => {
   const resolvedContext = request.unchainedContext as Context;
   const { modules } = resolvedContext;
@@ -28,9 +39,9 @@ export const stripeHandler = async (request, response) => {
   try {
     if (event.type === 'payment_intent.succeeded') {
       const paymentIntent = event.data.object;
-      const { orderPaymentId, environment } = paymentIntent.metadata || {};
+      const { orderPaymentId } = paymentIntent.metadata || {};
 
-      if ((STRIPE_WEBHOOK_ENVIRONMENT || environment) && environment !== STRIPE_WEBHOOK_ENVIRONMENT) {
+      if (!checkEnvironment(paymentIntent.metadata)) {
         logger.verbose(`event ignored because of environment difference`, {
           type: event.type,
         });
@@ -70,9 +81,9 @@ export const stripeHandler = async (request, response) => {
       });
     } else if (event.type === 'setup_intent.succeeded') {
       const setupIntent = event.data.object;
-      const { paymentProviderId, userId, environment } = setupIntent.metadata || {};
+      const { paymentProviderId, userId } = setupIntent.metadata || {};
 
-      if ((STRIPE_WEBHOOK_ENVIRONMENT || environment) && environment !== STRIPE_WEBHOOK_ENVIRONMENT) {
+      if (!checkEnvironment(setupIntent.metadata)) {
         response.end(JSON.stringify({ received: true, ignored: true }));
         return;
       }

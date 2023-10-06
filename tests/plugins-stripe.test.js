@@ -69,7 +69,7 @@ if (STRIPE_SECRET) {
     describe('Mutation.signPaymentProviderForCredentialRegistration (Stripe)', () => {
       let idAndSecret;
       it('Request a new client secret for the purpose of registration', async () => {
-        const { data: { signPaymentProviderForCredentialRegistration } = {} } =
+        const { data: { signPaymentProviderForCredentialRegistration } = {}, ...rest } =
           await graphqlFetch({
             query: /* GraphQL */ `
               mutation signPaymentProviderForCredentialRegistration(
@@ -94,14 +94,17 @@ if (STRIPE_SECRET) {
           signPaymentProviderForCredentialRegistration.split('_secret_');
       }, 10000);
       it('Confirm the setup intent', async () => {
-        const stripe = Stripe(STRIPE_SECRET);
+        const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2023-08-16' });
         
         const confirmedIntent = await stripe.setupIntents.confirm(
           idAndSecret[0],
           {
+            return_url: 'http://localhost:4010',
+            use_stripe_sdk: true,
             payment_method: 'pm_card_visa',
           },
         );
+
         expect(confirmedIntent).toMatchObject({
           status: 'succeeded',
         });
@@ -247,13 +250,16 @@ if (STRIPE_SECRET) {
       }, 10000);
       it('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);
-        
+
         const confirmedIntent = await stripe.paymentIntents.confirm(
           idAndSecret[0],
           {
+            return_url: 'http://localhost:4010',
+            use_stripe_sdk: true,
             payment_method: 'pm_card_visa',
           },
         );
+
         expect(confirmedIntent).toMatchObject({
           status: 'succeeded',
         });
