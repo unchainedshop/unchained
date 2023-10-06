@@ -10,7 +10,7 @@ const {
   DATATRANS_SECURITY = Security.DYNAMIC_SIGN,
 } = process.env;
 
-const logger = createLogger('unchained:core-payment:datatrans');
+const logger = createLogger('unchained:core-payment:datatrans:webhook');
 
 export const datatransHandler = async (req, res) => {
   const resolvedContext = req.unchainedContext as Context;
@@ -27,13 +27,17 @@ export const datatransHandler = async (req, res) => {
     })(timestamp, req.body);
 
     if (hash !== comparableSignature) {
-      logger.error(`Datatrans Plugin: Hash mismatch: ${signature} / ${comparableSignature}`, req.body);
+      logger.error(`hash mismatch: ${signature} / ${comparableSignature}`, req.body);
       res.writeHead(403);
       res.end('Hash mismatch');
       return;
     }
 
     const transaction: StatusResponseSuccess = JSON.parse(req.body) as StatusResponseSuccess;
+
+    logger.verbose(`received request`, {
+      type: transaction.type,
+    });
 
     if (transaction.status === 'authorized') {
       const userId = transaction.refno2;
@@ -47,7 +51,7 @@ export const datatransHandler = async (req, res) => {
             { userId, transactionContext: { transactionId: transaction.transactionId } },
             { ...resolvedContext },
           );
-          logger.info(`Datatrans Webhook: Unchained registered payment credentials for ${userId}`, {
+          logger.info(`registered payment credentials for ${userId}`, {
             userId,
           });
           res.writeHead(200);
@@ -67,14 +71,14 @@ export const datatransHandler = async (req, res) => {
             resolvedContext,
           );
           res.writeHead(200);
-          logger.info(`Datatrans Webhook: Unchained confirmed checkout for order ${order.orderNumber}`, {
+          logger.info(`confirmed checkout for order ${order.orderNumber}`, {
             orderId: order._id,
           });
           res.end(JSON.stringify(order));
           return;
         }
       } catch (e) {
-        logger.error(`Datatrans Webhook: Unchained rejected to checkout with message`, e);
+        logger.error(`rejected to checkout with message`, e);
         res.writeHead(500);
         res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
         return;

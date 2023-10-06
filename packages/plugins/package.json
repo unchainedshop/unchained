@@ -79,13 +79,13 @@
     "express": "^4.18.2",
     "mongodb": "^5.9.0",
     "postfinancecheckout": "^4.1.1",
-    "stripe": "^13.7.0",
+    "stripe": "^13.9.0",
     "tiny-secp256k1": "^2.2.3",
     "web-push": "^3.6.3"
   },
   "devDependencies": {
     "@redis/client": "^1.5.11",
-    "@types/node": "^18.18.0",
+    "@types/node": "^18.18.3",
     "@unchainedshop/api": "^2.5.5",
     "@unchainedshop/core-delivery": "^2.5.5",
     "@unchainedshop/core-enrollments": "^2.5.5",

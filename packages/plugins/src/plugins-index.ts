@@ -16,7 +16,7 @@ import './payment/worldline-saferpay/index.js';
 import { datatransHandler } from './payment/datatrans-v2/index.js';
 import { configureCryptopayModule, cryptopayHandler } from './payment/cryptopay/index.js';
 import { appleIAPHandler, configureAppleTransactionsModule } from './payment/apple-iap/index.js';
-import { stripeHandler } from './payment/stripe.js';
+import { stripeHandler } from './payment/stripe/index.js';
 import { postfinanceCheckoutHandler } from './payment/postfinance-checkout/index.js';
 
 // Warehousing

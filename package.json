@@ -46,7 +46,7 @@
     "test:unit-watch": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit --watch --config ./packages/unit-jest.config.js  "
   },
   "devDependencies": {
-    "@apollo/client": "^3.8.4",
+    "@apollo/client": "^3.8.5",
     "@babel/core": "^7.23.0",
     "@babel/eslint-parser": "^7.22.15",
     "@babel/preset-env": "^7.22.20",
@@ -54,9 +54,9 @@
     "@types/jest": "^29.5.5",
     "@types/lodash.clone": "^4.5.7",
     "@types/mocha": "^10.0.2",
-    "@types/node": "^18.18.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.3",
-    "@typescript-eslint/parser": "^6.7.3",
+    "@types/node": "^18.18.3",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
     "apollo-upload-client": "^17.0.0",
     "cross-env": "^7.0.3",
     "dotenv-extended": "^2.9.0",

@@ -57,15 +57,15 @@
     "open": "^9.1.0",
     "postfinancecheckout": "^4.1.1",
     "serve-static": "^1.15.0",
-    "stripe": "^13.7.0",
+    "stripe": "^13.9.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^4.18.0",
+    "twilio": "^4.18.1",
     "uuid": "^9.0.1",
     "web-push": "^3.6.6",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@types/node": "^18.18.0",
+    "@types/node": "^18.18.3",
     "mongodb-memory-server": "^8.13.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",

@@ -95,19 +95,11 @@ if (STRIPE_SECRET) {
       }, 10000);
       it('Confirm the setup intent', async () => {
         const stripe = Stripe(STRIPE_SECRET);
-        const method = await stripe.paymentMethods.create({
-          type: 'card',
-          card: {
-            number: '4242424242424242',
-            exp_month: 12,
-            exp_year: 2025,
-            cvc: '314',
-          },
-        });
+        
         const confirmedIntent = await stripe.setupIntents.confirm(
           idAndSecret[0],
           {
-            payment_method: method.id,
+            payment_method: 'pm_card_visa',
           },
         );
         expect(confirmedIntent).toMatchObject({
@@ -255,19 +247,11 @@ if (STRIPE_SECRET) {
       }, 10000);
       it('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);
-        const method = await stripe.paymentMethods.create({
-          type: 'card',
-          card: {
-            number: '4242424242424242',
-            exp_month: 12,
-            exp_year: 2025,
-            cvc: '314',
-          },
-        });
+        
         const confirmedIntent = await stripe.paymentIntents.confirm(
           idAndSecret[0],
           {
-            payment_method: method.id,
+            payment_method: 'pm_card_visa',
           },
         );
         expect(confirmedIntent).toMatchObject({
