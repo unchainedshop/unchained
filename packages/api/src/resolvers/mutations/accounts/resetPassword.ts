@@ -10,14 +10,14 @@ import {
 
 export default async function resetPassword(
   root: Root,
-  params: { newPlainPassword?: string; token: string },
+  params: { newPassword?: string; token: string },
   context: Context,
 ) {
   const { modules, userId } = context;
 
   log('mutation resetPassword', { userId });
 
-  if (!params.newPlainPassword) {
+  if (!params.newPassword) {
     throw new Error('Password is required');
   }
   try {

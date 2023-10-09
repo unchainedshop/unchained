@@ -5,7 +5,7 @@ export default [
       """
       Log the user in with a password.
       """
-      loginWithPassword(username: String, email: String, plainPassword: String): LoginMethodResponse
+      loginWithPassword(username: String, email: String, password: String): LoginMethodResponse
 
       """
       Log the user in with a WebAuthn device
@@ -26,7 +26,7 @@ export default [
         username: String
         email: String
         webAuthnPublicKeyCredentials: JSON
-        plainPassword: String
+        password: String
         profile: UserProfileInput
       ): LoginMethodResponse
 
@@ -40,7 +40,7 @@ export default [
       """
       Change the current user's password. Must be logged in.
       """
-      changePassword(oldPlainPassword: String, newPlainPassword: String): SuccessResponse
+      changePassword(oldPassword: String, newPassword: String): SuccessResponse
 
       """
       Request a forgot password email.
@@ -50,7 +50,7 @@ export default [
       """
       Reset the password for a user using a token received in email. Logs the user in afterwards.
       """
-      resetPassword(newPlainPassword: String, token: String!): LoginMethodResponse
+      resetPassword(newPassword: String, token: String!): LoginMethodResponse
 
       """
       Log the user out.
@@ -319,7 +319,7 @@ export default [
       """
       Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)
       """
-      enrollUser(profile: UserProfileInput!, email: String!, plainPassword: String): User!
+      enrollUser(profile: UserProfileInput!, email: String!, password: String): User!
 
       """
       Forcefully trigger an enrollment email for already added users by e-mail
@@ -334,7 +334,7 @@ export default [
       """
       Set a new password for a specific user
       """
-      setPassword(newPlainPassword: String, userId: ID!): User!
+      setPassword(newPassword: String, userId: ID!): User!
 
       """
       Set roles of a user

@@ -76,8 +76,8 @@ describe('Auth for logged in users', () => {
         query: /* GraphQL */ `
           mutation {
             changePassword(
-              oldPlainPassword: "password"
-              newPlainPassword: "password"
+              oldPassword: "password"
+              newPassword: "password"
             ) {
               success
             }

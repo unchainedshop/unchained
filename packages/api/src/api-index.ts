@@ -13,7 +13,6 @@ export * from './context.js';
 export * as acl from './acl.js';
 export * as errors from './errors.js';
 export * as express from './express/index.js';
-export { hashPassword } from './hashPassword.js';
 export * as roles from './roles/index.js';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 

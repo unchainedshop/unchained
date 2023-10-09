@@ -83,7 +83,7 @@ describe("Auth for anonymous users", () => {
             createUser(
               username: $username
               email: $email
-              plainPassword: $password
+              password: $password
               profile: $profile
             ) {
               id
@@ -139,7 +139,7 @@ describe("Auth for anonymous users", () => {
       const { data: { loginWithPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            loginWithPassword(username: "admin", plainPassword: "password") {
+            loginWithPassword(username: "admin", password: "password") {
               id
               token
               user {
@@ -253,8 +253,8 @@ describe("Auth for anonymous users", () => {
 
       const { data: { resetPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation resetPassword($newPlainPassword: String, $token: String!) {
-            resetPassword(newPlainPassword: $newPlainPassword, token: $token) {
+          mutation resetPassword($newPassword: String, $token: String!) {
+            resetPassword(newPassword: $newPassword, token: $token) {
               id
               token
               user {
@@ -264,7 +264,7 @@ describe("Auth for anonymous users", () => {
           }
         `,
         variables: {
-          newPlainPassword: "password",
+          newPassword: "password",
           token,
         },
       });

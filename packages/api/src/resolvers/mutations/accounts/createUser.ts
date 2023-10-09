@@ -1,7 +1,6 @@
 import { UserData } from '@unchainedshop/types/accounts.js';
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
-import { hashPassword } from '../../../hashPassword.js';
 import {
   AuthOperationFailedError,
   EmailAlreadyExistsError,
@@ -14,15 +13,11 @@ export default async function createUser(root: Root, params: UserData, context: 
 
   log('mutation createUser', { email: params.email, username: params.username, userId });
 
-  if (!params.plainPassword && !params.webAuthnPublicKeyCredentials) {
+  if (!params.password && !params.webAuthnPublicKeyCredentials) {
     throw new Error('Password or Public Key is required');
   }
 
   const mappedUser = { ...params };
-  if (mappedUser.plainPassword) {
-    mappedUser.password = hashPassword(mappedUser.plainPassword);
-  }
-  delete mappedUser.plainPassword;
   delete mappedUser.webAuthnPublicKeyCredentials;
 
   const webAuthnService =

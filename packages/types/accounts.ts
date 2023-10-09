@@ -15,7 +15,6 @@ export interface UserData {
   initialPassword?: boolean;
   lastBillingAddress?: User['lastBillingAddress'];
   password: string | null;
-  plainPassword?: string;
   webAuthnPublicKeyCredentials?: any;
   profile?: UserProfile;
   roles?: Array<string>;
@@ -136,18 +135,18 @@ export interface AccountsModule {
   setPassword: (
     userId: string,
     params: {
-      newPlainPassword?: string;
+      newPassword?: string;
     },
   ) => Promise<void>;
   changePassword: (
     userId: string,
     params: {
-      newPlainPassword?: string;
-      oldPlainPassword?: string;
+      newPassword?: string;
+      oldPassword?: string;
     },
   ) => Promise<boolean>;
   resetPassword: (
-    params: { newPlainPassword?: string; token: string },
+    params: { newPassword?: string; token: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<AccountsUser>;
   sendResetPasswordEmail: (email: string) => Promise<boolean>;

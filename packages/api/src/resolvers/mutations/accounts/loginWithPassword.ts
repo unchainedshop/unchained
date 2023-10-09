@@ -6,29 +6,28 @@ import {
   InvalidCredentialsError,
   UserDeactivatedError,
 } from '../../../errors.js';
-import { hashPassword } from '../../../hashPassword.js';
 
 export default async function loginWithPassword(
   root: Root,
   params: {
     username?: string;
     email?: string;
-    plainPassword?: string;
+    password?: string;
   },
   context: Context,
 ) {
   const { modules } = context;
-  const { username, email, plainPassword } = params;
+  const { username, email, password } = params;
 
   log('mutation loginWithPassword', { username, email });
 
-  if (!plainPassword) {
+  if (!password) {
     throw new Error('Password is required');
   }
 
   const mappedUserLoginParams = {
     user: email ? { email } : { username },
-    password: hashPassword(plainPassword),
+    password,
   };
 
   try {

@@ -5,17 +5,17 @@ import { AuthOperationFailedError, InvalidCredentialsError } from '../../../erro
 export default async function changePassword(
   root: Root,
   params: {
-    oldPlainPassword?: string;
-    newPlainPassword?: string;
+    oldPassword?: string;
+    newPassword?: string;
   },
   { modules, userId }: Context,
 ) {
   log('mutation changePassword', { userId });
 
-  if (!params.newPlainPassword) {
+  if (!params.newPassword) {
     throw new Error('New password is required');
   }
-  if (!params.oldPlainPassword) {
+  if (!params.oldPassword) {
     throw new Error('Old password is required');
   }
   let success = false;

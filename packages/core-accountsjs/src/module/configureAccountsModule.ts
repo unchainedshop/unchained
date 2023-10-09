@@ -8,7 +8,6 @@ import { UnchainedAccountsServer } from '../accounts/accountsServer.js';
 import { createDbManager } from '../accounts/dbManager.js';
 import { evaluateContext } from './utils/evaluateContext.js';
 import { filterContext } from './utils/filterContext.js';
-import { hashPassword } from './utils/hashPassword.js';
 import { configureAccountsWebAuthnModule } from './configureAccountsWebAuthnModule.js';
 
 export const configureAccountsModule = async ({
@@ -152,15 +151,12 @@ export const configureAccountsModule = async ({
 
     // User management
     setUsername: (_id, username) => dbManager.setUsername(_id, username),
-    setPassword: async (userId, { newPlainPassword }) => {
-      const newPassword = newPlainPassword ? hashPassword(newPlainPassword) : uuidv4().split('-').pop();
-      await accountsPassword.setPassword(userId, newPassword);
+
+    setPassword: async (userId, { newPassword }) => {
+      await accountsPassword.setPassword(userId, newPassword || uuidv4().split('-').pop());
     },
 
-    changePassword: async (userId, { newPlainPassword, oldPlainPassword }) => {
-      const newPassword = hashPassword(newPlainPassword);
-      const oldPassword = hashPassword(oldPlainPassword);
-
+    changePassword: async (userId, { newPassword, oldPassword }) => {
       await accountsPassword.changePassword(userId, oldPassword, newPassword);
       return true;
     },
@@ -169,9 +165,8 @@ export const configureAccountsModule = async ({
       return true;
     },
 
-    resetPassword: async ({ newPlainPassword, token }, context) => {
+    resetPassword: async ({ newPassword, token }, context) => {
       const user = await dbManager.findUserByResetPasswordToken(token);
-      const newPassword = hashPassword(newPlainPassword);
       await accountsPassword.resetPassword(token, newPassword, context);
       return user;
     },

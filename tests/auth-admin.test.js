@@ -434,15 +434,15 @@ describe('Auth for admin users', () => {
         displayName: 'Admin3',
       };
       const email = 'admin3@unchained.local';
-      const plainPassword = null;
+      const password = null;
       const { data: { enrollUser } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation enrollUser(
             $email: String!
-            $plainPassword: String
+            $password: String
             $profile: UserProfileInput!
           ) {
-            enrollUser(email: $email, plainPassword: $plainPassword, profile: $profile) {
+            enrollUser(email: $email, password: $password, profile: $profile) {
               _id
               isInitialPassword
               primaryEmail {
@@ -454,7 +454,7 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           email,
-          plainPassword,
+          password,
           profile,
         },
       });
@@ -512,17 +512,17 @@ describe('Auth for admin users', () => {
         displayName: 'Admin4',
       };
       const email = 'admin4@unchained.local';
-      const plainPassword = 'admin4';
+      const password = 'admin4';
       const { data: { enrollUser } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation enrollUser(
             $email: String!
-            $plainPassword: String
+            $password: String
             $profile: UserProfileInput!
           ) {
             enrollUser(
               email: $email
-              plainPassword: $plainPassword
+              password: $password
               profile: $profile
             ) {
               _id
@@ -536,7 +536,7 @@ describe('Auth for admin users', () => {
         `,
         variables: {
           email,
-          plainPassword,
+          password,
           profile,
         },
       });
@@ -552,18 +552,18 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.setPassword', () => {
     it('set the password of a foreign user', async () => {
-      const newPlainPassword = 'new';
+      const newPassword = 'new';
       const { data: { setPassword } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation setPassword($userId: ID!, $newPlainPassword: String!) {
-            setPassword(newPlainPassword: $newPlainPassword, userId: $userId) {
+          mutation setPassword($userId: ID!, $newPassword: String!) {
+            setPassword(newPassword: $newPassword, userId: $userId) {
               _id
             }
           }
         `,
         variables: {
           userId: User._id,
-          newPlainPassword,
+          newPassword,
         },
       });
       expect(setPassword).toMatchObject({

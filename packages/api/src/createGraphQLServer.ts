@@ -53,7 +53,7 @@ export default async (options) => {
     apollo: APOLLO_ENGINE_KEY
       ? {
           key: APOLLO_ENGINE_KEY,
-          privateVariables: ['email', 'plainPassword', 'oldPlainPassword', 'newPlainPassword'],
+          privateVariables: ['email', 'password', 'oldPassword', 'newPassword'],
           ...engine,
         }
       : undefined,

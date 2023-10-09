@@ -432,8 +432,6 @@ type APIRoles = {
 };
 
 declare module '@unchainedshop/api' {
-  function hashPassword(password: string): string;
-
   const acl: any;
   const errors: any;
   const roles: APIRoles;

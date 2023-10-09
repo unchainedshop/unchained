@@ -102,7 +102,7 @@ describe("Guest user cart migration", () => {
     const { data: { loginWithPassword } = {} } = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation {
-          loginWithPassword(username: "admin", plainPassword: "password") {
+          loginWithPassword(username: "admin", password: "password") {
             id
             token
             user {

@@ -1,4 +1,3 @@
-import { hashPassword } from '@unchainedshop/api';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,7 +26,7 @@ export default async (unchainedAPI) => {
         email: 'admin@unchained.local',
         guest: false,
         initialPassword: seedPassword ? true : undefined,
-        password: seedPassword ? hashPassword(seedPassword) : undefined,
+        password: seedPassword ? seedPassword : undefined,
         roles: ['admin'],
         username: 'admin',
       },
