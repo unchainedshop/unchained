@@ -40,7 +40,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     async authenticate(params: { email?: string | null }) {
       const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
 
-      const guestUserId = await unchainedAPI.modules.accounts.createUser(
+      const guestUserId = await unchainedAPI.modules.users.createUser(
         {
           email: params.email || `${guestname}@unchained.local`,
           guest: true,

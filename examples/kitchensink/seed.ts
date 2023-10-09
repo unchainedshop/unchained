@@ -21,7 +21,7 @@ export default async (unchainedAPI) => {
     if ((await modules.users.count({ username: 'admin' })) > 0) {
       return;
     }
-    const adminId = await modules.accounts.createUser(
+    const adminId = await modules.users.createUser(
       {
         email: 'admin@unchained.local',
         guest: false,

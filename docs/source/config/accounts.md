@@ -28,7 +28,6 @@ In this example we are customizing session time and verification email sending a
 ```
 const options = {
   accounts: {
-    autoMessagingAfterUserCreation: false,
     mergeUserCartsOnLogin: false,
     server: {
       loginExpirationInDays: 1,

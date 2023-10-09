@@ -38,26 +38,6 @@ export const configureAccountsModule = async ({
 
     emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
 
-    // Mutations
-    createUser: async (userData, { skipMessaging, skipPasswordEnrollment } = {}) => {
-      const userId = await accountsPassword.createUser(userData);
-
-      const autoMessagingEnabled = skipMessaging
-        ? false
-        : accountsSettings.autoMessagingAfterUserCreation && !!userData.email && !!userId;
-
-      if (autoMessagingEnabled) {
-        if (userData.password === undefined) {
-          if (!skipPasswordEnrollment) {
-            await accountsPassword.sendEnrollmentEmail(userData.email);
-          }
-        } else {
-          await accountsPassword.sendVerificationEmail(userData.email);
-        }
-      }
-      return userId;
-    },
-
     // Email
     addEmail: (userId, email) => accountsPassword.addEmail(userId, email, false),
     removeEmail: async (userId, email) => accountsPassword.removeEmail(userId, email),

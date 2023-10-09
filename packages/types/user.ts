@@ -97,6 +97,31 @@ export type UserQuery = Filter<User> & {
 /*
  * Module
  */
+export interface UserData {
+  email?: string;
+  guest?: boolean;
+  initialPassword?: boolean;
+  lastBillingAddress?: User['lastBillingAddress'];
+  password: string | null;
+  webAuthnPublicKeyCredentials?: any;
+  profile?: UserProfile;
+  roles?: Array<string>;
+  username?: string;
+}
+
+/*
+ * Settings
+ */
+
+export interface UsersSettingsOptions {
+  mergeUserCartsOnLogin?: boolean;
+  autoMessagingAfterUserCreation?: boolean;
+}
+export interface UsersSettings {
+  mergeUserCartsOnLogin: boolean;
+  autoMessagingAfterUserCreation: boolean;
+  configureSettings: (options: UsersSettingsOptions) => void;
+}
 
 export type UsersModule = {
   // Queries
@@ -117,8 +142,11 @@ export type UsersModule = {
   userLocale: (user: User) => Locale;
 
   // Mutations
+  createUser: (
+    userData: UserData,
+    options: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean },
+  ) => Promise<string>;
   addRoles: (userId: string, roles: Array<string>) => Promise<number>;
-
   updateAvatar: (_id: string, fileId: string) => Promise<User>;
   updateGuest: (user: User, guest: boolean) => Promise<void>;
   updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;

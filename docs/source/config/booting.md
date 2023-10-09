@@ -18,7 +18,7 @@ const unchainedAPI = await startPlatform({})
 `startPlatform` returns the unchained api that lets you control all the modules and services defined. for example you can create seed the database with configurations like add currency, language, payment provider, admin accounts etc...
 
 ```typescript
-await unchainedAPI.modules.accounts.createUser(
+await unchainedAPI.modules.users.createUser(
   {
     email: 'admin@unchained.local',
     guest: false,

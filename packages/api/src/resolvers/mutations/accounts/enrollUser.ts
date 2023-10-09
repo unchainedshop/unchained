@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { UserData } from '@unchainedshop/types/accounts.js';
+import { UserData } from '@unchainedshop/types/user.js';
 import {
   AuthOperationFailedError,
   EmailAlreadyExistsError,
@@ -12,16 +12,16 @@ export default async function enrollUser(root: Root, params: UserData, context: 
   const { modules } = context;
 
   log('mutation enrollUser', { email: params.email, userId: context.userId });
-
-  const mappedUserData = params;
-  mappedUserData.initialPassword = true;
-
-  // Skip Messaging when password is set so we
-  // don't send a verification e-mail after enrollment
   try {
-    const userId = await modules.accounts.createUser(mappedUserData, {
-      skipMessaging: !!mappedUserData.password,
-    });
+    const userId = await modules.users.createUser(
+      {
+        ...params,
+        initialPassword: true,
+      },
+      {
+        skipMessaging: !!params.password,
+      },
+    );
 
     return modules.users.findUserById(userId);
   } catch (e) {

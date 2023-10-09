@@ -9,18 +9,6 @@ export interface WebAuthnCredentialsCreationRequest {
   factor: 'first' | 'second' | 'either';
 }
 
-export interface UserData {
-  email?: string;
-  guest?: boolean;
-  initialPassword?: boolean;
-  lastBillingAddress?: User['lastBillingAddress'];
-  password: string | null;
-  webAuthnPublicKeyCredentials?: any;
-  profile?: UserProfile;
-  roles?: Array<string>;
-  username?: string;
-}
-
 export type AccessToken = {
   access_token: string;
   expires_in: string;
@@ -34,13 +22,11 @@ export type AccessToken = {
  */
 
 export interface AccountsSettingsOptions {
-  autoMessagingAfterUserCreation?: boolean;
   mergeUserCartsOnLogin?: boolean;
   server?: any;
   password?: any;
 }
 export interface AccountsSettings {
-  autoMessagingAfterUserCreation: boolean;
   mergeUserCartsOnLogin: boolean;
   configureSettings: (options: AccountsSettingsOptions, context: any) => void;
 }
@@ -86,12 +72,6 @@ export interface AccountsModule {
   getAccountsServer: () => any;
 
   emit: (event: string, meta: any) => Promise<void>;
-
-  // Mutations
-  createUser: (
-    userData: UserData,
-    options: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean },
-  ) => Promise<string>;
 
   // Email
   addEmail: (userId: string, email: string) => Promise<void>;

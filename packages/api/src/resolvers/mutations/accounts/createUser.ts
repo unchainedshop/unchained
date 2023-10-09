@@ -1,4 +1,4 @@
-import { UserData } from '@unchainedshop/types/accounts.js';
+import { UserData } from '@unchainedshop/types/user.js';
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 import {
@@ -17,20 +17,15 @@ export default async function createUser(root: Root, params: UserData, context: 
     throw new Error('Password or Public Key is required');
   }
 
-  const mappedUser = { ...params };
-  delete mappedUser.webAuthnPublicKeyCredentials;
-
-  const webAuthnService =
-    params.webAuthnPublicKeyCredentials &&
-    (await modules.accounts.webAuthn.verifyCredentialCreation(
-      params.username,
-      params.webAuthnPublicKeyCredentials,
-    ));
-  let newUserId;
   try {
-    newUserId = await modules.accounts.createUser(mappedUser, {
-      skipPasswordEnrollment: !!webAuthnService,
-    });
+    const newUserId = await modules.users.createUser(
+      {
+        ...params,
+        initialPassword: false,
+      },
+      {},
+    );
+    return modules.accounts.createLoginToken(newUserId, context);
   } catch (e) {
     if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({ email: params?.email });
     else if (e.code === 'UsernameAlreadyExists')
@@ -39,18 +34,4 @@ export default async function createUser(root: Root, params: UserData, context: 
       throw new UsernameOrEmailRequiredError({ username: params?.username });
     else throw new AuthOperationFailedError({ username: params?.username, email: params.email });
   }
-
-  if (newUserId && webAuthnService) {
-    await modules.users.updateUser(
-      { _id: newUserId },
-      {
-        $push: {
-          'services.webAuthn': webAuthnService,
-        },
-      },
-      {},
-    );
-  }
-
-  return modules.accounts.createLoginToken(newUserId, context);
 }

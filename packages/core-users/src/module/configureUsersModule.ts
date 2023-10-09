@@ -1,7 +1,7 @@
 import localePkg from 'locale';
 import { Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
+import { User, UserQuery, UsersModule, UsersSettingsOptions } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -16,6 +16,7 @@ import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
+import { userSettings } from '../users-settings.js';
 
 const { Locale } = localePkg;
 
@@ -54,8 +55,11 @@ FileDirector.registerFileUploadCallback('user-avatars', async (file, context: Un
 
 export const configureUsersModule = async ({
   db,
+  options,
   migrationRepository,
-}: ModuleInput<Record<string, never>>): Promise<UsersModule> => {
+}: ModuleInput<UsersSettingsOptions>): Promise<UsersModule> => {
+  userSettings.configureSettings(options || {});
+
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
 
@@ -138,6 +142,63 @@ export const configureUsersModule = async ({
     },
 
     // Mutations
+    createUser: async (
+      {
+        email,
+        guest,
+        initialPassword,
+        lastBillingAddress,
+        password,
+        // webAuthnPublicKeyCredentials,
+        profile,
+        roles,
+        username,
+      },
+      { skipMessaging, skipPasswordEnrollment } = {},
+    ) => {
+      // TODO: Re-Implement, then set service to services and skip password enrollment when webAuthn registration!
+      // const webAuthnService =
+      //   webAuthnPublicKeyCredentials &&
+      //   (await modules.accounts.webAuthn.verifyCredentialCreation(
+      //     params.username,
+      //     params.webAuthnPublicKeyCredentials,
+      //   ));
+
+      const services = {};
+      if (password) {
+        // TODO: Re-Implement by setting the hash of the user
+      }
+
+      const { insertedId: userId } = await Users.insertOne({
+        guest,
+        services,
+        roles: roles || [],
+        initialPassword: !!initialPassword,
+        emails: email ? [{ address: email, verified: false }] : [],
+        pushSubscriptions: [],
+        lastBillingAddress,
+        profile,
+        username,
+      });
+
+      const autoMessagingEnabled = skipMessaging
+        ? false
+        : userSettings.autoMessagingAfterUserCreation && !!email && !!userId;
+
+      if (autoMessagingEnabled) {
+        if (password === undefined) {
+          if (!skipPasswordEnrollment) {
+            // TODO: Re-Implement
+            // await accountsPassword.sendEnrollmentEmail(email);
+          }
+        } else {
+          // TODO: Re-Implement
+          // await accountsPassword.sendVerificationEmail(email);
+        }
+      }
+      return userId;
+    },
+
     addRoles: async (userId, roles) => {
       const selector = generateDbFilterById(userId);
       const updateResult = await Users.updateOne(selector, {

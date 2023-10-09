@@ -37,7 +37,7 @@ const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
     // create sso user if not exist and login
     const ssoUserId =
       (await context.modules.users.findUser({ username: 'sso' }))?._id ||
-      (await context.modules.accounts.createUser(
+      (await context.modules.users.createUser(
         {
           username: 'sso',
           roles: ['admin'],
