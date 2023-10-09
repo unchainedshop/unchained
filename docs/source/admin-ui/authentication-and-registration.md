@@ -34,15 +34,9 @@ To register using [Web authn](https://webauthn.guide/) go to the sign up page an
 
 
 # Authentication
-To access the admin UI, users need to authenticate themselves by providing their credentials. There are two options for authentication: email and password plus [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password), or [Web authn](https://webauthn.guide/).
+To access the admin UI, users need to authenticate themselves by providing their credentials. There are two options for authentication: email and password, OpenID Connect and [Web authn](https://webauthn.guide/).
 
-## Login with email and password (TOTP)
-
-To log in with email and password, users should first enter their email or username and click continue. If their email or username is found in the system, they will be prompted to enter their password.
-
-If [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) has not been enabled, users will be redirected to the home page as a logged-in user after entering a valid password. However, if [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) has been enabled, users will be required to enter the time-based generated number as the last step in the authentication process. Once the correct number is entered, users will be redirected to the home page as a logged-in user.
-![diagram](../images/admin-ui/authentication-and-registration/log-in-email.png)
 ## Login with Web authn
 Alternatively, users can choose to authenticate themselves using [Web authn](https://webauthn.guide/), provided that it has been enabled. This authentication method uses public key cryptography to authenticate users, and it is considered more secure than traditional authentication methods. Users will be required to follow the prompts and provide the necessary information to complete the authentication process.
 
-In summary, users can authenticate themselves on admin UI using either email and password plus [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) (if enabled) or with [Web authn](https://webauthn.guide/) (if enabled). The [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) authentication method requires users to enter a time-based generated number as the last step in the authentication process, while Web authn uses public key cryptography to authenticate users.
+In summary, users can authenticate themselves on admin UI using either email and password or with [Web authn](https://webauthn.guide/) (if enabled).

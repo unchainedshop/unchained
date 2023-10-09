@@ -55,8 +55,6 @@ The Account tab on the user detail page displays information such as email addre
     - **Roles**:- The user's assigned roles in the shop.
     - **Password change**:- used to change the user's current password. By default, a user with an "Admin" role has the ability to change any user's password using the "Set Password" form, which is only visible to accounts with the appropriate permissions.
     ![diagram](../images/admin-ui/user/set-password.png)
-    - **2FA authentication**:- Used to activate or deactivate [TOTP/Time based one time password](https://en.wikipedia.org/wiki/Time-based_one-time_password) authentication of a user
-![diagram](../images/admin-ui/user/2fa-authentication.png)
     - **Web Authn**:- The "WebAuthn" tab in the user detail page displays information about the devices used for [Web authn](https://webauthn.guide/) authentication method. [Web authn](https://webauthn.guide/) is a modern authentication method that allows users to authenticate themselves with their devices, such as smartphones or security keys. The tab provides information about the devices used for [Web authn](https://webauthn.guide/) authentication, such as their names, types, and statuses.
     ![diagram](../images/admin-ui/user/user-account-setting-1.png)
 

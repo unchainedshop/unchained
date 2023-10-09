@@ -11,7 +11,6 @@ import { evaluateContext } from './utils/evaluateContext.js';
 import { filterContext } from './utils/filterContext.js';
 import { hashPassword } from './utils/hashPassword.js';
 import { configureAccountsWebAuthnModule } from './configureAccountsWebAuthnModule.js';
-import { configureAccountsOAuthModule } from './configureAccountsOAuthModule.js';
 
 export const configureAccountsModule = async ({
   db,
@@ -34,7 +33,6 @@ export const configureAccountsModule = async ({
   accountsSettings.configureSettings(options || {}, { accountsPassword, accountsServer });
 
   const webAuthn = await configureAccountsWebAuthnModule({ db, options });
-  const oAuth2 = configureAccountsOAuthModule();
 
   return {
     dbManager,
@@ -220,23 +218,6 @@ export const configureAccountsModule = async ({
       return user;
     },
 
-    // TOTP
-    buildTOTPSecret: () => {
-      const authSecret = accountsPassword.twoFactor.getNewAuthSecret();
-      return authSecret.otpauth_url;
-    },
-
-    enableTOTP: async (userId, secret, code) => {
-      await accountsPassword.twoFactor.set(userId, { base32: secret } as any, code);
-      return true;
-    },
-
-    disableTOTP: async (userId, code) => {
-      await accountsPassword.twoFactor.unset(userId, code);
-      return true;
-    },
-
     webAuthn,
-    oAuth2,
   };
 };

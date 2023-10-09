@@ -5,12 +5,7 @@ export default [
       """
       Log the user in with a password.
       """
-      loginWithPassword(
-        username: String
-        email: String
-        plainPassword: String
-        totpCode: String
-      ): LoginMethodResponse
+      loginWithPassword(username: String, email: String, plainPassword: String): LoginMethodResponse
 
       """
       Log the user in with a WebAuthn device
@@ -18,26 +13,11 @@ export default [
       loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
 
       """
-      Log the user with OAuth2 service provider
-      """
-      loginWithOAuth(
-        provider: String!
-        authorizationCode: String!
-        redirectUrl: String!
-      ): LoginMethodResponse
-
-      """
       Web3
       """
       addWeb3Address(address: String!): User!
       verifyWeb3Address(address: String!, hash: String!): User!
       removeWeb3Address(address: String!): User!
-
-      """
-      OAuth2
-      """
-      linkOAuthAccount(provider: String!, authorizationCode: String!, redirectUrl: String!): User!
-      unlinkOAuthAccount(provider: String!, oAuthAccountId: ID!): User!
 
       """
       Create a new user.
@@ -96,21 +76,6 @@ export default [
       Login as Guest User (creates an anonymous user and returns logged in token)
       """
       loginAsGuest: LoginMethodResponse
-
-      """
-      In order to activate TOTP, generate a secret and return
-      """
-      buildSecretTOTPAuthURL: String!
-
-      """
-      In order to activate 2nd factor (TOTP), generate a secret and return
-      """
-      enableTOTP(secretBase32: String!, code: String!): User!
-
-      """
-      Disable the 2nd factor (TOTP)
-      """
-      disableTOTP(code: String!, userId: ID): User!
 
       """
       Create WebAuthn PublicKeyCredentialCreationOptions to use for Registering a new WebAuthn Device

@@ -7,9 +7,6 @@ import stopImpersonation from './accounts/stopImpersonation.js';
 import loginAsGuest from './accounts/loginAsGuest.js';
 import logout from './accounts/logout.js';
 import logoutAllSessions from './accounts/logoutAllSessions.js';
-import buildSecretTOTPAuthURL from './accounts/buildSecretTOTPAuthURL.js';
-import enableTOTP from './accounts/enableTOTP.js';
-import disableTOTP from './accounts/disableTOTP.js';
 import changePassword from './accounts/changePassword.js';
 import createUser from './accounts/createUser.js';
 import verifyEmail from './accounts/verifyEmail.js';
@@ -158,9 +155,6 @@ import prepareUserAvatarUpload from './users/prepareUserAvatarUpload.js';
 import rejectOrder from './orders/rejectOrder.js';
 import removePushSubscription from './users/removePushSubscription.js';
 import addPushSubscription from './users/addPushSubscription.js';
-import loginWithOAuth from './accounts/loginWithOAuth.js';
-import linkOAuthAccount from './accounts/linkOAuthAccount.js';
-import unlinkOAuthAccount from './accounts/unlinkOAuthAccount.js';
 
 export default {
   logout: acl(actions.logout)(logout),
@@ -179,17 +173,11 @@ export default {
   addWeb3Address: acl(actions.updateUser)(addWeb3Address),
   removeWeb3Address: acl(actions.updateUser)(removeWeb3Address),
   verifyWeb3Address: acl(actions.updateUser)(verifyWeb3Address),
-  linkOAuthAccount: acl(actions.updateUser)(linkOAuthAccount),
-  unlinkOAuthAccount: acl(actions.updateUser)(unlinkOAuthAccount),
   verifyEmail: acl(actions.verifyEmail)(verifyEmail),
   loginWithPassword: acl(actions.loginWithPassword)(loginWithPassword),
   loginWithWebAuthn: acl(actions.loginWithWebAuthn)(loginWithWebAuthn),
-  loginWithOAuth: acl(actions.loginWithOAuth)(loginWithOAuth),
   impersonate: acl(actions.impersonate)(impersonate),
   stopImpersonation: acl(actions.stopImpersonation)(stopImpersonation),
-  buildSecretTOTPAuthURL: acl(actions.authTwoFactor)(buildSecretTOTPAuthURL),
-  enableTOTP: acl(actions.authTwoFactor)(enableTOTP),
-  disableTOTP: acl(actions.manageTwoFactor)(disableTOTP),
   pageView: acl(actions.pageView)(pageView),
   createUser: acl(actions.createUser)(createUser),
   forgotPassword: acl(actions.forgotPassword)(forgotPassword),

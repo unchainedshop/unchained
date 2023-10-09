@@ -15,7 +15,6 @@ import {
   Web3Address,
   WebAuthnCredentials,
   PushSubscription,
-  OAuthAccount,
 } from '@unchainedshop/types/user.js';
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
@@ -48,7 +47,6 @@ export interface UserHelperTypes {
   >;
   isGuest: HelperType<any, boolean>;
   isInitialPassword: HelperType<any, boolean>;
-  isTwoFactorEnabled: HelperType<any, boolean>;
   language: HelperType<{ localeContext: Locale }, Language>;
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
   lastContact: HelperType<any, Contact>;
@@ -82,7 +80,6 @@ export interface UserHelperTypes {
   tags: HelperType<any, Array<string>>;
   username: HelperType<any, string>;
   pushSubscriptions: HelperType<any, Array<PushSubscription>>;
-  oAuthAccounts: HelperType<any, Array<OAuthAccount>>;
   reviews: HelperType<
     {
       sort?: Array<SortOption>;
@@ -141,11 +138,7 @@ export const User: UserHelperTypes = {
     const { password: { initial } = { initial: undefined } } = user.services || {};
     return user.initialPassword || !!initial;
   },
-  isTwoFactorEnabled: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
-    const { 'two-factor': { secret } = { secret: undefined } } = user.services || {};
-    return !!secret;
-  },
+
   isGuest: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return !!user.guest;
@@ -243,15 +236,6 @@ export const User: UserHelperTypes = {
       expirationTime,
       endpoint,
     }));
-  },
-  oAuthAccounts: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return Object.entries(user.services?.oauth || {}).flatMap(([provider, accounts]) => {
-      return (accounts as any).map((providerData) => ({
-        provider,
-        ...(providerData as any),
-      }));
-    });
   },
   async reviews(user, params, context) {
     const { modules } = context;

@@ -91,18 +91,6 @@ export default [
       verified: Boolean!
     }
 
-    type OAuthProvider {
-      _id: String!
-      clientId: String!
-      scopes: [String!]!
-    }
-
-    type OAuthAccount {
-      _id: ID!
-      provider: OAuthProvider!
-      authorizationCode: String!
-    }
-
     type User {
       _id: ID!
       created: DateTime!
@@ -110,7 +98,6 @@ export default [
       deleted: DateTime
       username: String
       isGuest: Boolean!
-      isTwoFactorEnabled: Boolean!
       isInitialPassword: Boolean!
       webAuthnCredentials: [WebAuthnCredentials!]!
       web3Addresses: [Web3Address!]!
@@ -152,7 +139,6 @@ export default [
       ): [Enrollment!]!
       allowedActions: [RoleAction!]!
       tokens: [Token!]!
-      oAuthAccounts: [OAuthAccount!]!
       reviews(limit: Int = 10, offset: Int = 0, sort: [SortOptionInput!]): [ProductReview!]!
       reviewsCount: Int!
     }

@@ -77,8 +77,6 @@ export const all = (role, actions) => {
   role.allow(actions.viewOrder, () => false);
   role.allow(actions.viewQuotation, () => false);
   role.allow(actions.viewEnrollment, () => false);
-  role.allow(actions.authTwoFactor, () => false);
-  role.allow(actions.manageTwoFactor, () => false);
   role.allow(actions.impersonate, () => false);
   role.allow(actions.stopImpersonation, () => false);
 
@@ -106,7 +104,6 @@ export const all = (role, actions) => {
   role.allow(actions.loginAsGuest, () => true);
   role.allow(actions.loginWithPassword, () => true);
   role.allow(actions.loginWithWebAuthn, () => true);
-  role.allow(actions.loginWithOAuth, () => true);
   role.allow(actions.verifyEmail, () => true);
   role.allow(actions.useWebAuthn, () => true);
   role.allow(actions.pageView, () => true);

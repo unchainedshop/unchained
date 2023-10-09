@@ -228,17 +228,6 @@ export const UsernameOrEmailRequiredError = createError(
   'No username or email is provided.',
 );
 
-export const TwoFactorCodeDidNotMatchError = createError(
-  'TwoFactorCodeDidNotMatch',
-  "2FA code didn't match",
-);
-
-export const TwoFactorCodeRequiredError = createError('TwoFactorCodeRequired', '2FA code required');
-
-export const TwoFactorAlreadySetError = createError('TwoFactorAlreadySet', '2FA already set for user');
-
-export const TwoFactorNotSetError = createError('TwoFactorNotSet', '2FA not set for user');
-
 export const InvalidCredentialsError = createError('InvalidCredentials', 'Invalid credentials provided');
 
 export const InvalidResetTokenError = createError('InvalidResetTokenError', 'Token validation failed');

@@ -22,7 +22,6 @@ export default [
       userRoles: [String!]!
       externalLinks: [Link]!
       adminUiConfig: AdminUiConfig!
-      oAuthProviders: [OAuthProvider!]!
       vapidPublicKey: String
     }
   `,
