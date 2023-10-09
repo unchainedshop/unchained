@@ -114,14 +114,6 @@ export interface AccountsModule {
     token: string;
     tokenExpires: Date;
   }>;
-  createImpersonationToken: (
-    userId: string,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<{
-    id: string;
-    token: string;
-    tokenExpires: Date;
-  }>;
   loginWithService: (
     params:
       | LoginWithGuestParams

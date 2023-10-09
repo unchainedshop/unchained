@@ -98,8 +98,6 @@ const actions: Record<string, string> = [
   'registerPaymentCredentials',
   'managePaymentCredentials',
   'bulkImport',
-  'impersonate',
-  'stopImpersonation',
   'logout',
   'logoutAllSessions',
   'loginAsGuest',

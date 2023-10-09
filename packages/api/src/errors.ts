@@ -278,8 +278,3 @@ export const ProductLinkedToQuotationError = createError(
   'ProductLinkedToQuotation',
   'Product is part of a requested/proposed quotations item, remove it from any requested/proposed quotations item before deleting',
 );
-
-export const ImpersonatingAdminUserError = createError(
-  'ImpersonatingAdminUserError',
-  'Can not impersonate a admin user account',
-);

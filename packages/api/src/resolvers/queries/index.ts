@@ -65,11 +65,9 @@ import token from './warehousing/token.js';
 import work from './worker/work.js';
 import workQueue from './worker/workQueue.js';
 import workQueueCount from './worker/workQueueCount.js';
-import impersonator from './users/impersonator.js';
 
 export default {
   me,
-  impersonator,
   user: acl(actions.viewUser)(user),
   users: acl(actions.viewUsers)(users),
   usersCount: acl(actions.viewUsers)(usersCount),
