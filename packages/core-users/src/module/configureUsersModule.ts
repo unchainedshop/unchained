@@ -1,4 +1,5 @@
 import localePkg from 'locale';
+import bcrypt from 'bcryptjs';
 import { Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { User, UserQuery, UsersModule, UsersSettingsOptions } from '@unchainedshop/types/user.js';
@@ -165,10 +166,12 @@ export const configureUsersModule = async ({
       //     params.webAuthnPublicKeyCredentials,
       //   ));
 
-      const services = {};
+      const services: Record<string, any> = {};
       if (password) {
-        // TODO: Re-Implement by setting the hash of the user
         const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(sha256Hash, salt);
+        services.password = { bcrypt: hashedPassword };
       }
 
       const { insertedId: userId } = await Users.insertOne({
