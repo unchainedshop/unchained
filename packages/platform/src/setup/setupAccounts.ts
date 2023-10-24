@@ -1,6 +1,6 @@
 import { User } from '@unchainedshop/types/user.js';
 import { randomValueHex } from '@unchainedshop/utils';
-import { accountsSettings } from '@unchainedshop/core-accountsjs';
+import { usersSettings } from '@unchainedshop/core-users';
 import moniker from 'moniker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 
@@ -95,7 +95,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         {
           fromUser: userBeforeLogin,
           toUser: user,
-          shouldMerge: accountsSettings.mergeUserCartsOnLogin,
+          shouldMerge: usersSettings.mergeUserCartsOnLogin,
           countryContext,
         },
         unchainedAPI,
@@ -105,7 +105,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
         {
           fromUser: userBeforeLogin,
           toUser: user,
-          shouldMerge: accountsSettings.mergeUserCartsOnLogin,
+          shouldMerge: usersSettings.mergeUserCartsOnLogin,
           countryContext,
         },
         unchainedAPI,

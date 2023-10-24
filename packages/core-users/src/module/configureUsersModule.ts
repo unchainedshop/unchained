@@ -14,6 +14,7 @@ import {
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 import { userSettings } from '../users-settings.js';
@@ -167,6 +168,7 @@ export const configureUsersModule = async ({
       const services = {};
       if (password) {
         // TODO: Re-Implement by setting the hash of the user
+        const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
       }
 
       const { insertedId: userId } = await Users.insertOne({

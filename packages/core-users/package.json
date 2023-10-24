@@ -36,6 +36,7 @@
     "@unchainedshop/logger": "^2.5.12",
     "@unchainedshop/roles": "^2.5.12",
     "@unchainedshop/utils": "^2.5.12",
+    "bcrypt": "^5.1.1",
     "locale": "^0.1.0",
     "simpl-schema": "=3.2.0",
     "uuid": "^9.0.1"
