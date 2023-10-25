@@ -44,14 +44,6 @@ export const configureAccountsModule = async ({
 
     findUnverifiedUserByToken: async (token) => dbManager.findUserByEmailVerificationToken(token),
 
-    // eslint-disable-next-line
-    // @ts-ignore : Accountsjs is BADLY typed!
-    findUserByEmail: async (email) => accountsPassword.findUserByEmail(email),
-
-    // eslint-disable-next-line
-    // @ts-ignore : Accountsjs is BADLY typed!
-    findUserByUsername: async (username) => accountsPassword.findUserByUsername(username),
-
     sendVerificationEmail: async (email) => accountsPassword.sendVerificationEmail(email),
     sendEnrollmentEmail: async (email) => accountsPassword.sendEnrollmentEmail(email),
     verifyEmail: async (token) => accountsPassword.verifyEmail(token),

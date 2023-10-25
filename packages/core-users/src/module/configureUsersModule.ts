@@ -1,8 +1,24 @@
 import localePkg from 'locale';
 import bcrypt from 'bcryptjs';
-import { Filter, Query } from '@unchainedshop/types/common.js';
+import {
+  Address,
+  Contact,
+  Filter,
+  FindOptions,
+  Query,
+  Update,
+  UpdateOptions,
+} from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import { User, UserQuery, UsersModule, UsersSettingsOptions } from '@unchainedshop/types/user.js';
+import {
+  Email,
+  User,
+  UserData,
+  UserLastLogin,
+  UserProfile,
+  UserQuery,
+  UsersSettingsOptions,
+} from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -59,7 +75,7 @@ export const configureUsersModule = async ({
   db,
   options,
   migrationRepository,
-}: ModuleInput<UsersSettingsOptions>): Promise<UsersModule> => {
+}: ModuleInput<UsersSettingsOptions>) => {
   userSettings.configureSettings(options || {});
 
   registerEvents(USER_EVENTS);
@@ -72,17 +88,36 @@ export const configureUsersModule = async ({
 
   return {
     // Queries
-    count: async (query) => {
+    count: async (query: UserQuery): Promise<number> => {
       const userCount = await Users.countDocuments(buildFindSelector(query));
       return userCount;
     },
 
-    async findUserById(userId) {
+    async findUserById(userId: string): Promise<User> {
       if (!userId) return null;
       return Users.findOne(generateDbFilterById(userId), {});
     },
 
-    async findUserByToken({ resetToken, hashedToken }) {
+    async findUserByUsername(username: string): Promise<User> {
+      if (!username) return null;
+      return Users.findOne({ username }, {});
+    },
+
+    async findUserByEmail(email: string): Promise<User> {
+      if (!email) return null;
+      return Users.findOne(
+        { emails: { $elemMatch: { address: { $regex: email, $options: 'i' } } } },
+        {},
+      );
+    },
+
+    async findUserByToken({
+      resetToken,
+      hashedToken,
+    }: {
+      resetToken?: string;
+      hashedToken?: string;
+    }): Promise<User> {
       if (hashedToken) {
         return Users.findOne({
           'services.resume.loginTokens.hashedToken': hashedToken,
@@ -98,13 +133,24 @@ export const configureUsersModule = async ({
       return null;
     },
 
-    findUser: async (query, options) => {
+    findUser: async (
+      query: UserQuery & { sort?: Array<SortOption> },
+      findOptions?: FindOptions,
+    ): Promise<User> => {
       const selector = buildFindSelector(query);
 
-      return Users.findOne(selector, options);
+      return Users.findOne(selector, findOptions);
     },
 
-    findUsers: async ({ limit, offset, ...query }) => {
+    async findUsers({
+      limit,
+      offset,
+      ...query
+    }: UserQuery & {
+      sort?: Array<SortOption>;
+      limit?: number;
+      offset?: number;
+    }): Promise<Array<User>> {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       const selector = buildFindSelector(query);
 
@@ -124,7 +170,7 @@ export const configureUsersModule = async ({
       }).toArray();
     },
 
-    userExists: async ({ userId }) => {
+    async userExists({ userId }: { userId: string }): Promise<boolean> {
       const selector = generateDbFilterById<User>(userId);
       selector.deleted = null; // skip deleted users when checked for existance!
       const userCount = await Users.countDocuments(selector, { limit: 1 });
@@ -132,13 +178,13 @@ export const configureUsersModule = async ({
     },
 
     // Transformations
-    primaryEmail: (user) => {
+    primaryEmail(user: User): Email {
       return (user.emails || []).sort(
         (left, right) => Number(right.verified) - Number(left.verified),
       )?.[0];
     },
 
-    userLocale: (user) => {
+    userLocale(user: User): localePkg.Locale {
       if (!user?.lastLogin?.locale) return systemLocale;
       return new Locale(user.lastLogin.locale);
     },
@@ -155,9 +201,12 @@ export const configureUsersModule = async ({
         profile,
         roles,
         username,
-      },
-      { skipMessaging, skipPasswordEnrollment } = {},
-    ) => {
+      }: UserData,
+      {
+        skipMessaging,
+        skipPasswordEnrollment,
+      }: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean } = {},
+    ): Promise<string> => {
       // TODO: Re-Implement, then set service to services and skip password enrollment when webAuthn registration!
       // const webAuthnService =
       //   webAuthnPublicKeyCredentials &&
@@ -204,7 +253,7 @@ export const configureUsersModule = async ({
       return userId;
     },
 
-    addRoles: async (userId, roles) => {
+    addRoles: async (userId: string, roles: Array<string>): Promise<number> => {
       const selector = generateDbFilterById(userId);
       const updateResult = await Users.updateOne(selector, {
         $addToSet: { roles: { $each: roles } },
@@ -218,7 +267,7 @@ export const configureUsersModule = async ({
       return updateResult.modifiedCount;
     },
 
-    updateAvatar: async (_id, fileId) => {
+    updateAvatar: async (_id: string, fileId: string): Promise<User> => {
       const userFilter = generateDbFilterById(_id);
       log('Update Avatar', { userId: _id });
 
@@ -237,14 +286,14 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    updateGuest: async (user, guest) => {
+    updateGuest: async (user: User, guest: boolean): Promise<void> => {
       log('Update guest', { userId: user._id });
 
       const modifier = { $set: { guest } };
       await Users.updateOne(generateDbFilterById(user._id), modifier);
     },
 
-    updateHeartbeat: async (userId, lastLogin) => {
+    updateHeartbeat: async (userId: string, lastLogin: UserLastLogin): Promise<User> => {
       const userFilter = generateDbFilterById(userId);
 
       const modifier = {
@@ -265,7 +314,7 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    updateInitialPassword: async (user, initialPassword) => {
+    updateInitialPassword: async (user: User, initialPassword: boolean): Promise<void> => {
       log(`Update initial password flag to ${initialPassword}`, {
         userId: user._id,
         level: LogLevel.Verbose,
@@ -275,7 +324,7 @@ export const configureUsersModule = async ({
       await Users.updateOne(generateDbFilterById(user._id), modifier);
     },
 
-    delete: async (userId) => {
+    delete: async (userId: string): Promise<User> => {
       const userFilter = generateDbFilterById(userId);
 
       const existingUser = await Users.findOne(userFilter, {
@@ -310,7 +359,11 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-    updateProfile: async (userId, updatedData) => {
+
+    updateProfile: async (
+      userId: string,
+      updatedData: { profile?: UserProfile; meta?: any },
+    ): Promise<User> => {
       const userFilter = generateDbFilterById(userId);
       const { meta, profile } = updatedData;
 
@@ -343,7 +396,7 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    updateLastBillingAddress: async (_id, lastBillingAddress) => {
+    updateLastBillingAddress: async (_id: string, lastBillingAddress: Address): Promise<User> => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
 
@@ -373,7 +426,7 @@ export const configureUsersModule = async ({
       return updatedUser;
     },
 
-    updateLastContact: async (_id, lastContact) => {
+    updateLastContact: async (_id: string, lastContact: Contact): Promise<User> => {
       const userFilter = generateDbFilterById(_id);
       const user = await Users.findOne(userFilter, {});
       const profile = user.profile || {};
@@ -399,7 +452,7 @@ export const configureUsersModule = async ({
       return updatedUser;
     },
 
-    updateRoles: async (_id, roles) => {
+    updateRoles: async (_id: string, roles: Array<string>): Promise<User> => {
       const userFilter = generateDbFilterById(_id);
 
       const modifier = {
@@ -415,7 +468,8 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-    updateTags: async (_id, tags) => {
+
+    updateTags: async (_id: string, tags: Array<string>): Promise<User> => {
       const userFilter = generateDbFilterById(_id);
 
       const modifier = {
@@ -432,28 +486,40 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-    updateUser: async (query, modifier, options) => {
-      await Users.updateOne(query, modifier, options);
-      const user = await Users.findOne(query);
+
+    updateUser: async (
+      selector: Query,
+      modifier: Update<User>,
+      updateOptions: UpdateOptions,
+    ): Promise<void> => {
+      await Users.updateOne(selector, modifier, updateOptions);
+      const user = await Users.findOne(selector);
       await emit('USER_UPDATE', {
         user: removeConfidentialServiceHashes(user),
       });
     },
 
-    addPushSubscription: async (userId, subscription, { userAgent, unsubscribeFromOtherUsers }) => {
+    addPushSubscription: async (
+      userId: string,
+      subscription: any,
+      subscriptionOptions?: {
+        userAgent: string;
+        unsubscribeFromOtherUsers: boolean;
+      },
+    ): Promise<void> => {
       const updateResult = await Users.updateOne(
         { _id: userId, 'pushSubscriptions.keys.p256dh': { $ne: subscription?.keys?.p256dh } },
         {
           $push: {
             pushSubscriptions: {
-              userAgent,
+              userAgent: subscriptionOptions?.userAgent,
               ...subscription,
             },
           },
         },
         {},
       );
-      if (updateResult.modifiedCount === 1 && unsubscribeFromOtherUsers) {
+      if (updateResult.modifiedCount === 1 && subscriptionOptions?.unsubscribeFromOtherUsers) {
         await Users.updateMany(
           { _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': subscription?.keys?.p256dh },
           {
@@ -464,7 +530,8 @@ export const configureUsersModule = async ({
         );
       }
     },
-    removePushSubscription: async (userId, p256dh) => {
+
+    removePushSubscription: async (userId: string, p256dh: string): Promise<void> => {
       await Users.updateOne(
         { _id: userId },
         {
