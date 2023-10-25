@@ -13,7 +13,7 @@ export default async function sendEnrollmentEmail(
   if (!user) throw new UserNotFoundError({ email });
 
   try {
-    await modules.users.sendEnrollmentEmail(user._id, email);
+    await modules.users.sendResetPasswordEmail(user._id, email, true);
     return {
       success: true,
     };

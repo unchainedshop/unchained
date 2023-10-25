@@ -118,7 +118,6 @@ export interface AccountsModule {
     params: { newPassword?: string; token: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<AccountsUser>;
-  sendResetPasswordEmail: (email: string) => Promise<boolean>;
 
   webAuthn: AccountsWebAuthnModule;
 }

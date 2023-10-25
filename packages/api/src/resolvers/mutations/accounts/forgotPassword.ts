@@ -9,13 +9,17 @@ export default async function forgotPassword(
 ) {
   log('mutation forgotPassword', { email, userId });
 
-  let success = false;
-  try {
-    success = await modules.accounts.sendResetPasswordEmail(email);
-  } catch (e) {
-    if (e.code === 'UserNotFound') throw new UserNotFoundError({ email });
-    else throw new AuthOperationFailedError({ email });
-  }
+  const user = await modules.users.findUserByEmail(email);
+  if (!user) throw new UserNotFoundError({ email });
 
-  return { success };
+  try {
+    await modules.users.sendResetPasswordEmail(user._id, email);
+    return {
+      success: true,
+    };
+  } catch (e) {
+    return {
+      success: false,
+    };
+  }
 }

@@ -151,6 +151,12 @@ export const configureUsersModule = async ({
           arrayFilters: [{ 'email.address': address }],
         },
       );
+
+      await emit('USER_ACCOUNT_ACTION', {
+        action: 'email-verified',
+        address,
+        userId,
+      });
     },
 
     async findUserByToken({
@@ -258,6 +264,8 @@ export const configureUsersModule = async ({
       //     params.webAuthnPublicKeyCredentials,
       //   ));
 
+      // TODO: Validate User Creation Input
+
       const services: Record<string, any> = {};
       if (password) {
         const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
@@ -278,6 +286,11 @@ export const configureUsersModule = async ({
         username,
       });
 
+      await emit('USER_ACCOUNT_ACTION', {
+        action: 'user-created',
+        userId,
+      });
+
       const autoMessagingEnabled = skipMessaging
         ? false
         : userSettings.autoMessagingAfterUserCreation && !!email && !!userId;
@@ -285,7 +298,7 @@ export const configureUsersModule = async ({
       if (autoMessagingEnabled) {
         if (password === undefined) {
           if (!skipPasswordEnrollment) {
-            await this.sendEnrollmentEmail(userId, email);
+            await this.sendResetPasswordEmail(userId, email, true);
           }
         } else {
           await this.sendVerificationEmail(userId, email);
@@ -331,25 +344,28 @@ export const configureUsersModule = async ({
       });
     },
 
-    async sendEnrollmentEmail(userId: string, email: string): Promise<void> {
-      const enrollmentToken = {
-        token: crypto.randomUUID(),
+    async sendResetPasswordEmail(userId: string, email: string, isEnrollment?: boolean): Promise<void> {
+      const plainToken = crypto.randomUUID();
+      const resetToken = {
+        token: crypto.createHash('sha256').update(plainToken).digest('hex'),
         address: email,
         when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
       };
+
       await Users.updateOne(
         { _id: userId },
         {
           $push: {
-            'services.email.enrollmentTokens': enrollmentToken,
+            'services.password.reset': resetToken,
           },
         },
       );
 
       await emit('USER_ACCOUNT_ACTION', {
-        action: 'enroll-account',
+        action: isEnrollment ? 'enroll-account' : 'reset-password',
         userId,
-        ...enrollmentToken,
+        ...resetToken,
+        token: plainToken,
       });
     },
 
