@@ -1,12 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import {
-  AuthOperationFailedError,
-  InvalidResetTokenError,
-  NoEmailSetError,
-  ResetPasswordLinkExpiredError,
-  ResetPasswordLinkUnknownAddressError,
-} from '../../../errors.js';
+import { InvalidResetTokenError } from '../../../errors.js';
 
 export default async function resetPassword(
   root: Root,
@@ -20,17 +14,11 @@ export default async function resetPassword(
   if (!params.newPassword) {
     throw new Error('Password is required');
   }
-  try {
-    const userWithNewPassword = await modules.accounts.resetPassword(params, context);
+  const user = await modules.users.findUserByResetToken(params.token);
 
-    const result = await modules.accounts.createLoginToken(userWithNewPassword.id, context);
-    return result;
-  } catch (e) {
-    if (e.code === 'InvalidToken') throw new InvalidResetTokenError({});
-    if (e.code === 'ResetPasswordLinkExpired') throw new ResetPasswordLinkExpiredError({});
-    if (e.code === 'ResetPasswordLinkUnknownAddress​')
-      throw new ResetPasswordLinkUnknownAddressError({});
-    if (e.code === 'NoEmailSet') throw new NoEmailSetError({});
-    throw new AuthOperationFailedError({});
-  }
+  if (!user) throw new InvalidResetTokenError({});
+  await modules.users.setPassword(user._id, params.newPassword);
+
+  const result = await modules.accounts.createLoginToken(user._id, context);
+  return result;
 }

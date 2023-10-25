@@ -107,12 +107,6 @@ export const configureAccountsModule = async ({
       }
     },
 
-    resetPassword: async ({ newPassword, token }, context) => {
-      const user = await dbManager.findUserByResetPasswordToken(token);
-      await accountsPassword.resetPassword(token, newPassword, context);
-      return user;
-    },
-
     webAuthn,
   };
 };

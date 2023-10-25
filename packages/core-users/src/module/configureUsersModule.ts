@@ -163,23 +163,27 @@ export const configureUsersModule = async ({
       });
     },
 
-    async findUserByToken({
-      resetToken,
-      hashedToken,
-    }: {
-      resetToken?: string;
-      hashedToken?: string;
-    }): Promise<User> {
+    async findUserByResetToken(plainToken: string): Promise<User> {
+      const token = crypto.createHash('sha256').update(plainToken).digest('hex');
+      const user = await Users.findOne(
+        {
+          'services.password.reset': {
+            $elemMatch: {
+              token,
+              when: { $gt: new Date().getTime() },
+            },
+          },
+        },
+        {},
+      );
+      return user;
+    },
+
+    async findUserByToken(hashedToken?: string): Promise<User> {
       if (hashedToken) {
         // TODO: Move to connect-session
         return Users.findOne({
           'services.resume.loginTokens.hashedToken': hashedToken,
-        });
-      }
-
-      if (resetToken) {
-        return Users.findOne({
-          'services.password.reset.token': resetToken,
         });
       }
 

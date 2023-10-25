@@ -22,33 +22,6 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
   accountsServer.users = unchainedAPI.modules.users;
 
-  // accountsServer.options.prepareMail = (
-  //   to: string,
-  //   token: string,
-  //   user: User & { id: string },
-  //   pathFragment: string,
-  // ) => {
-  //   return {
-  //     template: 'ACCOUNT_ACTION',
-  //     recipientEmail: to,
-  //     action: pathFragment,
-  //     userId: user.id || user._id,
-  //     token,
-  //     skipMessaging: !!user.guest && pathFragment === 'verify-email',
-  //   };
-  // };
-
-  // accountsServer.options.sendMail = (input: any) => {
-  //   if (!input) return true;
-  //   if (input.skipMessaging) return true;
-
-  //   return unchainedAPI.modules.worker.addWork({
-  //     type: 'MESSAGE',
-  //     retries: 0,
-  //     input,
-  //   });
-  // };
-
   accountsServer.services.guest = {
     async authenticate(params: { email?: string | null }) {
       const guestname = `${moniker.choose()}-${randomValueHex(5)}`;

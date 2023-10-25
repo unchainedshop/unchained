@@ -1,4 +1,5 @@
 import { log } from '@unchainedshop/logger';
+import crypto from 'crypto';
 import { Context, Root } from '@unchainedshop/types/api.js';
 import {
   AuthenticationFailedError,
@@ -27,7 +28,7 @@ export default async function loginWithPassword(
 
   const mappedUserLoginParams = {
     user: email ? { email } : { username },
-    password,
+    password: crypto.createHash('sha256').update(password).digest('hex'),
   };
 
   try {

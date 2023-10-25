@@ -14,9 +14,8 @@ export default async function verifyEmail(root: Root, { token }: { token: any },
   }
 
   await modules.users.verifyEmail(unverifiedToken.userId, unverifiedToken.address);
-  const verifiedUser = await modules.users.findUserById(unverifiedToken.userId);
 
-  const tokenData = await modules.accounts.createLoginToken(verifiedUser._id, context);
+  const tokenData = await modules.accounts.createLoginToken(unverifiedToken.userId, context);
 
   return tokenData;
 }

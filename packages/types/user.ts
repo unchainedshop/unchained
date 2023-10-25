@@ -127,7 +127,8 @@ export type UsersModule = {
   // Queries
   count: (query: UserQuery) => Promise<number>;
   findUserById: (userId: _ID) => Promise<User>;
-  findUserByToken: (query: { resetToken?: string; hashedToken?: string }) => Promise<User>;
+  findUserByToken: (hashedToken?: string) => Promise<User>;
+  findUserByResetToken: (token: string) => Promise<User>;
   findUnverifiedEmailToken: (token: string) => Promise<{
     userId: string;
     address: string;
@@ -161,10 +162,6 @@ export type UsersModule = {
   setUsername: (userId: string, newUsername: string) => Promise<void>;
   setPassword: (userId: string, newPassword?: string) => Promise<void>;
   verifyPassword: (userId: string, password: string) => Promise<boolean>;
-  resetPassword: (
-    params: { newPassword?: string; token: string },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<User>;
   addRoles: (userId: string, roles: Array<string>) => Promise<number>;
   updateAvatar: (_id: string, fileId: string) => Promise<User>;
   updateGuest: (user: User, guest: boolean) => Promise<void>;

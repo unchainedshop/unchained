@@ -1,6 +1,6 @@
 import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
-import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts.js';
+import { AccountsModule, AccountsSettingsOptions } from './accounts.js';
 import { Context } from './api.js';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments.js';
 

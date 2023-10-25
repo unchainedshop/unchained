@@ -1,6 +1,4 @@
-import { User as AccountsUser } from '@accounts/types';
 import { UnchainedCore } from './core.js';
-import { User, UserProfile } from './user.js';
 
 export interface WebAuthnCredentialsCreationRequest {
   challenge: string;
@@ -100,10 +98,5 @@ export interface AccountsModule {
   createHashLoginToken: (loginToken: string) => string;
 
   // User Management
-  resetPassword: (
-    params: { newPassword?: string; token: string },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<AccountsUser>;
-
   webAuthn: AccountsWebAuthnModule;
 }

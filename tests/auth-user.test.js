@@ -166,19 +166,15 @@ describe('Auth for logged in users', () => {
 
     it('verifies the e-mail of user', async () => {
       // Reset the password with that token
-      const Users = db.collection('users');
-      const user = await Users.findOne({
-        _id: 'userthatmustverifyemail',
+      const Events = db.collection('events');
+      const event = await Events.findOne({
+        "payload.userId": 'userthatmustverifyemail',
+        "payload.action": "verify-email"
       });
 
-      const {
-        services: {
-          email: {
-            verificationTokens: [{ token }],
-          },
-        },
-      } = user;
-      const { data: { verifyEmail } = {} } = await graphqlFetch({
+      const token = event.payload.token;
+
+      const { data: { verifyEmail } = {}, ...rest } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation verifyEmail($token: String!) {
             verifyEmail(token: $token) {

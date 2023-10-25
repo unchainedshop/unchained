@@ -238,18 +238,13 @@ describe("Auth for anonymous users", () => {
 
     it("change password with token from forgotPassword call", async () => {
       // Reset the password with that token
-      const Users = db.collection("users");
-      const user = await Users.findOne({
-        "emails.address": "userthatforgetspasswords@unchained.local",
+      const Events = db.collection('events');
+      const event = await Events.findOne({
+        "payload.userId": 'userthatforgetspasswords',
+        "payload.action": "reset-password"
       });
 
-      const {
-        services: {
-          password: {
-            reset: [{ token }],
-          },
-        },
-      } = user;
+      const token = event.payload.token;
 
       const { data: { resetPassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
