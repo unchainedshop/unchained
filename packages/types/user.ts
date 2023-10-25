@@ -128,6 +128,8 @@ export type UsersModule = {
   count: (query: UserQuery) => Promise<number>;
   findUserById: (userId: _ID) => Promise<User>;
   findUserByToken: (query: { resetToken?: string; hashedToken?: string }) => Promise<User>;
+  findUserByEmail(email: string): Promise<User>;
+  findUserByUsername(username: string): Promise<User>;
   findUser: (selector: UserQuery & { sort?: Array<SortOption> }, options?: FindOptions) => Promise<User>;
   findUsers: (
     query: UserQuery & {
@@ -146,6 +148,8 @@ export type UsersModule = {
     userData: UserData,
     options: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean },
   ) => Promise<string>;
+  sendVerificationEmail: (userId: string, email: string) => Promise<void>;
+  sendEnrollmentEmail: (userId: string, email: string) => Promise<void>;
   addRoles: (userId: string, roles: Array<string>) => Promise<number>;
   updateAvatar: (_id: string, fileId: string) => Promise<User>;
   updateGuest: (user: User, guest: boolean) => Promise<void>;

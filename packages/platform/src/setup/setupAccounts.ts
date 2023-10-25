@@ -3,38 +3,51 @@ import { randomValueHex } from '@unchainedshop/utils';
 import { userSettings } from '@unchainedshop/core-users';
 import moniker from 'moniker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { subscribe } from '@unchainedshop/events';
 
 export const setupAccounts = (unchainedAPI: UnchainedCore) => {
+  subscribe('USER_ACCOUNT_ACTION', async ({ payload }: { payload: any }) => {
+    await unchainedAPI.modules.worker.addWork({
+      type: 'MESSAGE',
+      retries: 0,
+      input: {
+        template: 'ACCOUNT_ACTION',
+        recipientEmail: payload.address,
+        ...payload,
+      },
+    });
+  });
+
   const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();
 
   accountsServer.users = unchainedAPI.modules.users;
 
-  accountsServer.options.prepareMail = (
-    to: string,
-    token: string,
-    user: User & { id: string },
-    pathFragment: string,
-  ) => {
-    return {
-      template: 'ACCOUNT_ACTION',
-      recipientEmail: to,
-      action: pathFragment,
-      userId: user.id || user._id,
-      token,
-      skipMessaging: !!user.guest && pathFragment === 'verify-email',
-    };
-  };
+  // accountsServer.options.prepareMail = (
+  //   to: string,
+  //   token: string,
+  //   user: User & { id: string },
+  //   pathFragment: string,
+  // ) => {
+  //   return {
+  //     template: 'ACCOUNT_ACTION',
+  //     recipientEmail: to,
+  //     action: pathFragment,
+  //     userId: user.id || user._id,
+  //     token,
+  //     skipMessaging: !!user.guest && pathFragment === 'verify-email',
+  //   };
+  // };
 
-  accountsServer.options.sendMail = (input: any) => {
-    if (!input) return true;
-    if (input.skipMessaging) return true;
+  // accountsServer.options.sendMail = (input: any) => {
+  //   if (!input) return true;
+  //   if (input.skipMessaging) return true;
 
-    return unchainedAPI.modules.worker.addWork({
-      type: 'MESSAGE',
-      retries: 0,
-      input,
-    });
-  };
+  //   return unchainedAPI.modules.worker.addWork({
+  //     type: 'MESSAGE',
+  //     retries: 0,
+  //     input,
+  //   });
+  // };
 
   accountsServer.services.guest = {
     async authenticate(params: { email?: string | null }) {

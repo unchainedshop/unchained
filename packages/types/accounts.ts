@@ -79,9 +79,6 @@ export interface AccountsModule {
   verifyEmail: (token: string) => Promise<void>;
   findUnverifiedUserByToken: (token: string) => Promise<AccountsUser>;
 
-  sendVerificationEmail: (email: string) => Promise<void>;
-  sendEnrollmentEmail: (email: string) => Promise<void>;
-
   // Authentication
   createLoginToken: (
     userId: string,

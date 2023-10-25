@@ -1,6 +1,5 @@
 import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/accounts.js';
 
-import { v4 as uuidv4 } from 'uuid';
 import { ModuleInput } from '@unchainedshop/types/core.js';
 import { accountsPassword } from '../accounts/accountsPassword.js';
 import { UnchainedAccountsServer } from '../accounts/accountsServer.js';
@@ -41,8 +40,6 @@ export const configureAccountsModule = async ({
 
     findUnverifiedUserByToken: async (token) => dbManager.findUserByEmailVerificationToken(token),
 
-    sendVerificationEmail: async (email) => accountsPassword.sendVerificationEmail(email),
-    sendEnrollmentEmail: async (email) => accountsPassword.sendEnrollmentEmail(email),
     verifyEmail: async (token) => accountsPassword.verifyEmail(token),
 
     // Autentication
@@ -122,7 +119,7 @@ export const configureAccountsModule = async ({
     setUsername: (_id, username) => dbManager.setUsername(_id, username),
 
     setPassword: async (userId, { newPassword }) => {
-      await accountsPassword.setPassword(userId, newPassword || uuidv4().split('-').pop());
+      await accountsPassword.setPassword(userId, newPassword || crypto.randomUUID().split('-').pop());
     },
 
     changePassword: async (userId, { newPassword, oldPassword }) => {

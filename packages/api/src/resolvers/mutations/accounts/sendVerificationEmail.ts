@@ -1,5 +1,6 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import { UserNotFoundError } from '../../../errors.js';
 
 export default async function sendVerificationEmail(
   root: Root,
@@ -8,9 +9,17 @@ export default async function sendVerificationEmail(
 ) {
   log('mutation sendVerificationEmail', { email, userId });
 
-  await modules.accounts.sendVerificationEmail(email);
+  const user = await modules.users.findUserByEmail(email);
+  if (!user) throw new UserNotFoundError({ email });
 
-  return {
-    success: true,
-  };
+  try {
+    await modules.users.sendVerificationEmail(user._id, email);
+    return {
+      success: true,
+    };
+  } catch (e) {
+    return {
+      success: false,
+    };
+  }
 }

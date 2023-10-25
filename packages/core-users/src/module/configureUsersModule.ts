@@ -30,7 +30,6 @@ import {
 } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { v4 as uuidv4 } from 'uuid';
 import crypto from 'crypto';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
@@ -39,6 +38,7 @@ import { userSettings } from '../users-settings.js';
 const { Locale } = localePkg;
 
 const USER_EVENTS = [
+  'USER_ACCOUNT_ACTION',
   'USER_UPDATE',
   'USER_UPDATE_PROFILE',
   'USER_ADD_ROLES',
@@ -119,6 +119,7 @@ export const configureUsersModule = async ({
       hashedToken?: string;
     }): Promise<User> {
       if (hashedToken) {
+        // TODO: Move to connect-session
         return Users.findOne({
           'services.resume.loginTokens.hashedToken': hashedToken,
         });
@@ -190,7 +191,7 @@ export const configureUsersModule = async ({
     },
 
     // Mutations
-    createUser: async (
+    async createUser(
       {
         email,
         guest,
@@ -206,7 +207,7 @@ export const configureUsersModule = async ({
         skipMessaging,
         skipPasswordEnrollment,
       }: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean } = {},
-    ): Promise<string> => {
+    ): Promise<string> {
       // TODO: Re-Implement, then set service to services and skip password enrollment when webAuthn registration!
       // const webAuthnService =
       //   webAuthnPublicKeyCredentials &&
@@ -242,15 +243,57 @@ export const configureUsersModule = async ({
       if (autoMessagingEnabled) {
         if (password === undefined) {
           if (!skipPasswordEnrollment) {
-            // TODO: Re-Implement
-            // await accountsPassword.sendEnrollmentEmail(email);
+            await this.sendEnrollmentEmail(userId, email);
           }
         } else {
-          // TODO: Re-Implement
-          // await accountsPassword.sendVerificationEmail(email);
+          await this.sendVerificationEmail(userId, email);
         }
       }
       return userId;
+    },
+
+    async sendEnrollmentEmail(userId: string, email: string): Promise<void> {
+      const enrollmentToken = {
+        token: crypto.randomUUID(),
+        address: email,
+        when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
+      };
+      await Users.updateOne(
+        { _id: userId },
+        {
+          $push: {
+            'services.email.enrollmentTokens': enrollmentToken,
+          },
+        },
+      );
+
+      await emit('USER_ACCOUNT_ACTION', {
+        action: 'enroll-account',
+        userId,
+        ...enrollmentToken,
+      });
+    },
+
+    async sendVerificationEmail(userId: string, email: string): Promise<void> {
+      const verificationToken = {
+        token: crypto.randomUUID(),
+        address: email,
+        when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
+      };
+      await Users.updateOne(
+        { _id: userId },
+        {
+          $push: {
+            'services.email.verificationTokens': verificationToken,
+          },
+        },
+      );
+
+      await emit('USER_ACCOUNT_ACTION', {
+        action: 'verify-email',
+        userId,
+        ...verificationToken,
+      });
     },
 
     addRoles: async (userId: string, roles: Array<string>): Promise<number> => {
@@ -332,17 +375,18 @@ export const configureUsersModule = async ({
       });
       if (!existingUser) return null;
 
+      const uuid = crypto.randomUUID();
       const obfuscatedEmails = existingUser.emails?.flatMap(({ address, verified }) => {
         if (!verified) return [];
         return [
           {
-            address: `${address}@${uuidv4()}.unchained.local`,
+            address: `${address}@${uuid}.unchained.local`,
             verified: true,
           },
         ];
       });
 
-      const obfuscatedUsername = existingUser.username ? `${existingUser.username}-${uuidv4()}` : null;
+      const obfuscatedUsername = existingUser.username ? `${existingUser.username}-${uuid}` : null;
 
       Users.updateOne(userFilter, {
         $set: {
