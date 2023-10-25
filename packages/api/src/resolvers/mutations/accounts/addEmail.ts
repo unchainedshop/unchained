@@ -14,7 +14,8 @@ export default async function addEmail(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  await modules.accounts.addEmail(normalizedUserId, params.email);
+  const normalizedEmail = params.email.toLowerCase().trim();
+  await modules.users.addEmail(normalizedUserId, normalizedEmail);
 
   return modules.users.findUserById(normalizedUserId);
 }

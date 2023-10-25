@@ -34,10 +34,6 @@ export const configureAccountsModule = async ({
 
     emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
 
-    // Email
-    addEmail: (userId, email) => accountsPassword.addEmail(userId, email, false),
-    removeEmail: async (userId, email) => accountsPassword.removeEmail(userId, email),
-
     findUnverifiedUserByToken: async (token) => dbManager.findUserByEmailVerificationToken(token),
 
     verifyEmail: async (token) => accountsPassword.verifyEmail(token),

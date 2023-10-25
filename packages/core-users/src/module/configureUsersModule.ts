@@ -105,10 +105,7 @@ export const configureUsersModule = async ({
 
     async findUserByEmail(email: string): Promise<User> {
       if (!email) return null;
-      return Users.findOne(
-        { emails: { $elemMatch: { address: { $regex: email, $options: 'i' } } } },
-        {},
-      );
+      return Users.findOne({ 'emails.address': { $regex: email, $options: 'i' } }, {});
     },
 
     async findUserByToken({
@@ -250,6 +247,43 @@ export const configureUsersModule = async ({
         }
       }
       return userId;
+    },
+
+    async addEmail(userId: string, address: string): Promise<void> {
+      await Users.updateOne(
+        { _id: userId, 'emails.address': { $not: { $regex: address, $options: 'i' } } },
+        {
+          $push: {
+            emails: {
+              address,
+              verified: false,
+            },
+          },
+        },
+      );
+
+      await emit('USER_ACCOUNT_ACTION', {
+        action: 'add-email',
+        userId,
+        address,
+      });
+    },
+
+    async removeEmail(userId: string, address: string): Promise<void> {
+      await Users.updateOne(
+        { _id: userId, 'emails.address': { $regex: address, $options: 'i' } },
+        {
+          $pull: {
+            emails: { address: { $regex: address, $options: 'i' } },
+          },
+        },
+      );
+
+      await emit('USER_ACCOUNT_ACTION', {
+        action: 'remove-email',
+        userId,
+        address,
+      });
     },
 
     async sendEnrollmentEmail(userId: string, email: string): Promise<void> {

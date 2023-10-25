@@ -148,6 +148,8 @@ export type UsersModule = {
     userData: UserData,
     options: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean },
   ) => Promise<string>;
+  addEmail: (userId: string, email: string) => Promise<void>;
+  removeEmail: (userId: string, email: string) => Promise<void>;
   sendVerificationEmail: (userId: string, email: string) => Promise<void>;
   sendEnrollmentEmail: (userId: string, email: string) => Promise<void>;
   addRoles: (userId: string, roles: Array<string>) => Promise<number>;
