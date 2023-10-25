@@ -15,7 +15,6 @@ export const userSettings: UsersSettings = {
     userSettings.autoMessagingAfterUserCreation =
       autoMessagingAfterUserCreation ?? defaultAutoMessagingAfterUserCreation;
 
-    // accountsPassword.options.sendVerificationEmailAfterSignup = false; // eslint-disable-line
     // accountsPassword.options.validateNewUser = (user) => { // eslint-disable-line
     //   const customSchema = Schemas.User.extend({
     //     password: String,
@@ -25,12 +24,5 @@ export const userSettings: UsersSettings = {
     //   customSchema.validate(user);
     //   return customSchema.clean(user);
     // };
-
-    // Object.keys(server).forEach((key) => {
-    //   accountsServer.options[key] = server[key];// eslint-disable-line
-    // });
-    // Object.keys(password).forEach((key) => {
-    //   accountsPassword.options[key] = password[key];// eslint-disable-line
-    // });
   },
 };

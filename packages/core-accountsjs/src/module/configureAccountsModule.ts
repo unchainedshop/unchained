@@ -2,7 +2,6 @@ import { AccountsModule, AccountsSettingsOptions } from '@unchainedshop/types/ac
 
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleInput } from '@unchainedshop/types/core.js';
-import { accountsSettings } from '../accounts-settings.js';
 import { accountsPassword } from '../accounts/accountsPassword.js';
 import { UnchainedAccountsServer } from '../accounts/accountsServer.js';
 import { createDbManager } from '../accounts/dbManager.js';
@@ -27,8 +26,6 @@ export const configureAccountsModule = async ({
       password: accountsPassword,
     },
   );
-
-  accountsSettings.configureSettings(options || {}, { accountsPassword, accountsServer });
 
   const webAuthn = await configureAccountsWebAuthnModule({ db, options });
 

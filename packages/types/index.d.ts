@@ -218,8 +218,6 @@ declare module '@unchainedshop/core-accountsjs' {
   function configureAccountsModule(
     params: ModuleInput<AccountsSettingsOptions>,
   ): Promise<AccountsModule>;
-
-  const accountsSettings: AccountsSettings;
 }
 
 declare module '@unchainedshop/core-assortments' {
