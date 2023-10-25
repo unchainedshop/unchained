@@ -15,7 +15,7 @@ export default async function setUsername(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  await modules.accounts.setUsername(normalizedUserId, params.username);
+  await modules.users.setUsername(normalizedUserId, params.username);
 
   return modules.users.findUserById(normalizedUserId);
 }

@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { AuthOperationFailedError, UserNotFoundError } from '../../../errors.js';
+import { UserNotFoundError } from '../../../errors.js';
 
 export default async function forgotPassword(
   root: Root,

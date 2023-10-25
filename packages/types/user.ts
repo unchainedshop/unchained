@@ -158,6 +158,19 @@ export type UsersModule = {
   sendVerificationEmail: (userId: string, email: string) => Promise<void>;
   sendResetPasswordEmail: (userId: string, email: string, isEnrollment?: boolean) => Promise<void>;
   verifyEmail: (userId: string, email: string) => Promise<void>;
+  setUsername: (userId: string, username: string) => Promise<void>;
+  setPassword: (userId: string, newPassword?: string) => Promise<void>;
+  changePassword: (
+    userId: string,
+    params: {
+      newPassword?: string;
+      oldPassword?: string;
+    },
+  ) => Promise<boolean>;
+  resetPassword: (
+    params: { newPassword?: string; token: string },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<User>;
   addRoles: (userId: string, roles: Array<string>) => Promise<number>;
   updateAvatar: (_id: string, fileId: string) => Promise<User>;
   updateGuest: (user: User, guest: boolean) => Promise<void>;

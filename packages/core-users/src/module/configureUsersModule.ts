@@ -19,7 +19,6 @@ import {
   UserQuery,
   UsersSettingsOptions,
 } from '@unchainedshop/types/user.js';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -39,13 +38,18 @@ const { Locale } = localePkg;
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
+  'USER_CREATE',
+  'USER_ADD_ROLES',
   'USER_UPDATE',
   'USER_UPDATE_PROFILE',
-  'USER_ADD_ROLES',
   'USER_UPDATE_ROLE',
   'USER_UPDATE_TAGS',
   'USER_UPDATE_AVATAR',
+  'USER_UPDATE_GUEST',
+  'USER_UPDATE_USERNAME',
+  'USER_UPDATE_PASSWORD',
   'USER_UPDATE_HEARTBEAT',
+  'USER_UPDATE_INITIAL_PASSWORD',
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
   'USER_REMOVE',
@@ -84,11 +88,18 @@ export const configureUsersModule = async ({
   // Migration
   addMigrations(migrationRepository);
 
+  const hashPassword = async (password) => {
+    const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(sha256Hash, salt);
+    return hashedPassword;
+  };
+
   const mutations = generateDbMutations<User>(Users, Schemas.User) as ModuleMutations<User>;
 
   return {
     // Queries
-    count: async (query: UserQuery): Promise<number> => {
+    async count(query: UserQuery): Promise<number> {
       const userCount = await Users.countDocuments(buildFindSelector(query));
       return userCount;
     },
@@ -182,12 +193,11 @@ export const configureUsersModule = async ({
       return null;
     },
 
-    findUser: async (
+    async findUser(
       query: UserQuery & { sort?: Array<SortOption> },
       findOptions?: FindOptions,
-    ): Promise<User> => {
+    ): Promise<User> {
       const selector = buildFindSelector(query);
-
       return Users.findOne(selector, findOptions);
     },
 
@@ -268,13 +278,10 @@ export const configureUsersModule = async ({
 
       const services: Record<string, any> = {};
       if (password) {
-        const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(sha256Hash, salt);
-        services.password = { bcrypt: hashedPassword };
+        services.password = { bcrypt: await hashPassword(password) };
       }
 
-      const { insertedId: userId } = await Users.insertOne({
+      const userId = await mutations.create({
         guest,
         services,
         roles: roles || [],
@@ -286,29 +293,35 @@ export const configureUsersModule = async ({
         username,
       });
 
-      await emit('USER_ACCOUNT_ACTION', {
-        action: 'user-created',
-        userId,
+      try {
+        const autoMessagingEnabled = skipMessaging
+          ? false
+          : userSettings.autoMessagingAfterUserCreation && !!email && !!userId;
+
+        if (autoMessagingEnabled) {
+          if (password === undefined) {
+            if (!skipPasswordEnrollment) {
+              await this.sendResetPasswordEmail(userId, email, true);
+            }
+          } else {
+            await this.sendVerificationEmail(userId, email);
+          }
+        }
+      } catch (e) {
+        /* */
+      }
+
+      const user = await Users.findOne({ _id: userId }, {});
+      await emit('USER_CREATE', {
+        user: removeConfidentialServiceHashes(user),
       });
 
-      const autoMessagingEnabled = skipMessaging
-        ? false
-        : userSettings.autoMessagingAfterUserCreation && !!email && !!userId;
-
-      if (autoMessagingEnabled) {
-        if (password === undefined) {
-          if (!skipPasswordEnrollment) {
-            await this.sendResetPasswordEmail(userId, email, true);
-          }
-        } else {
-          await this.sendVerificationEmail(userId, email);
-        }
-      }
       return userId;
     },
 
     async addEmail(userId: string, address: string): Promise<void> {
-      await Users.updateOne(
+      // TODO: Validate e-mail
+      await this.updateUser(
         { _id: userId, 'emails.address': { $not: { $regex: address, $options: 'i' } } },
         {
           $push: {
@@ -319,16 +332,10 @@ export const configureUsersModule = async ({
           },
         },
       );
-
-      await emit('USER_ACCOUNT_ACTION', {
-        action: 'add-email',
-        userId,
-        address,
-      });
     },
 
     async removeEmail(userId: string, address: string): Promise<void> {
-      await Users.updateOne(
+      await this.updateUser(
         { _id: userId, 'emails.address': { $regex: address, $options: 'i' } },
         {
           $pull: {
@@ -336,12 +343,6 @@ export const configureUsersModule = async ({
           },
         },
       );
-
-      await emit('USER_ACCOUNT_ACTION', {
-        action: 'remove-email',
-        userId,
-        address,
-      });
     },
 
     async sendResetPasswordEmail(userId: string, email: string, isEnrollment?: boolean): Promise<void> {
@@ -408,10 +409,42 @@ export const configureUsersModule = async ({
       return updateResult.modifiedCount;
     },
 
+    async setUsername(userId: string, username: string) {
+      // TODO: Validate username
+      await Users.updateOne(
+        { _id: userId },
+        {
+          $set: {
+            username,
+          },
+        },
+      );
+      const user = await Users.findOne({ _id: userId }, {});
+      await emit('USER_UPDATE_USERNAME', {
+        user: removeConfidentialServiceHashes(user),
+      });
+    },
+
+    async setPassword(userId: string, password: string) {
+      // TODO: Validate password
+      await Users.updateOne(
+        { _id: userId },
+        {
+          $set: {
+            'services.password': {
+              bcrypt: await hashPassword(password || crypto.randomUUID().split('-').pop()),
+            },
+          },
+        },
+      );
+      const user = await Users.findOne({ _id: userId }, {});
+      await emit('USER_UPDATE_PASSWORD', {
+        user: removeConfidentialServiceHashes(user),
+      });
+    },
+
     updateAvatar: async (_id: string, fileId: string): Promise<User> => {
       const userFilter = generateDbFilterById(_id);
-      log('Update Avatar', { userId: _id });
-
       const modifier = {
         $set: {
           avatarId: fileId,
@@ -428,15 +461,17 @@ export const configureUsersModule = async ({
     },
 
     updateGuest: async (user: User, guest: boolean): Promise<void> => {
-      log('Update guest', { userId: user._id });
-
       const modifier = { $set: { guest } };
-      await Users.updateOne(generateDbFilterById(user._id), modifier);
+      await mutations.update(user._id, modifier);
+      await emit('USER_UPDATE_GUEST', {
+        user: removeConfidentialServiceHashes({
+          ...user,
+          guest,
+        }),
+      });
     },
 
     updateHeartbeat: async (userId: string, lastLogin: UserLastLogin): Promise<User> => {
-      const userFilter = generateDbFilterById(userId);
-
       const modifier = {
         $set: {
           lastLogin: {
@@ -447,8 +482,7 @@ export const configureUsersModule = async ({
       };
 
       await mutations.update(userId, modifier);
-      const user = await Users.findOne(userFilter, {});
-
+      const user = await Users.findOne({ _id: userId }, {});
       await emit('USER_UPDATE_HEARTBEAT', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -456,13 +490,11 @@ export const configureUsersModule = async ({
     },
 
     updateInitialPassword: async (user: User, initialPassword: boolean): Promise<void> => {
-      log(`Update initial password flag to ${initialPassword}`, {
-        userId: user._id,
-        level: LogLevel.Verbose,
-      });
-
       const modifier = { $set: { initialPassword } };
       await Users.updateOne(generateDbFilterById(user._id), modifier);
+      await emit('USER_UPDATE_INITIAL_PASSWORD', {
+        user: removeConfidentialServiceHashes({ ...user, initialPassword }),
+      });
     },
 
     delete: async (userId: string): Promise<User> => {

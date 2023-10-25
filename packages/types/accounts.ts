@@ -100,13 +100,6 @@ export interface AccountsModule {
   createHashLoginToken: (loginToken: string) => string;
 
   // User Management
-  setUsername: (userId: string, username: string) => Promise<void>;
-  setPassword: (
-    userId: string,
-    params: {
-      newPassword?: string;
-    },
-  ) => Promise<void>;
   changePassword: (
     userId: string,
     params: {

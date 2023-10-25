@@ -107,13 +107,6 @@ export const configureAccountsModule = async ({
       }
     },
 
-    // User management
-    setUsername: (_id, username) => dbManager.setUsername(_id, username),
-
-    setPassword: async (userId, { newPassword }) => {
-      await accountsPassword.setPassword(userId, newPassword || crypto.randomUUID().split('-').pop());
-    },
-
     changePassword: async (userId, { newPassword, oldPassword }) => {
       await accountsPassword.changePassword(userId, oldPassword, newPassword);
       return true;
