@@ -108,6 +108,51 @@ export const configureUsersModule = async ({
       return Users.findOne({ 'emails.address': { $regex: email, $options: 'i' } }, {});
     },
 
+    async findUnverifiedEmailToken(plainToken: string): Promise<{
+      userId: string;
+      address: string;
+      when: Date;
+    }> {
+      if (!plainToken) return null;
+      const token = crypto.createHash('sha256').update(plainToken).digest('hex');
+      const user = await Users.findOne(
+        {
+          'services.email.verificationTokens': {
+            $elemMatch: {
+              token,
+              when: { $gt: new Date().getTime() },
+            },
+          },
+        },
+        {},
+      );
+      if (!user) return null;
+      const verificationToken = user.services.email.verificationTokens.find((v) => v.token === token);
+      return {
+        userId: user._id,
+        ...verificationToken,
+      };
+    },
+
+    async verifyEmail(userId: string, address: string): Promise<void> {
+      await Users.updateOne(
+        { _id: userId },
+        {
+          $set: {
+            'emails.$[email].verified': true,
+          },
+          $pull: {
+            'services.email.verificationTokens': {
+              address,
+            },
+          },
+        },
+        {
+          arrayFilters: [{ 'email.address': address }],
+        },
+      );
+    },
+
     async findUserByToken({
       resetToken,
       hashedToken,
@@ -309,11 +354,13 @@ export const configureUsersModule = async ({
     },
 
     async sendVerificationEmail(userId: string, email: string): Promise<void> {
+      const plainToken = crypto.randomUUID();
       const verificationToken = {
-        token: crypto.randomUUID(),
+        token: crypto.createHash('sha256').update(plainToken).digest('hex'),
         address: email,
         when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
       };
+
       await Users.updateOne(
         { _id: userId },
         {
@@ -327,6 +374,7 @@ export const configureUsersModule = async ({
         action: 'verify-email',
         userId,
         ...verificationToken,
+        token: plainToken,
       });
     },
 

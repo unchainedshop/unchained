@@ -73,10 +73,6 @@ export interface AccountsModule {
 
   emit: (event: string, meta: any) => Promise<void>;
 
-  // Email
-  verifyEmail: (token: string) => Promise<void>;
-  findUnverifiedUserByToken: (token: string) => Promise<AccountsUser>;
-
   // Authentication
   createLoginToken: (
     userId: string,

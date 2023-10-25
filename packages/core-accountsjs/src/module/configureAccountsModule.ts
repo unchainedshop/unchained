@@ -34,10 +34,6 @@ export const configureAccountsModule = async ({
 
     emit: (event, meta) => accountsServer.getHooks().emit(event, meta),
 
-    findUnverifiedUserByToken: async (token) => dbManager.findUserByEmailVerificationToken(token),
-
-    verifyEmail: async (token) => accountsPassword.verifyEmail(token),
-
     // Autentication
     createLoginToken: async (userId, rawContext) => {
       // TODO: rawContext does not contain user and locale date anymore

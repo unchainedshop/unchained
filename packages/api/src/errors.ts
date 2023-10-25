@@ -232,6 +232,11 @@ export const InvalidCredentialsError = createError('InvalidCredentials', 'Invali
 
 export const InvalidResetTokenError = createError('InvalidResetTokenError', 'Token validation failed');
 
+export const InvalidEmailVerificationTokenError = createError(
+  'InvalidEmailVerificationTokenError',
+  'Token invalid or expired',
+);
+
 export const NoEmailSetError = createError('NoEmailSet', 'User has no email set');
 
 export const ResetPasswordLinkExpiredError = createError(
