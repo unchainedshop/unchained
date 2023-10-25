@@ -10,7 +10,7 @@ export default async function addWebAuthnCredentials(
     userId,
   });
 
-  const webAuthnService = await modules.accounts.webAuthn.verifyCredentialCreation(
+  const webAuthnService = await modules.users.webAuthn.verifyCredentialCreation(
     user.username,
     credentials,
   );

@@ -48,7 +48,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       const user = await unchainedAPI.modules.users.findUserByUsername(username);
       if (!user) throw new Error('User not found');
 
-      await unchainedAPI.modules.accounts.webAuthn.verifyCredentialRequest(
+      await unchainedAPI.modules.users.webAuthn.verifyCredentialRequest(
         user.services?.webAuthn,
         user.username,
         params.webAuthnPublicKeyCredentials,

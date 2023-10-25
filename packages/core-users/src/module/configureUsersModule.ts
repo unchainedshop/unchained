@@ -33,6 +33,7 @@ import crypto from 'crypto';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 import { userSettings } from '../users-settings.js';
+import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 
 const { Locale } = localePkg;
 
@@ -89,9 +90,11 @@ export const configureUsersModule = async ({
   addMigrations(migrationRepository);
 
   const mutations = generateDbMutations<User>(Users, Schemas.User) as ModuleMutations<User>;
+  const webAuthn = await configureUsersWebAuthnModule({ db, options });
 
   return {
     // Queries
+    webAuthn,
     async count(query: UserQuery): Promise<number> {
       const userCount = await Users.countDocuments(buildFindSelector(query));
       return userCount;
@@ -253,7 +256,7 @@ export const configureUsersModule = async ({
         initialPassword,
         lastBillingAddress,
         password,
-        // webAuthnPublicKeyCredentials,
+        webAuthnPublicKeyCredentials,
         profile,
         roles,
         username,
@@ -264,18 +267,20 @@ export const configureUsersModule = async ({
       }: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean } = {},
     ): Promise<string> {
       // TODO: Re-Implement, then set service to services and skip password enrollment when webAuthn registration!
-      // const webAuthnService =
-      //   webAuthnPublicKeyCredentials &&
-      //   (await modules.accounts.webAuthn.verifyCredentialCreation(
-      //     params.username,
-      //     params.webAuthnPublicKeyCredentials,
-      //   ));
+      const webAuthnService =
+        webAuthnPublicKeyCredentials &&
+        (await this.webAuthn.verifyCredentialCreation(username, webAuthnPublicKeyCredentials));
 
       // TODO: Validate User Creation Input
 
       const services: Record<string, any> = {};
+
       if (password) {
         services.password = { bcrypt: await this.hashPassword(password) };
+      }
+
+      if (webAuthnService) {
+        services.webAuthn = [webAuthnService];
       }
 
       const userId = await mutations.create({
@@ -297,7 +302,7 @@ export const configureUsersModule = async ({
 
         if (autoMessagingEnabled) {
           if (password === undefined) {
-            if (!skipPasswordEnrollment) {
+            if (!skipPasswordEnrollment && !webAuthnService) {
               await this.sendResetPasswordEmail(userId, email, true);
             }
           } else {

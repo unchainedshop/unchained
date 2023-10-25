@@ -1,20 +1,5 @@
 import { UnchainedCore } from './core.js';
 
-export interface WebAuthnCredentialsCreationRequest {
-  challenge: string;
-  username: string;
-  origin: string;
-  factor: 'first' | 'second' | 'either';
-}
-
-export type AccessToken = {
-  access_token: string;
-  expires_in: string;
-  refresh_token: string;
-  token_type: string;
-  id_token: string;
-  error: string;
-};
 /*
  * Settings
  */
@@ -32,23 +17,6 @@ export interface AccountsSettings {
 /*
  * Module
  */
-export interface AccountsWebAuthnModule {
-  findMDSMetadataForAAGUID: (aaguid: string) => Promise<any>;
-
-  createCredentialCreationOptions: (
-    origin: string,
-    username: string,
-    extensionOptions?: any,
-  ) => Promise<any>;
-  verifyCredentialCreation: (username: string, credentials: any) => Promise<any>;
-
-  createCredentialRequestOptions: (
-    origin: string,
-    username?: string,
-    extensionOptions?: any,
-  ) => Promise<any>;
-  verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
-}
 
 export type LoginWithParams<N, T> = {
   service: N;
@@ -96,7 +64,4 @@ export interface AccountsModule {
     unchainedAPI: UnchainedCore,
   ) => Promise<{ success: boolean; error?: any }>;
   createHashLoginToken: (loginToken: string) => string;
-
-  // User Management
-  webAuthn: AccountsWebAuthnModule;
 }

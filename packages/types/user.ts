@@ -123,7 +123,35 @@ export interface UsersSettings {
   configureSettings: (options: UsersSettingsOptions) => void;
 }
 
+export interface WebAuthnCredentialsCreationRequest {
+  challenge: string;
+  username: string;
+  origin: string;
+  factor: 'first' | 'second' | 'either';
+}
+
+export interface UsersWebAuthnModule {
+  findMDSMetadataForAAGUID: (aaguid: string) => Promise<any>;
+
+  createCredentialCreationOptions: (
+    origin: string,
+    username: string,
+    extensionOptions?: any,
+  ) => Promise<any>;
+  verifyCredentialCreation: (username: string, credentials: any) => Promise<any>;
+
+  createCredentialRequestOptions: (
+    origin: string,
+    username?: string,
+    extensionOptions?: any,
+  ) => Promise<any>;
+  verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
+}
+
 export type UsersModule = {
+  // Submodules
+  webAuthn: UsersWebAuthnModule;
+
   // Queries
   count: (query: UserQuery) => Promise<number>;
   findUserById: (userId: _ID) => Promise<User>;

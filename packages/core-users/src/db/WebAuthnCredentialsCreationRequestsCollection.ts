@@ -1,5 +1,5 @@
-import { Db } from '@unchainedshop/types/common.js';
 import { WebAuthnCredentialsCreationRequest } from '@unchainedshop/types/user.js';
+import { Db } from '@unchainedshop/types/common.js';
 import { buildDbIndexes } from '@unchainedshop/utils';
 
 type Collection = WebAuthnCredentialsCreationRequest & { _id: number };

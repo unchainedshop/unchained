@@ -6,11 +6,9 @@ import { UnchainedAccountsServer } from '../accounts/accountsServer.js';
 import { createDbManager } from '../accounts/dbManager.js';
 import { evaluateContext } from './utils/evaluateContext.js';
 import { filterContext } from './utils/filterContext.js';
-import { configureAccountsWebAuthnModule } from './configureAccountsWebAuthnModule.js';
 
 export const configureAccountsModule = async ({
   db,
-  options,
 }: ModuleInput<AccountsSettingsOptions>): Promise<AccountsModule> => {
   const dbManager = createDbManager(db) as any;
 
@@ -25,8 +23,6 @@ export const configureAccountsModule = async ({
       password: accountsPassword,
     },
   );
-
-  const webAuthn = await configureAccountsWebAuthnModule({ db, options });
 
   return {
     dbManager,
@@ -106,7 +102,5 @@ export const configureAccountsModule = async ({
         };
       }
     },
-
-    webAuthn,
   };
 };

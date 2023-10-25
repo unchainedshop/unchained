@@ -21,7 +21,7 @@ export const WebAuthnCredentials: WebAuthnCredentialsHelperTypes = {
     return obj.created || new Date(0);
   },
   async mdsMetadata(obj, _, { modules }) {
-    const metadata = await modules.accounts.webAuthn.findMDSMetadataForAAGUID(obj.aaguid);
+    const metadata = await modules.users.webAuthn.findMDSMetadataForAAGUID(obj.aaguid);
     return metadata;
   },
 };

@@ -1,5 +1,4 @@
 /// <reference lib="dom" />
-import { AccountsSettingsOptions, AccountsWebAuthnModule } from '@unchainedshop/types/accounts.js';
 import { ModuleInput } from '@unchainedshop/types/core.js';
 import {
   Fido2Lib,
@@ -7,6 +6,7 @@ import {
   PublicKeyCredentialRequestOptions,
 } from 'fido2-lib';
 
+import { UsersSettingsOptions } from '@unchainedshop/types/user.js';
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
 
 const { ROOT_URL, EMAIL_WEBSITE_NAME } = process.env;
@@ -42,9 +42,7 @@ export function buf2hex(buffer) {
     .join('');
 }
 
-export const configureAccountsWebAuthnModule = async ({
-  db,
-}: ModuleInput<AccountsSettingsOptions>): Promise<AccountsWebAuthnModule> => {
+export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<UsersSettingsOptions>) => {
   const WebAuthnCredentialsCreationRequests = await WebAuthnCredentialsCreationRequestsCollection(db);
 
   const thisDomain = new URL(ROOT_URL).hostname;

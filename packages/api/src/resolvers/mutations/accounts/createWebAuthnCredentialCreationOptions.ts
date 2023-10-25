@@ -10,7 +10,7 @@ export default async function createWebAuthnCredentialCreationOptions(
     userId,
   });
 
-  const options = await modules.accounts.webAuthn.createCredentialCreationOptions(
+  const options = await modules.users.webAuthn.createCredentialCreationOptions(
     req.headers.origin,
     username,
     extensionOptions,
