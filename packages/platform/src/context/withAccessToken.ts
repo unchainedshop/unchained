@@ -16,9 +16,7 @@ export default (fn: (context: Context) => any = contextIdentity): any => {
       const [type, userToken] = params.req.headers.authorization.split(' ');
       if (type === 'Bearer' && userToken) {
         const [username, secret] = userToken.split(':');
-        const user = await unchainedContext.modules.users.findUser({
-          username,
-        });
+        const user = await unchainedContext.modules.users.findUserByUsername(username);
         if (secret && user?.services.token?.secret === secret) {
           newContext.userId = user._id;
           newContext.user = user;
