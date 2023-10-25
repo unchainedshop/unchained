@@ -100,13 +100,6 @@ export interface AccountsModule {
   createHashLoginToken: (loginToken: string) => string;
 
   // User Management
-  changePassword: (
-    userId: string,
-    params: {
-      newPassword?: string;
-      oldPassword?: string;
-    },
-  ) => Promise<boolean>;
   resetPassword: (
     params: { newPassword?: string; token: string },
     unchainedAPI: UnchainedCore,

@@ -107,11 +107,6 @@ export const configureAccountsModule = async ({
       }
     },
 
-    changePassword: async (userId, { newPassword, oldPassword }) => {
-      await accountsPassword.changePassword(userId, oldPassword, newPassword);
-      return true;
-    },
-
     resetPassword: async ({ newPassword, token }, context) => {
       const user = await dbManager.findUserByResetPasswordToken(token);
       await accountsPassword.resetPassword(token, newPassword, context);

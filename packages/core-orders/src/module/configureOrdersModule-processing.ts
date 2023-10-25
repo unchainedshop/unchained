@@ -481,11 +481,6 @@ export const configureOrderModuleProcessing = ({
               );
             }),
           );
-
-          // TODO: we will use this function to keep a "Ordered in Flight" amount, allowing us to
-          // do live stock stuff
-          // 2. Reserve quantity at Warehousing Provider until order is CANCELLED/FULLFILLED
-          // ???
         }
 
         nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);

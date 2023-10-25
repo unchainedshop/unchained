@@ -18,13 +18,17 @@ export default async function changePassword(
   if (!params.oldPassword) {
     throw new Error('Old password is required');
   }
+
+  const isValidCurrentPassword = await modules.users.verifyPassword(userId, params.oldPassword);
+  if (!isValidCurrentPassword) throw new InvalidCredentialsError({});
+
   let success = false;
   try {
-    success = await modules.accounts.changePassword(userId, params);
+    await modules.users.setPassword(userId, params.newPassword);
+    success = true;
   } catch (e) {
     success = false;
-    if (e.code === 'InvalidCredentials') throw new InvalidCredentialsError({});
-    else throw new AuthOperationFailedError({});
+    throw new AuthOperationFailedError({});
   }
 
   return { success };

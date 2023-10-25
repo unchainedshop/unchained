@@ -3,7 +3,6 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 const EXCLUDED_CONTEXT_FIELDS = ['modules', 'services', 'bulkImporter', 'loaders', 'req', 'res'];
 
 export const filterContext = (graphqlContext): UnchainedCore => {
-  // TODO: Type!
   return Object.fromEntries(
     Object.entries(graphqlContext).filter(([key]) => {
       if (EXCLUDED_CONTEXT_FIELDS.includes(key)) return false;

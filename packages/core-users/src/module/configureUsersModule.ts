@@ -88,13 +88,6 @@ export const configureUsersModule = async ({
   // Migration
   addMigrations(migrationRepository);
 
-  const hashPassword = async (password) => {
-    const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(sha256Hash, salt);
-    return hashedPassword;
-  };
-
   const mutations = generateDbMutations<User>(Users, Schemas.User) as ModuleMutations<User>;
 
   return {
@@ -278,7 +271,7 @@ export const configureUsersModule = async ({
 
       const services: Record<string, any> = {};
       if (password) {
-        services.password = { bcrypt: await hashPassword(password) };
+        services.password = { bcrypt: await this.hashPassword(password) };
       }
 
       const userId = await mutations.create({
@@ -317,6 +310,20 @@ export const configureUsersModule = async ({
       });
 
       return userId;
+    },
+
+    async hashPassword(password) {
+      const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(sha256Hash, salt);
+      return hashedPassword;
+    },
+
+    async verifyPassword(userId: string, plainPassword: string): Promise<boolean> {
+      const user = await Users.findOne({ _id: userId }, { projection: { services: 1 } });
+      const hashInDb = user?.services?.password?.bcrypt;
+      const password = crypto.createHash('sha256').update(plainPassword).digest('hex');
+      return bcrypt.compare(password, hashInDb);
     },
 
     async addEmail(userId: string, address: string): Promise<void> {
@@ -432,7 +439,7 @@ export const configureUsersModule = async ({
         {
           $set: {
             'services.password': {
-              bcrypt: await hashPassword(password || crypto.randomUUID().split('-').pop()),
+              bcrypt: await this.hashPassword(password || crypto.randomUUID().split('-').pop()),
             },
           },
         },
