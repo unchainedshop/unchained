@@ -3,7 +3,6 @@ import { IncomingMessage } from 'http';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import cookie from 'cookie';
 
 const { ROOT_URL, NODE_ENV, UNCHAINED_CLOUD_ENDPOINT } = process.env;
 
@@ -47,18 +46,20 @@ const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
         },
         { skipMessaging: true },
       ));
-    const { tokenExpires, token } = await context.modules.accounts.createLoginToken(ssoUserId, context);
-    const expires = new Date(tokenExpires || new Date().getTime() + 100000);
-    const authCookie = cookie.serialize(process.env.UNCHAINED_COOKIE_NAME, token, {
-      domain,
-      httpOnly: true,
-      expires,
-      path: '/',
-      sameSite: 'strict',
-      secure: NODE_ENV === 'production',
-    });
 
-    return authCookie;
+    // TODO: Re-implement as a passport strategy
+    // const { tokenExpires, token } = await context.modules.accounts.createLoginToken(ssoUserId, context);
+    // const expires = new Date(tokenExpires || new Date().getTime() + 100000);
+    // const authCookie = cookie.serialize(process.env.UNCHAINED_COOKIE_NAME, token, {
+    //   domain,
+    //   httpOnly: true,
+    //   expires,
+    //   path: '/',
+    //   sameSite: 'strict',
+    //   secure: NODE_ENV === 'production',
+    // });
+
+    // return authCookie;
   }
   throw new Error('Invalid token/domain pair');
 };
