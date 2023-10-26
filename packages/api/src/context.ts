@@ -21,7 +21,7 @@ export const createContextResolver =
   ): UnchainedContextResolver =>
   async ({ req, res, ...apolloContext }) => {
     const loaders = await instantiateLoaders(req, res, unchainedAPI);
-    const userContext = await getUserContext(req, res, unchainedAPI);
+    const userContext = await getUserContext(req);
     const localeContext = await getLocaleContext(req, res, unchainedAPI);
 
     return {

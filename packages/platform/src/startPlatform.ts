@@ -6,6 +6,7 @@ import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core.j
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { WorkerDirector } from '@unchainedshop/core-worker';
 import { AdminUiConfig } from '@unchainedshop/types/api.js';
+import { Db } from 'mongodb';
 import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
 import { runMigrations } from './migrations/runMigrations.js';
 import { setupAccounts } from './setup/setupAccounts.js';
@@ -80,6 +81,7 @@ export const startPlatform = async ({
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
   apolloGraphQLServer: any;
+  db: Db;
 }> => {
   exitOnMissingEnvironmentVariables();
 
@@ -147,5 +149,5 @@ export const startPlatform = async ({
     setImmediate(() => unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI));
   }
 
-  return { unchainedAPI, apolloGraphQLServer };
+  return { unchainedAPI, apolloGraphQLServer, db };
 };

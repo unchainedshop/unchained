@@ -328,9 +328,7 @@ export const configureUsersModule = async ({
       return hashedPassword;
     },
 
-    async verifyPassword(userId: string, plainPassword: string): Promise<boolean> {
-      const user = await Users.findOne({ _id: userId }, { projection: { services: 1 } });
-      const hashInDb = user?.services?.password?.bcrypt;
+    async verifyPassword(hashInDb: string, plainPassword: string): Promise<boolean> {
       const password = crypto.createHash('sha256').update(plainPassword).digest('hex');
       return bcrypt.compare(password, hashInDb);
     },

@@ -1,12 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import crypto from 'crypto';
+
 import { Context, Root } from '@unchainedshop/types/api.js';
-import {
-  AuthenticationFailedError,
-  AuthOperationFailedError,
-  InvalidCredentialsError,
-  UserDeactivatedError,
-} from '../../../errors.js';
+import { InvalidCredentialsError } from '../../../errors.js';
 
 export default async function loginWithPassword(
   root: Root,
@@ -17,7 +12,6 @@ export default async function loginWithPassword(
   },
   context: Context,
 ) {
-  const { modules } = context;
   const { username, email, password } = params;
 
   log('mutation loginWithPassword', { username, email });
@@ -26,21 +20,21 @@ export default async function loginWithPassword(
     throw new Error('Password is required');
   }
 
-  const mappedUserLoginParams = {
-    user: email ? { email } : { username },
-    password: crypto.createHash('sha256').update(password).digest('hex'),
-  };
+  const user = username
+    ? await context.modules.users.findUserByUsername(username)
+    : await context.modules.users.findUserByEmail(email);
 
-  try {
-    const result = await modules.accounts.loginWithService(
-      { service: 'password', ...mappedUserLoginParams },
-      context,
-    );
-    return result;
-  } catch (e) {
-    if (e.code === 'AuthenticationFailed') throw new AuthenticationFailedError({ username, email });
-    else if (e.code === 'UserDeactivated') throw new UserDeactivatedError({ username, email });
-    else if (e.code === 'InvalidCredentials') throw new InvalidCredentialsError({ username, email });
-    else throw new AuthOperationFailedError({ username, email });
+  const hashInDb = user.services?.password?.bcrypt;
+  const verified = hashInDb && (await context.modules.users.verifyPassword(hashInDb, password));
+  if (verified) {
+    const tokenData = await context.login(user);
+    // eslint-disable-next-line
+    (user as any)._inLoginMethodResponse = true;
+    return {
+      id: user._id,
+      ...tokenData,
+    };
   }
+
+  throw new InvalidCredentialsError({ username, email });
 }

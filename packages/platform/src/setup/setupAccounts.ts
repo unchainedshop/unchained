@@ -18,109 +18,108 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
     });
   });
 
-  const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();
+  // const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();
+  // accountsServer.users = unchainedAPI.modules.users;
 
-  accountsServer.users = unchainedAPI.modules.users;
+  // accountsServer.services.guest = {
+  //   async authenticate(params: { email?: string | null }) {
+  //     const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
 
-  accountsServer.services.guest = {
-    async authenticate(params: { email?: string | null }) {
-      const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
+  //     const guestUserId = await unchainedAPI.modules.users.createUser(
+  //       {
+  //         email: params.email || `${guestname}@unchained.local`,
+  //         guest: true,
+  //         password: null,
+  //         initialPassword: true,
+  //       },
+  //       {},
+  //     );
+  //     return unchainedAPI.modules.users.findUserById(guestUserId);
+  //   },
+  // };
 
-      const guestUserId = await unchainedAPI.modules.users.createUser(
-        {
-          email: params.email || `${guestname}@unchained.local`,
-          guest: true,
-          password: null,
-          initialPassword: true,
-        },
-        {},
-      );
-      return unchainedAPI.modules.users.findUserById(guestUserId);
-    },
-  };
+  // accountsServer.services.webAuthn = {
+  //   async authenticate(params: { webAuthnPublicKeyCredentials: any }) {
+  //     const username =
+  //       Buffer.from(params.webAuthnPublicKeyCredentials?.response?.userHandle, 'base64').toString() ||
+  //       '';
 
-  accountsServer.services.webAuthn = {
-    async authenticate(params: { webAuthnPublicKeyCredentials: any }) {
-      const username =
-        Buffer.from(params.webAuthnPublicKeyCredentials?.response?.userHandle, 'base64').toString() ||
-        '';
+  //     const user = await unchainedAPI.modules.users.findUserByUsername(username);
+  //     if (!user) throw new Error('User not found');
 
-      const user = await unchainedAPI.modules.users.findUserByUsername(username);
-      if (!user) throw new Error('User not found');
+  //     await unchainedAPI.modules.users.webAuthn.verifyCredentialRequest(
+  //       user.services?.webAuthn,
+  //       user.username,
+  //       params.webAuthnPublicKeyCredentials,
+  //     );
+  //     return user;
+  //   },
+  // };
 
-      await unchainedAPI.modules.users.webAuthn.verifyCredentialRequest(
-        user.services?.webAuthn,
-        user.username,
-        params.webAuthnPublicKeyCredentials,
-      );
-      return user;
-    },
-  };
+  // accountsServer.on('LoginTokenCreated', async (props) => {
+  //   const { userId, connection = {} } = props;
 
-  accountsServer.on('LoginTokenCreated', async (props) => {
-    const { userId, connection = {} } = props;
+  //   // TODO: Doubt that there is countryContext etc. here?
+  //   const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
+  //     connection;
 
-    // TODO: Doubt that there is countryContext etc. here?
-    const { userIdBeforeLogin, countryContext, remoteAddress, remotePort, userAgent, normalizedLocale } =
-      connection;
+  //   await unchainedAPI.modules.users.updateHeartbeat(userId, {
+  //     remoteAddress,
+  //     remotePort,
+  //     userAgent,
+  //     locale: normalizedLocale,
+  //     countryCode: countryContext,
+  //   });
 
-    await unchainedAPI.modules.users.updateHeartbeat(userId, {
-      remoteAddress,
-      remotePort,
-      userAgent,
-      locale: normalizedLocale,
-      countryCode: countryContext,
-    });
+  //   const user = await unchainedAPI.modules.users.findUserById(userId);
 
-    const user = await unchainedAPI.modules.users.findUserById(userId);
+  //   if (userIdBeforeLogin) {
+  //     const userBeforeLogin = await unchainedAPI.modules.users.findUserById(userIdBeforeLogin);
 
-    if (userIdBeforeLogin) {
-      const userBeforeLogin = await unchainedAPI.modules.users.findUserById(userIdBeforeLogin);
+  //     await unchainedAPI.services.orders.migrateOrderCarts(
+  //       {
+  //         fromUser: userBeforeLogin,
+  //         toUser: user,
+  //         shouldMerge: userSettings.mergeUserCartsOnLogin,
+  //         countryContext,
+  //       },
+  //       unchainedAPI,
+  //     );
 
-      await unchainedAPI.services.orders.migrateOrderCarts(
-        {
-          fromUser: userBeforeLogin,
-          toUser: user,
-          shouldMerge: userSettings.mergeUserCartsOnLogin,
-          countryContext,
-        },
-        unchainedAPI,
-      );
+  //     await unchainedAPI.services.bookmarks.migrateBookmarks(
+  //       {
+  //         fromUser: userBeforeLogin,
+  //         toUser: user,
+  //         shouldMerge: userSettings.mergeUserCartsOnLogin,
+  //         countryContext,
+  //       },
+  //       unchainedAPI,
+  //     );
+  //   }
 
-      await unchainedAPI.services.bookmarks.migrateBookmarks(
-        {
-          fromUser: userBeforeLogin,
-          toUser: user,
-          shouldMerge: userSettings.mergeUserCartsOnLogin,
-          countryContext,
-        },
-        unchainedAPI,
-      );
-    }
+  //   await unchainedAPI.modules.orders.ensureCartForUser(
+  //     {
+  //       user,
+  //       countryCode: countryContext,
+  //     },
+  //     unchainedAPI,
+  //   );
+  // });
 
-    await unchainedAPI.modules.orders.ensureCartForUser(
-      {
-        user,
-        countryCode: countryContext,
-      },
-      unchainedAPI,
-    );
-  });
+  // accountsServer.on('ResetPasswordSuccess', async (user: User) => {
+  //   await unchainedAPI.modules.users.updateInitialPassword(user, false);
+  // });
 
-  accountsServer.on('ResetPasswordSuccess', async (user: User) => {
-    await unchainedAPI.modules.users.updateInitialPassword(user, false);
-  });
+  // accountsServer.on('ChangePasswordSuccess', async (user: User) => {
+  //   await unchainedAPI.modules.users.updateInitialPassword(user, false);
+  // });
 
-  accountsServer.on('ChangePasswordSuccess', async (user: User) => {
-    await unchainedAPI.modules.users.updateInitialPassword(user, false);
-  });
+  // accountsServer.on('ValidateLogin', async (params: { service: string; user: User }) => {
+  //   if (params.service !== 'guest' && params.user.guest) {
+  //     await unchainedAPI.modules.users.updateGuest(params.user, false);
+  //   }
+  //   return true;
+  // });
 
-  accountsServer.on('ValidateLogin', async (params: { service: string; user: User }) => {
-    if (params.service !== 'guest' && params.user.guest) {
-      await unchainedAPI.modules.users.updateGuest(params.user, false);
-    }
-    return true;
-  });
-
-  return accountsServer;
+  // return accountsServer;
 };

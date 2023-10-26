@@ -1,6 +1,5 @@
 import './load_env.js';
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import http from 'http';
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
@@ -20,8 +19,6 @@ import seed from './seed.js';
 const start = async () => {
   const app = express();
   const httpServer = http.createServer(app);
-
-  app.use(cookieParser());
 
   const engine = await startPlatform({
     introspection: true,

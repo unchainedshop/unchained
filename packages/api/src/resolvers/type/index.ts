@@ -23,7 +23,6 @@ import { FilterOption } from './filter/filter-option-types.js';
 import { Language } from './language-types.js';
 import { LoadedFilter } from './filter/loaded-filter-types.js';
 import { LoadedFilterOption } from './filter/loaded-filter-option-types.js';
-import { LoginMethodResponse } from './login-method-response-types.js';
 import { Order } from './order/order-types.js';
 import { OrderDelivery } from './order/order-delivery-types.js';
 import { OrderDeliveryDiscount } from './order/order-delivery-discount-types.js';
@@ -94,7 +93,6 @@ const types = {
   Language,
   LoadedFilter,
   LoadedFilterOption,
-  LoginMethodResponse,
   Order,
   OrderDelivery,
   OrderDeliveryDiscount,
