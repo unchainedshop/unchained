@@ -1,8 +1,11 @@
-import { IncomingMessage } from 'http';
+import { IncomingMessage, OutgoingMessage } from 'http';
 import { UnchainedUserContext } from '@unchainedshop/types/api.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export const getUserContext = async (
   req: IncomingMessage & { cookies?: any },
+  res: OutgoingMessage, // eslint-disable-line
+  unchainedAPI: UnchainedCore, // eslint-disable-line
 ): Promise<UnchainedUserContext> => {
   const login = async (user) => {
     await new Promise((resolve, reject) => {
@@ -13,6 +16,7 @@ export const getUserContext = async (
         return resolve(result);
       });
     });
+
     /* eslint-disable-next-line */
     (user as any)._inLoginMethodResponse = true;
     return {

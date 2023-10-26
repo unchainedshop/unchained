@@ -92,8 +92,6 @@ export const connect = (
   );
   expressApp.use(passport.session());
 
-  // passport.use(makePasswordStrategy(unchainedAPI));
-
   const contextResolver = getCurrentContextResolver();
 
   expressApp.use(

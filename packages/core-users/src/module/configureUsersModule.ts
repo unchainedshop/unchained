@@ -50,7 +50,6 @@ const USER_EVENTS = [
   'USER_UPDATE_USERNAME',
   'USER_UPDATE_PASSWORD',
   'USER_UPDATE_HEARTBEAT',
-  'USER_UPDATE_INITIAL_PASSWORD',
   'USER_UPDATE_BILLING_ADDRESS',
   'USER_UPDATE_LAST_CONTACT',
   'USER_REMOVE',
@@ -445,6 +444,7 @@ export const configureUsersModule = async ({
         { _id: userId },
         {
           $set: {
+            initialPassword: false,
             'services.password': {
               bcrypt: await this.hashPassword(password || crypto.randomUUID().split('-').pop()),
             },
@@ -501,14 +501,6 @@ export const configureUsersModule = async ({
         user: removeConfidentialServiceHashes(user),
       });
       return user;
-    },
-
-    updateInitialPassword: async (user: User, initialPassword: boolean): Promise<void> => {
-      const modifier = { $set: { initialPassword } };
-      await Users.updateOne(generateDbFilterById(user._id), modifier);
-      await emit('USER_UPDATE_INITIAL_PASSWORD', {
-        user: removeConfidentialServiceHashes({ ...user, initialPassword }),
-      });
     },
 
     delete: async (userId: string): Promise<User> => {

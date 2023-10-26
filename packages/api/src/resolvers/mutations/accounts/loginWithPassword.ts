@@ -13,7 +13,6 @@ export default async function loginWithPassword(
   context: Context,
 ) {
   const { username, email, password } = params;
-
   log('mutation loginWithPassword', { username, email });
 
   if (!password) {
@@ -26,13 +25,37 @@ export default async function loginWithPassword(
 
   const hashInDb = user.services?.password?.bcrypt;
   const verified = hashInDb && (await context.modules.users.verifyPassword(hashInDb, password));
-  if (verified) {
-    const tokenData = await context.login(user);
-    return {
-      user,
-      ...tokenData,
-    };
+
+  if (!verified) throw new InvalidCredentialsError({ username, email });
+
+  if (user.guest) {
+    await context.modules.users.updateGuest(user, false);
   }
 
-  throw new InvalidCredentialsError({ username, email });
+  await context.modules.users.updateHeartbeat(user._id, {
+    remoteAddress: context.remoteAddress,
+    remotePort: context.remotePort,
+    userAgent: context.userAgent,
+    locale: context.localeContext.normalized,
+    countryCode: context.countryContext,
+  });
+
+  if (context.userId) {
+    await context.services.users.migrateUserData(context.userId, user._id, context);
+  }
+
+  await context.modules.orders.ensureCartForUser(
+    {
+      user,
+      countryCode: context.countryContext,
+    },
+    context,
+  );
+
+  const tokenData = await context.login(user);
+
+  return {
+    user,
+    ...tokenData,
+  };
 }

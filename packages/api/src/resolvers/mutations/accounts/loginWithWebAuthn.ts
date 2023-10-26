@@ -1,10 +1,5 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import {
-  AuthenticationFailedError,
-  AuthOperationFailedError,
-  UserDeactivatedError,
-} from '../../../errors.js';
 
 export default async function loginWithWebAuthn(
   root: Root,
@@ -13,15 +8,28 @@ export default async function loginWithWebAuthn(
   },
   context: Context,
 ) {
-  const { modules } = context;
-
   log('mutation loginWithWebAuthn');
-  try {
-    const result = await modules.accounts.loginWithService({ service: 'webAuthn', ...params }, context);
-    return result;
-  } catch (e) {
-    if (e.code === 'AuthenticationFailed') throw new AuthenticationFailedError({});
-    else if (e.code === 'UserDeactivated') throw new UserDeactivatedError({});
-    else throw new AuthOperationFailedError({});
-  }
+
+  const username =
+    Buffer.from(params.webAuthnPublicKeyCredentials?.response?.userHandle, 'base64').toString() || '';
+
+  const user = await context.modules.users.findUserByUsername(username);
+  if (!user) throw new Error('User not found');
+
+  await context.modules.users.webAuthn.verifyCredentialRequest(
+    user.services?.webAuthn,
+    user.username,
+    params.webAuthnPublicKeyCredentials,
+  );
+
+  await context.modules.users.updateHeartbeat(user._id, {
+    remoteAddress: context.remoteAddress,
+    remotePort: context.remotePort,
+    userAgent: context.userAgent,
+    locale: context.localeContext.normalized,
+    countryCode: context.countryContext,
+  });
+
+  const tokenData = await context.login(user);
+  return tokenData;
 }

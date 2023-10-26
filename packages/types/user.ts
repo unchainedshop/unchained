@@ -194,7 +194,6 @@ export type UsersModule = {
   updateAvatar: (_id: string, fileId: string) => Promise<User>;
   updateGuest: (user: User, guest: boolean) => Promise<void>;
   updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
-  updateInitialPassword: (user: User, initialPassword: boolean) => Promise<void>;
   updateLastBillingAddress: (_id: string, lastAddress: Address) => Promise<User>;
   updateLastContact: (_id: string, lastContact: Contact) => Promise<User>;
   updateProfile: (
@@ -229,8 +228,14 @@ export type GetUserLanguageService = (user: User, context: UnchainedCore) => Pro
 
 export type GetUserCountryService = (user: User, context: UnchainedCore) => Promise<Country>;
 
+export type MigrateUserDataService = (
+  userIdBeforeLogin,
+  userId,
+  unchainedAPI: UnchainedCore,
+) => Promise<void>;
 export interface UserServices {
   getUserCountry: GetUserCountryService;
   getUserLanguage: GetUserLanguageService;
   updateUserAvatarAfterUpload: UpdateUserAvatarAfterUploadService;
+  migrateUserData: MigrateUserDataService;
 }
