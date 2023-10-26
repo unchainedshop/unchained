@@ -11,7 +11,6 @@ import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import createApolloMiddleware from './createApolloMiddleware.js';
 import createSingleSignOnMiddleware from './createSingleSignOnMiddleware.js';
-import makePasswordStrategy from '../passport/password-strategy.js';
 
 const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',

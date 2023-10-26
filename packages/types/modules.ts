@@ -1,4 +1,3 @@
-import { AccountsModule, AccountsSettingsOptions } from './accounts.js';
 import { AssortmentsModule, AssortmentsSettingsOptions } from './assortments.js';
 import { BookmarksModule } from './bookmarks.js';
 import { CountriesModule } from './countries.js';
@@ -19,7 +18,6 @@ import { WarehousingModule } from './warehousing.js';
 import { WorkerModule } from './worker.js';
 
 export interface Modules {
-  accounts: AccountsModule;
   assortments: AssortmentsModule;
   bookmarks: BookmarksModule;
   countries: CountriesModule;
@@ -41,7 +39,6 @@ export interface Modules {
 }
 
 export interface ModuleOptions {
-  accounts?: AccountsSettingsOptions;
   assortments?: AssortmentsSettingsOptions;
   products?: ProductsSettingsOptions;
   delivery?: DeliverySettingsOptions;

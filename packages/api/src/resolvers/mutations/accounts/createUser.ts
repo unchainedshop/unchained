@@ -6,6 +6,7 @@ import {
   EmailAlreadyExistsError,
   UsernameAlreadyExistsError,
   UsernameOrEmailRequiredError,
+  PasswordOrWebAuthnPublicKeyRequiredError,
 } from '../../../errors.js';
 
 export default async function createUser(root: Root, params: UserData, context: Context) {
@@ -13,8 +14,12 @@ export default async function createUser(root: Root, params: UserData, context: 
 
   log('mutation createUser', { email: params.email, username: params.username, userId });
 
+  if (!params.username && !params.email) {
+    throw new UsernameOrEmailRequiredError({ username: params?.username });
+  }
+
   if (!params.password && !params.webAuthnPublicKeyCredentials) {
-    throw new Error('Password or Public Key is required');
+    throw new PasswordOrWebAuthnPublicKeyRequiredError({ username: params?.username });
   }
 
   try {
@@ -25,13 +30,18 @@ export default async function createUser(root: Root, params: UserData, context: 
       },
       {},
     );
-    return modules.accounts.createLoginToken(newUserId, context);
+
+    const user = await modules.users.findUserById(newUserId);
+    const tokenData = await context.login(user);
+
+    return {
+      user,
+      ...tokenData,
+    };
   } catch (e) {
     if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({ email: params?.email });
     else if (e.code === 'UsernameAlreadyExists')
       throw new UsernameAlreadyExistsError({ username: params?.username });
-    else if (e.code === 'UsernameOrEmailRequired')
-      throw new UsernameOrEmailRequiredError({ username: params?.username });
     else throw new AuthOperationFailedError({ username: params?.username, email: params.email });
   }
 }

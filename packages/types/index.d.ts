@@ -1,6 +1,5 @@
 import { IncomingMessage } from 'http';
 import SimpleSchema from 'simpl-schema';
-import { AccountsModule, AccountsSettingsOptions } from './accounts.js';
 import { Context } from './api.js';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments.js';
 
@@ -213,12 +212,6 @@ declare module '@unchainedshop/file-upload' {
 /*
  * Core packages
  */
-
-declare module '@unchainedshop/core-accountsjs' {
-  function configureAccountsModule(
-    params: ModuleInput<AccountsSettingsOptions>,
-  ): Promise<AccountsModule>;
-}
 
 declare module '@unchainedshop/core-assortments' {
   function configureAssortmentsModule(

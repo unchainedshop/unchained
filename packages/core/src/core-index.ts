@@ -1,5 +1,4 @@
 import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core.js';
-import { configureAccountsModule } from '@unchainedshop/core-accountsjs';
 import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
 import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
 import { configureCountriesModule, countryServices } from '@unchainedshop/core-countries';
@@ -27,11 +26,6 @@ export const initCore = async ({
   bulkImporter,
   options = {},
 }: UnchainedCoreOptions): Promise<UnchainedCore> => {
-  const accounts = await configureAccountsModule({
-    db,
-    options: options.accounts,
-    migrationRepository,
-  });
   const assortments = await configureAssortmentsModule({
     db,
     options: options.assortments,
@@ -130,7 +124,6 @@ export const initCore = async ({
 
   return {
     modules: {
-      accounts,
       assortments,
       bookmarks,
       countries,

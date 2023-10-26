@@ -19,6 +19,10 @@ export default async function resetPassword(
   if (!user) throw new InvalidResetTokenError({});
   await modules.users.setPassword(user._id, params.newPassword);
 
-  const result = await modules.accounts.createLoginToken(user._id, context);
-  return result;
+  const tokenData = await context.login(user);
+
+  return {
+    user,
+    ...tokenData,
+  };
 }
