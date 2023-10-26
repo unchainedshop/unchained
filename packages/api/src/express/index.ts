@@ -5,11 +5,11 @@ import type e from 'express';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { Db } from 'mongodb';
-import passport from 'passport';
 import { getCurrentContextResolver } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import createApolloMiddleware from './createApolloMiddleware.js';
+import setupPassport from './passport/setup.js';
 
 const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',
@@ -51,21 +51,7 @@ export const connect = (
   }: { apolloGraphQLServer: ApolloServer; db: Db; unchainedAPI: UnchainedCore },
   options?: { corsOrigins?: any },
 ) => {
-  passport.serializeUser(function (user, done) {
-    done(null, user._id);
-  });
-
-  passport.deserializeUser(function (_id, done) {
-    unchainedAPI.modules.users.findUserById(_id).then(
-      (user) => {
-        done(null, user);
-      },
-      (error) => {
-        done(error, null);
-      },
-    );
-  });
-
+  const passport = setupPassport(unchainedAPI);
   expressApp.use(passport.initialize());
   expressApp.use(
     session({
@@ -89,6 +75,7 @@ export const connect = (
     }),
   );
   expressApp.use(passport.session());
+  expressApp.use(passport.authenticate('access-token', { session: false }));
 
   const contextResolver = getCurrentContextResolver();
 

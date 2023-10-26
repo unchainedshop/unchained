@@ -1,5 +1,5 @@
-export const ADMIN_TOKEN = 'Bearer JOytDLyIQL3lOY1K1EfKx_S_nh13kOIe9h_J8E3mDWO';
-export const USER_TOKEN = 'Bearer nYhR7GjP4Ur4-oMw1Ns7Ti61_0jB3YM5d0XrnXKc2qQ';
+export const ADMIN_TOKEN = 'Bearer admin:secret';
+export const USER_TOKEN = 'Bearer user:secret';
 
 export const Admin = {
   _id: 'admin',
@@ -18,13 +18,8 @@ export const Admin = {
     password: {
       bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
-    resume: {
-      loginTokens: [
-        {
-          when: new Date(new Date().getTime() + 1000000),
-          hashedToken: 'XX1ivUOcPmJ/tzP0TRwoVuBLuRZod2t2QtZu+kHTThg=',
-        },
-      ],
+    token: {
+      secret: '901b281c4e0c4007e8526ef27153b79330811e733976d5e65c8343a39e54ec81',
     },
   },
 };
@@ -49,13 +44,8 @@ export const User = {
     password: {
       bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
-    resume: {
-      loginTokens: [
-        {
-          when: new Date(new Date().getTime() + 1000000),
-          hashedToken: '5VVf9TC/VQVcA271Muuhc4Y2QEtye79UnBR8Ib8oIi8=',
-        },
-      ],
+    token: {
+      secret: '92592125f3859823818804f00932aca5b658d7a334a5feaa8ab7fa321702e913',
     },
   },
 };

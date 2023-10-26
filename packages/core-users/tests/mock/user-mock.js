@@ -37,14 +37,6 @@ export default {
     token: {
       secret: 'secret',
     },
-    resume: {
-      loginTokens: [
-        {
-          hashedToken: '12eK1jAbw9kcP5u/sha4M5T2pKVVQol1aAbITYGmtCI=',
-          when: new Date('2022-11-27T10:36:00.313Z'),
-        },
-      ],
-    },
     webAuthn: [],
     web3: [
       {

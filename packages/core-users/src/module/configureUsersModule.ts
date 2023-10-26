@@ -181,11 +181,12 @@ export const configureUsersModule = async ({
       return user;
     },
 
-    async findUserByToken(hashedToken?: string): Promise<User> {
-      if (hashedToken) {
-        // TODO: Move to connect-session
+    async findUserByToken(plainToken?: string): Promise<User> {
+      const token = crypto.createHash('sha256').update(plainToken).digest('hex');
+
+      if (token) {
         return Users.findOne({
-          'services.resume.loginTokens.hashedToken': hashedToken,
+          'services.token.secret': token,
         });
       }
 

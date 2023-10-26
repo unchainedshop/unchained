@@ -5,6 +5,7 @@ export default async function logout(root: Root, { token }: { token: string }, c
   const { userId } = context;
 
   log('mutation logout', { userId });
+  // TODO: this should only logout this session or an explicitly provided session
   await context.logout();
 
   return { success: true };

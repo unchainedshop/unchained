@@ -49,7 +49,9 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "passport": "^0.6.0",
-    "passport-local": "^1.0.0"
+    "passport-http-bearer": "^1.0.1",
+    "passport-local": "^1.0.0",
+    "passport-strategy": "^1.0.0"
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^7.0.1",

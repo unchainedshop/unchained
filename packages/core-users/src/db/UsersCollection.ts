@@ -67,15 +67,6 @@ export const UsersCollection = async (db: Db) => {
 
     {
       index: {
-        'services.resume.loginTokens.hashedToken': 1,
-      } as any,
-      options: {
-        sparse: true,
-      },
-    },
-
-    {
-      index: {
         _id: 'text',
         username: 'text',
         'emails.address': 'text',

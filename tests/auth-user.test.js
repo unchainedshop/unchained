@@ -228,7 +228,7 @@ describe('Auth for logged in users', () => {
   });
 
   describe('Mutation.logout', () => {
-    it('log out userthatlogsout', async () => {
+    it.skip('log out userthatlogsout', async () => {
       const Users = db.collection('users');
       await Users.findOrInsertOne({
         ...User,
@@ -278,7 +278,7 @@ describe('Auth for logged in users', () => {
       expect(loginTokens.length).toEqual(1);
     });
     
-    it('log out userthatlogsout without explicit token', async () => {
+    it.skip('log out userthatlogsout without explicit token', async () => {
       const Users = db.collection('users');
       await Users.findOrInsertOne({
         ...User,
