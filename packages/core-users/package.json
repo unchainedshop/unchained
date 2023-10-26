@@ -37,6 +37,7 @@
     "@unchainedshop/roles": "^2.5.12",
     "@unchainedshop/utils": "^2.5.12",
     "bcryptjs": "^2.4.3",
+    "fido2-lib": "^3.4.1",
     "locale": "^0.1.0",
     "simpl-schema": "=3.2.0"
   },

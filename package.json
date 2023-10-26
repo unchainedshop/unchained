@@ -75,5 +75,10 @@
     "ts-jest": "^29.1.1",
     "typescript": "^5.3.3",
     "workspaces-run": "^1.0.2"
+  },
+  "overrides": {
+    "@shelf/jest-mongodb": {
+      "mongodb": "6.2.0"
+    }
   }
 }

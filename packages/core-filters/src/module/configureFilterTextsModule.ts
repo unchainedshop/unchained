@@ -49,14 +49,14 @@ export const configureFilterTextsModule = ({
       includeResultMetadata: true,
     });
 
-    if (updateResult.ok) {
+    if (updateResult) {
       await emit('FILTER_UPDATE_TEXT', {
         filterId: params.filterId,
         filterOptionValue: params.filterOptionValue || null,
-        text: updateResult.value,
+        text: updateResult,
       });
     }
-    return updateResult.value;
+    return updateResult;
   };
 
   return {
