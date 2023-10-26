@@ -28,10 +28,8 @@ export default async function loginWithPassword(
   const verified = hashInDb && (await context.modules.users.verifyPassword(hashInDb, password));
   if (verified) {
     const tokenData = await context.login(user);
-    // eslint-disable-next-line
-    (user as any)._inLoginMethodResponse = true;
     return {
-      id: user._id,
+      user,
       ...tokenData,
     };
   }

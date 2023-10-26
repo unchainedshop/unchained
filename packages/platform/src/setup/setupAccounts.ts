@@ -1,7 +1,6 @@
 import { User } from '@unchainedshop/types/user.js';
 import { randomValueHex } from '@unchainedshop/utils';
 import { userSettings } from '@unchainedshop/core-users';
-import moniker from 'moniker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { subscribe } from '@unchainedshop/events';
 
@@ -17,26 +16,6 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
       },
     });
   });
-
-  // const accountsServer = unchainedAPI.modules.accounts.getAccountsServer();
-  // accountsServer.users = unchainedAPI.modules.users;
-
-  // accountsServer.services.guest = {
-  //   async authenticate(params: { email?: string | null }) {
-  //     const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
-
-  //     const guestUserId = await unchainedAPI.modules.users.createUser(
-  //       {
-  //         email: params.email || `${guestname}@unchained.local`,
-  //         guest: true,
-  //         password: null,
-  //         initialPassword: true,
-  //       },
-  //       {},
-  //     );
-  //     return unchainedAPI.modules.users.findUserById(guestUserId);
-  //   },
-  // };
 
   // accountsServer.services.webAuthn = {
   //   async authenticate(params: { webAuthnPublicKeyCredentials: any }) {

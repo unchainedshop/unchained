@@ -1,12 +1,25 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import moniker from 'moniker';
+import { randomValueHex } from '@unchainedshop/utils';
 
 export default async function loginAsGuest(root: Root, _: any, context: Context) {
-  const { modules } = context;
-
   log('mutation loginAsGuest');
 
-  const loginToken = await modules.accounts.loginWithService({ service: 'guest' }, context);
-
-  return loginToken;
+  const guestname = `${moniker.choose()}-${randomValueHex(5)}`;
+  const guestUserId = await context.modules.users.createUser(
+    {
+      email: `${guestname}@unchained.local`,
+      guest: true,
+      password: null,
+      initialPassword: true,
+    },
+    { skipMessaging: true },
+  );
+  const user = await context.modules.users.findUserById(guestUserId);
+  const tokenData = await context.login(user);
+  return {
+    user,
+    ...tokenData,
+  };
 }
