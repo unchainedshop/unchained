@@ -26,7 +26,7 @@ const buildObfuscatedFieldsFilter = (additionalSensitiveFields = []) => {
     }
 
     if (typeof data === 'object' && data !== null) {
-      const temp = { ...data };
+      const temp = data;
       Object.keys(temp).forEach((key) => {
         if (sensitiveFields.includes(key)) {
           delete temp[key];
@@ -284,7 +284,9 @@ export const configureWorkerModule = async ({
     },
 
     findWork: async ({ workId, originalWorkId }) =>
-      WorkQueue.findOne(workId ? generateDbFilterById(workId) : { originalWorkId }, {}),
+      removePrivateFields(
+        await WorkQueue.findOne(workId ? generateDbFilterById(workId) : { originalWorkId }, {}),
+      ),
 
     findWorkQueue: async ({ limit, skip, sort, ...selectorOptions }) => {
       const selector = buildQuerySelector(selectorOptions);
@@ -293,8 +295,7 @@ export const configureWorkerModule = async ({
         limit,
         sort: buildSortOptions(sort || defaultSort),
       });
-
-      return workQueues.toArray();
+      return removePrivateFields(await workQueues.toArray());
     },
 
     count: async (query) => {
