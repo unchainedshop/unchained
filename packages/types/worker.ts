@@ -41,6 +41,10 @@ export type Work = {
  * Module
  */
 
+export interface WorkerSettingsOptions {
+  blacklistedVariables?: string[];
+}
+
 export type WorkData = Pick<
   Partial<Work>,
   'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker'

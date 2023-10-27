@@ -126,6 +126,7 @@ import {
   IWorkerDirector,
   WorkerModule,
   WorkerSchedule,
+  WorkerSettingsOptions,
   WorkStatus as WorkerStatusType,
 } from './worker.js';
 import { UnchainedCoreOptions, ModuleInput } from './core.js';
@@ -395,7 +396,7 @@ declare module '@unchainedshop/core-users' {
 
 declare module '@unchainedshop/core-warehousing' {
   function configureWarehousingModule(
-    params: ModuleInput<Record<string, never>>,
+    params: ModuleInput<WorkerSettingsOptions>,
   ): Promise<WarehousingModule>;
 
   const WarehousingDirector: IWarehousingDirector;
@@ -405,7 +406,7 @@ declare module '@unchainedshop/core-warehousing' {
 }
 
 declare module '@unchainedshop/core-worker' {
-  function configureWorkerModule(params: ModuleInput<Record<string, never>>): Promise<WorkerModule>;
+  function configureWorkerModule(params: ModuleInput<WorkerSettingsOptions>): Promise<WorkerModule>;
 
   const WorkerDirector: IWorkerDirector;
   const WorkStatus: typeof WorkerStatusType;

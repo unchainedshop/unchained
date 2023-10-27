@@ -1,7 +1,7 @@
 import os from 'os';
 import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkData, WorkerModule } from '@unchainedshop/types/worker.js';
+import { Work, WorkData, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection } from '@unchainedshop/types/api.js';
@@ -14,6 +14,35 @@ import { WorkStatus } from '../director/WorkStatus.js';
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const logger = createLogger('unchained:core-worker');
+
+const buildObfuscatedFieldsFilter = (additionalSensitiveFields = []) => {
+  const defaultObfuscatedFields = ['password', 'token', 'plainPassword', 'authorization', 'secret'];
+
+  const sensitiveFields = [...defaultObfuscatedFields, ...additionalSensitiveFields];
+
+  const obfuscateSensitiveFields = (data) => {
+    if (Array.isArray(data)) {
+      return data.map((item) => obfuscateSensitiveFields(item));
+    }
+
+    if (typeof data === 'object' && data !== null) {
+      const temp = { ...data };
+      Object.keys(temp).forEach((key) => {
+        if (sensitiveFields.includes(key)) {
+          delete temp[key];
+        } else {
+          temp[key] = obfuscateSensitiveFields(temp[key]);
+        }
+      });
+
+      return temp; // Return the modified copy
+    }
+
+    return data; // Return unchanged data for non-objects
+  };
+
+  return obfuscateSensitiveFields;
+};
 
 export const buildQuerySelector = ({
   created,
@@ -93,8 +122,11 @@ const defaultSort: Array<{ key: string; value: SortDirection }> = [
 
 export const configureWorkerModule = async ({
   db,
-}: ModuleInput<Record<string, never>>): Promise<WorkerModule> => {
+  options,
+}: ModuleInput<WorkerSettingsOptions>): Promise<WorkerModule> => {
   const WorkQueue = await WorkQueueCollection(db);
+
+  const removePrivateFields = buildObfuscatedFieldsFilter(options?.blacklistedVariables);
 
   const mutations = generateDbMutations<Work>(WorkQueue, WorkQueueSchema) as ModuleMutations<Work>;
 
@@ -118,7 +150,7 @@ export const configureWorkerModule = async ({
     );
 
     WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
-      work: result.value,
+      work: removePrivateFields(result.value),
     });
 
     return result.value;
@@ -168,7 +200,7 @@ export const configureWorkerModule = async ({
     }
     logger.debug(`work details:`, { work });
 
-    WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work });
+    WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work: removePrivateFields(work) });
 
     return work;
   };
@@ -340,7 +372,7 @@ export const configureWorkerModule = async ({
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
-      WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work });
+      WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work: removePrivateFields(work) });
 
       return work;
     },
@@ -355,7 +387,7 @@ export const configureWorkerModule = async ({
       const work = await WorkQueue.findOne(generateDbFilterById(currentWork._id), {});
 
       WorkerDirector.events.emit(WorkerEventTypes.RESCHEDULED, {
-        work,
+        work: removePrivateFields(work),
         oldScheduled: currentWork.scheduled,
       });
 
@@ -413,7 +445,7 @@ export const configureWorkerModule = async ({
           });
 
           WorkerDirector.events.emit(WorkerEventTypes.ADDED, {
-            work: result.value,
+            work: removePrivateFields(result.value),
           });
         }
         return result.value;
@@ -444,7 +476,7 @@ export const configureWorkerModule = async ({
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
-      WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work });
+      WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work: removePrivateFields(work) });
 
       return work;
     },
