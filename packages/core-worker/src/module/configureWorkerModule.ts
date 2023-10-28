@@ -15,10 +15,12 @@ const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const logger = createLogger('unchained:core-worker');
 
-const buildObfuscatedFieldsFilter = (additionalSensitiveFields = []) => {
+const buildObfuscatedFieldsFilter = (additionalSensitiveFields: string[] = []) => {
   const defaultObfuscatedFields = ['password', 'token', 'plainPassword', 'authorization', 'secret'];
 
-  const sensitiveFields = [...defaultObfuscatedFields, ...additionalSensitiveFields];
+  const sensitiveFields = Array.from(
+    new Set([...defaultObfuscatedFields, ...additionalSensitiveFields]),
+  );
 
   const obfuscateSensitiveFields = (data) => {
     if (Array.isArray(data)) {

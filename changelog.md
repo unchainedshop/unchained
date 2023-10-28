@@ -1,3 +1,5 @@
+# Next
+- Add new worker configuration option `blacklistedVariables` that accepts array of variable names that should be removed from a job log data returned.
 # Unchained Engine v2.6
 
 ## Minor
