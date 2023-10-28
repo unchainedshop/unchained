@@ -1,15 +1,10 @@
 import { createRequire } from 'module';
 import { createLogger as createWinstonLogger, format, transports } from 'winston';
 import TransportStream from 'winston-transport';
-import { LogLevel } from './logger.types.js';
+import { LogLevel, SupportedLogFormats } from './logger.types.js';
 
 const require = createRequire(import.meta.url);
 const { stringify } = require('safe-stable-stringify');
-
-enum SupportedLogFormats {
-  'unchained',
-  'json',
-}
 
 const {
   DEBUG = '',
