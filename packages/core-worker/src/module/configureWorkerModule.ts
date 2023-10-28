@@ -201,10 +201,10 @@ export const configureWorkerModule = async ({
       });
     }
     logger.debug(`work details:`, { work });
+    const cleanedWorkData = removePrivateFields(work);
+    WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work: cleanedWorkData });
 
-    WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work: removePrivateFields(work) });
-
-    return work;
+    return cleanedWorkData;
   };
 
   const processNextWork: WorkerModule['processNextWork'] = async (unchainedAPI, workerId) => {
@@ -374,10 +374,10 @@ export const configureWorkerModule = async ({
       });
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
+      const cleanedWorkData = removePrivateFields(work);
+      WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work: cleanedWorkData });
 
-      WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work: removePrivateFields(work) });
-
-      return work;
+      return cleanedWorkData;
     },
 
     rescheduleWork: async (currentWork, scheduled) => {
@@ -388,13 +388,13 @@ export const configureWorkerModule = async ({
       });
 
       const work = await WorkQueue.findOne(generateDbFilterById(currentWork._id), {});
-
+      const cleanedWorkData = removePrivateFields(work);
       WorkerDirector.events.emit(WorkerEventTypes.RESCHEDULED, {
-        work: removePrivateFields(work),
+        work: cleanedWorkData,
         oldScheduled: currentWork.scheduled,
       });
 
-      return work;
+      return cleanedWorkData;
     },
 
     allocateWork,
@@ -441,17 +441,16 @@ export const configureWorkerModule = async ({
             upsert: true,
           },
         );
-
+        const cleanedWorkData = removePrivateFields(result.value);
         if (!result.lastErrorObject.updatedExisting) {
           logger.info(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
             workId,
           });
-
           WorkerDirector.events.emit(WorkerEventTypes.ADDED, {
-            work: removePrivateFields(result.value),
+            work: cleanedWorkData,
           });
         }
-        return result.value;
+        return cleanedWorkData;
       } catch (e) {
         /* TODO: 
         If the findOneAndUpdate call failed because of _id conflict with a DELETED work,
@@ -478,10 +477,10 @@ export const configureWorkerModule = async ({
       await mutations.delete(workId);
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
+      const cleanedWorkData = removePrivateFields(work);
+      WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work: cleanedWorkData });
 
-      WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work: removePrivateFields(work) });
-
-      return work;
+      return cleanedWorkData;
     },
 
     markOldWorkAsFailed: async ({ types, worker = UNCHAINED_WORKER_ID, referenceDate }) => {
