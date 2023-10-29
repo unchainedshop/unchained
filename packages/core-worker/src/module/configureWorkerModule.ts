@@ -1,11 +1,12 @@
 import os from 'os';
 import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkData, WorkerModule } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { SortDirection } from '@unchainedshop/types/api.js';
+import { Work, WorkData, WorkerModule } from '../types.js';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
+
 import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
@@ -54,8 +55,9 @@ export const buildQuerySelector = ({
     },
   };
   const statusQuery = {
-    $or: Object.entries(filterMap).reduce(
-      (acc, [key, filter]) => (status?.includes(key as WorkStatus) ? [...acc, filter] : acc),
+    $or: Object.entries(filterMap as any).reduce(
+      (previousValue, [key, filter]) =>
+        (status?.includes(key as WorkStatus) ? [...previousValue, filter] : previousValue) as any,
       [],
     ),
   };
@@ -154,7 +156,10 @@ export const configureWorkerModule = async ({
 
     const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
 
-    const duration = new Date(work.finished).getTime() - new Date(work.started).getTime();
+    if (!work) return null;
+
+    const duration =
+      new Date(work.finished as Date).getTime() - new Date(work.started as Date).getTime();
     if (work.success) {
       logger.info(`${work.type} finished with success (${duration}ms)`, {
         workId,
@@ -229,7 +234,7 @@ export const configureWorkerModule = async ({
     if (work) {
       const output = await WorkerDirector.doWork(work, unchainedAPI);
 
-      return finishWork(work._id, {
+      return finishWork(work._id as string, {
         ...output,
         finished: work.finished || new Date(),
         started: work.started,
@@ -325,13 +330,13 @@ export const configureWorkerModule = async ({
       const created = new Date();
       const workId = await mutations.create({
         type,
-        input,
+        input: input || {},
         priority,
         scheduled: scheduled || created,
         originalWorkId,
         retries,
         created,
-        worker,
+        worker: worker || undefined,
       });
 
       logger.info(`${type} scheduled @ ${new Date(scheduled || created).toISOString()}`, {
@@ -346,7 +351,7 @@ export const configureWorkerModule = async ({
     },
 
     rescheduleWork: async (currentWork, scheduled) => {
-      await mutations.update(currentWork._id, {
+      await mutations.update(currentWork._id as string, {
         $set: {
           scheduled,
         },
@@ -380,13 +385,13 @@ export const configureWorkerModule = async ({
         priority,
       });
       try {
-        const workId = `${type}:${scheduled.getTime()}`;
+        const workId = `${type}:${scheduled?.getTime()}`;
         const result = await WorkQueue.findOneAndUpdate(
           query,
           {
             $set: {
               input,
-              worker: null,
+              worker: undefined,
               updated: created,
             },
             $setOnInsert: {
@@ -407,8 +412,8 @@ export const configureWorkerModule = async ({
           },
         );
 
-        if (!result.lastErrorObject.updatedExisting) {
-          logger.info(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
+        if (!result.lastErrorObject?.updatedExisting) {
+          logger.info(`${type} auto-scheduled @ ${new Date(scheduled as Date).toISOString()}`, {
             workId,
           });
 

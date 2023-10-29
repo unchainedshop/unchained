@@ -1,14 +1,14 @@
-import { IWorker } from '@unchainedshop/types/worker.js';
+import { IWorker } from '../types.js';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 import { BaseWorker } from './BaseWorker.js';
 
-function debounce<T extends (...args: any) => any>(func: T, wait) {
-  let timeout;
-  return (...args) => {
+function debounce<T extends (...args: any) => any>(func: T, wait: number) {
+  let timeout: NodeJS.Timeout | undefined | number | string;
+  return (...args: any) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-      timeout = null;
+      timeout = undefined;
       func(...args);
     }, wait);
   };

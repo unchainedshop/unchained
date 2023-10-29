@@ -1,5 +1,5 @@
-import { IScheduler, Work, WorkData } from '@unchainedshop/types/worker.js';
 import { log } from '@unchainedshop/logger';
+import { IScheduler, Work, WorkData } from '../types.js';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 
@@ -19,7 +19,7 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
     const handleFinishedWork = async ({ work }: { work: Work }) => {
       if (!work.success && work.retries > 0) {
         const now = new Date();
-        const workDelayMs = work.scheduled.getTime() - work.created.getTime();
+        const workDelayMs = work.scheduled.getTime() - (work.created as Date).getTime();
 
         // In short: Double the delay of the old work or delay for 5 seconds
         const scheduled =
@@ -45,7 +45,7 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
         };
 
         if (retryInput) {
-          workData.input = await retryInput(workData, work.input);
+          workData.input = (await retryInput(workData, work.input)) as Record<string, any> | undefined;
         } else {
           workData.input = work.input;
         }

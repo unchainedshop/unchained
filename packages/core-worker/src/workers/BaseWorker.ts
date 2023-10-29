@@ -1,7 +1,7 @@
-import { IWorker, WorkData } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import { WorkerDirector } from '../director/WorkerDirector.js';
+import { IWorker, WorkData } from '../types.js';
 
 interface WorkerParams {
   workerId?: string;
@@ -35,12 +35,12 @@ export const BaseWorker: IWorker<WorkerParams> = {
       reset: async (referenceDate = new Date()) => {
         await unchainedAPI.modules.worker.markOldWorkAsFailed({
           types: WorkerDirector.getActivePluginTypes({ external: false }),
-          worker: workerId,
+          worker: workerId as string,
           referenceDate,
         });
       },
 
-      autorescheduleTypes: async ({ referenceDate }) => {
+      autorescheduleTypes: async ({ referenceDate }: { referenceDate: Date }) => {
         return Promise.all(
           WorkerDirector.getAutoSchedules().map(async ([type, workConfig]) => {
             const fixedSchedule = { ...workConfig.schedule };
@@ -65,12 +65,18 @@ export const BaseWorker: IWorker<WorkerParams> = {
         );
       },
 
-      process: async ({ maxWorkItemCount, referenceDate }) => {
+      process: async ({
+        maxWorkItemCount,
+        referenceDate,
+      }: {
+        maxWorkItemCount: number;
+        referenceDate: Date;
+      }): Promise<void> => {
         await workerActions.autorescheduleTypes({
           referenceDate,
         });
 
-        const processRecursively = async (recursionCounter = 0) => {
+        const processRecursively = async (recursionCounter: number = 0) => {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
           const doneWork = await unchainedAPI.modules.worker.processNextWork(unchainedAPI, workerId);
           if (doneWork) return processRecursively(recursionCounter + 1);

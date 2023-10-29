@@ -1,12 +1,9 @@
 import { EventEmitter } from 'events';
-import {
-  IWorkerAdapter,
-  IWorkerDirector,
-  WorkScheduleConfiguration,
-} from '@unchainedshop/types/worker.js';
+
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
 import { WorkerEventTypes } from './WorkerEventTypes.js';
+import { IWorkerAdapter, IWorkerDirector, WorkScheduleConfiguration } from '../types.js';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
@@ -70,13 +67,16 @@ export const WorkerDirector: IWorkerDirector = {
     }
 
     try {
-      const output = await adapter.doWork(input, unchainedAPI, workId);
+      const output = await adapter.doWork(input, unchainedAPI, workId as string);
       WorkerDirector.events.emit(WorkerEventTypes.DONE, { output });
       return output;
     } catch (error) {
       // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
+
       log('DO not use this as flow control.', { level: LogLevel.Verbose });
-      log(`WorkerDirector -> Error doing work ${type}: ${error.message}`);
+      if (error instanceof Error) {
+        log(`WorkerDirector -> Error doing work ${type}: ${error.message}`);
+      }
 
       const errorOutput = { error, success: false };
 
