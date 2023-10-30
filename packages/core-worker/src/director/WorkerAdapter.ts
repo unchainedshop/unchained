@@ -1,5 +1,5 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { IWorkerAdapter, Output, WorkResult } from '../types.js';
+import { IWorkerAdapter, Output, WorkResult } from '../types/index.js';
 
 export const WorkerAdapter: Omit<IWorkerAdapter<any, void>, 'key' | 'label' | 'type' | 'version'> = {
   external: false,

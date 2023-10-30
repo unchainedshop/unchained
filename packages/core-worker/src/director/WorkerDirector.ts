@@ -2,8 +2,13 @@ import { EventEmitter } from 'events';
 
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
-import { WorkerEventTypes } from './WorkerEventTypes.js';
-import { IWorkerAdapter, IWorkerDirector, WorkScheduleConfiguration } from '../types.js';
+
+import {
+  IWorkerAdapter,
+  IWorkerDirector,
+  WorkerEventTypes,
+  WorkScheduleConfiguration,
+} from '../types/index.js';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 

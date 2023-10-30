@@ -1,6 +1,6 @@
 import later from '@breejs/later';
 import { BaseWorker } from './BaseWorker.js';
-import { IWorker, WorkerSchedule } from '../types.js';
+import { IWorker, WorkerSchedule } from '../types/index.js';
 
 const { NODE_ENV } = process.env;
 

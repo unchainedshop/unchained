@@ -1,12 +1,12 @@
 {
   "name": "@unchainedshop/core-worker",
   "version": "2.5.6",
-  "main": "lib/worker-index.js",
+  "main": "lib/types/index.js",
   "exports": {
-    ".": "./lib/worker-index.js",
+    ".": "./lib/types/index.js",
     "./*": "./lib/*"
   },
-  "types": "lib/worker-index.d.ts",
+  "types": "./lib/types/index.d.ts",
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",

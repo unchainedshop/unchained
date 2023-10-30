@@ -1,5 +1,5 @@
-import { IWorker } from '../types.js';
-import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
+import { IWorker, WorkerEventTypes } from '../types/index.js';
+
 import { WorkerDirector } from '../director/WorkerDirector.js';
 import { BaseWorker } from './BaseWorker.js';
 

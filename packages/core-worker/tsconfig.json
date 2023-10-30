@@ -1,9 +1,10 @@
 {
   "extends": "../shared/base.tsconfig.json",
-  "compilerOptions": {
+  "compilerOptions": {        
     "strict": true,
     "rootDir": "src",
     "outDir": "lib",
+    "baseUrl": "./node_modules"
   },
   "exclude": ["**/*.test.ts", "**/*.test.js", "tests"],
   "include": [

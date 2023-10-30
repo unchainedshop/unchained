@@ -1,7 +1,7 @@
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import { WorkerDirector } from '../director/WorkerDirector.js';
-import { IWorker, WorkData } from '../types.js';
+import { IWorker, Work, WorkData } from '../types/index.js';
 
 interface WorkerParams {
   workerId?: string;
@@ -25,11 +25,11 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
     const workerActions = {
       start() {
-        throw new Error(`Not implemented on ${this.constructor.key}`);
+        throw new Error(`Not implemented on ${(this.constructor as any).key}`);
       },
 
       stop() {
-        throw new Error(`Not implemented on ${this.constructor.key}`);
+        throw new Error(`Not implemented on ${(this.constructor as any).key}`);
       },
 
       reset: async (referenceDate = new Date()) => {
@@ -53,9 +53,10 @@ export const BaseWorker: IWorker<WorkerParams> = {
               timeout: workConfig.timeout,
               priority: workConfig.priority || 0,
               retries: workConfig.retries || 0,
+              input: undefined,
             };
             if (workConfig.input) {
-              workData.input = await workConfig.input(workData);
+              workData.input = (await workConfig.input(workData)) as Record<string, any> | undefined;
               // A work input fn can skip auto scheduling a new record
               // when it explicitly returns a falsish input instead of a dictionary
               if (!workData.input) return null;
@@ -69,14 +70,14 @@ export const BaseWorker: IWorker<WorkerParams> = {
         maxWorkItemCount,
         referenceDate,
       }: {
-        maxWorkItemCount: number;
-        referenceDate: Date;
+        maxWorkItemCount?: number | undefined;
+        referenceDate?: Date | undefined;
       }): Promise<void> => {
         await workerActions.autorescheduleTypes({
-          referenceDate,
+          referenceDate: referenceDate as Date,
         });
 
-        const processRecursively = async (recursionCounter: number = 0) => {
+        const processRecursively = async (recursionCounter: number = 0): Promise<Work | null> => {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
           const doneWork = await unchainedAPI.modules.worker.processNextWork(unchainedAPI, workerId);
           if (doneWork) return processRecursively(recursionCounter + 1);

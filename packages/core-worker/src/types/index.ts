@@ -22,6 +22,8 @@ export enum WorkerEventTypes {
   RESCHEDULED = 'rescheduled',
 }
 
+declare module '@breejs/later' {}
+
 export type Work = {
   _id?: _ID;
   priority: number;
@@ -173,6 +175,13 @@ export type IWorker<P extends { workerId?: string }> = {
   };
 };
 
+export interface FailedReschedulerParams {
+  retryInput?: (
+    workData: WorkData,
+    priorInput: Record<string, any>,
+  ) => Promise<Record<string, any> | null>;
+}
+
 export type IScheduler<P> = {
   key: string;
   label: string;
@@ -186,3 +195,13 @@ export type IScheduler<P> = {
     stop: () => void;
   };
 };
+
+export { configureWorkerModule } from '../module/configureWorkerModule.js';
+
+export { WorkerDirector } from '../director/WorkerDirector.js';
+export { WorkerAdapter } from '../director/WorkerAdapter.js';
+export { FailedRescheduler } from '../schedulers/FailedRescheduler.js';
+
+export { BaseWorker } from '../workers/BaseWorker.js';
+export { EventListenerWorker } from '../workers/EventListenerWorker.js';
+export { IntervalWorker } from '../workers/IntervalWorker.js';

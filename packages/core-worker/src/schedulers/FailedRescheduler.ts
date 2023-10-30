@@ -1,7 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { IScheduler, Work, WorkData } from '../types.js';
+import { IScheduler, Work, WorkData, WorkerEventTypes } from '../types/index.js';
 import { WorkerDirector } from '../director/WorkerDirector.js';
-import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 
 export interface FailedReschedulerParams {
   retryInput?: (
