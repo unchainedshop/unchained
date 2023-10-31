@@ -147,6 +147,7 @@ export type UsersModule = {
     },
   ) => Promise<void>;
   removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
+  deleteAccount: (params: { userId?: string }, context: UnchainedCore) => Promise<boolean>;
 };
 
 /*
@@ -161,6 +162,10 @@ export type UpdateUserAvatarAfterUploadService = (
 export type GetUserLanguageService = (user: User, context: UnchainedCore) => Promise<Language>;
 
 export type GetUserCountryService = (user: User, context: UnchainedCore) => Promise<Country>;
+
+export interface UserSettingsOptions {
+  enableRightToBeForgotten?: boolean;
+}
 
 export interface UserServices {
   getUserCountry: GetUserCountryService;

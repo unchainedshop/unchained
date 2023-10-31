@@ -352,5 +352,9 @@ export const configureQuotationsModule = async ({
     updateProposal: updateQuotationFields(['price', 'expires', 'meta']),
 
     updateStatus,
+    removeQuotationByUserId: async (userId) => {
+      const deletedQuotationsResult = await Quotations.deleteMany({ userId });
+      return deletedQuotationsResult.deletedCount;
+    },
   };
 };
