@@ -166,6 +166,7 @@ export interface EnrollmentMutations {
     params: { status: EnrollmentStatus; info?: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<Enrollment>;
+  removeEnrollmentsByUserId: (userId: string) => Promise<number>;
 }
 
 export type EnrollmentsModule = EnrollmentQueries &
@@ -216,6 +217,14 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
 /*
  * Settings
  */
+
+export type RemoveUserEnrollmentService = (
+  params: { userId: string },
+  unchainedAPI: UnchainedCore,
+) => Promise<boolean>;
+export interface EnrollmentServices {
+  removeUserEnrollments: RemoveUserEnrollmentService;
+}
 
 export interface EnrollmentsSettingsOptions {
   autoSchedulingSchedule?: WorkerSchedule;

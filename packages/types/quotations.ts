@@ -111,6 +111,7 @@ export interface QuotationMutations {
     quotationId: string,
     params: { status: QuotationStatus; info?: string },
   ) => Promise<Quotation>;
+  removeQuotationByUserId: (userId: string) => Promise<number>;
 }
 
 export type QuotationsModule = QuotationQueries &
@@ -154,6 +155,13 @@ export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
 /*
  * Settings
  */
+export type RemoveUserQuotationService = (
+  params: { userId: string },
+  unchainedAPI: UnchainedCore,
+) => Promise<boolean>;
+export interface QuotationServices {
+  removeUserQuotations: RemoveUserQuotationService;
+}
 
 export interface QuotationsSettingsOptions {
   quotationNumberHashFn?: (quotation: Quotation, index: number) => string;

@@ -110,6 +110,7 @@ export interface UserSettingsOptions {
   validateUsername?: (username: string) => Promise<boolean>;
   validateNewUser?: (user: Partial<User>) => Promise<User>;
   validatePassword?: (password: string) => Promise<boolean>;
+  enableRightToBeForgotten?: boolean;
 }
 export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
@@ -215,6 +216,7 @@ export type UsersModule = {
     },
   ) => Promise<void>;
   removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
+  deleteAccount: (params: { userId?: string }, context: UnchainedCore) => Promise<boolean>;
 };
 
 /*

@@ -13,7 +13,7 @@ import { OrdersModule, OrdersSettingsOptions } from './orders.js';
 import { PaymentModule, PaymentSettingsOptions } from './payments.js';
 import { ProductsModule, ProductsSettingsOptions } from './products.js';
 import { QuotationsModule, QuotationsSettingsOptions } from './quotations.js';
-import { UsersModule, UserSettingsOptions } from './user.js';
+import { UserSettingsOptions, UsersModule } from './user.js';
 import { WarehousingModule } from './warehousing.js';
 import { WorkerModule, WorkerSettingsOptions } from './worker.js';
 

@@ -35,6 +35,16 @@ const start = async () => {
       }),
     ],
     options: {
+      accounts: {
+        password: {
+          twoFactor: {
+            appName: 'Example',
+          },
+        },
+      },
+      users: {
+        enableRightToBeForgotten: true
+      },
       payment: {
         filterSupportedProviders: async ({ providers }) => {
           return providers.sort((left, right) => {

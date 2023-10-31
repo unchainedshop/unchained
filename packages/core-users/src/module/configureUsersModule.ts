@@ -1,7 +1,6 @@
 import localePkg from 'locale';
 import bcrypt from 'bcryptjs';
 import { Address, Contact } from '@unchainedshop/types/common.js';
-import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   User,
   UserQuery,
@@ -10,7 +9,10 @@ import {
   UserProfile,
   UserSettingsOptions,
   UserData,
+  UsersModule,
 } from '@unchainedshop/types/user.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -72,9 +74,7 @@ export const configureUsersModule = async ({
   db,
   options,
   migrationRepository,
-}: ModuleInput<UserSettingsOptions>) => {
-  userSettings.configureSettings(options || {}, db);
-
+}: ModuleInput<UserSettingsOptions>): Promise<UsersModule> => {
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
 
@@ -752,6 +752,15 @@ export const configureUsersModule = async ({
         } as mongodb.UpdateFilter<User>,
         {},
       );
+    },
+    deleteAccount: async ({ userId }, context) => {
+      if (!options?.enableRightToBeForgotten) throw Error('Right to be forgotten is disabled');
+      await context.services.products.removeUserTraces({ userId }, context);
+      await context.services.quotations.removeUserQuotations({ userId }, context);
+      await context.services.enrollments.removeUserEnrollments({ userId }, context);
+      await Users.deleteOne({ _id: userId });
+
+      return true;
     },
   };
 };

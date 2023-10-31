@@ -85,6 +85,17 @@ export const configureProductReviewsModule = async ({
     });
   };
 
+  const removeVotesByUserId = async (userId) => {
+    await ProductReviews.updateMany(
+      {},
+      {
+        $pull: {
+          votes: { userId },
+        },
+      },
+    );
+  };
+
   return {
     // Queries
     findProductReview: async ({ productReviewId }) =>
@@ -169,6 +180,12 @@ export const configureProductReviewsModule = async ({
       await emit('PRODUCT_UPDATE_REVIEW', { productReview });
 
       return productReview;
+    },
+
+    removeUserReviews: async (userId) => {
+      await ProductReviews.deleteMany({ authorId: userId });
+      await removeVotesByUserId(userId);
+      return true;
     },
 
     votes: {
