@@ -372,5 +372,12 @@ export const configureOrderPositionsModule = ({
 
       return upsertedOrderPosition;
     },
+    deleteUserOrderPositionsByOrderIds: async (orderIds) => {
+      log(`OrderPosition -> Delete User orders`, {
+        orderIds,
+      });
+      const deleteUserOrdersResult = await OrderPositions.deleteMany({ orderId: { $in: orderIds } });
+      return deleteUserOrdersResult.deletedCount;
+    },
   };
 };

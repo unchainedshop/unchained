@@ -758,6 +758,7 @@ export const configureUsersModule = async ({
       await context.services.products.removeUserTraces({ userId }, context);
       await context.services.quotations.removeUserQuotations({ userId }, context);
       await context.services.enrollments.removeUserEnrollments({ userId }, context);
+      await context.services.orders.removeUserTraces({ userId }, context);
       await Users.deleteOne({ _id: userId });
 
       return true;
