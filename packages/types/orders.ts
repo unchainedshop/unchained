@@ -169,6 +169,7 @@ export interface OrderMutations {
   updateContact: (orderId: string, contact: Contact, unchainedAPI: UnchainedCore) => Promise<Order>;
   updateContext: (orderId: string, context: any, unchainedAPI: UnchainedCore) => Promise<boolean>;
   updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
+  deleteUserOrders: (userId: string) => Promise<number>;
 }
 
 export type OrdersModule = OrderQueries &
@@ -205,9 +206,17 @@ export type CreateUserCartService = (
   unchainedAPI: UnchainedCore,
 ) => Promise<Order>;
 
+export type RemoveUserTracesOrderService = (
+  params: {
+    userId: string;
+  },
+  unchainedAPI: UnchainedCore,
+) => Promise<boolean>;
+
 export interface OrderServices {
   migrateOrderCarts: MigrateOrderCartsService;
   createUserCart: CreateUserCartService;
+  removeUserTraces: RemoveUserTracesOrderService;
 }
 
 /*

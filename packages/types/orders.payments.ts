@@ -106,6 +106,7 @@ export type OrderPaymentsModule = {
   ) => Promise<OrderPayment>;
 
   updateCalculation: (orderPayment: OrderPayment, unchainedAPI: UnchainedCore) => Promise<OrderPayment>;
+  deleteUserOrderPaymentsByOrderIds: (orderIds: string[]) => Promise<number>;
 };
 
 export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {

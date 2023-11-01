@@ -351,5 +351,13 @@ export const configureOrderPaymentsModule = ({
 
       return OrderPayments.findOne(selector);
     },
+
+    deleteUserOrderPaymentsByOrderIds: async (orderIds) => {
+      log(`OrderPayment -> Delete User orders payment`, {
+        orderIds,
+      });
+      const deleteUserOrdersResult = await OrderPayments.deleteMany({ orderId: { $in: orderIds } });
+      return deleteUserOrdersResult.deletedCount;
+    },
   };
 };
