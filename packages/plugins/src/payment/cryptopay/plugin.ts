@@ -65,7 +65,7 @@ const Cryptopay: IPaymentAdapter = {
           const targetCurrencyObj = await modules.currencies.findCurrency({
             isoCode: addressData.currency,
           });
-          if (!targetCurrencyObj.isActive) return null;
+          if (!targetCurrencyObj?.isActive) return null;
           const rateData = await modules.products.prices.rates.getRate(
             originCurrencyObj,
             targetCurrencyObj,
@@ -171,7 +171,7 @@ const Cryptopay: IPaymentAdapter = {
           // we neuter for security reasons, it's still quite complicated for most ethereum clients to show an appropriate
           // xpub, that's why
           const hdWallet = ethers.HDNodeWallet.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
-          const hardenedMaster = (hdWallet as HDNodeWallet)?.neuter() || (hdWallet as HDNodeVoidWallet);
+          const hardenedMaster = 'neuter' in hdWallet ? hdWallet.neuter() : hdWallet;
 
           const ethDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.ETH,
