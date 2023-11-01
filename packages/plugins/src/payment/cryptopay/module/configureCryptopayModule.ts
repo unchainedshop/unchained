@@ -27,7 +27,7 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
   const CryptoTransactions = CryptopayTransactionsCollection(db);
 
   const getWalletAddress: CryptopayModule['getWalletAddress'] = async (addressId) => {
-    return CryptoTransactions.findOne({ _id: addressId });
+    return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
   const updateMostRecentBlock: CryptopayModule['updateMostRecentBlock'] = async (
@@ -54,11 +54,11 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
   }) => {
     await CryptoTransactions.updateOne(
       {
-        _id: addressId,
+        _id: addressId.toLowerCase(),
       },
       {
         $setOnInsert: {
-          _id: addressId,
+          _id: addressId.toLowerCase(),
           contract,
           currency,
           decimals: null,
@@ -75,7 +75,7 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
       { upsert: true },
     );
 
-    return CryptoTransactions.findOne({ _id: addressId });
+    return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
   const getNextDerivationNumber: CryptopayModule['getNextDerivationNumber'] = async (currency) => {
@@ -99,11 +99,11 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
   }) => {
     await CryptoTransactions.updateOne(
       {
-        _id: addressId,
+        _id: addressId.toLowerCase(),
       },
       {
         $setOnInsert: {
-          _id: addressId,
+          _id: addressId.toLowerCase(),
           currency,
           contract,
           created: new Date(),
@@ -119,7 +119,7 @@ export const configureCryptopayModule = ({ db }: { db: Db }): CryptopayModule =>
       { upsert: true },
     );
 
-    return CryptoTransactions.findOne({ _id: addressId });
+    return CryptoTransactions.findOne({ _id: addressId.toLowerCase() });
   };
 
   return {
