@@ -1,6 +1,6 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
-import { HDNodeVoidWallet, HDNodeWallet, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { BIP32Factory } from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import * as bitcoin from 'bitcoinjs-lib';
