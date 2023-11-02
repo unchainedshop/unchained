@@ -25,9 +25,9 @@ export const buildFindByContextDataSelector = (context: any): Query => {
     (currentSelector, key) =>
       context[key] !== undefined
         ? {
-          ...currentSelector,
-          [`context.${key}`]: context[key],
-        }
+            ...currentSelector,
+            [`context.${key}`]: context[key],
+          }
         : currentSelector,
     {},
   );
