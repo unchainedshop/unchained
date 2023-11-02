@@ -11,11 +11,44 @@ import {
   systemLocale,
   buildSortOptions,
 } from '@unchainedshop/utils';
+import crypto from 'crypto';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
+
+const isDate = (value) => {
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime());
+};
+
+function maskString(value) {
+  if (isDate(value)) return value;
+  return crypto
+    .createHash('sha256')
+    .update(JSON.stringify([value, new Date().getTime()]))
+    .digest('hex');
+}
+
+const maskUserPropertyValues = (user) => {
+  if (typeof user !== 'object' || user === null) {
+    return user;
+  }
+  if (Array.isArray(user)) {
+    return user.map((item) => maskUserPropertyValues(item));
+  }
+  const maskedUser = {};
+  Object.keys(user).forEach((key) => {
+    if (typeof user[key] === 'string') {
+      maskedUser[key] = maskString(user[key]);
+    } else {
+      maskedUser[key] = maskUserPropertyValues(user[key]);
+    }
+  });
+
+  return maskedUser;
+};
 
 const { Locale } = localePkg;
 
@@ -412,12 +445,12 @@ export const configureUsersModule = async ({
     },
     deleteAccount: async ({ userId }, context) => {
       if (!options?.enableRightToBeForgotten) throw Error('Right to be forgotten is disabled');
-      await context.services.products.removeUserTraces({ userId }, context);
-      await context.services.quotations.removeUserQuotations({ userId }, context);
-      await context.services.enrollments.removeUserEnrollments({ userId }, context);
-      await context.services.orders.removeUserTraces({ userId }, context);
-      await Users.deleteOne({ _id: userId });
-
+      const { modules } = context;
+      const { _id, ...user } = await modules.users.findUserById(userId);
+      console.log(user);
+      const maskedUserData = maskUserPropertyValues(user);
+      console.log(maskedUserData);
+      await modules.users.updateUser({ _id }, { $set: { ...maskedUserData } }, {});
       return true;
     },
   };
