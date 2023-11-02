@@ -4,7 +4,7 @@ import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-
 import { configureCountriesModule, countryServices } from '@unchainedshop/core-countries';
 import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
 import { configureDeliveryModule } from '@unchainedshop/core-delivery';
-import { configureEnrollmentsModule, enrollmentServices } from '@unchainedshop/core-enrollments';
+import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
 import { configureEventsModule } from '@unchainedshop/core-events';
 import { configureFilesModule, fileServices } from '@unchainedshop/core-files';
 import { configureFiltersModule } from '@unchainedshop/core-filters';
@@ -13,7 +13,7 @@ import { configureMessagingModule } from '@unchainedshop/core-messaging';
 import { configureOrdersModule, orderServices } from '@unchainedshop/core-orders';
 import { configurePaymentModule } from '@unchainedshop/core-payment';
 import { configureProductsModule, productServices } from '@unchainedshop/core-products';
-import { configureQuotationsModule, quotationServices } from '@unchainedshop/core-quotations';
+import { configureQuotationsModule } from '@unchainedshop/core-quotations';
 import { configureUsersModule, userServices } from '@unchainedshop/core-users';
 import { configureWarehousingModule } from '@unchainedshop/core-warehousing';
 import { configureWorkerModule } from '@unchainedshop/core-worker';
@@ -153,8 +153,6 @@ export const initCore = async ({
       orders: orderServices,
       products: productServices,
       users: userServices,
-      quotations: quotationServices,
-      enrollments: enrollmentServices,
       ...services,
     },
     bulkImporter,

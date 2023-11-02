@@ -475,9 +475,5 @@ export const configureEnrollmentsModule = async ({
     },
 
     updateStatus,
-    removeEnrollmentsByUserId: async (userId): Promise<number> => {
-      const deleteEnrollmentResult = await Enrollments.deleteMany({ userId });
-      return deleteEnrollmentResult.deletedCount;
-    },
   };
 };

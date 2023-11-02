@@ -184,13 +184,6 @@ export type NextUserCartService = (
   unchainedAPI: UnchainedCore,
 ) => Promise<Order | null>;
 
-export type RemoveUserTracesOrderService = (
-  params: {
-    userId: string;
-  },
-  unchainedAPI: UnchainedCore,
-) => Promise<boolean>;
-
 export interface OrderServices {
   migrateOrderCarts: MigrateOrderCartsService;
   nextUserCart: NextUserCartService;

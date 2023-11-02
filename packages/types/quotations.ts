@@ -155,14 +155,6 @@ export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
 /*
  * Settings
  */
-export type RemoveUserQuotationService = (
-  params: { userId: string },
-  unchainedAPI: UnchainedCore,
-) => Promise<boolean>;
-export interface QuotationServices {
-  removeUserQuotations: RemoveUserQuotationService;
-}
-
 export interface QuotationsSettingsOptions {
   quotationNumberHashFn?: (quotation: Quotation, index: number) => string;
 }
