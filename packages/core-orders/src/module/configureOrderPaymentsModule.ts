@@ -24,9 +24,9 @@ export const buildFindByContextDataSelector = (context: any): mongodb.Filter<Ord
     (currentSelector, key) =>
       context[key] !== undefined
         ? {
-            ...currentSelector,
-            [`context.${key}`]: context[key],
-          }
+          ...currentSelector,
+          [`context.${key}`]: context[key],
+        }
         : currentSelector,
     {},
   );
@@ -351,14 +351,6 @@ export const configureOrderPaymentsModule = ({
           returnDocument: 'after',
         },
       );
-    },
-
-    deleteUserOrderPaymentsByOrderIds: async (orderIds) => {
-      log(`OrderPayment -> Delete User orders payment`, {
-        orderIds,
-      });
-      const deleteUserOrdersResult = await OrderPayments.deleteMany({ orderId: { $in: orderIds } });
-      return deleteUserOrdersResult.deletedCount;
     },
   };
 };

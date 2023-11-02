@@ -91,7 +91,6 @@ export type OrderPositionsModule = {
     params: { order: Order; product: Product },
     unchainedAPI: UnchainedCore,
   ) => Promise<OrderPosition>;
-  deleteUserOrderPositionsByOrderIds: (orderIds: string[]) => Promise<number>;
 };
 
 export type OrderPositionDiscount = Omit<OrderPrice, '_id'> & {

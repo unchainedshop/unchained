@@ -72,7 +72,6 @@ export type OrderDeliveriesModule = {
     orderDelivery: OrderDelivery,
     unchainedAPI: UnchainedCore,
   ) => Promise<OrderDelivery>;
-  deleteUserOrderDeliveriesByOrderIds: (orderIds: string[]) => Promise<number>;
 };
 
 export type OrderDeliveryDiscount = Omit<OrderPrice, '_id'> & {

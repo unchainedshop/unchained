@@ -231,12 +231,5 @@ export const configureOrderDiscountsModule = ({
       await emit('ORDER_UPDATE_DISCOUNT', { discount });
       return discount;
     },
-    deleteUserOrderDiscountsByOrderIds: async (orderIds) => {
-      log(`OrderDiscounts -> Delete User orders discount`, {
-        orderIds,
-      });
-      const deleteUserOrdersResult = await OrderDiscounts.deleteMany({ orderId: { $in: orderIds } });
-      return deleteUserOrdersResult.deletedCount;
-    },
   };
 };

@@ -56,7 +56,6 @@ export type ProductReviewsModule = {
   deleteMany: (selector: Filter<ProductReview>) => Promise<number>;
 
   update: (productReviewId: string, doc: ProductReview) => Promise<ProductReview>;
-  removeUserReviews: (userId: string) => Promise<boolean>;
 
   /*
    * Product review votes
