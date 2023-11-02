@@ -790,7 +790,10 @@ export const configureUsersModule = async ({
       if (!options?.enableRightToBeForgotten) throw Error('Right to be forgotten is disabled');
       const { modules } = context;
       const { _id, ...user } = await modules.users.findUserById(userId);
-      const maskedUserData = maskUserPropertyValues(user);
+      delete user?.services;
+
+      const maskedUserData = maskUserPropertyValues({ ...user, meta: null });
+      await modules.bookmarks.deleteByUserId(userId);
       await modules.users.updateUser({ _id }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
       return true;
     },

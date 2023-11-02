@@ -84,7 +84,8 @@ export const configureOrderPositionsModule = ({
       const originalProductId = originalProduct ? originalProduct._id : undefined;
 
       log(
-        `Create ${quantity}x Position with Product ${productId} ${quotationId ? ` (${quotationId})` : ''
+        `Create ${quantity}x Position with Product ${productId} ${
+          quotationId ? ` (${quotationId})` : ''
         }`,
         { orderId, productId, originalProductId },
       );
