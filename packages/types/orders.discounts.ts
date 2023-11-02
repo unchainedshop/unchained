@@ -51,5 +51,4 @@ export type OrderDiscountsModule = {
   create: (doc: OrderDiscount) => Promise<OrderDiscount>;
   update: (orderDiscountId: string, doc: OrderDiscount) => Promise<OrderDiscount>;
   delete: (orderDiscountId: string, unchainedAPI: UnchainedCore) => Promise<OrderDiscount>;
-  deleteUserOrderDiscountsByOrderIds: (orderIds: string[]) => Promise<number>;
 };

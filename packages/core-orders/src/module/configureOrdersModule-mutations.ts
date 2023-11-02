@@ -231,14 +231,6 @@ export const configureOrderModuleMutations = ({
       }
       return false;
     },
-
     updateCalculation,
-    deleteUserOrders: async (userId) => {
-      log(`OrderPosition -> Delete User orders`, {
-        userId,
-      });
-      const deletedUserOrdersResult = await Orders.deleteMany({ userId });
-      return deletedUserOrdersResult.deletedCount;
-    },
   };
 };

@@ -406,7 +406,6 @@ export type RemoveUserTracesProductService = (
 
 export interface ProductServices {
   removeProduct: RemoveProductService;
-  removeUserTraces: RemoveUserTracesProductService;
 }
 
 /*

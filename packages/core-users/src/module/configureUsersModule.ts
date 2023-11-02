@@ -40,7 +40,7 @@ const maskUserPropertyValues = (user) => {
   }
   const maskedUser = {};
   Object.keys(user).forEach((key) => {
-    if (typeof user[key] === 'string') {
+    if (typeof user[key] === 'string' || isDate(user[key])) {
       maskedUser[key] = maskString(user[key]);
     } else {
       maskedUser[key] = maskUserPropertyValues(user[key]);
@@ -447,10 +447,8 @@ export const configureUsersModule = async ({
       if (!options?.enableRightToBeForgotten) throw Error('Right to be forgotten is disabled');
       const { modules } = context;
       const { _id, ...user } = await modules.users.findUserById(userId);
-      console.log(user);
       const maskedUserData = maskUserPropertyValues(user);
-      console.log(maskedUserData);
-      await modules.users.updateUser({ _id }, { $set: { ...maskedUserData } }, {});
+      await modules.users.updateUser({ _id }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
       return true;
     },
   };
