@@ -118,7 +118,6 @@ export interface QuotationMutations {
     quotationId: string,
     params: { status: QuotationStatus; info?: string },
   ) => Promise<Quotation>;
-  removeQuotationByUserId: (userId: string) => Promise<number>;
 }
 
 export type QuotationsModule = QuotationQueries &

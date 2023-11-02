@@ -399,11 +399,6 @@ export type RemoveProductService = (
   unchainedAPI: UnchainedCore,
 ) => Promise<boolean>;
 
-export type RemoveUserTracesProductService = (
-  params: { userId: string },
-  unchainedAPI: UnchainedCore,
-) => Promise<boolean>;
-
 export interface ProductServices {
   removeProduct: RemoveProductService;
 }
