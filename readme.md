@@ -41,7 +41,7 @@ npm start
 
 See [changelog.md](changelog.md)
 
-## Migration to Unchained 2.0
+## Migration to Unchained 2.0
 
 1. WHATWG Fetch Support required
 Update Node to 18 or enable Experimental Fetch support on Node.js 16+
