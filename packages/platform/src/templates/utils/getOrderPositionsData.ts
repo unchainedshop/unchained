@@ -1,6 +1,7 @@
 import { Locale } from '@unchainedshop/types/common.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order } from '@unchainedshop/types/orders.js';
+import formatPrice from './formatPrice.js';
 
 export const getOrderPositionsData = async (
   order: Order,
@@ -12,12 +13,7 @@ export const getOrderPositionsData = async (
     orderId: order._id,
   });
 
-  const formatPrice = (price: number) => {
-    const fixedPrice = price / 100;
-    return `${order.currency} ${fixedPrice}`;
-  };
-
-  await Promise.all(
+  return Promise.all(
     orderPositions.map(async (orderPosition) => {
       const productTexts = await modules.products.texts.findLocalizedText({
         productId: orderPosition.productId,
@@ -28,18 +24,21 @@ export const getOrderPositionsData = async (
         locale: params.locale?.normalized,
       });
 
-      const productTitle = productTexts?.title; // deprecated
-
       const positionPricing = modules.orders.positions.pricingSheet(
         orderPosition,
         order.currency,
         context,
       );
-      const total = formatPrice(positionPricing.sum());
+      const total = formatPrice({
+        amount: positionPricing.sum(),
+        currency: order.currency,
+      });
+
       const { quantity } = positionPricing;
       return {
+        productId: orderPosition.productId,
+        configuration: orderPosition.configuration,
         originalProductTexts,
-        product: productTitle,
         productTexts,
         quantity,
         total,

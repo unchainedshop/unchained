@@ -1,44 +1,48 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging.js';
 import { systemLocale } from '@unchainedshop/utils';
-import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData.js';
 import { getOrderPositionsData } from './utils/getOrderPositionsData.js';
+import { getOrderSummaryData } from './utils/getOrderSummaryData.js';
 
-const { EMAIL_FROM, EMAIL_WEBSITE_NAME, ROOT_URL } = process.env;
+const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
 const textTemplate = `
-  {{subject}}\n
-  \n
-  Order number: {{orderNumber}}\n
-  Order date: {{orderDate}}\n
-  Link: {{adminUILink}}\n
-  \n
-  Delivery address:\n
-  -----------------\n
-  {{address.firstName}} {{address.lastName}}\n
-  {{address.company}}\n
-  {{address.addressLine}}\n
-  {{address.addressLine2}}\n
-  {{address.postalCode}} {{address.city}}\n
-  {{address.regionCode}}\n
-  {{address.countryCode}}\n
-  \n
-  Articles:\n
-  -----------------\n
-  {{#items}}
-  * {{sku}} - {{name}}      CHF {{price}}     {{quantity}}\n
-  {{/items}}
+New Order:
+
+Order number: {{orderNumber}}
+Ordered: {{orderDate}}
+
+Delivery address:
+-----------------
+{{summary.deliveryAddress}}
+
+Billing address:
+-----------------
+{{summary.billingAddress}}
+
+Articles:
+-----------------
+{{#positions}}
+* {{quantity}} {{productTexts.title}}: {{total}}
+
+{{/positions}}
+
+Subtotal: {{summary.items}}
+{{#summary.raw.delivery.amount}}
+Delivery: {{summary.delivery}}
+{{/summary.raw.delivery.amount}}
+{{#summary.raw.payment.amount}}
+Payment: {{summary.payment}}
+{{/summary.raw.payment.amount}}
+Total: {{summary.gross}}
+{{#summary.raw.taxes.amount}}
+(VAT included: {{summary.taxes}})
+{{/summary.raw.taxes.amount}}
 `;
 
 export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config, orderId }, context) => {
   const { modules } = context;
   const order = await modules.orders.findOrder({ orderId });
-  const orderPricing = modules.orders.pricingSheet(order);
 
-  const orderDate = new Date(order.ordered).toLocaleString();
-
-  const attachments = await getOrderAttachmentsData(order, { fileType: 'DELIVERY_NOTE' }, context);
-
-  const address = order.billingAddress;
   const configObject = config.reduce((acc, { key, value }) => {
     return {
       ...acc,
@@ -48,19 +52,14 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config,
 
   const subject = `${EMAIL_WEBSITE_NAME}: New Order / ${order.orderNumber}`;
 
-  const adminUILink = `${ROOT_URL}/orders/view/?_id=${order._id}`;
-
   const data = {
-    contact: order.contact || {},
-    adminUILink,
-    items: getOrderPositionsData(order, { locale: systemLocale }, context),
-    orderDate,
-    orderNumber: order.orderNumber,
     shopName: EMAIL_WEBSITE_NAME,
-    subject,
-    total: orderPricing.total({ useNetPrice: false }).amount / 100,
-    ...configObject,
-    address,
+    shopUrl: EMAIL_WEBSITE_URL,
+    orderDate: new Date(order.ordered).toLocaleString(),
+    orderNumber: order.orderNumber,
+    currency: order.currency,
+    positions: await getOrderPositionsData(order, { locale: systemLocale }, context),
+    summary: await getOrderSummaryData(order, { locale: systemLocale }, context),
   };
 
   return [
@@ -72,7 +71,6 @@ export const resolveForwardDeliveryTemplate: TemplateResolver = async ({ config,
         cc: configObject.cc,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),
-        attachments,
       },
     },
   ];

@@ -1,37 +1,42 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging.js';
-import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
-import { getOrderAttachmentsData } from './utils/getOrderAttachmentsData.js';
 import { getOrderPositionsData } from './utils/getOrderPositionsData.js';
+import { getOrderSummaryData } from './utils/getOrderSummaryData.js';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
 const textTemplate = `
-  {{subject}}\n
-  \n
-  {{thankyou}}\n
-  \n
-  -----------------\n
-  {{buttonText}}: {{url}}\n
-  -----------------\n
-`;
+Thank you very much for your order.
 
-const texts = {
-  en: {
-    buttonText: 'Follow purchase order status',
-    thankyou: 'Thank you for your order on',
-    subject: `${EMAIL_WEBSITE_NAME}: Order confirmation`,
-  },
-  de: {
-    buttonText: 'Bestellstatus verfolgen',
-    thankyou: 'Vielen Dank für deine Bestellung bei',
-    subject: `${EMAIL_WEBSITE_NAME}: Bestellbestätigung`,
-  },
-  fr: {
-    buttonText: 'Follow purchase order status',
-    thankyou: 'Thank you for your order on',
-    subject: `${EMAIL_WEBSITE_NAME}: Order confirmation`,
-  },
-};
+Order number: {{orderNumber}}
+Ordered: {{orderDate}}
+
+Delivery address:
+-----------------
+{{summary.deliveryAddress}}
+
+Billing address:
+-----------------
+{{summary.billingAddress}}
+
+Articles:
+-----------------
+{{#positions}}
+* {{quantity}} {{productTexts.title}}: {{total}}
+
+{{/positions}}
+
+Subtotal: {{summary.items}}
+{{#summary.raw.delivery.amount}}
+Delivery: {{summary.delivery}}
+{{/summary.raw.delivery.amount}}
+{{#summary.raw.payment.amount}}
+Payment: {{summary.payment}}
+{{/summary.raw.payment.amount}}
+Total: {{summary.gross}}
+{{#summary.raw.taxes.amount}}
+(VAT included: {{summary.taxes}})
+{{/summary.raw.taxes.amount}}
+`;
 
 export const resolveOrderConfirmationTemplate: TemplateResolver = async (
   { orderId, locale },
@@ -44,54 +49,18 @@ export const resolveOrderConfirmationTemplate: TemplateResolver = async (
     return [];
   }
 
-  const formatPrice = (price: number) => {
-    const fixedPrice = price / 100;
-    return `${order.currency} ${fixedPrice}`;
-  };
-
-  // TODO: If order.status is PENDING, we should only send the user
-  // a notice that we have received the order but not confirming it
-  const attachments = await getOrderAttachmentsData(order, { fileType: 'ORDER_CONFIRMATION' }, context);
-
-  const orderPricing = modules.orders.pricingSheet(order);
-
-  const { subject } = texts[locale.language];
+  const subject = `${EMAIL_WEBSITE_NAME}: Order confirmation`;
 
   const data = {
-    ...texts[locale.language],
     shopName: EMAIL_WEBSITE_NAME,
     shopUrl: EMAIL_WEBSITE_URL,
-    subject,
-    url: `${EMAIL_WEBSITE_URL}/order?_id=${order._id}`,
-    summary: {
-      items: formatPrice(
-        orderPricing.total({
-          category: OrderPricingRowCategory.Items,
-          useNetPrice: false,
-        }).amount,
-      ),
-      taxes: formatPrice(
-        orderPricing.total({
-          category: OrderPricingRowCategory.Taxes,
-          useNetPrice: false,
-        }).amount,
-      ),
-      delivery: formatPrice(
-        orderPricing.total({
-          category: OrderPricingRowCategory.Delivery,
-          useNetPrice: false,
-        }).amount,
-      ),
-      payment: formatPrice(
-        orderPricing.total({
-          category: OrderPricingRowCategory.Payment,
-          useNetPrice: false,
-        }).amount,
-      ),
-      gross: formatPrice(orderPricing.total({ useNetPrice: false }).amount),
-    },
-    positions: getOrderPositionsData(order, { locale }, context),
+    orderDate: new Date(order.ordered).toLocaleString(),
+    orderNumber: order.orderNumber,
+    currency: order.currency,
+    summary: await getOrderSummaryData(order, { locale }, context),
+    positions: await getOrderPositionsData(order, { locale }, context),
   };
+
   return [
     {
       type: 'EMAIL',
@@ -100,7 +69,6 @@ export const resolveOrderConfirmationTemplate: TemplateResolver = async (
         to: order.contact.emailAddress,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),
-        attachments,
       },
     },
   ];
