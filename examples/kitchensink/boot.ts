@@ -6,6 +6,7 @@ import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { startPlatform, connectPlatformToExpress4 } from '@unchainedshop/platform';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
+import { ApolloServerPluginLandingPageGraphiQLPlayground } from 'apollo-graphiql-playground';
 import { log } from '@unchainedshop/logger';
 import serveStatic from 'serve-static';
 
@@ -32,6 +33,9 @@ const start = async () => {
         },
       }),
       ApolloServerPluginDrainHttpServer({ httpServer }),
+      ApolloServerPluginLandingPageGraphiQLPlayground({
+        shouldPersistHeaders: true,
+      }),
     ],
     options: {
       accounts: {
