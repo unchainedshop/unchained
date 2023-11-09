@@ -1,5 +1,5 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging.js';
-import formatWorkItems from './utils/formatWorkItems.js';
+import util from 'util';
 
 const {
   EMAIL_FROM = 'noreply@unchained.local',
@@ -7,6 +7,15 @@ const {
   EMAIL_WEBSITE_NAME = 'Unchained',
   ROOT_URL,
 } = process.env;
+
+const formatWorkItems = (workItems) => {
+  return workItems
+    .map(({ _id, type, started, error }) => {
+      const stringifiedErrors = util.inspect(error, false, 10, false);
+      return `${new Date(started).toLocaleString()} ${type} (${_id}): ${stringifiedErrors}`;
+    })
+    .join('\n');
+};
 
 const textTemplate = `
 -------------------------
