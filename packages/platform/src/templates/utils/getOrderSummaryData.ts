@@ -2,6 +2,7 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order } from '@unchainedshop/types/orders.js';
 import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
 import { Locale } from '@unchainedshop/types/common.js';
+import { DeliveryInterface } from '@unchainedshop/types/delivery.js';
 import formatPrice from './formatPrice.js';
 import { formatAddress } from './formatAddress.js';
 
@@ -16,6 +17,12 @@ export const getOrderSummaryData = async (
   });
   const orderPayment = await modules.orders.payments.findOrderPayment({
     orderPaymentId: order.paymentId,
+  });
+  const paymentProvider = await modules.payment.paymentProviders.findProvider({
+    paymentProviderId: orderPayment.paymentProviderId,
+  });
+  const deliveryProvider = await modules.delivery.findProvider({
+    deliveryProviderId: orderDelivery.deliveryProviderId,
   });
 
   const deliveryAddress = formatAddress(orderDelivery?.context?.deliveryAddress || order.billingAddress);
@@ -44,23 +51,27 @@ export const getOrderSummaryData = async (
 
   const total = orderPricing.total({ useNetPrice: false });
 
+  const payment = paymentProvider.adapterKey;
+  const delivery = deliveryProvider.adapterKey;
+
   return {
-    raw: {
+    rawPrices: {
       items: itemsTotal,
       taxes: taxesTotal,
       delivery: deliveryTotal,
       payment: paymentTotal,
       gross: total,
-      order,
-      orderDelivery,
-      orderPayment,
     },
+    prices: {
+      items: formatPrice(itemsTotal),
+      taxes: formatPrice(taxesTotal),
+      delivery: formatPrice(deliveryTotal),
+      payment: formatPrice(paymentTotal),
+      gross: formatPrice(total),
+    },
+    payment,
+    delivery,
     deliveryAddress,
     billingAddress,
-    items: formatPrice(itemsTotal),
-    taxes: formatPrice(taxesTotal),
-    delivery: formatPrice(deliveryTotal),
-    payment: formatPrice(paymentTotal),
-    gross: formatPrice(total),
   };
 };

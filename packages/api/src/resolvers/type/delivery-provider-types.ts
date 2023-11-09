@@ -41,6 +41,7 @@ export const DeliveryProvider: DeliveryProviderHelperTypes = {
   interface(obj, _, { modules }) {
     const Interface = modules.delivery.findInterface(obj);
 
+    // TODO: Harmonize with Payment, eliminate double mappings (_id -> key -> _id ...)
     if (!Interface) return null;
 
     return {

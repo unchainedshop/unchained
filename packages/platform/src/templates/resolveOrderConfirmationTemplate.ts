@@ -9,33 +9,32 @@ Thank you very much for your order.
 
 Order number: {{orderNumber}}
 Ordered: {{orderDate}}
+Payment method: {{summary.payment}}
+Delivery method: {{summary.delivery}}
 
 Delivery address:
------------------
 {{summary.deliveryAddress}}
 
 Billing address:
------------------
 {{summary.billingAddress}}
 
-Articles:
------------------
+Order Details:
+
+Items:
 {{#positions}}
 * {{quantity}} {{productTexts.title}}: {{total}}
-
 {{/positions}}
 
-Subtotal: {{summary.items}}
-{{#summary.raw.delivery.amount}}
-Delivery: {{summary.delivery}}
-{{/summary.raw.delivery.amount}}
-{{#summary.raw.payment.amount}}
-Payment: {{summary.payment}}
-{{/summary.raw.payment.amount}}
-Total: {{summary.gross}}
-{{#summary.raw.taxes.amount}}
-(VAT included: {{summary.taxes}})
-{{/summary.raw.taxes.amount}}
+{{#summary.rawPrices.delivery.amount}}
+Delivery Fees: {{summary.prices.delivery}}
+{{/summary.rawPrices.delivery.amount}}
+{{#summary.rawPrices.payment.amount}}
+Payment Fees: {{summary.prices.payment}}
+{{/summary.rawPrices.payment.amount}}
+Total: {{summary.prices.gross}}
+{{#summary.rawPrices.taxes.amount}}
+(VAT included: {{summary.prices.taxes}})
+{{/summary.rawPrices.taxes.amount}}
 `;
 
 export const resolveOrderConfirmationTemplate: TemplateResolver = async (
