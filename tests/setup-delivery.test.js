@@ -1,12 +1,12 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleDeliveryProvider } from './seeds/deliveries';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { SimpleDeliveryProvider } from './seeds/deliveries.js';
 
 describe('setup delivery providers', () => {
   let graphqlFetch;
 
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   describe('Mutation.createDeliveryProvider', () => {

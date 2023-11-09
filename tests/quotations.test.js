@@ -2,10 +2,10 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { ProcessingQuotation, ProposedQuotation } from './seeds/quotations';
-import { SimpleProduct } from './seeds/products';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { ProcessingQuotation, ProposedQuotation } from './seeds/quotations.js';
+import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetch;
 let graphqlAnonymousFetch;
@@ -13,13 +13,13 @@ let graphqlAnonymousFetch;
 describe('TranslatedFilterTexts', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
   });
 
   describe('Query.quotations for admin should', () => {
     it('return list of quotations', async () => {
-      jest.setTimeout(10000);
+      import.meta.jest.setTimeout(10000);
       const {
         data: { quotations },
         errors
@@ -76,7 +76,7 @@ describe('TranslatedFilterTexts', () => {
     });
 
     it('return list of searched quotations by quotation number', async () => {
-      jest.setTimeout(10000);
+      import.meta.jest.setTimeout(10000);
       const {
         data: { quotations },
       } = await graphqlFetch({

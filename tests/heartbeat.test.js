@@ -2,8 +2,8 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
+} from './helpers.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
@@ -11,9 +11,9 @@ let graphqlfetchAsAnonymousUser;
 describe('Heartbeat', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlfetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlfetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   describe('mutation.heartbeat for admin User should', () => {

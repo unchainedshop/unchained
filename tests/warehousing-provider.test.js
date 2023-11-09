@@ -2,9 +2,9 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleWarehousingProvider } from './seeds/warehousings';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 
 let graphqlFetch;
 let graphqlAnonymousFetch;
@@ -12,8 +12,8 @@ let graphqlAnonymousFetch;
 describe('WarehousingProviders', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
   });
 
   describe('Query.warehousingProviders when loggedin should', () => {

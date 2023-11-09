@@ -2,15 +2,15 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;
 
 describe('WarehousingInterfaces', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('For logged in users', () => {
@@ -42,7 +42,7 @@ describe('WarehousingInterfaces', () => {
 
   describe('For Anonymous user', () => {
     it('should return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query WarehousingInterfaces($type: WarehousingProviderType!) {

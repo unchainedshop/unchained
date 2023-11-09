@@ -3,16 +3,18 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   putFile,
-} from './helpers';
-import { readFileSync } from 'node:fs';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
-import { JpegProductMedia, SimpleProduct } from './seeds/products';
+} from './helpers.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { JpegProductMedia, SimpleProduct } from './seeds/products.js';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let graphqlFetch;
-const fs = require('fs');
-const path = require('path');
 
-const productMediaBuffer = readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
+const productMediaBuffer = fs.readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
 const productMediaFile = new Blob(productMediaBuffer, { type: "image/jpeg" });
 
 const productMediaFile2 = fs.createReadStream(
@@ -25,7 +27,7 @@ const productMediaFile3 = fs.createReadStream(
 describe('ProductsVariation', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.addProductMedia for admin user should', () => {
@@ -227,7 +229,7 @@ describe('ProductsVariation', () => {
 
   describe('Mutation.addProductMedia for normal user should', () => {
     it('return NoPermissionError', async () => {
-      const userGraphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      const userGraphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
       const {
         errors,
@@ -251,7 +253,7 @@ describe('ProductsVariation', () => {
 
   describe('Mutation.addProductMedia for anonymous user should', () => {
     it('return NoPermissionError', async () => {
-      const anonymousGraphqlFetch = createAnonymousGraphqlFetch();
+      const anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
 
       const {
         errors,
@@ -342,7 +344,7 @@ describe('ProductsVariation', () => {
 
   describe('mutation.reorderProductMedia for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -462,7 +464,7 @@ describe('ProductsVariation', () => {
 
   describe('mutation.updateProductMediaTexts for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -578,7 +580,7 @@ describe('ProductsVariation', () => {
 
   describe('mutation.removeProductMedia for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `

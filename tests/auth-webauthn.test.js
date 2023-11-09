@@ -1,5 +1,5 @@
-import { setupDatabase, createAnonymousGraphqlFetch, createLoggedInGraphqlFetch } from './helpers';
-import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
+import { setupDatabase, createAnonymousGraphqlFetch, createLoggedInGraphqlFetch } from './helpers.js';
+import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
 let db;
 let graphqlFetch;
@@ -8,8 +8,8 @@ let anonymousGraphqlFetch;
 describe('WebAuthn Flows', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    anonymousGraphqlFetch = createAnonymousGraphqlFetch();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
   });
   
   describe('Mutation.createWebAuthnCredentialCreationOptions', () => {

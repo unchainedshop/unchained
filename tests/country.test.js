@@ -1,16 +1,16 @@
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { BaseCountry } from './seeds/locale-data';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { BaseCountry } from './seeds/locale-data.js';
 
 let graphqlFetch;
 
 describe('Country', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('For admin user ', () => {

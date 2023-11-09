@@ -1,12 +1,12 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleWarehousingProvider } from './seeds/warehousings';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 
 describe('setup warehousing providers', () => {
   let graphqlFetch;
 
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   describe('Mutation.createWarehousingProvider', () => {

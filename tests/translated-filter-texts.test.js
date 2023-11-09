@@ -2,16 +2,16 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { MultiChoiceFilter } from './seeds/filters';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { MultiChoiceFilter } from './seeds/filters.js';
 
 let graphqlFetch;
 
 describe('TranslatedFilterTexts', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Query.translatedFilterTexts for admin user should', () => {
@@ -74,7 +74,7 @@ describe('TranslatedFilterTexts', () => {
 
   describe('Query.TranslatedFilterTexts for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query TranslatedFilterTexts(

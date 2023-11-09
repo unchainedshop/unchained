@@ -2,16 +2,16 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleProduct } from './seeds/products';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetch;
 
 describe('ProductsCommerce', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.updateProductCommerce for admin user should ', () => {
@@ -160,7 +160,7 @@ describe('ProductsCommerce', () => {
 
   describe('mutation.updateProductCommerce for anonymous user', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation UpdateProductCommerce(

@@ -2,10 +2,10 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { SendMailDeliveryProvider } from './seeds/deliveries';
-import { SimpleOrder, SimpleDelivery, PickupDelivery } from './seeds/orders';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
+} from './helpers.js';
+import { SendMailDeliveryProvider } from './seeds/deliveries.js';
+import { SimpleOrder, SimpleDelivery, PickupDelivery } from './seeds/orders.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
@@ -14,9 +14,9 @@ let graphqlFetchAsAnonymousUser;
 describe('Order: Deliveries', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   describe('Mutation.setOrderDeliveryProvider for admin user', () => {

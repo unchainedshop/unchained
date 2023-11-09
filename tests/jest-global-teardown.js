@@ -1,5 +1,5 @@
-import teardownInMemoryMongoDB from '@shelf/jest-mongodb/lib/teardown';
-import { disconnect } from './helpers';
+import teardownInMemoryMongoDB from '@shelf/jest-mongodb/lib/teardown.js';
+import { disconnect } from './helpers.js';
 
 async function cleanup() {
   global.__SUBPROCESS_UNCHAINED__.unref();

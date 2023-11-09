@@ -2,16 +2,16 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { SimpleDeliveryProvider } from './seeds/deliveries';
-import { SimplePaymentProvider } from './seeds/payments';
-import { PlanProduct } from './seeds/products';
+} from './helpers.js';
+import { SimpleDeliveryProvider } from './seeds/deliveries.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
+import { PlanProduct } from './seeds/products.js';
 import {
   ActiveEnrollment,
   InitialEnrollment,
   TerminatedEnrollment,
-} from './seeds/enrollments';
-import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
+} from './seeds/enrollments.js';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
@@ -20,9 +20,9 @@ let graphqlFetchAsAnonymousUser;
 describe('Enrollments', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   describe('Mutation.createCart (Enrollment)', () => {

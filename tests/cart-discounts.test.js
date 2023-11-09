@@ -1,6 +1,6 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleOrder, DiscountedDiscount } from './seeds/orders';
-import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { SimpleOrder, DiscountedDiscount } from './seeds/orders.js';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;
 let adminGraphqlFetch;
@@ -8,8 +8,8 @@ let adminGraphqlFetch;
 describe('Cart: Discounts', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
-    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.addCartDiscount', () => {
