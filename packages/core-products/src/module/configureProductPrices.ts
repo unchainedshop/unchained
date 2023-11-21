@@ -110,6 +110,8 @@ export const configureProductPricesModule = ({
         .update([product._id, country, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''))
         .digest('hex'),
       ...unitPrice,
+      isNetPrice: useNetPrice,
+      isTaxable: pricing.taxSum() > 0,
       currencyCode: pricing.currency,
     };
   };

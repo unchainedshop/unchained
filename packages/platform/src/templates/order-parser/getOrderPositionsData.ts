@@ -3,12 +3,15 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order } from '@unchainedshop/types/orders.js';
 import formatPrice from './formatPrice.js';
 
+type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;
+
 export const getOrderPositionsData = async (
   order: Order,
-  params: { locale?: Locale },
+  params: { locale?: Locale; useNetPrice?: boolean; format?: PriceFormatter },
   context: UnchainedCore,
 ) => {
   const { modules } = context;
+  const { useNetPrice, format = formatPrice } = params || {};
   const orderPositions = await modules.orders.positions.findOrderPositions({
     orderId: order._id,
   });
@@ -29,10 +32,8 @@ export const getOrderPositionsData = async (
         order.currency,
         context,
       );
-      const total = formatPrice({
-        amount: positionPricing.sum(),
-        currency: order.currency,
-      });
+      const total = positionPricing.total({ useNetPrice });
+      const unitPrice = positionPricing.unitPrice({ useNetPrice });
 
       const { quantity } = positionPricing;
       return {
@@ -41,7 +42,12 @@ export const getOrderPositionsData = async (
         originalProductTexts,
         productTexts,
         quantity,
-        total,
+        rawPrices: {
+          unitPrice,
+          total,
+        },
+        unitPrice: format(unitPrice),
+        total: format(total),
       };
     }),
   );

@@ -5,12 +5,15 @@ import { Locale } from '@unchainedshop/types/common.js';
 import formatPrice from './formatPrice.js';
 import { formatAddress } from './formatAddress.js';
 
+type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;
+
 export const getOrderSummaryData = async (
   order: Order,
-  params: { locale?: Locale },
+  params: { locale?: Locale; useNetPrice?: boolean; format?: PriceFormatter },
   context: UnchainedCore,
 ) => {
   const { modules } = context;
+  const { useNetPrice, format = formatPrice } = params || {};
   const orderDelivery = await modules.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId,
   });
@@ -30,25 +33,25 @@ export const getOrderSummaryData = async (
 
   const paymentTotal = orderPricing.total({
     category: OrderPricingRowCategory.Payment,
-    useNetPrice: false,
+    useNetPrice,
   });
 
   const deliveryTotal = orderPricing.total({
     category: OrderPricingRowCategory.Delivery,
-    useNetPrice: false,
+    useNetPrice,
   });
 
   const taxesTotal = orderPricing.total({
     category: OrderPricingRowCategory.Taxes,
-    useNetPrice: false,
+    useNetPrice,
   });
 
   const itemsTotal = orderPricing.total({
     category: OrderPricingRowCategory.Items,
-    useNetPrice: false,
+    useNetPrice,
   });
 
-  const total = orderPricing.total({ useNetPrice: false });
+  const total = orderPricing.total({ useNetPrice });
 
   const payment = paymentProvider.adapterKey;
   const delivery = deliveryProvider.adapterKey;
@@ -62,11 +65,11 @@ export const getOrderSummaryData = async (
       gross: total,
     },
     prices: {
-      items: formatPrice(itemsTotal),
-      taxes: formatPrice(taxesTotal),
-      delivery: formatPrice(deliveryTotal),
-      payment: formatPrice(paymentTotal),
-      gross: formatPrice(total),
+      items: format(itemsTotal),
+      taxes: format(taxesTotal),
+      delivery: format(deliveryTotal),
+      payment: format(paymentTotal),
+      gross: format(total),
     },
     payment,
     delivery,
