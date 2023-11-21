@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/utils",
-  "version": "2.5.9",
+  "version": "2.5.10",
   "main": "lib/utils-index.js",
   "exports": {
     ".": "./lib/utils-index.js",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^2.5.9",
+    "@unchainedshop/logger": "^2.5.10",
     "abort-controller": "3.0.0",
     "hashids": "^2.3.0",
     "locale": "0.1.0",
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.9.0",
-    "@unchainedshop/types": "^2.5.9",
+    "@unchainedshop/types": "^2.5.10",
     "jest": "^29.7.0",
     "typescript": "^5.2.2"
   }
