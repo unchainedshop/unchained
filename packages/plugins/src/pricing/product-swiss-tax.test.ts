@@ -1,82 +1,41 @@
-import { getTaxRate, isDeliveryAddressInSwitzerland,  SwissTaxCategories } from './product-swiss-tax.js';
+import { getTaxRate, isDeliveryAddressInSwitzerland } from './product-swiss-tax.js';
 
 describe("ProductSwissTax", () => {
-describe('SwissTaxCategories', () => {
-  it('DEFAULT rate', () => {
-    expect(SwissTaxCategories.DEFAULT.rate()).toBe(0.077);
-  });
 
-  it('REDUCED rate', () => {
-    expect(SwissTaxCategories.REDUCED.rate()).toBe(0.025);
-  });
-
-  it('SPECIAL rate', () => {
-    expect(SwissTaxCategories.SPECIAL.rate()).toBe(0.037);
-  });
-});
 
 describe('getTaxRate', () => {
   it('default rate', () => {
-    const context: any = {
-      product: {
-        tags: []
-      },
-      provider: {
-        configuration: [],
-      },
-    };
-    expect(getTaxRate(context)).toBe(0.077);
+    expect(getTaxRate({
+      product: {} as any,
+      order: {} as any,
+    })).toBe(0.077);
   });
 
   it('reduced rate', () => {
-    const context: any = {
+    expect(getTaxRate({
       product: {
         tags: ['swiss-tax-category:reduced']
-      },
-      provider: {
-        configuration: [
-          {
-            key: 'swiss-tax-category',
-            value: SwissTaxCategories.REDUCED.rate(),
-          },
-        ],
-      },
-    };
-    expect(getTaxRate(context)).toBe(0.025);
+      } as any,
+      order: {} as any,
+    })).toBe(0.025);
   });
 
   it('special rate', () => {
-    const context: any = {
+    expect(getTaxRate({
       product: {
         tags: ['swiss-tax-category:special']
-      },
-      provider: {
-        configuration: [
-          {
-            key: 'swiss-tax-category',
-            value: SwissTaxCategories.SPECIAL.rate(),
-          },
-        ],
-      },
-    };
-    expect(getTaxRate(context)).toBe(0.037);
+      } as any,
+      order: {} as any,
+    })).toBe(0.037);
   });
 
   it('default rate', () => {
-    const context: any = {
+    expect(getTaxRate({
       product: {
         tags: ['swiss-tax-category:default']
-      },
-      provider: {
-        configuration: [
-          {
-            key: 'swiss-tax-category',
-            value: SwissTaxCategories.DEFAULT.rate(),
-          },
-        ],
-      },
-    };
-    expect(getTaxRate(context)).toBe(0.077);
+      } as any,
+      order: {} as any,
+    })).toBe(0.077);
   });
 
 })

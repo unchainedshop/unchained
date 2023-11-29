@@ -1,39 +1,21 @@
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
-import {
-  IProductPricingAdapter,
-  ProductPricingAdapterContext,
-} from '@unchainedshop/types/products.pricing.js';
+import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing.js';
+import { Product } from '@unchainedshop/types/products.js';
+import { Order } from '@unchainedshop/types/orders.js';
+import { SwissTaxCategories } from './tax/ch.js';
 
-export const SwissTaxCategories = {
-  DEFAULT: {
-    rate: () => {
-      return 0.077;
-    },
-  },
-  REDUCED: {
-    tag: 'swiss-tax-category:reduced',
-    rate: () => {
-      return 0.025;
-    },
-  },
-  SPECIAL: {
-    tag: 'swiss-tax-category:special',
-    rate: () => {
-      return 0.037;
-    },
-  },
-};
+export const getTaxRate = (context: { product: Product; order?: Order }) => {
+  const { product, order } = context;
 
-export const getTaxRate = (context: ProductPricingAdapterContext) => {
-  const { product } = context;
+  const productSpecialTaxTag = product.tags?.find(
+    (tag) => tag?.trim().toLowerCase().startsWith('swiss-tax-category:'),
+  );
+  const taxCategory =
+    Object.values(SwissTaxCategories).find(
+      (t) => `swiss-tax-category:${t.value}` === productSpecialTaxTag?.trim().toLowerCase(),
+    ) || SwissTaxCategories.DEFAULT;
 
-  if (product.tags?.includes(SwissTaxCategories.REDUCED.tag)) {
-    return SwissTaxCategories.REDUCED.rate();
-  }
-  if (product.tags?.includes(SwissTaxCategories.SPECIAL.tag)) {
-    return SwissTaxCategories.SPECIAL.rate();
-  }
-  return SwissTaxCategories.DEFAULT.rate();
+  return taxCategory.rate(order?.ordered);
 };
 
 export const isDeliveryAddressInSwitzerland = async ({ order, country, modules }) => {
@@ -68,6 +50,9 @@ export const ProductSwissTax: IProductPricingAdapter = {
   actions: (params) => {
     const pricingAdapter = ProductPricingAdapter.actions(params);
     const { context } = params;
+
+    console.log(params);
+
     return {
       ...pricingAdapter,
 
