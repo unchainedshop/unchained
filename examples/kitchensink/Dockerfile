@@ -1,4 +1,4 @@
-FROM node:18-alpine as bundler
+FROM node:20-alpine as bundler
 
 # Install app dependencies
 RUN mkdir -p /source
@@ -13,7 +13,7 @@ ADD . /source/
 RUN npm run build || :
 RUN rm -Rf node_modules
 
-FROM node:18-alpine as runtime
+FROM node:20-alpine as runtime
 
 RUN apk add --no-cache --update curl
 

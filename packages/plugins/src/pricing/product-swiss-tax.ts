@@ -51,8 +51,6 @@ export const ProductSwissTax: IProductPricingAdapter = {
     const pricingAdapter = ProductPricingAdapter.actions(params);
     const { context } = params;
 
-    console.log(params);
-
     return {
       ...pricingAdapter,
 
