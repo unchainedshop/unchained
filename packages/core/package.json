@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/core-accountsjs": "^2.5.12",
     "@unchainedshop/core-assortments": "^2.5.12",
     "@unchainedshop/core-bookmarks": "^2.5.12",
     "@unchainedshop/core-countries": "^2.5.12",

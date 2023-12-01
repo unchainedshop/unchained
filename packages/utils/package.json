@@ -31,7 +31,6 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/logger": "^2.5.12",
-    "abort-controller": "3.0.0",
     "hashids": "^2.3.0",
     "locale": "0.1.0",
     "lru-cache": "^10.0.0",

@@ -40,8 +40,6 @@
     "@unchainedshop/plugins": "^2.5.12",
     "@unchainedshop/roles": "^2.5.12",
     "@unchainedshop/utils": "^2.5.12",
-    "event-iterator": "^2.0.0",
-    "JSONStream": "^1.3.5",
     "moniker": "0.1.2"
   },
   "devDependencies": {
