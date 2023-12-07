@@ -10,4 +10,5 @@ module.exports = {
     },
     autoStart: false,
   },
+  useSharedDBForAllJestWorkers: true,
 };

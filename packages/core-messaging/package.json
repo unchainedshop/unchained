@@ -35,7 +35,7 @@
     "mustache": "^4.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.1",
+    "@types/node": "^20.10.3",
     "@unchainedshop/types": "^2.5.12",
     "jest": "^29.7.0",
     "locale": "^0.1.0",

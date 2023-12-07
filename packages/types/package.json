@@ -38,8 +38,8 @@
     "@accounts/types": "^0.33.2",
     "@apollo/server": "^4.9.5",
     "@types/locale": "^0.1.4",
-    "@types/node": "^20.10.1",
-    "mongodb": "^5.9.1",
+    "@types/node": "^20.10.3",
+    "mongodb": "^5.9.2",
     "simpl-schema": "=3.2.0",
     "typedoc": "^0.25.4",
     "typescript": "^5.3.2"
