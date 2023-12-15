@@ -204,7 +204,7 @@ describe('Auth for admin users', () => {
   });
 
   describe('Mutation.updateUserAvatar', () => {
-    it.only('update the avatar of a foreign user', async () => {
+    it('update the avatar of a foreign user', async () => {
       const avatarBuffer = readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
       const avatar = new Blob(avatarBuffer, { type: "image/jpeg" });
       
