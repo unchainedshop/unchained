@@ -1,5 +1,5 @@
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express/index.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import express from 'express';
 
 // Delivery
@@ -89,7 +89,12 @@ const {
 // import './files/minio/minio-adapter';
 // import { minioHandler } from './files/minio/minio-webhook';
 
-export const defaultModules = {
+export const defaultModules: Record<
+  string,
+  {
+    configure: (params: ModuleInput<any>) => any;
+  }
+> = {
   appleTransactions: {
     configure: configureAppleTransactionsModule,
   },
