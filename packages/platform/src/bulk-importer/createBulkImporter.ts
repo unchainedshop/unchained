@@ -1,4 +1,4 @@
-import mongodb, { BulkOperationBase } from 'mongodb';
+import type { BulkOperationBase } from 'mongodb';
 import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core.js';
 import * as AssortmentHandlers from './handlers/assortment/index.js';
 import * as FilterHandlers from './handlers/filter/index.js';
