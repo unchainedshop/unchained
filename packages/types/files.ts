@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
 
@@ -66,12 +67,20 @@ export type UploadFileFromURLService = (
   unchainedAPI: UnchainedCore,
 ) => Promise<File>;
 
+export type CreateDownloadStreamService = (
+  params: {
+    fileId: _ID;
+  },
+  unchainedAPI: UnchainedCore,
+) => Promise<Readable>;
+
 export interface FileServices {
   linkFile: LinkFileService;
   uploadFileFromStream: UploadFileFromStreamService;
   uploadFileFromURL: UploadFileFromURLService;
   createSignedURL: CreateSignedURLService;
   removeFiles: RemoveFilesService;
+  createDownloadStream: CreateDownloadStreamService;
 }
 
 /*
@@ -107,6 +116,7 @@ export interface IFileAdapter extends IBaseAdapter {
     fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown> },
     unchainedAPI: UnchainedCore,
   ) => Promise<UploadFileData | null>;
+  createDownloadStream: (file: File, unchainedAPI: UnchainedCore) => Promise<Readable>;
 }
 
 export type IFileDirector = IBaseDirector<IFileAdapter> & {

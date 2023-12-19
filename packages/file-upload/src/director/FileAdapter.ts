@@ -18,6 +18,11 @@ export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
       resolve(null);
     });
   },
+  createDownloadStream() {
+    return new Promise<null>((resolve) => {
+      resolve(null);
+    });
+  },
   uploadFileFromURL() {
     return new Promise<null>((resolve) => {
       resolve(null);

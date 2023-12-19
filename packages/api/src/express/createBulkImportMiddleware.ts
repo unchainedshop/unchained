@@ -35,10 +35,12 @@ export default function bulkImportMiddleware(contextResolver: UnchainedContextRe
       };
 
       const date = new Date().toISOString();
+
       const file = await context.services.files.uploadFileFromStream(
         {
           directoryName: 'bulk-import-streams',
-          rawFile: { filename: `${date}.json`, createReadStream: () => req },
+          rawFile: Promise.resolve({ filename: `${date}.json`, createReadStream: () => req }),
+          meta: {},
         },
         context,
       );

@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger, LogLevel } from '@unchainedshop/logger';
@@ -11,9 +10,19 @@ const logger = createLogger('unchained:platform:bulk-import');
 const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI: UnchainedCore) => {
   logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
 
+  const readStream = await unchainedAPI.services.files.createDownloadStream(
+    { fileId: payloadId },
+    unchainedAPI,
+  );
+
+  if (!readStream) {
+    throw new Error(
+      'The current file adapter does not support streams when downloading required for streamed events. Please use a different file adapter.',
+    );
+  }
+
   const eventIterator = new EventIterator(
     (queue) => {
-      const readStream = unchainedAPI.services.files.streamFile(payloadId);
       const jsonStream = JSONStream.parse('events.*'); // rows, ANYTHING, doc
       jsonStream.on('data', queue.push);
       jsonStream.on('close', queue.stop);

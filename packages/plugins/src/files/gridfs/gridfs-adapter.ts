@@ -10,6 +10,7 @@ import {
   resolveExpirationDate,
 } from '@unchainedshop/file-upload';
 import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
+import { read } from 'fs';
 import sign from './sign.js';
 
 const { ROOT_URL } = process.env;
@@ -111,6 +112,11 @@ export const GridFSAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName) || response.headers.get('content-type'),
       url,
     } as UploadFileData;
+  },
+
+  async createDownloadStream(file, { modules }: any) {
+    const readStream = await modules.gridfsFileUploads.createReadStream(file.path, file._id);
+    return readStream;
   },
 
   async removeFiles(files, { modules }: any) {

@@ -90,7 +90,7 @@ connectToMinio().then(function setClient(c) {
   client = c;
 });
 
-const createDownloadStream = async (
+const createHttpDownloadStream = async (
   fileUrl: string,
   headers: OutgoingHttpHeaders,
 ): Promise<http.IncomingMessage> => {
@@ -211,8 +211,8 @@ export const MinioAdapter: IFileAdapter = {
     const fileName = fname || href.split('/').pop();
     const _id = buildHashedFilename(directoryName, fileName, new Date());
 
-    const stream = await createDownloadStream(fileLink, headers);
-    const type = stream?.headers?.['content-type'] || getMimeType(fileName);
+    const stream = await createHttpDownloadStream(fileLink, headers);
+    const type = mimeType.lookup(fileName) || stream.headers['content-type'];
 
     const metaData = {
       'Content-Type': type,
@@ -236,6 +236,13 @@ export const MinioAdapter: IFileAdapter = {
       type,
       url: generateMinioUrl(directoryName, _id),
     } as UploadFileData;
+  },
+
+  async createDownloadStream(file) {
+    if (!client) throw new Error('Minio not connected, check env variables');
+
+    const stream = await client.getObject(MINIO_BUCKET_NAME, generateMinioPath(file.path, file._id));
+    return stream;
   },
 };
 
