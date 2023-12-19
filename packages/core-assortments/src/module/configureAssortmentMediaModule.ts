@@ -72,6 +72,7 @@ export const configureAssortmentMediaModule = async ({
       {
         upsert: true,
         returnDocument: 'after',
+        includeResultMetadata: true,
       },
     );
     if (currentText.ok) {

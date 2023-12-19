@@ -71,6 +71,7 @@ export const configureProductMediaModule = async ({
       {
         upsert: true,
         returnDocument: 'after',
+        includeResultMetadata: true,
       },
     );
     if (updateResult.ok) {

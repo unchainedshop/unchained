@@ -80,6 +80,7 @@ export const configureProductTextsModule = ({
     const updateResult = await ProductTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
       returnDocument: 'after',
+      includeResultMetadata: true,
     });
 
     if (updateResult.ok) {

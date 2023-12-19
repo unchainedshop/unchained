@@ -118,10 +118,10 @@ export const configureWorkerModule = async ({
     );
 
     WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
-      work: result.value,
+      work: result,
     });
 
-    return result.value;
+    return result;
   };
 
   const finishWork: WorkerModule['finishWork'] = async (
@@ -403,6 +403,7 @@ export const configureWorkerModule = async ({
           {
             sort: buildSortOptions(defaultSort),
             returnDocument: 'after',
+            includeResultMetadata: true,
             upsert: true,
           },
         );

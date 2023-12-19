@@ -78,6 +78,7 @@ export const configureAssortmentTextsModule = ({
     const updateResult = await AssortmentTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
       returnDocument: 'after',
+      includeResultMetadata: true,
     });
 
     if (updateResult.ok) {

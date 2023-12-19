@@ -142,7 +142,6 @@ describe('Auth for logged in users', () => {
           },
         },
         {
-          returnDocument: 'after',
           upsert: true,
         },
       );

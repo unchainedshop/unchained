@@ -46,6 +46,7 @@ export const configureFilterTextsModule = ({
     const updateResult = await FilterTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
       returnDocument: 'after',
+      includeResultMetadata: true,
     });
 
     if (updateResult.ok) {
