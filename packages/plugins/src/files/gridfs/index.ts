@@ -2,15 +2,7 @@ import mongodb from 'mongodb';
 
 export const configureGridFSFileUploadModule = ({ db }) => {
   // eslint-disable-next-line
-  // @ts-ignore
-  const isMeteor = typeof Meteor === 'object';
-
-  // eslint-disable-next-line
   let { GridFSBucket } = mongodb;
-  if (isMeteor) {
-    const { MongoInternals } = require('meteor/mongo'); // eslint-disable-line
-    GridFSBucket = MongoInternals.NpmModule.GridFSBucket;
-  }
 
   return {
     createWriteStream: async (directoryName, fileId, fileName) => {
