@@ -81,7 +81,7 @@ export const configureAssortmentTextsModule = ({
       includeResultMetadata: true,
     });
 
-    if (updateResult) {
+    if (updateResult.ok) {
       const assortmentSelector = generateDbFilterById(assortmentId);
       await Assortments.updateOne(assortmentSelector, {
         $set: {
@@ -108,11 +108,11 @@ export const configureAssortmentTextsModule = ({
       );
       await emit('ASSORTMENT_UPDATE_TEXT', {
         assortmentId,
-        text: updateResult,
+        text: updateResult.value,
       });
     }
 
-    return updateResult;
+    return updateResult.value;
   };
 
   return {

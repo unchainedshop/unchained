@@ -74,13 +74,13 @@ export const configureProductMediaModule = async ({
         includeResultMetadata: true,
       },
     );
-    if (updateResult) {
+    if (updateResult.ok) {
       await emit('PRODUCT_UPDATE_MEDIA_TEXT', {
         productMediaId,
-        text: updateResult,
+        text: updateResult.value,
       });
     }
-    return updateResult;
+    return updateResult.value;
   };
 
   return {

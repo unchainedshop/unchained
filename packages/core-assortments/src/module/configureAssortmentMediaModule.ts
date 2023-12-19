@@ -75,13 +75,13 @@ export const configureAssortmentMediaModule = async ({
         includeResultMetadata: true,
       },
     );
-    if (currentText) {
+    if (currentText.ok) {
       await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
         assortmentMediaId,
-        text: currentText,
+        text: currentText.value,
       });
     }
-    return currentText;
+    return currentText.value;
   };
 
   return {

@@ -83,7 +83,7 @@ export const configureProductTextsModule = ({
       includeResultMetadata: true,
     });
 
-    if (updateResult) {
+    if (updateResult.ok) {
       await Products.updateOne(generateDbFilterById(productId), {
         $set: {
           updated: new Date(),
@@ -109,11 +109,11 @@ export const configureProductTextsModule = ({
       );
       await emit('PRODUCT_UPDATE_TEXT', {
         productId,
-        text: updateResult,
+        text: updateResult.value,
       });
     }
 
-    return updateResult;
+    return updateResult.value;
   };
 
   return {

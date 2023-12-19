@@ -405,7 +405,6 @@ export const configureWorkerModule = async ({
             returnDocument: 'after',
             includeResultMetadata: true,
             upsert: true,
-            includeResultMetadata: true,
           },
         );
 
