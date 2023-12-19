@@ -1,6 +1,6 @@
 import { MongoClient, Collection } from 'mongodb';
 import { execute, toPromise, gql } from '@apollo/client/core/index.js';
-
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import seedLocaleData from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
 import seedProducts from './seeds/products.js';
@@ -82,14 +82,13 @@ const convertLinkToFetch =
 
 export const createAnonymousGraphqlFetch = async () => {
   const uri = 'http://localhost:4010/graphql';
-  const createUploadLink = (await import('apollo-upload-client/createUploadLink.mjs')).default;
 
   const link = createUploadLink({
     uri,
     includeExtensions: true,
-    fetchOptions: {
-      duplex: 'half',
-    },
+    // fetchOptions: {
+    //   duplex: 'half',
+    // },
     headers: {
       'apollo-require-preflight': true,
     },
@@ -99,14 +98,13 @@ export const createAnonymousGraphqlFetch = async () => {
 
 export const createLoggedInGraphqlFetch = async (token = ADMIN_TOKEN) => {
   const uri = 'http://localhost:4010/graphql';
-  const createUploadLink = (await import('apollo-upload-client/createUploadLink.mjs')).default;
 
   const link = createUploadLink({
     uri,
-    includeExtensions: true,
-    fetchOptions: {
-      duplex: 'half',
-    },
+    // includeExtensions: true,
+    // fetchOptions: {
+    //   duplex: 'half',
+    // },
     headers: {
       authorization: token,
       'apollo-require-preflight': true,

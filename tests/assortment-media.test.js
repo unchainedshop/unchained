@@ -17,11 +17,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let graphqlFetch;
 let userGraphqlFetch;
 
-const assortmentMediaFileBuffer = fs.readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
+const assortmentMediaFileBuffer = fs.readFileSync(path.resolve(__dirname, `./assets/zurich.jpg`));
 const assortmentMediaFile = new Blob(assortmentMediaFileBuffer, { type: "image/jpeg" });
 
 const assortmentMediaFile2 = fs.createReadStream(
-  path.resolve(__dirname, `./assets/image.jpg`)
+  path.resolve(__dirname, `./assets/zurich.jpg`)
 );
 
 const assortmentMediaFile3 = fs.createReadStream(
@@ -37,6 +37,7 @@ describe("AssortmentMedia", () => {
 
   describe("Mutation.addAssortmentMedia for admin user should", () => {
     it("upload assortment media correctly", async () => {
+      import.meta.jest.setTimeout(10000);
       const {
         data: { addAssortmentMedia },
       } = await graphqlFetch({
@@ -60,7 +61,6 @@ describe("AssortmentMedia", () => {
           media: assortmentMediaFile,
         },
       });
-
       expect(addAssortmentMedia?.file).toMatchObject({
         name: 'blob',
         type: 'image/jpeg',
@@ -68,10 +68,11 @@ describe("AssortmentMedia", () => {
       const hash = crypto.createHash('sha256');
       const download = await (await fetch(addAssortmentMedia.file.url)).text();
       hash.update(download);
-      expect(hash.digest('hex')).toBe('c60b924c5ea542c64e791e9e371571c4fe39f57e0cb2d76e16703414b24f9412')
+      expect(hash.digest('hex')).toBe('98a5675d5f4b4fecf80c26e344e5e97f185c11a54b4008bb76fa017bb45d60fd')
     }, 20000);
 
     it("return AssortmentNotFoundError when passed non existing assortment ID", async () => {
+      import.meta.jest.setTimeout(10000);
       const {
         errors,
       } = await graphqlFetch({
@@ -92,6 +93,7 @@ describe("AssortmentMedia", () => {
     });
 
     it("return InvalidIdError when passed Invalid assortment ID", async () => {
+      import.meta.jest.setTimeout(10000);
       const {
         errors,
       } = await graphqlFetch({
@@ -114,6 +116,7 @@ describe("AssortmentMedia", () => {
 
   describe("Mutation.addAssortmentMedia for normal user should", () => {
     it("return NoPermissionError", async () => {
+      import.meta.jest.setTimeout(10000);
       const {
         errors,
       } = await userGraphqlFetch({
@@ -137,6 +140,7 @@ describe("AssortmentMedia", () => {
 
   describe("Mutation.addAssortmentMedia for anonymous user should", () => {
     it("return NoPermissionError", async () => {
+      import.meta.jest.setTimeout(10000);
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const {
@@ -241,7 +245,7 @@ describe("AssortmentMedia", () => {
       const hash = crypto.createHash('sha256');
       const download = await (await fetch(assortment.media[2].file.url)).text();
       hash.update(download);
-      expect(hash.digest('hex')).toBe('9f577129bae6b0fef97013c4224cc7f3e2efd9b232fe4cd9c3c79a33950e4b9c')
+      expect(hash.digest('hex')).toBe('5d3291cf26f878a23363c581ab4c124f65022d86089d3b532326b5705689743c')
     }, 20000);
 
     it("link uploaded media file with assortment media successfully", async () => {

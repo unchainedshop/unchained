@@ -69,7 +69,7 @@ export const GridFSAdapter: IFileAdapter = {
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
-    await pipeline(stream, new PassThrough(), writeStream);
+    await pipeline(stream, new PassThrough({ allowHalfOpen: true }), writeStream);
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${_id}`;
 

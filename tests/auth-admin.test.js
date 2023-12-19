@@ -205,7 +205,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.updateUserAvatar', () => {
     it('update the avatar of a foreign user', async () => {
-      const avatarBuffer = readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
+      const avatarBuffer = readFileSync(path.resolve(__dirname, `./assets/zurich.jpg`));
       const avatar = new Blob(avatarBuffer, { type: "image/jpeg" });
       
       const {
@@ -241,7 +241,7 @@ describe('Auth for admin users', () => {
       // const hash = crypto.createHash('sha256');
       // const download = await (await fetch(updateUserAvatar.avatar.url)).text();
       // hash.update(download)
-      // expect(hash.digest('hex')).toBe('c60b924c5ea542c64e791e9e371571c4fe39f57e0cb2d76e16703414b24f9412')
+      // expect(hash.digest('hex')).toBe('98a5675d5f4b4fecf80c26e344e5e97f185c11a54b4008bb76fa017bb45d60fd')
     }, 99999);
   });
 

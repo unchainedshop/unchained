@@ -14,11 +14,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let graphqlFetch;
 
-const productMediaBuffer = fs.readFileSync(path.resolve(__dirname, `./assets/image.jpg`));
+const productMediaBuffer = fs.readFileSync(path.resolve(__dirname, `./assets/zurich.jpg`));
 const productMediaFile = new Blob(productMediaBuffer, { type: "image/jpeg" });
 
 const productMediaFile2 = fs.createReadStream(
-  path.resolve(__dirname, `./assets/image.jpg`)
+  path.resolve(__dirname, `./assets/zurich.jpg`)
 );
 const productMediaFile3 = fs.createReadStream(
   path.resolve(__dirname, `./assets/contract.pdf`)
@@ -32,6 +32,7 @@ describe('ProductsVariation', () => {
 
   describe('Mutation.addProductMedia for admin user should', () => {
     it('upload product media correctly', async () => {
+      import.meta.jest.setTimeout(10000);
       const {
         data: { addProductMedia },
       } = await graphqlFetch({
@@ -63,6 +64,7 @@ describe('ProductsVariation', () => {
     }, 10000);
 
     it('return ProductNotFoundError when passed non existing product ID', async () => {
+      import.meta.jest.setTimeout(10000);
       const {
         errors,
       } = await graphqlFetch({
@@ -83,6 +85,7 @@ describe('ProductsVariation', () => {
     });
 
     it('return InvalidIdError when passed Invalid product ID', async () => {
+      import.meta.jest.setTimeout(10000);
       const {
         errors,
       } = await graphqlFetch({
@@ -253,6 +256,7 @@ describe('ProductsVariation', () => {
 
   describe('Mutation.addProductMedia for anonymous user should', () => {
     it('return NoPermissionError', async () => {
+      import.meta.jest.setTimeout(10000);
       const anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
 
       const {
