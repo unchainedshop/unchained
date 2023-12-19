@@ -1,4 +1,4 @@
-import { Db, Update, _ID, GridFSBucket } from './common.js';
+import { Db, Update, _ID } from './common.js';
 import { Modules, ModuleOptions } from './modules.js';
 import { Services } from './services.js';
 import { IRoleOptionConfig } from './roles.js';
