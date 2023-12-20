@@ -35,7 +35,7 @@
     "@unchainedshop/events": "^2.5.12",
     "@unchainedshop/logger": "^2.5.12",
     "@unchainedshop/utils": "^2.5.12",
-    "date-fns": "^3.0.0",
+    "date-fns": "^3.0.1",
     "locale": "0.1.0",
     "simpl-schema": "=3.2.0"
   },

@@ -1,5 +1,5 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import * as dateFns from 'date-fns/add';
+import { add } from 'date-fns/add';
 
 import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments.js';
 
@@ -15,7 +15,7 @@ export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, i
 
   return {
     start,
-    end: dateFns.add(start, {
+    end: add(start, {
       [lowerCaseInterval]: intervalCount,
     }),
   };
