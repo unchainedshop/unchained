@@ -231,7 +231,6 @@ export const configureOrderModuleMutations = ({
       }
       return false;
     },
-
     updateCalculation,
   };
 };

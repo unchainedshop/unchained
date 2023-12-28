@@ -1,7 +1,7 @@
 import localePkg from 'locale';
 import { Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
+import { User, UserQuery, UserSettingsOptions, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -11,11 +11,44 @@ import {
   systemLocale,
   buildSortOptions,
 } from '@unchainedshop/utils';
+import crypto from 'crypto';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
+
+const isDate = (value) => {
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime());
+};
+
+function maskString(value) {
+  if (isDate(value)) return value;
+  return crypto
+    .createHash('sha256')
+    .update(JSON.stringify([value, new Date().getTime()]))
+    .digest('hex');
+}
+
+const maskUserPropertyValues = (user) => {
+  if (typeof user !== 'object' || user === null) {
+    return user;
+  }
+  if (Array.isArray(user)) {
+    return user.map((item) => maskUserPropertyValues(item));
+  }
+  const maskedUser = {};
+  Object.keys(user).forEach((key) => {
+    if (typeof user[key] === 'string' || isDate(user[key])) {
+      maskedUser[key] = maskString(user[key]);
+    } else {
+      maskedUser[key] = maskUserPropertyValues(user[key]);
+    }
+  });
+
+  return maskedUser;
+};
 
 const { Locale } = localePkg;
 
@@ -54,8 +87,9 @@ FileDirector.registerFileUploadCallback('user-avatars', async (file, context: Un
 
 export const configureUsersModule = async ({
   db,
+  options,
   migrationRepository,
-}: ModuleInput<Record<string, never>>): Promise<UsersModule> => {
+}: ModuleInput<UserSettingsOptions>): Promise<UsersModule> => {
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
 
@@ -408,6 +442,17 @@ export const configureUsersModule = async ({
         } as Filter<User>,
         {},
       );
+    },
+    deleteAccount: async ({ userId }, context) => {
+      if (!options?.enableRightToBeForgotten) throw Error('Right to be forgotten is disabled');
+      const { modules } = context;
+      const { _id, ...user } = await modules.users.findUserById(userId);
+      delete user?.services;
+
+      const maskedUserData = maskUserPropertyValues({ ...user, meta: null });
+      await modules.bookmarks.deleteByUserId(userId);
+      await modules.users.updateUser({ _id }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
+      return true;
     },
   };
 };

@@ -161,6 +161,7 @@ import addPushSubscription from './users/addPushSubscription.js';
 import loginWithOAuth from './accounts/loginWithOAuth.js';
 import linkOAuthAccount from './accounts/linkOAuthAccount.js';
 import unlinkOAuthAccount from './accounts/unlinkOAuthAccount.js';
+import deleteAccount from './users/deleteAccount.js';
 
 export default {
   logout: acl(actions.logout)(logout),
@@ -334,4 +335,5 @@ export default {
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCheckout,
   ),
+  deleteAccount,
 };

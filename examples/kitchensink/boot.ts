@@ -51,6 +51,9 @@ const start = async () => {
           },
         },
       },
+      users: {
+        enableRightToBeForgotten: true
+      },
       payment: {
         filterSupportedProviders: async ({ providers }) => {
           return providers.sort((left, right) => {

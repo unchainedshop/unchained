@@ -922,6 +922,7 @@ export default [
       Remove user W3C push subscription object
       """
       removePushSubscription(p256dh: String!): User!
+      deleteAccount(userId: ID): Boolean!
     }
   `,
 ];
