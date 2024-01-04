@@ -17,7 +17,7 @@ const extendSelectorWithLocale = (selector, locale) => {
   return { ...localeSelector, ...selector };
 };
 
-const findLocalizedText = async <T extends Document>(
+export const findLocalizedText = async <T extends Document>(
   collection: Collection<T>,
   selector: Filter<T>,
   locale: Locale,

@@ -2,12 +2,13 @@ import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
 import { Readable } from 'stream';
 import { URL } from 'url';
-import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
+import { UploadFileData } from '@unchainedshop/types/files.js';
 import {
   FileAdapter,
   FileDirector,
   buildHashedFilename,
   resolveExpirationDate,
+  IFileAdapter,
 } from '@unchainedshop/file-upload';
 
 import { log, LogLevel } from '@unchainedshop/logger';

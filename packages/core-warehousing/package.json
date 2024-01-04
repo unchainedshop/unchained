@@ -34,7 +34,6 @@
     "@unchainedshop/events": "^2.5.12",
     "@unchainedshop/logger": "^2.5.12",
     "@unchainedshop/utils": "^2.5.12",
-    "lru-cache": "^10.0.0",
     "simpl-schema": "=3.2.0"
   },
   "devDependencies": {
