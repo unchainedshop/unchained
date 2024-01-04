@@ -1,5 +1,5 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers";
-import { SimpleProduct } from "./seeds/products";
+import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers.js";
+import { SimpleProduct } from "./seeds/products.js";
 
 let db;
 let graphqlFetch;
@@ -8,7 +8,7 @@ let orderId;
 describe("Cart Checkout Flow", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   describe("Mutation.createCart", () => {
@@ -121,7 +121,7 @@ describe("Cart Checkout Flow", () => {
         variables: {
           orderId,
           contact: {
-            emailAddress: "hello@unchained.shop",
+            emailAddress: "hello@unchained.local",
             telNumber: "+41999999999",
           },
           meta: {
@@ -132,7 +132,7 @@ describe("Cart Checkout Flow", () => {
 
       expect(data?.updateCart).toMatchObject({
         contact: {
-          emailAddress: "hello@unchained.shop",
+          emailAddress: "hello@unchained.local",
           telNumber: "+41999999999",
         },
       });

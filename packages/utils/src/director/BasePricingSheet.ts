@@ -7,19 +7,17 @@ import {
 export const BasePricingSheet = <Calculation extends PricingCalculation>(
   params: PricingSheetParams<Calculation>,
 ): IBasePricingSheet<Calculation> => {
-  const calculation = params.calculation || [];
-
   const pricingSheet: IBasePricingSheet<Calculation> = {
-    calculation,
+    calculation: params.calculation || [],
     currency: params.currency,
     quantity: params.quantity,
 
     getRawPricingSheet() {
-      return calculation;
+      return this.calculation;
     },
 
     isValid() {
-      return calculation.length > 0;
+      return this.calculation.length > 0;
     },
 
     sum(filter) {
@@ -37,20 +35,17 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     },
 
     net() {
-      return this.gross() - this.taxSum();
+      return this.sum() - this.taxSum();
     },
 
     total({ category, useNetPrice } = { useNetPrice: false }) {
-      if (!category) {
-        return {
-          amount: Math.round(useNetPrice ? this.net() : this.gross()),
-          currency: params.currency,
-        };
-      }
-
+      const grossAmountForCategory = this.sum(category && { category });
+      const taxAmountForCategory = this.taxSum(category && { baseCategory: category });
       return {
-        amount: Math.round(this.sum({ category } as any)),
-        currency: params.currency,
+        amount: Math.round(
+          useNetPrice ? grossAmountForCategory - taxAmountForCategory : grossAmountForCategory,
+        ),
+        currency: this.currency,
       };
     },
 
@@ -61,7 +56,7 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
             (row: Calculation) =>
               !!row && (filter[filterKey] === undefined || row[filterKey] === filter[filterKey]),
           ),
-        calculation,
+        this.calculation,
       );
 
       return filteredCalculation;
@@ -69,12 +64,12 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
 
     resetCalculation(calculationSheet) {
       calculationSheet.filterBy().forEach(({ amount, ...row }: Calculation) => {
-        pricingSheet.calculation.push({
+        this.calculation.push({
           ...row,
           amount: amount * -1,
         } as Calculation);
       });
-      return pricingSheet.calculation;
+      return this.calculation;
     },
   };
 

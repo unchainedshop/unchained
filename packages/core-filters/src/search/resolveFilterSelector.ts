@@ -4,20 +4,20 @@ import { mongodb } from '@unchainedshop/mongodb';
 const defaultSelector = ({ filterIds, filterQuery, includeInactive }: SearchQuery) => {
   const selector: mongodb.Filter<Filter> = {};
   const keys = (filterQuery || []).map((filter) => filter.key);
-  if (Array.isArray(filterIds)) {
-    // return predefined list
+
+  if (filterIds) {
+    // return explicit list because filters are preset by search
     selector._id = { $in: filterIds };
   } else if (keys.length > 0) {
     // return filters that are part of the filterQuery
     selector.key = { $in: keys };
-  } else {
-    // do not return filters
-    return null;
   }
+
   if (!includeInactive) {
     // include only active filters
     selector.isActive = true;
   }
+
   return selector;
 };
 

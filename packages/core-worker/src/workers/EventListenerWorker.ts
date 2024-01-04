@@ -3,8 +3,19 @@ import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 import { BaseWorker } from './BaseWorker.js';
 
+function debounce<T extends (...args: any) => any>(func: T, wait) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      timeout = null;
+      func(...args);
+    }, wait);
+  };
+}
+
 export interface EventListenerWorkerParams {
-  workerId: string;
+  workerId?: string;
 }
 
 export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {
@@ -16,32 +27,25 @@ export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {
   type: 'EVENT_LISTENER',
 
   actions: ({ workerId }, unchainedAPI) => {
-    let onAdded: () => Promise<void>;
-    let onFinished: () => Promise<void>;
-
     const baseWorkerActions = BaseWorker.actions(
       { workerId, worker: EventListenerWorker },
       unchainedAPI,
     );
+
+    // Debounce in the event of many work queue events conflicting with each other
+    const processWorkQueue = debounce<() => Promise<void>>(async () => {
+      await baseWorkerActions.process({
+        maxWorkItemCount: 1, // only one work item at a time, else we could end up in a loop
+        referenceDate: EventListenerWorker.getFloorDate(),
+      });
+    }, 300);
+
     return {
       ...baseWorkerActions,
 
       start() {
-        onAdded = async () => {
-          await baseWorkerActions.process({
-            maxWorkItemCount: 0,
-            referenceDate: EventListenerWorker.getFloorDate(),
-          });
-        };
-        onFinished = async () => {
-          await baseWorkerActions.process({
-            maxWorkItemCount: 0,
-            referenceDate: EventListenerWorker.getFloorDate(),
-          });
-        };
-
-        WorkerDirector.events.on(WorkerEventTypes.ADDED, onAdded);
-        WorkerDirector.events.on(WorkerEventTypes.FINISHED, onFinished);
+        WorkerDirector.events.on(WorkerEventTypes.ADDED, processWorkQueue);
+        WorkerDirector.events.on(WorkerEventTypes.FINISHED, processWorkQueue);
 
         setTimeout(async () => {
           await baseWorkerActions.autorescheduleTypes({
@@ -51,8 +55,8 @@ export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {
       },
 
       stop() {
-        WorkerDirector.events.off(WorkerEventTypes.ADDED, onAdded);
-        WorkerDirector.events.off(WorkerEventTypes.FINISHED, onFinished);
+        WorkerDirector.events.off(WorkerEventTypes.ADDED, processWorkQueue);
+        WorkerDirector.events.off(WorkerEventTypes.FINISHED, processWorkQueue);
       },
     };
   },

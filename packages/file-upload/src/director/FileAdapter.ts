@@ -2,6 +2,7 @@ import { log, LogLevel } from '@unchainedshop/logger';
 import { IBaseAdapter } from '@unchainedshop/types/common.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { File, UploadFileData } from '@unchainedshop/types/files.js';
+import { Readable } from 'stream';
 
 export interface IFileAdapter extends IBaseAdapter {
   createSignedURL: (
@@ -20,8 +21,8 @@ export interface IFileAdapter extends IBaseAdapter {
     fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown> },
     unchainedAPI: UnchainedCore,
   ) => Promise<UploadFileData | null>;
+  createDownloadStream: (file: File, unchainedAPI: UnchainedCore) => Promise<Readable>;
 }
-
 export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
   createSignedURL() {
     return new Promise<null>((resolve) => {
@@ -35,6 +36,11 @@ export const FileAdapter: Omit<IFileAdapter, 'key' | 'label' | 'version'> = {
     });
   },
   uploadFileFromStream() {
+    return new Promise<null>((resolve) => {
+      resolve(null);
+    });
+  },
+  createDownloadStream() {
     return new Promise<null>((resolve) => {
       resolve(null);
     });

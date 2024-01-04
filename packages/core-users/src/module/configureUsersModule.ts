@@ -132,8 +132,8 @@ export const configureUsersModule = async ({
     },
 
     userLocale: (user) => {
-      const locale = (user.lastLogin?.locale && new Locale(user.lastLogin.locale)) || systemLocale;
-      return locale;
+      if (!user?.lastLogin?.locale) return systemLocale;
+      return new Locale(user.lastLogin.locale);
     },
 
     // Mutations

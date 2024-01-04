@@ -55,6 +55,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
   role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
   role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);
+  role.allow(actions.viewUserProductReviews, isInLoginMutationResponse);
   role.allow(actions.reviewProduct, () => false);
   role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);
@@ -79,6 +80,7 @@ export const all = (role, actions) => {
   role.allow(actions.authTwoFactor, () => false);
   role.allow(actions.manageTwoFactor, () => false);
   role.allow(actions.impersonate, () => false);
+  role.allow(actions.stopImpersonation, () => false);
 
   // only allow if query is not demanding for drafts
   role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);
@@ -99,4 +101,18 @@ export const all = (role, actions) => {
   role.allow(actions.viewFilters, () => true);
   role.allow(actions.viewTranslations, () => true);
   role.allow(actions.search, () => true);
+  role.allow(actions.logout, () => true);
+  role.allow(actions.logoutAllSessions, () => true);
+  role.allow(actions.loginAsGuest, () => true);
+  role.allow(actions.loginWithPassword, () => true);
+  role.allow(actions.loginWithWebAuthn, () => true);
+  role.allow(actions.loginWithOAuth, () => true);
+  role.allow(actions.verifyEmail, () => true);
+  role.allow(actions.useWebAuthn, () => true);
+  role.allow(actions.pageView, () => true);
+  role.allow(actions.createUser, () => true);
+  role.allow(actions.forgotPassword, () => true);
+  role.allow(actions.resetPassword, () => true);
+  role.allow(actions.changePassword, () => true);
+  role.allow(actions.heartbeat, () => true);
 };

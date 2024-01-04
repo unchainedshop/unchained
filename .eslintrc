@@ -1,10 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint",
-    "prettier"
-  ],
+  "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
     "airbnb-base",
     "eslint:recommended",
@@ -29,20 +26,13 @@
     "no-underscore-dangle": [
       "error",
       {
-        "allow": [
-          "_id",
-          "__MONGO_URI__",
-          "__MONGO_DB_NAME__",
-          "__SUBPROCESS_UNCHAINED__",
-          "__MONGOD__"
-        ]
+        "allow": ["_id", "__MONGO_URI__", "__MONGO_DB_NAME__", "__SUBPROCESS_UNCHAINED__", "__MONGOD__"]
       }
     ],
     "no-unused-vars": "error",
-    "no-shadow": [
-      "warn"
-    ],
+    "no-shadow": ["warn"],
     "import/no-mutable-exports": "off",
-    "import/prefer-default-export": 0
+    "import/prefer-default-export": 0,
+    "import/extensions": [0]
   }
 }

@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import type { FindOptions } from 'mongodb';
 import { TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
@@ -65,12 +66,20 @@ export type UploadFileFromURLService = (
   unchainedAPI: UnchainedCore,
 ) => Promise<File>;
 
+export type CreateDownloadStreamService = (
+  params: {
+    fileId: string;
+  },
+  unchainedAPI: UnchainedCore,
+) => Promise<Readable>;
+
 export interface FileServices {
   linkFile: LinkFileService;
   uploadFileFromStream: UploadFileFromStreamService;
   uploadFileFromURL: UploadFileFromURLService;
   createSignedURL: CreateSignedURLService;
   removeFiles: RemoveFilesService;
+  createDownloadStream: CreateDownloadStreamService;
 }
 
 /*

@@ -1,9 +1,9 @@
+import { IncomingMessage } from 'http';
+import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
 import { systemLocale } from '@unchainedshop/utils';
-import { IncomingMessage } from 'http';
 import localePkg from 'locale';
-import path from 'path';
 
 const { Locale } = localePkg;
 

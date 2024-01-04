@@ -1,12 +1,12 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimplePaymentProvider } from './seeds/payments';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
 
 describe('setup payment providers', () => {
   let graphqlFetch;
 
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   describe('Mutation.createPaymentProvider', () => {

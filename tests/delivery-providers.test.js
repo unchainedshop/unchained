@@ -2,9 +2,9 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
-import { PickupDeliveryProvider, SendMailDeliveryProvider, SimpleDeliveryProvider } from './seeds/deliveries';
+} from './helpers.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { PickupDeliveryProvider, SendMailDeliveryProvider, SimpleDeliveryProvider } from './seeds/deliveries.js';
 
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
@@ -13,9 +13,9 @@ let graphqlFetchAsNormalUser;
 describe('DeliveryProviders', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   describe('Query.deliveryProviders for admin user should', () => {
@@ -264,7 +264,7 @@ describe('DeliveryProviders', () => {
 
   describe('Query.deliveryProviders for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query DeliveryProviders {

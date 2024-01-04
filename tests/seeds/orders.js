@@ -1,4 +1,4 @@
-import chainedUpsert from './utils/chainedUpsert';
+import chainedUpsert from './utils/chainedUpsert.js';
 
 export const SimpleOrder = {
   _id: 'simple-order',
@@ -8,7 +8,7 @@ export const SimpleOrder = {
   currency: 'CHF',
   countryCode: 'CH',
   contact: {
-    emailAddress: 'info@unchained.shop',
+    emailAddress: 'info@unchained.local',
   },
   billingAddress: {
     addressLine: 'Bahnhofplatz 2',
@@ -132,7 +132,7 @@ export const ConfirmedOrder = {
   status: 'CONFIRMED',
   orderNumber: 'O0011',
   contact: {
-    emailAddress: 'info@unchained.shop',
+    emailAddress: 'info@unchained.local',
     telNumber: '+41999999999',
   },
   billingAddress: {

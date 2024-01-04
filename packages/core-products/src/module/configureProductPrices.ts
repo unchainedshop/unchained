@@ -1,5 +1,5 @@
-import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/types/products.js';
 import crypto from 'crypto';
+import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/types/products.js';
 import { IProductPricingSheet, ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
 import { Currency } from '@unchainedshop/types/currencies.js';
 import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
@@ -110,6 +110,8 @@ export const configureProductPricesModule = ({
         .update([product._id, country, quantity, useNetPrice, user ? user._id : 'ANONYMOUS'].join(''))
         .digest('hex'),
       ...unitPrice,
+      isNetPrice: useNetPrice,
+      isTaxable: pricing.taxSum() > 0,
       currencyCode: pricing.currency,
     };
   };
@@ -314,15 +316,18 @@ export const configureProductPricesModule = ({
             expiresAt: { $gte: referenceDate },
           })
           .toArray();
-        return rates.reduce((acc, rate) => {
-          const curRate = normalizeRate(baseCurrency, quoteCurrency, rate);
-          const lastMinRate = acc.min || curRate;
-          const lastMaxRate = acc.max || curRate;
-          return {
-            min: Math.min(curRate, lastMinRate),
-            max: Math.max(curRate, lastMaxRate),
-          };
-        }, {} as { min: number; max: number });
+        return rates.reduce(
+          (acc, rate) => {
+            const curRate = normalizeRate(baseCurrency, quoteCurrency, rate);
+            const lastMinRate = acc.min || curRate;
+            const lastMaxRate = acc.max || curRate;
+            return {
+              min: Math.min(curRate, lastMinRate),
+              max: Math.max(curRate, lastMaxRate),
+            };
+          },
+          {} as { min: number; max: number },
+        );
       },
       updateRates: async (rates) => {
         const priceRates = await ProductPriceRates(db);

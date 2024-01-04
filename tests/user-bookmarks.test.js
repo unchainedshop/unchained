@@ -1,6 +1,6 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { UnpublishedProduct, SimpleProduct, PlanProduct } from './seeds/products';
-import { ADMIN_TOKEN, User, Admin } from './seeds/users';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { UnpublishedProduct, SimpleProduct, PlanProduct } from './seeds/products.js';
+import { ADMIN_TOKEN, User, Admin } from './seeds/users.js';
 
 let db;
 let graphqlFetch;
@@ -8,7 +8,7 @@ let graphqlFetch;
 describe('User Bookmarks', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.createBookmark', () => {

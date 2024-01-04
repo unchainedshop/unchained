@@ -32,7 +32,7 @@ export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQue
   const selector: {
     deleted: Date;
     status?: any;
-    $text?: { $search?: string };
+    $text?: { $search: string };
     userId?: string;
   } = {
     deleted: null,

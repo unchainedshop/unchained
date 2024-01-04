@@ -15,6 +15,9 @@ const getGoggleAuthorizationCode = async ({
     headers: {
       'Content-Type': 'application/json',
     },
+    // eslint-disable-next-line
+    // @ts-ignore
+    duplex: 'half',
     body: JSON.stringify({
       code,
       client_id: clientId,
@@ -150,6 +153,9 @@ const GoogleOAuth2Adapter: IOAuth2Adapter = {
       refreshToken: async ({ refresh_token }) => {
         const response = await fetch('https://oauth2.googleapis.com/token', {
           method: 'POST',
+          // eslint-disable-next-line
+          // @ts-ignore
+          duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
           },

@@ -1,7 +1,7 @@
-import { UnchainedServerOptions } from '@unchainedshop/types/api.js';
-import type { ApolloServer } from '@apollo/server';
 import fs from 'fs';
 import path from 'path';
+import { UnchainedServerOptions } from '@unchainedshop/types/api.js';
+import type { ApolloServer } from '@apollo/server';
 import createGraphQLServer from './createGraphQLServer.js';
 import {
   createContextResolver,

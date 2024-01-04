@@ -133,7 +133,7 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   }) => IDeliveryPricingSheet;
 
   // Delivery adapter
-  findInterface: (params: DeliveryProvider) => IDeliveryAdapter;
+  findInterface: (params: DeliveryProvider) => DeliveryInterface;
   findInterfaces: (params: { type: DeliveryProviderType }) => Array<DeliveryInterface>;
   findSupported: (
     params: { order: Order },

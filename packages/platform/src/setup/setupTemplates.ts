@@ -5,6 +5,7 @@ import { resolveForwardDeliveryTemplate } from '../templates/resolveForwardDeliv
 import { resolveOrderConfirmationTemplate } from '../templates/resolveOrderConfirmationTemplate.js';
 import { resolveQuotationStatusTemplate } from '../templates/resolveQuotationStatusTemplate.js';
 import { resolveEnrollmentStatusTemplate } from '../templates/resolveEnrollmentStatusTemplate.js';
+import { resolveErrorReportTemplate } from '../templates/resolveErrorReportTemplate.js';
 
 export enum MessageTypes {
   ACCOUNT_ACTION = 'ACCOUNT_ACTION',
@@ -13,6 +14,7 @@ export enum MessageTypes {
   ORDER_REJECTION = 'ORDER_REJECTION',
   QUOTATION_STATUS = 'QUOTATION_STATUS',
   ENROLLMENT_STATUS = 'ENROLLMENT_STATUS',
+  ERROR_REPORT = 'ERROR_REPORT',
 }
 
 export const setupTemplates = () => {
@@ -22,4 +24,5 @@ export const setupTemplates = () => {
   MessagingDirector.registerTemplate(MessageTypes.ORDER_REJECTION, resolveOrderRejectionTemplate);
   MessagingDirector.registerTemplate(MessageTypes.QUOTATION_STATUS, resolveQuotationStatusTemplate);
   MessagingDirector.registerTemplate(MessageTypes.ENROLLMENT_STATUS, resolveEnrollmentStatusTemplate);
+  MessagingDirector.registerTemplate(MessageTypes.ERROR_REPORT, resolveErrorReportTemplate);
 };

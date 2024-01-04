@@ -1,9 +1,9 @@
+import crypto from 'crypto';
 import { Context } from '@unchainedshop/types/api.js';
 import {
   DeliveryError,
   DeliveryProvider as DeliveryProviderType,
 } from '@unchainedshop/types/delivery.js';
-import crypto from 'crypto';
 import { DeliveryPricingDirector } from '@unchainedshop/core-delivery';
 
 export type HelperType<P, T> = (provider: DeliveryProviderType, params: P, context: Context) => T;
@@ -40,14 +40,8 @@ export interface DeliveryProviderHelperTypes {
 export const DeliveryProvider: DeliveryProviderHelperTypes = {
   interface(obj, _, { modules }) {
     const Interface = modules.delivery.findInterface(obj);
-
     if (!Interface) return null;
-
-    return {
-      _id: Interface.key,
-      label: Interface.label,
-      version: Interface.version,
-    };
+    return Interface;
   },
 
   async isActive(deliveryProvider, _, requestContext) {

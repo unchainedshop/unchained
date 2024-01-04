@@ -123,10 +123,10 @@ export const configureWorkerModule = async ({
     );
 
     WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
-      work: result.value,
+      work: result,
     });
 
-    return result.value;
+    return result;
   };
 
   const finishWork: WorkerModule['finishWork'] = async (
@@ -178,7 +178,7 @@ export const configureWorkerModule = async ({
     return work;
   };
 
-  const processNextWork: WorkerModule['processNextWork'] = async (workerId, unchainedAPI) => {
+  const processNextWork: WorkerModule['processNextWork'] = async (unchainedAPI, workerId) => {
     const adapters = WorkerDirector.getAdapters();
 
     const alreadyAllocatedWork = await WorkQueue.aggregate(
@@ -225,9 +225,10 @@ export const configureWorkerModule = async ({
       })
       .map((adapter) => adapter.type);
 
+    const worker = workerId ?? UNCHAINED_WORKER_ID;
     const work = await allocateWork({
       types,
-      worker: workerId,
+      worker,
     });
 
     if (work) {
@@ -237,7 +238,7 @@ export const configureWorkerModule = async ({
         ...output,
         finished: work.finished || new Date(),
         started: work.started,
-        worker: workerId,
+        worker,
       });
     }
 
@@ -407,6 +408,7 @@ export const configureWorkerModule = async ({
           {
             sort: buildSortOptions(defaultSort),
             returnDocument: 'after',
+            includeResultMetadata: true,
             upsert: true,
           },
         );
@@ -453,7 +455,7 @@ export const configureWorkerModule = async ({
       return work;
     },
 
-    markOldWorkAsFailed: async ({ types, worker, referenceDate }) => {
+    markOldWorkAsFailed: async ({ types, worker = UNCHAINED_WORKER_ID, referenceDate }) => {
       const workQueue = await WorkQueue.find(
         buildQuerySelector({
           status: [WorkStatus.ALLOCATED],

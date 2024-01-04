@@ -2,9 +2,9 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { SimpleProduct, SimpleProductReview } from './seeds/products';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
+} from './helpers.js';
+import { SimpleProduct, SimpleProductReview } from './seeds/products.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;
 let graphqlFetchAsNormalUser;
@@ -13,9 +13,9 @@ let graphqlFetchAsAnonymusUser;
 describe('Products: Reviews', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymusUser = createAnonymousGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymusUser = await createAnonymousGraphqlFetch();
   });
 
   describe('Mutation.createProductReview', () => {

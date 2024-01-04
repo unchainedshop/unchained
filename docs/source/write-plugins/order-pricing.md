@@ -51,7 +51,7 @@ export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
     return {
       calculate: async (): Promise<OrderPricingCalculation[]> => {
         const resultRaw = resultSheet.getRawPricingSheet();
-        resultSheet.addPayment({ amount: 100 });
+        resultSheet.addPayment({ amount: 100, taxAmount: 0 });
         resultRaw.forEach(
           ({ amount, category }) =>
             ShopOrderPricingAdapter.log(`Order Pricing Calculation -> ${category} ${amount}`),

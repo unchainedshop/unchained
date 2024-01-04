@@ -1,11 +1,10 @@
-import type { Db, GridFSBucket, UpdateFilter } from 'mongodb';
+import type { Db, UpdateFilter } from 'mongodb';
 import { Modules, ModuleOptions } from './modules.js';
 import { Services } from './services.js';
 import { IRoleOptionConfig } from './roles.js';
 
 export interface BulkImporter {
   createBulkImporter: (options: any) => any;
-  BulkImportPayloads: GridFSBucket;
 }
 
 export interface UnchainedCore {

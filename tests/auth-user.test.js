@@ -1,5 +1,5 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
 let db;
 let graphqlFetch;
@@ -8,8 +8,8 @@ let adminGraphqlFetch;
 describe('Auth for logged in users', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
-    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Query.me', () => {
@@ -142,7 +142,6 @@ describe('Auth for logged in users', () => {
           },
         },
         {
-          returnDocument: 'after',
           upsert: true,
         },
       );

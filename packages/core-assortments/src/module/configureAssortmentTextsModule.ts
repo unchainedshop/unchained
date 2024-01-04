@@ -12,7 +12,7 @@ import { assortmentsSettings } from '../assortments-settings.js';
 
 const { Locale } = localePkg;
 
-const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXTS'];
+const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
 export const configureAssortmentTextsModule = ({
   Assortments,
@@ -43,11 +43,11 @@ export const configureAssortmentTextsModule = ({
     });
   };
 
-  const upsertLocalizedText: AssortmentsModule['texts']['upsertLocalizedText'] = async (
-    assortmentId,
-    locale,
-    text,
-  ) => {
+  const upsertLocalizedText = async (
+    assortmentId: string,
+    locale: string,
+    text: Omit<AssortmentText, 'assortmentId' | 'locale'>,
+  ): Promise<AssortmentText> => {
     const { slug: textSlug, ...textFields } = text;
     const slug = await makeSlug({
       slug: textSlug,
@@ -75,11 +75,13 @@ export const configureAssortmentTextsModule = ({
 
     const selector = { assortmentId, locale };
 
-    const updateResult = await AssortmentTexts.updateOne(selector, modifier, {
+    const updateResult = await AssortmentTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
+      returnDocument: 'after',
+      includeResultMetadata: true,
     });
 
-    if (updateResult.upsertedCount > 0 || updateResult.modifiedCount > 0) {
+    if (updateResult.ok) {
       const assortmentSelector = generateDbFilterById(assortmentId);
       await Assortments.updateOne(assortmentSelector, {
         $set: {
@@ -104,9 +106,13 @@ export const configureAssortmentTextsModule = ({
           },
         },
       );
+      await emit('ASSORTMENT_UPDATE_TEXT', {
+        assortmentId,
+        text: updateResult.value,
+      });
     }
 
-    return AssortmentTexts.findOne(selector, {});
+    return updateResult.value;
   };
 
   return {
@@ -150,15 +156,9 @@ export const configureAssortmentTextsModule = ({
           )
         : [];
 
-      await emit('ASSORTMENT_UPDATE_TEXTS', {
-        assortmentId,
-        assortmentTexts,
-      });
-
       return assortmentTexts;
     },
 
-    upsertLocalizedText,
     makeSlug,
 
     deleteMany: async ({ assortmentId, excludedAssortmentIds }) => {

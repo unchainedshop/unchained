@@ -17,7 +17,7 @@ export const LastLoginSchema = new SimpleSchema(
   {
     timestamp: Date,
     locale: String,
-    countryContext: String,
+    countryCode: String,
     remoteAddress: String,
     remotePort: String,
     userAgent: String,

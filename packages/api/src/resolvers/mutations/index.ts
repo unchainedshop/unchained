@@ -3,6 +3,7 @@ import { checkResolver as acl } from '../../acl.js';
 import loginWithPassword from './accounts/loginWithPassword.js';
 import loginWithWebAuthn from './accounts/loginWithWebAuthn.js';
 import impersonate from './accounts/impersonate.js';
+import stopImpersonation from './accounts/stopImpersonation.js';
 import loginAsGuest from './accounts/loginAsGuest.js';
 import logout from './accounts/logout.js';
 import logoutAllSessions from './accounts/logoutAllSessions.js';
@@ -162,11 +163,15 @@ import linkOAuthAccount from './accounts/linkOAuthAccount.js';
 import unlinkOAuthAccount from './accounts/unlinkOAuthAccount.js';
 
 export default {
-  logout,
-  logoutAllSessions,
-  loginAsGuest,
-  createWebAuthnCredentialCreationOptions,
-  createWebAuthnCredentialRequestOptions,
+  logout: acl(actions.logout)(logout),
+  logoutAllSessions: acl(actions.logoutAllSessions)(logoutAllSessions),
+  loginAsGuest: acl(actions.loginAsGuest)(loginAsGuest),
+  createWebAuthnCredentialCreationOptions: acl(actions.useWebAuthn)(
+    createWebAuthnCredentialCreationOptions,
+  ),
+  createWebAuthnCredentialRequestOptions: acl(actions.useWebAuthn)(
+    createWebAuthnCredentialRequestOptions,
+  ),
   addPushSubscription: acl(actions.updateUser)(addPushSubscription),
   removePushSubscription: acl(actions.updateUser)(removePushSubscription),
   addWebAuthnCredentials: acl(actions.updateUser)(addWebAuthnCredentials),
@@ -176,22 +181,23 @@ export default {
   verifyWeb3Address: acl(actions.updateUser)(verifyWeb3Address),
   linkOAuthAccount: acl(actions.updateUser)(linkOAuthAccount),
   unlinkOAuthAccount: acl(actions.updateUser)(unlinkOAuthAccount),
-  verifyEmail,
-  loginWithPassword,
-  loginWithWebAuthn,
-  loginWithOAuth,
+  verifyEmail: acl(actions.verifyEmail)(verifyEmail),
+  loginWithPassword: acl(actions.loginWithPassword)(loginWithPassword),
+  loginWithWebAuthn: acl(actions.loginWithWebAuthn)(loginWithWebAuthn),
+  loginWithOAuth: acl(actions.loginWithOAuth)(loginWithOAuth),
   impersonate: acl(actions.impersonate)(impersonate),
+  stopImpersonation: acl(actions.stopImpersonation)(stopImpersonation),
   buildSecretTOTPAuthURL: acl(actions.authTwoFactor)(buildSecretTOTPAuthURL),
   enableTOTP: acl(actions.authTwoFactor)(enableTOTP),
   disableTOTP: acl(actions.manageTwoFactor)(disableTOTP),
-  pageView,
-  createUser,
-  forgotPassword,
-  resetPassword,
+  pageView: acl(actions.pageView)(pageView),
+  createUser: acl(actions.createUser)(createUser),
+  forgotPassword: acl(actions.forgotPassword)(forgotPassword),
+  resetPassword: acl(actions.resetPassword)(resetPassword),
   sendVerificationEmail: acl(actions.sendEmail)(sendVerificationEmail),
   sendEnrollmentEmail: acl(actions.sendEmail)(sendEnrollmentEmail),
-  changePassword,
-  heartbeat,
+  changePassword: acl(actions.changePassword)(changePassword),
+  heartbeat: acl(actions.heartbeat)(heartbeat),
   addEmail: acl(actions.updateUser)(addEmail),
   removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),

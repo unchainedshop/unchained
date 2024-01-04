@@ -3,16 +3,16 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
 } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleAssortment, AssortmentFilters } from './seeds/assortments';
-import { MultiChoiceFilter } from './seeds/filters';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { SimpleAssortment, AssortmentFilters } from './seeds/assortments.js';
+import { MultiChoiceFilter } from './seeds/filters.js';
 
 let graphqlFetch;
 
 describe('AssortmentFilter', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.reorderAssortmentFilters for admin users should', () => {
@@ -86,8 +86,9 @@ describe('AssortmentFilter', () => {
   });
 
   describe('mutation.reorderAssortmentFilters for anonymous user should', () => {
-    const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
     it('return error', async () => {
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
+
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation ReorderAssortmentFilters(
@@ -267,7 +268,7 @@ describe('AssortmentFilter', () => {
 
   describe('mutation.addAssortmentFilter for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -382,7 +383,7 @@ describe('AssortmentFilter', () => {
 
   describe('mutation.removeAssortmentFilter for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentFilter($assortmentFilterId: ID!) {

@@ -30,6 +30,9 @@ export const Product: ProductHelperTypes = {
       queryString,
     });
   },
+  reviewsCount: async (obj, params, { modules }) => {
+    return modules.products.reviews.count({ ...params, productId: obj._id });
+  },
 
   siblings: async (product, params, { modules }) => {
     const { assortmentId, limit, offset, includeInactive = false } = params;

@@ -84,8 +84,14 @@ export const configureDeliveryModule = async ({
 
     // Delivery Adapter
 
-    findInterface: (deliveryProvider) => {
-      return DeliveryDirector.getAdapter(deliveryProvider.adapterKey);
+    findInterface: (paymentProvider) => {
+      const Adapter = DeliveryDirector.getAdapter(paymentProvider.adapterKey);
+      if (!Adapter) return null;
+      return {
+        _id: Adapter.key,
+        label: Adapter.label,
+        version: Adapter.version,
+      };
     },
 
     findInterfaces: ({ type }) => {

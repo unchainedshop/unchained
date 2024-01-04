@@ -24,6 +24,7 @@ export default async function signPaymentProviderForCredentialRegistration(
   return modules.payment.paymentProviders.sign(
     paymentProviderId,
     {
+      userId,
       transactionContext,
     },
     context,

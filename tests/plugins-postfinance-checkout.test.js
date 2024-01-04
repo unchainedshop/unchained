@@ -1,9 +1,9 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN } from './seeds/users';
-import { SimplePaymentProvider } from './seeds/payments';
-import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
-import { SuccTranscationHookPayload, SuccTransactionApiResponse } from './seeds/postfinance-checkout';
-import { orderIsPaid } from '../packages/plugins/lib/payment/postfinance-checkout/utils';
+import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { USER_TOKEN } from './seeds/users.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
+import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
+import { SuccTranscationHookPayload, SuccTransactionApiResponse } from './seeds/postfinance-checkout.js';
+import { orderIsPaid } from '../packages/plugins/lib/payment/postfinance-checkout/utils.js';
 
 let db;
 let graphqlFetch;
@@ -18,7 +18,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
 
     beforeAll(async () => {
       [db] = await setupDatabase();
-      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
       // Add a postfinance checkout provider
       await db.collection('payment-providers').findOrInsertOne({
@@ -208,7 +208,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
       const mockedOrderModule = {
         payments: {
           findOrderPayment: ({ orderPaymentId }) => { return orderPaymentId === 'pfcheckout-payment' ? { orderId: 'pfcheckout-order' } : {} },
-          markAsPaid: jest.fn(),
+          markAsPaid: import.meta.jest.fn(),
         },
         findOrder: ({ orderId }) => { return orderId === 'pfcheckout-order' ? { orderId, currency: SimpleOrder.currency } : {} },
         pricingSheet: ({ orderId }) => {
@@ -256,8 +256,6 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           'http://localhost:4010/payment/postfinance-checkout',
           {
             method: 'POST',
-            // eslint-disable-next-line
-            // @ts-ignore
             duplex: 'half',
             headers: {
               'Accept': 'application/json',

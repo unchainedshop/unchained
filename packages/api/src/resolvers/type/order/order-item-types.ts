@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Context } from '@unchainedshop/types/api.js';
 import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
 import { Order } from '@unchainedshop/types/orders.js';
@@ -6,7 +7,6 @@ import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { Quotation } from '@unchainedshop/types/quotations.js';
 import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
-import crypto from 'crypto';
 
 type HelperType<P, T> = (orderPosition: OrderPosition, params: P, context: Context) => T;
 
@@ -28,8 +28,8 @@ export interface OrderItemHelperTypes {
   originalProduct: HelperType<never, Promise<Product>>;
   product: HelperType<never, Promise<Product>>;
   quotation: HelperType<never, Promise<Quotation>>;
-  total: HelperType<{ category: string }, Promise<OrderPrice>>;
-  unitPrice: HelperType<never, Promise<OrderPrice>>;
+  total: HelperType<{ category: string; useNetPrice: boolean }, Promise<OrderPrice>>;
+  unitPrice: HelperType<{ useNetPrice: boolean }, Promise<OrderPrice>>;
 }
 
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
@@ -118,39 +118,32 @@ export const OrderItem: OrderItemHelperTypes = {
     return modules.quotations.findQuotation({ quotationId: obj.quotationId });
   },
 
-  total: async (obj, { category }, context) => {
+  total: async (obj, params, context) => {
     const pricingSheet = await getPricingSheet(obj, context);
 
     if (pricingSheet.isValid()) {
-      const { amount, currency } = pricingSheet.total({
-        category,
-        useNetPrice: false,
-      });
+      const price = pricingSheet.total(params);
       return {
         _id: crypto
           .createHash('sha256')
-          .update([`${obj._id}-${category}`, amount, currency].join(''))
+          .update([obj._id, JSON.stringify(params), JSON.stringify(price)].join(''))
           .digest('hex'),
-        amount,
-        currency,
+        ...price,
       };
     }
     return null;
   },
 
-  unitPrice: async (obj, _, context) => {
+  unitPrice: async (obj, params, context) => {
     const pricingSheet = await getPricingSheet(obj, context);
 
     if (pricingSheet.isValid()) {
-      const price = pricingSheet.unitPrice({
-        useNetPrice: false,
-      });
+      const price = pricingSheet.unitPrice(params);
       return {
         _id: crypto
           .createHash('sha256')
           .update([`${obj._id}-unit`, price.amount, pricingSheet.currency].join(''))
           .digest('hex'),
-        currency: pricingSheet.currency,
         ...price,
       };
     }

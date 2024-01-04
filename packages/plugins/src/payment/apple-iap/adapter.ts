@@ -344,9 +344,8 @@ const AppleIAP: IPaymentAdapter = {
         if (!isMatchesTransaction)
           throw new Error('Apple IAP Plugin: Product in order does not match transaction');
 
-        const alreadyProcessedTransaction = await appleTransactions.findTransactionById(
-          transactionIdentifier,
-        );
+        const alreadyProcessedTransaction =
+          await appleTransactions.findTransactionById(transactionIdentifier);
 
         if (alreadyProcessedTransaction)
           throw new Error('Apple IAP Plugin: Transaction already processed');

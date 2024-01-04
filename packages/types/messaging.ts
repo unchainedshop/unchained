@@ -43,7 +43,6 @@ export type TemplateResolver = (
 
 export interface MessagingModule {
   renderToText: (template: string, data: Record<string, any>) => string;
-  renderMjmlToHtml: (template: string, data: Record<string, any>) => string;
 }
 
 export type IMessagingDirector = {

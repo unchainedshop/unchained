@@ -1,12 +1,12 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleOrder, ConfirmedOrder, PendingOrder } from './seeds/orders';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { SimpleOrder, ConfirmedOrder, PendingOrder } from './seeds/orders.js';
 
 let graphqlFetch;
 
 describe('Order: Management', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   describe('Mutation.removeOrder', () => {

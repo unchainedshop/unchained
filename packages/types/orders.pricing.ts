@@ -56,15 +56,10 @@ export interface OrderPricingContext {
 }
 
 export interface IOrderPricingSheet extends IPricingSheet<OrderPricingCalculation> {
-  addDelivery: (params: { amount: number; meta?: any }) => void;
-  addItems: (params: { amount: number; meta?: any }) => void;
-  addPayment: (params: { amount: number; meta?: any }) => void;
-
-  itemsSum: () => number;
-
-  getItemsRows: () => Array<OrderPricingCalculation>;
-  getDeliveryRows: () => Array<OrderPricingCalculation>;
-  getPaymentRows: () => Array<OrderPricingCalculation>;
+  addDelivery: (params: { amount: number; taxAmount: number; meta?: any }) => void;
+  addDiscount: (params: { amount: number; taxAmount: number; discountId: string; meta?: any }) => void;
+  addItems: (params: { amount: number; taxAmount: number; meta?: any }) => void;
+  addPayment: (params: { amount: number; taxAmount: number; meta?: any }) => void;
 }
 
 export type IOrderPricingAdapter = IPricingAdapter<

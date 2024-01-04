@@ -1,14 +1,11 @@
-import type { Discount, DiscountConfiguration } from '@unchainedshop/types/discount.js';
+import type { Discount } from '@unchainedshop/types/discount.js';
 import {
   IProductPricingAdapter,
   ProductPricingRowCategory,
 } from '@unchainedshop/types/products.pricing.js';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
+import { calculation as calcUtils } from '@unchainedshop/utils';
 
-export const applyRate = (configuration: DiscountConfiguration, amount) => {
-  const { rate, fixedRate } = configuration;
-  return rate ? amount * rate : Math.min(fixedRate || 0, amount);
-};
 const ProductDiscount: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
@@ -27,7 +24,7 @@ const ProductDiscount: IProductPricingAdapter = {
     const addDiscount = (discount: Discount, total: number, isTaxable: boolean) => {
       const { configuration, discountId } = discount;
       const { isNetPrice = false, ...meta } = configuration;
-      const amount = applyRate(configuration, total);
+      const amount = calcUtils.applyRate(configuration, total);
 
       pricingAdapter.resultSheet().addDiscount({
         amount: amount * -1,

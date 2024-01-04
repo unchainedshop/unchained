@@ -89,20 +89,23 @@ export const loadFilter = async (
   // - Is the same like examinedProductIdSet
   const filteredByOtherFiltersSet = await otherFilters
     .filter((otherFilter) => otherFilter.key !== filter.key)
-    .reduce(async (productIdSetPromise, otherFilter) => {
-      if (otherFilter.key === filter.key) return productIdSetPromise;
-      if (!filterQuery[otherFilter.key]) return productIdSetPromise;
-      const productIdSet = await productIdSetPromise;
-      const otherFilterProductIds = await filterProductIds(
-        otherFilter,
-        {
-          values: filterQuery[otherFilter.key],
-          forceLiveCollection,
-        },
-        unchainedAPI,
-      );
-      return intersectSet(productIdSet, new Set(otherFilterProductIds));
-    }, Promise.resolve(new Set(examinedProductIdSet)));
+    .reduce(
+      async (productIdSetPromise, otherFilter) => {
+        if (otherFilter.key === filter.key) return productIdSetPromise;
+        if (!filterQuery[otherFilter.key]) return productIdSetPromise;
+        const productIdSet = await productIdSetPromise;
+        const otherFilterProductIds = await filterProductIds(
+          otherFilter,
+          {
+            values: filterQuery[otherFilter.key],
+            forceLiveCollection,
+          },
+          unchainedAPI,
+        );
+        return intersectSet(productIdSet, new Set(otherFilterProductIds));
+      },
+      Promise.resolve(new Set(examinedProductIdSet)),
+    );
 
   const filterProductIdsForValues = values
     ? await filterProductIds(

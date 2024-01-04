@@ -52,12 +52,6 @@ export const DeliveryPricingSheet = (
       });
     },
 
-    feeSum() {
-      return basePricingSheet.sum({
-        category: DeliveryPricingRowCategory.Delivery,
-      });
-    },
-
     discountSum(discountId) {
       return basePricingSheet.sum({
         category: DeliveryPricingRowCategory.Discount,
@@ -88,22 +82,10 @@ export const DeliveryPricingSheet = (
         .filter(Boolean);
     },
 
-    getFeeRows() {
-      return basePricingSheet.filterBy({
-        category: DeliveryPricingRowCategory.Item,
-      });
-    },
-
     getDiscountRows(discountId) {
       return basePricingSheet.filterBy({
         category: DeliveryPricingRowCategory.Discount,
         discountId,
-      });
-    },
-
-    getTaxRows() {
-      return basePricingSheet.filterBy({
-        category: DeliveryPricingRowCategory.Tax,
       });
     },
   };

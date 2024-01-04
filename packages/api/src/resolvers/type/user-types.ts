@@ -20,6 +20,7 @@ import {
 import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
 import { Roles, permissions } from '@unchainedshop/roles';
+import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 import { checkAction, checkTypeResolver } from '../../acl.js';
 import { actions } from '../../roles/index.js';
 
@@ -82,6 +83,15 @@ export interface UserHelperTypes {
   username: HelperType<any, string>;
   pushSubscriptions: HelperType<any, Array<PushSubscription>>;
   oAuthAccounts: HelperType<any, Array<OAuthAccount>>;
+  reviews: HelperType<
+    {
+      sort?: Array<SortOption>;
+      limit?: number;
+      offset?: number;
+    },
+    Array<ProductReview>
+  >;
+  reviewsCount: HelperType<any, number>;
 }
 
 const {
@@ -90,6 +100,7 @@ const {
   viewUserOrders,
   viewUserEnrollments,
   viewUserQuotations,
+  viewUserProductReviews,
 } = actions as Record<string, string>;
 
 const getPrimaryEmail = (user: UserType) => {
@@ -240,6 +251,21 @@ export const User: UserHelperTypes = {
         provider,
         ...(providerData as any),
       }));
+    });
+  },
+  async reviews(user, params, context) {
+    const { modules } = context;
+    await checkAction(context, viewUserProductReviews, [user, params]);
+    return modules.products.reviews.findProductReviews({
+      ...(params || {}),
+      authorId: user._id,
+    });
+  },
+  async reviewsCount(user, params, context) {
+    const { modules } = context;
+    await checkAction(context, viewUserProductReviews, [user, params]);
+    return modules.products.reviews.count({
+      authorId: user._id,
     });
   },
 };

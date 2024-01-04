@@ -1,12 +1,12 @@
-import { setupDatabase, createAnonymousGraphqlFetch } from './helpers';
-import { SimpleProduct } from './seeds/products';
+import { setupDatabase, createAnonymousGraphqlFetch } from './helpers.js';
+import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetch;
 
 describe('public queries', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createAnonymousGraphqlFetch();
+    graphqlFetch = await createAnonymousGraphqlFetch();
   });
 
   it('products', async () => {

@@ -1,5 +1,5 @@
-import { SimpleOrder } from './orders';
-import { PlanProduct } from './products';
+import { SimpleOrder } from './orders.js';
+import { PlanProduct } from './products.js';
 
 export const ActiveEnrollment = {
   _id: 'activeenrollment',

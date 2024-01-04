@@ -10,9 +10,8 @@ export default async (
   log(`mutation removePaymentCredentials ${paymentCredentialsId}`, { userId });
 
   if (!paymentCredentialsId) throw new InvalidIdError({ paymentCredentialsId });
-  const removedCredentials = await modules.payment.paymentCredentials.removeCredentials(
-    paymentCredentialsId,
-  );
+  const removedCredentials =
+    await modules.payment.paymentCredentials.removeCredentials(paymentCredentialsId);
   if (!removedCredentials) throw new PaymentCredentialsNotFoundError({ paymentCredentialsId });
 
   return removedCredentials;

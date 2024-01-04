@@ -1,16 +1,22 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { startOfHour, startOfMinute, add } from 'date-fns';
+import * as dateFns from 'date-fns/add';
 
 import { IEnrollmentAdapter } from '@unchainedshop/types/enrollments.js';
 
 export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
-  const lowerCase = interval.toLowerCase();
-  const start = lowerCase === 'hours' ? startOfMinute(referenceDate) : startOfHour(referenceDate);
+  const lowerCaseInterval = interval.toLowerCase();
+
+  const start = new Date(referenceDate);
+  if (lowerCaseInterval === 'hours') {
+    start.setMinutes(0, 0, 0);
+  } else {
+    start.setSeconds(0, 0);
+  }
 
   return {
     start,
-    end: add(start, {
-      [lowerCase]: intervalCount,
+    end: dateFns.add(start, {
+      [lowerCaseInterval]: intervalCount,
     }),
   };
 };

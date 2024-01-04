@@ -154,12 +154,6 @@ export type FiltersModule = {
       texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue'>>,
     ) => Promise<Array<FilterText>>;
 
-    upsertLocalizedText: (
-      params: { filterId: string; filterOptionValue?: string },
-      locale: string,
-      text: Omit<FilterText, 'filterId' | 'filterOptionValue' | 'locale'>,
-    ) => Promise<FilterText>;
-
     deleteMany: (params: { filterId?: string; excludedFilterIds?: string[] }) => Promise<number>;
   };
 };

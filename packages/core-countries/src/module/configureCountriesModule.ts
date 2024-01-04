@@ -1,7 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/countries.js';
-import countryFlags from 'emoji-flags';
-import countryI18n from 'i18n-iso-countries';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
@@ -59,10 +57,13 @@ export const configureCountriesModule = async ({
     },
 
     name(country, language) {
-      return countryI18n.getName(country.isoCode, language) || language;
+      return new Intl.DisplayNames([language], { type: 'region', fallback: 'code' }).of(country.isoCode);
     },
     flagEmoji(country) {
-      return countryFlags.countryCode(country.isoCode).emoji || '❌';
+      const letterToLetterEmoji = (letter: string): string => {
+        return String.fromCodePoint(letter.toLowerCase().charCodeAt(0) + 127365);
+      };
+      return Array.from(country.isoCode.toUpperCase()).map(letterToLetterEmoji).join('');
     },
 
     isBase(country) {

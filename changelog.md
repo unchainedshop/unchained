@@ -1,3 +1,56 @@
+# Unchained Engine v2.6
+
+## Minor
+- Protect `upsertLocalizedText` in the core packages products, filters & assortments. Forces the developer to use updateTexts or equivalent functions. This is the first step with the goal to move all localized texts to it's appropriate root documents in order to reduce roundtrips to the db.
+- Remove events `PRODUCT_UPDATE_VARIATION_TEXTS`, `PRODUCT_UPDATE_TEXTS`, `FILTER_UPDATE_TEXTS`, `ASSORTMENT_UPDATE_TEXTS` (triggered for every product when text changes)
+- Add new events `PRODUCT_UPDATE_VARIATION_TEXT`, `PRODUCT_UPDATE_TEXT`, `FILTER_UPDATE_TEXT`, `ASSORTMENT_UPDATE_TEXT` (triggered for every locale & product when text changes).
+- The `_CREATE` events for products, filters and assortments are now triggered AFTER creating the initial text objects so that you can safely use both events to update texts in external systems.
+- Allow to configure an "environment" for stripe which allows to drop events coming to the the engine that are intended to land on another engine not causing false negatives in webhooks.
+
+## Patch
+- Fix payment credential signing procedures that depend on a userId
+- Fix worker not cleaning regression
+
+# Unchained Engine v2.5
+
+This small release improves impersonation and pricing, allowing for better support of e-commerce platforms that want to show net prices all along until the end.
+
+## Minor
+- Add Error Report job that sends failed work items to an E-Mail Address of choice defined by `EMAIL_ERROR_REPORT_RECIPIENT`
+- Remove `mjml` templates because of excessive size of mjml dependencies. Here are the old ones: https://github.com/unchainedshop/unchained/tree/3fabb6cbe55682aa2ee69a246758a09db908fe26/packages/platform/src/templates
+- Add support for net and gross calculation on order items and order totals: Added useNetPrice parameter to `OrderItem.total`, `OrderItem.unitPrice`, `Order.total`
+- Add granular permissions and default allow rules for all mutations even the anonymous ones
+- Add `Mutation.stopImpersonation` that will end an impersonated user account session and return back to the initial impersonator account.
+- Add `Query.impersonator` that returns the currently impersonating user in an impersonation session, allowing the client to check if it's in impersonation mode
+- Add `Product.reviewsCount`, `User.reviewsCount` & `User.reviews`
+- Update `PRODUCT_UPDATE` event to contain the changed product too in the event
+- Debounce EventListenerWorker triggered process of the queue to reduce load of Unchained when many items are rolled up
+## Patch
+- Bump various dependencies and remove more
+- Fix landing page
+- Fix heartbeat not logging the country context
+
+# Unchained Engine v2.3
+
+We have been working on reducing the bundle size lately and got rid of many third party dependencies. We will not stop here and continue that work. The ultimate goal is to make Unchained run on Deno natively. To achieve, we first have to make the core (`core-` packages) free of third party dependencies and free of Node package dependence and `api` basically only depend on Apollo.
+
+## Minor
+- Remove `renderMjmlToHtml` convenience method and pre-defined html templates because mjml is too heavy weight as a dependency and html e-mails cause more issues than they solve.
+- Support `MINIO_UPLOAD_PREFIX` to specifiy subdirectory in bucket in front of all uploads
+- Remove various dependencies from core packages.
+- Make updating of token ownerships more performant
+- Improve pricing types
+- Support attachment preview in mail debug mode when using absolute file paths
+- Update `mutation.impersonate` behavior to enable switching a session to an **impersonated** account and return to the **impersonator** account without the need to logout from the impersonated user account and login again to the initial user (**impersonator**).
+Note: By default impersonation is only allowed to **ADMIN** user.
+## Patch
+- Fix an issue with order pricing
+- Fix oder position removal issue #571
+- Fix bookmark edge cases #564
+- Fix an issue with filters not returned that are selected when they return 0 items
+- Fix countryCode not returned in lastLogin field of User
+
+
 # Unchained Engine v2.2
 
 This release contains various bugfixes and improvements and it breaks various type imports because we are currently in the process of moving types to their respective npm modules.

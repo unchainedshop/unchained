@@ -2,10 +2,10 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { Admin, ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
-import { ConfigurableProduct } from './seeds/products';
-import { SimpleBookmarks } from './seeds/bookmark';
+} from './helpers.js';
+import { Admin, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { ConfigurableProduct } from './seeds/products.js';
+import { SimpleBookmarks } from './seeds/bookmark.js';
 
 let graphqlFetch;
 let graphqlNormalUserFetch;
@@ -14,9 +14,9 @@ let graphqlAnonymousUserFetch;
 describe('Bookmark', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlNormalUserFetch = createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlAnonymousUserFetch = createAnonymousGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlNormalUserFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlAnonymousUserFetch = await createAnonymousGraphqlFetch();
   });
 
   describe('For admin user ', () => {

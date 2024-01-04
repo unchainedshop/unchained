@@ -1,4 +1,4 @@
-FROM node:14-slim
+FROM node:16-slim
 
 ENV NODE_ENV production
 ENV GATSBY_TELEMETRY_DISABLED 1

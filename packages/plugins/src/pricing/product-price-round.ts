@@ -1,9 +1,7 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing.js';
 import { ProductPricingAdapter, ProductPricingDirector } from '@unchainedshop/core-products';
+import { calculation as calcUtils } from '@unchainedshop/utils';
 
-export const roundToNext = (value, precision) => Math.ceil(value / precision) * precision;
-// TODO: Move to types
-// String is referencing to a currency
 interface PriceRoundSettings {
   configurations: Record<string, number>;
   defaultPrecision: number;
@@ -61,7 +59,7 @@ export const ProductPriceRound: IProductPricingAdapter & {
           const [productPrice] = calculation;
           pricingAdapter.resultSheet().resetCalculation(params.calculationSheet);
           pricingAdapter.resultSheet().addItem({
-            amount: roundToNext(productPrice.amount, roundPrecision) * quantity,
+            amount: calcUtils.roundToNext(productPrice.amount, roundPrecision) * quantity,
             isTaxable: productPrice.isTaxable,
             isNetPrice: productPrice.isNetPrice,
             meta: { adapter: ProductPriceRound.key },

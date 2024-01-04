@@ -92,15 +92,6 @@ export type ProductVariationsModule = {
       texts: Array<Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>>,
       productVariationOptionValue?: string,
     ) => Promise<Array<ProductVariationText>>;
-
-    upsertLocalizedText: (
-      params: {
-        productVariationId: string;
-        productVariationOptionValue?: string;
-      },
-      locale: string,
-      text: Omit<ProductVariationText, 'locale' | 'productVariationId' | 'productVariationOptionValue'>,
-    ) => Promise<ProductVariationText>;
   };
 };
 

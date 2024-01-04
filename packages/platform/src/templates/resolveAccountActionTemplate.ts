@@ -2,32 +2,6 @@ import { TemplateResolver } from '@unchainedshop/types/messaging.js';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_URL, EMAIL_WEBSITE_NAME } = process.env;
 
-const mjmlTemplate = `
-<mjml>
-  <mj-body background-color="#FAFAFA">
-      <mj-section padding-bottom="32px" background-color="#fcfcfc">
-        <mj-column width="100%">
-          <mj-text align="center" font-size="20px" color="#232323" font-family="Helvetica Neue" font-weight="200">
-            <h2>{{subject}}</h2>
-          </mj-text>
-          <mj-text align="left" font-size="20px" color="#232323" font-family="Helvetica Neue" font-weight="200">
-            <span>{{message}}</span><br/>
-          </mj-text>
-        </mj-column>
-      </mj-section>
-
-      <mj-section padding-bottom="20px" background-color="#f3f3f3">
-        <mj-column>
-          <mj-button href="{{url}}" font-family="Helvetica" background-color="#31302E" color="white">
-           {{buttonText}}
-         </mj-button>
-         <mj-spacer/>
-        </mj-column>
-      </mj-section>
-  </mj-body>
-</mjml>
-`;
-
 const verifyEmailEnglishConfig = {
   buttonText: 'Verify email address',
   message: 'We need to ensure that this email is yours as a commercial partner.',
@@ -137,7 +111,6 @@ export const resolveAccountActionTemplate: TemplateResolver = async (
         to: recipientEmail || modules.users.primaryEmail(user)?.address,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),
-        html: modules.messaging.renderMjmlToHtml(mjmlTemplate, data),
       },
     },
   ];

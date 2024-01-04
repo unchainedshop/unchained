@@ -1,6 +1,6 @@
+import crypto from 'crypto';
 import { Context } from '@unchainedshop/types/api.js';
 import { ProductDiscount as ProductDiscountType } from '@unchainedshop/types/products.js';
-import crypto from 'crypto';
 
 type HelperType<T> = (product: ProductDiscountType, _: never, context: Context) => T;
 

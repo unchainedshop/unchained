@@ -97,9 +97,8 @@ export const WarehousingDirector: IWarehousingDirector = {
 
           // Calculate earliest delivery date
           const actions = await DeliveryDirector.actions(deliveryProvider, context, unchainedAPI);
-          const deliveryThroughputTime = await actions.estimatedDeliveryThroughput(
-            warehousingThroughputTime,
-          );
+          const deliveryThroughputTime =
+            await actions.estimatedDeliveryThroughput(warehousingThroughputTime);
           const earliestDelivery = Number.isFinite(deliveryThroughputTime)
             ? new Date(shippingTimestamp + deliveryThroughputTime)
             : null;

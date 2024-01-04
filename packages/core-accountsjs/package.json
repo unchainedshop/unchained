@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-accountsjs",
-  "version": "2.2.3",
+  "version": "2.5.12",
   "main": "lib/accounts-index.js",
   "exports": {
     ".": "./lib/accounts-index.js",
@@ -32,21 +32,20 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@accounts/database-manager": "0.33.1",
-    "@accounts/mongo": "0.34.0",
-    "@accounts/mongo-password": "^0.32.4",
+    "@accounts/mongo": "^0.34.1",
+    "@accounts/mongo-password": "^0.33.0",
     "@accounts/password": "^0.32.2",
     "@accounts/server": "0.33.1",
-    "@graphql-modules/core": "0.7.17",
-    "@unchainedshop/logger": "^2.2.3",
-    "@unchainedshop/utils": "^2.2.3",
-    "fido2-lib": "^3.4.0",
-    "uuid": "^9.0.0"
+    "@unchainedshop/logger": "^2.5.12",
+    "@unchainedshop/utils": "^2.5.12",
+    "fido2-lib": "^3.4.4",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/node": "^18.16.16",
-    "@unchainedshop/types": "^2.2.3",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
-    "typescript": "^4.9.5"
+    "@types/node": "^20.10.6",
+    "@unchainedshop/types": "^2.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
   }
 }

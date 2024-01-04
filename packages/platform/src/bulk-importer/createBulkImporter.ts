@@ -1,5 +1,4 @@
-import { mongodb } from '@unchainedshop/mongodb';
-import mongodb, { BulkOperationBase } from 'mongodb';
+import type { BulkOperationBase } from 'mongodb';
 import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core.js';
 import * as AssortmentHandlers from './handlers/assortment/index.js';
 import * as FilterHandlers from './handlers/filter/index.js';
@@ -43,14 +42,6 @@ export const getOperation = (entity: string, operation: string): BulkImportOpera
 };
 
 export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImporter => {
-  const { GridFSBucket } = mongodb;
-
-  // Increase the chunk size to 5MB to get around chunk sorting limits of mongodb (weird error above 100 MB)
-  const BulkImportPayloads = new GridFSBucket(db, {
-    bucketName: 'bulk_import_payloads',
-    chunkSizeBytes: 5 * 1024 * 1024,
-  });
-
   bulkOperationHandlers = {
     ASSORTMENT: AssortmentHandlers,
     PRODUCT: ProductHandlers,
@@ -139,7 +130,6 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
   };
 
   return {
-    BulkImportPayloads,
     createBulkImporter,
   };
 };

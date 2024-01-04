@@ -11,65 +11,96 @@ export const OrderPricingSheet = (
 ): IOrderPricingSheet => {
   const basePricingSheet: IBasePricingSheet<OrderPricingCalculation> = BasePricingSheet(params);
 
+  const addTaxIfAvailabile = (category: string, taxAmount?: number, meta?: any, discountId?: string) => {
+    if (taxAmount) {
+      basePricingSheet.calculation.push({
+        category: OrderPricingRowCategory.Taxes,
+        amount: taxAmount,
+        baseCategory: category,
+        discountId,
+        meta,
+      });
+    }
+  };
+
   const pricingSheet: IOrderPricingSheet = {
     ...basePricingSheet,
 
-    addItems({ amount, meta }) {
+    addItems({ amount, taxAmount, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Items,
         amount,
         meta,
       });
+
+      addTaxIfAvailabile(OrderPricingRowCategory.Items, taxAmount, meta);
     },
 
-    addDiscount({ amount, discountId, meta }: { amount: number; discountId: string; meta?: any }) {
+    addDiscount({ amount, taxAmount, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Discounts,
         amount,
         discountId,
         meta,
       });
+
+      addTaxIfAvailabile(OrderPricingRowCategory.Discounts, taxAmount, meta, discountId);
     },
 
-    addTax({ amount, meta }) {
-      basePricingSheet.calculation.push({
-        category: OrderPricingRowCategory.Taxes,
-        amount,
-        meta,
-      });
-    },
-
-    addDelivery({ amount, meta }) {
+    addDelivery({ amount, taxAmount, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Delivery,
         amount,
         meta,
       });
+
+      addTaxIfAvailabile(OrderPricingRowCategory.Delivery, taxAmount, meta);
     },
 
-    addPayment({ amount, meta }) {
+    addPayment({ amount, taxAmount, meta }) {
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Payment,
         amount,
         meta,
       });
+
+      addTaxIfAvailabile(OrderPricingRowCategory.Payment, taxAmount, meta);
+    },
+
+    taxSum(filter) {
+      return basePricingSheet.sum({
+        category: OrderPricingRowCategory.Taxes,
+        ...(filter || {}),
+      });
     },
 
     gross() {
       // tax is included 2 times, this is only true for Order Pricing!
-      return basePricingSheet.sum() - pricingSheet.taxSum();
+      return basePricingSheet.sum() - this.taxSum();
     },
 
-    taxSum() {
-      return basePricingSheet.sum({
-        category: OrderPricingRowCategory.Taxes,
-      });
+    net() {
+      return basePricingSheet.sum() - this.taxSum() - this.taxSum();
     },
 
-    itemsSum() {
-      return basePricingSheet.sum({
-        category: OrderPricingRowCategory.Items,
-      });
+    total({ category, useNetPrice } = { useNetPrice: false }) {
+      if (!category) {
+        // WORKAROUND WHEN NO CATEGORY IS GIVEN
+        return {
+          amount: Math.round(useNetPrice ? this.net() : this.gross()),
+          currency: params.currency,
+        };
+      }
+
+      const grossAmountForCategory = this.sum({ category });
+      const taxAmountForCategory = this.taxSum({ baseCategory: category });
+      const amount = Math.round(
+        useNetPrice ? grossAmountForCategory - taxAmountForCategory : grossAmountForCategory,
+      );
+      return {
+        amount,
+        currency: params.currency,
+      };
     },
 
     discountSum(discountId) {
@@ -106,30 +137,6 @@ export const OrderPricingSheet = (
       return basePricingSheet.filterBy({
         category: OrderPricingRowCategory.Discounts,
         discountId,
-      });
-    },
-
-    getItemsRows() {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Items,
-      });
-    },
-
-    getTaxRows() {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Taxes,
-      });
-    },
-
-    getDeliveryRows() {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Delivery,
-      });
-    },
-
-    getPaymentRows() {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Payment,
       });
     },
   };

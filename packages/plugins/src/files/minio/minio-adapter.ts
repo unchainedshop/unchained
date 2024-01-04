@@ -1,19 +1,20 @@
-import { UploadFileData } from '@unchainedshop/types/files.js';
+import https from 'https';
+import http, { OutgoingHttpHeaders } from 'http';
+import { Readable } from 'stream';
+import { URL } from 'url';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
 import {
-  IFileAdapter,
   FileAdapter,
   FileDirector,
   buildHashedFilename,
+  resolveExpirationDate,
 } from '@unchainedshop/file-upload';
 
-import https from 'https';
-import http, { OutgoingHttpHeaders } from 'http';
 import { log, LogLevel } from '@unchainedshop/logger';
 import mimeType from 'mime-types';
-import Minio from 'minio';
-import { AssumeRoleProvider } from 'minio/dist/main/AssumeRoleProvider.js';
-import { Readable } from 'stream';
-import { URL } from 'url';
+import { Client } from 'minio';
+import { AssumeRoleProvider } from 'minio/dist/esm/AssumeRoleProvider.mjs';
+import { expiryOffsetInMs } from '@unchainedshop/file-upload/put-expiration.js';
 
 const {
   MINIO_ACCESS_KEY,
@@ -22,12 +23,12 @@ const {
   MINIO_SECRET_KEY,
   MINIO_ENDPOINT,
   MINIO_BUCKET_NAME,
+  MINIO_UPLOAD_PREFIX,
   NODE_ENV,
   AMAZON_S3_SESSION_TOKEN,
 } = process.env;
-const PUT_URL_EXPIRY = 24 * 60 * 60;
 
-let client: Minio.Client;
+let client: Client;
 
 export async function connectToMinio() {
   if (!MINIO_ENDPOINT || !MINIO_BUCKET_NAME) {
@@ -40,7 +41,7 @@ export async function connectToMinio() {
 
   try {
     const resolvedUrl = new URL(MINIO_ENDPOINT);
-    const minioClient = new Minio.Client({
+    const minioClient = new Client({
       endPoint: resolvedUrl.hostname,
       useSSL: resolvedUrl.protocol === 'https:',
       port: parseInt(resolvedUrl.port, 10) || undefined,
@@ -72,8 +73,13 @@ export async function connectToMinio() {
   return null;
 }
 
+const generateMinioPath = (directoryName: string, fileName: string) => {
+  const prefix = MINIO_UPLOAD_PREFIX || '';
+  return [prefix, directoryName, fileName].filter(Boolean).join('/');
+};
+
 const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
-  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${directoryName}/${hashedFilename}`;
+  return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${generateMinioPath(directoryName, hashedFilename)}`;
 };
 
 const getMimeType = (extension) => {
@@ -84,7 +90,7 @@ connectToMinio().then(function setClient(c) {
   client = c;
 });
 
-const createDownloadStream = async (
+const createHttpDownloadStream = async (
   fileUrl: string,
   headers: OutgoingHttpHeaders,
 ): Promise<http.IncomingMessage> => {
@@ -116,8 +122,6 @@ const bufferToStream = (buffer: any) => {
   return stream;
 };
 
-const getExpiryDate = () => new Date(new Date().getTime() + PUT_URL_EXPIRY);
-
 export const MinioAdapter: IFileAdapter = {
   key: 'shop.unchained.file-upload-plugin.minio',
   label: 'Uploads files into an S3 bucket using minio',
@@ -128,13 +132,13 @@ export const MinioAdapter: IFileAdapter = {
   async createSignedURL(directoryName, fileName) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
-    const expiryDate = getExpiryDate();
+    const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const url = await client.presignedPutObject(
       MINIO_BUCKET_NAME,
-      `${directoryName}/${_id}`,
-      PUT_URL_EXPIRY,
+      generateMinioPath(directoryName, _id),
+      expiryOffsetInMs() / 1000,
     );
 
     return {
@@ -179,9 +183,15 @@ export const MinioAdapter: IFileAdapter = {
       'Content-Type': type,
     };
 
-    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream, undefined, metaData);
+    await client.putObject(
+      MINIO_BUCKET_NAME,
+      generateMinioPath(directoryName, _id),
+      stream,
+      undefined,
+      metaData,
+    );
 
-    const { size } = await getObjectStats(`${directoryName}/${_id}`);
+    const { size } = await getObjectStats(generateMinioPath(directoryName, _id));
 
     return {
       _id,
@@ -201,15 +211,21 @@ export const MinioAdapter: IFileAdapter = {
     const fileName = fname || href.split('/').pop();
     const _id = buildHashedFilename(directoryName, fileName, new Date());
 
-    const stream = await createDownloadStream(fileLink, headers);
-    const type = stream?.headers?.['content-type'] || getMimeType(fileName);
+    const stream = await createHttpDownloadStream(fileLink, headers);
+    const type = mimeType.lookup(fileName) || stream.headers['content-type'];
 
     const metaData = {
       'Content-Type': type,
     };
 
-    await client.putObject(MINIO_BUCKET_NAME, `${directoryName}/${_id}`, stream, undefined, metaData);
-    const { size } = await getObjectStats(`${directoryName}/${_id}`);
+    await client.putObject(
+      MINIO_BUCKET_NAME,
+      generateMinioPath(directoryName, _id),
+      stream,
+      undefined,
+      metaData,
+    );
+    const { size } = await getObjectStats(generateMinioPath(directoryName, _id));
 
     return {
       _id,
@@ -220,6 +236,13 @@ export const MinioAdapter: IFileAdapter = {
       type,
       url: generateMinioUrl(directoryName, _id),
     } as UploadFileData;
+  },
+
+  async createDownloadStream(file) {
+    if (!client) throw new Error('Minio not connected, check env variables');
+
+    const stream = await client.getObject(MINIO_BUCKET_NAME, generateMinioPath(file.path, file._id));
+    return stream;
   },
 };
 

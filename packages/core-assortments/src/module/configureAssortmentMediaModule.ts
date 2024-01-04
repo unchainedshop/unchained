@@ -46,17 +46,16 @@ export const configureAssortmentMediaModule = async ({
     AssortmentMediaSchema,
   ) as ModuleMutations<AssortmentMediaType>;
 
-  const upsertLocalizedText: AssortmentMediaModule['texts']['upsertLocalizedText'] = async (
-    assortmentMediaId,
-    locale,
-    text,
-  ) => {
+  const upsertLocalizedText = async (
+    assortmentMediaId: string,
+    locale: string,
+    text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale'>,
+  ): Promise<AssortmentMediaText> => {
     const selector = {
       assortmentMediaId,
       locale,
     };
-
-    await AssortmentMediaTexts.updateOne(
+    const currentText = await AssortmentMediaTexts.findOneAndUpdate(
       selector,
       {
         $set: {
@@ -72,10 +71,17 @@ export const configureAssortmentMediaModule = async ({
       },
       {
         upsert: true,
+        returnDocument: 'after',
+        includeResultMetadata: true,
       },
     );
-
-    return AssortmentMediaTexts.findOne(selector, {});
+    if (currentText.ok) {
+      await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
+        assortmentMediaId,
+        text: currentText.value,
+      });
+    }
+    return currentText.value;
   };
 
   return {
@@ -232,18 +238,11 @@ export const configureAssortmentMediaModule = async ({
       // Mutations
       updateMediaTexts: async (assortmentMediaId, texts) => {
         const mediaTexts = await Promise.all(
-          texts.map(({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
+          texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
         );
-
-        await emit('ASSORTMENT_UPDATE_MEDIA_TEXT', {
-          assortmentMediaId,
-          mediaTexts,
-        });
 
         return mediaTexts;
       },
-
-      upsertLocalizedText,
     },
   };
 };

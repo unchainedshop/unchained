@@ -1,6 +1,4 @@
 import { Roles, Role } from '@unchainedshop/roles';
-
-import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { all } from './all.js';
 import { loggedIn } from './loggedIn.js';
 import { admin } from './admin.js';
@@ -102,6 +100,22 @@ const actions: Record<string, string> = [
   'authTwoFactor',
   'manageTwoFactor',
   'impersonate',
+  'stopImpersonation',
+  'logout',
+  'logoutAllSessions',
+  'loginAsGuest',
+  'loginWithPassword',
+  'loginWithWebAuthn',
+  'loginWithOAuth',
+  'verifyEmail',
+  'useWebAuthn',
+  'pageView',
+  'createUser',
+  'forgotPassword',
+  'resetPassword',
+  'changePassword',
+  'viewUserProductReviews',
+  'heartbeat',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;
@@ -116,6 +130,7 @@ const configureRoles = ({ additionalRoles = {}, additionalActions = [] }) => {
     allRoles[key] = new Role(key);
     val(allRoles[key], actions);
   });
+
   all(allRoles.ALL, actions);
   loggedIn(allRoles.LOGGEDIN, actions);
   admin(allRoles.ADMIN, actions);

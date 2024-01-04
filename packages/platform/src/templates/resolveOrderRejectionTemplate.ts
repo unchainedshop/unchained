@@ -1,59 +1,19 @@
 import { TemplateResolver } from '@unchainedshop/types/messaging.js';
+import { transformOrderToText } from './order-parser/index.js';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 
-const mjmlTemplate = `
-<mjml>
-  <mj-body background-color="#FAFAFA">
-      <mj-section padding-bottom="32px" background-color="#FFFFFF">
-        <mj-column width="100%">
-          <mj-text font-size="20px" color="#232323" font-family="Helvetica Neue" font-weight="400">
-            <h2>{{subject}}</h2>
-          </mj-text>
-          <mj-text font-size="20px" color="#232323" font-family="Helvetica Neue">
-            <p>{{rejection}}</p>
-          </mj-text>
-        </mj-column>
-      </mj-section>
-
-      <mj-section padding-bottom="20px" background-color="#F3F3F3">
-        <mj-column>
-          <mj-button href="{{url}}" font-family="Helvetica" background-color="#31302E" color="#FFFFFF">
-           {{buttonText}}
-         </mj-button>
-        </mj-column>
-      </mj-section>
-  </mj-body>
-</mjml>
-`;
-
 const textTemplate = `
-  {{subject}}\n
-  \n
-  {{rejection}}\n
-  \n
-  -----------------\n
-  {{buttonText}}: {{url}}\n
-  -----------------\n
-`;
+I'm sorry we can't confirm your order.
 
-const texts = {
-  en: {
-    buttonText: 'Details are available at',
-    rejection: 'Your order was cancelled.',
-    subject: `${EMAIL_WEBSITE_NAME}: Order cancelled`,
-  },
-  de: {
-    buttonText: 'Details abrufen',
-    rejection: 'Deine Bestellung wurde storniert',
-    subject: `${EMAIL_WEBSITE_NAME}: Bestellung storniert`,
-  },
-  fr: {
-    buttonText: 'Details are available at',
-    rejection: 'Your order was cancelled.',
-    subject: `${EMAIL_WEBSITE_NAME}: Order cancelled`,
-  },
-};
+This can happen when the payment was not successful or the order was manually canceled because of product availability or fullfillment issues.
+
+The order in question is:
+
+{{orderDetails}}
+
+{{shopName}}: {{shopUrl}}
+`;
 
 export const resolveOrderRejectionTemplate: TemplateResolver = async ({ orderId, locale }, context) => {
   const { modules } = context;
@@ -63,22 +23,22 @@ export const resolveOrderRejectionTemplate: TemplateResolver = async ({ orderId,
     return [];
   }
 
-  const { subject } = texts[locale.language];
+  const subject = `Order rejected ${order.orderNumber}`;
 
   const data = {
-    ...texts[locale.language],
-    subject,
-    url: `${EMAIL_WEBSITE_URL}/order?_id=${order._id}`,
+    shopName: EMAIL_WEBSITE_NAME,
+    shopUrl: EMAIL_WEBSITE_URL,
+    orderDetails: await transformOrderToText({ order, locale }, context),
   };
+
   return [
     {
       type: 'EMAIL',
       input: {
-        from: EMAIL_FROM || 'orders@unchained.local',
+        from: `${EMAIL_WEBSITE_NAME} <${EMAIL_FROM || 'noreply@unchained.local'}>`,
         to: order.contact.emailAddress,
         subject,
         text: modules.messaging.renderToText(textTemplate, data),
-        html: modules.messaging.renderMjmlToHtml(mjmlTemplate, data),
       },
     },
   ];

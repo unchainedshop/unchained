@@ -1,12 +1,10 @@
 import { IWorker, WorkData } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
-import os from 'os';
 import { WorkerDirector } from '../director/WorkerDirector.js';
 
-const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 interface WorkerParams {
-  workerId: string;
+  workerId?: string;
   worker: IWorker<any>;
 }
 
@@ -23,7 +21,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
   },
 
   actions: ({ workerId, worker }: WorkerParams, unchainedAPI) => {
-    log(`${worker.key} -> Initialized: ${workerId || UNCHAINED_WORKER_ID} (${worker.type})`);
+    log(`${worker.key} -> Initialized ${worker.type}`);
 
     const workerActions = {
       start() {
@@ -50,7 +48,6 @@ export const BaseWorker: IWorker<WorkerParams> = {
             const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
             nextDate.setMilliseconds(0);
             const workData: WorkData = {
-              worker: workConfig.worker || workerId,
               type,
               scheduled: nextDate,
               timeout: workConfig.timeout,
@@ -75,7 +72,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
         const processRecursively = async (recursionCounter = 0) => {
           if (maxWorkItemCount && maxWorkItemCount < recursionCounter) return null;
-          const doneWork = await unchainedAPI.modules.worker.processNextWork(workerId, unchainedAPI);
+          const doneWork = await unchainedAPI.modules.worker.processNextWork(unchainedAPI, workerId);
           if (doneWork) return processRecursively(recursionCounter + 1);
           return null;
         };

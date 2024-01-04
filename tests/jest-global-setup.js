@@ -1,8 +1,8 @@
+import { spawn } from 'child_process';
 import dotenv from 'dotenv-extended';
 
-import setupInMemoryMongoDB from '@shelf/jest-mongodb/lib/setup';
-import { spawn } from 'child_process';
-import { wipeDatabase } from './helpers';
+import setupInMemoryMongoDB from '@shelf/jest-mongodb/lib/setup.js';
+import { wipeDatabase } from './helpers.js';
 
 dotenv.load();
 
@@ -20,7 +20,7 @@ const startAndWaitForApp = async () => {
           NODE_ENV: 'development',
           UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET: 'secret',
           UNCHAINED_DISABLE_EMAIL_INTERCEPTION: 1,
-          EMAIL_WEBSITE_NAME: 'Unchained Website',
+          EMAIL_WEBSITE_NAME: 'Unchained',
           EMAIL_WEBSITE_URL: 'http://localhost:4010',
           EMAIL_FROM: 'noreply@unchained.local',
           DATATRANS_SECRET: 'secret',

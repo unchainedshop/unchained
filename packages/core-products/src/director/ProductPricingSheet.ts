@@ -14,16 +14,6 @@ export const ProductPricingSheet = (
   const pricingSheet: IProductPricingSheet = {
     ...basePricingSheet,
 
-    addItem({ amount, isTaxable, isNetPrice, meta }) {
-      basePricingSheet.calculation.push({
-        category: ProductPricingRowCategory.Item,
-        amount,
-        isTaxable,
-        isNetPrice,
-        meta,
-      });
-    },
-
     addDiscount({ amount, isTaxable, isNetPrice, discountId, meta }) {
       basePricingSheet.calculation.push({
         category: ProductPricingRowCategory.Discount,
@@ -31,6 +21,16 @@ export const ProductPricingSheet = (
         isTaxable,
         isNetPrice,
         discountId,
+        meta,
+      });
+    },
+
+    addItem({ amount, isTaxable, isNetPrice, meta }) {
+      basePricingSheet.calculation.push({
+        category: ProductPricingRowCategory.Item,
+        amount,
+        isTaxable,
+        isNetPrice,
         meta,
       });
     },
@@ -52,12 +52,6 @@ export const ProductPricingSheet = (
       });
     },
 
-    itemSum() {
-      return basePricingSheet.sum({
-        category: ProductPricingRowCategory.Item,
-      });
-    },
-
     discountSum(discountId) {
       return basePricingSheet.sum({
         category: ProductPricingRowCategory.Discount,
@@ -66,14 +60,10 @@ export const ProductPricingSheet = (
     },
 
     unitPrice(unitPriceParams) {
-      const netAmount = this.net();
-      const grossAmount = this.gross();
+      const amount = unitPriceParams?.useNetPrice ? this.net() : this.gross();
       return {
-        amount: Math.round((unitPriceParams?.useNetPrice ? netAmount : grossAmount) / this.quantity),
+        amount: Math.round(amount / this.quantity),
         currency: this.currency,
-        isNetPrice: unitPriceParams?.useNetPrice,
-        isTaxable: grossAmount !== netAmount,
-        category: ProductPricingRowCategory.Item,
       };
     },
 
@@ -100,22 +90,10 @@ export const ProductPricingSheet = (
         .filter(Boolean);
     },
 
-    getItemRows() {
-      return basePricingSheet.filterBy({
-        category: ProductPricingRowCategory.Item,
-      });
-    },
-
     getDiscountRows(discountId: string) {
       return basePricingSheet.filterBy({
         category: ProductPricingRowCategory.Discount,
         discountId,
-      });
-    },
-
-    getTaxRows() {
-      return basePricingSheet.filterBy({
-        category: ProductPricingRowCategory.Tax,
       });
     },
   };

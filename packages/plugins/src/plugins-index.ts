@@ -1,5 +1,5 @@
 import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express/index.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import express from 'express';
 
 // Delivery
@@ -16,7 +16,7 @@ import './payment/worldline-saferpay/index.js';
 import { datatransHandler } from './payment/datatrans-v2/index.js';
 import { configureCryptopayModule, cryptopayHandler } from './payment/cryptopay/index.js';
 import { appleIAPHandler, configureAppleTransactionsModule } from './payment/apple-iap/index.js';
-import { stripeHandler } from './payment/stripe.js';
+import { stripeHandler } from './payment/stripe/index.js';
 import { postfinanceCheckoutHandler } from './payment/postfinance-checkout/index.js';
 
 // Warehousing
@@ -62,6 +62,7 @@ import './worker/email.js';
 import './worker/sms.js';
 import './worker/push-notification.js';
 import './worker/update-ecb-rates.js';
+import './worker/error-notifications.js';
 import './worker/update-coinbase-rates.js';
 import { configureExportToken } from './worker/export-token.js';
 import { configureGenerateOrderAutoscheduling } from './worker/enrollment-order-generator.js';
@@ -88,7 +89,12 @@ const {
 // import './files/minio/minio-adapter';
 // import { minioHandler } from './files/minio/minio-webhook';
 
-export const defaultModules = {
+export const defaultModules: Record<
+  string,
+  {
+    configure: (params: ModuleInput<any>) => any;
+  }
+> = {
   appleTransactions: {
     configure: configureAppleTransactionsModule,
   },

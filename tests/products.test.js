@@ -2,8 +2,8 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
+} from './helpers.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
   PlanProduct,
   SimpleProduct,
@@ -12,7 +12,7 @@ import {
   UnpublishedProduct,
   ProxyProduct,
   ProxyPlanProduct1,
-} from './seeds/products';
+} from './seeds/products.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
@@ -21,9 +21,9 @@ let graphqlFetchAsAnonymousUser;
 describe('Products', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    graphqlFetchAsAdmin = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   describe('Mutation.createProduct', () => {

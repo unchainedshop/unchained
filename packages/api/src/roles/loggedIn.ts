@@ -213,6 +213,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.viewUserQuotations, isMyself);
   role.allow(actions.viewUserEnrollments, isMyself);
   role.allow(actions.viewUserPrivateInfos, isMyself);
+  role.allow(actions.viewUserProductReviews, isMyself);
   role.allow(actions.viewUserTokens, isMyself);
   role.allow(actions.updateUser, isMyself);
   role.allow(actions.authTwoFactor, isMyself);
@@ -241,4 +242,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
   role.allow(actions.updateToken, isOwnedToken);
   role.allow(actions.viewToken, isOwnedToken);
+  role.allow(actions.stopImpersonation, () => true);
+  role.allow(actions.impersonate, () => false);
 };

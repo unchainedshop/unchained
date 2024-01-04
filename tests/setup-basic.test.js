@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from "./helpers";
+import { setupDatabase, createLoggedInGraphqlFetch } from "./helpers.js";
 
 let db;
 let graphqlFetch;
@@ -6,7 +6,7 @@ let graphqlFetch;
 describe("basic setup of internationalization and localization context", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   describe("currencies", () => {

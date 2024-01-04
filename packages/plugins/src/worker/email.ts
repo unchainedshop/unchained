@@ -1,9 +1,9 @@
+import { mkdtemp, writeFile } from 'fs/promises';
+import { join, isAbsolute } from 'path';
+import { tmpdir } from 'os';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
-import fs from 'fs';
-import { join, isAbsolute } from 'path';
-import os from 'os';
 import open from 'open';
 import nodemailer from 'nodemailer';
 
@@ -26,20 +26,17 @@ const buildLink = ({ filename, content, href, contentType, encoding, path }) => 
   return '';
 };
 
-function writeFile(filename, data, done) {
-  fs.mkdtemp(join(os.tmpdir(), 'email-'), (err1, folder) => {
-    if (err1) return done(err1);
-    const temporaryFolderPath = `${folder}/${filename}`;
-    return fs.writeFile(temporaryFolderPath, data, (err2) => {
-      if (err2) return done(err2);
-      return done(null, temporaryFolderPath);
-    });
-  });
-}
-
-const openInBrowser = (options) => {
+const openInBrowser = async (options) => {
   const filename = `${Date.now()}.html`;
+  const messageBody = options.html || options.text.replace(/(\r\n|\n|\r)/gm, '<br/>');
   const content = `
+<!DOCTYPE html>
+<html lang="en" xmlns="https://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+  </head>
+  <body>
     <b>From:&nbsp</b>${options.from}<br/>
     <b>To:&nbsp;</b>${options.to}<br/>
     <b>Cc:&nbsp;</b>${options.cc}<br/>
@@ -49,16 +46,14 @@ const openInBrowser = (options) => {
     <b>subject:&nbsp;</b>${options.subject}<br/>
     <b>attachments:&nbsp;</b>${(options.attachments || []).map(buildLink).join(',&nbsp;')}<br/>
     <hr/>
-    ${(options.html || options.text).replace(/(\r\n|\n|\r)/gm, '<br/>')}
-    `;
-  writeFile(filename, content, (err, filePath) => {
-    if (err) {
-      logger.error(err);
-      return;
-    }
-    logger.verbose('unchained:platform -> Mailman detected an outgoing email');
-    open(filePath);
-  });
+    ${messageBody}
+  </body>
+</html>`;
+
+  const folder = await mkdtemp(join(tmpdir(), 'email-'));
+  const fileName = `${folder}/${filename}`;
+  await writeFile(fileName, content);
+  return open(fileName);
 };
 
 const EmailWorkerPlugin: IWorkerAdapter<
@@ -98,7 +93,8 @@ const EmailWorkerPlugin: IWorkerAdapter<
         ...rest,
       };
       if (checkEmailInterceptionEnabled()) {
-        openInBrowser(sendMailOptions);
+        logger.verbose('unchained:platform -> Mailman detected an outgoing email');
+        await openInBrowser(sendMailOptions);
         return { success: true, result: { intercepted: true } };
       }
       if (!process.env.MAIL_URL) {

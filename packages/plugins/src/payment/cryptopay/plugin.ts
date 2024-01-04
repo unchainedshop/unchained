@@ -34,7 +34,7 @@ type CryptopayAddress = {
 const getDerivationPath = (currency: CryptopayCurrencies, index: number): string => {
   const address = `${(parseInt(CRYPTOPAY_DERIVATION_START, 10) || 0) + index}`;
   if (currency === CryptopayCurrencies.ETH) {
-    const pathComponents = ethers.utils.defaultPath.split('/');
+    const pathComponents = ethers.defaultPath.split('/');
     pathComponents[pathComponents.length - 1] = address;
     return pathComponents.join('/');
   }
@@ -65,7 +65,7 @@ const Cryptopay: IPaymentAdapter = {
           const targetCurrencyObj = await modules.currencies.findCurrency({
             isoCode: addressData.currency,
           });
-          if (!targetCurrencyObj.isActive) return null;
+          if (!targetCurrencyObj?.isActive) return null;
           const rateData = await modules.products.prices.rates.getRate(
             originCurrencyObj,
             targetCurrencyObj,
@@ -143,7 +143,7 @@ const Cryptopay: IPaymentAdapter = {
                 ({
                   address: _id,
                   currency,
-                } as CryptopayAddress),
+                }) as CryptopayAddress,
             ),
           );
           return JSON.stringify(existingAddressesWithNewExpiration);
@@ -170,7 +170,9 @@ const Cryptopay: IPaymentAdapter = {
         if (CRYPTOPAY_ETH_XPUB) {
           // we neuter for security reasons, it's still quite complicated for most ethereum clients to show an appropriate
           // xpub, that's why
-          const hardenedMaster = ethers.utils.HDNode.fromExtendedKey(CRYPTOPAY_ETH_XPUB).neuter();
+          const hdWallet = ethers.HDNodeWallet.fromExtendedKey(CRYPTOPAY_ETH_XPUB);
+          const hardenedMaster = 'neuter' in hdWallet ? hdWallet.neuter() : hdWallet;
+
           const ethDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
             CryptopayCurrencies.ETH,
           );

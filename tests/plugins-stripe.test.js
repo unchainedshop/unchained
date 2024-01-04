@@ -1,8 +1,8 @@
 import Stripe from 'stripe';
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN } from './seeds/users';
-import { SimplePaymentProvider } from './seeds/payments';
-import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
+import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { USER_TOKEN } from './seeds/users.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
+import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 
 const { STRIPE_SECRET } = process.env;
 
@@ -13,7 +13,7 @@ if (STRIPE_SECRET) {
   describe('Plugins: Stripe Payments', () => {
     beforeAll(async () => {
       [db] = await setupDatabase();
-      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
       // Add a stripe provider
       await db.collection('payment-providers').findOrInsertOne({
@@ -69,7 +69,7 @@ if (STRIPE_SECRET) {
     describe('Mutation.signPaymentProviderForCredentialRegistration (Stripe)', () => {
       let idAndSecret;
       it('Request a new client secret for the purpose of registration', async () => {
-        const { data: { signPaymentProviderForCredentialRegistration } = {} } =
+        const { data: { signPaymentProviderForCredentialRegistration } = {}, ...rest } =
           await graphqlFetch({
             query: /* GraphQL */ `
               mutation signPaymentProviderForCredentialRegistration(
@@ -94,22 +94,17 @@ if (STRIPE_SECRET) {
           signPaymentProviderForCredentialRegistration.split('_secret_');
       }, 10000);
       it('Confirm the setup intent', async () => {
-        const stripe = Stripe(STRIPE_SECRET);
-        const method = await stripe.paymentMethods.create({
-          type: 'card',
-          card: {
-            number: '4242424242424242',
-            exp_month: 12,
-            exp_year: 2025,
-            cvc: '314',
-          },
-        });
+        const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2023-08-16' });
+        
         const confirmedIntent = await stripe.setupIntents.confirm(
           idAndSecret[0],
           {
-            payment_method: method.id,
+            return_url: 'http://localhost:4010',
+            use_stripe_sdk: true,
+            payment_method: 'pm_card_visa',
           },
         );
+
         expect(confirmedIntent).toMatchObject({
           status: 'succeeded',
         });
@@ -255,21 +250,16 @@ if (STRIPE_SECRET) {
       }, 10000);
       it('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);
-        const method = await stripe.paymentMethods.create({
-          type: 'card',
-          card: {
-            number: '4242424242424242',
-            exp_month: 12,
-            exp_year: 2025,
-            cvc: '314',
-          },
-        });
+
         const confirmedIntent = await stripe.paymentIntents.confirm(
           idAndSecret[0],
           {
-            payment_method: method.id,
+            return_url: 'http://localhost:4010',
+            use_stripe_sdk: true,
+            payment_method: 'pm_card_visa',
           },
         );
+
         expect(confirmedIntent).toMatchObject({
           status: 'succeeded',
         });

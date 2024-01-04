@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Context } from '@unchainedshop/types/api.js';
 import { Country } from '@unchainedshop/types/countries.js';
 import { Currency } from '@unchainedshop/types/currencies.js';
@@ -11,7 +12,6 @@ import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
 import { PaymentProvider } from '@unchainedshop/types/payments.js';
 import { User } from '@unchainedshop/types/user.js';
-import crypto from 'crypto';
 
 type HelperType<P, T> = (order: OrderType, params: P, context: Context) => T;
 
@@ -26,7 +26,7 @@ export interface OrderHelperTypes {
   payment: HelperType<never, Promise<OrderPayment>>;
   items: HelperType<never, Promise<Array<OrderPosition>>>;
   status: HelperType<never, string>;
-  total: HelperType<{ category: string }, Promise<OrderPrice>>;
+  total: HelperType<{ category: string; useNetPrice: boolean }, Promise<OrderPrice>>;
   user: HelperType<never, Promise<User>>;
 }
 
@@ -80,16 +80,15 @@ export const Order: OrderHelperTypes = {
     return obj.status;
   },
 
-  total: async (obj, params: { category: string }, { modules }) => {
+  total: async (obj, params, { modules }) => {
     const pricingSheet = modules.orders.pricingSheet(obj);
 
     if (pricingSheet.isValid()) {
-      const price = pricingSheet.total({ category: params.category, useNetPrice: false });
-
+      const price = pricingSheet.total(params);
       return {
         _id: crypto
           .createHash('sha256')
-          .update([obj._id, price.amount, price.currency].join(''))
+          .update([obj._id, JSON.stringify(params), JSON.stringify(price)].join(''))
           .digest('hex'),
         ...price,
       };

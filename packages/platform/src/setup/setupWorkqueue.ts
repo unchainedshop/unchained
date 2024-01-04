@@ -15,12 +15,12 @@ export interface SetupWorkqueueOptions {
 
 export const setupWorkqueue = (
   unchainedAPI: UnchainedCore,
-  { workerId, batchCount, schedule, retryInput }: SetupWorkqueueOptions = {},
+  workQueueOptions: SetupWorkqueueOptions = {},
 ) => {
   const handlers = [
-    FailedRescheduler.actions({ retryInput }, unchainedAPI),
-    EventListenerWorker.actions({ workerId }, unchainedAPI),
-    IntervalWorker.actions({ workerId, batchCount, schedule }, unchainedAPI),
+    FailedRescheduler.actions(workQueueOptions, unchainedAPI),
+    EventListenerWorker.actions(workQueueOptions, unchainedAPI),
+    IntervalWorker.actions(workQueueOptions, unchainedAPI),
   ];
 
   handlers.forEach((handler) => handler.start());

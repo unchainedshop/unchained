@@ -2,14 +2,14 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users';
+} from './helpers.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
   GenericPaymentCredential,
   PrePaidPaymentCredential,
   SimplePaymentProvider,
   SimplePaymentCredential,
-} from './seeds/payments';
+} from './seeds/payments.js';
 
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
@@ -18,9 +18,9 @@ let graphqlFetchAsAnonymousUser;
 describe('PaymentProviders', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
-    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    graphqlFetchAsAdminUser = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = await createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   describe('Query.paymentProvidersCount when logged in should', () => {

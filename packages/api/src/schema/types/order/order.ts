@@ -77,7 +77,7 @@ export default [
       status: OrderStatus
       supportedDeliveryProviders: [DeliveryProvider!]!
       supportedPaymentProviders: [PaymentProvider!]!
-      total(category: OrderPriceCategory): Price
+      total(category: OrderPriceCategory, useNetPrice: Boolean = false): Price
       updated: DateTime
       user: User
     }

@@ -65,11 +65,5 @@ export type AssortmentMediaModule = {
       assortmentMediaId: string,
       texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId'>>,
     ) => Promise<Array<AssortmentMediaText>>;
-
-    upsertLocalizedText: (
-      assortmentId: string,
-      locale: string,
-      text: Omit<AssortmentMediaText, 'assortmentMediaId' | 'locale'>,
-    ) => Promise<AssortmentMediaText>;
   };
 };

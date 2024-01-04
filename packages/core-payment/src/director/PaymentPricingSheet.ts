@@ -52,12 +52,6 @@ export const PaymentPricingSheet = (
       });
     },
 
-    feeSum() {
-      return basePricingSheet.sum({
-        category: PaymentPricingRowCategory.Payment,
-      });
-    },
-
     discountSum(discountId) {
       return basePricingSheet.sum({
         category: PaymentPricingRowCategory.Discount,
@@ -88,22 +82,10 @@ export const PaymentPricingSheet = (
         .filter(Boolean);
     },
 
-    getFeeRows() {
-      return basePricingSheet.filterBy({
-        category: PaymentPricingRowCategory.Item,
-      });
-    },
-
     getDiscountRows(discountId) {
       return basePricingSheet.filterBy({
         category: PaymentPricingRowCategory.Discount,
         discountId,
-      });
-    },
-
-    getTaxRows() {
-      return basePricingSheet.filterBy({
-        category: PaymentPricingRowCategory.Tax,
       });
     },
   };

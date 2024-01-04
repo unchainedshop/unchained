@@ -1,47 +1,6 @@
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
 import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
-// TODO: move into separate file and share multiple places
-const resolveRatioAndTaxDivisorForPricingSheet = (pricing, total) => {
-  if (total === 0 || !pricing) {
-    return {
-      ratio: 1,
-      taxDivisor: 1,
-    };
-  }
-  const tax = pricing.taxSum();
-  const gross = pricing.gross();
-  return {
-    ratio: gross / total,
-    taxDivisor: gross / (gross - tax),
-  };
-};
-
-// TODO: move into separate file and share multiple places
-const resolveAmountAndTax = ({ ratio, taxDivisor }, amount) => {
-  const shareAmount = Number.isFinite(ratio) ? amount * ratio : 0;
-  const shareTaxAmount = Number.isFinite(taxDivisor) ? shareAmount - shareAmount / taxDivisor : 0;
-  return [shareAmount, shareTaxAmount];
-};
-
-// TODO: move into separate file and share multiple places
-const applyDiscountToMultipleShares = (shares, amount) => {
-  return shares.reduce(
-    ([currentDiscountAmount, currentTaxAmount], share) => {
-      const [shareAmount, shareTaxAmount] = resolveAmountAndTax(share, amount);
-      return [currentDiscountAmount + shareAmount, currentTaxAmount + shareTaxAmount];
-    },
-    [0, 0],
-  );
-};
-
-// TODO: move into separate file and share multiple places
-const calculateAmountToSplit = (configuration, amount) => {
-  const deductionAmount = configuration.rate
-    ? amount * configuration.rate
-    : Math.min(configuration.fixedRate, amount);
-
-  return Math.max(0, deductionAmount - (configuration.alreadyDeducted || 0));
-};
+import { calculation as calcUtils } from '@unchainedshop/utils';
 
 const OrderItemsDiscount: IOrderPricingAdapter = {
   ...OrderPricingAdapter,
@@ -67,12 +26,13 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
         // if you want to add percentual discounts,
         // add it to the order item calculation
 
-        const totalAmountOfItems = params.calculationSheet.sum({
+        const totalAmountOfItems = params.calculationSheet.total({
           category: OrderPricingRowCategory.Items,
-        });
+          useNetPrice: false,
+        }).amount;
 
         const itemShares = orderPositions.map((orderPosition) =>
-          resolveRatioAndTaxDivisorForPricingSheet(
+          calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
             modules.orders.positions.pricingSheet(orderPosition, order.currency, params.context),
             totalAmountOfItems,
           ),
@@ -82,33 +42,23 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
 
         params.discounts.forEach(({ configuration, discountId }) => {
           // First, we deduce the discount from the items
-          const [itemsDiscountAmount, itemsTaxAmount] = applyDiscountToMultipleShares(
+          const [itemsDiscountAmount, itemsTaxAmount] = calcUtils.applyDiscountToMultipleShares(
             itemShares,
-            calculateAmountToSplit({ ...configuration, alreadyDeducted }, totalAmountOfItems),
+            calcUtils.calculateAmountToSplit({ ...configuration, alreadyDeducted }, totalAmountOfItems),
           );
           alreadyDeducted = +itemsDiscountAmount;
 
-          const discountAmount = itemsDiscountAmount;
-          const taxAmount = itemsTaxAmount;
+          const discountAmount = itemsDiscountAmount * -1;
+          const taxAmount = itemsTaxAmount * -1;
           if (discountAmount) {
             pricingAdapter.resultSheet().addDiscount({
-              amount: discountAmount * -1,
+              amount: discountAmount,
+              taxAmount,
               discountId,
-              isTaxable: false,
-              isNetPrice: false,
               meta: {
                 adapter: OrderItemsDiscount.key,
               },
             });
-            if (taxAmount !== 0) {
-              pricingAdapter.resultSheet().addTax({
-                amount: taxAmount * -1,
-                meta: {
-                  discountId,
-                  adapter: OrderItemsDiscount.key,
-                },
-              });
-            }
           }
         });
 

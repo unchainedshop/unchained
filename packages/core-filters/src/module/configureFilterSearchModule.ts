@@ -91,6 +91,8 @@ export const configureFilterSearchModule = ({
       )(productIds);
 
       const findFilters = async () => {
+        if (!filterSelector) return [];
+
         const extractedFilterIds = (filterSelector?._id as any)?.$in || [];
         const otherFilters = await Filters.find(filterSelector).toArray();
         const sortedFilters = otherFilters.sort((left, right) => {

@@ -1,7 +1,7 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN, User } from './seeds/users';
-import { SimplePaymentProvider } from './seeds/payments';
-import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
+import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { USER_TOKEN, User } from './seeds/users.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
+import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 
 let db;
 let graphqlFetch;
@@ -13,7 +13,7 @@ describe('Plugins: Datatrans Payments', () => {
 
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
     // Add a datatrans provider
     await db.collection('payment-providers').findOrInsertOne({
@@ -101,7 +101,7 @@ describe('Plugins: Datatrans Payments', () => {
 
   describe('mutation.signPaymentProviderForCheckout (Datatrans) should', () => {
     it('starts a new transaction and checks if it is valid', async () => {
-      jest.setTimeout(10000);
+      import.meta.jest.setTimeout(10000);
       const {
         data: { signPaymentProviderForCheckout },
       } = await graphqlFetch({
@@ -148,8 +148,6 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
-          // eslint-disable-next-line
-          // @ts-ignore
           duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
@@ -177,8 +175,6 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
-          // eslint-disable-next-line
-          // @ts-ignore
           duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
@@ -203,8 +199,6 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
-          // eslint-disable-next-line
-          // @ts-ignore
           duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
@@ -227,8 +221,6 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
-          // eslint-disable-next-line
-          // @ts-ignore
           duplex: 'half',
           headers: {
             'Content-Type': 'application/json',
@@ -265,8 +257,6 @@ describe('Plugins: Datatrans Payments', () => {
         'http://localhost:4010/payment/datatrans/webhook',
         {
           method: 'POST',
-          // eslint-disable-next-line
-          // @ts-ignore
           duplex: 'half',
           headers: {
             'Content-Type': 'application/json',

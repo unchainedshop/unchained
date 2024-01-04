@@ -1,9 +1,9 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers";
-import { USER_TOKEN } from "./seeds/users";
-import { SimplePaymentProvider } from "./seeds/payments";
-import { SimpleOrder, SimplePosition, SimplePayment } from "./seeds/orders";
-import { SimpleProduct } from "./seeds/products";
-import { BTC_DERIVATIONS, ETH_DERIVATIONS, BTCCurrency, SHIBCurrency } from "./seeds/cryptopay";
+import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers.js";
+import { USER_TOKEN } from "./seeds/users.js";
+import { SimplePaymentProvider } from "./seeds/payments.js";
+import { SimpleOrder, SimplePosition, SimplePayment } from "./seeds/orders.js";
+import { SimpleProduct } from "./seeds/products.js";
+import { BTC_DERIVATIONS, ETH_DERIVATIONS, BTCCurrency, SHIBCurrency } from "./seeds/cryptopay.js";
 
 let db;
 let graphqlFetch;
@@ -11,7 +11,7 @@ let graphqlFetch;
 describe.skip("Plugins: Cryptopay Payments", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
     await db.collection("products").findOrInsertOne({
       ...SimpleProduct,
@@ -232,8 +232,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
@@ -255,8 +253,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
@@ -278,8 +274,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'BTC',
@@ -301,8 +295,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'ETH',
@@ -324,8 +316,6 @@ describe.skip("Plugins: Cryptopay Payments", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // eslint-disable-next-line
-        // @ts-ignore
         duplex: 'half',
         body: JSON.stringify({
           currency: 'ETH',

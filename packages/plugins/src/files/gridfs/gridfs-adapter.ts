@@ -1,24 +1,18 @@
 /// <reference lib="dom" />
-import { UploadFileData } from '@unchainedshop/types/files.js';
+import { URL } from 'url';
+import { Readable, PassThrough } from 'stream';
+import { pipeline } from 'stream/promises';
+import mimeType from 'mime-types';
 import {
-  IFileAdapter,
   FileAdapter,
   FileDirector,
   buildHashedFilename,
+  resolveExpirationDate,
 } from '@unchainedshop/file-upload';
-import mimeType from 'mime-types';
-import { URL } from 'url';
-import { Readable, pipeline as rawPipeline } from 'stream';
-import { promisify } from 'util';
-import { ReadableStream } from 'node:stream/web';
+import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
 import sign from './sign.js';
 
-const pipeline = promisify(rawPipeline);
-
-const { UNCHAINED_PUT_URL_EXPIRY = '86400000', ROOT_URL } = process.env;
-
-const getExpiryDate = () =>
-  new Date(new Date().getTime() + (parseInt(UNCHAINED_PUT_URL_EXPIRY, 10) || 24 * 60 * 60 * 1000));
+const { ROOT_URL } = process.env;
 
 const bufferToStream = (buffer: any) => {
   const stream = new Readable();
@@ -36,7 +30,7 @@ export const GridFSAdapter: IFileAdapter = {
   ...FileAdapter,
 
   async createSignedURL(directoryName, fileName) {
-    const expiryDate = getExpiryDate();
+    const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
     const signature = sign(directoryName, _id, expiryDate.getTime());
 
@@ -71,11 +65,11 @@ export const GridFSAdapter: IFileAdapter = {
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
     }
 
-    const expiryDate = getExpiryDate();
+    const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
-    await pipeline(stream, writeStream);
+    await pipeline(stream, new PassThrough({ allowHalfOpen: true }), writeStream);
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${_id}`;
 
@@ -98,13 +92,13 @@ export const GridFSAdapter: IFileAdapter = {
     const { href } = new URL(fileLink);
     const fileName = fname || href.split('/').pop();
 
-    const expiryDate = getExpiryDate();
+    const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
     const response = await fetch(href, { headers });
     if (!response.ok) throw new Error(`Unexpected response for ${href}: ${response.statusText}`);
-    await pipeline(response.body as ReadableStream, writeStream);
+    await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${_id}`;
 
@@ -117,6 +111,11 @@ export const GridFSAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName) || response.headers.get('content-type'),
       url,
     } as UploadFileData;
+  },
+
+  async createDownloadStream(file, { modules }: any) {
+    const readStream = await modules.gridfsFileUploads.createReadStream(file.path, file._id);
+    return readStream;
   },
 
   async removeFiles(files, { modules }: any) {

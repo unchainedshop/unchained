@@ -2,16 +2,16 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleAssortment } from './seeds/assortments';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { SimpleAssortment } from './seeds/assortments.js';
 
 let graphqlFetch;
 
 describe('TranslatedAssortmentsText', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Query.translatedAssortmentsText for admin user should', () => {
@@ -78,7 +78,7 @@ describe('TranslatedAssortmentsText', () => {
 
   describe('Query.translatedAssortmentTexts for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query TranslatedAssortmentTexts($assortmentId: ID!) {

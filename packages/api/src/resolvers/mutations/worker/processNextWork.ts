@@ -14,7 +14,7 @@ export default async function processNextWork(
     userId: context.userId,
   });
 
-  const work = await context.modules.worker.processNextWork(worker, context);
+  const work = await context.modules.worker.processNextWork(context, worker);
 
   return work;
 }
