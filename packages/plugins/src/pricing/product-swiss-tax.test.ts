@@ -8,7 +8,7 @@ describe('getTaxRate', () => {
     expect(getTaxRate({
       product: {} as any,
       order: {} as any,
-    })).toBe(0.077);
+    })).toBe(0.081);
   });
 
   it('reduced rate', () => {
@@ -17,7 +17,7 @@ describe('getTaxRate', () => {
         tags: ['swiss-tax-category:reduced']
       } as any,
       order: {} as any,
-    })).toBe(0.025);
+    })).toBe(0.026);
   });
 
   it('special rate', () => {
@@ -26,7 +26,7 @@ describe('getTaxRate', () => {
         tags: ['swiss-tax-category:special']
       } as any,
       order: {} as any,
-    })).toBe(0.037);
+    })).toBe(0.038);
   });
 
   it('default rate', () => {
@@ -35,7 +35,7 @@ describe('getTaxRate', () => {
         tags: ['swiss-tax-category:default']
       } as any,
       order: {} as any,
-    })).toBe(0.077);
+    })).toBe(0.081);
   });
 
 })
