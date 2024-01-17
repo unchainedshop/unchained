@@ -10,6 +10,7 @@ import {
 } from '@unchainedshop/mongodb';
 import { SortDirection } from '@unchainedshop/types/api.js';
 import { emit, registerEvents } from '@unchainedshop/events';
+import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
 import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';
@@ -19,37 +20,6 @@ import { WorkStatus } from '../director/WorkStatus.js';
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const logger = createLogger('unchained:core-worker');
-
-const buildObfuscatedFieldsFilter = (additionalSensitiveFields: string[] = []) => {
-  const defaultObfuscatedFields = ['password', 'token', 'plainPassword', 'authorization', 'secret'];
-
-  const sensitiveFields = Array.from(
-    new Set([...defaultObfuscatedFields, ...additionalSensitiveFields]),
-  );
-
-  const obfuscateSensitiveFields = (data) => {
-    if (Array.isArray(data)) {
-      return data.map((item) => obfuscateSensitiveFields(item));
-    }
-
-    if (typeof data === 'object' && data !== null) {
-      const temp = data;
-      Object.keys(temp).forEach((key) => {
-        if (sensitiveFields.includes(key)) {
-          delete temp[key];
-        } else {
-          temp[key] = obfuscateSensitiveFields(temp[key]);
-        }
-      });
-
-      return temp; // Return the modified copy
-    }
-
-    return data; // Return unchanged data for non-objects
-  };
-
-  return obfuscateSensitiveFields;
-};
 
 export const buildQuerySelector = ({
   created,

@@ -7,6 +7,8 @@ export { default as slugify } from './slugify.js';
 export { default as pipePromises } from './pipe-promises.js';
 export { default as generateRandomHash } from './generate-random-hash.js';
 export { default as randomValueHex } from './random-value-hex.js';
+export { default as buildObfuscatedFieldsFilter } from './build-obfuscated-fields-filter.js';
+
 /*
  * Schemas
  */
