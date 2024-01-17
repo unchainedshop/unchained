@@ -16,7 +16,7 @@ import { ProductsModule, ProductsSettingsOptions } from './products.js';
 import { QuotationsModule, QuotationsSettingsOptions } from './quotations.js';
 import { UsersModule } from './user.js';
 import { WarehousingModule } from './warehousing.js';
-import { WorkerModule } from './worker.js';
+import { WorkerModule, WorkerSettingsOptions } from './worker.js';
 
 export interface Modules {
   accounts: AccountsModule;
@@ -51,4 +51,5 @@ export interface ModuleOptions {
   quotations?: QuotationsSettingsOptions;
   files?: FilesSettingsOptions;
   payment?: PaymentSettingsOptions;
+  worker?: WorkerSettingsOptions;
 }

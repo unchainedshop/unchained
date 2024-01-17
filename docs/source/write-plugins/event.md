@@ -9,8 +9,7 @@ Here is an example of redis-enabled Unchained Events:
 
 ```typescript
 import { createClient } from '@redis/client';
-import { EmitAdapter } from '@unchainedshop/types/events.js';
-import { setEmitAdapter } from '@unchainedshop/events';
+import { EmitAdapter, setEmitAdapter } from '@unchainedshop/events';
 
 const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
 

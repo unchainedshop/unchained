@@ -1,13 +1,18 @@
 import type { mongodb } from '@unchainedshop/mongodb';
 
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
-import { Event, EventQuery, EventsModule } from '@unchainedshop/types/events.js';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { EventsCollection } from '../db/EventsCollection.js';
+import { ModuleCreateMutation, ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { EventsSchema } from '../db/EventsSchema.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
+
+export type EventQuery = {
+  types?: Array<string>;
+  queryString?: string;
+  created?: Date;
+};
 
 export const buildFindSelector = ({ types, queryString, created }: EventQuery) => {
   const selector: { type?: any; $text?: any; created?: any } = {};
@@ -17,6 +22,26 @@ export const buildFindSelector = ({ types, queryString, created }: EventQuery) =
   if (created) selector.created = { $gte: created };
   return selector;
 };
+
+export interface EventsModule extends ModuleCreateMutation<Event> {
+  findEvent: (
+    params: mongodb.Filter<Event> & { eventId: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<Event>;
+
+  findEvents: (
+    params: EventQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<Event>>;
+
+  type: (event: Event) => string;
+
+  count: (query: EventQuery) => Promise<number>;
+}
 
 export const configureEventsModule = async ({
   db,

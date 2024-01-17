@@ -1,9 +1,25 @@
 import { createLogger } from '@unchainedshop/logger';
-import { EmitAdapter } from '@unchainedshop/types/events.js';
 
 const logger = createLogger('unchained:events');
 
-export type ContextNormalizerFunction = (context: any) => any;
+export type RawPayloadType<T> = {
+  payload: T;
+  context: {
+    userAgent?: string;
+    language?: string;
+    country?: string;
+    remoteAddress?: string;
+    referer?: string;
+    origin?: string;
+    userId?: string;
+  };
+};
+export interface EmitAdapter {
+  publish(eventName: string, data: RawPayloadType<Record<string, any>>): void;
+  subscribe(eventName: string, callback: (payload: RawPayloadType<Record<string, any>>) => void): void;
+}
+
+export type ContextNormalizerFunction = (context: any) => RawPayloadType<any>['context'];
 
 export const defaultNormalizer: ContextNormalizerFunction = (context) => {
   return {
@@ -52,7 +68,7 @@ export const EventDirector = {
 
   getEmitHistoryAdapter: (): EmitAdapter => HistoryAdapter,
 
-  emit: async (eventName: string, data?: Record<string, unknown>): Promise<void> => {
+  emit: async (eventName: string, data?: Record<string, any>): Promise<void> => {
     const extractedContext = ContextNormalizer(null);
 
     if (!RegisteredEventsSet.has(eventName))
@@ -73,7 +89,7 @@ export const EventDirector = {
     logger.verbose(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
   },
 
-  subscribe: (eventName: string, callback: (payload?: Record<string, unknown>) => void): void => {
+  subscribe: <T>(eventName: string, callback: (payload: RawPayloadType<T>) => void): void => {
     const currentSubscription = `${eventName}${callback?.toString()}`; // used to avaoid registering the same event handler callback
 
     if (!RegisteredEventsSet.has(eventName))

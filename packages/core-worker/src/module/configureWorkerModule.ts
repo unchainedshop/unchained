@@ -1,6 +1,6 @@
 import os from 'os';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkData, WorkerModule } from '@unchainedshop/types/worker.js';
+import { Work, WorkData, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
@@ -9,6 +9,8 @@ import {
   mongodb,
 } from '@unchainedshop/mongodb';
 import { SortDirection } from '@unchainedshop/types/api.js';
+import { emit, registerEvents } from '@unchainedshop/events';
+import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
 import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';
@@ -98,8 +100,13 @@ const defaultSort: Array<{ key: string; value: SortDirection }> = [
 
 export const configureWorkerModule = async ({
   db,
-}: ModuleInput<Record<string, never>>): Promise<WorkerModule> => {
+  options,
+}: ModuleInput<WorkerSettingsOptions>): Promise<WorkerModule> => {
+  registerEvents(Object.values(WorkerEventTypes));
+
   const WorkQueue = await WorkQueueCollection(db);
+
+  const removePrivateFields = buildObfuscatedFieldsFilter(options?.blacklistedVariables);
 
   const mutations = generateDbMutations<Work>(WorkQueue, WorkQueueSchema) as ModuleMutations<Work>;
 
@@ -122,9 +129,9 @@ export const configureWorkerModule = async ({
       { sort: buildSortOptions(defaultSort), returnDocument: 'after' },
     );
 
-    WorkerDirector.events.emit(WorkerEventTypes.ALLOCATED, {
-      work: result,
-    });
+    if (result) {
+      emit(WorkerEventTypes.ALLOCATED, removePrivateFields(result));
+    }
 
     return result;
   };
@@ -172,8 +179,7 @@ export const configureWorkerModule = async ({
       });
     }
     logger.debug(`work details:`, { work });
-
-    WorkerDirector.events.emit(WorkerEventTypes.FINISHED, { work });
+    emit(WorkerEventTypes.FINISHED, removePrivateFields(work));
 
     return work;
   };
@@ -261,13 +267,11 @@ export const configureWorkerModule = async ({
 
     findWorkQueue: async ({ limit, skip, sort, ...selectorOptions }) => {
       const selector = buildQuerySelector(selectorOptions);
-      const workQueues = WorkQueue.find(selector, {
+      return WorkQueue.find(selector, {
         skip,
         limit,
         sort: buildSortOptions(sort || defaultSort),
-      });
-
-      return workQueues.toArray();
+      }).toArray();
     },
 
     count: async (query) => {
@@ -344,8 +348,7 @@ export const configureWorkerModule = async ({
       });
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
-
-      WorkerDirector.events.emit(WorkerEventTypes.ADDED, { work });
+      emit(WorkerEventTypes.ADDED, removePrivateFields(work));
 
       return work;
     },
@@ -358,9 +361,8 @@ export const configureWorkerModule = async ({
       });
 
       const work = await WorkQueue.findOne(generateDbFilterById(currentWork._id), {});
-
-      WorkerDirector.events.emit(WorkerEventTypes.RESCHEDULED, {
-        work,
+      emit(WorkerEventTypes.RESCHEDULED, {
+        work: removePrivateFields(work),
         oldScheduled: currentWork.scheduled,
       });
 
@@ -412,15 +414,11 @@ export const configureWorkerModule = async ({
             upsert: true,
           },
         );
-
         if (!result.lastErrorObject.updatedExisting) {
           logger.info(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
             workId,
           });
-
-          WorkerDirector.events.emit(WorkerEventTypes.ADDED, {
-            work: result.value,
-          });
+          emit(WorkerEventTypes.ADDED, removePrivateFields(result.value));
         }
         return result.value;
       } catch (e) {
@@ -449,8 +447,7 @@ export const configureWorkerModule = async ({
       await mutations.delete(workId);
 
       const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
-
-      WorkerDirector.events.emit(WorkerEventTypes.DELETED, { work });
+      emit(WorkerEventTypes.DELETED, removePrivateFields(work));
 
       return work;
     },

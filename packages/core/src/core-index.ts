@@ -110,6 +110,7 @@ export const initCore = async ({
   });
   const worker = await configureWorkerModule({
     db,
+    options: options.worker,
     migrationRepository,
   });
 

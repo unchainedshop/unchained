@@ -2,6 +2,7 @@ import { IWorkerAdapter, Work } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter, WorkerEventTypes } from '@unchainedshop/core-worker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import later from '@breejs/later';
+import { subscribe } from '@unchainedshop/events';
 
 const everyMinute = later.parse.cron('* * * * *');
 
@@ -63,7 +64,7 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
 };
 
 export const configureUpdateTokenOwnership = (unchainedAPI: UnchainedCore) => {
-  WorkerDirector.events.on(WorkerEventTypes.FINISHED, async ({ work }: { work: Work }) => {
+  subscribe<Work>(WorkerEventTypes.FINISHED, async ({ payload: work }) => {
     if (work.type === 'UPDATE_TOKEN_OWNERSHIP' && work.success) {
       await Promise.all(
         (work.result?.tokens || []).map(unchainedAPI.modules.warehousing.updateTokenOwnership),
