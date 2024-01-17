@@ -68,7 +68,7 @@
     "@types/node": "^20.11.5",
     "mongodb-memory-server": "^9.1.5",
     "nodemon": "^3.0.3",
-    "prettier": "^3.2.3",
+    "prettier": "^3.2.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
