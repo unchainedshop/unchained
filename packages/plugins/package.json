@@ -78,9 +78,11 @@
     "ethers": "^6.10.0",
     "express": "^4.18.2",
     "mongodb": "^6.3.0",
+    "open": "^10.0.0",
     "postfinancecheckout": "^4.1.1",
     "stripe": "^13.11.0",
     "tiny-secp256k1": "^2.2.3",
+    "twilio": "^4.20.1",
     "web-push": "^3.6.3"
   },
   "devDependencies": {

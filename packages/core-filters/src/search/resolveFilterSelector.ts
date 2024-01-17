@@ -1,7 +1,8 @@
 import { Filter, FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
 import { mongodb } from '@unchainedshop/mongodb';
 
-const defaultSelector = ({ filterIds, filterQuery, includeInactive }: SearchQuery) => {
+const defaultSelector = (searchQuery: SearchQuery) => {
+  const { filterIds, filterQuery, includeInactive } = searchQuery;
   const selector: mongodb.Filter<Filter> = {};
   const keys = (filterQuery || []).map((filter) => filter.key);
 

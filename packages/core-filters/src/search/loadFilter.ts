@@ -31,8 +31,8 @@ const findLoadedOptions = async (
         unchainedAPI,
       );
       const filteredProductIds = intersectSet(productIdSet, new Set(filterOptionProductIds));
-      const normalizedValues = parse(values, [value]);
-      const isSelected = normalizedValues.indexOf(value) !== -1;
+      const normalizedValues = values && parse(values, [value]);
+      const isSelected = normalizedValues && normalizedValues.indexOf(value) !== -1;
 
       if (!filteredProductIds.size && !isSelected) {
         return null;
