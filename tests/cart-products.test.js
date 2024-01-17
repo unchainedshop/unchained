@@ -1,13 +1,13 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from "./helpers";
-import { SimpleProduct } from "./seeds/products";
-import { ConfirmedOrder, SimplePosition } from "./seeds/orders";
+import { setupDatabase, createLoggedInGraphqlFetch } from "./helpers.js";
+import { SimpleProduct } from "./seeds/products.js";
+import { ConfirmedOrder, SimplePosition } from "./seeds/orders.js";
 
 let graphqlFetch;
 
 describe("Cart: Product Items", () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
   describe("Mutation.addCartProduct", () => {
@@ -67,7 +67,7 @@ describe("Cart: Product Items", () => {
           amount: 20000,
         },
         taxes: {
-          amount: 1430,
+          amount: 1499,
         },
         product: {
           _id: SimpleProduct._id,

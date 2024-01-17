@@ -1,11 +1,10 @@
-import { Collection, Update } from '@unchainedshop/types/common.js';
+import { mongodb, generateDbFilterById } from '@unchainedshop/mongodb';
 import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById } from '@unchainedshop/utils';
 import { ProductType } from '@unchainedshop/types/products.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { ordersSettings } from '../orders-settings.js';
@@ -23,10 +22,10 @@ export const configureOrderModuleProcessing = ({
   OrderDeliveries,
   OrderPayments,
 }: {
-  Orders: Collection<Order>;
-  OrderPositions: Collection<OrderPosition>;
-  OrderDeliveries: Collection<OrderDelivery>;
-  OrderPayments: Collection<OrderPayment>;
+  Orders: mongodb.Collection<Order>;
+  OrderPositions: mongodb.Collection<OrderPosition>;
+  OrderDeliveries: mongodb.Collection<OrderDelivery>;
+  OrderPayments: mongodb.Collection<OrderPayment>;
 }): OrderProcessing => {
   registerEvents(ORDER_PROCESSING_EVENTS);
 
@@ -77,7 +76,7 @@ export const configureOrderModuleProcessing = ({
         break;
     }
 
-    const modifier: Update<Order> = {
+    const modifier: mongodb.UpdateFilter<Order> = {
       $set,
       $push: {
         log: {

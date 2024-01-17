@@ -1,7 +1,7 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN } from './seeds/users';
-import { SimplePaymentProvider } from './seeds/payments';
-import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
+import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { USER_TOKEN } from './seeds/users.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
+import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 
 let db;
 let graphqlFetch;
@@ -29,7 +29,7 @@ if (WORLDLINE_CUSTOMER_ID && WORLDLINE_USER && WORLDLINE_PW && WORLDLINE_SUCCESS
 
     beforeAll(async () => {
       [db] = await setupDatabase();
-      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
       // Add a worldline saferpay provider
       await db.collection('payment-providers').findOrInsertOne({

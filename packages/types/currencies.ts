@@ -1,9 +1,9 @@
 import { SortOption } from './api.js';
-import { TimestampFields, _ID } from './common.js';
+import { TimestampFields } from './common.js';
 import { ModuleMutations } from './core.js';
 
 export type Currency = {
-  _id?: _ID;
+  _id?: string;
   isoCode: string;
   isActive: boolean;
   contractAddress?: string;

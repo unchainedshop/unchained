@@ -1,6 +1,6 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { intervalUntilTimeout } from './lib/wait';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { intervalUntilTimeout } from './lib/wait.js';
 
 let db;
 let graphqlFetch;
@@ -8,7 +8,7 @@ let graphqlFetch;
 describe('Bulk Importer', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Import Products', () => {

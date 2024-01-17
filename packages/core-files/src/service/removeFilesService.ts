@@ -1,5 +1,5 @@
-import { Query } from '@unchainedshop/types/common.js';
-import { RemoveFilesService } from '@unchainedshop/types/files.js';
+import { File, RemoveFilesService } from '@unchainedshop/types/files.js';
+import { mongodb } from '@unchainedshop/mongodb';
 import { getFileAdapter } from '../utils/getFileAdapter.js';
 
 export const removeFilesService: RemoveFilesService = async ({ fileIds }, unchainedAPI) => {
@@ -10,7 +10,7 @@ export const removeFilesService: RemoveFilesService = async ({ fileIds }, unchai
   if (fileIds && typeof fileIds !== 'string' && !Array.isArray(fileIds))
     throw Error('Media id/s to be removed not provided as a string or array');
 
-  const selector: Query = {
+  const selector: mongodb.Filter<File> = {
     _id: { $in: fileIds },
   };
 

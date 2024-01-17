@@ -1,13 +1,13 @@
-import { Collection, Filter } from '@unchainedshop/types/common.js';
 import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
+import { findUnusedSlug } from '@unchainedshop/utils';
 import {
+  mongodb,
   findLocalizedText,
-  findUnusedSlug,
   generateDbFilterById,
   generateDbObjectId,
-} from '@unchainedshop/utils';
+} from '@unchainedshop/mongodb';
 import { productsSettings } from '../products-settings.js';
 
 const { Locale } = localePkg;
@@ -18,8 +18,8 @@ export const configureProductTextsModule = ({
   Products,
   ProductTexts,
 }: {
-  Products: Collection<Product>;
-  ProductTexts: Collection<ProductText>;
+  Products: mongodb.Collection<Product>;
+  ProductTexts: mongodb.Collection<ProductText>;
 }): ProductsModule['texts'] => {
   registerEvents(PRODUCT_TEXT_EVENTS);
 
@@ -80,6 +80,7 @@ export const configureProductTextsModule = ({
     const updateResult = await ProductTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
       returnDocument: 'after',
+      includeResultMetadata: true,
     });
 
     if (updateResult.ok) {
@@ -158,7 +159,7 @@ export const configureProductTextsModule = ({
     makeSlug,
 
     deleteMany: async ({ productId, excludedProductIds }) => {
-      const selector: Filter<ProductText> = {};
+      const selector: mongodb.Filter<ProductText> = {};
       if (productId) {
         selector.productId = productId;
       } else if (excludedProductIds) {

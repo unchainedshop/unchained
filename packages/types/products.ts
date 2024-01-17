@@ -1,6 +1,8 @@
+import type { FindOptions, UpdateFilter, Filter } from 'mongodb';
+
 import { Context, SortOption } from './api.js';
 import { AssortmentPathLink, AssortmentProduct } from './assortments.js';
-import { FindOptions, Query, TimestampFields, Update, _ID } from './common.js';
+import { TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Country } from './countries.js';
 import { Currency } from './currencies.js';
@@ -116,7 +118,7 @@ export interface ProductWarehousing {
 }
 
 export type Product = {
-  _id?: _ID;
+  _id?: string;
   bundleItems: Array<ProductBundleItem>;
   commerce?: ProductCommerce;
   meta?: any;
@@ -134,7 +136,7 @@ export type Product = {
 } & TimestampFields;
 
 export type ProductText = {
-  _id?: _ID;
+  _id?: string;
   productId: string;
   description?: string;
   locale: string;
@@ -147,7 +149,7 @@ export type ProductText = {
 } & TimestampFields;
 
 export type ProductDiscount = {
-  _id?: _ID;
+  _id?: string;
   productId: string;
   code: string;
   total?: OrderPrice;
@@ -163,7 +165,7 @@ export type ProductQuery = {
   queryString?: string;
   includeDrafts?: boolean;
   productIds?: Array<string>;
-  productSelector?: Query;
+  productSelector?: Filter<Product>;
   slugs?: Array<string>;
   tags?: Array<string>;
 };
@@ -306,7 +308,7 @@ export type ProductsModule = {
     options?: { keepReviews: boolean },
   ) => Promise<number>;
 
-  update: (productId: string, doc: Update<Product>) => Promise<string>;
+  update: (productId: string, doc: UpdateFilter<Product>) => Promise<string>;
 
   publish: (product: Product) => Promise<boolean>;
   unpublish: (product: Product) => Promise<boolean>;
@@ -347,17 +349,17 @@ export type ProductsModule = {
    */
 
   search: {
-    buildActiveStatusFilter: () => Query;
-    buildActiveDraftStatusFilter: () => Query;
+    buildActiveStatusFilter: () => Filter<Product>;
+    buildActiveDraftStatusFilter: () => Filter<Product>;
     countFilteredProducts: (params: {
       productIds: Array<string>;
-      productSelector: Query;
+      productSelector: Filter<Product>;
     }) => Promise<number>;
     findFilteredProducts: (params: {
       limit?: number;
       offset?: number;
       productIds: Array<string>;
-      productSelector: Query;
+      productSelector: Filter<Product>;
       sort?: FindOptions['sort'];
     }) => Promise<Array<Product>>;
   };
@@ -368,7 +370,7 @@ export type ProductsModule = {
 
   texts: {
     // Queries
-    findTexts: (query: Query, options?: FindOptions) => Promise<Array<ProductText>>;
+    findTexts: (query: Filter<ProductText>, options?: FindOptions) => Promise<Array<ProductText>>;
 
     findLocalizedText: (params: { productId: string; locale?: string }) => Promise<ProductText>;
     searchTexts: ({ searchText }: { searchText: string }) => Promise<Array<string>>;

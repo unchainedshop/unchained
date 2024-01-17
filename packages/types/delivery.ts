@@ -1,4 +1,5 @@
-import { FindOptions, IBaseAdapter, IBaseDirector, Query, TimestampFields, _ID } from './common.js';
+import type { Filter, FindOptions } from 'mongodb';
+import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 
 import {
@@ -25,7 +26,7 @@ export type DeliveryConfiguration = Array<{
 }>;
 
 export type DeliveryProvider = {
-  _id?: _ID;
+  _id?: string;
   type: DeliveryProviderType;
   adapterKey: string;
   configuration: DeliveryConfiguration;
@@ -112,17 +113,15 @@ export interface DeliveryInterface {
 
 export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   // Queries
-  count: (query: DeliveryProviderQuery) => Promise<number>;
+  count: (query: Filter<DeliveryProvider>) => Promise<number>;
   findProvider: (
-    query:
-      | {
-          deliveryProviderId: string;
-        }
-      | Query,
+    query: {
+      deliveryProviderId: string;
+    } & Filter<DeliveryProvider>,
     options?: FindOptions,
   ) => Promise<DeliveryProvider>;
   findProviders: (
-    query: DeliveryProviderQuery,
+    query: Filter<DeliveryProvider>,
     options?: FindOptions,
   ) => Promise<Array<DeliveryProvider>>;
 
@@ -134,7 +133,7 @@ export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   }) => IDeliveryPricingSheet;
 
   // Delivery adapter
-  findInterface: (params: DeliveryProvider) => IDeliveryAdapter;
+  findInterface: (params: DeliveryProvider) => DeliveryInterface;
   findInterfaces: (params: { type: DeliveryProviderType }) => Array<DeliveryInterface>;
   findSupported: (
     params: { order: Order },

@@ -13,7 +13,7 @@ Below is an example of a custom module that will be used to change currency of a
 
 ```typescript
 import { OrdersCollection } from '@unchainedshop/core-orders'
-import { generateDbFilterById } from '@unchainedshop/utils'
+import { generateDbFilterById } from '@unchainedshop/mongodb'
 import { Order } from '@unchainedshop/types/orders.js';
 
 type CurrencyModule = {

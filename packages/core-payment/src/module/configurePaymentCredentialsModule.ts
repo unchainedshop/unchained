@@ -2,11 +2,10 @@ import {
   PaymentCredentials as PaymentCredentialsType,
   PaymentModule,
 } from '@unchainedshop/types/payments.js';
-import { Collection } from '@unchainedshop/types/common.js';
-import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
+import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 
 export const configurePaymentCredentialsModule = (
-  PaymentCredentials: Collection<PaymentCredentialsType>,
+  PaymentCredentials: mongodb.Collection<PaymentCredentialsType>,
 ): PaymentModule['paymentCredentials'] => {
   const markPreferred = async ({ userId, paymentCredentialsId }) => {
     await PaymentCredentials.updateOne(

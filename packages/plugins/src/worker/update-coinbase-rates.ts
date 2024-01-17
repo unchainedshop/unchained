@@ -84,5 +84,4 @@ WorkerDirector.registerAdapter(UpdateCoinbaseRates);
 
 WorkerDirector.configureAutoscheduling(UpdateCoinbaseRates, {
   schedule: everyMinute,
-  retries: 0,
 });

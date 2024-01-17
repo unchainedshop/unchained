@@ -3,7 +3,6 @@ import {
   AssortmentMediaModule,
   AssortmentMediaText,
 } from '@unchainedshop/types/assortments.media.js';
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 
 import localePkg from 'locale';
@@ -13,7 +12,8 @@ import {
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from '@unchainedshop/utils';
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
 import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema.js';
@@ -72,6 +72,7 @@ export const configureAssortmentMediaModule = async ({
       {
         upsert: true,
         returnDocument: 'after',
+        includeResultMetadata: true,
       },
     );
     if (currentText.ok) {
@@ -90,7 +91,7 @@ export const configureAssortmentMediaModule = async ({
     },
 
     findAssortmentMedias: async ({ assortmentId, tags, offset, limit }, options) => {
-      const selector: Query = assortmentId ? { assortmentId } : {};
+      const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -152,7 +153,7 @@ export const configureAssortmentMediaModule = async ({
     },
 
     deleteMediaFiles: async ({ assortmentId, excludedAssortmentIds, excludedAssortmentMediaIds }) => {
-      const selector: Query = assortmentId ? { assortmentId } : {};
+      const selector: mongodb.Filter<AssortmentMediaType> = assortmentId ? { assortmentId } : {};
 
       if (!assortmentId && excludedAssortmentIds) {
         selector.assortmentId = { $nin: excludedAssortmentIds };

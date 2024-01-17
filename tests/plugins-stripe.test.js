@@ -1,8 +1,8 @@
 import Stripe from 'stripe';
-import { createLoggedInGraphqlFetch, setupDatabase } from './helpers';
-import { USER_TOKEN } from './seeds/users';
-import { SimplePaymentProvider } from './seeds/payments';
-import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders';
+import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
+import { USER_TOKEN } from './seeds/users.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
+import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 
 const { STRIPE_SECRET } = process.env;
 
@@ -13,7 +13,7 @@ if (STRIPE_SECRET) {
   describe('Plugins: Stripe Payments', () => {
     beforeAll(async () => {
       [db] = await setupDatabase();
-      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
       // Add a stripe provider
       await db.collection('payment-providers').findOrInsertOne({

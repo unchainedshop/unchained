@@ -1,7 +1,6 @@
 import { AssortmentProduct, AssortmentsModule } from '@unchainedshop/types/assortments.js';
-import { Collection, Filter } from '@unchainedshop/types/common.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 
 const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_ADD_PRODUCT',
@@ -13,7 +12,7 @@ export const configureAssortmentProductsModule = ({
   AssortmentProducts,
   invalidateCache,
 }: {
-  AssortmentProducts: Collection<AssortmentProduct>;
+  AssortmentProducts: mongodb.Collection<AssortmentProduct>;
   invalidateCache: AssortmentsModule['invalidateCache'];
 }): AssortmentsModule['products'] => {
   registerEvents(ASSORTMENT_PRODUCT_EVENTS);
@@ -21,7 +20,7 @@ export const configureAssortmentProductsModule = ({
   return {
     // Queries
     findAssortmentIds: async ({ productId, tags }) => {
-      const selector: Filter<AssortmentProduct> = { productId };
+      const selector: mongodb.Filter<AssortmentProduct> = { productId };
       if (tags) {
         selector.tags = { $in: tags };
       }
@@ -31,7 +30,7 @@ export const configureAssortmentProductsModule = ({
     },
 
     findProductIds: async ({ assortmentId, tags }) => {
-      const selector: Filter<AssortmentProduct> = { assortmentId };
+      const selector: mongodb.Filter<AssortmentProduct> = { assortmentId };
       if (tags) {
         selector.tags = { $in: tags };
       }

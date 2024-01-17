@@ -8,7 +8,6 @@ import {
   AssortmentText,
 } from '@unchainedshop/types/assortments.js';
 import { AssortmentMedia } from '@unchainedshop/types/assortments.media.js';
-import { Query } from '@unchainedshop/types/common.js';
 import { SearchFilterQuery, SearchProducts } from '@unchainedshop/types/filters.js';
 
 type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
@@ -68,13 +67,11 @@ export const Assortment: AssortmentHelperTypes = {
     });
     const assortmentIds = assortmentChildLinks.map(({ childAssortmentId }) => childAssortmentId);
 
-    const selector: Query = {
+    return modules.assortments.count({
       assortmentIds,
       includeInactive,
       includeLeaves: true,
-    };
-
-    return modules.assortments.count(selector);
+    });
   },
 
   filterAssignments: async (obj, _, { modules }) => {

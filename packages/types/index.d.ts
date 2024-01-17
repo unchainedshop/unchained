@@ -1,13 +1,9 @@
-import { IncomingMessage } from 'http';
-import SimpleSchema from 'simpl-schema';
 import { AccountsModule, AccountsSettings, AccountsSettingsOptions } from './accounts.js';
-import { Context } from './api.js';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments.js';
 
 import { BookmarkServices, BookmarksModule } from './bookmarks.js';
-import { Db, IBaseAdapter, IBaseDirector, Locale, Locales, TimestampFields } from './common.js';
 
-import { CountriesModule, Country, CountryServices } from './countries.js';
+import { CountriesModule, CountryServices } from './countries.js';
 import { CurrenciesModule } from './currencies.js';
 import {
   DeliveryError as DeliveryErrorType,
@@ -32,15 +28,8 @@ import {
   IEnrollmentAdapter,
   IEnrollmentDirector,
 } from './enrollments.js';
-import { EventDirector, EventsModule } from './events.js';
-import {
-  FileServices,
-  FilesSettings,
-  FilesSettingsOptions,
-  FilesModule,
-  IFileAdapter,
-  IFileDirector,
-} from './files.js';
+import { EventsModule } from './events.js';
+import { FileServices, FilesSettings, FilesSettingsOptions, FilesModule } from './files.js';
 import {
   FiltersModule,
   FilterType as FilterTypeType,
@@ -80,16 +69,7 @@ import {
   IPaymentPricingSheet,
   PaymentPricingCalculation,
 } from './payments.pricing.js';
-import {
-  BasePricingAdapterContext,
-  BasePricingContext,
-  IPricingDirector,
-  IPricingAdapter,
-  IPricingSheet,
-  PricingCalculation,
-  PricingSheetParams,
-  IBasePricingSheet,
-} from './pricing.js';
+import { PricingSheetParams } from './pricing.js';
 import {
   ProductServices,
   ProductsModule,
@@ -129,92 +109,7 @@ import {
   WorkerSettingsOptions,
   WorkStatus as WorkerStatusType,
 } from './worker.js';
-import { UnchainedCoreOptions, ModuleInput } from './core.js';
-
-declare module '@unchainedshop/utils' {
-  function resolveBestSupported(language: string, locales: Locales): Locale;
-  function resolveBestCountry(
-    contextCountry: string,
-    headerCountry: string | string[],
-    countries: Array<Country>,
-  ): string;
-  function resolveUserRemoteAddress(req: IncomingMessage): {
-    remoteAddress: string;
-    remotePort: string;
-  };
-
-  function objectInvert(obj: Record<string, string>): Record<string, string>;
-
-  const systemLocale: Locale;
-
-  const Schemas: {
-    timestampFields: TimestampFields;
-    User: SimpleSchema;
-    Address: SimpleSchema;
-    Contact: SimpleSchema;
-  };
-
-  // Director
-  const BaseAdapter: IBaseAdapter;
-  const BaseDirector: <Adapter extends IBaseAdapter>(
-    directorName: string,
-    options?: {
-      adapterSortKey?: string;
-      adapterKeyField?: string;
-    },
-  ) => IBaseDirector<Adapter>;
-
-  const BaseDiscountAdapter: Omit<IDiscountAdapter, 'key' | 'label' | 'version'>;
-  const BaseDiscountDirector: (directorName: string) => IDiscountDirector;
-
-  const BasePricingAdapter: <
-    AdapterContext extends BasePricingAdapterContext,
-    Calculation extends PricingCalculation,
-  >() => IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>;
-
-  const BasePricingDirector: <
-    PricingContext extends BasePricingContext,
-    AdapterPricingContext extends BasePricingAdapterContext,
-    Calculation extends PricingCalculation,
-    Adapter extends IPricingAdapter<AdapterPricingContext, Calculation, IPricingSheet<Calculation>>,
-  >(
-    directorName: string,
-  ) => IPricingDirector<
-    PricingContext,
-    Calculation,
-    AdapterPricingContext,
-    IPricingSheet<Calculation>,
-    Adapter
-  >;
-
-  const BasePricingSheet: <Calculation extends PricingCalculation>(
-    params: PricingSheetParams<Calculation>,
-  ) => IBasePricingSheet<Calculation>;
-}
-
-/*
- * Director packages
- */
-
-declare module '@unchainedshop/events' {
-  const emit: EventDirector['emit'];
-  const getEmitAdapter: EventDirector['getEmitAdapter'];
-  const getEmitHistoryAdapter: EventDirector['getEmitHistoryAdapter'];
-  const getRegisteredEvents: EventDirector['getRegisteredEvents'];
-  const registerEvents: EventDirector['registerEvents'];
-  const setEmitAdapter: EventDirector['setEmitAdapter'];
-  const setEmitHistoryAdapter: EventDirector['setEmitHistoryAdapter'];
-  const subscribe: EventDirector['subscribe'];
-}
-
-declare module '@unchainedshop/file-upload' {
-  const FileAdapter: Omit<IFileAdapter, 'key' | 'lable' | 'version'>;
-  const FileDirector: IFileDirector;
-}
-
-/*
- * Core packages
- */
+import { ModuleInput } from './core.js';
 
 declare module '@unchainedshop/core-accountsjs' {
   function configureAccountsModule(
@@ -419,27 +314,4 @@ declare module '@unchainedshop/core-worker' {
     schedule: WorkerSchedule | string;
   }>;
   const FailedRescheduler: IScheduler;
-}
-
-declare module '@unchainedshop/core' {
-  function initCore(options: UnchainedCoreOptions): Promise<Context>;
-}
-
-type APIRoles = {
-  allRoles: any;
-  actions: any;
-  configureRoles(params: any): any;
-  updateUserRole(context: Context, roleName: string): any;
-};
-
-declare module '@unchainedshop/api' {
-  function hashPassword(password: string): string;
-
-  const acl: any;
-  const errors: any;
-  const roles: APIRoles;
-}
-
-declare module '@unchainedshop/mongodb' {
-  function initDb(): Promise<Db>;
 }

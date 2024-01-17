@@ -1,10 +1,10 @@
-import { Db } from '@unchainedshop/types/common.js';
+import type { mongodb } from '@unchainedshop/mongodb';
 import { Event } from '@unchainedshop/types/events.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
 
 const TWO_DAYS_SEC = 172800;
 
-export const EventsCollection = async (db: Db) => {
+export const EventsCollection = async (db: mongodb.Db) => {
   const Events = db.collection<Event>('events');
 
   await buildDbIndexes(Events, [

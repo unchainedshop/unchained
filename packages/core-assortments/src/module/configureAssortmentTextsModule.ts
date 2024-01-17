@@ -1,13 +1,13 @@
 import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments.js';
-import { Collection, Filter } from '@unchainedshop/types/common.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
-  findUnusedSlug,
   generateDbFilterById,
   generateDbObjectId,
-} from '@unchainedshop/utils';
+  mongodb,
+} from '@unchainedshop/mongodb';
+import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.js';
 
 const { Locale } = localePkg;
@@ -18,8 +18,8 @@ export const configureAssortmentTextsModule = ({
   Assortments,
   AssortmentTexts,
 }: {
-  Assortments: Collection<Assortment>;
-  AssortmentTexts: Collection<AssortmentText>;
+  Assortments: mongodb.Collection<Assortment>;
+  AssortmentTexts: mongodb.Collection<AssortmentText>;
 }): AssortmentsModule['texts'] => {
   registerEvents(ASSORTMENT_TEXT_EVENTS);
 
@@ -78,6 +78,7 @@ export const configureAssortmentTextsModule = ({
     const updateResult = await AssortmentTexts.findOneAndUpdate(selector, modifier, {
       upsert: true,
       returnDocument: 'after',
+      includeResultMetadata: true,
     });
 
     if (updateResult.ok) {
@@ -161,7 +162,7 @@ export const configureAssortmentTextsModule = ({
     makeSlug,
 
     deleteMany: async ({ assortmentId, excludedAssortmentIds }) => {
-      const selector: Filter<AssortmentText> = {};
+      const selector: mongodb.Filter<AssortmentText> = {};
       if (assortmentId) {
         selector.assortmentId = assortmentId;
       } else if (excludedAssortmentIds) {

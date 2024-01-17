@@ -1,4 +1,4 @@
-FROM node:18-bullseye
+FROM node:20
 
 # Install app dependencies
 RUN mkdir -p /source

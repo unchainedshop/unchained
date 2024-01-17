@@ -9,8 +9,12 @@ import {
 import type { Locale } from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
-import { Query } from '@unchainedshop/types/common.js';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  buildSortOptions,
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema.js';
 import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
@@ -219,7 +223,7 @@ export const configureEnrollmentsModule = async ({
       return enrollmentCount;
     },
     openEnrollmentWithProduct: async ({ productId }) => {
-      const selector: Query = { productId };
+      const selector: mongodb.Filter<Enrollment> = { productId };
       selector.status = { $in: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED] };
       return Enrollments.findOne(selector);
     },

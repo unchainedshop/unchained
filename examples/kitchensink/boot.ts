@@ -4,8 +4,14 @@ import cookieParser from 'cookie-parser';
 import http from 'http';
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { startPlatform, connectPlatformToExpress4 } from '@unchainedshop/platform';
+import {
+  startPlatform,
+  connectPlatformToExpress4,
+  setAccessToken,
+  withAccessToken,
+} from '@unchainedshop/platform';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
+import { ApolloServerPluginLandingPageGraphiQLPlayground } from 'apollo-graphiql-playground';
 import { log } from '@unchainedshop/logger';
 import serveStatic from 'serve-static';
 
@@ -20,6 +26,7 @@ const start = async () => {
   const engine = await startPlatform({
     introspection: true,
     modules: defaultModules,
+    context: withAccessToken(),
     plugins: [
       responseCachePlugin({
         sessionId(ctx) {
@@ -32,6 +39,9 @@ const start = async () => {
         },
       }),
       ApolloServerPluginDrainHttpServer({ httpServer }),
+      ApolloServerPluginLandingPageGraphiQLPlayground({
+        shouldPersistHeaders: true,
+      }),
     ],
     options: {
       accounts: {
@@ -58,6 +68,7 @@ const start = async () => {
   });
 
   await seed(engine.unchainedAPI);
+  await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
 
   // Start the GraphQL Server
   await engine.apolloGraphQLServer.start();

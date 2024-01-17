@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger, LogLevel } from '@unchainedshop/logger';
@@ -8,16 +7,22 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 const logger = createLogger('unchained:platform:bulk-import');
 
-const streamPayloadToBulkImporter = async (
-  bulkImporter,
-  createReadStream,
-  unchainedAPI: UnchainedCore,
-) => {
+const streamPayloadToBulkImporter = async (bulkImporter, payloadId, unchainedAPI: UnchainedCore) => {
   logger.profile(`parseAsync`, { level: LogLevel.Verbose, message: 'parseAsync' });
+
+  const readStream = await unchainedAPI.services.files.createDownloadStream(
+    { fileId: payloadId },
+    unchainedAPI,
+  );
+
+  if (!readStream) {
+    throw new Error(
+      'The current file adapter does not support streams when downloading required for streamed events. Please use a different file adapter.',
+    );
+  }
 
   const eventIterator = new EventIterator(
     (queue) => {
-      const readStream = createReadStream();
       const jsonStream = JSONStream.parse('events.*'); // rows, ANYTHING, doc
       jsonStream.on('data', queue.push);
       jsonStream.on('close', queue.stop);
@@ -65,20 +70,9 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
         skipCacheInvalidation,
       });
 
-      if (rawPayload.payloadFilePath) {
-        // stream payload from file system
-        await streamPayloadToBulkImporter(
-          bulkImporter,
-          () => fs.createReadStream(rawPayload.payloadFilePath),
-          unchainedAPI,
-        );
-      } else if (rawPayload.payloadId) {
+      if (rawPayload.payloadId) {
         // stream payload from gridfs
-        await streamPayloadToBulkImporter(
-          bulkImporter,
-          () => unchainedAPI.bulkImporter.BulkImportPayloads.openDownloadStream(rawPayload.payloadId),
-          unchainedAPI,
-        );
+        await streamPayloadToBulkImporter(bulkImporter, rawPayload.payloadId, unchainedAPI);
       } else {
         const { events } = rawPayload;
         if (!events?.length) throw new Error('No events submitted');

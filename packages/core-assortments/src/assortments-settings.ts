@@ -1,5 +1,4 @@
 import { AssortmentsSettingsOptions } from '@unchainedshop/types/assortments.js';
-import { Db } from '@unchainedshop/types/common.js';
 import { slugify as defaultSlugify } from '@unchainedshop/utils';
 import zipTreeByDeepness from './utils/tree-zipper/zipTreeByDeepness.js';
 import makeMongoDBCache from './product-cache/mongodb.js';
@@ -16,7 +15,7 @@ export const assortmentsSettings = {
       zipTree = zipTreeByDeepness,
       slugify = defaultSlugify,
     }: AssortmentsSettingsOptions,
-    db: Db,
+    db,
   ) => {
     const defaultCache = await makeMongoDBCache(db);
     assortmentsSettings.zipTree = zipTree;

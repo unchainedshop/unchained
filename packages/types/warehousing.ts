@@ -1,6 +1,6 @@
-import { FindOptions, IBaseAdapter, IBaseDirector, TimestampFields, _ID, Locale } from './common.js';
+import type { FindOptions } from 'mongodb';
+import { IBaseAdapter, IBaseDirector, TimestampFields, Locale } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
-
 import { DeliveryProvider } from './delivery.js';
 import { Order } from './orders.js';
 import { OrderPosition } from './orders.positions.js';
@@ -15,7 +15,7 @@ export enum WarehousingProviderType {
 export type WarehousingConfiguration = Array<{ key: string; value: string }>;
 
 export type WarehousingProvider = {
-  _id?: _ID;
+  _id?: string;
   type: WarehousingProviderType;
   adapterKey: string;
   configuration: WarehousingConfiguration;
@@ -33,7 +33,7 @@ export enum WarehousingError {
 }
 
 export type TokenSurrogate = {
-  _id?: _ID;
+  _id?: string;
   userId?: string;
   walletAddress?: string;
   quantity: number;

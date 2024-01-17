@@ -1,43 +1,18 @@
 import { DeliveryPricingAdapter, DeliveryPricingDirector } from '@unchainedshop/core-delivery';
-import {
-  DeliveryPricingAdapterContext,
-  IDeliveryPricingAdapter,
-} from '@unchainedshop/types/delivery.pricing.js';
+import { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing.js';
 
-// https://www.ch.ch/de/mehrwertsteuersatz-schweiz/
-export const SwissTaxCategories = {
-  DEFAULT: {
-    rate: () => {
-      return 0.077;
-    },
-  },
-  REDUCED: {
-    value: 'reduced',
-    rate: () => {
-      return 0.025;
-    },
-  },
-  SPECIAL: {
-    value: 'special',
-    rate: () => {
-      return 0.037;
-    },
-  },
-};
+import { Order } from '@unchainedshop/types/orders.js';
+import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { SwissTaxCategories } from './tax/ch.js';
 
-const getTaxRate = (context: DeliveryPricingAdapterContext) => {
-  const taxCategoryFromProvider = context.provider?.configuration?.find(({ key }) => {
+const getTaxRate = ({ order, provider }: { order?: Order; provider?: DeliveryProvider }) => {
+  const taxCategoryFromProvider = provider?.configuration?.find(({ key }) => {
     if (key === 'swiss-tax-category') return true;
     return null;
   })?.value;
 
-  if (taxCategoryFromProvider === SwissTaxCategories.REDUCED.value) {
-    return SwissTaxCategories.REDUCED.rate();
-  }
-  if (taxCategoryFromProvider === SwissTaxCategories.SPECIAL.value) {
-    return SwissTaxCategories.SPECIAL.rate();
-  }
-  return SwissTaxCategories.DEFAULT.rate();
+  const taxCategory = SwissTaxCategories[taxCategoryFromProvider] || SwissTaxCategories.DEFAULT;
+  return taxCategory.rate(order?.ordered);
 };
 
 const isDeliveryAddressInSwitzerland = ({ orderDelivery, order, country = null }) => {

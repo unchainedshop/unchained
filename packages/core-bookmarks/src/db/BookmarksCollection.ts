@@ -1,7 +1,7 @@
-import { Db } from '@unchainedshop/types/common.js';
+import { mongodb } from '@unchainedshop/mongodb';
 import { Bookmark } from '@unchainedshop/types/bookmarks.js';
 
-export const BookmarksCollection = async (db: Db) => {
+export const BookmarksCollection = async (db: mongodb.Db) => {
   const Bookmarks = db.collection<Bookmark>('bookmarks');
 
   await Bookmarks.createIndex({ userId: 1 });

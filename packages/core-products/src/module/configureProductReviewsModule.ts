@@ -1,4 +1,3 @@
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import {
   ProductReview,
@@ -8,7 +7,12 @@ import {
   ProductVote,
 } from '@unchainedshop/types/products.reviews.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  buildSortOptions,
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
 import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema.js';
@@ -28,14 +32,14 @@ export const buildFindSelector = ({
   created,
   updated,
 }: ProductReviewQuery = {}) => {
-  const selector: Query = {
+  const selector: mongodb.Filter<ProductReview> = {
     ...(productId ? { productId } : {}),
     ...(authorId ? { authorId } : {}),
     deleted: null,
   };
 
   if (queryString) {
-    selector.$text = { $search: queryString };
+    (selector as any).$text = { $search: queryString };
   }
 
   if (created) {
@@ -73,7 +77,7 @@ export const configureProductReviewsModule = async ({
     ProductReviewsSchema,
   ) as ModuleMutations<ProductReview>;
 
-  const removeVote = async (selector: Query, { userId, type }: ProductVote) => {
+  const removeVote = async (selector: mongodb.Filter<ProductReview>, { userId, type }: ProductVote) => {
     await ProductReviews.updateOne(selector, {
       $pull: {
         votes: { userId, type },

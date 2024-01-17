@@ -2,16 +2,16 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleAssortment, AssortmentLinks } from './seeds/assortments';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { SimpleAssortment, AssortmentLinks } from './seeds/assortments.js';
 
 let graphqlFetch;
 
 describe('AssortmentLink', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.reorderAssortmentLinks for admin users should', () => {
@@ -85,7 +85,7 @@ describe('AssortmentLink', () => {
 
   describe('mutation.reorderAssortmentLinks for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation ReorderAssortmentLinks(
@@ -264,7 +264,7 @@ describe('AssortmentLink', () => {
 
   describe('mutation.addAssortmentLink for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
@@ -377,7 +377,7 @@ describe('AssortmentLink', () => {
 
   describe('mutation.removeAssortmentLink for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation removeAssortmentLink($assortmentLinkId: ID!) {

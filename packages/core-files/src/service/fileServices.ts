@@ -4,6 +4,7 @@ import { createSignedURLService } from './createSignedURLService.js';
 import { uploadFileFromURLService } from './uploadFileFromURLService.js';
 import { uploadFileFromStreamService } from './uploadFileFromStreamService.js';
 import { removeFilesService } from './removeFilesService.js';
+import { createDownloadStreamService } from './createDownloadStreamService.js';
 
 export const fileServices: FileServices = {
   linkFile: linkFileService,
@@ -11,4 +12,5 @@ export const fileServices: FileServices = {
   uploadFileFromURL: uploadFileFromURLService,
   uploadFileFromStream: uploadFileFromStreamService,
   removeFiles: removeFilesService,
+  createDownloadStream: createDownloadStreamService,
 };

@@ -1,12 +1,12 @@
 import SimpleSchema from 'simpl-schema';
-import { Collection, _ID, Update, TimestampFields } from '@unchainedshop/types/common.js';
+import { TimestampFields } from '@unchainedshop/types/common.js';
 import { ModuleCreateMutation, ModuleMutations } from '@unchainedshop/types/core.js';
-
+import { Collection, UpdateFilter } from 'mongodb';
 import { checkId } from './check-id.js';
 import { generateDbObjectId } from './generate-db-object-id.js';
 import { generateDbFilterById } from './generate-db-filter-by-id.js';
 
-export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
+export const generateDbMutations = <T extends TimestampFields & { _id?: string }>(
   collection: Collection<T>,
   schema: SimpleSchema,
   options?: {
@@ -45,9 +45,9 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: _ID }>(
       : async (_id, doc) => {
           checkId(_id);
 
-          let modifier: Update<T>;
+          let modifier: UpdateFilter<T>;
 
-          if ((doc as Update<T>)?.$set) {
+          if ((doc as UpdateFilter<T>)?.$set) {
             const values: any = schema.clean(doc as any, { isModifier: true });
             modifier = {
               ...values,

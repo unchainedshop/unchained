@@ -1,8 +1,8 @@
-import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers";
-import { USER_TOKEN } from "./seeds/users";
-import { SimplePaymentProvider } from "./seeds/payments";
-import { SimpleOrder, SimplePosition, SimplePayment } from "./seeds/orders";
-import { SimpleProduct, PlanProduct } from "./seeds/products";
+import { createLoggedInGraphqlFetch, setupDatabase } from "./helpers.js";
+import { USER_TOKEN } from "./seeds/users.js";
+import { SimplePaymentProvider } from "./seeds/payments.js";
+import { SimpleOrder, SimplePosition, SimplePayment } from "./seeds/orders.js";
+import { SimpleProduct, PlanProduct } from "./seeds/products.js";
 
 import {
   receiptData,
@@ -10,11 +10,11 @@ import {
   singleItemTransactionIdentifier,
   subscriptionProductId,
   subscriptionTransactionIdentifier,
-} from "./seeds/apple-iap-receipt";
-import initialBuy from "./seeds/apple-iap-initial-buy";
-import didRecover from "./seeds/apple-iap-did-recover";
-import didChangeRenewalStatus from "./seeds/apple-iap-did-change-renewal-status";
-import { AllEnrollmentIds } from "./seeds/enrollments";
+} from "./seeds/apple-iap-receipt.js";
+import initialBuy from "./seeds/apple-iap-initial-buy.js";
+import didRecover from "./seeds/apple-iap-did-recover.js";
+import didChangeRenewalStatus from "./seeds/apple-iap-did-change-renewal-status.js";
+import { AllEnrollmentIds } from "./seeds/enrollments.js";
 
 let db;
 let graphqlFetch;
@@ -22,7 +22,7 @@ let graphqlFetch;
   describe("Plugins: Apple IAP Payments", () => {
     beforeAll(async () => {
       [db] = await setupDatabase();
-      graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
 
       await db.collection("products").findOrInsertOne({
         ...SimpleProduct,

@@ -1,16 +1,20 @@
-import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { Document, Filter as DbFilter, FindOptions, Query } from '@unchainedshop/types/common.js';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import memoizee from 'memoizee';
+import { emit, registerEvents } from '@unchainedshop/events';
+import { log, LogLevel } from '@unchainedshop/logger';
+import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import {
+  mongodb,
+  generateDbFilterById,
+  generateDbMutations,
+  buildSortOptions,
+} from '@unchainedshop/mongodb';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   Filter,
   FilterQuery,
   FiltersModule,
   FiltersSettingsOptions,
 } from '@unchainedshop/types/filters.js';
-import { emit, registerEvents } from '@unchainedshop/events';
-import { log, LogLevel } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
 import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { FiltersCollection } from '../db/FiltersCollection.js';
@@ -27,12 +31,12 @@ export const buildFindSelector = ({
   queryString = '',
   filterIds,
 }: FilterQuery) => {
-  const selector: Query = {};
+  const selector: mongodb.Filter<Filter> = {};
   if (!includeInactive) selector.isActive = true;
   if (filterIds) {
     selector._id = { $in: filterIds };
   }
-  if (queryString) selector.$text = { $search: queryString };
+  if (queryString) (selector as any).$text = { $search: queryString };
   return selector;
 };
 
@@ -142,7 +146,7 @@ export const configureFiltersModule = async ({
     await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
   };
 
-  const invalidateCache = async (selector: DbFilter<Filter>, unchainedAPI: UnchainedCore) => {
+  const invalidateCache = async (selector: mongodb.Filter<Filter>, unchainedAPI: UnchainedCore) => {
     log('Filters: Start invalidating filter caches', {
       level: LogLevel.Verbose,
     });
@@ -184,7 +188,7 @@ export const configureFiltersModule = async ({
         sort,
         ...query
       }: FilterQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
-      options?: FindOptions<Document>,
+      options?: mongodb.FindOptions<mongodb.Document>,
     ) => {
       const defaultSortOption = [{ key: 'created', value: SortDirection.ASC }];
       const filters = Filters.find(buildFindSelector(query), {

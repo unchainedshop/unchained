@@ -1,23 +1,22 @@
 import { Locale } from '@unchainedshop/types/common.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order } from '@unchainedshop/types/orders.js';
+import formatPrice from './formatPrice.js';
+
+type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;
 
 export const getOrderPositionsData = async (
   order: Order,
-  params: { locale?: Locale },
+  params: { locale?: Locale; useNetPrice?: boolean; format?: PriceFormatter },
   context: UnchainedCore,
 ) => {
   const { modules } = context;
+  const { useNetPrice, format = formatPrice } = params || {};
   const orderPositions = await modules.orders.positions.findOrderPositions({
     orderId: order._id,
   });
 
-  const formatPrice = (price: number) => {
-    const fixedPrice = price / 100;
-    return `${order.currency} ${fixedPrice}`;
-  };
-
-  await Promise.all(
+  return Promise.all(
     orderPositions.map(async (orderPosition) => {
       const productTexts = await modules.products.texts.findLocalizedText({
         productId: orderPosition.productId,
@@ -28,21 +27,27 @@ export const getOrderPositionsData = async (
         locale: params.locale?.normalized,
       });
 
-      const productTitle = productTexts?.title; // deprecated
-
       const positionPricing = modules.orders.positions.pricingSheet(
         orderPosition,
         order.currency,
         context,
       );
-      const total = formatPrice(positionPricing.sum());
+      const total = positionPricing.total({ useNetPrice });
+      const unitPrice = positionPricing.unitPrice({ useNetPrice });
+
       const { quantity } = positionPricing;
       return {
+        productId: orderPosition.productId,
+        configuration: orderPosition.configuration,
         originalProductTexts,
-        product: productTitle,
         productTexts,
         quantity,
-        total,
+        rawPrices: {
+          unitPrice,
+          total,
+        },
+        unitPrice: format(unitPrice),
+        total: format(total),
       };
     }),
   );

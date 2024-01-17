@@ -1,8 +1,7 @@
-import { Db } from '@unchainedshop/types/common.js';
+import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 import { Language } from '@unchainedshop/types/languages.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
 
-export const LanguagesCollection = async (db: Db) => {
+export const LanguagesCollection = async (db: mongodb.Db) => {
   const Languages = db.collection<Language>('languages');
 
   await buildDbIndexes<Language>(Languages, [

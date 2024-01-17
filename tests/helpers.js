@@ -1,20 +1,19 @@
 import { MongoClient, Collection } from 'mongodb';
-import { execute, toPromise, gql } from '@apollo/client/core';
-import { createUploadLink } from 'apollo-upload-client';
-import { FormData } from 'formdata-node';
-import seedLocaleData from './seeds/locale-data';
-import seedUsers, { ADMIN_TOKEN } from './seeds/users';
-import seedProducts from './seeds/products';
-import seedDeliveries from './seeds/deliveries';
-import seedPayments from './seeds/payments';
-import seedWarehousings from './seeds/warehousings';
-import seedOrders from './seeds/orders';
-import seedQuotations from './seeds/quotations';
-import seedFilters from './seeds/filters';
-import seedAssortments from './seeds/assortments';
-import seedBookmarks from './seeds/bookmark';
-import seedEnrollment from './seeds/enrollments';
-import seedWorkQueue from './seeds/work';
+import { execute, toPromise, gql } from '@apollo/client/core/index.js';
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
+import seedLocaleData from './seeds/locale-data.js';
+import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
+import seedProducts from './seeds/products.js';
+import seedDeliveries from './seeds/deliveries.js';
+import seedPayments from './seeds/payments.js';
+import seedWarehousings from './seeds/warehousings.js';
+import seedOrders from './seeds/orders.js';
+import seedQuotations from './seeds/quotations.js';
+import seedFilters from './seeds/filters.js';
+import seedAssortments from './seeds/assortments.js';
+import seedBookmarks from './seeds/bookmark.js';
+import seedEnrollment from './seeds/enrollments.js';
+import seedWorkQueue from './seeds/work.js';
 
 Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...args) {
   try {
@@ -35,10 +34,7 @@ export const disconnect = async () => {
 
 export const connect = async () => {
   const connectionUri = (await global.__MONGOD__?.getUri()) || global.__MONGO_URI__;
-  connection = await MongoClient.connect(connectionUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  connection = await MongoClient.connect(connectionUri);
 };
 
 export const setupDatabase = async () => {
@@ -81,13 +77,15 @@ const convertLinkToFetch =
       }),
     );
 
-export const createAnonymousGraphqlFetch = () => {
+export const createAnonymousGraphqlFetch = async () => {
   const uri = 'http://localhost:4010/graphql';
+
   const link = createUploadLink({
     uri,
-    fetch,
-    FormData,
     includeExtensions: true,
+    // fetchOptions: {
+    //   duplex: 'half',
+    // },
     headers: {
       'apollo-require-preflight': true,
     },
@@ -95,13 +93,15 @@ export const createAnonymousGraphqlFetch = () => {
   return convertLinkToFetch(link);
 };
 
-export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
+export const createLoggedInGraphqlFetch = async (token = ADMIN_TOKEN) => {
   const uri = 'http://localhost:4010/graphql';
+
   const link = createUploadLink({
     uri,
-    fetch,
-    FormData,
-    includeExtensions: true,
+    // includeExtensions: true,
+    // fetchOptions: {
+    //   duplex: 'half',
+    // },
     headers: {
       authorization: token,
       'apollo-require-preflight': true,
@@ -113,8 +113,8 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
 export const putFile = async (file, url) => {
   const response = await fetch(url, {
     method: 'PUT',
-    body: file,
     duplex: 'half',
+    body: file,
   });
   if (response.ok) {
     return Promise.resolve({});

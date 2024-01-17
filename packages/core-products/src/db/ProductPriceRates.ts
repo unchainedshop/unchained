@@ -1,8 +1,7 @@
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
-import { Db } from '@unchainedshop/types/common.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
-export const ProductPriceRates = async (db: Db) => {
+export const ProductPriceRates = async (db: mongodb.Db) => {
   const ProductRates = db.collection<ProductPriceRate>('product_rates');
   // ProductRates Indexes
   // TODO: Time-Series Data in MongoDb 5.0!

@@ -1,4 +1,4 @@
-import { Collection, FindOptions, Query } from '@unchainedshop/types/common.js';
+import type { Collection, FindOptions, Filter } from 'mongodb';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 
@@ -15,8 +15,8 @@ const defaultSort = AMAZON_DOCUMENTDB_COMPAT_MODE ? sortBySequence : sortByIndex
 export const findPreservingIds =
   <T>(
     collection: Collection<T>,
-  ): ((selector: Query, ids: Array<string>, options?: FindOptions) => Promise<Array<T>>) =>
-  async (selector: Query, ids: Array<string>, options?: FindOptions): Promise<Array<T>> => {
+  ): ((selector: Filter<T>, ids: Array<string>, options?: FindOptions) => Promise<Array<T>>) =>
+  async (selector: Filter<T>, ids: Array<string>, options?: FindOptions): Promise<Array<T>> => {
     const { skip, limit, sort = defaultSort } = options || {};
     const filteredSelector = {
       ...selector,

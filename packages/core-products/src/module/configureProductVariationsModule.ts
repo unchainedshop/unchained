@@ -3,7 +3,6 @@ import {
   ProductVariationsModule,
   ProductVariationText,
 } from '@unchainedshop/types/products.variations.js';
-import { Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -12,7 +11,8 @@ import {
   generateDbFilterById,
   generateDbMutations,
   generateDbObjectId,
-} from '@unchainedshop/utils';
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
 import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
 
@@ -96,7 +96,7 @@ export const configureProductVariationsModule = async ({
   return {
     // Queries
     findProductVariationByKey: async ({ productId, key }) => {
-      const selector: Query = {
+      const selector: mongodb.Filter<ProductVariation> = {
         productId,
         key,
       };
@@ -108,7 +108,7 @@ export const configureProductVariationsModule = async ({
     },
 
     findProductVariations: async ({ productId, tags, offset, limit }) => {
-      const selector: Query = { productId };
+      const selector: mongodb.Filter<ProductVariation> = { productId };
       if (tags && tags.length > 0) {
         selector.tags = { $all: tags };
       }
@@ -177,7 +177,7 @@ export const configureProductVariationsModule = async ({
     },
 
     deleteVariations: async ({ productId, excludedProductIds }) => {
-      const selector: Filter<ProductVariation> = {};
+      const selector: mongodb.Filter<ProductVariation> = {};
       if (productId) {
         selector.productId = productId;
       } else if (excludedProductIds) {
@@ -266,7 +266,7 @@ export const configureProductVariationsModule = async ({
       }) => {
         const parsedLocale = new Locale(locale);
 
-        const selector: Query = { productVariationId };
+        const selector: mongodb.Filter<ProductVariationText> = { productVariationId };
         selector.productVariationOptionValue = productVariationOptionValue ?? { $eq: null };
         const text = await findLocalizedText<ProductVariationText>(
           ProductVariationTexts,

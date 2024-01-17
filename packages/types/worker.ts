@@ -1,6 +1,6 @@
-import { EventEmitter } from 'stream';
+import type { EventEmitter } from 'stream';
 import { SortOption } from './api.js';
-import { IBaseAdapter, IBaseDirector, TimestampFields, _ID } from './common.js';
+import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 
 export enum WorkStatus {
@@ -21,7 +21,7 @@ export enum WorkerEventTypes {
 }
 
 export type Work = {
-  _id?: _ID;
+  _id?: string;
   priority: number;
   retries: number;
   scheduled: Date;

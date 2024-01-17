@@ -1,4 +1,3 @@
-import { Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import {
   Product,
@@ -12,7 +11,8 @@ import {
   generateDbFilterById,
   generateDbMutations,
   buildSortOptions,
-} from '@unchainedshop/utils';
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
 import { ProductsCollection } from '../db/ProductsCollection.js';
@@ -54,7 +54,7 @@ export const buildFindSelector = ({
   queryString,
   ...query
 }: ProductQuery) => {
-  const selector: Query = productSelector ? { ...productSelector, ...query } : query;
+  const selector: mongodb.Filter<Product> = productSelector ? { ...productSelector, ...query } : query;
 
   if (productIds) {
     selector._id = { $in: productIds };
@@ -73,7 +73,7 @@ export const buildFindSelector = ({
   }
 
   if (queryString) {
-    selector.$text = { $search: queryString };
+    (selector as any).$text = { $search: queryString };
   }
 
   if (!selector.status) {
@@ -117,7 +117,9 @@ export const configureProductsModule = async ({
     { productId },
     options,
   ) => {
-    const selector: Query = generateDbFilterById(productId, { status: ProductStatus.DELETED });
+    const selector: mongodb.Filter<Product> = generateDbFilterById(productId, {
+      status: ProductStatus.DELETED,
+    });
 
     await productMedia.deleteMediaFiles({ productId });
     await productTexts.deleteMany({ productId });
@@ -183,7 +185,7 @@ export const configureProductsModule = async ({
       });
     });
     const productIds = filtered.map((filteredAssignment) => filteredAssignment.productId);
-    const selector: Query = {
+    const selector: mongodb.Filter<Product> = {
       _id: { $in: productIds },
       status: includeInactive
         ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }
@@ -224,7 +226,9 @@ export const configureProductsModule = async ({
     },
 
     productExists: async ({ productId, slug }) => {
-      const selector: Query = productId ? generateDbFilterById(productId) : { slugs: slug };
+      const selector: mongodb.Filter<Product> = productId
+        ? generateDbFilterById(productId)
+        : { slugs: slug };
       selector.status = { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] };
 
       const productCount = await Products.countDocuments(selector, { limit: 1 });
@@ -256,7 +260,7 @@ export const configureProductsModule = async ({
       const assignments = product.proxy?.assignments || [];
 
       const productIds = assignments.map(({ productId }) => productId);
-      const selector: Query = {
+      const selector: mongodb.Filter<Product> = {
         _id: { $in: productIds },
         status: includeInactive
           ? { $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT] }

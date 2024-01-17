@@ -2,8 +2,8 @@ import {
   setupDatabase,
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
-} from "./helpers";
-import { User, ADMIN_TOKEN } from "./seeds/users";
+} from "./helpers.js";
+import { User, ADMIN_TOKEN } from "./seeds/users.js";
 
 let db;
 let graphqlFetch;
@@ -12,8 +12,8 @@ let adminGraphqlFetch;
 describe("Auth for anonymous users", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    graphqlFetch = createAnonymousGraphqlFetch();
-    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createAnonymousGraphqlFetch();
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe("Mutation.loginAsGuest", () => {

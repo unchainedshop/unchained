@@ -1,4 +1,3 @@
-import { Collection, Filter, Query, Update } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
@@ -8,20 +7,20 @@ import {
 } from '@unchainedshop/types/orders.payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema.js';
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 
 export const buildFindByIdSelector = (orderPaymentId: string) =>
-  generateDbFilterById(orderPaymentId) as Filter<OrderPayment>;
+  generateDbFilterById(orderPaymentId) as mongodb.Filter<OrderPayment>;
 
-export const buildFindByContextDataSelector = (context: any): Query => {
+export const buildFindByContextDataSelector = (context: any): mongodb.Filter<OrderPayment> => {
   const contextKeys = Object.keys(context);
 
   if (contextKeys.length === 0) return null;
 
-  const selector: Query = contextKeys.reduce(
+  const selector: mongodb.Filter<OrderPayment> = contextKeys.reduce(
     (currentSelector, key) =>
       context[key] !== undefined
         ? {
@@ -38,7 +37,7 @@ export const configureOrderPaymentsModule = ({
   OrderPayments,
   updateCalculation,
 }: {
-  OrderPayments: Collection<OrderPayment>;
+  OrderPayments: mongodb.Collection<OrderPayment>;
   updateCalculation: OrdersModule['updateCalculation'];
 }): OrderPaymentsModule => {
   registerEvents(ORDER_PAYMENT_EVENTS);
@@ -74,7 +73,7 @@ export const configureOrderPaymentsModule = ({
     log(`OrderPayment ${orderPaymentId} -> New Status: ${status}`);
 
     const date = new Date();
-    const modifier: Update<OrderPayment> = {
+    const modifier: mongodb.UpdateFilter<OrderPayment> = {
       $set: { status, updated: new Date() },
       $push: {
         log: {

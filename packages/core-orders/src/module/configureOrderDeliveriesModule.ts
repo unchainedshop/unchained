@@ -1,5 +1,5 @@
-import { Collection, Filter, Update } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
+import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
 
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
@@ -9,19 +9,18 @@ import {
 } from '@unchainedshop/types/orders.deliveries.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema.js';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
 export const buildFindByIdSelector = (orderDeliveryId: string) =>
-  generateDbFilterById(orderDeliveryId) as Filter<OrderDelivery>;
+  generateDbFilterById(orderDeliveryId) as mongodb.Filter<OrderDelivery>;
 
 export const configureOrderDeliveriesModule = ({
   OrderDeliveries,
   updateCalculation,
 }: {
-  OrderDeliveries: Collection<OrderDelivery>;
+  OrderDeliveries: mongodb.Collection<OrderDelivery>;
   updateCalculation: OrdersModule['updateCalculation'];
 }): OrderDeliveriesModule => {
   registerEvents(ORDER_DELIVERY_EVENTS);
@@ -44,7 +43,7 @@ export const configureOrderDeliveriesModule = ({
     log(`OrderDelivery ${orderDeliveryId} -> New Status: ${status}`);
 
     const date = new Date();
-    const modifier: Update<OrderDelivery> = {
+    const modifier: mongodb.UpdateFilter<OrderDelivery> = {
       $set: { status, updated: new Date() },
       $push: {
         log: {

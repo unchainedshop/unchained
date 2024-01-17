@@ -1,15 +1,15 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleOrder } from './seeds/orders';
-import { USER_TOKEN } from './seeds/users';
-import { ProposedQuotation } from './seeds/quotations';
-import { SimpleProduct } from './seeds/products';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { SimpleOrder } from './seeds/orders.js';
+import { USER_TOKEN } from './seeds/users.js';
+import { ProposedQuotation } from './seeds/quotations.js';
+import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetch;
 
 describe('Cart: Quotations', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
   });
 
   describe('Mutation.addCartQuotation', () => {

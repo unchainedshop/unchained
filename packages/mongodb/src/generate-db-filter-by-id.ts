@@ -1,6 +1,6 @@
-import { Filter, _ID } from '@unchainedshop/types/common.js';
+import type { Filter } from 'mongodb';
 
-export const generateDbFilterById = <T extends { _id?: _ID }>(
+export const generateDbFilterById = <T extends { _id?: string }>(
   id: unknown,
   query: Filter<T> = {},
 ): Filter<T> => {

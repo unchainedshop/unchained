@@ -1,4 +1,4 @@
-import chainedUpsert from './utils/chainedUpsert';
+import chainedUpsert from './utils/chainedUpsert.js';
 
 export const SimplePaymentProvider = {
   _id: 'simple-payment-provider',

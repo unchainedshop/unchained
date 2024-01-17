@@ -1,23 +1,22 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { Collection, FindOptions, Query } from '@unchainedshop/types/common.js';
-import { Order, OrderQueries, OrderQuery } from '@unchainedshop/types/orders.js';
-import { generateDbFilterById, buildSortOptions } from '@unchainedshop/utils';
+import { Order, OrderQueries, OrderQuery, OrderStatus } from '@unchainedshop/types/orders.js';
+import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
-  const selector: Query = {};
+  const selector: mongodb.Filter<Order> = {};
 
   if (userId) {
     selector.userId = userId;
   }
 
   if (status) {
-    selector.status = status;
+    selector.status = status as OrderStatus;
   } else if (!includeCarts) {
     selector.status = { $ne: null }; // TODO: Slow performance! IDXSCAN in common query!
   }
 
   if (queryString) {
-    selector.$text = { $search: queryString };
+    (selector as any).$text = { $search: queryString };
   }
 
   return selector;
@@ -26,10 +25,9 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
 export const configureOrdersModuleQueries = ({
   Orders,
 }: {
-  Orders: Collection<Order>;
+  Orders: mongodb.Collection<Order>;
 }): OrderQueries => {
   return {
-    // Queries
     count: async (query) => {
       const orderCount = await Orders.countDocuments(buildFindSelector(query));
       return orderCount;
@@ -37,13 +35,12 @@ export const configureOrdersModuleQueries = ({
 
     findOrder: async ({ orderId, orderNumber }, options) => {
       const selector = orderId ? generateDbFilterById(orderId) : { orderNumber };
-
       return Orders.findOne(selector, options);
     },
 
     findOrders: async ({ limit, offset, queryString, sort, ...query }, options) => {
       const defaultSortOption: Array<SortOption> = [{ key: 'created', value: SortDirection.DESC }];
-      const findOptions: FindOptions = {
+      const findOptions: mongodb.FindOptions = {
         skip: offset,
         limit,
         sort: buildSortOptions(sort || defaultSortOption),

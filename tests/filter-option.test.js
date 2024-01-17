@@ -2,16 +2,16 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { MultiChoiceFilter } from './seeds/filters';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { MultiChoiceFilter } from './seeds/filters.js';
 
 let graphqlFetch;
 
 describe('FilterOption', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.createFilterOption for admin users should', () => {
@@ -115,7 +115,7 @@ describe('FilterOption', () => {
 
   describe('mutation.createFilterOption for anonymous users should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation CreateFilterOption(
@@ -230,7 +230,7 @@ describe('FilterOption', () => {
 
   describe('mutation.removeFilterOption for anonymous users should', () => {
     it('return error when passed valid filter ID', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveFilterOption(

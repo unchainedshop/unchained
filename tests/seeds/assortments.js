@@ -1,5 +1,5 @@
-import { SimpleProduct } from './products';
-import { MultiChoiceFilter } from './filters';
+import { SimpleProduct } from './products.js';
+import { MultiChoiceFilter } from './filters.js';
 
 export const SimpleAssortment = [
   {

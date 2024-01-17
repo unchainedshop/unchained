@@ -144,7 +144,6 @@ export const OrderItem: OrderItemHelperTypes = {
           .createHash('sha256')
           .update([`${obj._id}-unit`, price.amount, pricingSheet.currency].join(''))
           .digest('hex'),
-        currency: pricingSheet.currency,
         ...price,
       };
     }

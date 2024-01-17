@@ -1,5 +1,4 @@
 import localePkg from 'locale';
-import { Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
@@ -7,10 +6,10 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   generateDbMutations,
-  Schemas,
-  systemLocale,
   buildSortOptions,
-} from '@unchainedshop/utils';
+  mongodb,
+} from '@unchainedshop/mongodb';
+import { Schemas, systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -38,10 +37,10 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
 };
 
 export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
-  const selector: Query = { ...rest, deleted: null };
+  const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {
-    selector.$text = { $search: queryString };
+    (selector as any).$text = { $search: queryString };
   }
   return selector;
 };
@@ -138,19 +137,6 @@ export const configureUsersModule = async ({
     },
 
     // Mutations
-    addRoles: async (userId, roles) => {
-      const selector = generateDbFilterById(userId);
-      const updateResult = await Users.updateOne(selector, {
-        $addToSet: { roles: { $each: roles } },
-      });
-
-      const user = await Users.findOne(selector, {});
-      await emit('USER_ADD_ROLES', {
-        user: removeConfidentialServiceHashes(user),
-      });
-
-      return updateResult.modifiedCount;
-    },
 
     updateAvatar: async (_id, fileId) => {
       const userFilter = generateDbFilterById(_id);
@@ -394,7 +380,7 @@ export const configureUsersModule = async ({
             $pull: {
               pushSubscriptions: { 'keys.p256dh': subscription?.keys?.p256dh },
             },
-          } as Filter<User>,
+          } as mongodb.UpdateFilter<User>,
         );
       }
     },
@@ -405,7 +391,7 @@ export const configureUsersModule = async ({
           $pull: {
             pushSubscriptions: { 'keys.p256dh': p256dh },
           },
-        } as Filter<User>,
+        } as mongodb.UpdateFilter<User>,
         {},
       );
     },

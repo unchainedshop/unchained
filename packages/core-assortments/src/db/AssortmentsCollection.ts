@@ -1,5 +1,4 @@
-import { Db } from '@unchainedshop/types/common.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { buildDbIndexes, mongodb } from '@unchainedshop/mongodb';
 import {
   Assortment,
   AssortmentText,
@@ -9,7 +8,7 @@ import {
   AssortmentProductIdCacheRecord,
 } from '@unchainedshop/types/assortments.js';
 
-export const AssortmentsCollection = async (db: Db) => {
+export const AssortmentsCollection = async (db: mongodb.Db) => {
   const Assortments = db.collection<Assortment>('assortments');
   const AssortmentTexts = db.collection<AssortmentText>('assortment_texts');
   const AssortmentProducts = db.collection<AssortmentProduct>('assortment_products');

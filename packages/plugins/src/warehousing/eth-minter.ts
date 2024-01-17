@@ -3,9 +3,10 @@ import {
   WarehousingAdapter,
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
+import { generateDbObjectId } from '@unchainedshop/mongodb';
 import { ProductType, ProductContractStandard } from '@unchainedshop/types/products.js';
 import { IWarehousingAdapter, WarehousingError } from '@unchainedshop/types/warehousing.js';
-import { generateDbObjectId, systemLocale } from '@unchainedshop/utils';
+import { systemLocale } from '@unchainedshop/utils';
 
 const { MINTER_TOKEN_OFFSET = '0' } = process.env;
 

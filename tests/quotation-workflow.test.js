@@ -1,8 +1,8 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers';
-import { SimpleProduct } from './seeds/products';
-import { ProcessingQuotation } from './seeds/quotations';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { SimpleProduct } from './seeds/products.js';
+import { ProcessingQuotation } from './seeds/quotations.js';
 
-import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users';
+import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;
 let adminGraphqlFetch;
@@ -12,8 +12,8 @@ describe('cart checkout', () => {
 
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
-    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('Mutation.requestQuotation', () => {

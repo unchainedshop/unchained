@@ -1,4 +1,4 @@
-import { User as AccountsUser } from '@accounts/types';
+import type { User as AccountsUser } from '@accounts/types';
 import { IBaseAdapter, IBaseDirector } from './common.js';
 import { UnchainedCore } from './core.js';
 import { User, UserProfile } from './user.js';

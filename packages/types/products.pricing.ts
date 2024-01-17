@@ -58,7 +58,10 @@ export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalcul
     meta?: any;
   }) => void;
 
-  unitPrice: (params?: { useNetPrice: boolean }) => ProductPricingCalculation;
+  unitPrice: (params?: { useNetPrice: boolean }) => {
+    amount: number;
+    currency: string;
+  };
 }
 
 export type IProductPricingAdapter = IPricingAdapter<

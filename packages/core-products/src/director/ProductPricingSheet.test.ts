@@ -105,11 +105,11 @@ describe('ProductPricingSheet', () => {
 
       describe('unitPrice', () => {
         it('should return the GROSS sum for a  product price useNetPrice:false', () => {            
-          expect(pricingSheet.unitPrice({useNetPrice: false})).toEqual({"amount": 268, "category": "ITEM", "currency": "CHF", "isNetPrice": false, "isTaxable": true})
+          expect(pricingSheet.unitPrice({useNetPrice: false})).toEqual({"amount": 268, "currency": "CHF" })
         })
 
         it('should return the NET sum for a product price when useNetPrice:true', () => {            
-          expect(pricingSheet.unitPrice({useNetPrice: true})).toEqual({"amount": 230, "category": "ITEM", "currency": "CHF", "isNetPrice": true, "isTaxable": true})
+          expect(pricingSheet.unitPrice({useNetPrice: true})).toEqual({"amount": 230, "currency": "CHF" })
         })
       })
 

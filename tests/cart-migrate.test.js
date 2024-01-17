@@ -2,8 +2,8 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from "./helpers";
-import { SimpleProduct } from "./seeds/products";
+} from "./helpers.js";
+import { SimpleProduct } from "./seeds/products.js";
 
 let db;
 let anonymousGraphqlFetch;
@@ -14,7 +14,7 @@ let orderId;
 describe("Guest user cart migration", () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
-    anonymousGraphqlFetch = createAnonymousGraphqlFetch();
+    anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
   });
 
   it("login as guest", async () => {
@@ -33,7 +33,7 @@ describe("Guest user cart migration", () => {
   });
 
   it("add a product to the cart", async () => {
-    loggedInGraphqlFetch = createLoggedInGraphqlFetch(`Bearer ${guestToken}`);
+    loggedInGraphqlFetch = await createLoggedInGraphqlFetch(`Bearer ${guestToken}`);
     const result = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation addCartProduct(
@@ -84,7 +84,7 @@ describe("Guest user cart migration", () => {
         amount: 20000,
       },
       taxes: {
-        amount: 1430,
+        amount: 1499,
       },
       product: {
         _id: SimpleProduct._id,

@@ -2,9 +2,9 @@ import {
   setupDatabase,
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
-} from "./helpers";
-import { ConfirmedOrder, PendingOrder, SimpleOrder } from "./seeds/orders";
-import { USER_TOKEN, ADMIN_TOKEN } from "./seeds/users";
+} from "./helpers.js";
+import { ConfirmedOrder, PendingOrder, SimpleOrder } from "./seeds/orders.js";
+import { USER_TOKEN, ADMIN_TOKEN } from "./seeds/users.js";
 
 let graphqlFetch;
 let adminGraphqlFetch;
@@ -13,9 +13,9 @@ let graphqlFetchAsAnonymousUser;
 describe("Order: Management", () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
-    adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
+    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
+    adminGraphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
   describe("Query.ordersCount for logged in user should", () => {

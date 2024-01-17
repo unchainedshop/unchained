@@ -1,13 +1,6 @@
+import type { FindOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import {
-  Address,
-  Configuration,
-  Contact,
-  FindOptions,
-  LogFields,
-  TimestampFields,
-  _ID,
-} from './common.js';
+import { Address, Configuration, Contact, LogFields, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { OrderDeliveriesModule } from './orders.deliveries.js';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts.js';
@@ -25,7 +18,7 @@ export enum OrderStatus {
 }
 
 export type Order = {
-  _id?: _ID;
+  _id?: string;
   billingAddress?: Address;
   calculation: Array<any>;
   confirmed?: Date;

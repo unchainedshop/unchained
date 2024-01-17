@@ -1,17 +1,20 @@
-# Next
-- Add new worker configuration option `blacklistedVariables` that accepts array of variable names that should be removed from a job log data returned.
-# Unchained Engine v2.6
+# Unchained Engine vNEXT
 
 ## Minor
+- Remove obsolete internal `addRoles` from users
+- Move `generateDbFilterById`, `buildSortOptions` and `generateDbObjectId` from `@unchainedshop/utils` to `@unchainedshop/mongodb`;
+- Improve typing a lot
 - Protect `upsertLocalizedText` in the core packages products, filters & assortments. Forces the developer to use updateTexts or equivalent functions. This is the first step with the goal to move all localized texts to it's appropriate root documents in order to reduce roundtrips to the db.
 - Remove events `PRODUCT_UPDATE_VARIATION_TEXTS`, `PRODUCT_UPDATE_TEXTS`, `FILTER_UPDATE_TEXTS`, `ASSORTMENT_UPDATE_TEXTS` (triggered for every product when text changes)
 - Add new events `PRODUCT_UPDATE_VARIATION_TEXT`, `PRODUCT_UPDATE_TEXT`, `FILTER_UPDATE_TEXT`, `ASSORTMENT_UPDATE_TEXT` (triggered for every locale & product when text changes).
 - The `_CREATE` events for products, filters and assortments are now triggered AFTER creating the initial text objects so that you can safely use both events to update texts in external systems.
 - Allow to configure an "environment" for stripe which allows to drop events coming to the the engine that are intended to land on another engine not causing false negatives in webhooks.
+- Add new worker configuration option `blacklistedVariables` that accepts array of variable names that should be removed from a job log data returned.
 
 ## Patch
 - Fix payment credential signing procedures that depend on a userId
 - Fix worker not cleaning regression
+- Fix local-search plugin
 
 # Unchained Engine v2.5
 

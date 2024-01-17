@@ -2,17 +2,17 @@ import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
-} from './helpers';
-import { ADMIN_TOKEN } from './seeds/users';
-import { SimpleAssortment, AssortmentProduct } from './seeds/assortments';
-import { SimpleProduct } from './seeds/products';
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { SimpleAssortment, AssortmentProduct } from './seeds/assortments.js';
+import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetch;
 
 describe('AssortmentProduct', () => {
   beforeAll(async () => {
     await setupDatabase();
-    graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
   describe('mutation.reorderAssortmentProducts for admin user should', () => {
@@ -78,7 +78,7 @@ describe('AssortmentProduct', () => {
 
   describe('mutation.reorderAssortmentProducts for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation ReorderAssortmentProducts(
@@ -267,7 +267,7 @@ describe('AssortmentProduct', () => {
 
   describe('mutation.addAssortmentProduct anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation AddAssortmentProduct(
@@ -370,7 +370,7 @@ describe('AssortmentProduct', () => {
 
   describe('mutation.removeAssortmentProduct for anonymous user should', () => {
     it('return error', async () => {
-      const graphqlAnonymousFetch = createAnonymousGraphqlFetch();
+      const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentProduct($assortmentProductId: ID!) {

@@ -1,7 +1,6 @@
 import { AssortmentLink, AssortmentsModule } from '@unchainedshop/types/assortments.js';
-import { Collection } from '@unchainedshop/types/common.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
 
@@ -15,7 +14,7 @@ export const configureAssortmentLinksModule = ({
   AssortmentLinks,
   invalidateCache,
 }: {
-  AssortmentLinks: Collection<AssortmentLink>;
+  AssortmentLinks: mongodb.Collection<AssortmentLink>;
   invalidateCache: AssortmentsModule['invalidateCache'];
 }): AssortmentsModule['links'] => {
   registerEvents(ASSORTMENT_LINK_EVENTS);

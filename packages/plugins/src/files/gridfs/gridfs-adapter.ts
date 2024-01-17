@@ -8,8 +8,9 @@ import {
   FileDirector,
   buildHashedFilename,
   resolveExpirationDate,
+  IFileAdapter,
 } from '@unchainedshop/file-upload';
-import { IFileAdapter, UploadFileData } from '@unchainedshop/types/files.js';
+import { UploadFileData } from '@unchainedshop/types/files.js';
 import sign from './sign.js';
 
 const { ROOT_URL } = process.env;
@@ -69,7 +70,7 @@ export const GridFSAdapter: IFileAdapter = {
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
 
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
-    await pipeline(stream, new PassThrough(), writeStream);
+    await pipeline(stream, new PassThrough({ allowHalfOpen: true }), writeStream);
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${_id}`;
 
@@ -111,6 +112,11 @@ export const GridFSAdapter: IFileAdapter = {
       type: mimeType.lookup(fileName) || response.headers.get('content-type'),
       url,
     } as UploadFileData;
+  },
+
+  async createDownloadStream(file, { modules }: any) {
+    const readStream = await modules.gridfsFileUploads.createReadStream(file.path, file._id);
+    return readStream;
   },
 
   async removeFiles(files, { modules }: any) {
