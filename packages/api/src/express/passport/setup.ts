@@ -21,10 +21,15 @@ const setupPassport = (unchainedAPI: UnchainedCore) => {
   });
 
   passport.use(
-    new AccessTokenStrategy(function verify(token, done) {
+    new AccessTokenStrategy(function verify(userToken, done) {
+      const [username, token] = userToken.split(':');
       unchainedAPI.modules.users.findUserByToken(token).then(
         (user) => {
-          done(null, user);
+          if (user?.username === username) {
+            done(null, user);
+            return;
+          }
+          done(null, null);
         },
         (error) => {
           done(error, null);

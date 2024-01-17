@@ -31,7 +31,9 @@ export default class AccessTokenStrategy extends Strategy {
           if (!user || err) return this.pass();
           this.success(user);
         });
+        return;
       }
     }
+    this.pass();
   }
 }
