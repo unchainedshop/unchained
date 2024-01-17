@@ -1,12 +1,12 @@
 import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries.js';
 import { Modules } from '@unchainedshop/types/modules.js';
-import { LRUCache } from 'lru-cache';
+import * as lruCache from 'lru-cache';
 
 const { NODE_ENV } = process.env;
 
 const ttl = NODE_ENV === 'production' ? 1000 * 1 : 0; // minute or second
 
-const currencyCodeCache = new LRUCache({
+const currencyCodeCache = new lruCache.LRUCache({
   max: 500,
   ttl,
 });

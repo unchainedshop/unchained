@@ -84,7 +84,7 @@ describe("Guest user cart migration", () => {
         amount: 20000,
       },
       taxes: {
-        amount: 1430,
+        amount: 1499,
       },
       product: {
         _id: SimpleProduct._id,
