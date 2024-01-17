@@ -71,18 +71,5 @@ export type UnchainedServerOptions = {
   roles?: any;
   events: Array<string>;
   workTypes: Array<string>;
-  typeDefs?: Array<string>;
-  resolvers?: Record<string, any>;
-  context?: any;
-  tracing?: boolean;
-  schema?: any;
-  plugins?: any[];
-  cache: any;
-  cacheControl?: any;
-  introspection: boolean;
-  playground: boolean;
   adminUiConfig?: AdminUiConfig;
-} & Omit<
-  ApolloServerOptions<Context>,
-  'context' | 'uploads' | 'formatError' | 'typeDefs' | 'resolvers' | 'cors' | 'schema' | 'schemaHash'
->;
+} & ApolloServerOptions<Context>;
