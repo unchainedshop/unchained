@@ -7,8 +7,8 @@ import { SwissTaxCategories } from './tax/ch.js';
 export const getTaxRate = (context: { product: Product; order?: Order }) => {
   const { product, order } = context;
 
-  const productSpecialTaxTag = product.tags?.find(
-    (tag) => tag?.trim().toLowerCase().startsWith('swiss-tax-category:'),
+  const productSpecialTaxTag = product.tags?.find((tag) =>
+    tag?.trim().toLowerCase().startsWith('swiss-tax-category:'),
   );
   const taxCategory =
     Object.values(SwissTaxCategories).find(
