@@ -1,6 +1,9 @@
-# Unchained Engine v2.6
+# Unchained Engine vNEXT
 
 ## Minor
+- Remove obsolete internal `addRoles` from users
+- Move `generateDbFilterById`, `buildSortOptions` and `generateDbObjectId` from `@unchainedshop/utils` to `@unchainedshop/mongodb`;
+- Improve typing a lot
 - Protect `upsertLocalizedText` in the core packages products, filters & assortments. Forces the developer to use updateTexts or equivalent functions. This is the first step with the goal to move all localized texts to it's appropriate root documents in order to reduce roundtrips to the db.
 - Remove events `PRODUCT_UPDATE_VARIATION_TEXTS`, `PRODUCT_UPDATE_TEXTS`, `FILTER_UPDATE_TEXTS`, `ASSORTMENT_UPDATE_TEXTS` (triggered for every product when text changes)
 - Add new events `PRODUCT_UPDATE_VARIATION_TEXT`, `PRODUCT_UPDATE_TEXT`, `FILTER_UPDATE_TEXT`, `ASSORTMENT_UPDATE_TEXT` (triggered for every locale & product when text changes).
@@ -10,6 +13,7 @@
 ## Patch
 - Fix payment credential signing procedures that depend on a userId
 - Fix worker not cleaning regression
+- Fix local-search plugin
 
 # Unchained Engine v2.5
 
