@@ -1,13 +1,6 @@
 import localePkg from 'locale';
 import bcrypt from 'bcryptjs';
-import {
-  Address,
-  Contact,
-  FindOptions,
-  Query,
-  Update,
-  UpdateOptions,
-} from '@unchainedshop/types/common.js';
+import { Address, Contact } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   Email,
@@ -194,7 +187,7 @@ export const configureUsersModule = async ({
 
     async findUser(
       query: UserQuery & { sort?: Array<SortOption> },
-      findOptions?: FindOptions,
+      findOptions?: mongodb.FindOptions,
     ): Promise<User> {
       const selector = buildFindSelector(query);
       return Users.findOne(selector, findOptions);
@@ -668,9 +661,9 @@ export const configureUsersModule = async ({
     },
 
     updateUser: async (
-      selector: Query,
-      modifier: Update<User>,
-      updateOptions: UpdateOptions,
+      selector: mongodb.Filter<User>,
+      modifier: mongodb.UpdateFilter<User>,
+      updateOptions: mongodb.UpdateOptions,
     ): Promise<void> => {
       await Users.updateOne(selector, modifier, updateOptions);
       const user = await Users.findOne(selector);
