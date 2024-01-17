@@ -79,9 +79,7 @@ const LocalSearch: IFilterAdapter = {
       },
 
       async transformFilterSelector(last) {
-        // TODO: Fix type searchQuery
-        const { query = {} } = params.searchQuery;
-        const { queryString, filterIds, includeInactive } = query;
+        const { queryString, filterIds, includeInactive } = params.searchQuery;
 
         if (queryString && !filterIds) {
           // Global search without assortment scope:

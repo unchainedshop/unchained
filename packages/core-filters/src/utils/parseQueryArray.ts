@@ -1,7 +1,7 @@
 import { SearchFilterQuery } from '@unchainedshop/types/filters.js';
 
 // maps each key value pair into a single string
-export const parseQueryArray = (query: SearchFilterQuery) =>
+export const parseQueryArray = (query: SearchFilterQuery): Record<string, Array<string>> =>
   (query || []).reduce(
     (accumulator, { key, value }) => ({
       ...accumulator,

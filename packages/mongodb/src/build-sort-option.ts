@@ -1,5 +1,5 @@
 import { SortOption } from '@unchainedshop/types/api.js';
-import { Sort } from 'mongodb';
+import type { Sort } from 'mongodb';
 
 const SORT_DIRECTIONS = {
   ASC: 1,

@@ -1,7 +1,7 @@
 import 'abort-controller/polyfill.js';
 import { LRUCache } from 'lru-cache';
 import { Locale } from '@unchainedshop/types/common.js';
-import { Collection, Document, Filter } from 'mongodb';
+import type { Collection, Document, Filter } from 'mongodb';
 import { systemLocale } from '@unchainedshop/utils';
 
 const { NODE_ENV } = process.env;

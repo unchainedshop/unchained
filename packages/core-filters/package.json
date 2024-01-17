@@ -34,6 +34,7 @@
     "@unchainedshop/events": "^2.5.12",
     "@unchainedshop/logger": "^2.5.12",
     "@unchainedshop/utils": "^2.5.12",
+    "@unchainedshop/mongodb": "^2.5.12",
     "locale": "^0.1.0",
     "memoizee": "^0.4.15",
     "simpl-schema": "=3.2.0"

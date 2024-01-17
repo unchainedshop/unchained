@@ -1,4 +1,4 @@
-import type { BulkOperationBase } from 'mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core.js';
 import * as AssortmentHandlers from './handlers/assortment/index.js';
 import * as FilterHandlers from './handlers/filter/index.js';
@@ -12,7 +12,7 @@ export type BulkImportOperationResult = {
 export type BulkImportOperation = (
   payload: any,
   options: {
-    bulk: (collection: string) => BulkOperationBase;
+    bulk: (collection: string) => typeof mongodb.BulkOperationBase;
     createShouldUpsertIfIDExists?: boolean;
     skipCacheInvalidation?: boolean;
     logger?: any;

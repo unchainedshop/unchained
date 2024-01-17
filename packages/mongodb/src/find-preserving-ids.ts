@@ -1,4 +1,4 @@
-import { Collection, FindOptions, Filter } from 'mongodb';
+import type { Collection, FindOptions, Filter } from 'mongodb';
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 
