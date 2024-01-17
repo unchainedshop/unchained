@@ -1,4 +1,3 @@
-import type { EventEmitter } from 'stream';
 import { SortOption } from './api.js';
 import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
@@ -9,15 +8,6 @@ export enum WorkStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   DELETED = 'DELETED',
-}
-
-export enum WorkerEventTypes {
-  ADDED = 'added',
-  ALLOCATED = 'allocated',
-  DONE = 'done',
-  FINISHED = 'finished',
-  DELETED = 'deleted',
-  RESCHEDULED = 'rescheduled',
 }
 
 export type Work = {
@@ -141,12 +131,6 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
     workScheduleConfiguration: WorkScheduleConfiguration,
   ) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
-
-  events: EventEmitter;
-  // emit: (eventName: string, payload: any) => void;
-  // onEmit: (eventName: string, payload: any) => void;
-  // offEmit: (eventName: string, payload: any) => void;
-
   doWork: (work: Work, unchainedAPI: UnchainedCore) => Promise<WorkResult<any>>;
 };
 

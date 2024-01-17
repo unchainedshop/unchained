@@ -69,6 +69,7 @@ export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => P
 export type UnchainedServerOptions = {
   unchainedAPI: UnchainedCore;
   roles?: any;
+  context?: any;
   events: Array<string>;
   workTypes: Array<string>;
   adminUiConfig?: AdminUiConfig;

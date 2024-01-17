@@ -1,6 +1,6 @@
 import { IScheduler, Work, WorkData } from '@unchainedshop/types/worker.js';
 import { log } from '@unchainedshop/logger';
-import { WorkerDirector } from '../director/WorkerDirector.js';
+import { subscribe } from '@unchainedshop/events';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 
 export interface FailedReschedulerParams {
@@ -16,7 +16,7 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
   version: '1.0.0',
 
   actions: ({ retryInput }, unchainedAPI) => {
-    const handleFinishedWork = async ({ work }: { work: Work }) => {
+    const handleFinishedWork = async ({ payload: work }: { payload: Work }) => {
       if (!work.success && work.retries > 0) {
         const now = new Date();
         const workDelayMs = work.scheduled.getTime() - work.created.getTime();
@@ -56,11 +56,11 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
 
     return {
       start() {
-        WorkerDirector.events.on(WorkerEventTypes.FINISHED, handleFinishedWork);
+        subscribe<Work>(WorkerEventTypes.FINISHED, handleFinishedWork);
       },
 
       stop() {
-        WorkerDirector.events.off(WorkerEventTypes.FINISHED, handleFinishedWork);
+        /* */
       },
     };
   },

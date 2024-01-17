@@ -1,19 +1,6 @@
 import type { Filter, FindOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import { TimestampFields } from './common.js';
 import { ModuleCreateMutation } from './core.js';
-
-export type Event = {
-  _id?: string;
-  type: string;
-  context?: Record<string, unknown>;
-  payload?: Record<string, unknown>;
-} & TimestampFields;
-
-export interface EmitAdapter {
-  publish(eventName: string, data: Pick<Event, 'context' | 'payload'>): void;
-  subscribe(eventName: string, callback: (payload?: Record<string, unknown>) => void): void;
-}
 
 export type EventQuery = {
   types?: Array<string>;

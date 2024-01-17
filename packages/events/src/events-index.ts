@@ -1,4 +1,4 @@
-import { EventDirector } from './EventDirector.js';
+import { EventDirector, EmitAdapter } from './EventDirector.js';
 
 const {
   emit,
@@ -23,4 +23,5 @@ export {
   setEmitAdapter,
   setEmitHistoryAdapter,
   subscribe,
+  EmitAdapter,
 };

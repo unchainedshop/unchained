@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events';
-import { EmitAdapter } from '@unchainedshop/types/events.js';
-import { setEmitAdapter } from '@unchainedshop/events';
+import { setEmitAdapter, EmitAdapter } from '@unchainedshop/events';
 
 const NodeEventEmitter = (): EmitAdapter => {
   const eventEmitter = new EventEmitter();

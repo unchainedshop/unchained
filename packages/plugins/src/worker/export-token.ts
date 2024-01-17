@@ -1,6 +1,7 @@
-import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
+import { IWorkerAdapter, Work } from '@unchainedshop/types/worker.js';
 import { WorkerDirector, WorkerAdapter, WorkerEventTypes } from '@unchainedshop/core-worker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { subscribe } from '@unchainedshop/events';
 
 export const ExportTokenWorker: IWorkerAdapter<void, void> = {
   ...WorkerAdapter,
@@ -17,7 +18,7 @@ export const ExportTokenWorker: IWorkerAdapter<void, void> = {
 };
 
 export const configureExportToken = (unchainedAPI: UnchainedCore) => {
-  WorkerDirector.events.on(WorkerEventTypes.FINISHED, async ({ work }) => {
+  subscribe<Work>(WorkerEventTypes.FINISHED, async ({ payload: work }) => {
     if (work.type === 'EXPORT_TOKEN' && work.success) {
       await unchainedAPI.modules.warehousing.updateTokenOwnership({
         tokenId: work.input.token._id,
