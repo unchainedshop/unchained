@@ -1,11 +1,25 @@
-import {
-  ContextNormalizerFunction,
-  EmitAdapter,
-  EventDirector as IEventDirector,
-} from '@unchainedshop/types/events.js';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:events');
+
+export type RawPayloadType<T> = {
+  payload: T;
+  context: {
+    userAgent?: string;
+    language?: string;
+    country?: string;
+    remoteAddress?: string;
+    referer?: string;
+    origin?: string;
+    userId?: string;
+  };
+};
+export interface EmitAdapter {
+  publish(eventName: string, data: RawPayloadType<Record<string, any>>): void;
+  subscribe(eventName: string, callback: (payload: RawPayloadType<Record<string, any>>) => void): void;
+}
+
+export type ContextNormalizerFunction = (context: any) => RawPayloadType<any>['context'];
 
 export const defaultNormalizer: ContextNormalizerFunction = (context) => {
   return {
@@ -26,7 +40,7 @@ let Adapter: EmitAdapter; // Public (customizable)
 let HistoryAdapter: EmitAdapter; // (Per default: Core-events adapter to write into DB)
 let ContextNormalizer = defaultNormalizer;
 
-export const EventDirector: IEventDirector = {
+export const EventDirector = {
   registerEvents: (events: string[]): void => {
     if (events.length) {
       events.forEach((e) => RegisteredEventsSet.add(e));
@@ -42,38 +56,40 @@ export const EventDirector: IEventDirector = {
     ContextNormalizer = fn;
   },
 
-  setEmitAdapter: (adapter: EmitAdapter) => {
+  setEmitAdapter: (adapter: EmitAdapter): void => {
     Adapter = adapter;
   },
 
   getEmitAdapter: (): EmitAdapter => Adapter,
 
-  setEmitHistoryAdapter: (adapter: EmitAdapter) => {
+  setEmitHistoryAdapter: (adapter: EmitAdapter): void => {
     HistoryAdapter = adapter;
   },
 
   getEmitHistoryAdapter: (): EmitAdapter => HistoryAdapter,
 
-  emit: async (eventName: string, data: any): Promise<void> => {
+  emit: async (eventName: string, data?: Record<string, any>): Promise<void> => {
     const extractedContext = ContextNormalizer(null);
 
     if (!RegisteredEventsSet.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);
 
+    const payload = data || {};
+
     Adapter?.publish(eventName, {
-      payload: { ...data },
+      payload,
       context: extractedContext,
     });
 
     HistoryAdapter?.publish(eventName, {
-      payload: { ...data },
+      payload,
       context: extractedContext,
     });
 
     logger.verbose(`EventDirector -> Emitted ${eventName} with ${JSON.stringify(data)}`);
   },
 
-  subscribe: (eventName: string, callback: () => void): void => {
+  subscribe: <T>(eventName: string, callback: (payload: RawPayloadType<T>) => void): void => {
     const currentSubscription = `${eventName}${callback?.toString()}`; // used to avaoid registering the same event handler callback
 
     if (!RegisteredEventsSet.has(eventName))

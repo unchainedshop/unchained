@@ -1,10 +1,14 @@
-import { Collection, Filter, Query } from '@unchainedshop/types/common.js';
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, generateDbObjectId } from '@unchainedshop/utils';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  generateDbObjectId,
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { OrderPositionsSchema } from '../db/OrderPositionsSchema.js';
 import { ordersSettings } from '../orders-settings.js';
 
@@ -16,13 +20,16 @@ const ORDER_POSITION_EVENTS: string[] = [
 ];
 
 export const buildFindByIdSelector = (orderPositionId: string, orderId?: string) =>
-  generateDbFilterById(orderPositionId, orderId ? { orderId } : undefined) as Filter<OrderPosition>;
+  generateDbFilterById(
+    orderPositionId,
+    orderId ? { orderId } : undefined,
+  ) as mongodb.Filter<OrderPosition>;
 
 export const configureOrderPositionsModule = ({
   OrderPositions,
   updateCalculation,
 }: {
-  OrderPositions: Collection<OrderPosition>;
+  OrderPositions: mongodb.Collection<OrderPosition>;
   updateCalculation: OrdersModule['updateCalculation'];
 }): OrderPositionsModule => {
   registerEvents(ORDER_POSITION_EVENTS);
@@ -322,7 +329,7 @@ export const configureOrderPositionsModule = ({
       );
 
       // Search for existing position
-      const selector: Query = {
+      const selector: mongodb.Filter<OrderPosition> = {
         orderId,
         productId: resolvedProduct._id,
         originalProductId: product._id,

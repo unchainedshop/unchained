@@ -1,4 +1,5 @@
-import { Query, TimestampFields, _ID } from './common.js';
+import type { Filter } from 'mongodb';
+import { TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
 
 import { User } from './user.js';
@@ -9,7 +10,7 @@ export type UserProductFilter = {
 };
 
 export type Bookmark = {
-  _id?: _ID;
+  _id?: string;
   userId: string;
   productId: string;
   meta?: any;
@@ -22,7 +23,7 @@ export type Bookmark = {
 export interface BookmarksModule extends ModuleMutations<Bookmark> {
   findBookmarksByUserId: (userId: string) => Promise<Array<Bookmark>>;
   findBookmarkById: (bookmarkId: string) => Promise<Bookmark>;
-  findBookmarks: (query: Query) => Promise<Array<Bookmark>>;
+  findBookmarks: (query: Filter<Bookmark>) => Promise<Array<Bookmark>>;
   replaceUserId: (fromUserId: string, toUserId: string, bookmarkIds?: Array<string>) => Promise<number>;
   deleteByUserId: (toUserId: string) => Promise<number>;
   deleteByProductId: (productId: string) => Promise<number>;

@@ -1,17 +1,17 @@
-import { Db, TimestampFields, _ID } from '@unchainedshop/types/common.js';
-import { Decimal128 } from 'mongodb';
+import { TimestampFields } from '@unchainedshop/types/common.js';
+import { mongodb } from '@unchainedshop/mongodb';
 
 export type CryptopayTransaction = {
-  _id?: _ID;
+  _id?: string;
   blockHeight: number;
   mostRecentBlockHeight: number;
-  amount: Decimal128;
+  amount: mongodb.Decimal128;
   currency: string;
   decimals: number;
   contract: string;
   orderPaymentId?: string;
 } & TimestampFields;
 
-export const CryptopayTransactionsCollection = (db: Db) => {
+export const CryptopayTransactionsCollection = (db: mongodb.Db) => {
   return db.collection<CryptopayTransaction>('cryptopay_transactions');
 };

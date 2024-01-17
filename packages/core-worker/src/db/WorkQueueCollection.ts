@@ -1,10 +1,9 @@
-import { Db } from '@unchainedshop/types/common.js';
+import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 import { Work } from '@unchainedshop/types/worker.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
 
 const ONE_DAY_IN_SECONDS = 86400;
 
-export const WorkQueueCollection = async (db: Db) => {
+export const WorkQueueCollection = async (db: mongodb.Db) => {
   const WorkQueue = db.collection<Work>('work_queue');
 
   await buildDbIndexes<Work>(WorkQueue, [

@@ -80,18 +80,6 @@ export const Roles: RolesInterface = {
     const allows = await Roles.allow(context, roles, action, args);
     return allows === true;
   },
-
-  /**
-   * Adds roles to a user
-   */
-  async addUserToRoles(context, roles) {
-    let userRoles = roles;
-    if (!Array.isArray(userRoles)) {
-      userRoles = [userRoles];
-    }
-
-    return context.modules.users.addRoles(context.userId, userRoles);
-  },
 };
 
 /**

@@ -1,16 +1,6 @@
-import { Filter } from 'mongodb';
+import type { Filter, FindOptions, UpdateFilter, UpdateOptions } from 'mongodb';
 import { SortOption } from './api.js';
-import {
-  Address,
-  Contact,
-  FindOptions,
-  Locale,
-  Query,
-  TimestampFields,
-  Update,
-  UpdateOptions,
-  _ID,
-} from './common.js';
+import { Address, Contact, Locale, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Country } from './countries.js';
 import { File } from './files.js';
@@ -71,9 +61,9 @@ export interface PushSubscriptionObject {
 }
 
 export type User = {
-  _id?: _ID;
+  _id?: string;
   deleted?: Date;
-  avatarId?: _ID;
+  avatarId?: string;
   emails: Array<Email>;
   guest: boolean;
   initialPassword: boolean;
@@ -154,7 +144,7 @@ export type UsersModule = {
 
   // Queries
   count: (query: UserQuery) => Promise<number>;
-  findUserById: (userId: _ID) => Promise<User>;
+  findUserById: (userId: string) => Promise<User>;
   findUserByToken: (hashedToken?: string) => Promise<User>;
   findUserByResetToken: (token: string) => Promise<User>;
   findUnverifiedEmailToken: (token: string) => Promise<{
@@ -203,7 +193,11 @@ export type UsersModule = {
   delete: (userId: string) => Promise<User>;
   updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
   updateTags: (_id: string, tags: Array<string>) => Promise<User>;
-  updateUser: (selector: Query, modifier: Update<User>, options: UpdateOptions) => Promise<void>;
+  updateUser: (
+    selector: Filter<User>,
+    modifier: UpdateFilter<User>,
+    options: UpdateOptions,
+  ) => Promise<void>;
   addPushSubscription: (
     userId: string,
     subscription: any,

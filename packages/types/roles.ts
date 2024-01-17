@@ -31,7 +31,6 @@ export interface RolesInterface {
     args?: CheckPermissionArgs,
   ): Promise<boolean>;
   userHasPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<boolean>;
-  addUserToRoles(context: Context, roles: string | string[]): Promise<any>;
   adminRole?: RoleInterface;
   loggedInRole?: RoleInterface;
   allRole?: RoleInterface;

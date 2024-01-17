@@ -1,4 +1,5 @@
-import { Configuration, FindOptions, TimestampFields, _ID } from './common.js';
+import type { FindOptions } from 'mongodb';
+import { Configuration, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderDelivery } from './orders.deliveries.js';
@@ -8,7 +9,7 @@ import { Product } from './products.js';
 import { IProductPricingSheet, ProductPricingCalculation } from './products.pricing.js';
 
 export type OrderPosition = {
-  _id?: _ID;
+  _id?: string;
   calculation: Array<ProductPricingCalculation>;
   configuration: Configuration;
   context?: any;

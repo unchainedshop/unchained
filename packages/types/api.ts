@@ -1,5 +1,5 @@
-import { IncomingMessage, OutgoingMessage } from 'http';
-import { ApolloServerOptions } from '@apollo/server';
+import type { IncomingMessage, OutgoingMessage } from 'http';
+import type { ApolloServerOptions } from '@apollo/server';
 import type { Locale } from 'locale';
 import { User } from './user.js';
 import { UnchainedCore } from './core.js';
@@ -69,20 +69,8 @@ export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => P
 export type UnchainedServerOptions = {
   unchainedAPI: UnchainedCore;
   roles?: any;
+  context?: any;
   events: Array<string>;
   workTypes: Array<string>;
-  typeDefs?: Array<string>;
-  resolvers?: Record<string, any>;
-  context?: any;
-  tracing?: boolean;
-  schema?: any;
-  plugins?: any[];
-  cache: any;
-  cacheControl?: any;
-  introspection: boolean;
-  playground: boolean;
   adminUiConfig?: AdminUiConfig;
-} & Omit<
-  ApolloServerOptions<Context>,
-  'context' | 'uploads' | 'formatError' | 'typeDefs' | 'resolvers' | 'cors' | 'schema' | 'schemaHash'
->;
+} & ApolloServerOptions<Context>;

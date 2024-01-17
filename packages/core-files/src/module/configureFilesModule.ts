@@ -1,7 +1,7 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { File, FilesModule, FilesSettingsOptions } from '@unchainedshop/types/files.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection.js';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema.js';
 import { filesSettings } from '../files-settings.js';

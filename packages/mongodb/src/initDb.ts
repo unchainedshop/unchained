@@ -25,14 +25,12 @@ export const stopDb = async () => {
   await mongod.stop();
 };
 
-const initDbNative = async (): Promise<Db> => {
+const initDb = async (): Promise<Db> => {
   const url = process.env.MONGO_URL || (await startDb());
   const client = new MongoClient(url);
   await client.connect();
   const db = client.db();
   return db;
 };
-
-const initDb = initDbNative;
 
 export { initDb };

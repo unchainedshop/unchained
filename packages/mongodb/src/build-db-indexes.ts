@@ -1,5 +1,10 @@
-import { Collection, Indexes, Document } from '@unchainedshop/types/common.js';
+import type { Collection, Document, CreateIndexesOptions, IndexDirection } from 'mongodb';
 import { log, LogLevel } from '@unchainedshop/logger';
+
+export type Indexes<T extends Document> = Array<{
+  index: { [key in keyof T]?: IndexDirection }; // TODO: Support key with object path (e.g. 'product.proxy.assignments')
+  options?: CreateIndexesOptions;
+}>;
 
 const buildIndexes = <T>(
   collection: Collection<T>,

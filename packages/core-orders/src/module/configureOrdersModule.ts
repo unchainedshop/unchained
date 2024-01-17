@@ -3,7 +3,7 @@ import { Order, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { generateDbFilterById } from '@unchainedshop/utils';
+import { generateDbFilterById } from '@unchainedshop/mongodb';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
 import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.js';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';

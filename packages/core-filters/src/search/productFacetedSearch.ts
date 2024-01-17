@@ -1,11 +1,11 @@
-import { Collection } from '@unchainedshop/types/common.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Filter } from '@unchainedshop/types/filters.js';
+import { mongodb } from '@unchainedshop/mongodb';
 import { intersectSet } from '../utils/intersectSet.js';
 import { FilterProductIds, SearchConfiguration } from './search.js';
 
 export const productFacetedSearch = (
-  Filters: Collection<Filter>,
+  Filters: mongodb.Collection<Filter>,
   filterProductIds: FilterProductIds,
   searchConfiguration: SearchConfiguration,
   unchainedAPI: UnchainedCore,
@@ -13,7 +13,7 @@ export const productFacetedSearch = (
   const { query, filterSelector, forceLiveCollection } = searchConfiguration;
 
   return async (productIds: Array<string>) => {
-    if (!query || query.length === 0) return productIds;
+    if (!query || !query.filterQuery) return productIds;
 
     const filters = filterSelector ? await Filters.find(filterSelector).toArray() : [];
 

@@ -1,11 +1,11 @@
-import { Db } from '@unchainedshop/types/common.js';
+import { mongodb } from '@unchainedshop/mongodb';
 import { AssortmentsCollection } from '../db/AssortmentsCollection.js';
 
 const eqSet = (as, bs) => {
   return [...as].join(',') === [...bs].join(',');
 };
 
-export default async function mongodbCache(db: Db) {
+export default async function mongodbCache(db: mongodb.Db) {
   const { AssortmentProductIdCache } = await AssortmentsCollection(db);
 
   return {

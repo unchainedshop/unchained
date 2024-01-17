@@ -2,15 +2,10 @@
   "extends": "../shared/base.tsconfig.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "lib",
-    "typeRoots": [
-      "node_modules/@types",
-      "node_modules/mongodb"
-    ],
-    "types": [],
+    "outDir": "./lib",
   },
-  "exclude": ["**/*.test.ts", "**/*.test.js", "tests"],
+  "exclude": ["./lib"],
   "include": [
-    "*.ts",
+    "*.ts"
   ]
 }

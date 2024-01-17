@@ -5,8 +5,6 @@ import { buildDefaultTypeDefs } from './schema/index.js';
 import resolvers from './resolvers/index.js';
 import { actions } from './roles/index.js';
 
-const { APOLLO_ENGINE_KEY } = process.env;
-
 const logGraphQLServerError = (error: GraphQLFormattedError) => {
   try {
     const {
@@ -30,7 +28,6 @@ export default async (options) => {
   const {
     typeDefs: additionalTypeDefs = [],
     resolvers: additionalResolvers = [],
-    engine = {},
     events = [],
     workTypes = [],
     ...apolloServerOptions
@@ -50,13 +47,6 @@ export default async (options) => {
       logGraphQLServerError(error);
       return error;
     },
-    apollo: APOLLO_ENGINE_KEY
-      ? {
-          key: APOLLO_ENGINE_KEY,
-          privateVariables: ['email', 'password', 'oldPassword', 'newPassword'],
-          ...engine,
-        }
-      : undefined,
     ...apolloServerOptions,
   });
 

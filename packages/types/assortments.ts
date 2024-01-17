@@ -1,10 +1,10 @@
-import { Db } from 'mongodb';
+import type { Filter, FindOptions, Db } from 'mongodb';
 import { SortOption } from './api.js';
 import { AssortmentMediaModule } from './assortments.media.js';
-import { Filter, FindOptions, Query, TimestampFields, Tree, _ID } from './common.js';
+import { TimestampFields, Tree } from './common.js';
 
 export type Assortment = {
-  _id?: _ID;
+  _id?: string;
   isActive: boolean;
   isBase: boolean;
   isRoot: boolean;
@@ -15,7 +15,7 @@ export type Assortment = {
 } & TimestampFields;
 
 export type AssortmentFilter = {
-  _id?: _ID;
+  _id?: string;
   assortmentId: string;
   filterId: string;
   meta?: any;
@@ -24,7 +24,7 @@ export type AssortmentFilter = {
 } & TimestampFields;
 
 export type AssortmentLink = {
-  _id?: _ID;
+  _id?: string;
   childAssortmentId: string;
   meta?: any;
   parentAssortmentId: string;
@@ -33,7 +33,7 @@ export type AssortmentLink = {
 } & TimestampFields;
 
 export type AssortmentProduct = {
-  _id?: _ID;
+  _id?: string;
   assortmentId: string;
   meta?: any;
   productId: string;
@@ -42,12 +42,12 @@ export type AssortmentProduct = {
 } & TimestampFields;
 
 export type AssortmentProductIdCacheRecord = {
-  _id?: _ID;
+  _id?: string;
   productIds: Array<string>;
 } & TimestampFields;
 
 export type AssortmentText = {
-  _id?: _ID;
+  _id?: string;
   assortmentId: string;
   description?: string;
   locale: string;
@@ -59,7 +59,7 @@ export type AssortmentText = {
 export type AssortmentQuery = {
   queryString?: string;
   assortmentIds?: Array<string>;
-  assortmentSelector?: Query;
+  assortmentSelector?: Filter<Assortment>;
   includeInactive?: boolean;
   includeLeaves?: boolean;
   slugs?: Array<string>;
@@ -143,7 +143,7 @@ export type AssortmentsModule = {
     // Mutations
     create: (doc: AssortmentFilter) => Promise<AssortmentFilter>;
 
-    delete: (assortmentFilterId: string) => Promise<Array<{ _id: _ID }>>;
+    delete: (assortmentFilterId: string) => Promise<Array<{ _id: string }>>;
     deleteMany: (selector: Filter<AssortmentFilter>) => Promise<number>;
 
     update: (assortmentFilterId: string, doc: AssortmentFilter) => Promise<AssortmentFilter>;
@@ -240,7 +240,7 @@ export type AssortmentsModule = {
     delete: (
       assortmentProductId: string,
       options?: { skipInvalidation?: boolean },
-    ) => Promise<Array<{ _id: _ID; assortmentId: string }>>;
+    ) => Promise<Array<{ _id: string; assortmentId: string }>>;
 
     deleteMany: (
       selector: Filter<AssortmentProduct>,
@@ -271,7 +271,7 @@ export type AssortmentsModule = {
   search: {
     findFilteredAssortments: (params: {
       assortmentIds: Array<string>;
-      assortmentSelector: Query;
+      assortmentSelector: Filter<Assortment>;
       limit: number;
       offset: number;
       sort: FindOptions['sort'];
@@ -284,7 +284,7 @@ export type AssortmentsModule = {
 
   texts: {
     // Queries
-    findTexts: (query: Query, options?: FindOptions) => Promise<Array<AssortmentText>>;
+    findTexts: (query: Filter<AssortmentText>, options?: FindOptions) => Promise<Array<AssortmentText>>;
 
     findLocalizedText: (params: { assortmentId: string; locale?: string }) => Promise<AssortmentText>;
     searchTexts: ({ searchText }: { searchText: string }) => Promise<Array<string>>;

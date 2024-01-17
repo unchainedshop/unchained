@@ -1,7 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { Query, Update } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-
 import {
   Quotation,
   QuotationQuery,
@@ -10,7 +8,12 @@ import {
 } from '@unchainedshop/types/quotations.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/utils';
+import {
+  generateDbFilterById,
+  generateDbMutations,
+  buildSortOptions,
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { QuotationsCollection } from '../db/QuotationsCollection.js';
 import { QuotationsSchema } from '../db/QuotationsSchema.js';
 import { QuotationStatus } from '../db/QuotationStatus.js';
@@ -113,7 +116,7 @@ export const configureQuotationsModule = async ({
         break;
     }
 
-    const modifier: Update<Quotation> = {
+    const modifier: mongodb.UpdateFilter<Quotation> = {
       $set,
       $push: {
         log: {
@@ -220,7 +223,7 @@ export const configureQuotationsModule = async ({
       return quotationCount;
     },
     openQuotationWithProduct: async ({ productId }) => {
-      const selector: Query = { productId };
+      const selector: mongodb.Filter<Quotation> = { productId };
       selector.status = { $in: [QuotationStatus.REQUESTED, QuotationStatus.PROPOSED] };
 
       return Quotations.findOne(selector);

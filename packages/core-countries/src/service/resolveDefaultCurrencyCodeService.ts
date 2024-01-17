@@ -1,19 +1,19 @@
+import { Context } from '@unchainedshop/types/api.js';
 import { Country, ResolveDefaultCurrencyCodeService } from '@unchainedshop/types/countries.js';
-import { Modules } from '@unchainedshop/types/modules.js';
-import { LRUCache } from 'lru-cache';
+import * as lruCache from 'lru-cache';
 
 const { NODE_ENV } = process.env;
 
 const ttl = NODE_ENV === 'production' ? 1000 * 1 : 0; // minute or second
 
-const currencyCodeCache = new LRUCache({
+const currencyCodeCache = new lruCache.LRUCache({
   max: 500,
   ttl,
 });
 
 const { UNCHAINED_CURRENCY } = process.env;
 
-const getDefaultCurrency = async (modules: Modules, country?: Country) => {
+const getDefaultCurrency = async (modules: Context['modules'], country?: Country) => {
   if (country?.defaultCurrencyId) {
     return modules.currencies.findCurrency({
       currencyId: country.defaultCurrencyId,
@@ -24,7 +24,7 @@ const getDefaultCurrency = async (modules: Modules, country?: Country) => {
 
 export const resolveDefaultCurrencyCodeService: ResolveDefaultCurrencyCodeService = async (
   { isoCode },
-  { modules },
+  { modules }: Context,
 ) => {
   const currencyCode = currencyCodeCache.get(isoCode) as string;
   if (currencyCode) return currencyCode;

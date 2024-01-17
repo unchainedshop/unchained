@@ -1,10 +1,9 @@
-import { Collection, Filter } from '@unchainedshop/types/common.js';
 import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
+import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema.js';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector.js';
@@ -22,13 +21,13 @@ const OrderDiscountErrorCode = {
 };
 
 export const buildFindByIdSelector = (orderDiscountId: string) =>
-  generateDbFilterById(orderDiscountId) as Filter<OrderDiscount>;
+  generateDbFilterById(orderDiscountId) as mongodb.Filter<OrderDiscount>;
 
 export const configureOrderDiscountsModule = ({
   OrderDiscounts,
   updateCalculation,
 }: {
-  OrderDiscounts: Collection<OrderDiscount>;
+  OrderDiscounts: mongodb.Collection<OrderDiscount>;
   updateCalculation: OrdersModule['updateCalculation'];
 }): OrderDiscountsModule => {
   registerEvents(ORDER_DISCOUNT_EVENTS);

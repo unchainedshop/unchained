@@ -1,7 +1,6 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { UnchainedLocaleContext } from '@unchainedshop/types/api.js';
 import localePkg from 'locale';
-import { LRUCache } from 'lru-cache';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
   resolveBestCountry,
@@ -10,6 +9,7 @@ import {
   systemLocale,
 } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+import * as lruCache from 'lru-cache';
 
 const { Locales } = localePkg;
 
@@ -17,7 +17,7 @@ const { NODE_ENV } = process.env;
 
 const ttl = NODE_ENV === 'production' ? 1000 * 60 : 0; // minute or second
 
-const localeContextCache = new LRUCache({
+const localeContextCache = new lruCache.LRUCache({
   max: 500,
   ttl,
 });

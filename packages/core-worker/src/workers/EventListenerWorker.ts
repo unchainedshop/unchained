@@ -1,6 +1,6 @@
 import { IWorker } from '@unchainedshop/types/worker.js';
+import { subscribe } from '@unchainedshop/events';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
-import { WorkerDirector } from '../director/WorkerDirector.js';
 import { BaseWorker } from './BaseWorker.js';
 
 function debounce<T extends (...args: any) => any>(func: T, wait) {
@@ -44,8 +44,8 @@ export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {
       ...baseWorkerActions,
 
       start() {
-        WorkerDirector.events.on(WorkerEventTypes.ADDED, processWorkQueue);
-        WorkerDirector.events.on(WorkerEventTypes.FINISHED, processWorkQueue);
+        subscribe(WorkerEventTypes.ADDED, processWorkQueue);
+        subscribe(WorkerEventTypes.FINISHED, processWorkQueue);
 
         setTimeout(async () => {
           await baseWorkerActions.autorescheduleTypes({
@@ -55,8 +55,7 @@ export const EventListenerWorker: IWorker<EventListenerWorkerParams> = {
       },
 
       stop() {
-        WorkerDirector.events.off(WorkerEventTypes.ADDED, processWorkQueue);
-        WorkerDirector.events.off(WorkerEventTypes.FINISHED, processWorkQueue);
+        /* */
       },
     };
   },

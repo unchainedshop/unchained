@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import {
   Address,
   Contact,
-  Filter,
   FindOptions,
   Query,
   Update,
@@ -23,10 +22,10 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   generateDbMutations,
-  Schemas,
-  systemLocale,
   buildSortOptions,
-} from '@unchainedshop/utils';
+  mongodb,
+} from '@unchainedshop/mongodb';
+import { Schemas, systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import crypto from 'crypto';
@@ -61,10 +60,10 @@ export const removeConfidentialServiceHashes = (rawUser: User): User => {
 };
 
 export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQuery) => {
-  const selector: Query = { ...rest, deleted: null };
+  const selector: mongodb.Filter<User> = { ...rest, deleted: null };
   if (!includeGuests) selector.guest = { $in: [false, null] };
   if (queryString) {
-    selector.$text = { $search: queryString };
+    (selector as any).$text = { $search: queryString };
   }
   return selector;
 };
@@ -707,7 +706,7 @@ export const configureUsersModule = async ({
             $pull: {
               pushSubscriptions: { 'keys.p256dh': subscription?.keys?.p256dh },
             },
-          } as Filter<User>,
+          } as mongodb.UpdateFilter<User>,
         );
       }
     },
@@ -719,7 +718,7 @@ export const configureUsersModule = async ({
           $pull: {
             pushSubscriptions: { 'keys.p256dh': p256dh },
           },
-        } as Filter<User>,
+        } as mongodb.UpdateFilter<User>,
         {},
       );
     },

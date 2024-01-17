@@ -1,14 +1,13 @@
+import type { FindOptions } from 'mongodb';
 import { SortOption } from './api.js';
 import {
   Address,
   Configuration,
   Contact,
-  FindOptions,
   IBaseAdapter,
   IBaseDirector,
   LogFields,
   TimestampFields,
-  _ID,
 } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
@@ -43,7 +42,7 @@ export type EnrollmentQuery = {
 };
 
 export type Enrollment = {
-  _id?: _ID;
+  _id?: string;
   billingAddress: Address;
   configuration: Configuration;
   contact: Contact;

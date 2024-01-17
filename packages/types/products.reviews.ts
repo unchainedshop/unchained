@@ -1,5 +1,6 @@
+import type { Filter } from 'mongodb';
 import { SortOption } from './api.js';
-import { Filter, TimestampFields, _ID } from './common.js';
+import { TimestampFields } from './common.js';
 
 export enum ProductReviewVoteType {
   UPVOTE = 'UPVOTE',
@@ -15,7 +16,7 @@ export interface ProductVote {
 }
 
 export type ProductReview = {
-  _id?: _ID;
+  _id?: string;
   productId: string;
   authorId: string;
   rating: number;

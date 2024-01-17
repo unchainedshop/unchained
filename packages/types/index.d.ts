@@ -1,12 +1,6 @@
-import { IncomingMessage } from 'http';
-import SimpleSchema from 'simpl-schema';
-import { Context } from './api.js';
 import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } from './assortments.js';
-
 import { BookmarkServices, BookmarksModule } from './bookmarks.js';
-import { Db, IBaseAdapter, IBaseDirector, Locale, Locales, TimestampFields } from './common.js';
-
-import { CountriesModule, Country, CountryServices } from './countries.js';
+import { CountriesModule, CountryServices } from './countries.js';
 import { CurrenciesModule } from './currencies.js';
 import {
   DeliveryError as DeliveryErrorType,
@@ -31,15 +25,8 @@ import {
   IEnrollmentAdapter,
   IEnrollmentDirector,
 } from './enrollments.js';
-import { EventDirector, EventsModule } from './events.js';
-import {
-  FileServices,
-  FilesSettings,
-  FilesSettingsOptions,
-  FilesModule,
-  IFileAdapter,
-  IFileDirector,
-} from './files.js';
+import { EventsModule } from './events.js';
+import { FileServices, FilesSettings, FilesSettingsOptions, FilesModule } from './files.js';
 import {
   FiltersModule,
   FilterType as FilterTypeType,
@@ -79,16 +66,7 @@ import {
   IPaymentPricingSheet,
   PaymentPricingCalculation,
 } from './payments.pricing.js';
-import {
-  BasePricingAdapterContext,
-  BasePricingContext,
-  IPricingDirector,
-  IPricingAdapter,
-  IPricingSheet,
-  PricingCalculation,
-  PricingSheetParams,
-  IBasePricingSheet,
-} from './pricing.js';
+import { PricingSheetParams } from './pricing.js';
 import {
   ProductServices,
   ProductsModule,
@@ -124,9 +102,10 @@ import {
   IWorkerDirector,
   WorkerModule,
   WorkerSchedule,
+  WorkerSettingsOptions,
   WorkStatus as WorkerStatusType,
 } from './worker.js';
-import { UnchainedCoreOptions, ModuleInput } from './core.js';
+import { ModuleInput } from './core.js';
 
 declare module '@unchainedshop/utils' {
   function resolveBestSupported(language: string, locales: Locales): Locale;
@@ -203,15 +182,6 @@ declare module '@unchainedshop/events' {
   const setEmitHistoryAdapter: EventDirector['setEmitHistoryAdapter'];
   const subscribe: EventDirector['subscribe'];
 }
-
-declare module '@unchainedshop/file-upload' {
-  const FileAdapter: Omit<IFileAdapter, 'key' | 'lable' | 'version'>;
-  const FileDirector: IFileDirector;
-}
-
-/*
- * Core packages
- */
 
 declare module '@unchainedshop/core-assortments' {
   function configureAssortmentsModule(
@@ -379,7 +349,7 @@ declare module '@unchainedshop/core-quotations' {
 
 declare module '@unchainedshop/core-warehousing' {
   function configureWarehousingModule(
-    params: ModuleInput<Record<string, never>>,
+    params: ModuleInput<WorkerSettingsOptions>,
   ): Promise<WarehousingModule>;
 
   const WarehousingDirector: IWarehousingDirector;
@@ -389,7 +359,7 @@ declare module '@unchainedshop/core-warehousing' {
 }
 
 declare module '@unchainedshop/core-worker' {
-  function configureWorkerModule(params: ModuleInput<Record<string, never>>): Promise<WorkerModule>;
+  function configureWorkerModule(params: ModuleInput<WorkerSettingsOptions>): Promise<WorkerModule>;
 
   const WorkerDirector: IWorkerDirector;
   const WorkStatus: typeof WorkerStatusType;
@@ -402,25 +372,4 @@ declare module '@unchainedshop/core-worker' {
     schedule: WorkerSchedule | string;
   }>;
   const FailedRescheduler: IScheduler;
-}
-
-declare module '@unchainedshop/core' {
-  function initCore(options: UnchainedCoreOptions): Promise<Context>;
-}
-
-type APIRoles = {
-  allRoles: any;
-  actions: any;
-  configureRoles(params: any): any;
-  updateUserRole(context: Context, roleName: string): any;
-};
-
-declare module '@unchainedshop/api' {
-  const acl: any;
-  const errors: any;
-  const roles: APIRoles;
-}
-
-declare module '@unchainedshop/mongodb' {
-  function initDb(): Promise<Db>;
 }

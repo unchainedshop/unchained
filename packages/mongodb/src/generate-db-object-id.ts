@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 
-// Source: https://github.com/meteor/meteor/blob/devel/packages/random/NodeRandomGenerator.js
 /**
  * @name Random.hexString
  * @summary Return a random string of `n` hexadecimal digits.

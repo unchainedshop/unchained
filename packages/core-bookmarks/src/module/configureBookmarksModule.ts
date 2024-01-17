@@ -1,8 +1,7 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
-import { Query } from '@unchainedshop/types/common.js';
+import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { BookmarksCollection } from '../db/BookmarksCollection.js';
 import { BookmarkSchema } from '../db/BookmarksSchema.js';
 
@@ -31,7 +30,7 @@ export const configureBookmarksModule = async ({
 
     // Mutations
     replaceUserId: async (fromUserId, toUserId, bookmarkIds) => {
-      const selector: Query = { userId: fromUserId };
+      const selector: mongodb.Filter<Bookmark> = { userId: fromUserId };
       if (bookmarkIds) {
         selector._id = { $in: bookmarkIds };
       }

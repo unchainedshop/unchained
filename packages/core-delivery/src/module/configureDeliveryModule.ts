@@ -3,11 +3,10 @@ import {
   DeliveryContext,
   DeliveryModule,
   DeliveryProvider,
-  DeliveryProviderQuery,
   DeliverySettingsOptions,
 } from '@unchainedshop/types/delivery.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/utils';
+import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
 import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet.js';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection.js';
 import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema.js';
@@ -27,7 +26,7 @@ const asyncFilter = async (arr, predicate) => {
   return arr.filter((_v, index) => results[index]);
 };
 
-export const buildFindSelector = ({ type }: DeliveryProviderQuery = {}) => {
+export const buildFindSelector = ({ type }: mongodb.Filter<DeliveryProvider> = {}) => {
   return { ...(type ? { type } : {}), deleted: null };
 };
 

@@ -1,7 +1,7 @@
 import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
-import { Db } from '@unchainedshop/types/common.js';
+import { mongodb } from '@unchainedshop/mongodb';
 
-export const createMigrationRepository = (db: Db): MigrationRepository<Migration> => {
+export const createMigrationRepository = (db: mongodb.Db): MigrationRepository<Migration> => {
   const migrations = new Map();
   return {
     db,

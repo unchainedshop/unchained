@@ -1,7 +1,7 @@
 import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
 import { UsersCollection } from '../db/UsersCollection.js';
 
-const convertTagsToLowerCase = async (collection: any) => {
+const convertTagsToLowerCase = async (collection: Awaited<ReturnType<typeof UsersCollection>>) => {
   let bulk = collection.initializeUnorderedBulkOp();
   let count = 0;
 

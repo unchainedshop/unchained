@@ -1,9 +1,10 @@
+import type { FindOptions } from 'mongodb';
 import { Context } from './api.js';
-import { FindOptions, TimestampFields, _ID } from './common.js';
+import { TimestampFields } from './common.js';
 import { File } from './files.js';
 
 export type ProductMedia = {
-  _id?: _ID;
+  _id?: string;
   mediaId: string;
   productId: string;
   sortKey: number;
@@ -12,7 +13,7 @@ export type ProductMedia = {
 } & TimestampFields;
 
 export type ProductMediaText = {
-  _id?: _ID;
+  _id?: string;
   productMediaId: string;
   locale?: string;
   title?: string;
@@ -39,8 +40,8 @@ export type ProductMediaModule = {
   delete: (productMediaId: string) => Promise<number>;
   deleteMediaFiles: (params: {
     productId?: string;
-    excludedProductIds?: Array<_ID>;
-    excludedProductMediaIds?: Array<_ID>;
+    excludedProductIds?: Array<string>;
+    excludedProductMediaIds?: Array<string>;
   }) => Promise<number>;
 
   update: (productMediaId: string, productMedia: ProductMedia) => Promise<ProductMedia>;

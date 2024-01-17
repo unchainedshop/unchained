@@ -1,5 +1,5 @@
-import { FindOptions } from '@unchainedshop/types/common.js';
 import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
+import { mongodb } from '@unchainedshop/mongodb';
 
 const ORDER_BY_INDEX = 'default';
 const DIRECTION_DESCENDING = 'DESC';
@@ -17,7 +17,7 @@ const normalizeDirection = (textualInput) => {
   return null;
 };
 
-const defaultStage = ({ orderBy }: { orderBy?: string }): FindOptions['sort'] => {
+const defaultStage = ({ orderBy }: { orderBy?: string }): mongodb.FindOptions['sort'] => {
   if (!orderBy || orderBy === ORDER_BY_INDEX) {
     if (AMAZON_DOCUMENTDB_COMPAT_MODE) {
       return {

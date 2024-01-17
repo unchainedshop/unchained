@@ -1,4 +1,4 @@
-import { Query, Tree } from '@unchainedshop/types/common.js';
+import { Tree } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import {
   AssortmentsModule,
@@ -14,7 +14,8 @@ import {
   generateDbFilterById,
   findPreservingIds,
   buildSortOptions,
-} from '@unchainedshop/utils';
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
@@ -45,7 +46,7 @@ export const buildFindSelector = ({
   includeInactive = false,
   queryString,
 }: AssortmentQuery) => {
-  const selector: Query = assortmentSelector || {};
+  const selector: mongodb.Filter<Assortment> = assortmentSelector || {};
   selector.deleted = null;
 
   if (assortmentIds) {
@@ -69,7 +70,7 @@ export const buildFindSelector = ({
   }
 
   if (queryString) {
-    selector.$text = { $search: queryString };
+    (selector as any).$text = { $search: queryString };
   }
 
   if (!assortmentSelector && !includeInactive) {
@@ -262,9 +263,8 @@ export const configureAssortmentsModule = async ({
    */
 
   return {
-    // Queries
     findAssortment: async ({ assortmentId, slug }) => {
-      let selector: Query = {};
+      let selector: mongodb.Filter<Assortment> = {};
 
       if (assortmentId) {
         selector = generateDbFilterById(assortmentId);

@@ -1,45 +1,6 @@
-import {
-  Collection,
-  CreateIndexesOptions,
-  Db,
-  Document,
-  Filter,
-  FindOptions,
-  IndexDirection,
-  ObjectId,
-  Sort,
-  UpdateFilter,
-  UpdateOptions,
-  GridFSBucket,
-} from 'mongodb';
 import type { Locale, Locales } from 'locale';
 
 export { Locale, Locales };
-
-/*
- * MongoDb
- */
-export type {
-  Collection,
-  Db,
-  Document,
-  Filter,
-  FindOptions,
-  ObjectId,
-  Sort,
-  UpdateFilter as Update,
-  UpdateOptions,
-  GridFSBucket,
-};
-
-export type _ID = string;
-
-export type Query = { [x: string]: any };
-
-export type Indexes<T extends Document> = Array<{
-  index: { [key in keyof T]?: IndexDirection }; // TODO: Support key with object path (e.g. 'product.proxy.assignments')
-  options?: CreateIndexesOptions;
-}>;
 
 /*
  * Data definitions

@@ -1,6 +1,6 @@
-import crypto from 'crypto';
-import { Db } from '@unchainedshop/types/common.js';
+import { mongodb } from '@unchainedshop/mongodb';
 import { FiltersSettingsOptions } from '@unchainedshop/types/filters.js';
+import crypto from 'crypto';
 import memoizee from 'memoizee';
 import { FiltersCollection } from '../db/FiltersCollection.js';
 
@@ -28,7 +28,7 @@ const updateIfHashChanged = async (Collection, selector, doc) => {
   return _id;
 };
 
-export default async function mongodbCache(db: Db) {
+export default async function mongodbCache(db: mongodb.Db) {
   const { FilterProductIdCache } = await FiltersCollection(db);
 
   const getCachedProductIdsFromMemoryCache = memoizee(

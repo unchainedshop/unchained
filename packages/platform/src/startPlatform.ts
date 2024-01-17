@@ -33,9 +33,6 @@ export type PlatformOptions = {
   rolesOptions?: UnchainedCoreOptions['roleOptions'];
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
   introspection?: boolean;
-  playground?: boolean;
-  tracing?: boolean;
-  cacheControl?: any;
   adminUiConfig?: AdminUiConfig;
 };
 
@@ -75,9 +72,6 @@ export const startPlatform = async ({
   workQueueOptions,
   context,
   introspection,
-  playground,
-  tracing,
-  cacheControl,
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
   apolloGraphQLServer: any;
@@ -131,9 +125,6 @@ export const startPlatform = async ({
     cache,
     context,
     introspection,
-    playground,
-    tracing,
-    cacheControl,
     adminUiConfig,
   });
 

@@ -1,13 +1,9 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { LanguagesModule, Language, LanguageQuery } from '@unchainedshop/types/languages.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  generateDbMutations,
-  generateDbFilterById,
-  systemLocale,
-  buildSortOptions,
-} from '@unchainedshop/utils';
+import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { systemLocale } from '@unchainedshop/utils';
 import { LanguagesCollection } from '../db/LanguagesCollection.js';
 import { LanguagesSchema } from '../db/LanguagesSchema.js';
 

@@ -1,12 +1,13 @@
-import { Db, TimestampFields, _ID } from '@unchainedshop/types/common.js';
+import { mongodb } from '@unchainedshop/mongodb';
+import { TimestampFields } from '@unchainedshop/types/common.js';
 
 export type AppleTransaction = {
-  _id?: _ID;
+  _id?: string;
   matchedTransaction: any;
   orderId: string;
 } & TimestampFields;
 
-export const AppleTransactionsCollection = async (db: Db) => {
+export const AppleTransactionsCollection = async (db: mongodb.Db) => {
   const AppleTransactions = db.collection<AppleTransaction>('payment_apple_iap_processed_transactions');
 
   return AppleTransactions;

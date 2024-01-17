@@ -16,7 +16,7 @@ Below is a simple filter plugin that will filter products based on there attribu
 ```typescript
 
 import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/types/filters.js';
-import { Query, FindOptions } from '@unchainedshop/types/common.js';
+import { Filter, FindOptions } from '@unchainedshop/types/common.js';
 import { Context } from '@unchainedshop/types/api.js';
 
 const ShopAttributeFilter: IFilterAdapter = {
@@ -35,8 +35,8 @@ const ShopAttributeFilter: IFilterAdapter = {
           assortmentIds: Array<string>;
         },
         options?: {
-          filterSelector: Query;
-          assortmentSelector: Query;
+          filterSelector: Filter;
+          assortmentSelector: Filter;
           sortStage: FindOptions['sort'];
         },
       ) {
@@ -153,7 +153,6 @@ Below is a simplified implementation of the `ShopAttributeFilter` above, this ti
 
 ```typescript
 import type { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/types/filters.js';
-import { Query } from '@unchainedshop/types/common.js';
 import { Context } from '@unchainedshop/types/api.js';
 
 const ShopAttributeFilter: IFilterAdapter = {
@@ -166,7 +165,7 @@ const ShopAttributeFilter: IFilterAdapter = {
   actions: (params: FilterContext & Context): FilterAdapterActions => {
     return {
       ...FilterAdapter.actions(params),
-      async transformProductSelector(query: Query, options?: { key?: string; value?: any }): Promise<Query> {
+      async transformProductSelector(query, options) {
         if (!key) return last;
         return {
           status: 'ACTIVE',

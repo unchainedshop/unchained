@@ -1,14 +1,11 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context, SortOption } from '@unchainedshop/types/api.js';
-import { EventQuery } from '@unchainedshop/types/events.js';
+import { Root, Context } from '@unchainedshop/types/api.js';
+
+type FindEventsParams = Parameters<Context['modules']['events']['findEvents']>['0'];
 
 export default async function events(
   root: Root,
-  params: EventQuery & {
-    limit?: number;
-    offset?: number;
-    sort: Array<SortOption>;
-  },
+  params: FindEventsParams,
   { modules, userId }: Context,
 ) {
   log(

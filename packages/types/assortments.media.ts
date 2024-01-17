@@ -1,7 +1,8 @@
-import { FindOptions, TimestampFields, _ID } from './common.js';
+import type { FindOptions } from 'mongodb';
+import { TimestampFields } from './common.js';
 
 export type AssortmentMedia = {
-  _id?: _ID;
+  _id?: string;
   mediaId: string;
   assortmentId: string;
   sortKey: number;
@@ -10,7 +11,7 @@ export type AssortmentMedia = {
 } & TimestampFields;
 
 export type AssortmentMediaText = {
-  _id?: _ID;
+  _id?: string;
   assortmentMediaId: string;
   locale?: string;
   title?: string;
@@ -37,8 +38,8 @@ export type AssortmentMediaModule = {
   delete: (assortmentMediaId: string) => Promise<number>;
   deleteMediaFiles: (params: {
     assortmentId?: string;
-    excludedAssortmentIds?: Array<_ID>;
-    excludedAssortmentMediaIds?: Array<_ID>;
+    excludedAssortmentIds?: Array<string>;
+    excludedAssortmentMediaIds?: Array<string>;
   }) => Promise<number>;
 
   update: (assortmentMediaId: string, doc: AssortmentMedia) => Promise<AssortmentMedia>;

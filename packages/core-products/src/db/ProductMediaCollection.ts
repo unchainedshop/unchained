@@ -1,8 +1,7 @@
 import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media.js';
-import { Db } from '@unchainedshop/types/common.js';
-import { buildDbIndexes } from '@unchainedshop/utils';
+import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
-export const ProductMediaCollection = async (db: Db) => {
+export const ProductMediaCollection = async (db: mongodb.Db) => {
   const ProductMedias = db.collection<ProductMedia>('product_media');
   const ProductMediaTexts = db.collection<ProductMediaText>('product_media_texts');
 
