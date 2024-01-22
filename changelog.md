@@ -1,5 +1,19 @@
 # Unchained Engine vNEXT
 
+We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and also open up the window to SSO/SAML/Federated Identities etc.
+
+At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver. 
+
+That's why we have decided to remove various auth features that are better solved through Identity Management systems and migrate to passportjs which is also ESM now.
+
+We will keep supporting the following auth-strategies out of the box:
+- E-Mail/Username & Password
+- WebAuthn (Passkeys)
+- Access Tokens
+
+## Major
+- Removed core-accountsjs and complete refactored all auth code
+
 ## Minor
 - Remove obsolete internal `addRoles` from users
 - Move `generateDbFilterById`, `buildSortOptions` and `generateDbObjectId` from `@unchainedshop/utils` to `@unchainedshop/mongodb`;

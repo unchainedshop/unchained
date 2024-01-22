@@ -1,8 +1,7 @@
 const defaultObfuscatedFields = [
   'password',
-  'plainPassword',
-  'newPlainPassword',
-  'oldPlainPassword',
+  'newPassword',
+  'oldPassword',
   'authorization',
   'secret',
   'accesskey',

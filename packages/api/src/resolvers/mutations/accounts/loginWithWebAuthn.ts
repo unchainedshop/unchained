@@ -31,5 +31,8 @@ export default async function loginWithWebAuthn(
   });
 
   const tokenData = await context.login(user);
-  return tokenData;
+  return {
+    user,
+    ...tokenData,
+  };
 }

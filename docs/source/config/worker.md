@@ -19,9 +19,8 @@ const options = {
 
 By default those variables are filtered:
 - `password`,
-- `plainPassword`,
-- `newPlainPassword`,
-- `oldPlainPassword`,
+- `newPassword`,
+- `oldPassword`,
 - `authorization`,
 - `secret`,
 - `accesskey`,
