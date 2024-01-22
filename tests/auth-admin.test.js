@@ -30,12 +30,12 @@ describe('Auth for admin users', () => {
 
       await Users.findOrInsertOne({
         ...User,
-        _id: 'guest',
-        username: 'guest',
+        _id: 'guest2',
+        username: 'guest2',
         guest: true,
         emails: [
           {
-            address: 'guest@localhost',
+            address: 'guest2@unchained.local',
             verified: true,
           },
         ],
@@ -58,7 +58,7 @@ describe('Auth for admin users', () => {
         { _id: 'user', name: 'user@unchained.local' },
       ]);
     });
-    it('returns 1 additional guest when using includeGuests', async () => {
+    it('returns 2 additional guest when using includeGuests', async () => {
       const { data: { users } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           query {
@@ -72,7 +72,8 @@ describe('Auth for admin users', () => {
       expect(users).toEqual([
         { _id: 'admin', name: 'admin@unchained.local' },
         { _id: 'user', name: 'user@unchained.local' },
-        { _id: 'guest', name: 'guest@localhost' },
+        { _id: 'guest', name: 'guest@unchained.local' },
+        { _id: 'guest2', name: 'guest2@unchained.local' },
       ]);
     });
 
@@ -93,7 +94,7 @@ describe('Auth for admin users', () => {
       expect(users.length).toEqual(1);
       expect(users[0]).toMatchObject({
         _id: 'guest',
-        name: 'guest@localhost',
+        name: 'guest@unchained.local',
       });
     });
   });
@@ -107,7 +108,7 @@ describe('Auth for admin users', () => {
         guest: true,
         emails: [
           {
-            address: 'guest@localhost',
+            address: 'guest@unchained.local',
             verified: true,
           },
         ],
@@ -157,7 +158,7 @@ describe('Auth for admin users', () => {
           }
         `,
       });
-      expect(usersCount).toEqual(3);
+      expect(usersCount).toEqual(4);
     });
 
     it('returns 1 for queryString guest', async () => {

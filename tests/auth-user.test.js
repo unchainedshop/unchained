@@ -235,7 +235,7 @@ describe('Auth for logged in users', () => {
         username: 'userthatlogsout',
         emails: [
           {
-            address: 'userthatlogsout@localhost',
+            address: 'userthatlogsout@unchained.local',
             verified: true,
           },
         ],
@@ -285,7 +285,7 @@ describe('Auth for logged in users', () => {
         username: 'userthatlogsout',
         emails: [
           {
-            address: 'userthatlogsout@localhost',
+            address: 'userthatlogsout@unchained.local',
             verified: true,
           },
         ],

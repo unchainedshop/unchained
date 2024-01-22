@@ -244,7 +244,7 @@ Tell Unchained more about the guy who orders:
 
 ```
 mutation updateContact {
-  updateCart(contact: { emailAddress: "hello@localhost" }, billingAddress: {firstName: "Pascal", addressLine: "Haha", postalCode: "5556", city: "somewhere"}) {
+  updateCart(contact: { emailAddress: "hello@unchained.local" }, billingAddress: {firstName: "Pascal", addressLine: "Haha", postalCode: "5556", city: "somewhere"}) {
     _id
   }
 }
