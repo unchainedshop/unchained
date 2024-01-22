@@ -22,13 +22,13 @@ describe("Guest user cart migration", () => {
       query: /* GraphQL */ `
         mutation {
           loginAsGuest {
-            id
-            token
+            _id
           }
         }
       `,
     });
     guestToken = result.data.loginAsGuest.token;
+    console.log(result);
     expect(result.data.loginAsGuest).toMatchObject({});
   });
 
@@ -103,9 +103,9 @@ describe("Guest user cart migration", () => {
       query: /* GraphQL */ `
         mutation {
           loginWithPassword(username: "admin", password: "password") {
-            id
-            token
+            _id
             user {
+              _id
               username
             }
           }
@@ -113,7 +113,7 @@ describe("Guest user cart migration", () => {
       `,
     });
     const adminOrder = await db.collection("orders").findOne({
-      userId: loginWithPassword.id,
+      userId: loginWithPassword.user._id,
       _id: orderId,
     });
     expect(adminOrder).toMatchObject({});

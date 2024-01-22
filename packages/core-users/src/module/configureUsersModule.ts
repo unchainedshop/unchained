@@ -226,7 +226,7 @@ export const configureUsersModule = async ({
       const selector = generateDbFilterById<User>(userId);
       selector.deleted = null; // skip deleted users when checked for existance!
       const userCount = await Users.countDocuments(selector, { limit: 1 });
-      return !!userCount;
+      return userCount === 1;
     },
 
     // Transformations

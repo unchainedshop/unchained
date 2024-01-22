@@ -658,6 +658,45 @@ describe('Auth for admin users', () => {
   });
 
   describe('Mutation.setUsername for admin user should', () => {
+    it('update guest username successuly for the specified user ID', async () => {
+      const {
+        data,
+        ...rest
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation setUsername($username: String!, $userId: ID!) {
+            setUsername(username: $username, userId: $userId) {
+              _id
+              username
+            }
+          }
+        `,
+        variables: {
+          userId: User._id,
+          username: 'user-updated',
+        },
+      });
+      expect(data?.setUsername.username).toEqual('user-updated');
+    });
+
+    it('return UserNotFoundError when passed non existing user ID', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation setUsername($username: String!, $userId: ID!) {
+            setUsername(username: $username, userId: $userId) {
+              _id
+              username
+            }
+          }
+        `,
+        variables: {
+          userId: 'non-existing-id',
+          username: 'user-updated',
+        },
+      });
+      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
+    });
+
     it('update username for the specified user ID', async () => {
       const {
         data: { setUsername },
@@ -722,44 +761,6 @@ describe('Auth for admin users', () => {
         },
       });
       expect(setUsername.username).toEqual('admin-updated');
-    });
-
-    it('update guest username successuly for the specified user ID', async () => {
-      const {
-        data: { setUsername },
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation setUsername($username: String!, $userId: ID!) {
-            setUsername(username: $username, userId: $userId) {
-              _id
-              username
-            }
-          }
-        `,
-        variables: {
-          userId: User._id,
-          username: 'user-updated',
-        },
-      });
-      expect(setUsername.username).toEqual('user-updated');
-    });
-
-    it('return UserNotFoundError when passed non existing user ID', async () => {
-      const { errors } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation setUsername($username: String!, $userId: ID!) {
-            setUsername(username: $username, userId: $userId) {
-              _id
-              username
-            }
-          }
-        `,
-        variables: {
-          userId: 'non-existing-id',
-          username: 'user-updated',
-        },
-      });
-      expect(errors[0]?.extensions?.code).toEqual('UserNotFoundError');
     });
   });
 

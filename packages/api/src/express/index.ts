@@ -85,8 +85,4 @@ export const connect = (
   );
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware(contextResolver));
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware(contextResolver));
-  // expressApp.use(
-  //   ['/', '/.well-known/unchained/cloud-sso'],
-  //   createSingleSignOnMiddleware(contextResolver),
-  // );
 };

@@ -7,14 +7,9 @@ export default [
     """
     type LoginMethodResponse @cacheControl(maxAge: 0, scope: PRIVATE) {
       """
-      Id of the user logged in user
+      Session ID
       """
-      id: String!
-
-      """
-      Token of the connection
-      """
-      token: String!
+      _id: String!
 
       """
       Expiration date for the token

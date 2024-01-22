@@ -190,8 +190,7 @@ To initiate a cart/basket, you need to be logged in. You can log in as a guest w
 ```
 mutation loginAsGuest {
   loginAsGuest {
-    id
-    token
+    _id
     tokenExpires
   }
 }

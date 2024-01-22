@@ -20,7 +20,7 @@ export const getUserContext = async (
     /* eslint-disable-next-line */
     (user as any)._inLoginMethodResponse = true;
     return {
-      token: (req as any).sessionID,
+      _id: (req as any).sessionID,
       /* eslint-disable-next-line */
       tokenExpires: new Date((req as any).session?.cookie._expires),
     };

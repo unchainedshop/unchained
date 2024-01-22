@@ -178,8 +178,7 @@ describe('Auth for logged in users', () => {
         query: /* GraphQL */ `
           mutation verifyEmail($token: String!) {
             verifyEmail(token: $token) {
-              id
-              token
+              _id
               user {
                 _id
               }

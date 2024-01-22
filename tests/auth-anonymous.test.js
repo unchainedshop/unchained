@@ -23,8 +23,7 @@ describe("Auth for anonymous users", () => {
         query: /* GraphQL */ `
           mutation {
             loginAsGuest {
-              id
-              token
+              _id
             }
           }
         `,
@@ -86,8 +85,7 @@ describe("Auth for anonymous users", () => {
               password: $password
               profile: $profile
             ) {
-              id
-              token
+              _id
               user {
                 _id
                 username
@@ -140,9 +138,9 @@ describe("Auth for anonymous users", () => {
         query: /* GraphQL */ `
           mutation {
             loginWithPassword(username: "admin", password: "password") {
-              id
-              token
+              _id
               user {
+                _id
                 username
               }
             }
@@ -150,8 +148,8 @@ describe("Auth for anonymous users", () => {
         `,
       });
       expect(loginWithPassword).toMatchObject({
-        id: "admin",
         user: {
+          _id: 'admin',
           username: "admin",
         },
       });
@@ -250,8 +248,7 @@ describe("Auth for anonymous users", () => {
         query: /* GraphQL */ `
           mutation resetPassword($newPassword: String, $token: String!) {
             resetPassword(newPassword: $newPassword, token: $token) {
-              id
-              token
+              _id
               user {
                 _id
               }
@@ -264,7 +261,6 @@ describe("Auth for anonymous users", () => {
         },
       });
       expect(resetPassword).toMatchObject({
-        id: "userthatforgetspasswords",
         user: {
           _id: "userthatforgetspasswords",
         },
