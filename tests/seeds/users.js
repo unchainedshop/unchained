@@ -19,7 +19,7 @@ export const Admin = {
       bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
     token: {
-      secret: '901b281c4e0c4007e8526ef27153b79330811e733976d5e65c8343a39e54ec81',
+      secret: '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b',
     },
   },
 };
@@ -45,7 +45,7 @@ export const User = {
       bcrypt: '$2b$10$UjNk75pHOmaIiUMtfmNxPeLrs56qSpA4nRFf7ub6MPI7HF07usCJ2',
     },
     token: {
-      secret: '92592125f3859823818804f00932aca5b658d7a334a5feaa8ab7fa321702e913',
+      secret: '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b',
     },
   },
 };
