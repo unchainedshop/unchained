@@ -7,7 +7,7 @@ import { UnchainedCore } from './core.js';
 export declare type Root = Record<string, unknown>;
 
 export interface UnchainedUserContext {
-  login: (user: User) => Promise<{ token: string; tokenExpires: Date }>;
+  login: (user: User) => Promise<{ _id: string; tokenExpires: Date }>;
   logout: () => Promise<void>;
   userId?: string;
   user?: User;
