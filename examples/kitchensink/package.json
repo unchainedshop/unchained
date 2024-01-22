@@ -45,8 +45,6 @@
     "apollo-graphiql-playground": "^0.1.4",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.5",
-    "cookie": "^0.6.0",
-    "cookie-parser": "^1.4.6",
     "dotenv-extended": "^2.9.0",
     "ethers": "^6.10.0",
     "event-iterator": "^2.0.0",

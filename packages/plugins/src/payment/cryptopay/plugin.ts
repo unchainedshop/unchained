@@ -3,7 +3,7 @@ import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/co
 import { ethers } from 'ethers';
 import { BIP32Factory } from 'bip32';
 import * as ecc from 'tiny-secp256k1';
-import * as bitcoin from 'bitcoinjs-lib';
+import { networks, payments } from 'bitcoinjs-lib';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { OrderPricingSheet } from '@unchainedshop/core-orders';
@@ -151,7 +151,7 @@ const Cryptopay: IPaymentAdapter = {
 
         const cryptoAddresses: CryptopayAddress[] = [];
         if (CRYPTOPAY_BTC_XPUB) {
-          const network = CRYPTOPAY_BTC_TESTNET ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
+          const network = CRYPTOPAY_BTC_TESTNET ? networks.testnet : networks.bitcoin;
           const bip32 = BIP32Factory(ecc);
           const hardenedMaster = bip32.fromBase58(CRYPTOPAY_BTC_XPUB, network);
           const btcDerivationNumber = await modules.cryptopay.getNextDerivationNumber(
@@ -161,7 +161,7 @@ const Cryptopay: IPaymentAdapter = {
           const child = hardenedMaster.derivePath(derivationPath);
           cryptoAddresses.push({
             currency: CryptopayCurrencies.BTC,
-            address: bitcoin.payments.p2pkh({
+            address: payments.p2pkh({
               pubkey: child.publicKey,
               network,
             }).address,

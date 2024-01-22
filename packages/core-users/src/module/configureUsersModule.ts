@@ -21,11 +21,12 @@ import {
 import { Schemas, systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import crypto from 'crypto';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 import { userSettings } from '../users-settings.js';
 import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
+import * as pbkdf2 from './pbkdf2.js';
+import * as sha256 from './sha256.js';
 
 const { Locale } = localePkg;
 
@@ -112,7 +113,7 @@ export const configureUsersModule = async ({
       when: Date;
     }> {
       if (!plainToken) return null;
-      const token = crypto.createHash('sha256').update(plainToken).digest('hex');
+      const token = await sha256.hash(plainToken);
       const user = await Users.findOne(
         {
           'services.email.verificationTokens': {
@@ -158,7 +159,7 @@ export const configureUsersModule = async ({
     },
 
     async findUserByResetToken(plainToken: string): Promise<User> {
-      const token = crypto.createHash('sha256').update(plainToken).digest('hex');
+      const token = await sha256.hash(plainToken);
       const user = await Users.findOne(
         {
           'services.password.reset': {
@@ -174,7 +175,7 @@ export const configureUsersModule = async ({
     },
 
     async findUserByToken(plainToken?: string): Promise<User> {
-      const token = crypto.createHash('sha256').update(plainToken).digest('hex');
+      const token = await sha256.hash(plainToken);
 
       if (token) {
         return Users.findOne({
@@ -268,7 +269,7 @@ export const configureUsersModule = async ({
       const services: Record<string, any> = {};
 
       if (password) {
-        services.password = { bcrypt: await this.hashPassword(password) };
+        services.password = await this.hashPassword(password);
       }
 
       if (webAuthnService) {
@@ -314,15 +315,24 @@ export const configureUsersModule = async ({
     },
 
     async hashPassword(password) {
-      const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(sha256Hash, salt);
-      return hashedPassword;
+      const salt = pbkdf2.generateSalt();
+      const hashedPassword = await pbkdf2.getDerivedKey(salt, password);
+      return { pbkdf2: `${salt}:${hashedPassword}` };
     },
 
-    async verifyPassword(hashInDb: string, plainPassword: string): Promise<boolean> {
-      const password = crypto.createHash('sha256').update(plainPassword).digest('hex');
-      return bcrypt.compare(password, hashInDb);
+    async verifyPassword(
+      { bcrypt: bcryptHash, pbkdf2: pbkdf2SaltAndHash }: { bcrypt?: string; pbkdf2?: string },
+      plainPassword: string,
+    ): Promise<boolean> {
+      if (bcryptHash) {
+        const password = await sha256.hash(plainPassword);
+        return bcrypt.compare(password, bcryptHash);
+      }
+      if (pbkdf2SaltAndHash) {
+        const [pbkdf2Salt, pbkdf2Hash] = pbkdf2SaltAndHash.split(':');
+        return pbkdf2.compare(plainPassword, pbkdf2Hash, pbkdf2Salt);
+      }
+      return false;
     },
 
     async addEmail(userId: string, address: string): Promise<void> {
@@ -354,7 +364,7 @@ export const configureUsersModule = async ({
     async sendResetPasswordEmail(userId: string, email: string, isEnrollment?: boolean): Promise<void> {
       const plainToken = crypto.randomUUID();
       const resetToken = {
-        token: crypto.createHash('sha256').update(plainToken).digest('hex'),
+        token: await sha256.hash(plainToken),
         address: email,
         when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
       };
@@ -379,7 +389,7 @@ export const configureUsersModule = async ({
     async sendVerificationEmail(userId: string, email: string): Promise<void> {
       const plainToken = crypto.randomUUID();
       const verificationToken = {
-        token: crypto.createHash('sha256').update(plainToken).digest('hex'),
+        token: await sha256.hash(plainToken),
         address: email,
         when: new Date().getTime() + 1000 * 60 * 60, // 1 hour
       };
@@ -431,16 +441,17 @@ export const configureUsersModule = async ({
       });
     },
 
-    async setPassword(userId: string, password: string) {
+    async setPassword(userId: string, plainPassword: string) {
       // TODO: Validate password
+      const password = plainPassword || crypto.randomUUID().split('-').pop();
       await Users.updateOne(
         { _id: userId },
         {
           $set: {
             initialPassword: false,
-            'services.password': {
-              bcrypt: await this.hashPassword(password || crypto.randomUUID().split('-').pop()),
-            },
+            'services.password': await this.hashPassword(
+              password || crypto.randomUUID().split('-').pop(),
+            ),
           },
         },
       );

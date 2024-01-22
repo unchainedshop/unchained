@@ -20,9 +20,10 @@ export default async function changePassword(
   }
 
   const user = await modules.users.findUserById(userId);
-  const hashInDb = user.services?.password?.bcrypt;
 
-  const isValidCurrentPassword = await modules.users.verifyPassword(hashInDb, params.oldPassword);
+  const isValidCurrentPassword =
+    user.services?.password &&
+    (await modules.users.verifyPassword(user.services?.password, params.oldPassword));
   if (!isValidCurrentPassword) throw new InvalidCredentialsError({});
 
   let success = false;

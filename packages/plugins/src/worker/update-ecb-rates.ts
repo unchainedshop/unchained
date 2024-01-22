@@ -2,7 +2,7 @@
 import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
-import xmlJs from 'xml-js';
+import { xml2json } from 'xml-js';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
 
 const getExchangeRates = async () => {
@@ -10,7 +10,7 @@ const getExchangeRates = async () => {
     method: 'GET',
   })
     .then((res) => res.text())
-    .then((text) => JSON.parse(xmlJs.xml2json(text)))
+    .then((text) => JSON.parse(xml2json(text)))
     .then((json) =>
       json.elements?.[0]?.elements
         .filter((e) => e.name.toLowerCase() === 'cube')[0]

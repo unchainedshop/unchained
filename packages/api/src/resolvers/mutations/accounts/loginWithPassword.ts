@@ -23,8 +23,9 @@ export default async function loginWithPassword(
     ? await context.modules.users.findUserByUsername(username)
     : await context.modules.users.findUserByEmail(email);
 
-  const hashInDb = user.services?.password?.bcrypt;
-  const verified = hashInDb && (await context.modules.users.verifyPassword(hashInDb, password));
+  const verified =
+    user.services?.password &&
+    (await context.modules.users.verifyPassword(user.services.password, password));
 
   if (!verified) throw new InvalidCredentialsError({ username, email });
 
