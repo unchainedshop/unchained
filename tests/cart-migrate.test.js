@@ -4,6 +4,7 @@ import {
   createAnonymousGraphqlFetch,
 } from "./helpers.js";
 import { SimpleProduct } from "./seeds/products.js";
+import { GUEST_TOKEN } from "./seeds/users.js";
 
 let db;
 let anonymousGraphqlFetch;
@@ -33,7 +34,7 @@ describe("Guest user cart migration", () => {
   });
 
   it("add a product to the cart", async () => {
-    loggedInGraphqlFetch = await createLoggedInGraphqlFetch(`Bearer ${guestToken}`);
+    loggedInGraphqlFetch = await createLoggedInGraphqlFetch(GUEST_TOKEN);
     const result = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation addCartProduct(

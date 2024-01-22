@@ -6,7 +6,7 @@ export default async (
   username: string,
   plainSecret: string,
 ): Promise<void> => {
-  const secret = crypto.createHash('sha256').update(plainSecret).digest('hex');
+  const secret = crypto.createHash('sha256').update(`${username}:${plainSecret}`).digest('hex');
 
   await unchainedAPI.modules.users.updateUser(
     { username },
