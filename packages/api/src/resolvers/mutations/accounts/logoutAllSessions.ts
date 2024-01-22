@@ -6,6 +6,9 @@ export default async function logoutAllSessions(root: Root, _: any, context: Con
 
   log('mutation logoutAllSessions', { userId });
   // TODO: this should logout all sessions of a user
+  // custom code to get sessions for passport userId
+  // then express-session destroy
+
   await context.logout();
 
   return { success: true };

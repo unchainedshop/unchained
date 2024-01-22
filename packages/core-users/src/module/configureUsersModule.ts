@@ -259,7 +259,8 @@ export const configureUsersModule = async ({
         skipPasswordEnrollment,
       }: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean } = {},
     ): Promise<string> {
-      // TODO: Re-Implement, then set service to services and skip password enrollment when webAuthn registration!
+      // TODO: Re-Implement, then set service to services and
+      // skip password enrollment when webAuthn registration!
       const webAuthnService =
         webAuthnPublicKeyCredentials &&
         (await this.webAuthn.verifyCredentialCreation(username, webAuthnPublicKeyCredentials));

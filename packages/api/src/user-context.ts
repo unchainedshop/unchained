@@ -26,7 +26,10 @@ export const getUserContext = async (
     };
   };
 
-  const logout = async () => {
+  const logout = async (sessionId?: string) => { /* eslint-disable-line */
+    // TODO: this should only logout an explicitly provided session if sessionID
+    // has been provided
+    // express-session destroy
     await new Promise((resolve, reject) => {
       (req as any).logout((error, result) => {
         if (error) {

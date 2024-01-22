@@ -8,7 +8,7 @@ export declare type Root = Record<string, unknown>;
 
 export interface UnchainedUserContext {
   login: (user: User) => Promise<{ _id: string; tokenExpires: Date }>;
-  logout: () => Promise<void>;
+  logout: (sessionId?: string) => Promise<void>;
   userId?: string;
   user?: User;
 }
