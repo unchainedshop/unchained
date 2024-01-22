@@ -80,7 +80,7 @@
     "lru-cache": "^10.0.0",
     "open": "^10.0.0",
     "postfinancecheckout": "^4.1.1",
-    "stripe": "^14.12.0",
+    "stripe": "^14.13.0",
     "tiny-secp256k1": "^2.2.3",
     "twilio": "^4.20.1",
     "web-push": "^3.6.3"
@@ -116,7 +116,7 @@
     "postfinancecheckout": "^4.4.0",
     "request": "^2.88.2",
     "tiny-secp256k1": "^2.2.3",
-    "ts-jest": "^29.1.1",
+    "ts-jest": "^29.1.2",
     "typescript": "^5.3.3",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

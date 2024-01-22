@@ -36,7 +36,7 @@
     "mongodb": "^6.3.0"
   },
   "optionalDependencies": {
-    "mongodb-memory-server": "^9.1.5"
+    "mongodb-memory-server": "^9.1.6"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
