@@ -14,8 +14,7 @@ export default async function removeEmail(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  const normalizedEmail = params.email.toLowerCase().trim();
-  await modules.users.removeEmail(normalizedUserId, normalizedEmail);
+  await modules.users.removeEmail(normalizedUserId, params.email);
 
   return modules.users.findUserById(normalizedUserId);
 }

@@ -9,7 +9,7 @@ import {
   UserLastLogin,
   UserProfile,
   UserQuery,
-  UsersSettingsOptions,
+  UserSettingsOptions,
 } from '@unchainedshop/types/user.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -72,8 +72,8 @@ export const configureUsersModule = async ({
   db,
   options,
   migrationRepository,
-}: ModuleInput<UsersSettingsOptions>) => {
-  userSettings.configureSettings(options || {});
+}: ModuleInput<UserSettingsOptions>) => {
+  userSettings.configureSettings(options || {}, db);
 
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
@@ -244,32 +244,43 @@ export const configureUsersModule = async ({
     // Mutations
     async createUser(
       {
-        email,
-        guest,
-        initialPassword,
-        lastBillingAddress,
         password,
-        webAuthnPublicKeyCredentials,
-        profile,
-        roles,
+        email,
         username,
+        initialPassword,
+        roles,
+        webAuthnPublicKeyCredentials,
+        ...userData
       }: UserData,
       {
         skipMessaging,
         skipPasswordEnrollment,
       }: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean } = {},
     ): Promise<string> {
-      // TODO: Re-Implement, then set service to services and
-      // skip password enrollment when webAuthn registration!
+      const normalizedUserData = await userSettings.validateNewUser(userData);
+
       const webAuthnService =
         webAuthnPublicKeyCredentials &&
         (await this.webAuthn.verifyCredentialCreation(username, webAuthnPublicKeyCredentials));
 
-      // TODO: Validate User Creation Input
-
       const services: Record<string, any> = {};
 
+      if (email) {
+        if (!(await userSettings.validateEmail(email))) {
+          throw new Error(`E-Mail address ${email} is invalid`, { cause: 'EMAIL_INVALID' });
+        }
+      }
+
+      if (username) {
+        if (!(await userSettings.validateUsername(username))) {
+          throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
+        }
+      }
+
       if (password) {
+        if (!(await userSettings.validatePassword(password))) {
+          throw new Error(`Password ***** is invalid`, { cause: 'PASSWORD_INVALID' });
+        }
         services.password = await this.hashPassword(password);
       }
 
@@ -278,15 +289,11 @@ export const configureUsersModule = async ({
       }
 
       const userId = await mutations.create({
-        guest,
-        services,
-        roles: roles || [],
-        initialPassword: !!initialPassword,
-        emails: email ? [{ address: email, verified: false }] : [],
-        pushSubscriptions: [],
-        lastBillingAddress,
-        profile,
+        ...normalizedUserData,
         username,
+        roles: roles || [],
+        initialPassword: Boolean(initialPassword),
+        emails: email ? [{ address: email, verified: false }] : [],
       });
 
       try {
@@ -337,13 +344,15 @@ export const configureUsersModule = async ({
     },
 
     async addEmail(userId: string, address: string): Promise<void> {
-      // TODO: Validate e-mail
+      if (!(await userSettings.validateEmail(address))) {
+        throw new Error(`E-Mail address ${address} is invalid`, { cause: 'EMAIL_INVALID' });
+      }
       await this.updateUser(
         { _id: userId, 'emails.address': { $not: { $regex: address, $options: 'i' } } },
         {
           $push: {
             emails: {
-              address,
+              address: address.trim(),
               verified: false,
             },
           },
@@ -427,12 +436,14 @@ export const configureUsersModule = async ({
     },
 
     async setUsername(userId: string, username: string) {
-      // TODO: Validate username
+      if (!(await userSettings.validateUsername(username))) {
+        throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
+      }
       await Users.updateOne(
         { _id: userId },
         {
           $set: {
-            username,
+            username: username.trim(),
           },
         },
       );
@@ -443,7 +454,9 @@ export const configureUsersModule = async ({
     },
 
     async setPassword(userId: string, plainPassword: string) {
-      // TODO: Validate password
+      if (!(await userSettings.validatePassword(plainPassword))) {
+        throw new Error(`Password ***** is invalid`, { cause: 'PASSWORD_INVALID' });
+      }
       const password = plainPassword || crypto.randomUUID().split('-').pop();
       await Users.updateOne(
         { _id: userId },

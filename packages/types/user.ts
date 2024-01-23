@@ -1,4 +1,4 @@
-import type { Filter, FindOptions, UpdateFilter, UpdateOptions } from 'mongodb';
+import type { Db, Filter, FindOptions, UpdateFilter, UpdateOptions } from 'mongodb';
 import { SortOption } from './api.js';
 import { Address, Contact, Locale, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
@@ -103,20 +103,22 @@ export interface UserData {
  * Settings
  */
 
-export interface UsersSettingsOptions {
+export interface UserSettingsOptions {
   mergeUserCartsOnLogin?: boolean;
   autoMessagingAfterUserCreation?: boolean;
-  validateEmail?: (email: string) => boolean;
-  validateUsername?: (username: string) => boolean;
-  validateNewUser?: (user: User) => Promise<User>;
+  validateEmail?: (email: string) => Promise<boolean>;
+  validateUsername?: (username: string) => Promise<boolean>;
+  validateNewUser?: (user: Partial<User>) => Promise<User>;
+  validatePassword?: (password: string) => Promise<boolean>;
 }
-export interface UsersSettings {
+export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
-  validateEmail: (email: string) => boolean;
-  validateUsername: (username: string) => boolean;
-  validateNewUser: (user: User) => Promise<User>;
-  configureSettings: (options: UsersSettingsOptions) => void;
+  validateEmail: (email: string) => Promise<boolean>;
+  validateUsername: (username: string) => Promise<boolean>;
+  validateNewUser: (user: Partial<User>) => Promise<User>;
+  validatePassword: (password: string) => Promise<boolean>;
+  configureSettings: (options: UserSettingsOptions, db: Db) => void;
 }
 
 export interface WebAuthnCredentialsCreationRequest {

@@ -236,5 +236,5 @@ export interface FiltersSettings {
     productIdsMap: Record<string, Array<string>>,
   ) => Promise<number>;
   getCachedProductIds?: (filterId: string) => Promise<[Array<string>, Record<string, Array<string>>]>;
-  configureSettings: (options?: FiltersSettingsOptions, db?: Db) => void;
+  configureSettings: (options: FiltersSettingsOptions, db: Db) => void;
 }

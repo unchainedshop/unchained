@@ -322,5 +322,5 @@ export interface AssortmentsSettings {
   slugify?: (title: string) => string;
   setCachedProductIds?: (assortmentId: string, productIds: Array<string>) => Promise<number>;
   getCachedProductIds?: (assortmentId: string) => Promise<Array<string>>;
-  configureSettings: (options?: AssortmentsSettingsOptions, db?: Db) => void;
+  configureSettings: (options: AssortmentsSettingsOptions, db: Db) => void;
 }
