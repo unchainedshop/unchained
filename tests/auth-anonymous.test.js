@@ -115,7 +115,6 @@ describe("Auth for anonymous users", () => {
           },
         },
       });
-      console.log(data);
       expect(data.createUser).toMatchObject({
         user: {
           username: "newuser",

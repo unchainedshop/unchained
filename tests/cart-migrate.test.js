@@ -29,7 +29,6 @@ describe("Guest user cart migration", () => {
       `,
     });
     guestToken = result.data.loginAsGuest.token;
-    console.log(result);
     expect(result.data.loginAsGuest).toMatchObject({});
   });
 
