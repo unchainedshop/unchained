@@ -12,7 +12,7 @@
   "dependencies": {
     "@mdx-js/react": "^1.6.22",
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.21",
-    "@unchainedshop/types": "^2.3.6",
+    "@unchainedshop/types": "^2.5.12",
     "cheerio": "1.0.0-rc.2",
     "coffeescript": "^2.7.0",
     "gatsby": "2.24.47",

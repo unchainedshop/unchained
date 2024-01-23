@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-quotations",
-  "version": "2.5.12",
+  "version": "3.0.0",
   "main": "lib/quotations-index.js",
   "exports": {
     ".": "./lib/quotations-index.js",
@@ -31,15 +31,15 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^2.5.12",
-    "@unchainedshop/logger": "^2.5.12",
-    "@unchainedshop/utils": "^2.5.12",
+    "@unchainedshop/events": "^3.0.0",
+    "@unchainedshop/logger": "^3.0.0",
+    "@unchainedshop/utils": "^3.0.0",
     "simpl-schema": "=3.2.0"
   },
   "devDependencies": {
     "@types/locale": "^0.1.4",
     "@types/node": "^20.11.5",
-    "@unchainedshop/types": "^2.5.12",
+    "@unchainedshop/types": "^3.0.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
