@@ -9,7 +9,7 @@ export default async function events(
   { modules, userId }: Context,
 ) {
   log(
-    `query events ${params.types}  limit: ${params.limit} offset: ${params.offset} queryString: ${params.queryString}`,
+    `query events ${params.types?.join(',') || '*'} limit: ${params.limit} offset: ${params.offset} queryString: ${params.queryString}`,
     {
       userId,
     },

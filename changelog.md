@@ -12,7 +12,9 @@ We will keep supporting the following auth-strategies out of the box:
 - Access Tokens
 
 ## Major
-- Removed core-accountsjs and complete refactored all auth code
+Removed core-accountsjs and complete refactored all auth code:
+- Removed accounts settings and migrated partially to user settings (removed sendVerificationEmailAfterSignup)
+- LoginMethodResponse has a new breaking GraphQL type
 
 ## Minor
 - Remove obsolete internal `addRoles` from users

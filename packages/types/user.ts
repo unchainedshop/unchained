@@ -106,10 +106,16 @@ export interface UserData {
 export interface UsersSettingsOptions {
   mergeUserCartsOnLogin?: boolean;
   autoMessagingAfterUserCreation?: boolean;
+  validateEmail?: (email: string) => boolean;
+  validateUsername?: (username: string) => boolean;
+  validateNewUser?: (user: User) => Promise<User>;
 }
 export interface UsersSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
+  validateEmail: (email: string) => boolean;
+  validateUsername: (username: string) => boolean;
+  validateNewUser: (user: User) => Promise<User>;
   configureSettings: (options: UsersSettingsOptions) => void;
 }
 
