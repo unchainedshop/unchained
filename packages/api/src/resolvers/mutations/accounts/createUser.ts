@@ -7,6 +7,7 @@ import {
   UsernameAlreadyExistsError,
   UsernameOrEmailRequiredError,
   PasswordOrWebAuthnPublicKeyRequiredError,
+  PasswordInvalidError,
 } from '../../../errors.js';
 
 export default async function createUser(root: Root, params: UserData, context: Context) {
@@ -43,9 +44,11 @@ export default async function createUser(root: Root, params: UserData, context: 
 
     return context.login(user);
   } catch (e) {
-    if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({ email: params?.email });
-    else if (e.code === 'UsernameAlreadyExists')
+    if (e.cause === 'EMAIL_INVALID') throw new EmailAlreadyExistsError({ email: params?.email });
+    else if (e.cause === 'USERNAME_INVALID')
       throw new UsernameAlreadyExistsError({ username: params?.username });
+    else if (e.cause === 'PASSWORD_INVALID')
+      throw new PasswordInvalidError({ username: params?.username });
     else throw new AuthOperationFailedError({ username: params?.username, email: params.email });
   }
 }

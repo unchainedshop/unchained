@@ -213,16 +213,24 @@ export const CyclicAssortmentLinkNotSupportedError = createError(
   'Cyclic assortment link detected, make sure child assortment is not assigned as a parent on the assortment graph',
 );
 
-export const EmailAlreadyExistsError = createError('EmailAlreadyExists', 'Email already exists');
+export const EmailAlreadyExistsError = createError(
+  'EmailAlreadyExists',
+  'Email already exists or is invalid',
+);
 
 export const UsernameAlreadyExistsError = createError(
   'UsernameAlreadyExists',
-  'Username already exists',
+  'Username already exists or is invalid',
 );
 
 export const UsernameOrEmailRequiredError = createError(
   'UsernameOrEmailRequired',
   'No username or email is provided.',
+);
+
+export const PasswordInvalidError = createError(
+  'PasswordInvalidError',
+  'The provided password is invalid, maybe too insecure',
 );
 
 export const PasswordOrWebAuthnPublicKeyRequiredError = createError(

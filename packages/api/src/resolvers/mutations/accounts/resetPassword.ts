@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { InvalidResetTokenError } from '../../../errors.js';
+import { InvalidResetTokenError, PasswordInvalidError } from '../../../errors.js';
 
 export default async function resetPassword(
   root: Root,
@@ -17,7 +17,13 @@ export default async function resetPassword(
   let user = await modules.users.findUserByResetToken(params.token);
 
   if (!user) throw new InvalidResetTokenError({});
-  await modules.users.setPassword(user._id, params.newPassword);
+
+  try {
+    await modules.users.setPassword(userId, params.newPassword);
+  } catch (e) {
+    if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId });
+    else throw e;
+  }
 
   user = await context.modules.users.updateHeartbeat(user._id, {
     remoteAddress: context.remoteAddress,

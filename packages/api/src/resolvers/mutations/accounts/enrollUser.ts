@@ -4,6 +4,7 @@ import { UserData } from '@unchainedshop/types/user.js';
 import {
   AuthOperationFailedError,
   EmailAlreadyExistsError,
+  PasswordInvalidError,
   UsernameAlreadyExistsError,
   UsernameOrEmailRequiredError,
 } from '../../../errors.js';
@@ -12,6 +13,11 @@ export default async function enrollUser(root: Root, params: UserData, context: 
   const { modules } = context;
 
   log('mutation enrollUser', { email: params.email, userId: context.userId });
+
+  if (!params.username && !params.email) {
+    throw new UsernameOrEmailRequiredError({});
+  }
+
   try {
     const userId = await modules.users.createUser(
       {
@@ -25,11 +31,11 @@ export default async function enrollUser(root: Root, params: UserData, context: 
 
     return modules.users.findUserById(userId);
   } catch (e) {
-    if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({ email: params?.email });
-    else if (e.code === 'UsernameAlreadyExists')
-      throw new UsernameAlreadyExistsError({ username: params?.username, email: params.email });
-    else if (e.code === 'UsernameOrEmailRequired')
-      throw new UsernameOrEmailRequiredError({ username: params?.username, email: params.email });
+    if (e.cause === 'EMAIL_INVALID') throw new EmailAlreadyExistsError({ email: params?.email });
+    else if (e.cause === 'USERNAME_INVALID')
+      throw new UsernameAlreadyExistsError({ username: params?.username });
+    else if (e.cause === 'PASSWORD_INVALID')
+      throw new PasswordInvalidError({ username: params?.username });
     else throw new AuthOperationFailedError({ username: params?.username, email: params.email });
   }
 }

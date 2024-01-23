@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { UserNotFoundError, InvalidIdError } from '../../../errors.js';
+import { UserNotFoundError, InvalidIdError, PasswordInvalidError } from '../../../errors.js';
 
 export default async function setPassword(
   root: Root,
@@ -18,7 +18,12 @@ export default async function setPassword(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  await modules.users.setPassword(normalizedUserId, params.newPassword);
+  try {
+    await modules.users.setPassword(normalizedUserId, params.newPassword);
+  } catch (e) {
+    if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId: normalizedUserId });
+    else throw e;
+  }
 
   return modules.users.findUserById(normalizedUserId);
 }

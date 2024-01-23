@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { UserNotFoundError } from '../../../errors.js';
+import { EmailAlreadyExistsError, UserNotFoundError } from '../../../errors.js';
 
 export default async function addEmail(
   root: Root,
@@ -14,7 +14,12 @@ export default async function addEmail(
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
 
-  await modules.users.addEmail(normalizedUserId, params.email);
+  try {
+    await modules.users.addEmail(normalizedUserId, params.email);
+  } catch (e) {
+    if (e.cause === 'EMAIL_INVALID') throw new EmailAlreadyExistsError({ email: params?.email });
+    else throw e;
+  }
 
   return modules.users.findUserById(normalizedUserId);
 }

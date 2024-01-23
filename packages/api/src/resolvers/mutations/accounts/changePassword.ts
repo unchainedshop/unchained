@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { AuthOperationFailedError, InvalidCredentialsError } from '../../../errors.js';
+import { InvalidCredentialsError, PasswordInvalidError } from '../../../errors.js';
 
 export default async function changePassword(
   root: Root,
@@ -27,12 +27,14 @@ export default async function changePassword(
   if (!isValidCurrentPassword) throw new InvalidCredentialsError({});
 
   let success = false;
+
   try {
     await modules.users.setPassword(userId, params.newPassword);
     success = true;
   } catch (e) {
     success = false;
-    throw new AuthOperationFailedError({});
+    if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId });
+    else throw e;
   }
 
   return { success };
