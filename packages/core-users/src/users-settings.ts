@@ -56,7 +56,7 @@ export const userSettings: UserSettings = {
     };
 
     const defaultValidatePassword = async (password: string) => {
-      return password?.length > 8;
+      return password?.length >= 8;
     };
 
     userSettings.mergeUserCartsOnLogin = mergeUserCartsOnLogin ?? defaultMergeUserCartsOnLogin;
