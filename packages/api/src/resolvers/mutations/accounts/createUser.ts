@@ -31,13 +31,17 @@ export default async function createUser(root: Root, params: UserData, context: 
       {},
     );
 
-    const user = await modules.users.findUserById(newUserId);
-    const tokenData = await context.login(user);
+    let user = await modules.users.findUserById(newUserId);
 
-    return {
-      user,
-      ...tokenData,
-    };
+    user = await context.modules.users.updateHeartbeat(user._id, {
+      remoteAddress: context.remoteAddress,
+      remotePort: context.remotePort,
+      userAgent: context.userAgent,
+      locale: context.localeContext.normalized,
+      countryCode: context.countryContext,
+    });
+
+    return context.login(user);
   } catch (e) {
     if (e.code === 'EmailAlreadyExists') throw new EmailAlreadyExistsError({ email: params?.email });
     else if (e.code === 'UsernameAlreadyExists')

@@ -14,12 +14,14 @@ export default async function verifyEmail(root: Root, { token }: { token: any },
   }
 
   await modules.users.verifyEmail(unverifiedToken.userId, unverifiedToken.address);
-  const user = await modules.users.findUserById(unverifiedToken.userId);
 
-  const tokenData = await context.login(user);
+  const user = await context.modules.users.updateHeartbeat(unverifiedToken.userId, {
+    remoteAddress: context.remoteAddress,
+    remotePort: context.remotePort,
+    userAgent: context.userAgent,
+    locale: context.localeContext.normalized,
+    countryCode: context.countryContext,
+  });
 
-  return {
-    user,
-    ...tokenData,
-  };
+  return context.login(user);
 }

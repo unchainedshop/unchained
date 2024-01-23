@@ -19,7 +19,7 @@ export default async function loginWithPassword(
     throw new Error('Password is required');
   }
 
-  const user = username
+  let user = username
     ? await context.modules.users.findUserByUsername(username)
     : await context.modules.users.findUserByEmail(email);
 
@@ -33,7 +33,7 @@ export default async function loginWithPassword(
     await context.modules.users.updateGuest(user, false);
   }
 
-  await context.modules.users.updateHeartbeat(user._id, {
+  user = await context.modules.users.updateHeartbeat(user._id, {
     remoteAddress: context.remoteAddress,
     remotePort: context.remotePort,
     userAgent: context.userAgent,
@@ -53,10 +53,5 @@ export default async function loginWithPassword(
     context,
   );
 
-  const tokenData = await context.login(user);
-
-  return {
-    user,
-    ...tokenData,
-  };
+  return context.login(user);
 }

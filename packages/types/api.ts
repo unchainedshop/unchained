@@ -8,9 +8,12 @@ export declare type Root = Record<string, unknown>;
 
 export interface UnchainedUserContext {
   login: (user: User) => Promise<{ _id: string; tokenExpires: Date }>;
-  logout: (sessionId?: string) => Promise<void>;
+  logout: (sessionId?: string) => Promise<boolean>;
   userId?: string;
   user?: User;
+  remoteAddress?: string;
+  remotePort?: string;
+  userAgent?: string;
 }
 
 export enum SortDirection {
@@ -26,9 +29,6 @@ export type SortOption = {
 export interface UnchainedLocaleContext {
   countryContext: string;
   localeContext: Locale;
-  remoteAddress?: string;
-  remotePort?: string;
-  userAgent?: string;
 }
 
 export interface UnchainedLoaders {

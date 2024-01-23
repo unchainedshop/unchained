@@ -2,12 +2,7 @@ import { IncomingMessage, OutgoingMessage } from 'http';
 import { UnchainedLocaleContext } from '@unchainedshop/types/api.js';
 import localePkg from 'locale';
 import { log, LogLevel } from '@unchainedshop/logger';
-import {
-  resolveBestCountry,
-  resolveBestSupported,
-  resolveUserRemoteAddress,
-  systemLocale,
-} from '@unchainedshop/utils';
+import { resolveBestCountry, resolveBestSupported, systemLocale } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import * as lruCache from 'lru-cache';
 
@@ -30,10 +25,7 @@ export const getLocaleContext = async (
   const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
   const cachedContext = localeContextCache.get(cacheKey) as UnchainedLocaleContext;
 
-  const userAgent = req.headers['user-agent'];
-  const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
-
-  if (cachedContext) return { remoteAddress, remotePort, userAgent, ...cachedContext };
+  if (cachedContext) return cachedContext;
 
   // return the parsed locale by bcp47 and
   // return the best resolved normalized locale by locale according to system-wide configuration
@@ -73,5 +65,5 @@ export const getLocaleContext = async (
   };
   localeContextCache.set(cacheKey, newContext);
 
-  return { remoteAddress, remotePort, userAgent, ...newContext };
+  return newContext;
 };

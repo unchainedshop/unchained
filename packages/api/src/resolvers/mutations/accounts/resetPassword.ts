@@ -14,15 +14,18 @@ export default async function resetPassword(
   if (!params.newPassword) {
     throw new Error('Password is required');
   }
-  const user = await modules.users.findUserByResetToken(params.token);
+  let user = await modules.users.findUserByResetToken(params.token);
 
   if (!user) throw new InvalidResetTokenError({});
   await modules.users.setPassword(user._id, params.newPassword);
 
-  const tokenData = await context.login(user);
+  user = await context.modules.users.updateHeartbeat(user._id, {
+    remoteAddress: context.remoteAddress,
+    remotePort: context.remotePort,
+    userAgent: context.userAgent,
+    locale: context.localeContext.normalized,
+    countryCode: context.countryContext,
+  });
 
-  return {
-    user,
-    ...tokenData,
-  };
+  return context.login(user);
 }

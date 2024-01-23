@@ -6,7 +6,7 @@ export default async function logout(root: Root, _: { token: string }, context: 
 
   log('mutation logout', { userId });
 
-  await context.logout((context.req as any)?.sessionID);
+  const success = await context.logout((context.req as any)?.sessionID);
 
-  return { success: true };
+  return { success };
 }
