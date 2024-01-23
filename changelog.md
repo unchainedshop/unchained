@@ -1,20 +1,22 @@
 # Unchained Engine vNEXT
 
-We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and also open up the window to SSO/SAML/Federated Identities etc.
+## Removing the auth fat of unchained
+We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and keep up with the ever increasing complexity of auth mechanisms. At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver.
 
-At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver. 
+That's why we have decided to remove various auth features that are better solved through Identity Management systems and migrate to passport.js which is also ESM now. That opens the door to complex login methods like OpenID Connect through the community of passport.js,
 
-That's why we have decided to remove various auth features that are better solved through Identity Management systems and migrate to passportjs which is also ESM now.
-
-We will keep supporting the following auth-strategies out of the box:
+We will keep supporting the following auth-strategies out of the box that we consider widely known web standards:
 - E-Mail/Username & Password
 - WebAuthn (Passkeys)
 - Access Tokens
 
 ## Major
-Removed core-accountsjs and complete refactored all auth code:
-- Removed accounts settings and migrated partially to user settings (removed sendVerificationEmailAfterSignup)
+- Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
 - LoginMethodResponse has a new breaking GraphQL type
+- Remove logoutAllSessions and remove support for loging out a specific session
+- Introduce default password rules (min. 8 chars)
+- Drop 2FA support (if you want this, use a passport plugin)
+- Drop oAuth support (if you want this, use a passport plugin)
 
 ## Minor
 - Remove obsolete internal `addRoles` from users

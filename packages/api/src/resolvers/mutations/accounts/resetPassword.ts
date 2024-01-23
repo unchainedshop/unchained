@@ -19,9 +19,9 @@ export default async function resetPassword(
   if (!user) throw new InvalidResetTokenError({});
 
   try {
-    await modules.users.setPassword(userId, params.newPassword);
+    await modules.users.setPassword(user._id, params.newPassword);
   } catch (e) {
-    if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId });
+    if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId: user._id });
     else throw e;
   }
 

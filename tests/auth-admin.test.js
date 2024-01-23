@@ -513,7 +513,7 @@ describe('Auth for admin users', () => {
         displayName: 'Admin4',
       };
       const email = 'admin4@unchained.local';
-      const password = 'admin4';
+      const password = 'admin4-more-chars';
       const { data: { enrollUser } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation enrollUser(
@@ -553,7 +553,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.setPassword', () => {
     it('set the password of a foreign user', async () => {
-      const newPassword = 'new';
+      const newPassword = 'new-passsword';
       const { data: { setPassword } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation setPassword($userId: ID!, $newPassword: String!) {

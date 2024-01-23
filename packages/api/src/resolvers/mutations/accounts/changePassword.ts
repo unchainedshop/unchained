@@ -29,7 +29,7 @@ export default async function changePassword(
   let success = false;
 
   try {
-    await modules.users.setPassword(userId, params.newPassword);
+    await modules.users.setPassword(user._id, params.newPassword);
     success = true;
   } catch (e) {
     success = false;

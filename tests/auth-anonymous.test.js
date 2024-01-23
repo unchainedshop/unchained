@@ -70,7 +70,7 @@ describe("Auth for anonymous users", () => {
     it("create a new user", async () => {
       const birthday = new Date().toISOString().split('T')[0];
       const {
-        data: { createUser },
+        data,
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation createUser(
@@ -115,7 +115,8 @@ describe("Auth for anonymous users", () => {
           },
         },
       });
-      expect(createUser).toMatchObject({
+      console.log(data);
+      expect(data.createUser).toMatchObject({
         user: {
           username: "newuser",
           primaryEmail: {
