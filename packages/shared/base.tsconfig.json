@@ -7,7 +7,7 @@
       "experimentalDecorators": true,
       "forceConsistentCasingInFileNames": true,
       "lib": [
-        "esnext"
+        "ES2022"
       ],
       "module": "Node16",
       "moduleResolution": "Node16",

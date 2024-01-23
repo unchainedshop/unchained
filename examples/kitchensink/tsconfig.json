@@ -3,7 +3,7 @@
     // It is faster to skip typechecking.
     // Remove if you want ts-node to do typechecking.
     "transpileOnly": true,
-    "esm": true
+    "esm": true,
   },
   "compilerOptions": {
     "allowJs": true,
@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["esnext"],
+    "lib": ["ES2022"],
     "module": "Node16",
     "moduleResolution": "Node16",
     "noImplicitReturns": true,
@@ -25,9 +25,9 @@
     "types": ["node"],
     "baseUrl": ".", // This must be specified if "paths" is.
     "paths": {
-      "@unchainedshop/*": ["node_modules/@unchainedshop/types/index.d.ts"]
-    }
+      "@unchainedshop/*": ["node_modules/@unchainedshop/types/index.d.ts"],
+    },
   },
   "include": ["./*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
