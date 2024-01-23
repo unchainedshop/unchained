@@ -55,12 +55,7 @@ export default [
       """
       Log the user out.
       """
-      logout(token: String): SuccessResponse
-
-      """
-      Log out all sessions related with user.
-      """
-      logoutAllSessions: SuccessResponse
+      logout: SuccessResponse
 
       """
       Marks the user's email address as verified. Logs the user in afterwards.

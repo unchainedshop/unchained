@@ -253,15 +253,12 @@ describe('Auth for logged in users', () => {
       });
       const { data: { logout } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation logout($token: String!) {
-            logout(token: $token) {
+          mutation logout {
+            logout {
               success
             }
           }
         `,
-        variables: {
-          token: 'FWhglvqdNkNX80jZMJ61FvDUkKzCsESVfbui9H8Fg27',
-        },
       });
       expect(logout).toMatchObject({
         success: true,

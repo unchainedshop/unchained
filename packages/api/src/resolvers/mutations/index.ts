@@ -4,7 +4,6 @@ import loginWithPassword from './accounts/loginWithPassword.js';
 import loginWithWebAuthn from './accounts/loginWithWebAuthn.js';
 import loginAsGuest from './accounts/loginAsGuest.js';
 import logout from './accounts/logout.js';
-import logoutAllSessions from './accounts/logoutAllSessions.js';
 import changePassword from './accounts/changePassword.js';
 import createUser from './accounts/createUser.js';
 import verifyEmail from './accounts/verifyEmail.js';
@@ -156,7 +155,6 @@ import addPushSubscription from './users/addPushSubscription.js';
 
 export default {
   logout: acl(actions.logout)(logout),
-  logoutAllSessions: acl(actions.logoutAllSessions)(logoutAllSessions),
   loginAsGuest: acl(actions.loginAsGuest)(loginAsGuest),
   createWebAuthnCredentialCreationOptions: acl(actions.useWebAuthn)(
     createWebAuthnCredentialCreationOptions,

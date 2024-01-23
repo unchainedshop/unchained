@@ -98,7 +98,6 @@ export const all = (role, actions) => {
   role.allow(actions.viewTranslations, () => true);
   role.allow(actions.search, () => true);
   role.allow(actions.logout, () => true);
-  role.allow(actions.logoutAllSessions, () => true);
   role.allow(actions.loginAsGuest, () => true);
   role.allow(actions.loginWithPassword, () => true);
   role.allow(actions.loginWithWebAuthn, () => true);

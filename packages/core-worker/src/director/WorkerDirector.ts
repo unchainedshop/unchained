@@ -5,8 +5,6 @@ import {
 } from '@unchainedshop/types/worker.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
-import { emit } from '@unchainedshop/events';
-import { WorkerEventTypes } from './WorkerEventTypes.js';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
