@@ -5,8 +5,6 @@ import {
   PublicKeyCredentialCreationOptions,
   PublicKeyCredentialRequestOptions,
 } from 'fido2-lib';
-
-import { UsersSettingsOptions } from '@unchainedshop/types/user.js';
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
 
 const { ROOT_URL, EMAIL_WEBSITE_NAME } = process.env;
@@ -42,7 +40,7 @@ export function buf2hex(buffer) {
     .join('');
 }
 
-export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<UsersSettingsOptions>) => {
+export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => {
   const WebAuthnCredentialsCreationRequests = await WebAuthnCredentialsCreationRequestsCollection(db);
 
   const thisDomain = new URL(ROOT_URL).hostname;
