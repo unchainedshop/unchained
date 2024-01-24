@@ -1,4 +1,4 @@
-# Unchained Engine v2.6
+# Unchained Engine vNEXT
 
 ## Removing the auth fat of unchained
 We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and keep up with the ever increasing complexity of auth mechanisms. At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver.
@@ -17,6 +17,13 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Introduce default password rules (min. 8 chars)
 - Drop 2FA support (if you want this, use a passport plugin)
 - Drop oAuth support (if you want this, use a passport plugin)
+
+## Minor
+
+## Patch
+
+
+# Unchained Engine v2.6
 
 ## Minor
 - Add `shop.unchained.pricing.order-round` order price rounding plugin
