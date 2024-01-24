@@ -7,7 +7,10 @@ import {
   PublicKeyCredentialRequestOptions,
 } from 'fido2-lib';
 
+import { createLogger } from '@unchainedshop/logger';
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
+
+const logger = createLogger('unchained:core-users');
 
 const { ROOT_URL, EMAIL_WEBSITE_NAME } = process.env;
 
@@ -18,11 +21,16 @@ type SerializedOptions<T> = Omit<T, 'challenge' | 'requestId'> & {
 
 let setupMDSPromise;
 const setupMDSCollection = async () => {
-  const tocResult = await fetch('https://mds.fidoalliance.org');
-  const tocBase64 = await tocResult.text();
-  const mc = (Fido2Lib as any).createMdsCollection('FIDO MDS v3'); // createMdsCollection exists but not typed in official package!
-  const tocObj = await mc.addToc(tocBase64);
-  return tocObj.entries;
+  try {
+    const tocResult = await fetch('https://mds.fidoalliance.org');
+    const tocBase64 = await tocResult.text();
+    const mc = (Fido2Lib as any).createMdsCollection('FIDO MDS v3'); // createMdsCollection exists but not typed in official package!
+    const tocObj = await mc.addToc(tocBase64);
+    return tocObj.entries;
+  } catch (e) {
+    logger.error(e);
+    return [];
+  }
 };
 
 const fetchMDS = async () => {
