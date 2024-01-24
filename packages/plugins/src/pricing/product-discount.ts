@@ -12,7 +12,7 @@ const ProductDiscount: IProductPricingAdapter = {
   key: 'shop.unchained.pricing.product-discount',
   version: '1.0.0',
   label: 'Apply Discounts on Product Price',
-  orderIndex: 10,
+  orderIndex: 30,
 
   isActivatedFor: () => {
     return true;

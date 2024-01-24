@@ -8,7 +8,7 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
   key: 'shop.unchained.pricing.order-items-discount',
   version: '1.0.0',
   label: 'Apply Discounts on Total Value Of Goods',
-  orderIndex: 89,
+  orderIndex: 30,
 
   isActivatedFor: () => {
     return true;
