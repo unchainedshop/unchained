@@ -41,7 +41,7 @@ export const ProductSwissTax: IProductPricingAdapter = {
   key: 'shop.unchained.pricing.product-swiss-tax',
   version: '1.0.0',
   label: 'Apply Swiss Tax on Product',
-  orderIndex: 20,
+  orderIndex: 80,
 
   isActivatedFor: () => {
     return true;

@@ -1,4 +1,4 @@
-# Unchained Engine vNEXT
+# Unchained Engine v2.6
 
 ## Removing the auth fat of unchained
 We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and keep up with the ever increasing complexity of auth mechanisms. At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver.
@@ -19,26 +19,31 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Drop oAuth support (if you want this, use a passport plugin)
 
 ## Minor
+- Add `shop.unchained.pricing.order-round` order price rounding plugin
 - Remove obsolete internal `addRoles` from users
-- Move `generateDbFilterById`, `buildSortOptions` and `generateDbObjectId` from `@unchainedshop/utils` to `@unchainedshop/mongodb`;
-- Improve typing a lot
+- Utility functions have been moved `generateDbFilterById`, `buildSortOptions` and `generateDbObjectId` from `@unchainedshop/utils` to `@unchainedshop/mongodb`;
 - Protect `upsertLocalizedText` in the core packages products, filters & assortments. Forces the developer to use updateTexts or equivalent functions. This is the first step with the goal to move all localized texts to it's appropriate root documents in order to reduce roundtrips to the db.
 - Remove events `PRODUCT_UPDATE_VARIATION_TEXTS`, `PRODUCT_UPDATE_TEXTS`, `FILTER_UPDATE_TEXTS`, `ASSORTMENT_UPDATE_TEXTS` (triggered for every product when text changes)
 - Add new events `PRODUCT_UPDATE_VARIATION_TEXT`, `PRODUCT_UPDATE_TEXT`, `FILTER_UPDATE_TEXT`, `ASSORTMENT_UPDATE_TEXT` (triggered for every locale & product when text changes).
 - The `_CREATE` events for products, filters and assortments are now triggered AFTER creating the initial text objects so that you can safely use both events to update texts in external systems.
-- Allow to configure an "environment" for stripe which allows to drop events coming to the the engine that are intended to land on another engine not causing false negatives in webhooks.
 - Add new worker configuration option `blacklistedVariables` that accepts array of variable names that should be removed from a job log data returned.
+- Deprecated `APOLLO_ENGINE_KEY` from old apollo versions has been removed
 
 ## Patch
 - Fix payment credential signing procedures that depend on a userId
 - Fix worker not cleaning regression
 - Fix local-search plugin
+- Fix WebAuthn plugin to not crash when https://mds.fidoalliance.org is not available for catalog download
+- Typescript type improvements
+- Remove dead code
+- Bulk Importer now uses the files plugin underneath to store large bulk import payload files
 
 # Unchained Engine v2.5
 
 This small release improves impersonation and pricing, allowing for better support of e-commerce platforms that want to show net prices all along until the end.
 
 ## Minor
+- Allow to configure an "environment" for stripe which allows to drop events coming to the the engine that are intended to land on another engine not causing false negatives in webhooks.
 - Add Error Report job that sends failed work items to an E-Mail Address of choice defined by `EMAIL_ERROR_REPORT_RECIPIENT`
 - Remove `mjml` templates because of excessive size of mjml dependencies. Here are the old ones: https://github.com/unchainedshop/unchained/tree/3fabb6cbe55682aa2ee69a246758a09db908fe26/packages/platform/src/templates
 - Add support for net and gross calculation on order items and order totals: Added useNetPrice parameter to `OrderItem.total`, `OrderItem.unitPrice`, `Order.total`

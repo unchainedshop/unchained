@@ -7,7 +7,7 @@ export const HundredOff: IDiscountAdapter = {
   key: 'shop.unchained.discount.100-off',
   label: '100 Off',
   version: '1.0.0',
-  orderIndex: 1,
+  orderIndex: 10,
 
   // return true if a discount is allowed to get added manually by a user
   isManualAdditionAllowed: async () => {
