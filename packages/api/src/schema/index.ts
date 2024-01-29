@@ -6,17 +6,13 @@ import query from './query.js';
 import mutation from './mutation.js';
 
 export const buildDefaultTypeDefs = ({ actions = [], events = [], workTypes = [] }) => {
-  const dynamicTypeDefs = `
-    extend enum RoleAction {
-        ${actions.join(',')}
-    }
-    extend enum EventType {
-        ${events.join(',')}
-    }
-    extend enum WorkType {
-        ${workTypes.join(',')}
-    }
-  `;
+  const dynamicTypeDefs = [
+    actions?.length && `extend enum RoleAction { ${actions.join(',')} }`,
+    events?.length && `extend enum EventType { ${events.join(',')} }`,
+    workTypes?.length && `extend enum WorkType { ${workTypes.join(',')} }`,
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   return [...scalars, ...directives, ...types, ...inputTypes, ...query, ...mutation, dynamicTypeDefs];
 };

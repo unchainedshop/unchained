@@ -57,8 +57,8 @@ export const configureEventsModule = async ({
   return {
     ...mutations,
     findEvent: async ({ eventId, ...rest }, options) => {
-      const selector = eventId ? generateDbFilterById(eventId) : rest;
-      return Events.findOne(selector as unknown as mongodb.Filter<Event>, options);
+      const selector = eventId ? generateDbFilterById<Event>(eventId) : rest;
+      return Events.findOne(selector, options);
     },
 
     findEvents: async ({ limit, offset, sort, ...query }) => {

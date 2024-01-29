@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/mongodb",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "MongoDB provider for unchained platform",
   "main": "lib/mongodb-index.js",
   "exports": {
@@ -31,16 +31,16 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/utils": "^2.6.0",
-    "lru-cache": "^10.1.0",
+    "@unchainedshop/utils": "^2.6.1",
+    "lru-cache": "^10.2.0",
     "mongodb": "^6.3.0"
   },
   "optionalDependencies": {
     "mongodb-memory-server": "^9.1.6"
   },
   "devDependencies": {
-    "@types/node": "^20.11.6",
-    "@unchainedshop/types": "^2.6.0",
+    "@types/node": "^20.11.10",
+    "@unchainedshop/types": "^2.6.1",
     "jest": "^29.7.0",
     "typescript": "^5.3.3"
   }

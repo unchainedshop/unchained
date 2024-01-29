@@ -1,9 +1,9 @@
 {
     "name": "@unchainedshop/shared",
     "private": true,
-    "version": "2.6.0",
+    "version": "2.6.1",
     "dependencies": {
-        "@types/node": "^20.11.6",
+        "@types/node": "^20.11.10",
         "typescript": "^5.3.3"
     }
 }

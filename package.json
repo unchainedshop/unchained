@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -52,7 +52,7 @@
     "@types/jest": "^29.5.11",
     "@types/lodash.clone": "^4.5.9",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.6",
+    "@types/node": "^20.11.10",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "apollo-upload-client": "^18.0.1",
