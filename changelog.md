@@ -49,7 +49,7 @@ We will keep supporting the following auth-strategies out of the box that we con
 
 This small release improves impersonation and pricing, allowing for better support of e-commerce platforms that want to show net prices all along until the end.
 
-## Minor
+## Minor
 - Allow to configure an "environment" for stripe which allows to drop events coming to the the engine that are intended to land on another engine not causing false negatives in webhooks.
 - Add Error Report job that sends failed work items to an E-Mail Address of choice defined by `EMAIL_ERROR_REPORT_RECIPIENT`
 - Remove `mjml` templates because of excessive size of mjml dependencies. Here are the old ones: https://github.com/unchainedshop/unchained/tree/3fabb6cbe55682aa2ee69a246758a09db908fe26/packages/platform/src/templates
@@ -60,6 +60,7 @@ This small release improves impersonation and pricing, allowing for better suppo
 - Add `Product.reviewsCount`, `User.reviewsCount` & `User.reviews`
 - Update `PRODUCT_UPDATE` event to contain the changed product too in the event
 - Debounce EventListenerWorker triggered process of the queue to reduce load of Unchained when many items are rolled up
+
 ## Patch
 - Bump various dependencies and remove more
 - Fix landing page
