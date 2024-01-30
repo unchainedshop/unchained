@@ -35,6 +35,7 @@ We will keep supporting the following auth-strategies out of the box that we con
 - The `_CREATE` events for products, filters and assortments are now triggered AFTER creating the initial text objects so that you can safely use both events to update texts in external systems.
 - Add new worker configuration option `blacklistedVariables` that accepts array of variable names that should be removed from a job log data returned.
 - Deprecated `APOLLO_ENGINE_KEY` from old apollo versions has been removed
+- An undocumented worker internal event queue has been removed and new `events` have been added to support subscribing to `core-worker` events: `WORK_ADDED`, `WORK_ALLOCATED`, `WORK_FINISHED`, `WORK_DELETED`, `WORK_RESCHEDULED`
 
 ## Patch
 - Fix payment credential signing procedures that depend on a userId
