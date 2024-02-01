@@ -4,18 +4,10 @@ import stripe from './stripe.js';
 
 const logger = createLogger('unchained:core-payment:stripe:webhook');
 
-const { STRIPE_ENDPOINT_SECRET, STRIPE_WEBHOOK_ENVIRONMENT } = process.env;
-
-function checkEnvironment(metadata: any) {
-  const environmentInMetadata = metadata?.environment;
-  const environmentInEnv = STRIPE_WEBHOOK_ENVIRONMENT;
-
-  if (!environmentInMetadata && !environmentInEnv) {
-    return true;
-  }
-
-  return environmentInEnv === environmentInMetadata;
-}
+export const WebhookEventTypes = {
+  PAYMENT_INTENT_SUCCEEDED: 'payment_intent.succeeded',
+  SETUP_INTENT_SUCCEEDED: 'setup_intent.succeeded',
+};
 
 export const stripeHandler = async (request, response) => {
   const resolvedContext = request.unchainedContext as Context;
@@ -25,29 +17,49 @@ export const stripeHandler = async (request, response) => {
 
   try {
     const sig = request.headers['stripe-signature'];
-    event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_ENDPOINT_SECRET);
-    logger.verbose(`received event`, {
-      type: event.type,
-    });
+    event = stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_ENDPOINT_SECRET);
   } catch (err) {
-    logger.error(`failed event validation with: ${err.message}`);
+    logger.error(`Error constructing event: ${err.message}`);
     response.writeHead(400);
     response.end(err.message);
     return;
   }
 
+  if (!Object.values(WebhookEventTypes).find(event.type)) {
+    logger.verbose(`unhandled event type`, {
+      type: event.type,
+    });
+    response.writeHead(200);
+    response.end({
+      ignored: true,
+      message: `Unhandled event type: ${event.type}. Supported types: ${Object.values(WebhookEventTypes).join(', ')}`,
+    });
+  }
+
+  const environmentInMetadata = event.data?.object?.metadata?.environment || '';
+  const environmentInEnv = process.env.STRIPE_WEBHOOK_ENVIRONMENT || '';
+  if (environmentInMetadata !== environmentInEnv) {
+    logger.verbose(`unhandled event environment`, {
+      type: event.type,
+      environment: environmentInMetadata,
+    });
+    response.writeHead(200);
+    response.end(
+      JSON.stringify({
+        ignored: true,
+        message: `Unhandled event environment: ${environmentInMetadata}. Supported environment: ${environmentInEnv}`,
+      }),
+    );
+    return;
+  }
+
+  logger.verbose(`Processing event`, {
+    type: event.type,
+  });
   try {
-    if (event.type === 'payment_intent.succeeded') {
+    if (event.type === WebhookEventTypes.PAYMENT_INTENT_SUCCEEDED) {
       const paymentIntent = event.data.object;
       const { orderPaymentId } = paymentIntent.metadata || {};
-
-      if (!checkEnvironment(paymentIntent.metadata)) {
-        logger.verbose(`event ignored because of environment difference`, {
-          type: event.type,
-        });
-        response.end(JSON.stringify({ received: true, ignored: true }));
-        return;
-      }
 
       logger.verbose(`checkout with orderPaymentId: ${orderPaymentId}`, {
         type: event.type,
@@ -75,25 +87,26 @@ export const stripeHandler = async (request, response) => {
         resolvedContext,
       );
 
-      logger.info(`confirmed checkout for order: ${order._id}`, {
+      logger.info(`checkout successful`, {
+        orderPaymentId,
         orderId: order._id,
         type: event.type,
       });
-    } else if (event.type === 'setup_intent.succeeded') {
+      response.writeHead(200);
+      response.end({
+        message: 'checkout successful',
+        orderId: order._id,
+      });
+    } else if (event.type === WebhookEventTypes.SETUP_INTENT_SUCCEEDED) {
       const setupIntent = event.data.object;
       const { paymentProviderId, userId } = setupIntent.metadata || {};
-
-      if (!checkEnvironment(setupIntent.metadata)) {
-        response.end(JSON.stringify({ received: true, ignored: true }));
-        return;
-      }
 
       logger.verbose(`registered payment credential with paymentProviderId: ${paymentProviderId}`, {
         type: event.type,
         userId,
       });
 
-      await modules.payment.registerCredentials(
+      const paymentCredentials = await modules.payment.registerCredentials(
         paymentProviderId,
         {
           transactionContext: {
@@ -104,29 +117,23 @@ export const stripeHandler = async (request, response) => {
         resolvedContext,
       );
 
-      logger.info(`registered payment credentials with paymentProviderId: ${paymentProviderId}`, {
+      logger.info(`payment credentials registration successful`, {
         userId,
+        paymentProviderId,
+        paymentCredentialsId: paymentCredentials?._id,
         type: event.type,
       });
-    } else {
-      logger.verbose(`unhandled type`, {
-        type: event.type,
+      response.writeHead(200);
+      response.end({
+        message: 'payment credentials registration successful',
+        paymentCredentialsId: paymentCredentials?._id,
       });
-      response.writeHead(404);
-      response.end();
-      return;
     }
-  } catch (err) {
-    logger.error(`failed with: ${err.message}`, {
+  } catch (error) {
+    logger.error(error, {
       type: event.type,
     });
-    response.writeHead(400);
-    response.end(err.message || 'Error');
-    return;
+    response.writeHead(500);
+    response.end(error.message);
   }
-  // Return a 200 response to acknowledge receipt of the event
-  logger.verbose(`event processed`, {
-    type: event.type,
-  });
-  response.end(JSON.stringify({ received: true }));
 };
