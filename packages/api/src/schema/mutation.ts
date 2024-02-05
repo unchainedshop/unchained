@@ -901,7 +901,7 @@ export default [
       """
       Sign a generic order payment
       """
-      signPaymentProviderForCheckout(orderPaymentId: ID!, transactionContext: JSON): String!
+      signPaymentProviderForCheckout(orderPaymentId: ID, transactionContext: JSON): String!
 
       prepareProductMediaUpload(mediaName: String!, productId: ID!): MediaUploadTicket!
       prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!

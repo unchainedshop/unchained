@@ -19,6 +19,8 @@ import { appleIAPHandler, configureAppleTransactionsModule } from './payment/app
 import { stripeHandler } from './payment/stripe/index.js';
 import { postfinanceCheckoutHandler } from './payment/postfinance-checkout/index.js';
 
+import { payrexxHandler } from './payment/payrexx/index.js';
+
 // Warehousing
 import './warehousing/store.js';
 import './warehousing/eth-minter.js';
@@ -79,6 +81,7 @@ import './accounts/linkedin-oauth.js';
 const {
   CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
   STRIPE_WEBHOOK_PATH = '/payment/stripe',
+  PAYREXX_WEBHOOK_PATH = '/payment/payrexx',
   PFCHECKOUT_WEBHOOK_PATH = '/payment/postfinance-checkout',
   DATATRANS_WEBHOOK_PATH = '/payment/datatrans/webhook',
   APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap',
@@ -144,6 +147,13 @@ export const connectDefaultPluginsToExpress4 = (
       strict: false,
     }),
     appleIAPHandler,
+  );
+
+  useMiddlewareWithCurrentContext(
+    app,
+    PAYREXX_WEBHOOK_PATH,
+    express.json({ type: 'application/json' }),
+    payrexxHandler,
   );
 
   // useMiddlewareWithCurrentContext(
