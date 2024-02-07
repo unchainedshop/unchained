@@ -10,9 +10,7 @@ export const buildDefaultTypeDefs = ({ actions = [], events = [], workTypes = []
     actions?.length && `extend enum RoleAction { ${actions.join(',')} }`,
     events?.length && `extend enum EventType { ${events.join(',')} }`,
     workTypes?.length && `extend enum WorkType { ${workTypes.join(',')} }`,
-  ]
-    .filter(Boolean)
-    .join('\n');
+  ].filter(Boolean);
 
-  return [...scalars, ...directives, ...types, ...inputTypes, ...query, ...mutation, dynamicTypeDefs];
+  return [...scalars, ...directives, ...types, ...inputTypes, ...query, ...mutation, ...dynamicTypeDefs];
 };

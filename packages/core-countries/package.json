@@ -37,7 +37,7 @@
     "simpl-schema": "=3.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.10",
+    "@types/node": "^20.11.16",
     "@unchainedshop/types": "^2.6.1",
     "cross-env": "^7.0.3",
     "jest": "^29.7.0",

@@ -86,8 +86,8 @@
     "web-push": "^3.6.3"
   },
   "devDependencies": {
-    "@redis/client": "^1.5.13",
-    "@types/node": "^20.11.10",
+    "@redis/client": "^1.5.14",
+    "@types/node": "^20.11.16",
     "@unchainedshop/api": "^2.6.1",
     "@unchainedshop/core-delivery": "^2.6.1",
     "@unchainedshop/core-enrollments": "^2.6.1",
@@ -112,7 +112,7 @@
     "lru-cache": "^10.2.0",
     "minio": "^7.1.3",
     "node-sheets": "^1.2.0",
-    "nodemailer": "^6.9.8",
+    "nodemailer": "^6.9.9",
     "open": "^10.0.3",
     "postfinancecheckout": "^4.5.0",
     "request": "^2.88.2",
