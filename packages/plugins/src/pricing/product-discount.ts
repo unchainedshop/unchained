@@ -5,6 +5,7 @@ import {
 } from '@unchainedshop/types/products.pricing.js';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
 import { calculation as calcUtils } from '@unchainedshop/utils';
+import { Product } from '@unchainedshop/types/products.js';
 
 const ProductDiscount: IProductPricingAdapter = {
   ...ProductPricingAdapter,
@@ -21,7 +22,7 @@ const ProductDiscount: IProductPricingAdapter = {
   actions: (params) => {
     const pricingAdapter = ProductPricingAdapter.actions(params);
 
-    const addDiscount = (discount: Discount, total: number, isTaxable: boolean) => {
+    const addDiscount = (discount: Discount<Product>, total: number, isTaxable: boolean) => {
       const { configuration, discountId } = discount;
       const { isNetPrice = false, ...meta } = configuration;
       const amount = calcUtils.applyRate(configuration, total);

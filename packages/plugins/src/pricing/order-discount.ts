@@ -22,9 +22,6 @@ export const OrderDiscount: IOrderPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        // discounts need to provide a *fixedRate*
-        // if you want to add percentual discounts,
-        // add it to the order item calculation
         const totalAmountOfItems = params.calculationSheet.total({
           category: OrderPricingRowCategory.Items,
           useNetPrice: false,
@@ -61,10 +58,8 @@ export const OrderDiscount: IOrderPricingAdapter = {
 
         params.discounts.forEach(({ configuration, discountId }) => {
           // First, we deduce the discount from the items
-          let alreadyDeducted = 0;
-
           const leftInDiscountToSplit = calcUtils.calculateAmountToSplit(
-            { ...configuration, alreadyDeducted },
+            { ...configuration },
             totalAmountOfItems,
           );
           const [itemsDiscountAmount, itemsTaxAmount] = calcUtils.applyDiscountToMultipleShares(
@@ -72,11 +67,10 @@ export const OrderDiscount: IOrderPricingAdapter = {
             Math.max(0, Math.min(amountLeft, leftInDiscountToSplit)),
           );
           amountLeft -= itemsDiscountAmount;
-          alreadyDeducted += itemsDiscountAmount;
 
           // After the items, we deduct the remaining discount from payment & delivery fees
           const leftInFeesToSplit = calcUtils.calculateAmountToSplit(
-            { ...configuration, alreadyDeducted },
+            { ...configuration },
             totalAmountOfPaymentAndDelivery,
           );
           const [deliveryAndPaymentDiscountAmount, deliveryAndPaymentTaxAmount] =
@@ -85,7 +79,6 @@ export const OrderDiscount: IOrderPricingAdapter = {
               Math.max(0, Math.min(amountLeft, leftInFeesToSplit)),
             );
           amountLeft -= deliveryAndPaymentDiscountAmount;
-          alreadyDeducted += itemsDiscountAmount;
 
           const discountAmount = (itemsDiscountAmount + deliveryAndPaymentDiscountAmount) * -1;
           const taxAmount = (itemsTaxAmount + deliveryAndPaymentTaxAmount) * -1;
@@ -96,7 +89,7 @@ export const OrderDiscount: IOrderPricingAdapter = {
               taxAmount,
               discountId,
               meta: {
-                adapter: OrderDiscount.key,
+                adapter: OrderDiscountTest.key,
               },
             });
           }

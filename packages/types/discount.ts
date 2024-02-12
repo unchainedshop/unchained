@@ -4,10 +4,11 @@ import { Order } from './orders.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { IPricingSheet, PricingCalculation } from './pricing.js';
 
-export interface DiscountConfiguration {
+export interface DiscountConfiguration<T = any> extends Record<string, any> {
   fixedRate?: number;
   rate?: number;
   isNetPrice?: boolean;
+  filter?: (data: T) => boolean;
 }
 
 export interface DiscountContext {
@@ -16,9 +17,9 @@ export interface DiscountContext {
   order?: Order;
 }
 
-export interface Discount {
+export interface Discount<T> {
   discountId: string;
-  configuration: DiscountConfiguration;
+  configuration: DiscountConfiguration<T>;
 }
 
 export interface DiscountAdapterActions {

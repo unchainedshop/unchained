@@ -94,7 +94,7 @@ export type IPricingAdapter<
   actions: (params: {
     context: PricingAdapterContext;
     calculationSheet: Sheet;
-    discounts: Array<Discount>;
+    discounts: Array<Discount<any>>;
   }) => IPricingAdapterActions<Calculation, PricingAdapterContext> & { resultSheet: () => Sheet };
 };
 

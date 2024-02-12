@@ -57,7 +57,7 @@ export const BasePricingDirector = <
             const resolvedCalculation = await previousPromise;
             if (!resolvedCalculation) return null;
 
-            const discounts: Array<Discount> = await Promise.all(
+            const discounts: Array<Discount<any>> = await Promise.all(
               context.discounts.map(async (discount) => ({
                 discountId: discount._id,
                 configuration: await context.modules.orders.discounts.configurationForPricingAdapterKey(
