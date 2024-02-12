@@ -79,8 +79,8 @@ export const configureOrderDiscountsModule = ({
       await updateCalculation(discount.orderId, unchainedAPI);
     } else {
       await OrderDiscounts.deleteOne(selector);
-      await emit('ORDER_REMOVE_DISCOUNT', { discount });
     }
+    await emit('ORDER_REMOVE_DISCOUNT', { discount });
     return discount;
   };
 
