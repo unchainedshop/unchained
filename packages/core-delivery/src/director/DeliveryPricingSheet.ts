@@ -63,7 +63,7 @@ export const DeliveryPricingSheet = (
 
       return [...new Set(discountIds)]
         .map((discountId) => {
-          const amount = basePricingSheet.total({
+          const { currency, amount } = basePricingSheet.total({
             category: DeliveryPricingRowCategory.Discount,
             discountId,
           });
@@ -73,7 +73,7 @@ export const DeliveryPricingSheet = (
           return {
             discountId,
             amount: Math.round(amount),
-            currency: basePricingSheet.currency,
+            currency,
           };
         })
         .filter(Boolean);

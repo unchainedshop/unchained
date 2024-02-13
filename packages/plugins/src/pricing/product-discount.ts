@@ -3,9 +3,12 @@ import {
   IProductPricingAdapter,
   ProductPricingRowCategory,
 } from '@unchainedshop/types/products.pricing.js';
-import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
+import {
+  ProductPricingDirector,
+  ProductPricingAdapter,
+  ProductDiscountConfiguration,
+} from '@unchainedshop/core-products';
 import { calculation as calcUtils } from '@unchainedshop/utils';
-import { ProductDiscountConfiguration } from '@unchainedshop/core-products/director/ProductDiscountConfiguration.js';
 
 const ProductDiscount: IProductPricingAdapter<ProductDiscountConfiguration> = {
   ...ProductPricingAdapter,

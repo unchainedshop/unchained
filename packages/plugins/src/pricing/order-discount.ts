@@ -1,7 +1,10 @@
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
-import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
+import {
+  OrderPricingDirector,
+  OrderPricingAdapter,
+  OrderDiscountConfiguration,
+} from '@unchainedshop/core-orders';
 import { calculation as calcUtils } from '@unchainedshop/utils';
-import { OrderDiscountConfiguration } from '@unchainedshop/core-orders/director/OrderDiscountConfiguration.js';
 
 export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
   ...OrderPricingAdapter,

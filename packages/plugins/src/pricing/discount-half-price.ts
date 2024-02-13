@@ -1,6 +1,6 @@
 import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 import { OrderDiscountDirector, OrderDiscountAdapter } from '@unchainedshop/core-orders';
-import { ProductDiscountConfiguration } from '@unchainedshop/core-products/director/ProductDiscountConfiguration.js';
+import { ProductDiscountConfiguration } from '@unchainedshop/core-products';
 
 export const HalfPrice: IDiscountAdapter<ProductDiscountConfiguration> = {
   ...OrderDiscountAdapter,
