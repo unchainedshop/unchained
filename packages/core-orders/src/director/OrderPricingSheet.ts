@@ -83,23 +83,16 @@ export const OrderPricingSheet = (
       return basePricingSheet.sum() - this.taxSum() - this.taxSum();
     },
 
-    total({ category, useNetPrice } = { useNetPrice: false }) {
-      if (!category) {
-        // WORKAROUND WHEN NO CATEGORY IS GIVEN
-        return {
-          amount: Math.round(useNetPrice ? this.net() : this.gross()),
-          currency: params.currency,
-        };
-      }
+    total({ category, useNetPrice, discountId } = { useNetPrice: false }) {
+      const taxAmount = this.taxSum({ baseCategory: category, discountId });
+      const amount = this.sum({ category, discountId }) - taxAmount;
 
-      const grossAmountForCategory = this.sum({ category });
-      const taxAmountForCategory = this.taxSum({ baseCategory: category });
-      const amount = Math.round(
-        useNetPrice ? grossAmountForCategory - taxAmountForCategory : grossAmountForCategory,
-      );
+      // Sum does not contain taxes when filtering by category, it's net in that case and gross if there is no category
+      const netAmount = !category ? amount - taxAmount : amount;
+
       return {
-        amount,
-        currency: params.currency,
+        amount: Math.round(useNetPrice ? netAmount : netAmount + taxAmount),
+        currency: this.currency,
       };
     },
 

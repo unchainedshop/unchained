@@ -40,16 +40,12 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
       return this.sum() - this.taxSum();
     },
 
-    total({ category, useNetPrice } = { useNetPrice: false }) {
-      if (!category) {
-        return {
-          amount: Math.round(useNetPrice ? this.net() : this.gross()),
-          currency: params.currency,
-        };
-      }
-      // Sum does not contain taxes when filtering by category, thus it's net
-      const netAmount = this.sum(category && { category });
-      const taxAmountForCategory = this.taxSum(category && { baseCategory: category });
+    total({ category, useNetPrice, discountId } = { useNetPrice: false }) {
+      const amount = this.sum({ category, discountId });
+      const taxAmountForCategory = this.taxSum({ baseCategory: category, discountId });
+
+      // Sum does not contain taxes when filtering by category, it's net in that case and gross if there is no category
+      const netAmount = !category ? amount - taxAmountForCategory : amount;
 
       return {
         amount: Math.round(useNetPrice ? netAmount : netAmount + taxAmountForCategory),
