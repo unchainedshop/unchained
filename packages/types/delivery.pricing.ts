@@ -69,16 +69,17 @@ export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation> & 
   }) => void;
 };
 
-export type IDeliveryPricingAdapter = IPricingAdapter<
+export type IDeliveryPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
-  IDeliveryPricingSheet
+  IDeliveryPricingSheet,
+  DiscountConfiguration
 >;
 
-export type IDeliveryPricingDirector = IPricingDirector<
+export type IDeliveryPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   DeliveryPricingContext,
   DeliveryPricingCalculation,
   DeliveryPricingAdapterContext,
   IDeliveryPricingSheet,
-  IDeliveryPricingAdapter
+  IDeliveryPricingAdapter<DiscountConfiguration>
 >;

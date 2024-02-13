@@ -70,16 +70,17 @@ export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation> & {
   }) => void;
 };
 
-export type IPaymentPricingAdapter = IPricingAdapter<
+export type IPaymentPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
-  IPaymentPricingSheet
+  IPaymentPricingSheet,
+  DiscountConfiguration
 >;
 
-export type IPaymentPricingDirector = IPricingDirector<
+export type IPaymentPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   PaymentPricingContext,
   PaymentPricingCalculation,
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
-  IPaymentPricingAdapter
+  IPaymentPricingAdapter<DiscountConfiguration>
 >;
