@@ -39,14 +39,12 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
             category: OrderPricingRowCategory.Delivery,
             useNetPrice: false,
           }).amount;
-
         const itemShares = orderPositions.map((orderPosition) =>
           calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
             modules.orders.positions.pricingSheet(orderPosition, order.currency, params.context),
             totalAmountOfItems,
           ),
         );
-
         const deliveryShare = calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
           orderDelivery &&
             modules.orders.deliveries.pricingSheet(orderDelivery, order.currency, params.context),
@@ -57,14 +55,12 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
             modules.orders.payments.pricingSheet(orderPayment, order.currency, params.context),
           totalAmountOfPaymentAndDelivery,
         );
-
         let amountLeft = totalAmountOfPaymentAndDelivery + totalAmountOfItems;
-
         params.discounts.forEach(({ configuration, discountId }) => {
           // First, we deduce the discount from the items
           const leftInDiscountToSplit = calcUtils.calculateAmountToSplit(
             { ...configuration },
-            totalAmountOfItems,
+            Math.min(totalAmountOfItems, amountLeft),
           );
           const [itemsDiscountAmount, itemsTaxAmount] = calcUtils.applyDiscountToMultipleShares(
             itemShares,
@@ -72,10 +68,15 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
           );
           amountLeft -= itemsDiscountAmount;
 
-          // After the items, we deduct the remaining discount from payment & delivery fees
+          // If it's a fixed rate we need to deduct the already deducted amount from the fixed rate
+          // before we hand it over to the split calculation
+          const fixedRate =
+            configuration.fixedRate > 0
+              ? Math.max(0, configuration.fixedRate - itemsDiscountAmount)
+              : undefined;
           const leftInFeesToSplit = calcUtils.calculateAmountToSplit(
-            { ...configuration },
-            totalAmountOfPaymentAndDelivery,
+            { ...configuration, fixedRate },
+            Math.min(totalAmountOfPaymentAndDelivery, amountLeft),
           );
           const [deliveryAndPaymentDiscountAmount, deliveryAndPaymentTaxAmount] =
             calcUtils.applyDiscountToMultipleShares(
@@ -83,10 +84,8 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
               Math.max(0, Math.min(amountLeft, leftInFeesToSplit)),
             );
           amountLeft -= deliveryAndPaymentDiscountAmount;
-
           const discountAmount = (itemsDiscountAmount + deliveryAndPaymentDiscountAmount) * -1;
           const taxAmount = (itemsTaxAmount + deliveryAndPaymentTaxAmount) * -1;
-
           if (discountAmount) {
             pricingAdapter.resultSheet().addDiscount({
               amount: discountAmount,
@@ -98,7 +97,6 @@ export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
             });
           }
         });
-
         return pricingAdapter.calculate();
       },
     };
