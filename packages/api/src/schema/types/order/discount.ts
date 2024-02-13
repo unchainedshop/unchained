@@ -52,7 +52,7 @@ export default [
       code: String
       order: Order!
       interface: DiscountInterface
-      total: Price!
+      total(useNetPrice: Boolean = false): Price!
       discounted: [OrderDiscountable!]
     }
   `,

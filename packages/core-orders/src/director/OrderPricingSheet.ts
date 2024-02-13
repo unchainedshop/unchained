@@ -103,13 +103,6 @@ export const OrderPricingSheet = (
       };
     },
 
-    discountSum(discountId) {
-      return basePricingSheet.sum({
-        category: OrderPricingRowCategory.Discounts,
-        discountId,
-      });
-    },
-
     discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
         .filterBy({

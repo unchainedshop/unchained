@@ -30,7 +30,6 @@ describe('ProductPricingSheet', () => {
         expect(typeof pricingSheet.addDiscount).toBe('function');
         expect(typeof pricingSheet.addTax).toBe('function');
         expect(typeof pricingSheet.taxSum).toBe('function');
-        expect(typeof pricingSheet.discountSum).toBe('function');
         expect(typeof pricingSheet.unitPrice).toBe('function');
         expect(typeof pricingSheet.discountPrices).toBe('function');
       });
@@ -84,13 +83,6 @@ describe('ProductPricingSheet', () => {
       describe('taxSum', () => {
         it('should return the sum of TAX calculation registered on the adapter', () => {            
             expect(pricingSheet.taxSum()).toEqual(75)
-          })
-
-      })
-
-      describe('discountSum', () => {
-        it('should return the sum of DISCOUNT calculation registered on the adapter', () => {
-            expect(pricingSheet.discountSum()).toEqual(60)
           })
 
       })

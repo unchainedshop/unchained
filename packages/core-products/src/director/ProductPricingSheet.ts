@@ -48,16 +48,10 @@ export const ProductPricingSheet = (
       });
     },
 
-    taxSum() {
+    taxSum(filter) {
       return basePricingSheet.sum({
         category: ProductPricingRowCategory.Tax,
-      });
-    },
-
-    discountSum(discountId) {
-      return basePricingSheet.sum({
-        category: ProductPricingRowCategory.Discount,
-        discountId,
+        ...(filter || {}),
       });
     },
 

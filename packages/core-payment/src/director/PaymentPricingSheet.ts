@@ -46,16 +46,10 @@ export const PaymentPricingSheet = (
       });
     },
 
-    taxSum() {
+    taxSum(filter) {
       return basePricingSheet.sum({
         category: PaymentPricingRowCategory.Tax,
-      });
-    },
-
-    discountSum(discountId) {
-      return basePricingSheet.sum({
-        category: PaymentPricingRowCategory.Discount,
-        discountId,
+        ...(filter || {}),
       });
     },
 

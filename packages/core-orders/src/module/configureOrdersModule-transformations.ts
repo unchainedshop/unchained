@@ -1,5 +1,9 @@
 import { Order, OrderTransformations } from '@unchainedshop/types/orders.js';
 import { mongodb } from '@unchainedshop/mongodb';
+import { DeliveryPricingRowCategory } from '@unchainedshop/types/delivery.pricing.js';
+import { PaymentPricingRowCategory } from '@unchainedshop/types/payments.pricing.js';
+import { ProductPricingRowCategory } from '@unchainedshop/types/products.pricing.js';
+import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
 import { OrderPricingSheet } from '../director/OrderPricingSheet.js';
 
 export const configureOrderModuleTransformations = ({
@@ -72,7 +76,7 @@ export const configureOrderModuleTransformations = ({
         orderDelivery &&
         modules.orders.deliveries
           .pricingSheet(orderDelivery, order.currency, unchainedAPI)
-          .discountSum(orderDiscountId);
+          .total({ category: DeliveryPricingRowCategory.Discount, discountId: orderDiscountId });
 
       // Payment discounts
       const orderPayment = await modules.orders.payments.findOrderPayment({
@@ -82,7 +86,7 @@ export const configureOrderModuleTransformations = ({
         orderPayment &&
         modules.orders.payments
           .pricingSheet(orderPayment, order.currency, unchainedAPI)
-          .discountSum(orderDiscountId);
+          .total({ category: PaymentPricingRowCategory.Discount, discountId: orderDiscountId });
 
       // Position discounts
       const orderPositions = await modules.orders.positions.findOrderPositions({
@@ -91,20 +95,20 @@ export const configureOrderModuleTransformations = ({
       const orderPositionDiscounts = orderPositions.map((orderPosition) =>
         modules.orders.positions
           .pricingSheet(orderPosition, order.currency, unchainedAPI)
-          .discountSum(orderDiscountId),
+          .total({ category: ProductPricingRowCategory.Discount, discountId: orderDiscountId }),
       );
 
       // order discounts
       const orderDiscountSum = OrderPricingSheet({
         calculation: order.calculation,
         currency: order.currency,
-      }).discountSum(orderDiscountId);
+      }).total({ category: OrderPricingRowCategory.Discounts, discountId: orderDiscountId });
 
       const prices = [
-        orderDeliveryDiscountSum,
-        orderPaymentDiscountSum,
-        ...orderPositionDiscounts,
-        orderDiscountSum,
+        orderDeliveryDiscountSum.amount,
+        orderPaymentDiscountSum.amount,
+        ...orderPositionDiscounts.map((positionDiscount) => positionDiscount.amount),
+        orderDiscountSum.amount,
       ];
       const amount = prices.reduce((oldValue, price) => oldValue + (price || 0), 0);
       return {

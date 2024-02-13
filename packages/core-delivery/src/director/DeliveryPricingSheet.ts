@@ -46,16 +46,10 @@ export const DeliveryPricingSheet = (
       });
     },
 
-    taxSum() {
+    taxSum(filter) {
       return basePricingSheet.sum({
         category: DeliveryPricingRowCategory.Tax,
-      });
-    },
-
-    discountSum(discountId) {
-      return basePricingSheet.sum({
-        category: DeliveryPricingRowCategory.Discount,
-        discountId,
+        ...(filter || {}),
       });
     },
 
@@ -69,7 +63,7 @@ export const DeliveryPricingSheet = (
 
       return [...new Set(discountIds)]
         .map((discountId) => {
-          const amount = basePricingSheet.sum({
+          const amount = basePricingSheet.total({
             category: DeliveryPricingRowCategory.Discount,
             discountId,
           });

@@ -1,6 +1,7 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentError, PaymentDirector } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
+import { PaymentPricingRowCategory } from '@unchainedshop/types/payments.pricing.js';
 import createDatatransAPI from './api/index.js';
 import type {
   AuthorizeAuthenticatedResponseSuccess,
@@ -100,10 +101,13 @@ const Datatrans: IPaymentAdapter = {
               .split(';')
               .map((f) => f.trim());
 
-            const discountSum = pricingForOrderPayment.discountSum(staticDiscountId) * -1;
+            const { amount: discountSum } = pricingForOrderPayment.total({
+              category: PaymentPricingRowCategory.Tax,
+              discountId: staticDiscountId,
+            });
             const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;
             const amount = Math.round(total * shareFactor);
-            const commission = Math.round(discountSum * shareFactor);
+            const commission = Math.round(discountSum * -1 * shareFactor);
 
             return {
               subMerchantId,
