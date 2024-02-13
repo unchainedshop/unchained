@@ -31,6 +31,7 @@ const ProductDiscount: IProductPricingAdapter<ProductDiscountConfiguration> = {
       const { isNetPrice = false, taxRate, ...meta } = resolvedConfiguration;
       const amount = calcUtils.applyRate(resolvedConfiguration, total);
       const isTaxable = taxRate === undefined || taxRate === null;
+
       pricingAdapter.resultSheet().addDiscount({
         amount: amount * -1,
         discountId,
@@ -43,8 +44,19 @@ const ProductDiscount: IProductPricingAdapter<ProductDiscountConfiguration> = {
         pricingAdapter.resultSheet().addTax({
           amount: taxAmount * -1,
           rate: taxRate,
+          discountId,
+          baseCategory: ProductPricingRowCategory.Discount,
           meta: { adapter: ProductDiscount.key, discountId, ...meta },
         });
+        if (!isNetPrice) {
+          pricingAdapter.resultSheet().addDiscount({
+            amount: taxAmount,
+            discountId,
+            isNetPrice: false,
+            isTaxable: false,
+            meta: { adapter: ProductDiscount.key, discountId, ...meta },
+          });
+        }
       }
     };
 
