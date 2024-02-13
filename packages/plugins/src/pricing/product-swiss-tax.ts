@@ -1,5 +1,8 @@
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
-import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing.js';
+import {
+  IProductPricingAdapter,
+  ProductPricingRowCategory,
+} from '@unchainedshop/types/products.pricing.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { Order } from '@unchainedshop/types/orders.js';
 import { SwissTaxCategories } from './tax/ch.js';
@@ -73,6 +76,7 @@ export const ProductSwissTax: IProductPricingAdapter = {
             pricingAdapter.resultSheet().addTax({
               amount: taxAmount,
               rate: taxRate,
+              baseCategory: ProductPricingRowCategory.Item,
               meta: { adapter: ProductSwissTax.key },
             });
           } else {
@@ -80,6 +84,7 @@ export const ProductSwissTax: IProductPricingAdapter = {
             pricingAdapter.resultSheet().addTax({
               amount: taxAmount,
               rate: taxRate,
+              baseCategory: ProductPricingRowCategory.Item,
               meta: { adapter: ProductSwissTax.key },
             });
           }

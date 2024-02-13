@@ -49,7 +49,15 @@ export type ProductPricingContext =
 
 export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalculation> {
   addItem: (params: Omit<ProductPricingCalculation, 'category' | 'discountId'>) => void;
-  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
+
+  addTax: (params: {
+    amount: number;
+    rate: number;
+    baseCategory?: string;
+    discountId?: string;
+    meta?: any;
+  }) => void;
+
   addDiscount: (params: {
     amount: number;
     isTaxable: boolean;

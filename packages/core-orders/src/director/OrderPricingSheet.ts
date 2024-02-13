@@ -112,7 +112,10 @@ export const OrderPricingSheet = (
 
     discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
-        .getDiscountRows(explicitDiscountId)
+        .filterBy({
+          category: OrderPricingRowCategory.Discounts,
+          discountId: explicitDiscountId,
+        })
         .map(({ discountId }) => discountId);
 
       return [...new Set(discountIds)]
@@ -131,13 +134,6 @@ export const OrderPricingSheet = (
           };
         })
         .filter(Boolean);
-    },
-
-    getDiscountRows(discountId) {
-      return basePricingSheet.filterBy({
-        category: OrderPricingRowCategory.Discounts,
-        discountId,
-      });
     },
   };
 

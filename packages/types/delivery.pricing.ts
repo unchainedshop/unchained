@@ -53,7 +53,13 @@ export type DeliveryPricingContext =
 
 export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation> & {
   addFee: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta?: any }) => void;
-  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
+  addTax: (params: {
+    amount: number;
+    rate: number;
+    baseCategory?: string;
+    discountId?: string;
+    meta?: any;
+  }) => void;
   addDiscount: (params: {
     amount: number;
     isTaxable: boolean;

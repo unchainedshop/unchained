@@ -61,7 +61,10 @@ export const PaymentPricingSheet = (
 
     discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
-        .getDiscountRows(explicitDiscountId)
+        .filterBy({
+          category: PaymentPricingRowCategory.Discount,
+          discountId: explicitDiscountId,
+        })
         .map(({ discountId }) => discountId);
 
       return [...new Set(discountIds)]
@@ -80,13 +83,6 @@ export const PaymentPricingSheet = (
           };
         })
         .filter(Boolean);
-    },
-
-    getDiscountRows(discountId) {
-      return basePricingSheet.filterBy({
-        category: PaymentPricingRowCategory.Discount,
-        discountId,
-      });
     },
   };
 

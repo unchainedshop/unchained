@@ -61,7 +61,10 @@ export const DeliveryPricingSheet = (
 
     discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
-        .getDiscountRows(explicitDiscountId)
+        .filterBy({
+          category: DeliveryPricingRowCategory.Discount,
+          discountId: explicitDiscountId,
+        })
         .map(({ discountId }) => discountId);
 
       return [...new Set(discountIds)]
@@ -80,13 +83,6 @@ export const DeliveryPricingSheet = (
           };
         })
         .filter(Boolean);
-    },
-
-    getDiscountRows(discountId) {
-      return basePricingSheet.filterBy({
-        category: DeliveryPricingRowCategory.Discount,
-        discountId,
-      });
     },
   };
 

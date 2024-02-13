@@ -70,7 +70,6 @@ export interface IPricingSheet<Calculation extends PricingCalculation>
   discountPrices: (discountId?: string) => Array<PricingDiscount>;
   discountSum: (discountId?: string) => number;
   addDiscount: (params: { amount: number; discountId: string; meta?: any }) => void;
-  getDiscountRows: (discountId: string) => Array<Calculation>;
 }
 
 export interface IPricingAdapterActions<

@@ -33,7 +33,6 @@ describe('ProductPricingSheet', () => {
         expect(typeof pricingSheet.discountSum).toBe('function');
         expect(typeof pricingSheet.unitPrice).toBe('function');
         expect(typeof pricingSheet.discountPrices).toBe('function');
-        expect(typeof pricingSheet.getDiscountRows).toBe('function');
       });
 
       it('gross() should return the GROSS sum of all ProductPricingCalculation', () => {
@@ -82,13 +81,6 @@ describe('ProductPricingSheet', () => {
       })
 
 
-      describe('getDiscountRows', () => {
-        it('should return all the DISCOUNTS registered on the ProductPricingSheet', () => {
-            expect(pricingSheet.getDiscountRows('for-all')).toEqual([DISCOUNT, DISCOUNT2])
-          })
-
-      })
-
       describe('taxSum', () => {
         it('should return the sum of TAX calculation registered on the adapter', () => {            
             expect(pricingSheet.taxSum()).toEqual(75)
@@ -123,14 +115,6 @@ describe('ProductPricingSheet', () => {
           expect(pricingSheet.discountPrices('non-existing')).toEqual([])
         })
 
-      })
-
-      describe('addDiscount', () => {
-        it('should add ProductPricingCalculation DISCOUNT category successfully', () => {            
-          expect(pricingSheet.getDiscountRows('new')).toEqual([])
-          pricingSheet.addDiscount({amount: 300, isNetPrice: true, isTaxable: true, discountId: 'new'})
-          expect(pricingSheet.getDiscountRows('new')).toEqual([{amount: 300, isNetPrice: true, isTaxable: true, category: 'DISCOUNT', meta: undefined, discountId: 'new'}])          
-        })
       })
 })
 
