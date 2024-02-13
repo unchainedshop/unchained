@@ -1,7 +1,15 @@
-# Unchained Engine v2.6
+# Unchained Engine v2.7
 
 ## Minor
 - Mutation `signPaymentProviderForCheckout` does not require an orderPaymentId anymore, it will try to sign the currently selected paymentProvider of the cart if left undefined. This will allow doing 1 request (multi mutation) checkouts in certain configurations.
+- Improve discount types
+- Extend the functionality of the default `product-discount` plugin so it's universally usable for different kind of product discounts
+
+## Patch
+- Fix a case with `order-discount` and `order-items-discount` plugins not appropriately applying a rate to payment and delivery fees
+
+
+# Unchained Engine v2.6
 
 ## Minor
 - Add `shop.unchained.pricing.order-round` order price rounding plugin

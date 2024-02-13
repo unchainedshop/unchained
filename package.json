@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -47,12 +47,12 @@
     "test:unit-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit --watch --config ./packages/unit-jest.config.js"
   },
   "devDependencies": {
-    "@apollo/client": "^3.9.3",
+    "@apollo/client": "^3.9.4",
     "@shelf/jest-mongodb": "^4.2.0",
     "@types/jest": "^29.5.12",
     "@types/lodash.clone": "^4.5.9",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.11.17",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "apollo-upload-client": "^18.0.1",
