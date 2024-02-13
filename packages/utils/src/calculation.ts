@@ -44,6 +44,10 @@ export const applyRate = (configuration: { fixedRate?: number; rate?: number }, 
   return rate ? amount * rate : Math.min(fixedRate || 0, amount);
 };
 
+export const getTaxAmount = (total: number, rate: number, isNetPrice: boolean) => {
+  return isNetPrice ? total * rate : total - total / (1 + rate);
+};
+
 export const resolveAmountAndTax = (
   { ratio, taxDivisor }: { ratio?: number; taxDivisor?: number },
   amount: number,

@@ -1,8 +1,9 @@
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
 import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
 import { calculation as calcUtils } from '@unchainedshop/utils';
+import { OrderDiscountConfiguration } from '@unchainedshop/core-orders/director/OrderDiscountConfiguration.js';
 
-export const OrderDiscount: IOrderPricingAdapter = {
+export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-discount',
@@ -89,7 +90,7 @@ export const OrderDiscount: IOrderPricingAdapter = {
               taxAmount,
               discountId,
               meta: {
-                adapter: OrderDiscountTest.key,
+                adapter: OrderDiscount.key,
               },
             });
           }

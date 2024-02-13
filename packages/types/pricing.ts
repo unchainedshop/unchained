@@ -86,6 +86,7 @@ export type IPricingAdapter<
   PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
   Sheet extends IPricingSheet<Calculation>,
+  DiscountConfiguration = unknown,
 > = IBaseAdapter & {
   orderIndex: number;
 
@@ -94,7 +95,7 @@ export type IPricingAdapter<
   actions: (params: {
     context: PricingAdapterContext;
     calculationSheet: Sheet;
-    discounts: Array<Discount<any>>;
+    discounts: Array<Discount<DiscountConfiguration>>;
   }) => IPricingAdapterActions<Calculation, PricingAdapterContext> & { resultSheet: () => Sheet };
 };
 

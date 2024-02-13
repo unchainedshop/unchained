@@ -2,8 +2,10 @@ import { IDiscountAdapter, IDiscountDirector } from '@unchainedshop/types/discou
 import { log } from '@unchainedshop/logger';
 import { BaseDirector } from './BaseDirector.js';
 
-export const BaseDiscountDirector = (directorName: string): IDiscountDirector => {
-  const baseDirector = BaseDirector<IDiscountAdapter>(directorName, {
+export const BaseDiscountDirector = <DiscountConfigurationType>(
+  directorName: string,
+): IDiscountDirector<DiscountConfigurationType> => {
+  const baseDirector = BaseDirector<IDiscountAdapter<DiscountConfigurationType>>(directorName, {
     adapterSortKey: 'orderIndex',
   });
 

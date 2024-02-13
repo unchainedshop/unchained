@@ -62,16 +62,17 @@ export interface IOrderPricingSheet extends IPricingSheet<OrderPricingCalculatio
   addPayment: (params: { amount: number; taxAmount: number; meta?: any }) => void;
 }
 
-export type IOrderPricingAdapter = IPricingAdapter<
+export type IOrderPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
   OrderPricingAdapterContext,
   OrderPricingCalculation,
-  IOrderPricingSheet
+  IOrderPricingSheet,
+  DiscountConfiguration
 >;
 
-export type IOrderPricingDirector = IPricingDirector<
+export type IOrderPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   OrderPricingContext,
   OrderPricingCalculation,
   OrderPricingAdapterContext,
   IOrderPricingSheet,
-  IOrderPricingAdapter
+  IOrderPricingAdapter<DiscountConfiguration>
 >;

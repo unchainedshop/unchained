@@ -187,7 +187,7 @@ export type ProductsModule = {
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
 
   // Transformations
-  interface: (productDiscount: ProductDiscount) => IDiscountAdapter;
+  interface: (productDiscount: ProductDiscount) => IDiscountAdapter<unknown>;
 
   isActive: (product: Product) => boolean;
   isDraft: (product: Product) => boolean;

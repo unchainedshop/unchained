@@ -28,28 +28,18 @@ export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
   version: '1.0.0',
   orderIndex: 1,
 
-  isActivatedFor: (context: OrderPricingAdapterContext) => {
+  isActivatedFor: (context) => {
     return true;
   },
 
-  log(message: string, options?: LogOptions): void {
-    console.log(message);
-  },
-
-  actions: (params: {
-    calculationSheet: IOrderPricingSheet;
-    context: OrderPricingAdapterContext;
-    discounts: Discount[];
-  }): IPricingAdapterActions<OrderPricingCalculation, OrderPricingAdapterContext> & {
-    resultSheet: () => IOrderPricingSheet;
-  } => {
+  actions: (params) => {
     const calculation: OrderPricingCalculation[] = [];
     const { context } = params;
     const { currency } = context;
     const resultSheet = OrderPricingSheet({ currency });
 
     return {
-      calculate: async (): Promise<OrderPricingCalculation[]> => {
+      calculate: async () => {
         const resultRaw = resultSheet.getRawPricingSheet();
         resultSheet.addPayment({ amount: 100, taxAmount: 0 });
         resultRaw.forEach(
@@ -59,9 +49,9 @@ export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
         );
         return resultRaw;
       },
-      getContext: (): OrderPricingAdapterContext => params.context,
+      getContext: () => params.context,
       resultSheet: () => resultSheet,
-      getCalculation: (): OrderPricingCalculation[] => calculation,
+      getCalculation: () => calculation,
     };
   },
 };

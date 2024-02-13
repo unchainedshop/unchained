@@ -2,7 +2,7 @@ import { log, LogLevel } from '@unchainedshop/logger';
 
 import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 
-export const BaseDiscountAdapter: Omit<IDiscountAdapter, 'key' | 'label' | 'version'> = {
+export const BaseDiscountAdapter: Omit<IDiscountAdapter<unknown>, 'key' | 'label' | 'version'> = {
   orderIndex: 0,
 
   isManualAdditionAllowed: async () => {

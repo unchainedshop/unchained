@@ -64,18 +64,19 @@ export interface IProductPricingSheet extends IPricingSheet<ProductPricingCalcul
   };
 }
 
-export type IProductPricingAdapter = IPricingAdapter<
+export type IProductPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
   ProductPricingAdapterContext,
   ProductPricingCalculation,
-  IProductPricingSheet
+  IProductPricingSheet,
+  DiscountConfiguration
 >;
 
-export type IProductPricingDirector = IPricingDirector<
+export type IProductPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   ProductPricingContext,
   ProductPricingCalculation,
   ProductPricingAdapterContext,
   IProductPricingSheet,
-  IProductPricingAdapter
+  IProductPricingAdapter<DiscountConfiguration>
 >;
 
 export type ProductPriceRate = {
