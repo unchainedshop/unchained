@@ -78,7 +78,8 @@ export default configureUpdateTokenOwnership;
 WorkerDirector.registerAdapter(RefreshTokens);
 WorkerDirector.registerAdapter(UpdateTokenOwnership);
 
-WorkerDirector.configureAutoscheduling(RefreshTokens, {
+WorkerDirector.configureAutoscheduling({
+  type: RefreshTokens.type,
   schedule: everyMinute,
   retries: 0,
 });

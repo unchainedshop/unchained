@@ -41,11 +41,14 @@ export const WorkerDirector: IWorkerDirector = {
     AutoScheduleMap.delete(type);
   },
 
-  configureAutoscheduling: (adapter, workQueue) => {
-    const { schedule } = workQueue;
-    AutoScheduleMap.set(adapter.type, workQueue);
+  configureAutoscheduling: (workItemConfiguration) => {
+    const adapter = WorkerDirector.getAdapterByType(workItemConfiguration.type);
+    AutoScheduleMap.set(
+      workItemConfiguration.scheduleId || workItemConfiguration.type,
+      workItemConfiguration,
+    );
     log(
-      `WorkerDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${schedule}`,
+      `WorkerDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${workItemConfiguration.schedule}`,
     );
   },
 

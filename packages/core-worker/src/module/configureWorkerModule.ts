@@ -1,6 +1,6 @@
 import os from 'os';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkData, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
+import { Work, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
@@ -371,15 +371,10 @@ export const configureWorkerModule = async ({
 
     allocateWork,
 
-    ensureOneWork: async ({
-      type,
-      input,
-      priority = 0,
-      scheduled,
-      timeout,
-      originalWorkId,
-      retries = 20,
-    }: WorkData) => {
+    ensureOneWork: async (
+      { type, input, priority = 0, scheduled, timeout, originalWorkId, retries = 20 },
+      workId,
+    ) => {
       const created = new Date();
       const query = buildQuerySelector({
         type,
@@ -387,7 +382,6 @@ export const configureWorkerModule = async ({
         priority,
       });
       try {
-        const workId = `${type}:${scheduled.getTime()}`;
         const result = await WorkQueue.findOneAndUpdate(
           query,
           {

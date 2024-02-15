@@ -50,11 +50,11 @@ const Payrexx: IPaymentAdapter = {
         return false;
       },
 
-      validate: async ({ token }) => {
+      validate: async () => {
         throw new Error('Token Registration Flow not implemented yet');
       },
 
-      register: async ({ setupIntentId }) => {
+      register: async () => {
         throw new Error('Token Registration Flow not implemented yet');
       },
 
