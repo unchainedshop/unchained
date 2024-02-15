@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-events",
-  "version": "2.7.3",
+  "version": "2.7.4",
   "main": "lib/events-index.js",
   "exports": {
     ".": "./lib/events-index.js",
@@ -31,13 +31,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^2.7.3",
-    "@unchainedshop/utils": "^2.7.3",
+    "@unchainedshop/events": "^2.7.4",
+    "@unchainedshop/utils": "^2.7.4",
     "simpl-schema": "=3.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
-    "@unchainedshop/types": "^2.7.3",
+    "@unchainedshop/types": "^2.7.4",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
