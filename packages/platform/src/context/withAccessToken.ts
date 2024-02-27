@@ -1,5 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
 import { Context } from '@unchainedshop/types/api.js';
+import { timingSafeEqual } from 'crypto';
 
 const logger = createLogger('unchained:platform');
 
@@ -19,11 +20,15 @@ export default (fn: (context: Context) => any = contextIdentity): any => {
         const user = await unchainedContext.modules.users.findUser({
           username,
         });
-        if (secret && user?.services.token?.secret === secret) {
-          newContext.userId = user._id;
-          newContext.user = user;
-        } else {
-          logger.warn('Token login failed');
+
+        if (secret && user?.services.token?.secret) {
+          if (timingSafeEqual(Buffer.from(secret), Buffer.from(user?.services.token?.secret))) {
+            newContext.userId = user._id;
+            newContext.user = user;
+            logger.debug('Token login success');
+          } else {
+            logger.warn('Token login failed');
+          }
         }
       }
     }
