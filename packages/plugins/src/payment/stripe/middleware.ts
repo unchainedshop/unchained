@@ -25,7 +25,7 @@ export const stripeHandler = async (request, response) => {
     return;
   }
 
-  if (!Object.values(WebhookEventTypes).find(event.type)) {
+  if (!Object.values(WebhookEventTypes).includes(event.type)) {
     logger.verbose(`unhandled event type`, {
       type: event.type,
     });
