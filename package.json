@@ -73,6 +73,6 @@
     "workspaces-run": "^1.0.2"
   },
   "dependencies": {
-    "graphql": "=16.7"
+    "graphql": "16.8"
   }
 }

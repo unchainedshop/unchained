@@ -34,7 +34,7 @@
     "abort-controller": "3.0.0",
     "hashids": "^2.3.0",
     "locale": "0.1.0",
-    "simpl-schema": "=3.2.0"
+    "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
     "@types/node": "^20.11.21",

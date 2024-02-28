@@ -33,7 +33,7 @@
   "dependencies": {
     "@unchainedshop/events": "^2.7.6",
     "@unchainedshop/utils": "^2.7.6",
-    "simpl-schema": "=3.2.0"
+    "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
     "@types/node": "^20.11.21",

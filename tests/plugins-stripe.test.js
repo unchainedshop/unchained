@@ -94,7 +94,7 @@ if (STRIPE_SECRET) {
           signPaymentProviderForCredentialRegistration.split('_secret_');
       }, 10000);
       it('Confirm the setup intent', async () => {
-        const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2023-08-16' });
+        const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2023-10-16' });
         
         const confirmedIntent = await stripe.setupIntents.confirm(
           idAndSecret[0],

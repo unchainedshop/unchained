@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
 const stripe = new Stripe(STRIPE_SECRET, {
-  apiVersion: '2023-08-16',
+  apiVersion: '2023-10-16',
 });
 
 export default stripe;
