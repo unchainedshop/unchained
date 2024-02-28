@@ -30,10 +30,13 @@ export const stripeHandler = async (request, response) => {
       type: event.type,
     });
     response.writeHead(200);
-    response.end({
-      ignored: true,
-      message: `Unhandled event type: ${event.type}. Supported types: ${Object.values(WebhookEventTypes).join(', ')}`,
-    });
+    response.end(
+      JSON.stringify({
+        ignored: true,
+        message: `Unhandled event type: ${event.type}. Supported types: ${Object.values(WebhookEventTypes).join(', ')}`,
+      }),
+    );
+    return;
   }
 
   const environmentInMetadata = event.data?.object?.metadata?.environment || '';
@@ -93,10 +96,12 @@ export const stripeHandler = async (request, response) => {
         type: event.type,
       });
       response.writeHead(200);
-      response.end({
-        message: 'checkout successful',
-        orderId: order._id,
-      });
+      response.end(
+        JSON.stringify({
+          message: 'checkout successful',
+          orderId: order._id,
+        }),
+      );
     } else if (event.type === WebhookEventTypes.SETUP_INTENT_SUCCEEDED) {
       const setupIntent = event.data.object;
       const { paymentProviderId, userId } = setupIntent.metadata || {};
@@ -124,10 +129,12 @@ export const stripeHandler = async (request, response) => {
         type: event.type,
       });
       response.writeHead(200);
-      response.end({
-        message: 'payment credentials registration successful',
-        paymentCredentialsId: paymentCredentials?._id,
-      });
+      response.end(
+        JSON.stringify({
+          message: 'payment credentials registration successful',
+          paymentCredentialsId: paymentCredentials?._id,
+        }),
+      );
     }
   } catch (error) {
     logger.error(error, {
