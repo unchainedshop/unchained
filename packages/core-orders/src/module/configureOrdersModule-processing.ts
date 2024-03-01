@@ -91,17 +91,17 @@ export const configureOrderModuleProcessing = ({
       log(`New Status: ${status}`, { orderId });
       if (order.status === null) {
         // The first time that an order transitions away from cart is a checkout event
-        await emit('ORDER_CHECKOUT', { order });
+        await emit('ORDER_CHECKOUT', { order: modificationResult.value, oldStatus: order.status });
       }
       switch (status) {
         case OrderStatus.FULLFILLED:
-          await emit('ORDER_FULLFILLED', { order });
+          await emit('ORDER_FULLFILLED', { order: modificationResult.value, oldStatus: order.status });
           break;
         case OrderStatus.REJECTED:
-          await emit('ORDER_REJECTED', { order });
+          await emit('ORDER_REJECTED', { order: modificationResult.value, oldStatus: order.status });
           break;
         case OrderStatus.CONFIRMED:
-          await emit('ORDER_CONFIRMED', { order });
+          await emit('ORDER_CONFIRMED', { order: modificationResult.value, oldStatus: order.status });
           break;
         default:
           break;
