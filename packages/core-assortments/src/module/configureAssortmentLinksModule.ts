@@ -30,14 +30,21 @@ export const configureAssortmentLinksModule = ({
       );
     },
 
-    findLinks: async ({ assortmentId, parentAssortmentId }, options) => {
-      const selector = parentAssortmentId
-        ? {
-            parentAssortmentId,
-          }
-        : {
-            $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
-          };
+    findLinks: async (
+      { assortmentId, assortmentIds, parentAssortmentId, parentAssortmentIds },
+      options,
+    ) => {
+      const selector =
+        parentAssortmentId || parentAssortmentIds
+          ? {
+              parentAssortmentId: parentAssortmentId || { $in: parentAssortmentIds },
+            }
+          : {
+              $or: [
+                { parentAssortmentId: assortmentId || { $in: assortmentIds } },
+                { childAssortmentId: assortmentId || { $in: assortmentIds } },
+              ],
+            };
 
       const links = AssortmentLinks.find(
         selector,

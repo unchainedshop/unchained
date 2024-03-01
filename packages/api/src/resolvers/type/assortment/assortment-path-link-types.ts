@@ -13,9 +13,8 @@ export interface AssortmentPathLinkHelperTypes {
 }
 
 export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
-  link: async ({ assortmentId, childAssortmentId }, _, { modules }) => {
-    // TODO: Loader
-    return modules.assortments.links.findLink({
+  link: async ({ assortmentId, childAssortmentId }, _, { loaders }) => {
+    return loaders.assortmentLinkLoader.load({
       parentAssortmentId: assortmentId,
       childAssortmentId,
     });

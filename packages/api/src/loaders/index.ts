@@ -95,6 +95,38 @@ const loaders = async (
       return getFilteredQueries({ queries, texts, filterFn });
     }),
 
+    assortmentLinkLoader: new DataLoader(async (queries) => {
+      const parentAssortmentIds = [...new Set(queries.map((q) => q.parentAssortmentId).filter(Boolean))];
+
+      const links = await unchainedAPI.modules.assortments.links.findLinks({
+        parentAssortmentIds,
+      });
+
+      return queries.map(({ parentAssortmentId, childAssortmentId }) => {
+        return links.find((link) => {
+          if (link.parentAssortmentId !== parentAssortmentId) return false;
+          if (childAssortmentId && link.childAssortmentId !== childAssortmentId) return false;
+          return true;
+        });
+      });
+    }),
+
+    // assortmentLinksLoader: new DataLoader(async (queries) => {
+    //   const parentAssortmentIds = [...new Set(queries.map((q) => q.parentAssortmentId).filter(Boolean))];
+
+    //   const links = await unchainedAPI.modules.assortments.links.findLinks({
+    //     parentAssortmentIds,
+    //   });
+
+    //   return queries.map(({ parentAssortmentId, childAssortmentId }) => {
+    //     return links.find((link) => {
+    //       if (link.parentAssortmentId !== parentAssortmentId) return false;
+    //       if (childAssortmentId && link.childAssortmentId !== childAssortmentId) return false;
+    //       return true;
+    //     });
+    //   });
+    // }),
+
     filterLoader: new DataLoader(async (queries) => {
       const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
 

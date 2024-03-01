@@ -173,7 +173,9 @@ export type AssortmentsModule = {
     findLinks: (
       query: {
         assortmentId?: string;
+        assortmentIds?: string[];
         parentAssortmentId?: string;
+        parentAssortmentIds?: string[];
       },
       options?: FindOptions,
     ) => Promise<Array<AssortmentLink>>;
