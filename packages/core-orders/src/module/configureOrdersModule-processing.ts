@@ -48,29 +48,17 @@ export const configureOrderModuleProcessing = ({
       status,
       updated: new Date(),
     };
-
     switch (status) {
       // explicitly use fallthrough here!
       case OrderStatus.FULLFILLED:
-        if (!order.fullfilled) {
-          $set.fullfilled = date;
-        }
+        $set.fullfilled = order.fullfilled || date;
       case OrderStatus.REJECTED: // eslint-disable-line no-fallthrough
-        if (!order.rejected) {
-          $set.rejected = date;
-        }
+        $set.rejected = order.rejected || date;
       case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
-        if (!order.confirmed) {
-          $set.confirmed = date;
-        }
+        $set.confirmed = order.confirmed || date;
       case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
-        if (!order.ordered) {
-          $set.ordered = date;
-        }
-        if (!order.orderNumber) {
-          // Order Numbers can be set by the user
-          $set.orderNumber = await findNewOrderNumber(order);
-        }
+        $set.ordered = order.ordered || date;
+        $set.orderNumber = order.orderNumber || (await findNewOrderNumber(order));
         break;
       default:
         break;
@@ -87,30 +75,40 @@ export const configureOrderModuleProcessing = ({
       },
     };
 
-    log(`New Status: ${status}`, { orderId });
+    const modificationResult = await Orders.findOneAndUpdate(
+      {
+        ...selector,
+        status: { $ne: status }, // Only update if status is different
+      },
+      modifier,
+      {
+        returnDocument: 'after',
+        includeResultMetadata: true,
+      },
+    );
 
-    await Orders.updateOne(selector, modifier);
-
-    const updatedOrder = await Orders.findOne(selector, {});
-    if (order.status === null) {
-      // The first time that an order transitions away from cart is a checkout event
-      await emit('ORDER_CHECKOUT', { order });
+    if (modificationResult.ok) {
+      log(`New Status: ${status}`, { orderId });
+      if (order.status === null) {
+        // The first time that an order transitions away from cart is a checkout event
+        await emit('ORDER_CHECKOUT', { order });
+      }
+      switch (status) {
+        case OrderStatus.FULLFILLED:
+          await emit('ORDER_FULLFILLED', { order });
+          break;
+        case OrderStatus.REJECTED:
+          await emit('ORDER_REJECTED', { order });
+          break;
+        case OrderStatus.CONFIRMED:
+          await emit('ORDER_CONFIRMED', { order });
+          break;
+        default:
+          break;
+      }
     }
-    switch (status) {
-      case OrderStatus.FULLFILLED:
-        await emit('ORDER_FULLFILLED', { order });
-        break;
-      case OrderStatus.REJECTED:
-        await emit('ORDER_REJECTED', { order });
-        break;
-      case OrderStatus.CONFIRMED:
-        await emit('ORDER_CONFIRMED', { order });
-        break;
-      default:
-        break;
-    }
 
-    return updatedOrder;
+    return modificationResult.value || Orders.findOne(selector, {});
   };
 
   const findOrderPositions = async (order: Order) =>
@@ -372,6 +370,7 @@ export const configureOrderModuleProcessing = ({
           { userId: order.userId, transactionContext: paymentContext },
           unchainedAPI,
         );
+
         nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }
 
@@ -385,7 +384,6 @@ export const configureOrderModuleProcessing = ({
           { userId: order.userId, transactionContext: paymentContext },
           unchainedAPI,
         );
-        nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }
 
       if (nextStatus === OrderStatus.CONFIRMED) {
@@ -398,10 +396,6 @@ export const configureOrderModuleProcessing = ({
           { userId: order.userId, transactionContext: paymentContext },
           unchainedAPI,
         );
-
-        const orderDelivery = await modules.orders.deliveries.findDelivery({
-          orderDeliveryId: order.deliveryId,
-        });
         if (order.status !== OrderStatus.CONFIRMED) {
           // we have to stop here shortly to complete the confirmation
           // before auto delivery is started, else we have no chance to create
@@ -411,6 +405,9 @@ export const configureOrderModuleProcessing = ({
             info: 'before delivery',
           });
 
+          const orderDelivery = await modules.orders.deliveries.findDelivery({
+            orderDeliveryId: order.deliveryId,
+          });
           await modules.orders.deliveries.send(
             orderDelivery,
             {
@@ -490,53 +487,7 @@ export const configureOrderModuleProcessing = ({
         nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }
 
-      order = await updateStatus(order._id, { status: nextStatus, info: 'order processed' });
-
-      if (initialOrder.status !== order.status) {
-        if (order.status === OrderStatus.REJECTED) {
-          await modules.orders.sendOrderRejectionToCustomer(order, params, unchainedAPI);
-        } else {
-          await modules.orders.sendOrderConfirmationToCustomer(order, params, unchainedAPI);
-        }
-      }
-
-      return order;
-    },
-
-    sendOrderConfirmationToCustomer: async (order, params, { modules }) => {
-      const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user);
-
-      await modules.worker.addWork({
-        type: 'MESSAGE',
-        retries: 0,
-        input: {
-          ...params,
-          locale,
-          template: 'ORDER_CONFIRMATION',
-          orderId: order._id,
-        },
-      });
-
-      return order;
-    },
-
-    sendOrderRejectionToCustomer: async (order, params, { modules }) => {
-      const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user);
-
-      await modules.worker.addWork({
-        type: 'MESSAGE',
-        retries: 0,
-        input: {
-          ...params,
-          locale,
-          template: 'ORDER_REJECTION',
-          orderId: order._id,
-        },
-      });
-
-      return order;
+      return updateStatus(order._id, { status: nextStatus, info: 'order processed' });
     },
 
     updateStatus,
