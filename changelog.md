@@ -1,3 +1,10 @@
+# Unchained Engine v2.8
+
+## Minor
+- Added Payrexx plugin
+- Changed the way order events work to fix a longstanding bug with double-messaging due to webhooks getting called in-flight. This affects ORDER_CHECKOUT, ORDER_CONFIRMED, ORDER_REJECTED & ORDER_FULLFILLED: Now the updated order is beeing emitted together with a new property "oldStatus" containing the previous order status. Also, order messaging module functions have been removed from `core-orders` and are now privately setup in `setupTemplates` @ platform.
+
+
 # Unchained Engine v2.7
 
 ## Minor
