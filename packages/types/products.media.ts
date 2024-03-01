@@ -1,4 +1,4 @@
-import type { FindOptions } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 import { Context } from './api.js';
 import { TimestampFields } from './common.js';
 import { File } from './files.js';
@@ -54,7 +54,10 @@ export type ProductMediaModule = {
 
   texts: {
     // Queries
-    findMediaTexts: (query: { productMediaId: string }) => Promise<Array<ProductMediaText>>;
+    findMediaTexts: (
+      query: Filter<ProductMediaText>,
+      options?: FindOptions,
+    ) => Promise<Array<ProductMediaText>>;
 
     findLocalizedMediaText: (query: {
       productMediaId: string;

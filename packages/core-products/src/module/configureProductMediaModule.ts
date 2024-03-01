@@ -218,8 +218,8 @@ export const configureProductMediaModule = async ({
 
     texts: {
       // Queries
-      findMediaTexts: async ({ productMediaId }) => {
-        return ProductMediaTexts.find({ productMediaId }).toArray();
+      findMediaTexts: async ({ productMediaId }, options) => {
+        return ProductMediaTexts.find({ productMediaId }, options).toArray();
       },
 
       findLocalizedMediaText: async ({ productMediaId, locale }) => {

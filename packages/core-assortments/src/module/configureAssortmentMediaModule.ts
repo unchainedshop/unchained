@@ -219,8 +219,8 @@ export const configureAssortmentMediaModule = async ({
 
     texts: {
       // Queries
-      findMediaTexts: async ({ assortmentMediaId }) => {
-        return AssortmentMediaTexts.find({ assortmentMediaId }).toArray();
+      findMediaTexts: async ({ assortmentMediaId }, options) => {
+        return AssortmentMediaTexts.find({ assortmentMediaId }, options).toArray();
       },
 
       findLocalizedMediaText: async ({ assortmentMediaId, locale }) => {

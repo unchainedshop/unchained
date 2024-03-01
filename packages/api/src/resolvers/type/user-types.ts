@@ -153,8 +153,9 @@ export const User: UserHelperTypes = {
 
   avatar: async (user, params, context) => {
     await checkAction(context, viewUserPublicInfos, [user, params]);
-    return context.modules.files.findFile({
-      fileId: user.avatarId as string,
+    const { loaders } = context;
+    return loaders.fileLoader.load({
+      fileId: user.avatarId,
     });
   },
 
