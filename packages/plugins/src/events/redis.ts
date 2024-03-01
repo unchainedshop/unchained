@@ -1,17 +1,19 @@
 import { createClient } from '@redis/client';
 import { setEmitAdapter, EmitAdapter } from '@unchainedshop/events';
 
-const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
+const { REDIS_PORT = '6379', REDIS_HOST = '127.0.0.1', REDIS_DB = '0' } = process.env;
 
 const subscribedEvents = new Set();
 
 const RedisEventEmitter = (): EmitAdapter => {
   const redisPublisher = createClient({
     url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
+    database: parseInt(REDIS_DB, 10),
   });
 
   const redisSubscriber = createClient({
     url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
+    database: parseInt(REDIS_DB, 10),
   });
 
   return {
