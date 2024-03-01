@@ -223,7 +223,8 @@ export type AssortmentsModule = {
 
     findProducts: (
       params: {
-        assortmentId: string;
+        assortmentId?: string;
+        assortmentIds?: Array<string>;
       },
       options?: FindOptions,
     ) => Promise<Array<AssortmentProduct>>;

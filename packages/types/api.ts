@@ -4,7 +4,7 @@ import type { Locale } from 'locale';
 import type DataLoader from 'dataloader';
 import { User } from './user.js';
 import { UnchainedCore } from './core.js';
-import { Assortment, AssortmentLink, AssortmentText } from './assortments.js';
+import { Assortment, AssortmentLink, AssortmentProduct, AssortmentText } from './assortments.js';
 import { AssortmentMediaText } from './assortments.media.js';
 import { Filter, FilterText } from './filters.js';
 import { File } from './files.js';
@@ -61,6 +61,12 @@ export interface UnchainedLoaders {
     >;
     assortmentLinkLoader: InstanceType<
       typeof DataLoader<{ parentAssortmentId: string; childAssortmentId: string }, AssortmentLink>
+    >;
+    assortmentLinksLoader: InstanceType<
+      typeof DataLoader<{ parentAssortmentId?: string; assortmentId?: string }, AssortmentLink[]>
+    >;
+    assortmentProductLoader: InstanceType<
+      typeof DataLoader<{ assortmentId: string; productId: string }, AssortmentProduct>
     >;
     assortmentMediaTextLoader: InstanceType<
       typeof DataLoader<{ assortmentMediaId: string; locale: string }, AssortmentMediaText>

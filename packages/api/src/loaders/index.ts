@@ -111,21 +111,54 @@ const loaders = async (
       });
     }),
 
-    // assortmentLinksLoader: new DataLoader(async (queries) => {
-    //   const parentAssortmentIds = [...new Set(queries.map((q) => q.parentAssortmentId).filter(Boolean))];
+    assortmentLinksLoader: new DataLoader(async (queries) => {
+      const parentAssortmentIds = [
+        ...new Set(queries.flatMap((q) => q.parentAssortmentId).filter(Boolean)),
+      ];
+      const assortmentIds = [...new Set(queries.flatMap((q) => q.assortmentId).filter(Boolean))];
 
-    //   const links = await unchainedAPI.modules.assortments.links.findLinks({
-    //     parentAssortmentIds,
-    //   });
+      const linksByParentAssortmentId =
+        parentAssortmentIds?.length &&
+        (await unchainedAPI.modules.assortments.links.findLinks({
+          parentAssortmentIds,
+        }));
+      const linksByAssortmentId =
+        assortmentIds?.length &&
+        (await unchainedAPI.modules.assortments.links.findLinks({
+          assortmentIds,
+        }));
 
-    //   return queries.map(({ parentAssortmentId, childAssortmentId }) => {
-    //     return links.find((link) => {
-    //       if (link.parentAssortmentId !== parentAssortmentId) return false;
-    //       if (childAssortmentId && link.childAssortmentId !== childAssortmentId) return false;
-    //       return true;
-    //     });
-    //   });
-    // }),
+      return queries.map(({ parentAssortmentId, assortmentId }) => {
+        if (parentAssortmentId) {
+          return linksByParentAssortmentId.filter(
+            (link) => link.parentAssortmentId === parentAssortmentId,
+          );
+        }
+        if (assortmentId) {
+          return linksByAssortmentId.filter(
+            (link) =>
+              link.parentAssortmentId === assortmentId || link.childAssortmentId === assortmentId,
+          );
+        }
+        return [];
+      });
+    }),
+
+    assortmentProductLoader: new DataLoader(async (queries) => {
+      const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+
+      const assortmentProducts = await unchainedAPI.modules.assortments.products.findProducts({
+        assortmentIds,
+      });
+
+      return queries.map(({ assortmentId, productId }) => {
+        return assortmentProducts.find((assortmentProduct) => {
+          if (assortmentProduct.assortmentId !== assortmentId) return false;
+          if (assortmentProduct.productId !== productId) return false;
+          return true;
+        });
+      });
+    }),
 
     filterLoader: new DataLoader(async (queries) => {
       const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];

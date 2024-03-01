@@ -60,11 +60,11 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
-  childrenCount: async (assortment, { includeInactive = false }, { modules }) => {
-    // TODO: Loader
-    const assortmentChildLinks = await modules.assortments.links.findLinks({
+  childrenCount: async (assortment, { includeInactive = false }, { modules, loaders }) => {
+    const assortmentChildLinks = await loaders.assortmentLinksLoader.load({
       parentAssortmentId: assortment._id,
     });
+
     const assortmentIds = assortmentChildLinks.map(({ childAssortmentId }) => childAssortmentId);
 
     return modules.assortments.count({
@@ -86,10 +86,9 @@ export const Assortment: AssortmentHelperTypes = {
     );
   },
 
-  async linkedAssortments(obj, _, { modules }) {
-    // TODO: Loader
-    return modules.assortments.links.findLinks({
-      assortmentId: obj._id,
+  async linkedAssortments(assortment, _, { loaders }) {
+    return loaders.assortmentLinksLoader.load({
+      assortmentId: assortment._id,
     });
   },
 
