@@ -137,6 +137,10 @@ const Payrexx: IPaymentAdapter = {
 
         const gatewayObject = await api.getGateway(gatewayId);
 
+        if (!gatewayObject) {
+          throw new Error('Could not load gateway from the Payrexx API');
+        }
+
         const pricing = await modules.orders.pricingSheet(order);
         const { currency, amount } = pricing.total({ useNetPrice: false });
 

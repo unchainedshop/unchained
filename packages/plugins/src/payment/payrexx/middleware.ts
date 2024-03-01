@@ -14,18 +14,19 @@ export const payrexxHandler = async (request, response) => {
       type: Object.keys(request.body).join(','),
     });
     response.writeHead(200);
-    response.end({
-      ignored: true,
-      message: `Unhandled event type: ${Object.keys(request.body).join(',')}. Supported type: transaction`,
-    });
+    response.end(
+      JSON.stringify({
+        ignored: true,
+        message: `Unhandled event type: ${Object.keys(request.body).join(',')}. Supported type: transaction`,
+      }),
+    );
   }
 
   logger.verbose(`Processing event`, {
     transactionId: transaction.id,
   });
   try {
-    const { referenceId: orderPaymentId } = transaction;
-
+    const { referenceId: orderPaymentId, invoice } = transaction;
     logger.verbose(`checkout with orderPaymentId: ${orderPaymentId}`);
     await modules.orders.payments.logEvent(orderPaymentId, {
       transactionId: transaction.id,
@@ -40,7 +41,7 @@ export const payrexxHandler = async (request, response) => {
       orderPayment.orderId,
       {
         paymentContext: {
-          transactionId: transaction.id,
+          gatewayId: invoice.paymentRequestId,
         },
       },
       resolvedContext,
@@ -50,10 +51,12 @@ export const payrexxHandler = async (request, response) => {
       orderId: order._id,
     });
     response.writeHead(200);
-    response.end({
-      message: 'checkout successful',
-      orderId: order._id,
-    });
+    response.end(
+      JSON.stringify({
+        message: 'checkout successful',
+        orderId: order._id,
+      }),
+    );
   } catch (error) {
     logger.error(error, {
       transactionId: transaction.id,
