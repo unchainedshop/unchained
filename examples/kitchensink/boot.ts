@@ -16,6 +16,7 @@ import { log } from '@unchainedshop/logger';
 import serveStatic from 'serve-static';
 
 import seed from './seed.js';
+import { UnchainedUserContext } from '@unchainedshop/types/api.js';
 
 const start = async () => {
   const app = express();
@@ -33,8 +34,7 @@ const start = async () => {
           return (ctx.contextValue as any).userId || null;
         },
         async shouldReadFromCache(ctx) {
-          const bustCache = (ctx.contextValue as any).req.headers['x-unchained-bust-cache'];
-          if (bustCache === 'true') return false;
+          if ((ctx.contextValue as UnchainedUserContext)?.user?.roles?.includes('admin')) return false;
           return true;
         },
       }),
