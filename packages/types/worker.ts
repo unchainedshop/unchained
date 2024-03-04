@@ -25,6 +25,7 @@ export type Work = {
   success?: boolean;
   timeout?: number;
   worker?: string;
+  autoscheduled?: boolean;
 } & TimestampFields;
 
 /*
@@ -83,6 +84,8 @@ export type WorkerModule = {
 
   ensureOneWork: (work: WorkData, workId: string) => Promise<Work>;
 
+  ensureNoWork: (work: { priority: number; type: string }) => Promise<void>;
+
   finishWork: (
     _id: string,
     data: WorkResult<any> & {
@@ -127,7 +130,7 @@ export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   getActivePluginTypes: (options?: { external?: boolean }) => Array<string>;
   getAdapterByType: (type: string) => IWorkerAdapter<any, any>;
-  disableAutoscheduling: (type: string) => void;
+  disableAutoscheduling: (scheduleId: string) => void;
   configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
   doWork: (work: Work, unchainedAPI: UnchainedCore) => Promise<WorkResult<any>>;

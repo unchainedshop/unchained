@@ -38,7 +38,21 @@ export const WorkerDirector: IWorkerDirector = {
   },
 
   disableAutoscheduling: (type) => {
-    AutoScheduleMap.delete(type);
+    const config = AutoScheduleMap.get(type);
+    AutoScheduleMap.set(type, { ...config, schedule: null });
+  },
+
+  unregisterAdapter: (key) => {
+    const adapter = WorkerDirector.getAdapter(key);
+    const result = baseDirector.unregisterAdapter(key);
+    if (adapter) {
+      AutoScheduleMap.forEach((workItemConfiguration, scheduleId) => {
+        if (workItemConfiguration.type === adapter.type) {
+          AutoScheduleMap.delete(scheduleId);
+        }
+      });
+    }
+    return result;
   },
 
   configureAutoscheduling: (workItemConfiguration) => {

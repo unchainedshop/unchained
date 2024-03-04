@@ -43,6 +43,14 @@ export const BaseWorker: IWorker<WorkerParams> = {
       autorescheduleTypes: async ({ referenceDate }) => {
         return Promise.all(
           WorkerDirector.getAutoSchedules().map(async ([scheduleId, workConfig]) => {
+            if (!workConfig.schedule) {
+              await unchainedAPI.modules.worker.ensureNoWork({
+                type: workConfig.type,
+                priority: workConfig.priority || 0,
+              });
+              return null;
+            }
+
             const fixedSchedule = { ...workConfig.schedule };
             fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
             const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);

@@ -371,6 +371,21 @@ export const configureWorkerModule = async ({
 
     allocateWork,
 
+    ensureNoWork: async ({ type, priority = 0 }) => {
+      const query = buildQuerySelector({
+        type,
+        status: [WorkStatus.NEW],
+        priority,
+        autoscheduled: true,
+      });
+
+      await WorkQueue.updateMany(query, {
+        $set: {
+          deleted: new Date(),
+        },
+      });
+    },
+
     ensureOneWork: async (
       { type, input, priority = 0, scheduled, timeout, originalWorkId, retries = 20 },
       workId,
@@ -378,8 +393,9 @@ export const configureWorkerModule = async ({
       const created = new Date();
       const query = buildQuerySelector({
         type,
-        status: [WorkStatus.NEW],
+        status: [WorkStatus.NEW, WorkStatus.DELETED],
         priority,
+        autoscheduled: true,
       });
       try {
         const result = await WorkQueue.findOneAndUpdate(
@@ -389,16 +405,20 @@ export const configureWorkerModule = async ({
               input,
               worker: null,
               updated: created,
+              scheduled,
+              retries,
+              timeout,
+              originalWorkId,
+            },
+            $unset: {
+              deleted: 1,
             },
             $setOnInsert: {
               _id: workId,
               type,
-              priority,
-              originalWorkId,
-              scheduled,
-              retries,
-              timeout,
               created,
+              autoscheduled: true,
+              priority,
             },
           },
           {
