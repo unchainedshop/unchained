@@ -1,4 +1,4 @@
-import { Filter, FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
+import { Filter, SearchQuery } from '@unchainedshop/types/filters.js';
 import { mongodb } from '@unchainedshop/mongodb';
 
 const defaultSelector = (searchQuery: SearchQuery) => {
@@ -22,10 +22,4 @@ const defaultSelector = (searchQuery: SearchQuery) => {
   return selector;
 };
 
-export const resolveFilterSelector = async (
-  searchQuery: SearchQuery,
-  filterActions: FilterAdapterActions,
-) => {
-  const selector = defaultSelector(searchQuery);
-  return filterActions.transformFilterSelector(selector);
-};
+export default defaultSelector;

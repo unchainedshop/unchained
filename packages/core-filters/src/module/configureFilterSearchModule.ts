@@ -1,17 +1,15 @@
-import { Filter, FiltersModule } from '@unchainedshop/types/filters.js';
+import { Filter, FilterAdapterActions, FiltersModule } from '@unchainedshop/types/filters.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { FilterDirector } from '../director/FilterDirector.js';
-import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch.js';
 import { cleanQuery } from '../search/cleanQuery.js';
 import { loadFilter } from '../search/loadFilter.js';
 import { productFacetedSearch } from '../search/productFacetedSearch.js';
-import { productFulltextSearch } from '../search/productFulltextSearch.js';
-import { resolveAssortmentSelector } from '../search/resolveAssortmentSelector.js';
-import { resolveFilterSelector } from '../search/resolveFilterSelector.js';
-import { resolveProductSelector } from '../search/resolveProductSelector.js';
-import { resolveSortStage } from '../search/resolveSortStage.js';
+import defaultAssortmentSelector from '../search/defaultAssortmentSelector.js';
+import defaultFilterSelector from '../search/defaultFilterSelector.js';
+import defaultProductSelector from '../search/defaultProductSelector.js';
+import defaultSortStage from '../search/resolveSortStage.js';
 import {
   FilterProductIds,
   SearchAssortmentConfiguration,
@@ -28,7 +26,11 @@ const findFilters =
       filterActions,
       filterProductIds,
       productIds,
-    }: SearchProductConfiguration & { filterProductIds: FilterProductIds; productIds?: string[] },
+    }: SearchProductConfiguration & {
+      filterActions: FilterAdapterActions;
+      filterProductIds: FilterProductIds;
+      productIds?: string[];
+    },
     unchainedAPI: UnchainedCore,
   ) =>
   async () => {
@@ -79,26 +81,28 @@ export const configureFilterSearchModule = ({
   filterProductIds: FilterProductIds;
 }): FiltersModule['search'] => {
   return {
-    searchAssortments: async (searchQuery, { forceLiveCollection }, unchainedAPI) => {
+    searchAssortments: async (rawSearchQuery, { forceLiveCollection }, unchainedAPI) => {
       const { modules } = unchainedAPI;
 
-      const query = cleanQuery(searchQuery);
-      const filterActions = await FilterDirector.actions({ searchQuery: query }, unchainedAPI);
-      const filterSelector = await resolveFilterSelector(query, filterActions);
-      const assortmentSelector = resolveAssortmentSelector(query);
-      const sortStage = await resolveSortStage(query, filterActions);
+      const searchQuery = cleanQuery(rawSearchQuery);
+      const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);
+      const filterSelector = await filterActions.transformFilterSelector(
+        defaultFilterSelector(searchQuery),
+      );
+      const assortmentSelector = defaultAssortmentSelector(searchQuery);
+      const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery));
 
       const searchConfiguration: SearchAssortmentConfiguration = {
-        query,
+        query: searchQuery,
         filterSelector,
         assortmentSelector,
         sortStage,
         forceLiveCollection,
-        filterActions,
       };
 
-      const assortmentIds = await query.assortmentIds;
-      const totalAssortmentIds = await assortmentFulltextSearch(searchConfiguration)(assortmentIds);
+      const assortmentIds = await searchQuery.assortmentIds;
+      const totalAssortmentIds =
+        (await filterActions.searchAssortments({ assortmentIds }, searchConfiguration)) || [];
 
       const assortmentsCount = async () =>
         modules.assortments.count({
@@ -119,28 +123,33 @@ export const configureFilterSearchModule = ({
       };
     },
 
-    searchProducts: async (searchQuery, { forceLiveCollection }, unchainedAPI) => {
+    searchProducts: async (rawSearchQuery, { forceLiveCollection }, unchainedAPI) => {
       const { modules } = unchainedAPI;
 
-      const query = cleanQuery(searchQuery);
-      const filterActions = await FilterDirector.actions({ searchQuery: query }, unchainedAPI);
-      const filterSelector = await resolveFilterSelector(query, filterActions);
-      const productSelector = await resolveProductSelector(query, filterActions, unchainedAPI);
-      const sortStage = await resolveSortStage(query, filterActions);
+      const searchQuery = cleanQuery(rawSearchQuery);
+      const filterActions = await FilterDirector.actions({ searchQuery }, unchainedAPI);
+      const filterSelector = await filterActions.transformFilterSelector(
+        defaultFilterSelector(searchQuery),
+      );
+      const productSelector = await filterActions.transformProductSelector(
+        defaultProductSelector(searchQuery, unchainedAPI),
+        {},
+      );
+      const sortStage = await filterActions.transformSortStage(defaultSortStage(searchQuery));
 
       const searchConfiguration: SearchProductConfiguration = {
-        query,
+        query: searchQuery,
         filterSelector,
         productSelector,
         sortStage,
         forceLiveCollection,
-        filterActions,
       };
 
-      const productIds = await query.productIds;
-      const totalProductIds = await productFulltextSearch(searchConfiguration)(productIds);
+      const productIds = await searchQuery.productIds;
+      const totalProductIds =
+        (await filterActions.searchProducts({ productIds }, searchConfiguration)) || [];
 
-      if (query.productIds?.length === 0) {
+      if (searchQuery.productIds?.length === 0) {
         // Restricted to an empty array of products
         // will always lead to an empty result
         return {
@@ -148,7 +157,7 @@ export const configureFilterSearchModule = ({
           filteredProductsCount: async () => 0,
           products: async () => [] as Array<Product>,
           filters: findFilters(
-            { ...searchConfiguration, productIds: totalProductIds, filterProductIds },
+            { ...searchConfiguration, filterActions, productIds: totalProductIds, filterProductIds },
             unchainedAPI,
           ),
         };

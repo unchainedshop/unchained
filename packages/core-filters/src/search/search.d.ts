@@ -1,6 +1,6 @@
 import { FindOptions } from '@unchainedshop/types/common.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
+import { SearchQuery } from '@unchainedshop/types/filters.js';
 
 export type CleanedSearchQuery = Omit<SearchQuery, 'query'> & {
   filterQuery: Record<string, Array<string>>;
@@ -11,7 +11,6 @@ export interface SearchConfiguration {
   filterSelector: Query;
   sortStage: FindOptions['sort'];
   forceLiveCollection: boolean;
-  filterActions: FilterAdapterActions;
 }
 
 export interface SearchProductConfiguration extends SearchConfiguration {
