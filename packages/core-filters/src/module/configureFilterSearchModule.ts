@@ -1,6 +1,7 @@
 import { Filter, FiltersModule } from '@unchainedshop/types/filters.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { mongodb } from '@unchainedshop/mongodb';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch.js';
 import { cleanQuery } from '../search/cleanQuery.js';
@@ -17,6 +18,59 @@ import {
   SearchProductConfiguration,
 } from '../search/search.js';
 
+const findFilters =
+  (
+    {
+      filterSelector,
+      productSelector,
+      query,
+      forceLiveCollection,
+      filterActions,
+      filterProductIds,
+      productIds,
+    }: SearchProductConfiguration & { filterProductIds: FilterProductIds; productIds?: string[] },
+    unchainedAPI: UnchainedCore,
+  ) =>
+  async () => {
+    if (!filterSelector) return [];
+
+    const extractedFilterIds = (filterSelector?._id as any)?.$in || [];
+    const otherFilters = await unchainedAPI.modules.filters.findFilters(filterSelector);
+    const sortedFilters = otherFilters.sort((left, right) => {
+      const leftIndex = extractedFilterIds.indexOf(left._id);
+      const rightIndex = extractedFilterIds.indexOf(right._id);
+      return leftIndex - rightIndex;
+    });
+
+    const relevantProducts = await unchainedAPI.modules.products.findProducts(
+      {
+        productSelector,
+        productIds,
+        includeDrafts: query.includeInactive,
+      },
+      {
+        projection: { _id: 1 },
+      },
+    );
+    const relevantProductIds = relevantProducts.map(({ _id }) => _id);
+    return Promise.all(
+      sortedFilters.map(async (filter) => {
+        return loadFilter(
+          filter,
+          {
+            allProductIds: relevantProductIds,
+            filterQuery: query.filterQuery,
+            forceLiveCollection,
+            otherFilters,
+          },
+          filterProductIds,
+          filterActions,
+          unchainedAPI,
+        );
+      }),
+    );
+  };
+
 export const configureFilterSearchModule = ({
   Filters,
   filterProductIds,
@@ -24,58 +78,6 @@ export const configureFilterSearchModule = ({
   Filters: mongodb.Collection<Filter>;
   filterProductIds: FilterProductIds;
 }): FiltersModule['search'] => {
-  const findFilters =
-    (
-      {
-        filterSelector,
-        productSelector,
-        query,
-        forceLiveCollection,
-        filterActions,
-      }: SearchProductConfiguration,
-      totalProductIds: any,
-      unchainedAPI,
-    ) =>
-    async () => {
-      if (!filterSelector) return [];
-
-      const extractedFilterIds = (filterSelector?._id as any)?.$in || [];
-      const otherFilters = await Filters.find(filterSelector).toArray();
-      const sortedFilters = otherFilters.sort((left, right) => {
-        const leftIndex = extractedFilterIds.indexOf(left._id);
-        const rightIndex = extractedFilterIds.indexOf(right._id);
-        return leftIndex - rightIndex;
-      });
-
-      const relevantProducts = await unchainedAPI.modules.products.findProducts(
-        {
-          productSelector,
-          productIds: totalProductIds,
-          includeDrafts: query.includeInactive,
-        },
-        {
-          projection: { _id: 1 },
-        },
-      );
-      const relevantProductIds = relevantProducts.map(({ _id }) => _id);
-      return Promise.all(
-        sortedFilters.map(async (filter) => {
-          return loadFilter(
-            filter,
-            {
-              allProductIds: relevantProductIds,
-              filterQuery: query.filterQuery,
-              forceLiveCollection,
-              otherFilters,
-            },
-            filterProductIds,
-            filterActions,
-            unchainedAPI,
-          );
-        }),
-      );
-    };
-
   return {
     searchAssortments: async (searchQuery, { forceLiveCollection }, unchainedAPI) => {
       const { modules } = unchainedAPI;
@@ -145,7 +147,10 @@ export const configureFilterSearchModule = ({
           productsCount: async () => 0,
           filteredProductsCount: async () => 0,
           products: async () => [] as Array<Product>,
-          filters: findFilters(searchConfiguration, totalProductIds, unchainedAPI),
+          filters: findFilters(
+            { ...searchConfiguration, productIds: totalProductIds, filterProductIds },
+            unchainedAPI,
+          ),
         };
       }
 
