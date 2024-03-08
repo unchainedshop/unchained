@@ -393,7 +393,7 @@ export const configureWorkerModule = async ({
       const created = new Date();
       const query = buildQuerySelector({
         type,
-        status: [WorkStatus.NEW, WorkStatus.DELETED],
+        status: [WorkStatus.NEW],
         priority,
         autoscheduled: true,
       });
@@ -405,7 +405,6 @@ export const configureWorkerModule = async ({
               input,
               worker: null,
               updated: created,
-              scheduled,
               retries,
               timeout,
               originalWorkId,
@@ -415,6 +414,7 @@ export const configureWorkerModule = async ({
             },
             $setOnInsert: {
               _id: workId,
+              scheduled,
               type,
               created,
               autoscheduled: true,
