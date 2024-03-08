@@ -29,6 +29,5 @@ export const createUserCartService: CreateUserCartService = async (
         : {}),
   });
 
-  await modules.orders.initProviders(order, unchainedAPI);
-  return order;
+  return modules.orders.initProviders(order, unchainedAPI);
 };
