@@ -85,7 +85,6 @@ module.exports = {
             'write-plugins/event',
           ],
           'API Reference': [
-            '[GraphQL API Reference](https://docs.unchained.shop/api)',
             '[GraphQL API Playground](https://engine.unchained.shop/graphql)',
             '[JS Reference](https://docs.unchained.shop/types)',
           ],
