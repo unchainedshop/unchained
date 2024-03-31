@@ -93,9 +93,7 @@ const Payrexx: IPaymentAdapter = {
         ) {
           const allTransactions = gatewayObject.invoices?.flatMap((invoice) => invoice.transactions);
           await Promise.all(
-            allTransactions.map(async (transaction) =>
-              api.chargePreAuthorized(transaction.id, { referenceId: orderPayment._id }),
-            ),
+            allTransactions.map(async (transaction) => api.chargePreAuthorized(transaction.id, {})),
           );
           return true;
         }
