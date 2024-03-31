@@ -25,6 +25,17 @@ export const payrexxHandler = async (request, response) => {
   if (transaction.status === 'confirmed') {
     // Ignore confirmed transactions, because those hooks are generated through calling the confirm()
     // method in the payment adapter and could lead to double bookings.
+    logger.verbose(`unhandled event state`, {
+      type: Object.keys(request.body).join(','),
+    });
+    response.writeHead(200);
+    response.end(
+      JSON.stringify({
+        ignored: true,
+        message: `Unhandled event state: transaction.confirmed`,
+      }),
+    );
+    return;
   }
 
   logger.verbose(`Processing event`, {
