@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/plugins",
-  "version": "2.8.6",
+  "version": "2.8.7",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {

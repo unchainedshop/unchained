@@ -20,6 +20,7 @@ export const payrexxHandler = async (request, response) => {
         message: `Unhandled event type: ${Object.keys(request.body).join(',')}. Supported type: transaction`,
       }),
     );
+    return;
   }
   if (transaction.status === 'confirmed') {
     // Ignore confirmed transactions, because those hooks are generated through calling the confirm()
