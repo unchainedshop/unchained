@@ -1,3 +1,5 @@
+import makeFetcher from './makeFetcher.js';
+
 const baseUrl = 'https://api.payrexx.com/v1.0/';
 
 export enum GatewayObjectStatus {
@@ -29,93 +31,43 @@ export type GatewayObject = {
 
 export type TransactionObject = any;
 
-const createPayrexxAPI = (instance: string, secret: string) => ({
-  async buildSignature(query = '') {
-    const key = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(secret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign', 'verify'],
-    );
-    const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(query));
-    return btoa(String.fromCharCode(...new Uint8Array(signature)));
-  },
+const createPayrexxAPI = (instance: string, secret: string) => {
+  const fetchPayrexx = makeFetcher(baseUrl, instance, secret);
 
-  buildUrl(path, params = {}) {
-    const url = new URL(path, baseUrl);
-    url.search = new URLSearchParams({ instance, ...params }).toString();
-    return url.href;
-  },
+  return {
+    async chargePreAuthorized(id, params) {
+      const result = await fetchPayrexx(`Transaction/${id}`, 'POST', params);
+      if (result.ok) {
+        return result.json();
+      }
+      throw new Error(await result.text());
+    },
 
-  async chargePreAuthorized(id, params) {
-    const queryParams = { ...params };
-    const signature = await this.buildSignature(new URLSearchParams(queryParams).toString());
-    queryParams.ApiSignature = signature;
+    async deleteReservation(id) {
+      const result = await fetchPayrexx(`Transaction/${id}`, 'DELETE');
+      if (result.ok) {
+        return result.json();
+      }
+      throw new Error(await result.text());
+    },
 
-    const url = this.buildUrl(`Transaction/${id}/`);
+    async getGateway(id): Promise<GatewayObject> {
+      const result = await fetchPayrexx(`Gateway/${id}`, 'GET');
+      if (!result.ok) throw new Error(await result.text());
+      const { status, data } = await result.json();
+      if (status !== 'success') return null;
+      return data?.[0];
+    },
 
-    const result = await fetch(url, {
-      method: 'POST',
-      body: new URLSearchParams(queryParams).toString(),
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/x-www-form-urlencoded',
-      },
-    });
-
-    if (result.ok) {
-      return result.json();
-    }
-    throw new Error(await result.text());
-  },
-
-  async deleteReservation(id) {
-    const url = this.buildUrl(`Transaction/${id}/`, { ApiSignature: await this.buildSignature() });
-    const result = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/x-www-form-urlencoded',
-      },
-    });
-
-    if (result.ok) {
-      return result.json();
-    }
-    throw new Error(await result.text());
-  },
-
-  async getGateway(id): Promise<GatewayObject> {
-    const url = this.buildUrl(`Gateway/${id}/`, { ApiSignature: await this.buildSignature() });
-    const result = await fetch(url);
-    if (!result.ok) throw new Error(await result.text());
-    const { status, data } = await result.json();
-    if (status !== 'success') return null;
-    return data?.[0];
-  },
-
-  async createGateway(params): Promise<GatewayObject> {
-    const queryParams = { ...params };
-    const signature = await this.buildSignature(new URLSearchParams(queryParams).toString());
-    queryParams.ApiSignature = signature;
-
-    const url = this.buildUrl('Gateway/');
-    const result = await fetch(url, {
-      method: 'POST',
-      body: new URLSearchParams(queryParams).toString(),
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/x-www-form-urlencoded',
-      },
-    });
-
-    if (result.ok) {
-      return result.json();
-    }
-    throw new Error(await result.text());
-  },
-});
+    async createGateway(params): Promise<GatewayObject> {
+      const result = await fetchPayrexx('Gateway', 'POST', params);
+      if (result.ok) {
+        return result.json();
+      }
+      throw new Error(await result.text());
+    },
+  };
+};
 
 export default createPayrexxAPI;
 

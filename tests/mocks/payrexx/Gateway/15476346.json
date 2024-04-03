@@ -1,0 +1,106 @@
+{
+    "data": [
+        {
+            "amount": 21580,
+            "applicationFee": 0,
+            "createdAt": 1712144500,
+            "currency": "CHF",
+            "fields": [],
+            "hash": "8abaa0dd004e00ace22a85b93a2c5a3a",
+            "id": 15484649,
+            "invoices": [
+                {
+                    "amount": 21580,
+                    "currency": "CHF",
+                    "discount": {
+                        "amount": 0,
+                        "code": null,
+                        "percentage": null
+                    },
+                    "googleAnalyticProducts": [
+                        {
+                            "item_id": 18749023,
+                            "item_name": "Unchained%20%23417c7af72c8e7579a5017397",
+                            "price": 215.8,
+                            "quantity": 1
+                        }
+                    ],
+                    "number": "Unchained%20%23417c7af72c8e7579a5017397",
+                    "paymentLink": {
+                        "email": "",
+                        "hash": "8abaa0dd004e00ace22a85b93a2c5a3a",
+                        "referenceId": "84116784ee574755eed10df8"
+                    },
+                    "paymentRequestId": 15484649,
+                    "products": [
+                        {
+                            "name": "Unchained%20%23417c7af72c8e7579a5017397",
+                            "price": 21580,
+                            "quantity": 1,
+                            "sku": null,
+                            "vatRate": null
+                        }
+                    ],
+                    "referenceId": "84116784ee574755eed10df8",
+                    "shippingAmount": null,
+                    "test": 1,
+                    "transactions": [
+                        {
+                            "amount": 21580,
+                            "contact": {
+                                "company": "",
+                                "country": "",
+                                "countryISO": "",
+                                "date_of_birth": "",
+                                "delivery_company": "",
+                                "delivery_country": "",
+                                "delivery_countryISO": "",
+                                "delivery_firstname": "",
+                                "delivery_lastname": "",
+                                "delivery_place": "",
+                                "delivery_street": "",
+                                "delivery_title": "",
+                                "delivery_zip": "",
+                                "email": "",
+                                "firstname": "",
+                                "id": 7571542,
+                                "lastname": "",
+                                "phone": "",
+                                "place": "",
+                                "street": "",
+                                "title": "",
+                                "uuid": "b5b27055",
+                                "zip": ""
+                            },
+                            "id": 14263484,
+                            "lang": "de",
+                            "metadata": [],
+                            "mode": "TEST",
+                            "pageUuid": null,
+                            "payment": {
+                                "brand": null
+                            },
+                            "payrexx_fee": 0,
+                            "psp": "Reka",
+                            "pspId": 23,
+                            "referenceId": "84116784ee574755eed10df8",
+                            "status": "waiting",
+                            "subscription": null,
+                            "time": "2024-04-03 13:41:48",
+                            "uuid": "58a18a83"
+                        }
+                    ]
+                }
+            ],
+            "link": "https://unchained-test.payrexx.com/?payment=8abaa0dd004e00ace22a85b93a2c5a3a",
+            "pm": [],
+            "preAuthorization": false,
+            "psp": [],
+            "referenceId": "84116784ee574755eed10df8",
+            "sku": null,
+            "status": "waiting",
+            "vatRate": 0
+        }
+    ],
+    "status": "success"
+}

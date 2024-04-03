@@ -1,0 +1,24 @@
+{
+    "data": [
+        {
+            "amount": 21580,
+            "applicationFee": 0,
+            "createdAt": 1712144500,
+            "currency": "CHF",
+            "fields": [],
+            "hash": "8abaa0dd004e00ace22a85b93a2c5a3a",
+            "id": 15484649,
+            "invoices": [],
+            "link": "https://unchained-test.payrexx.com/?payment=8abaa0dd004e00ace22a85b93a2c5a3a",
+            "pm": [],
+            "preAuthorization": false,
+            "psp": [],
+            "referenceId": "84116784ee574755eed10df8",
+            "requestId": 15551049,
+            "sku": null,
+            "status": "waiting",
+            "vatRate": 0
+        }
+    ],
+    "status": "success"
+}
