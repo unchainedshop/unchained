@@ -212,7 +212,6 @@ describe('Plugins: Payrexx Payments', () => {
           body: JSON.stringify(webhookBody),
         },
       );
-      console.log(await result.text())
       expect(result.status).toBe(200);
     });
 

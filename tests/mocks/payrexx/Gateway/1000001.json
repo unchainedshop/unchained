@@ -1,7 +1,7 @@
 {
     "data": [
         {
-            "amount": 21580,
+            "amount": 30000,
             "applicationFee": 0,
             "createdAt": 1712144500,
             "currency": "CHF",
@@ -10,7 +10,7 @@
             "id": 15484649,
             "invoices": [
                 {
-                    "amount": 21580,
+                    "amount": 30000,
                     "currency": "CHF",
                     "discount": {
                         "amount": 0,
@@ -29,24 +29,24 @@
                     "paymentLink": {
                         "email": "",
                         "hash": "8abaa0dd004e00ace22a85b93a2c5a3a",
-                        "referenceId": "84116784ee574755eed10df8"
+                        "referenceId": "1111112222"
                     },
                     "paymentRequestId": 15484649,
                     "products": [
                         {
                             "name": "Unchained%20%23417c7af72c8e7579a5017397",
-                            "price": 21580,
+                            "price": 30000,
                             "quantity": 1,
                             "sku": null,
                             "vatRate": null
                         }
                     ],
-                    "referenceId": "84116784ee574755eed10df8",
+                    "referenceId": "1111112222",
                     "shippingAmount": null,
                     "test": 1,
                     "transactions": [
                         {
-                            "amount": 21580,
+                            "amount": 30000,
                             "contact": {
                                 "company": "",
                                 "country": "",
@@ -83,8 +83,8 @@
                             "payrexx_fee": 0,
                             "psp": "Reka",
                             "pspId": 23,
-                            "referenceId": "84116784ee574755eed10df8",
-                            "status": "waiting",
+                            "referenceId": "1111112222",
+                            "status": "confirmed",
                             "subscription": null,
                             "time": "2024-04-03 13:41:48",
                             "uuid": "58a18a83"
@@ -96,9 +96,9 @@
             "pm": [],
             "preAuthorization": false,
             "psp": [],
-            "referenceId": "84116784ee574755eed10df8",
+            "referenceId": "1111112222",
             "sku": null,
-            "status": "waiting",
+            "status": "confirmed",
             "vatRate": 0
         }
     ],

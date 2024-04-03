@@ -15,16 +15,18 @@ export default (
   instance: string = null,
   secret: string = null,
 ): ((path: string, method: 'GET' | 'DELETE' | 'PUT' | 'POST', data?: any) => Promise<Response>) => {
-  console.log(baseUrl, instance, secret, PAYREXX_API_MOCKS_PATH);
   if (PAYREXX_API_MOCKS_PATH) {
     return async (path): Promise<Response> => {
       try {
         const filePath = resolve(process.env.PWD, PAYREXX_API_MOCKS_PATH, `${path}.json`);
         const content = await readFile(filePath);
-        const json = JSON.parse(content.toString());
+        const textData = content.toString();
+        const jsonData = JSON.parse(textData);
         return {
-          json: async () => json,
-          status: json?.error ? 500 : 204,
+          json: async () => jsonData,
+          text: async () => textData,
+          ok: !jsonData?.error,
+          status: jsonData?.error ? 500 : 204,
         } as any;
       } catch (error) {
         logger.error('Mock: Error while trying reading and parsing file', {
@@ -32,6 +34,8 @@ export default (
         });
         return {
           json: async () => ({ error: { code: 'MOCK', message: 'MOCK' } }),
+          text: async () => 'MOCK',
+          ok: false,
           status: 500,
         } as any;
       }
