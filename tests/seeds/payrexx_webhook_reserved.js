@@ -68,7 +68,7 @@ export default {
       originalAmount: 3500,
       refundedAmount: 0,
       shippingAmount: null,
-      paymentRequestId: 1000001,
+      paymentRequestId: 999999999,
       googleAnalyticProducts: [
         {
           price: 35,

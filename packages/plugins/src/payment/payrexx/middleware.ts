@@ -22,17 +22,15 @@ export const payrexxHandler = async (request, response) => {
     );
     return;
   }
-  if (transaction.status === 'confirmed') {
+  if (transaction.status === 'confirmed' || transaction.status === 'waiting') {
     // Ignore confirmed transactions, because those hooks are generated through calling the confirm()
     // method in the payment adapter and could lead to double bookings.
-    logger.verbose(`unhandled event state`, {
-      type: Object.keys(request.body).join(','),
-    });
+    logger.verbose(`unhandled transaction state: ${transaction.status}`);
     response.writeHead(200);
     response.end(
       JSON.stringify({
         ignored: true,
-        message: `Unhandled event state: transaction.confirmed`,
+        message: `Unhandled transaction state: ${transaction.status}`,
       }),
     );
     return;
@@ -53,6 +51,7 @@ export const payrexxHandler = async (request, response) => {
     if (!orderPayment) {
       throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
     }
+
     const order = await modules.orders.checkout(
       orderPayment.orderId,
       {
