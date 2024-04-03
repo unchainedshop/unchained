@@ -88,7 +88,7 @@ const Payrexx: IPaymentAdapter = {
         }
 
         if (
-          gatewayObject.status === GatewayObjectStatus.authorized ||
+          // gatewayObject.status === GatewayObjectStatus.authorized || // authorized is only used for tokenization!
           gatewayObject.status === GatewayObjectStatus.reserved
         ) {
           const allTransactions = gatewayObject.invoices?.flatMap((invoice) => invoice.transactions);
@@ -97,7 +97,11 @@ const Payrexx: IPaymentAdapter = {
           );
           return true;
         }
-        return false;
+
+        if (gatewayObject.status === GatewayObjectStatus.confirmed) {
+          return true; // already confirmed, no need to confirm
+        }
+        return false; // some other status with refund or anything, can't confirm!
       },
 
       async cancel() {
@@ -120,7 +124,11 @@ const Payrexx: IPaymentAdapter = {
           );
           return true;
         }
-        return false;
+
+        if (gatewayObject.status === GatewayObjectStatus.confirmed) {
+          return false; // already confirmed, can't cancel anymore
+        }
+        return true; // some other status with refund or anything, no need to cancel
       },
 
       charge: async ({ gatewayId, paymentCredentials }) => {
@@ -143,24 +151,21 @@ const Payrexx: IPaymentAdapter = {
         const { currency, amount } = pricing.total({ useNetPrice: false });
 
         if (
-          gatewayObject.currency !== currency.toUpperCase() ||
-          gatewayObject.amount !== Math.round(amount)
+          // gatewayObject.status === 'authorized' || // authorized is only used for tokenization!
+          gatewayObject.status === 'reserved' ||
+          gatewayObject.status === 'confirmed'
         ) {
-          throw new Error('The price has changed since the intent has been created');
-        }
-        if (gatewayObject.referenceId !== orderPayment?._id) {
-          throw new Error('The order payment is different from the initiating intent');
-        }
+          try {
+            if (
+              gatewayObject.currency !== currency.toUpperCase() ||
+              gatewayObject.amount !== Math.round(amount)
+            ) {
+              throw new Error('The price has changed since the intent has been created');
+            }
+            if (gatewayObject.referenceId !== orderPayment?._id) {
+              throw new Error('The order payment is different from the initiating intent');
+            }
 
-        switch (gatewayObject.status) {
-          case GatewayObjectStatus.waiting:
-            logger.verbose('Charge postponed because Gateway is pending', {
-              orderPaymentId: gatewayObject.referenceId,
-            });
-            return false;
-          case GatewayObjectStatus.authorized:
-          case GatewayObjectStatus.reserved:
-          case GatewayObjectStatus.confirmed:
             // confirm will do the transition, to do a checkout those stati above are fine
             logger.verbose(`Mark as charged, status is ${gatewayObject.status}`, {
               orderPaymentId: gatewayObject.referenceId,
@@ -169,13 +174,23 @@ const Payrexx: IPaymentAdapter = {
               transactionId: gatewayId,
               gatewayObject,
             };
-          default:
-            logger.verbose('Charge not possible', {
-              orderPaymentId: gatewayObject.referenceId,
-              status: gatewayObject.status,
-            });
-            throw new Error(`Gateway Status ${gatewayObject.status} does not allow checkout`);
+          } catch (e) {
+            if (gatewayObject.status === GatewayObjectStatus.reserved) {
+              // Cancel the reservation if it's reserved and the order has been manipulated
+              const allTransactions = gatewayObject.invoices?.flatMap((invoice) => invoice.transactions);
+              await Promise.all(
+                allTransactions.map(async (transaction) => api.deleteReservation(transaction.id)),
+              );
+            }
+            throw e;
+          }
         }
+
+        logger.verbose('Charge not possible', {
+          orderPaymentId: gatewayObject.referenceId,
+          status: gatewayObject.status,
+        });
+        throw new Error(`Gateway Status ${gatewayObject.status} does not allow checkout`);
       },
     };
 
