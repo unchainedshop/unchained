@@ -67,6 +67,7 @@ import workQueue from './worker/workQueue.js';
 import workQueueCount from './worker/workQueueCount.js';
 import impersonator from './users/impersonator.js';
 import validateResetPasswordToken from './users/validateResetPasswordToken.js';
+import validateVerifyEmailToken from './users/validateVerifyEmailToken.js';
 
 export default {
   me,
@@ -136,4 +137,5 @@ export default {
   events: acl(actions.viewEvents)(events),
   eventsCount: acl(actions.viewEvents)(eventsCount),
   validateResetPasswordToken: acl(actions.resetPassword)(validateResetPasswordToken),
+  validateVerifyEmailToken: acl(actions.verifyEmail)(validateVerifyEmailToken),
 };
