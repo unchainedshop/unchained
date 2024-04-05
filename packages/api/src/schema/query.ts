@@ -460,8 +460,14 @@ export default [
       """
       eventsCount(types: [String!], queryString: String, created: DateTime): Int!
 
+      """
+      Determines if a token is valid/active for reset password
+      """
       validateResetPasswordToken(token: String!): Boolean!
 
+      """
+      Determines if a token is valid/active for email verification
+      """
       validateVerifyEmailToken(token: String!): Boolean!
     }
   `,
