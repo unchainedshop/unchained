@@ -459,6 +459,7 @@ export default [
       Get total count of all emitted events
       """
       eventsCount(types: [String!], queryString: String, created: DateTime): Int!
+      validateResetPasswordToken(token: String!): Boolean!
     }
   `,
 ];
