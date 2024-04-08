@@ -49,7 +49,7 @@ export const datatransHandler = async (req, res) => {
           const paymentCredentials = await modules.payment.registerCredentials(
             paymentProviderId,
             { userId, transactionContext: { transactionId: transaction.transactionId } },
-            { ...resolvedContext },
+            resolvedContext,
           );
           logger.info(`registered payment credentials for ${userId}`, {
             userId,

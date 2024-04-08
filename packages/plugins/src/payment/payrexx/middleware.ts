@@ -22,7 +22,10 @@ export const payrexxHandler = async (request, response) => {
     );
     return;
   }
-  if (transaction.status === 'confirmed' || transaction.status === 'waiting') {
+  if (
+    (transaction.status === 'confirmed' && transaction.referenceId === '__IGNORE_WEBHOOK__') ||
+    transaction.status === 'waiting'
+  ) {
     // Ignore confirmed transactions, because those hooks are generated through calling the confirm()
     // method in the payment adapter and could lead to double bookings.
     logger.verbose(`unhandled transaction state: ${transaction.status}`);
@@ -40,38 +43,62 @@ export const payrexxHandler = async (request, response) => {
     transactionId: transaction.id,
   });
   try {
-    const { referenceId: orderPaymentId, invoice } = transaction;
-    logger.verbose(`checkout with orderPaymentId: ${orderPaymentId}`);
-    await modules.orders.payments.logEvent(orderPaymentId, {
-      transactionId: transaction.id,
-    });
-    const orderPayment = await modules.orders.payments.findOrderPayment({
-      orderPaymentId,
-    });
-    if (!orderPayment) {
-      throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
-    }
+    if (transaction.preAuthorizationId) {
+      // Pre-Authorization Flow, referenceId is a userId
+      const { referenceId: paymentProviderId, invoice } = transaction;
+      const userId = '';
+      logger.verbose(`register credentials for: ${userId}`);
+      await modules.payment.registerCredentials(
+        paymentProviderId,
+        { userId, transactionContext: { gatewayId: invoice.paymentRequestId } },
+        resolvedContext,
+      );
+      logger.info(`registration successful`, {
+        paymentProviderId,
+        userId,
+      });
+      response.writeHead(200);
+      response.end(
+        JSON.stringify({
+          message: 'registration successful',
+          paymentProviderId,
+          userId,
+        }),
+      );
+    } else {
+      const { referenceId: orderPaymentId, invoice } = transaction;
+      logger.verbose(`checkout with orderPaymentId: ${orderPaymentId}`);
+      await modules.orders.payments.logEvent(orderPaymentId, {
+        transactionId: transaction.id,
+      });
+      const orderPayment = await modules.orders.payments.findOrderPayment({
+        orderPaymentId,
+      });
+      if (!orderPayment) {
+        throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
+      }
 
-    const order = await modules.orders.checkout(
-      orderPayment.orderId,
-      {
-        paymentContext: {
-          gatewayId: invoice.paymentRequestId,
+      const order = await modules.orders.checkout(
+        orderPayment.orderId,
+        {
+          paymentContext: {
+            gatewayId: invoice.paymentRequestId,
+          },
         },
-      },
-      resolvedContext,
-    );
-    logger.info(`checkout successful`, {
-      orderPaymentId,
-      orderId: order._id,
-    });
-    response.writeHead(200);
-    response.end(
-      JSON.stringify({
-        message: 'checkout successful',
+        resolvedContext,
+      );
+      logger.info(`checkout successful`, {
+        orderPaymentId,
         orderId: order._id,
-      }),
-    );
+      });
+      response.writeHead(200);
+      response.end(
+        JSON.stringify({
+          message: 'checkout successful',
+          orderId: order._id,
+        }),
+      );
+    }
   } catch (error) {
     logger.error(error, {
       transactionId: transaction.id,

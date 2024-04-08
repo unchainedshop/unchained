@@ -1,7 +1,7 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
-import { mapOrderDataToGatewayObject } from './payrexx.js';
+import { mapOrderDataToGatewayObject, mapUserToGatewayObject } from './payrexx.js';
 import createPayrexxAPI, { GatewayObjectStatus } from './api/index.js';
 
 export * from './middleware.js';
@@ -50,17 +50,10 @@ const Payrexx: IPaymentAdapter = {
         return false;
       },
 
-      validate: async () => {
-        throw new Error('Token Registration Flow not implemented yet');
-      },
-
-      register: async () => {
-        throw new Error('Token Registration Flow not implemented yet');
-      },
-
       sign: async (transactionContext = {}) => {
-        const { orderPayment, order } = params.paymentContext;
+        const { orderPayment, userId, order } = params.paymentContext;
         if (orderPayment) {
+          // Order Checkout signing (One-time payment)
           const pricing = await modules.orders.pricingSheet(order);
           const gatewayObject = mapOrderDataToGatewayObject(
             { order, orderPayment, pricing },
@@ -70,7 +63,41 @@ const Payrexx: IPaymentAdapter = {
           return JSON.stringify(gateway);
         }
 
-        throw new Error('Token Registration Flow not implemented yet');
+        // Payment Credential Registration signing
+        const user = await modules.users.findUserById(userId);
+        const emailAddress = modules.users.primaryEmail(user)?.address;
+        const gateway = await api.createGateway(
+          mapUserToGatewayObject({
+            userId,
+            emailAddress,
+            currencyCode: 'CHF',
+          }),
+        );
+        return JSON.stringify(gateway);
+      },
+
+      // async validate(credentials) {
+      //   if (!credentials.meta) return false;
+      //   const { objectKey, currency } = credentials.meta;
+      //   const result = await api().validate({
+      //     refno: Buffer.from(`valid-${new Date().getTime()}`, 'hex').toString('base64'),
+      //     currency,
+      //     [objectKey]: JSON.parse(credentials.token),
+      //   });
+      //   return Boolean((result as ValidateResponseSuccess)?.transactionId);
+      // },
+
+      async register(transactionResponse) {
+        const { transactionId } = transactionResponse;
+        console.log({ transactionResponse });
+        throw new Error('Not implemented');
+        // const result = (await api().status({
+        //   transactionId,
+        // })) as StatusResponseSuccess;
+        // if (result.transactionId) {
+        //   return parseRegistrationData(result);
+        // }
+        return null;
       },
 
       async confirm() {
@@ -93,7 +120,9 @@ const Payrexx: IPaymentAdapter = {
         ) {
           const allTransactions = gatewayObject.invoices?.flatMap((invoice) => invoice.transactions);
           await Promise.all(
-            allTransactions.map(async (transaction) => api.chargePreAuthorized(transaction.id, {})),
+            allTransactions.map(async (transaction) =>
+              api.chargePreAuthorized(transaction.id, { referenceId: '__IGNORE_WEBHOOK__' }),
+            ),
           );
           return true;
         }
