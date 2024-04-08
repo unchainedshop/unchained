@@ -1,4 +1,5 @@
 import localePkg from 'locale';
+import crypto from 'crypto';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
@@ -89,8 +90,14 @@ export const configureUsersModule = async ({
       }
 
       if (verifyEmailToken) {
+        const token = crypto.createHash('sha256').update(verifyEmailToken).digest('hex');
         return Users.findOne({
-          'emails.password.reset.token': verifyEmailToken,
+          'services.email.verificationTokens': {
+            $elemMatch: {
+              token,
+              when: { $gt: new Date().getTime() },
+            },
+          },
         });
       }
 
