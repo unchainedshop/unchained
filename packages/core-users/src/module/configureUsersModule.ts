@@ -90,12 +90,10 @@ export const configureUsersModule = async ({
       }
 
       if (verifyEmailToken) {
-        const token = crypto.createHash('sha256').update(verifyEmailToken).digest('hex');
         return Users.findOne({
           'services.email.verificationTokens': {
             $elemMatch: {
-              token,
-              when: { $gt: new Date().getTime() },
+              token: verifyEmailToken,
             },
           },
         });
