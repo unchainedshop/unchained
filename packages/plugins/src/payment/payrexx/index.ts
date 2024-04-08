@@ -88,7 +88,7 @@ const Payrexx: IPaymentAdapter = {
       // },
 
       async register(transactionResponse) {
-        const { transactionId } = transactionResponse;
+        // const { transactionId } = transactionResponse;
         console.log({ transactionResponse });
         throw new Error('Not implemented');
         // const result = (await api().status({

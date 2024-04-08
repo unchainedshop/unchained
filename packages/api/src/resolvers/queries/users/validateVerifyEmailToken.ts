@@ -10,7 +10,7 @@ export default async function validateVerifyEmailToken(
 
   log(`query validateVerifyEmailToken ${userId}`, { userId, token });
 
-  const unverifiedToken = await modules.users.findUnverifiedEmailToken(token);
+  const unverifiedToken = await modules.users.findUserByToken({ verifyEmailToken: token });
 
   return !!unverifiedToken;
 }

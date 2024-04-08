@@ -97,7 +97,11 @@ export type UsersModule = {
   // Queries
   count: (query: UserQuery) => Promise<number>;
   findUserById: (userId: string) => Promise<User>;
-  findUserByToken: (query: { resetToken?: string; hashedToken?: string }) => Promise<User>;
+  findUserByToken: (query: {
+    resetToken?: string;
+    hashedToken?: string;
+    verifyEmailToken?: string;
+  }) => Promise<User>;
   findUser: (selector: UserQuery & { sort?: Array<SortOption> }, options?: FindOptions) => Promise<User>;
   findUsers: (
     query: UserQuery & {

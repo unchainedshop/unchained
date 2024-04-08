@@ -75,7 +75,7 @@ export const configureUsersModule = async ({
       return Users.findOne(generateDbFilterById(userId), {});
     },
 
-    async findUserByToken({ resetToken, hashedToken }) {
+    async findUserByToken({ resetToken, hashedToken, verifyEmailToken }) {
       if (hashedToken) {
         return Users.findOne({
           'services.resume.loginTokens.hashedToken': hashedToken,
@@ -85,6 +85,12 @@ export const configureUsersModule = async ({
       if (resetToken) {
         return Users.findOne({
           'services.password.reset.token': resetToken,
+        });
+      }
+
+      if (verifyEmailToken) {
+        return Users.findOne({
+          'emails.password.reset.token': verifyEmailToken,
         });
       }
 
