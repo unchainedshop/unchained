@@ -22,10 +22,7 @@ export const payrexxHandler = async (request, response) => {
     );
     return;
   }
-  if (
-    (transaction.status === 'confirmed' && transaction.referenceId === '__IGNORE_WEBHOOK__') ||
-    transaction.status === 'waiting'
-  ) {
+  if (transaction.referenceId === '__IGNORE_WEBHOOK__' || transaction.status === 'waiting') {
     // Ignore confirmed transactions, because those hooks are generated through calling the confirm()
     // method in the payment adapter and could lead to double bookings.
     logger.verbose(`unhandled transaction state: ${transaction.status}`);
