@@ -28,10 +28,15 @@ const ASSORTMENT_MEDIA_EVENTS = [
 ];
 
 FileDirector.registerFileUploadCallback('assortment-media', async (file, { modules }) => {
-  await modules.assortments.media.create({
+  const assortmentMedias = await modules.assortments.media.findAssortmentMedias({
     assortmentId: file.meta.assortmentId as string,
-    mediaId: file._id,
   });
+  const currentMedia = assortmentMedias.find(({ mediaId }) => mediaId === file._id);
+  if (!currentMedia)
+    await modules.assortments.media.create({
+      assortmentId: file.meta.assortmentId as string,
+      mediaId: file._id,
+    });
 });
 
 export const configureAssortmentMediaModule = async ({
@@ -142,8 +147,9 @@ export const configureAssortmentMediaModule = async ({
       const selector = generateDbFilterById(assortmentMediaId);
 
       await AssortmentMediaTexts.deleteMany({ assortmentMediaId });
-
+      console.log(selector);
       const deletedResult = await AssortmentMedia.deleteOne(selector);
+      console.log(deletedResult);
 
       await emit('ASSORTMENT_REMOVE_MEDIA', {
         assortmentMediaId,
