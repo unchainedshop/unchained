@@ -22,6 +22,16 @@ export const gridfsHandler = async (
     const url = new URL(req.url, ROOT_URL);
     const [, directoryName, fileName] = url.pathname.split('/');
 
+    res.setHeader('Access-Control-Allow-Methods', 'GET, PUT');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    if (req.method === 'OPTIONS') {
+      res.statusCode = 200;
+      res.end();
+      return;
+    }
+
     if (req.method === 'PUT') {
       const { s: signature, e: expiryTimestamp } = req.query;
       const expiryDate = new Date(parseInt(expiryTimestamp as string, 10));

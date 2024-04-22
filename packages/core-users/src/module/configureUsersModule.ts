@@ -1,5 +1,4 @@
 import localePkg from 'locale';
-import crypto from 'crypto';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import { log, LogLevel } from '@unchainedshop/logger';
