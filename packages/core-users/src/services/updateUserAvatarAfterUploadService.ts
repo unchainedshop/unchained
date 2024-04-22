@@ -10,7 +10,7 @@ export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadServ
 
   const files = await modules.files.findFiles({
     _id: { $ne: file._id },
-    path: 'user-avatars',
+    path: file.path,
     'meta.userId': userId,
   });
   const fileIds = files.map((f) => f._id);
