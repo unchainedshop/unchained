@@ -27,15 +27,10 @@ const PRODUCT_MEDIA_EVENTS = [
 ];
 
 FileDirector.registerFileUploadCallback('product-media', async (file, { modules }) => {
-  const productMedias = await modules.products.media.findProductMedias({
+  await modules.products.media.create({
     productId: file.meta?.productId as string,
+    mediaId: file._id,
   });
-  const currentMedia = productMedias.find(({ mediaId }) => mediaId === file._id);
-  if (!currentMedia)
-    await modules.products.media.create({
-      productId: file.meta?.productId as string,
-      mediaId: file._id,
-    });
 });
 
 export const configureProductMediaModule = async ({

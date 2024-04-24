@@ -228,7 +228,7 @@ export default {
   updateProductTexts: acl(actions.manageProducts)(updateProductTexts),
   updateProductMediaTexts: acl(actions.manageProducts)(updateProductMediaTexts),
   addProductMedia: acl(actions.manageProducts)(addProductMedia),
-  confirmMediaUpload: acl(actions.manageProducts)(confirmMediaUpload),
+  confirmMediaUpload: acl(actions.confirmMediaUpload)(confirmMediaUpload),
   prepareProductMediaUpload: acl(actions.manageProducts)(prepareProductMediaUpload),
   reorderProductMedia: acl(actions.manageProducts)(reorderProductMedia),
   removeProductMedia: acl(actions.manageProducts)(removeProductMedia),

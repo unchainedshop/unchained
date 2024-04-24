@@ -7,7 +7,13 @@ export const linkFileService: LinkFileService = async ({ fileId, size, type }, u
   } = unchainedAPI;
   const file = await files.findFile({ fileId });
   if (!file) throw new Error(`Media with id ${fileId} Not found`);
-  await files.update(file._id, { size, type: type || file.type, expires: null });
-  await FileDirector.getFileUploadCallback(file.path)(file, unchainedAPI);
+
+  if (file.expires) {
+    await files.update(file._id, { size, type: type || file.type, expires: null });
+    const callback = FileDirector.getFileUploadCallback(file.path);
+    if (callback) {
+      await callback(file, unchainedAPI);
+    }
+  }
   return files.findFile({ fileId });
 };

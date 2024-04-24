@@ -47,7 +47,6 @@ export const buildFindSelector = ({ includeGuests, queryString, ...rest }: UserQ
 
 FileDirector.registerFileUploadCallback('user-avatars', async (file, context: UnchainedCore) => {
   const { services } = context;
-
   return services.users.updateUserAvatarAfterUpload({ file }, context);
 });
 

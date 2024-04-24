@@ -244,4 +244,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.viewToken, isOwnedToken);
   role.allow(actions.stopImpersonation, () => true);
   role.allow(actions.impersonate, () => false);
+  role.allow(actions.confirmMediaUpload, () => true);
 };
