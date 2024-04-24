@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-products",
-  "version": "2.8.13",
+  "version": "2.8.14",
   "main": "lib/products-index.js",
   "exports": {
     ".": "./lib/products-index.js",
