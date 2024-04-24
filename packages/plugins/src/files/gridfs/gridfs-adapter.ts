@@ -102,6 +102,7 @@ export const GridFSAdapter: IFileAdapter = {
     await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
     const { length } = writeStream;
     const url = `/gridfs/${directoryName}/${encodeURIComponent(_id)}`;
+    const type = mimeType.lookup(fileName) || response.headers.get('content-type');
 
     return {
       _id,
@@ -109,7 +110,7 @@ export const GridFSAdapter: IFileAdapter = {
       expiryDate: null,
       fileName,
       size: length,
-      type: mimeType.lookup(fileName) || response.headers.get('content-type'),
+      type,
       url,
     } as UploadFileData;
   },

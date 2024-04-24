@@ -110,11 +110,16 @@ export const createLoggedInGraphqlFetch = async (token = ADMIN_TOKEN) => {
   return convertLinkToFetch(link);
 };
 
-export const putFile = async (file, url) => {
+export const putFile = async (file, { url, type }) => {
   const response = await fetch(url, {
     method: 'PUT',
     duplex: 'half',
     body: file,
+    headers: type
+      ? {
+          'Content-Type': type,
+        }
+      : undefined,
   });
   if (response.ok) {
     return Promise.resolve({});

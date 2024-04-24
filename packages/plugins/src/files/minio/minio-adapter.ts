@@ -83,10 +83,6 @@ const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
   return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${generateMinioPath(directoryName, hashedFilename)}`;
 };
 
-const getMimeType = (extension) => {
-  return mimeType.lookup(extension);
-};
-
 connectToMinio().then(function setClient(c) {
   client = c;
 });
@@ -147,7 +143,7 @@ export const MinioAdapter: IFileAdapter = {
       directoryName,
       expiryDate,
       fileName,
-      type: getMimeType(fileName),
+      type: mimeType.lookup(fileName),
       putURL: url,
       url: generateMinioUrl(directoryName, _id),
     } as UploadFileData & { putURL: string };
@@ -178,7 +174,7 @@ export const MinioAdapter: IFileAdapter = {
     }
 
     const _id = buildHashedFilename(directoryName, fileName, new Date());
-    const type = rawFile?.mimetype || getMimeType(fileName);
+    const type = mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype;
 
     const metaData = {
       'Content-Type': type,

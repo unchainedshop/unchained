@@ -218,7 +218,9 @@ describe("AssortmentMedia", () => {
 
       await putFile(
         assortmentMediaFile2,
-        prepareAssortmentMediaUpload.putURL
+        {
+          url: prepareAssortmentMediaUpload.putURL,
+        }
       );
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
       const {
@@ -275,7 +277,10 @@ describe("AssortmentMedia", () => {
 
       await putFile(
         assortmentMediaFile3,
-        prepareAssortmentMediaUpload.putURL
+        {
+          url: prepareAssortmentMediaUpload.putURL,
+          type: "image/jpg",
+        }
       );
 
       const {
@@ -301,7 +306,7 @@ describe("AssortmentMedia", () => {
         `,
         variables: {
           mediaUploadTicketId: prepareAssortmentMediaUpload._id,
-          size: 8000,
+          size: 8615,
           type: "image/jpg",
         },
       });
@@ -310,7 +315,7 @@ describe("AssortmentMedia", () => {
         _id: prepareAssortmentMediaUpload._id,
         name: "test-media",
         type: "image/jpg",
-        size: 8000,
+        size: 8615,
       });
     }, 20000);
   });

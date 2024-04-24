@@ -159,7 +159,9 @@ describe('ProductsVariation', () => {
         },
       });
 
-      await putFile(productMediaFile2, prepareProductMediaUpload.putURL);
+      await putFile(productMediaFile2, {
+        url: prepareProductMediaUpload.putURL,
+      });
 
       expect(prepareProductMediaUpload.putURL).not.toBe(null);
     }, 10000);
@@ -192,7 +194,10 @@ describe('ProductsVariation', () => {
         10000,
       );
 
-      await putFile(productMediaFile3, prepareProductMediaUpload.putURL);
+      await putFile(productMediaFile3, {
+        url: prepareProductMediaUpload.putURL,
+        type: "image/jpg",
+      });
 
       const {
         data: { confirmMediaUpload },
@@ -217,7 +222,7 @@ describe('ProductsVariation', () => {
         `,
         variables: {
           mediaUploadTicketId: prepareProductMediaUpload._id,
-          size: 8000,
+          size: 8615,
           type: 'image/jpg',
         },
       });
@@ -225,7 +230,7 @@ describe('ProductsVariation', () => {
         _id: prepareProductMediaUpload._id,
         name: 'test-media',
         type: 'image/jpg',
-        size: 8000,
+        size: 8615,
       });
     });
   });
