@@ -7,7 +7,7 @@ WORKDIR /source
 ADD packages /source/
 ADD package* /source/
 ADD examples/kitchensink/package* /source/examples/kitchensink/
-ADD jest-mongodb-config.js /source/jest-mongodb-config.js
+ADD jest-mongodb-config.cjs /source/jest-mongodb-config.cjs
 
 RUN NODE_ENV=development npm install
 
