@@ -59,10 +59,10 @@ export const GridFSAdapter: IFileAdapter = {
     let fileName;
     if (rawFile instanceof Promise) {
       const { filename: f, createReadStream } = await rawFile;
-      fileName = f;
+      fileName = decodeURIComponent(f);
       stream = createReadStream();
     } else {
-      fileName = rawFile.filename;
+      fileName = decodeURIComponent(rawFile.filename);
       stream = bufferToStream(Buffer.from(rawFile.buffer, 'base64'));
     }
 
@@ -72,7 +72,7 @@ export const GridFSAdapter: IFileAdapter = {
     const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
     await pipeline(stream, new PassThrough({ allowHalfOpen: true }), writeStream);
     const { length } = writeStream;
-    const url = `/gridfs/${directoryName}/${_id}`;
+    const url = `/gridfs/${directoryName}/${encodeURIComponent(_id)}`;
 
     return {
       _id,
@@ -91,7 +91,7 @@ export const GridFSAdapter: IFileAdapter = {
     { modules }: any,
   ) {
     const { href } = new URL(fileLink);
-    const fileName = fname || href.split('/').pop();
+    const fileName = decodeURIComponent(fname || href.split('/').pop());
 
     const expiryDate = resolveExpirationDate();
     const _id = buildHashedFilename(directoryName, fileName, expiryDate);
@@ -101,7 +101,7 @@ export const GridFSAdapter: IFileAdapter = {
     if (!response.ok) throw new Error(`Unexpected response for ${href}: ${response.statusText}`);
     await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
     const { length } = writeStream;
-    const url = `/gridfs/${directoryName}/${_id}`;
+    const url = `/gridfs/${directoryName}/${encodeURIComponent(_id)}`;
 
     return {
       _id,

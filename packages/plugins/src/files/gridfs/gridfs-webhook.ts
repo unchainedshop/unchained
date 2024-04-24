@@ -20,7 +20,9 @@ export const gridfsHandler = async (
   try {
     const { services, modules } = req.unchainedContext;
     const url = new URL(req.url, ROOT_URL);
-    const [, directoryName, fileName] = url.pathname.split('/');
+    const [, directoryNameRaw, fileNameRaw] = url.pathname.split('/');
+    const directoryName = decodeURIComponent(directoryNameRaw);
+    const fileName = decodeURIComponent(fileNameRaw);
 
     /* This is a file upload endpoint, and thus we need to allow CORS.
     else we'd need proxies for all kinds of things for storefronts */
