@@ -36,14 +36,14 @@
     "@accounts/mongo-password": "^0.33.0",
     "@accounts/password": "^0.32.2",
     "@accounts/server": "0.33.1",
-    "@unchainedshop/logger": "^2.8.13",
-    "@unchainedshop/utils": "^2.8.13",
+    "@unchainedshop/logger": "^2.8.14",
+    "@unchainedshop/utils": "^2.8.14",
     "fido2-lib": "^3.5.3",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
-    "@unchainedshop/types": "^2.8.13",
+    "@unchainedshop/types": "^2.8.14",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.5"
