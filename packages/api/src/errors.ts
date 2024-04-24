@@ -295,9 +295,6 @@ export const ImpersonatingAdminUserError = createError(
   'Can not impersonate a admin user account',
 );
 
-export const FileNotFoundError = createError('FileNotFoundError', 'Uploaded file not found');
+export const FileNotFoundError = createError('FileNotFoundError', 'File not found');
 
-export const FileLinkExpiredFoundError = createError(
-  'FileLinkExpiredFoundError',
-  'Uploaded file link is expired',
-);
+export const FileUploadExpiredError = createError('FileUploadExpired', 'File upload has expired');
