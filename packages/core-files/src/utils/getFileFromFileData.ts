@@ -1,7 +1,7 @@
 import { UploadFileData } from '@unchainedshop/types/files.js';
 
 export const getFileFromFileData = (fileData: UploadFileData, meta: any) => ({
-  _id: meta?.fileId || fileData._id,
+  _id: fileData._id,
   path: fileData.directoryName,
   expires: fileData.expiryDate,
   name: fileData.fileName,

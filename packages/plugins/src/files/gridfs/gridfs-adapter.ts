@@ -32,8 +32,8 @@ export const GridFSAdapter: IFileAdapter = {
 
   async createSignedURL(directoryName, fileName) {
     const expiryDate = resolveExpirationDate();
-    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
-    const signature = sign(directoryName, _id, expiryDate.getTime());
+    const hashedFilename = buildHashedFilename(directoryName, fileName, expiryDate);
+    const signature = sign(directoryName, hashedFilename, expiryDate.getTime());
 
     const putURL = new URL(
       `/gridfs/${directoryName}/${encodeURIComponent(
@@ -41,10 +41,10 @@ export const GridFSAdapter: IFileAdapter = {
       )}?e=${expiryDate.getTime()}&s=${signature}`,
       ROOT_URL,
     ).href;
-    const url = `/gridfs/${directoryName}/${_id}`;
+    const url = `/gridfs/${directoryName}/${hashedFilename}`;
 
     return {
-      _id,
+      _id: hashedFilename,
       directoryName,
       expiryDate,
       fileName,
@@ -67,45 +67,57 @@ export const GridFSAdapter: IFileAdapter = {
     }
 
     const expiryDate = resolveExpirationDate();
-    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
+    const hashedFilename = buildHashedFilename(directoryName, fileName, expiryDate);
+    const type = mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype;
 
-    const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
+    const writeStream = await modules.gridfsFileUploads.createWriteStream(
+      directoryName,
+      hashedFilename,
+      fileName,
+      { 'content-type': type },
+    );
     await pipeline(stream, new PassThrough({ allowHalfOpen: true }), writeStream);
     const { length } = writeStream;
-    const url = `/gridfs/${directoryName}/${encodeURIComponent(_id)}`;
+    const url = `/gridfs/${directoryName}/${encodeURIComponent(hashedFilename)}`;
 
     return {
-      _id,
+      _id: hashedFilename,
       directoryName,
       expiryDate: null,
       fileName,
       size: length,
-      type: mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype,
+      type,
       url,
     } as UploadFileData;
   },
 
   async uploadFileFromURL(
     directoryName: string,
-    { fileLink, fileName: fname, headers }: any,
+    { fileLink, fileName: fname, fileId, headers }: any,
     { modules }: any,
   ) {
     const { href } = new URL(fileLink);
     const fileName = decodeURIComponent(fname || href.split('/').pop());
 
     const expiryDate = resolveExpirationDate();
-    const _id = buildHashedFilename(directoryName, fileName, expiryDate);
+    const hashedFilename = buildHashedFilename(directoryName, fileName, expiryDate);
 
-    const writeStream = await modules.gridfsFileUploads.createWriteStream(directoryName, _id, fileName);
     const response = await fetch(href, { headers });
     if (!response.ok) throw new Error(`Unexpected response for ${href}: ${response.statusText}`);
-    await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
-    const { length } = writeStream;
-    const url = `/gridfs/${directoryName}/${encodeURIComponent(_id)}`;
     const type = mimeType.lookup(fileName) || response.headers.get('content-type');
 
+    const writeStream = await modules.gridfsFileUploads.createWriteStream(
+      directoryName,
+      hashedFilename,
+      fileName,
+      { 'content-type': type },
+    );
+    await pipeline(response.body as unknown as Readable, new PassThrough(), writeStream);
+    const { length } = writeStream;
+    const url = `/gridfs/${directoryName}/${encodeURIComponent(hashedFilename)}`;
+
     return {
-      _id,
+      _id: fileId || hashedFilename,
       directoryName,
       expiryDate: null,
       fileName,

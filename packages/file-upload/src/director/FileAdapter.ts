@@ -18,7 +18,12 @@ export interface IFileAdapter extends IBaseAdapter {
   ) => Promise<UploadFileData | null>;
   uploadFileFromURL: (
     directoryName: string,
-    fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown> },
+    fileInput: {
+      fileLink: string;
+      fileName: string;
+      fileId?: string;
+      headers?: Record<string, unknown>;
+    },
     unchainedAPI: UnchainedCore,
   ) => Promise<UploadFileData | null>;
   createDownloadStream: (file: File, unchainedAPI: UnchainedCore) => Promise<Readable>;

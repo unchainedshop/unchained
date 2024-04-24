@@ -47,15 +47,6 @@ export const gridfsHandler = async (
           res.end('File already linked');
           return;
         }
-        const writeStream = await modules.gridfsFileUploads.createWriteStream(
-          directoryName,
-          fileId,
-          fileName,
-        );
-        await pipeline(req, new PassThrough(), writeStream);
-
-        const { length } = writeStream;
-        res.statusCode = 200;
 
         // If the type is octet-stream, prefer mimetype lookup from the filename
         // Else prefer the content-type header
@@ -64,6 +55,16 @@ export const gridfsHandler = async (
             ? file.type || req.header('Content-Type')
             : req.header('Content-Type') || file.type;
 
+        const writeStream = await modules.gridfsFileUploads.createWriteStream(
+          directoryName,
+          fileId,
+          fileName,
+          { 'content-type': type },
+        );
+        await pipeline(req, new PassThrough(), writeStream);
+
+        const { length } = writeStream;
+        res.statusCode = 200;
         await services.files.linkFile({ fileId, size: length, type }, req.unchainedContext);
         res.end();
         return;
@@ -76,9 +77,13 @@ export const gridfsHandler = async (
     if (req.method === 'GET') {
       const fileId = fileName;
 
-      // Todo: Get Content-Type from meta data of GridFS file
-      // res.setHeader('Content-Type', file.type);
-      // res.setHeader('Content-Length', file.size);
+      const file = await modules.gridfsFileUploads.getFileInfo(directoryName, fileId);
+      if (file?.metadata?.['content-type']) {
+        res.setHeader('Content-Type', file.metadata['content-type']);
+      }
+      if (file?.length) {
+        res.setHeader('Content-Length', file?.length.toString());
+      }
       const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
       res.statusCode = 200;
       readStream.pipe(res, { end: false });
@@ -89,11 +94,12 @@ export const gridfsHandler = async (
     res.statusCode = 404;
     res.end();
   } catch (e) {
-    log(e.message, { level: LogLevel.Error });
     if (e.code === 'ENOENT') {
+      log(e.message, { level: LogLevel.Warning });
       res.statusCode = 404;
-      res.end();
+      res.end(e.message);
     } else {
+      log(e.message, { level: LogLevel.Error });
       res.statusCode = 503;
       res.end(JSON.stringify({ name: e.name, code: e.code, message: e.message }));
     }

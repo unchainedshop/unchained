@@ -12,11 +12,10 @@ const upsertAsset = async (
   try {
     const existingFile = fileId && (await modules.files.findFile({ fileId }));
     if (existingFile) {
-      const newMeta = { ...meta, fileId };
-      if (JSON.stringify(newMeta) === JSON.stringify(existingFile.meta)) {
+      if (JSON.stringify(meta) === JSON.stringify(existingFile.meta)) {
         return existingFile;
       }
-      await modules.files.update(fileId, { meta: newMeta, ...assetData });
+      await modules.files.update(fileId, { meta, ...assetData });
       const updatedFile = await modules.files.findFile({ fileId });
       return updatedFile;
     }
@@ -27,9 +26,10 @@ const upsertAsset = async (
         fileInput: {
           fileLink: url,
           fileName,
+          fileId,
           headers,
         },
-        meta: { ...meta, fileId },
+        meta,
       },
       unchainedAPI,
     );
