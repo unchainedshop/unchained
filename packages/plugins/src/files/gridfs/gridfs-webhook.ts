@@ -75,14 +75,10 @@ export const gridfsHandler = async (
 
     if (req.method === 'GET') {
       const fileId = fileName;
-      const file = await modules.files.findFile({ fileId });
-      if (!file) {
-        res.statusCode = 404;
-        res.end(`File not found: ${fileId}`);
-        return;
-      }
-      res.setHeader('Content-Type', file.type);
-      res.setHeader('Content-Length', file.size);
+
+      // Todo: Get Content-Type from meta data of GridFS file
+      // res.setHeader('Content-Type', file.type);
+      // res.setHeader('Content-Length', file.size);
       const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
       res.statusCode = 200;
       readStream.pipe(res, { end: false });
