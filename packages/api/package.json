@@ -59,7 +59,7 @@
     "graphql-upload": "^16.0.2",
     "locale": "0.1.0",
     "lodash.isnumber": "3.0.3",
-    "lru-cache": "^10.2.0"
+    "lru-cache": "^10.2.2"
   },
   "devDependencies": {
     "@types/graphql-upload": "^16.0.7",

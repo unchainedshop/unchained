@@ -47,7 +47,7 @@
     "test:unit-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit --watch --config ./packages/unit-jest.config.js"
   },
   "devDependencies": {
-    "@apollo/client": "^3.9.11",
+    "@apollo/client": "^3.10.1",
     "@shelf/jest-mongodb": "^4.2.0",
     "@types/jest": "^29.5.12",
     "@types/lodash.clone": "^4.5.9",

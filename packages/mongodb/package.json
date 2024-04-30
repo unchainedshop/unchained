@@ -32,7 +32,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/utils": "^2.8.15",
-    "lru-cache": "^10.2.0",
+    "lru-cache": "^10.2.2",
     "mongodb": "^6.5.0"
   },
   "optionalDependencies": {
