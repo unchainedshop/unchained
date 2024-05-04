@@ -216,6 +216,7 @@ export default [
     input CreateFilterOptionInput {
       value: String!
       title: String!
+      locale: String
     }
 
     input UpdateFilterInput {
