@@ -2,7 +2,7 @@ export default [
   /* GraphQL */ `
     enum ExternalLinkTarget {
       """
-      Open on new tab Enrollment
+      Open on new tab
       """
       BLANK
       """
