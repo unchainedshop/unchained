@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "2.8.16",
+  "version": "3.0.0-alpha1",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
