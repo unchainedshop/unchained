@@ -110,7 +110,7 @@ export const startPlatform = async ({
   setupAccounts(unchainedAPI);
 
   // Setup email templates
-  setupTemplates();
+  setupTemplates(unchainedAPI);
 
   // Start the graphQL server
   const apolloGraphQLServer = await startAPIServer({

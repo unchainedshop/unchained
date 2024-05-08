@@ -240,4 +240,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
   role.allow(actions.updateToken, isOwnedToken);
   role.allow(actions.viewToken, isOwnedToken);
+  role.allow(actions.confirmMediaUpload, () => true);
 };

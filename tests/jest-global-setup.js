@@ -26,6 +26,7 @@ const startAndWaitForApp = async () => {
           DATATRANS_SECRET: 'secret',
           DATATRANS_SIGN_KEY: '1337',
           DATATRANS_API_MOCKS_PATH: '../../tests/mocks/datatrans-v2',
+          PAYREXX_API_MOCKS_PATH: '../../tests/mocks/payrexx',
           APPLE_IAP_SHARED_SECRET: '71c41914012b4ad7be859f6c26432298',
           CRYPTOPAY_SECRET: 'secret',
           CRYPTOPAY_BTC_XPUB:

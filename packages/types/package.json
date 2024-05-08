@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/types",
-  "version": "3.0.0",
+  "version": "2.8.16",
   "description": "Types for unchained core packages",
   "repository": {
     "type": "git",
@@ -36,15 +36,12 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
     "@accounts/types": "^0.33.2",
-    "@apollo/server": "^4.10.0",
+    "@apollo/server": "^4.10.4",
     "@types/locale": "^0.1.4",
-    "@types/node": "^20.11.5",
-    "mongodb": "^6.3.0",
-    "simpl-schema": "=3.2.0",
-    "typedoc": "^0.25.7",
-    "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "graphql": "^16.8.1"
+    "@types/node": "^20.12.11",
+    "mongodb": "^6.6.1",
+    "simpl-schema": "^3.4.6",
+    "typedoc": "^0.25.13",
+    "typescript": "^5.4.5"
   }
 }

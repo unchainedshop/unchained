@@ -88,7 +88,8 @@ const UpdateECBRates: IWorkerAdapter<any, any> = {
 
 WorkerDirector.registerAdapter(UpdateECBRates);
 
-WorkerDirector.configureAutoscheduling(UpdateECBRates, {
+WorkerDirector.configureAutoscheduling({
+  type: UpdateECBRates.type,
   schedule: everyDayAtFour,
   retries: 5,
 });

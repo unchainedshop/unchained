@@ -152,7 +152,8 @@ WorkerDirector.registerAdapter(GenerateOrderWorker);
 
 export const configureGenerateOrderAutoscheduling = () => {
   if (enrollmentsSettings.autoSchedulingSchedule) {
-    WorkerDirector.configureAutoscheduling(GenerateOrderWorker, {
+    WorkerDirector.configureAutoscheduling({
+      type: GenerateOrderWorker.type,
       schedule: enrollmentsSettings.autoSchedulingSchedule,
       retries: 5,
     });

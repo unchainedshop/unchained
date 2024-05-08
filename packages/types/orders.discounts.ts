@@ -1,7 +1,7 @@
 import type { FindOptions } from 'mongodb';
 import { TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
-import { DiscountAdapterActions, DiscountConfiguration, DiscountContext } from './discount.js';
+import { DiscountAdapterActions, DiscountContext } from './discount.js';
 import { Order } from './orders.js';
 import { OrderPrice } from './orders.pricing.js';
 import { IPricingSheet, PricingCalculation } from './pricing.js';
@@ -31,7 +31,7 @@ export type OrderDiscountsModule = {
   interface: (
     orderDiscount: OrderDiscount,
     unchainedAPI: UnchainedCore,
-  ) => Promise<DiscountAdapterActions>;
+  ) => Promise<DiscountAdapterActions<any>>;
 
   isValid: (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => Promise<boolean>;
 
@@ -41,7 +41,7 @@ export type OrderDiscountsModule = {
     adapterKey: string,
     calculationSheet: IPricingSheet<PricingCalculation>,
     pricingContext: DiscountContext & UnchainedCore,
-  ) => Promise<DiscountConfiguration>;
+  ) => Promise<any>;
 
   // Mutations
   createManualOrderDiscount: (

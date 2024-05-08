@@ -1,13 +1,10 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
-import { UnchainedLoaders } from '@unchainedshop/types/api.js';
 import DataLoader from 'dataloader';
 import { systemLocale } from '@unchainedshop/utils';
 import localePkg from 'locale';
-import { Assortment, AssortmentText } from '@unchainedshop/types/assortments.js';
-import { Filter, FilterText } from '@unchainedshop/types/filters.js';
-import { Product, ProductText } from '@unchainedshop/types/products.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { ProductStatus } from '@unchainedshop/core-products';
+import { UnchainedLoaders } from '@unchainedshop/types/api.js';
 
 const { Locale } = localePkg;
 
@@ -35,13 +32,13 @@ function getFilteredQueries({ queries, texts, filterFn }) {
   });
 }
 
-export default async (
+const loaders = async (
   req: IncomingMessage,
   res: OutgoingMessage,
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLoaders['loaders']> => {
   return {
-    assortmentLoader: new DataLoader<{ assortmentId: string }, Assortment>(async (queries) => {
+    assortmentLoader: new DataLoader(async (queries) => {
       const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 
       const assortments = await unchainedAPI.modules.assortments.findAssortments({
@@ -58,29 +55,112 @@ export default async (
       });
     }),
 
-    assortmentTextLoader: new DataLoader<{ assortmentId: string; locale: string }, AssortmentText>(
-      async (queries) => {
-        const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+    assortmentTextLoader: new DataLoader(async (queries) => {
+      const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
 
-        const texts = await unchainedAPI.modules.assortments.texts.findTexts(
-          { assortmentId: { $in: assortmentIds } },
-          {
-            sort: {
-              assortmentId: 1,
-            },
+      const texts = await unchainedAPI.modules.assortments.texts.findTexts(
+        { assortmentId: { $in: assortmentIds } },
+        {
+          sort: {
+            assortmentId: 1,
           },
-        );
+        },
+      );
 
-        const filterFn =
-          ({ assortmentId }) =>
-          (text) =>
-            text.assortmentId === assortmentId;
+      const filterFn =
+        ({ assortmentId }) =>
+        (text) =>
+          text.assortmentId === assortmentId;
 
-        return getFilteredQueries({ queries, texts, filterFn });
-      },
-    ),
+      return getFilteredQueries({ queries, texts, filterFn });
+    }),
 
-    filterLoader: new DataLoader<{ filterId: string }, Filter>(async (queries) => {
+    assortmentMediaTextLoader: new DataLoader(async (queries) => {
+      const assortmentMediaIds = [...new Set(queries.map((q) => q.assortmentMediaId).filter(Boolean))];
+
+      const texts = await unchainedAPI.modules.assortments.media.texts.findMediaTexts(
+        { assortmentMediaId: { $in: assortmentMediaIds } },
+        {
+          sort: {
+            assortmentMediaId: 1,
+          },
+        },
+      );
+
+      const filterFn =
+        ({ assortmentMediaId }) =>
+        (text) =>
+          text.assortmentMediaId === assortmentMediaId;
+
+      return getFilteredQueries({ queries, texts, filterFn });
+    }),
+
+    assortmentLinkLoader: new DataLoader(async (queries) => {
+      const parentAssortmentIds = [...new Set(queries.map((q) => q.parentAssortmentId).filter(Boolean))];
+
+      const links = await unchainedAPI.modules.assortments.links.findLinks({
+        parentAssortmentIds,
+      });
+
+      return queries.map(({ parentAssortmentId, childAssortmentId }) => {
+        return links.find((link) => {
+          if (link.parentAssortmentId !== parentAssortmentId) return false;
+          if (childAssortmentId && link.childAssortmentId !== childAssortmentId) return false;
+          return true;
+        });
+      });
+    }),
+
+    assortmentLinksLoader: new DataLoader(async (queries) => {
+      const parentAssortmentIds = [
+        ...new Set(queries.flatMap((q) => q.parentAssortmentId).filter(Boolean)),
+      ];
+      const assortmentIds = [...new Set(queries.flatMap((q) => q.assortmentId).filter(Boolean))];
+
+      const linksByParentAssortmentId =
+        parentAssortmentIds?.length &&
+        (await unchainedAPI.modules.assortments.links.findLinks({
+          parentAssortmentIds,
+        }));
+      const linksByAssortmentId =
+        assortmentIds?.length &&
+        (await unchainedAPI.modules.assortments.links.findLinks({
+          assortmentIds,
+        }));
+
+      return queries.map(({ parentAssortmentId, assortmentId }) => {
+        if (parentAssortmentId) {
+          return linksByParentAssortmentId.filter(
+            (link) => link.parentAssortmentId === parentAssortmentId,
+          );
+        }
+        if (assortmentId) {
+          return linksByAssortmentId.filter(
+            (link) =>
+              link.parentAssortmentId === assortmentId || link.childAssortmentId === assortmentId,
+          );
+        }
+        return [];
+      });
+    }),
+
+    assortmentProductLoader: new DataLoader(async (queries) => {
+      const assortmentIds = [...new Set(queries.map((q) => q.assortmentId).filter(Boolean))];
+
+      const assortmentProducts = await unchainedAPI.modules.assortments.products.findProducts({
+        assortmentIds,
+      });
+
+      return queries.map(({ assortmentId, productId }) => {
+        return assortmentProducts.find((assortmentProduct) => {
+          if (assortmentProduct.assortmentId !== assortmentId) return false;
+          if (assortmentProduct.productId !== productId) return false;
+          return true;
+        });
+      });
+    }),
+
+    filterLoader: new DataLoader(async (queries) => {
       const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
 
       const filters = await unchainedAPI.modules.filters.findFilters({
@@ -96,10 +176,7 @@ export default async (
       });
     }),
 
-    filterTextLoader: new DataLoader<
-      { filterId: string; filterOptionValue?: string; locale: string },
-      FilterText
-    >(async (queries) => {
+    filterTextLoader: new DataLoader(async (queries) => {
       const filterIds = [...new Set(queries.map((q) => q.filterId).filter(Boolean))];
 
       const texts = await unchainedAPI.modules.filters.texts.findTexts(
@@ -119,7 +196,7 @@ export default async (
       return getFilteredQueries({ queries, texts, filterFn });
     }),
 
-    productLoader: new DataLoader<{ productId: string }, Product>(async (queries) => {
+    productLoader: new DataLoader(async (queries) => {
       const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))]; // you don't need lodash, _.unique my ass
 
       const products = await unchainedAPI.modules.products.findProducts({
@@ -137,26 +214,61 @@ export default async (
       });
     }),
 
-    productTextLoader: new DataLoader<{ productId: string; locale: string }, ProductText>(
-      async (queries) => {
-        const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
+    productTextLoader: new DataLoader(async (queries) => {
+      const productIds = [...new Set(queries.map((q) => q.productId).filter(Boolean))];
 
-        const texts = await unchainedAPI.modules.products.texts.findTexts(
-          { productId: { $in: productIds } },
-          {
-            sort: {
-              productId: 1,
-            },
+      const texts = await unchainedAPI.modules.products.texts.findTexts(
+        { productId: { $in: productIds } },
+        {
+          sort: {
+            productId: 1,
           },
-        );
+        },
+      );
 
-        const filterFn =
-          ({ productId }) =>
-          (text) =>
-            text.productId === productId;
+      const filterFn =
+        ({ productId }) =>
+        (text) =>
+          text.productId === productId;
 
-        return getFilteredQueries({ queries, texts, filterFn });
-      },
-    ),
+      return getFilteredQueries({ queries, texts, filterFn });
+    }),
+
+    productMediaTextLoader: new DataLoader(async (queries) => {
+      const productMediaIds = [...new Set(queries.map((q) => q.productMediaId).filter(Boolean))];
+
+      const texts = await unchainedAPI.modules.products.media.texts.findMediaTexts(
+        { productMediaId: { $in: productMediaIds } },
+        {
+          sort: {
+            productMediaId: 1,
+          },
+        },
+      );
+
+      const filterFn =
+        ({ productMediaId }) =>
+        (text) =>
+          text.productMediaId === productMediaId;
+
+      return getFilteredQueries({ queries, texts, filterFn });
+    }),
+
+    fileLoader: new DataLoader(async (queries) => {
+      const fileIds = [...new Set(queries.map((q) => q.fileId).filter(Boolean))]; // you don't need lodash, _.unique my ass
+
+      const files = await unchainedAPI.modules.files.findFiles({
+        _id: { $in: fileIds },
+      });
+
+      return queries.map(({ fileId }) => {
+        return files.find((file) => {
+          if (file._id !== fileId) return false;
+          return true;
+        });
+      });
+    }),
   };
 };
+
+export default loaders;

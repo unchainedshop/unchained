@@ -173,7 +173,9 @@ export type AssortmentsModule = {
     findLinks: (
       query: {
         assortmentId?: string;
+        assortmentIds?: string[];
         parentAssortmentId?: string;
+        parentAssortmentIds?: string[];
       },
       options?: FindOptions,
     ) => Promise<Array<AssortmentLink>>;
@@ -221,7 +223,8 @@ export type AssortmentsModule = {
 
     findProducts: (
       params: {
-        assortmentId: string;
+        assortmentId?: string;
+        assortmentIds?: Array<string>;
       },
       options?: FindOptions,
     ) => Promise<Array<AssortmentProduct>>;

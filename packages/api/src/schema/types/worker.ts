@@ -58,6 +58,9 @@ export default [
       # If work is \`ALLOCATED\` longer than \`timeout\` it is considered as
       # \`FAILED\` and could be cleaned.
       timeout: Int
+
+      # If true, the work item was scheduled by the autoscheduling system
+      autoscheduled: Boolean
     }
   `,
 ];

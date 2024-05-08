@@ -288,3 +288,7 @@ export const ProductLinkedToQuotationError = createError(
   'ProductLinkedToQuotation',
   'Product is part of a requested/proposed quotations item, remove it from any requested/proposed quotations item before deleting',
 );
+
+export const FileNotFoundError = createError('FileNotFoundError', 'File not found');
+
+export const FileUploadExpiredError = createError('FileUploadExpired', 'File upload has expired');

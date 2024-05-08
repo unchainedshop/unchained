@@ -25,6 +25,7 @@ export type Work = {
   success?: boolean;
   timeout?: number;
   worker?: string;
+  autoscheduled?: boolean;
 } & TimestampFields;
 
 /*
@@ -81,7 +82,9 @@ export type WorkerModule = {
 
   rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
 
-  ensureOneWork: (work: WorkData) => Promise<Work>;
+  ensureOneWork: (work: WorkData, workId: string) => Promise<Work>;
+
+  ensureNoWork: (work: { priority: number; type: string }) => Promise<void>;
 
   finishWork: (
     _id: string,
@@ -111,8 +114,10 @@ export interface WorkerSchedule {
 }
 
 export type WorkScheduleConfiguration = Pick<WorkData, 'timeout' | 'retries' | 'priority' | 'worker'> & {
+  type: string;
   input?: (workData: Omit<WorkData, 'input'>) => Promise<Record<string, any> | null>;
   schedule: WorkerSchedule;
+  scheduleId?: string;
 };
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;
@@ -125,11 +130,8 @@ export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
 export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   getActivePluginTypes: (options?: { external?: boolean }) => Array<string>;
   getAdapterByType: (type: string) => IWorkerAdapter<any, any>;
-  disableAutoscheduling: (type: string) => void;
-  configureAutoscheduling: (
-    adapter: IWorkerAdapter<any, any>,
-    workScheduleConfiguration: WorkScheduleConfiguration,
-  ) => void;
+  disableAutoscheduling: (scheduleId: string) => void;
+  configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
   getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
   doWork: (work: Work, unchainedAPI: UnchainedCore) => Promise<WorkResult<any>>;
 };

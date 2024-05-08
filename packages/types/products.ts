@@ -187,7 +187,7 @@ export type ProductsModule = {
   productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
 
   // Transformations
-  interface: (productDiscount: ProductDiscount) => IDiscountAdapter;
+  interface: (productDiscount: ProductDiscount) => IDiscountAdapter<unknown>;
 
   isActive: (product: Product) => boolean;
   isDraft: (product: Product) => boolean;
@@ -578,7 +578,11 @@ export interface SimpleProductHelperTypes extends PlanProductHelperTypes {
 }
 
 export interface ProductAssortmentPathHelperTypes {
-  assortmentProduct: (product: Product, _: never, context: Context) => Promise<AssortmentProduct>;
+  assortmentProduct: (
+    data: { assortmentId: string; productId: string; links: Array<AssortmentPathLink> },
+    _: never,
+    context: Context,
+  ) => Promise<AssortmentProduct>;
 }
 
 export interface ProductBundleItemHelperTypes {

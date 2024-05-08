@@ -1,8 +1,12 @@
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
-import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
+import {
+  OrderPricingDirector,
+  OrderPricingAdapter,
+  OrderDiscountConfiguration,
+} from '@unchainedshop/core-orders';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
-const OrderItemsDiscount: IOrderPricingAdapter = {
+const OrderItemsDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-items-discount',
@@ -38,15 +42,19 @@ const OrderItemsDiscount: IOrderPricingAdapter = {
           ),
         );
 
-        let alreadyDeducted = 0;
+        let amountLeft = totalAmountOfItems;
 
         params.discounts.forEach(({ configuration, discountId }) => {
           // First, we deduce the discount from the items
+          const leftInItemsToSplit = calcUtils.calculateAmountToSplit(
+            { ...configuration },
+            totalAmountOfItems,
+          );
           const [itemsDiscountAmount, itemsTaxAmount] = calcUtils.applyDiscountToMultipleShares(
             itemShares,
-            calcUtils.calculateAmountToSplit({ ...configuration, alreadyDeducted }, totalAmountOfItems),
+            Math.max(0, Math.min(amountLeft, leftInItemsToSplit)),
           );
-          alreadyDeducted = +itemsDiscountAmount;
+          amountLeft -= itemsDiscountAmount;
 
           const discountAmount = itemsDiscountAmount * -1;
           const taxAmount = itemsTaxAmount * -1;

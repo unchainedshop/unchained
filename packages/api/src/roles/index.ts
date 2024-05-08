@@ -110,6 +110,7 @@ const actions: Record<string, string> = [
   'changePassword',
   'viewUserProductReviews',
   'heartbeat',
+  'confirmMediaUpload',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;

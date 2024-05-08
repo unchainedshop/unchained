@@ -3,12 +3,12 @@ import { Context, Root } from '@unchainedshop/types/api.js';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments.js';
 import {
-  InvalidIdError,
   OrderPaymentConfigurationError,
   OrderPaymentNotFoundError,
   OrderPaymentTypeError,
   OrderWrongPaymentStatusError,
 } from '../../../errors.js';
+import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function signPaymentProviderForCheckout(
   root: Root,
@@ -22,12 +22,20 @@ export default async function signPaymentProviderForCheckout(
     userId,
   });
 
-  if (!orderPaymentId) throw new InvalidIdError({ orderPaymentId });
+  let orderPayment;
 
-  const orderPayment = await modules.orders.payments.findOrderPayment({
-    orderPaymentId,
-  });
-  if (!orderPayment) throw new OrderPaymentNotFoundError({ orderPaymentId });
+  if (orderPaymentId) {
+    orderPayment = await modules.orders.payments.findOrderPayment({
+      orderPaymentId,
+    });
+    if (!orderPayment) throw new OrderPaymentNotFoundError({ orderPaymentId });
+  } else {
+    const order = await getOrderCart({ user: context.user }, context);
+    orderPayment = await modules.orders.payments.findOrderPayment({
+      orderPaymentId: order.paymentId,
+    });
+    if (!orderPayment) throw new OrderPaymentNotFoundError({ orderPaymentId });
+  }
 
   const provider = await modules.payment.paymentProviders.findProvider({
     paymentProviderId: orderPayment.paymentProviderId,

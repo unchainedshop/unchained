@@ -6,14 +6,14 @@ export function resolveAssortmentProductFromDatabase(
   selector: mongodb.Filter<AssortmentProduct> = {},
 ) {
   return async (productId: string) => {
-    const products = AssortmentProducts.find(
+    const assortmentProducts = AssortmentProducts.find(
       { productId, ...selector },
       {
-        projection: { _id: true, assortmentId: true },
+        projection: { _id: true, assortmentId: true, productId: true },
         sort: { sortKey: 1, productId: 1 },
       },
     );
 
-    return products.toArray();
+    return assortmentProducts.toArray();
   };
 }

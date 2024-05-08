@@ -13,10 +13,11 @@ Below is an example of [IDiscountAdapter](https://docs.unchained.shop/types/inte
 
 import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 import { OrderDiscountDirector, OrderDiscountAdapter } from '@unchainedshop/core-orders';
+import { ProductDiscountConfiguration } from '@unchainedshop/core-products/director/ProductDiscountConfiguration.js';
 
 const ShopDiscount_TAG = 'ShopDiscount';
 
-const ShopDiscount: IDiscountAdapter = {
+const ShopDiscount: IDiscountAdapter<ProductDiscountConfiguration> = {
   ...OrderDiscountAdapter,
 
   key: 'ch.shop.discount.ShopDiscount',
@@ -25,36 +26,31 @@ const ShopDiscount: IDiscountAdapter = {
   orderIndex: 1,
 
   // return true if a discount is allowed to get added manually by a user
-  isManualAdditionAllowed: async (code: string): Promise<boolean> => {
+  isManualAdditionAllowed: async (code) => {
     return false;
   },
 
   // return true if a discount is allowed to get removed manually by a user
-  isManualRemovalAllowed: async (): Promise<boolean> => {
+  isManualRemovalAllowed: async () => {
     return false;
   },
 
   actions: async ({
     context,
-  }: {
-    context: DiscountContext & Context;
-  }): Promise<DiscountAdapterActions> => {
+  }) => {
     return {
-      isValidForSystemTriggering: async (): Promise<boolean> => {
+      isValidForSystemTriggering: async () => {
         return true;
       },
 
-      isValidForCodeTriggering: async (params: { code: string }): Promise<boolean> => {
+      isValidForCodeTriggering: async (params) => {
         return false;
       },
 
       // returns the appropriate discount context for a calculation adapter
       discountForPricingAdapterKey: ({
         pricingAdapterKey,
-      }: {
-        pricingAdapterKey: string;
-        calculationSheet: IPricingSheet<PricingCalculation>;
-      }): DiscountConfiguration => {
+      }) => {
         if (pricingAdapterKey === 'shop.unchained.pricing.product-ShopDiscount') {
           return [
             {
@@ -64,8 +60,8 @@ const ShopDiscount: IDiscountAdapter = {
         }
         return null;
       },
-      release: (): Promise<void> => {},
-      reserve: (params: { code: string }): Promise<any> => {
+      release: () => {},
+      reserve: (params): => {
         return null;
       },
     };

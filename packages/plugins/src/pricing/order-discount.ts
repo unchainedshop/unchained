@@ -1,8 +1,12 @@
 import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
-import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
+import {
+  OrderPricingDirector,
+  OrderPricingAdapter,
+  OrderDiscountConfiguration,
+} from '@unchainedshop/core-orders';
 import { calculation as calcUtils } from '@unchainedshop/utils';
 
-export const OrderDiscount: IOrderPricingAdapter = {
+export const OrderDiscount: IOrderPricingAdapter<OrderDiscountConfiguration> = {
   ...OrderPricingAdapter,
 
   key: 'shop.unchained.pricing.order-discount',
@@ -22,9 +26,6 @@ export const OrderDiscount: IOrderPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        // discounts need to provide a *fixedRate*
-        // if you want to add percentual discounts,
-        // add it to the order item calculation
         const totalAmountOfItems = params.calculationSheet.total({
           category: OrderPricingRowCategory.Items,
           useNetPrice: false,
@@ -38,14 +39,12 @@ export const OrderDiscount: IOrderPricingAdapter = {
             category: OrderPricingRowCategory.Delivery,
             useNetPrice: false,
           }).amount;
-
         const itemShares = orderPositions.map((orderPosition) =>
           calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
             modules.orders.positions.pricingSheet(orderPosition, order.currency, params.context),
             totalAmountOfItems,
           ),
         );
-
         const deliveryShare = calcUtils.resolveRatioAndTaxDivisorForPricingSheet(
           orderDelivery &&
             modules.orders.deliveries.pricingSheet(orderDelivery, order.currency, params.context),
@@ -56,28 +55,28 @@ export const OrderDiscount: IOrderPricingAdapter = {
             modules.orders.payments.pricingSheet(orderPayment, order.currency, params.context),
           totalAmountOfPaymentAndDelivery,
         );
-
         let amountLeft = totalAmountOfPaymentAndDelivery + totalAmountOfItems;
-
         params.discounts.forEach(({ configuration, discountId }) => {
           // First, we deduce the discount from the items
-          let alreadyDeducted = 0;
-
           const leftInDiscountToSplit = calcUtils.calculateAmountToSplit(
-            { ...configuration, alreadyDeducted },
-            totalAmountOfItems,
+            { ...configuration },
+            Math.min(totalAmountOfItems, amountLeft),
           );
           const [itemsDiscountAmount, itemsTaxAmount] = calcUtils.applyDiscountToMultipleShares(
             itemShares,
             Math.max(0, Math.min(amountLeft, leftInDiscountToSplit)),
           );
           amountLeft -= itemsDiscountAmount;
-          alreadyDeducted += itemsDiscountAmount;
 
-          // After the items, we deduct the remaining discount from payment & delivery fees
+          // If it's a fixed rate we need to deduct the already deducted amount from the fixed rate
+          // before we hand it over to the split calculation
+          const fixedRate =
+            configuration.fixedRate > 0
+              ? Math.max(0, configuration.fixedRate - itemsDiscountAmount)
+              : undefined;
           const leftInFeesToSplit = calcUtils.calculateAmountToSplit(
-            { ...configuration, alreadyDeducted },
-            totalAmountOfPaymentAndDelivery,
+            { ...configuration, fixedRate },
+            Math.min(totalAmountOfPaymentAndDelivery, amountLeft),
           );
           const [deliveryAndPaymentDiscountAmount, deliveryAndPaymentTaxAmount] =
             calcUtils.applyDiscountToMultipleShares(
@@ -85,11 +84,8 @@ export const OrderDiscount: IOrderPricingAdapter = {
               Math.max(0, Math.min(amountLeft, leftInFeesToSplit)),
             );
           amountLeft -= deliveryAndPaymentDiscountAmount;
-          alreadyDeducted += itemsDiscountAmount;
-
           const discountAmount = (itemsDiscountAmount + deliveryAndPaymentDiscountAmount) * -1;
           const taxAmount = (itemsTaxAmount + deliveryAndPaymentTaxAmount) * -1;
-
           if (discountAmount) {
             pricingAdapter.resultSheet().addDiscount({
               amount: discountAmount,
@@ -101,7 +97,6 @@ export const OrderDiscount: IOrderPricingAdapter = {
             });
           }
         });
-
         return pricingAdapter.calculate();
       },
     };

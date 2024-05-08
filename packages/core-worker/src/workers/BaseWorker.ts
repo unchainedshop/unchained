@@ -42,13 +42,21 @@ export const BaseWorker: IWorker<WorkerParams> = {
 
       autorescheduleTypes: async ({ referenceDate }) => {
         return Promise.all(
-          WorkerDirector.getAutoSchedules().map(async ([type, workConfig]) => {
+          WorkerDirector.getAutoSchedules().map(async ([scheduleId, workConfig]) => {
+            if (!workConfig.schedule) {
+              await unchainedAPI.modules.worker.ensureNoWork({
+                type: workConfig.type,
+                priority: workConfig.priority || 0,
+              });
+              return null;
+            }
+
             const fixedSchedule = { ...workConfig.schedule };
             fixedSchedule.schedules[0].s = [0]; // ignore seconds, always run on second 0
             const nextDate = later.schedule(fixedSchedule).next(1, referenceDate);
             nextDate.setMilliseconds(0);
             const workData: WorkData = {
-              type,
+              type: workConfig.type,
               scheduled: nextDate,
               timeout: workConfig.timeout,
               priority: workConfig.priority || 0,
@@ -60,7 +68,8 @@ export const BaseWorker: IWorker<WorkerParams> = {
               // when it explicitly returns a falsish input instead of a dictionary
               if (!workData.input) return null;
             }
-            return unchainedAPI.modules.worker.ensureOneWork(workData);
+            const workId = `${scheduleId}:${workData.scheduled.getTime()}`;
+            return unchainedAPI.modules.worker.ensureOneWork(workData, workId);
           }),
         );
       },

@@ -83,10 +83,6 @@ const generateMinioUrl = (directoryName: string, hashedFilename: string) => {
   return `${MINIO_ENDPOINT}/${MINIO_BUCKET_NAME}/${generateMinioPath(directoryName, hashedFilename)}`;
 };
 
-const getMimeType = (extension) => {
-  return mimeType.lookup(extension);
-};
-
 connectToMinio().then(function setClient(c) {
   client = c;
 });
@@ -147,7 +143,7 @@ export const MinioAdapter: IFileAdapter = {
       directoryName,
       expiryDate,
       fileName,
-      type: getMimeType(fileName),
+      type: mimeType.lookup(fileName),
       putURL: url,
       url: generateMinioUrl(directoryName, _id),
     } as UploadFileData & { putURL: string };
@@ -178,7 +174,7 @@ export const MinioAdapter: IFileAdapter = {
     }
 
     const _id = buildHashedFilename(directoryName, fileName, new Date());
-    const type = rawFile?.mimetype || getMimeType(fileName);
+    const type = mimeType.lookup(fileName) || (await Promise.resolve(rawFile)).mimetype;
 
     const metaData = {
       'Content-Type': type,
@@ -205,12 +201,12 @@ export const MinioAdapter: IFileAdapter = {
     } as UploadFileData;
   },
 
-  async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname, headers }: any) {
+  async uploadFileFromURL(directoryName: string, { fileLink, fileName: fname, fileId, headers }: any) {
     if (!client) throw new Error('Minio not connected, check env variables');
 
     const { href } = new URL(fileLink);
     const fileName = fname || href.split('/').pop();
-    const _id = buildHashedFilename(directoryName, fileName, new Date());
+    const hashedFilename = buildHashedFilename(directoryName, fileName, new Date());
 
     const stream = await createHttpDownloadStream(fileLink, headers);
     const type = mimeType.lookup(fileName) || stream.headers['content-type'];
@@ -221,21 +217,21 @@ export const MinioAdapter: IFileAdapter = {
 
     await client.putObject(
       MINIO_BUCKET_NAME,
-      generateMinioPath(directoryName, _id),
+      generateMinioPath(directoryName, hashedFilename),
       stream,
       undefined,
       metaData,
     );
-    const { size } = await getObjectStats(generateMinioPath(directoryName, _id));
+    const { size } = await getObjectStats(generateMinioPath(directoryName, hashedFilename));
 
     return {
-      _id,
+      _id: fileId || hashedFilename,
       directoryName,
       expiryDate: null,
       fileName,
       size,
       type,
-      url: generateMinioUrl(directoryName, _id),
+      url: generateMinioUrl(directoryName, hashedFilename),
     } as UploadFileData;
   },
 

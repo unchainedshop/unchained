@@ -1,4 +1,4 @@
-import type { FindOptions } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 import { TimestampFields } from './common.js';
 
 export type AssortmentMedia = {
@@ -53,7 +53,10 @@ export type AssortmentMediaModule = {
 
   texts: {
     // Queries
-    findMediaTexts: (query: { assortmentMediaId: string }) => Promise<Array<AssortmentMediaText>>;
+    findMediaTexts: (
+      query: Filter<AssortmentMediaText>,
+      options?: FindOptions,
+    ) => Promise<Array<AssortmentMediaText>>;
 
     findLocalizedMediaText: (query: {
       assortmentMediaId: string;

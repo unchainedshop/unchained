@@ -214,7 +214,6 @@ describe('calculateAmountToSplit', () => {
   it('calculates the correct amount to split when using a rate', () => {
     const configuration = {
       rate: 0.1,
-      alreadyDeducted: 0,
     };
     const amount = 1000;
     expect(calculateAmountToSplit(configuration, amount)).toBe(100);
@@ -223,34 +222,14 @@ describe('calculateAmountToSplit', () => {
   it('calculates the correct amount to split when using a fixed rate', () => {
     const configuration = {
       fixedRate: 50,
-      alreadyDeducted: 0,
     };
     const amount = 1000;
     expect(calculateAmountToSplit(configuration, amount)).toBe(50);
   });
 
-  it('calculates the correct amount to split when alreadyDeducted is non-zero', () => {
-    const configuration = {
-      rate: 0.1,
-      alreadyDeducted: 10,
-    };
-    const amount = 1000;
-    expect(calculateAmountToSplit(configuration, amount)).toBe(90);
-  });
-
-  it('returns 0 when the amount to deduct is less than or equal to alreadyDeducted', () => {
-    const configuration = {
-      rate: 0.1,
-      alreadyDeducted: 100,
-    };
-    const amount = 1000;
-    expect(calculateAmountToSplit(configuration, amount)).toBe(0);
-  });
-
   it('returns 0 when the amount is less than or equal to 0', () => {
     const configuration = {
       rate: 0.1,
-      alreadyDeducted: 0,
     };
     const amount = 0;
     expect(calculateAmountToSplit(configuration, amount)).toBe(0);
@@ -260,7 +239,6 @@ describe('calculateAmountToSplit', () => {
   it('returns 0 when amount is negative', () => {
     const configuration = {
       rate: 0.1,
-      alreadyDeducted: 0,
     };
     const amount = -1000;
     expect(calculateAmountToSplit(configuration, amount)).toBe(0);
@@ -269,7 +247,6 @@ describe('calculateAmountToSplit', () => {
   it('returns 0 when configuration rate is negative', () => {
     const configuration = {
       rate: -0.1,
-      alreadyDeducted: 0,
     };
     const amount = 1000;
     expect(calculateAmountToSplit(configuration, amount)).toBe(0);

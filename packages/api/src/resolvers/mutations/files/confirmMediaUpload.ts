@@ -1,14 +1,21 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import { FileUploadExpiredError, FileNotFoundError } from '../../../errors.js';
 
 export default async function confirmMediaUpload(
   root: Root,
-  { mediaUploadTicketId, size, type },
+  { mediaUploadTicketId: fileId, size, type },
   context: Context,
 ) {
-  const { services, userId } = context;
+  const { services, modules, userId } = context;
 
   log(`mutation confirmMediaUpload `, { userId });
 
-  return services.files.linkFile({ fileId: mediaUploadTicketId, size, type }, context);
+  const file = await modules.files.findFile({ fileId });
+  if (!file) throw new FileNotFoundError({ fileId });
+
+  if (file.expires && new Date(file.expires).getTime() < new Date().getTime())
+    throw new FileUploadExpiredError({ fileId });
+
+  return services.files.linkFile({ fileId, size, type }, context);
 }

@@ -75,7 +75,8 @@ WorkerDirector.registerAdapter(ErrorNotifications);
 export default ErrorNotifications;
 
 const ONE_DAY_IN_SECONDS = 24 * 60 * 60;
-WorkerDirector.configureAutoscheduling(ErrorNotifications, {
+WorkerDirector.configureAutoscheduling({
+  type: ErrorNotifications.type,
   schedule: everyDayAtFourInTheNight,
   input: async () => ({ secondsPassed: ONE_DAY_IN_SECONDS }),
   retries: 0,

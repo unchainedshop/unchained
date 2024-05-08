@@ -1,4 +1,5 @@
-import { IDiscountDirector } from '@unchainedshop/types/discount.js';
 import { BaseDiscountDirector } from '@unchainedshop/utils';
+import { OrderDiscountConfiguration } from './OrderDiscountConfiguration.js';
 
-export const OrderDiscountDirector: IDiscountDirector = BaseDiscountDirector('OrderDiscountDirector');
+export const OrderDiscountDirector =
+  BaseDiscountDirector<OrderDiscountConfiguration>('OrderDiscountDirector');

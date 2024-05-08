@@ -1,6 +1,6 @@
 import os from 'os';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkData, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
+import { Work, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
@@ -371,23 +371,33 @@ export const configureWorkerModule = async ({
 
     allocateWork,
 
-    ensureOneWork: async ({
-      type,
-      input,
-      priority = 0,
-      scheduled,
-      timeout,
-      originalWorkId,
-      retries = 20,
-    }: WorkData) => {
+    ensureNoWork: async ({ type, priority = 0 }) => {
+      const query = buildQuerySelector({
+        type,
+        status: [WorkStatus.NEW],
+        priority,
+        autoscheduled: true,
+      });
+
+      await WorkQueue.updateMany(query, {
+        $set: {
+          deleted: new Date(),
+        },
+      });
+    },
+
+    ensureOneWork: async (
+      { type, input, priority = 0, scheduled, timeout, originalWorkId, retries = 20 },
+      workId,
+    ) => {
       const created = new Date();
       const query = buildQuerySelector({
         type,
         status: [WorkStatus.NEW],
         priority,
+        autoscheduled: true,
       });
       try {
-        const workId = `${type}:${scheduled.getTime()}`;
         const result = await WorkQueue.findOneAndUpdate(
           query,
           {
@@ -395,16 +405,20 @@ export const configureWorkerModule = async ({
               input,
               worker: null,
               updated: created,
+              retries,
+              timeout,
+              originalWorkId,
+            },
+            $unset: {
+              deleted: 1,
             },
             $setOnInsert: {
               _id: workId,
-              type,
-              priority,
-              originalWorkId,
               scheduled,
-              retries,
-              timeout,
+              type,
               created,
+              autoscheduled: true,
+              priority,
             },
           },
           {

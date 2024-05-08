@@ -54,7 +54,13 @@ export type PaymentPricingContext =
 
 export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation> & {
   addFee: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta?: any }) => void;
-  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
+  addTax: (params: {
+    amount: number;
+    rate: number;
+    baseCategory?: string;
+    discountId?: string;
+    meta?: any;
+  }) => void;
   addDiscount: (params: {
     amount: number;
     isTaxable: boolean;
@@ -64,16 +70,17 @@ export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation> & {
   }) => void;
 };
 
-export type IPaymentPricingAdapter = IPricingAdapter<
+export type IPaymentPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
-  IPaymentPricingSheet
+  IPaymentPricingSheet,
+  DiscountConfiguration
 >;
 
-export type IPaymentPricingDirector = IPricingDirector<
+export type IPaymentPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   PaymentPricingContext,
   PaymentPricingCalculation,
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
-  IPaymentPricingAdapter
+  IPaymentPricingAdapter<DiscountConfiguration>
 >;

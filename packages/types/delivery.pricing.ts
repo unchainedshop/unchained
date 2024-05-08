@@ -53,7 +53,13 @@ export type DeliveryPricingContext =
 
 export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation> & {
   addFee: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta?: any }) => void;
-  addTax: (params: { amount: number; rate: number; meta?: any }) => void;
+  addTax: (params: {
+    amount: number;
+    rate: number;
+    baseCategory?: string;
+    discountId?: string;
+    meta?: any;
+  }) => void;
   addDiscount: (params: {
     amount: number;
     isTaxable: boolean;
@@ -63,16 +69,17 @@ export type IDeliveryPricingSheet = IPricingSheet<DeliveryPricingCalculation> & 
   }) => void;
 };
 
-export type IDeliveryPricingAdapter = IPricingAdapter<
+export type IDeliveryPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
-  IDeliveryPricingSheet
+  IDeliveryPricingSheet,
+  DiscountConfiguration
 >;
 
-export type IDeliveryPricingDirector = IPricingDirector<
+export type IDeliveryPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   DeliveryPricingContext,
   DeliveryPricingCalculation,
   DeliveryPricingAdapterContext,
   IDeliveryPricingSheet,
-  IDeliveryPricingAdapter
+  IDeliveryPricingAdapter<DiscountConfiguration>
 >;

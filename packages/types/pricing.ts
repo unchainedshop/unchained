@@ -55,7 +55,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
   gross: () => number;
   net: () => number;
   sum: (filter?: Partial<Calculation>) => number;
-  total: (params?: { category?: string; useNetPrice?: boolean }) => {
+  total: (params?: { category?: string; discountId?: string; useNetPrice?: boolean }) => {
     amount: number;
     currency: string;
   };
@@ -68,9 +68,7 @@ export interface IBasePricingSheet<Calculation extends PricingCalculation> {
 export interface IPricingSheet<Calculation extends PricingCalculation>
   extends IBasePricingSheet<Calculation> {
   discountPrices: (discountId?: string) => Array<PricingDiscount>;
-  discountSum: (discountId?: string) => number;
   addDiscount: (params: { amount: number; discountId: string; meta?: any }) => void;
-  getDiscountRows: (discountId: string) => Array<Calculation>;
 }
 
 export interface IPricingAdapterActions<
@@ -86,6 +84,7 @@ export type IPricingAdapter<
   PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
   Sheet extends IPricingSheet<Calculation>,
+  DiscountConfiguration = unknown,
 > = IBaseAdapter & {
   orderIndex: number;
 
@@ -94,7 +93,7 @@ export type IPricingAdapter<
   actions: (params: {
     context: PricingAdapterContext;
     calculationSheet: Sheet;
-    discounts: Array<Discount>;
+    discounts: Array<Discount<DiscountConfiguration>>;
   }) => IPricingAdapterActions<Calculation, PricingAdapterContext> & { resultSheet: () => Sheet };
 };
 

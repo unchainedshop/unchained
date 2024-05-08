@@ -43,8 +43,11 @@ export const configureAssortmentProductsModule = ({
       return AssortmentProducts.findOne(generateDbFilterById(assortmentProductId), {});
     },
 
-    findProducts: async ({ assortmentId }, options) => {
-      const products = AssortmentProducts.find({ assortmentId }, options);
+    findProducts: async ({ assortmentId, assortmentIds }, options) => {
+      const products = AssortmentProducts.find(
+        { assortmentId: assortmentId || { $in: assortmentIds } },
+        options,
+      );
       return products.toArray();
     },
 

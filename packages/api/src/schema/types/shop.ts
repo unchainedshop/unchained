@@ -1,8 +1,19 @@
 export default [
   /* GraphQL */ `
+    enum ExternalLinkTarget {
+      """
+      Open on new tab
+      """
+      BLANK
+      """
+      Open in own Iframe
+      """
+      SELF
+    }
     type Link @cacheControl(maxAge: 180) {
       href: String
       title: String
+      target: ExternalLinkTarget
     }
 
     type AdminUiConfigCustomEntityInterface {

@@ -24,6 +24,28 @@ We will keep supporting the following auth-strategies out of the box that we con
 
 ## Patch
 
+# Unchained Engine v2.8
+
+## Minor
+- Re-Scheduling Bahvior of auto-scheduled work has been refined (https://github.com/unchainedshop/unchained/issues/565) and the GraphQL API now contains "Work.autoscheduled" in order for the Admin UI to display auto-scheduled work.
+- Add `Query.validateVerifyEmailToken` that can be used to verify if a token is valid for use when verifying email
+- Add `Query.validateResetPasswordToken` that can be used to verify if a token is valid for use on password reset request
+- Added Payrexx plugin
+- Changed the way order events work to fix a longstanding bug with double-messaging due to webhooks getting called in-flight. This affects ORDER_CHECKOUT, ORDER_CONFIRMED, ORDER_REJECTED & ORDER_FULLFILLED: Now the updated order is beeing emitted together with a new property "oldStatus" containing the previous order status. Also, order messaging module functions have been removed from `core-orders` and are now privately setup in `setupTemplates` @ platform.
+
+## Patch
+- Allow CORS for upload handling
+- Fix avatar upload in PUT mode
+
+# Unchained Engine v2.7
+
+## Minor
+- Mutation `signPaymentProviderForCheckout` does not require an orderPaymentId anymore, it will try to sign the currently selected paymentProvider of the cart if left undefined. This will allow doing 1 request (multi mutation) checkouts in certain configurations.
+- Improve discount types
+- Extend the functionality of the default `product-discount` plugin so it's universally usable for different kind of product discounts
+
+## Patch
+- Fix a case with `order-discount` and `order-items-discount` plugins not appropriately applying a rate to payment and delivery fees
 
 # Unchained Engine v2.6
 

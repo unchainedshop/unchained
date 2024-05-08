@@ -140,11 +140,8 @@ export const configureAssortmentMediaModule = async ({
 
     delete: async (assortmentMediaId) => {
       const selector = generateDbFilterById(assortmentMediaId);
-
       await AssortmentMediaTexts.deleteMany({ assortmentMediaId });
-
       const deletedResult = await AssortmentMedia.deleteOne(selector);
-
       await emit('ASSORTMENT_REMOVE_MEDIA', {
         assortmentMediaId,
       });
@@ -219,8 +216,8 @@ export const configureAssortmentMediaModule = async ({
 
     texts: {
       // Queries
-      findMediaTexts: async ({ assortmentMediaId }) => {
-        return AssortmentMediaTexts.find({ assortmentMediaId }).toArray();
+      findMediaTexts: async ({ assortmentMediaId }, options) => {
+        return AssortmentMediaTexts.find({ assortmentMediaId }, options).toArray();
       },
 
       findLocalizedMediaText: async ({ assortmentMediaId, locale }) => {

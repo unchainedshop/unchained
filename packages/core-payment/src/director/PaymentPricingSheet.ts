@@ -46,22 +46,19 @@ export const PaymentPricingSheet = (
       });
     },
 
-    taxSum() {
+    taxSum(filter) {
       return basePricingSheet.sum({
         category: PaymentPricingRowCategory.Tax,
-      });
-    },
-
-    discountSum(discountId) {
-      return basePricingSheet.sum({
-        category: PaymentPricingRowCategory.Discount,
-        discountId,
+        ...(filter || {}),
       });
     },
 
     discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
-        .getDiscountRows(explicitDiscountId)
+        .filterBy({
+          category: PaymentPricingRowCategory.Discount,
+          discountId: explicitDiscountId,
+        })
         .map(({ discountId }) => discountId);
 
       return [...new Set(discountIds)]
@@ -80,13 +77,6 @@ export const PaymentPricingSheet = (
           };
         })
         .filter(Boolean);
-    },
-
-    getDiscountRows(discountId) {
-      return basePricingSheet.filterBy({
-        category: PaymentPricingRowCategory.Discount,
-        discountId,
-      });
     },
   };
 

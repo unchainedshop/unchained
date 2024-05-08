@@ -31,20 +31,24 @@ export const BasePricingSheet = <Calculation extends PricingCalculation>(
     },
 
     gross() {
+      // Sum contains taxes, thus it's gross when just suming everything
       return this.sum();
     },
 
     net() {
+      // Remove all taxes from gross to get net
       return this.sum() - this.taxSum();
     },
 
-    total({ category, useNetPrice } = { useNetPrice: false }) {
-      const grossAmountForCategory = this.sum(category && { category });
-      const taxAmountForCategory = this.taxSum(category && { baseCategory: category });
+    total({ category, useNetPrice, discountId } = { useNetPrice: false }) {
+      const amount = this.sum({ category, discountId });
+      const taxAmountForCategory = this.taxSum({ baseCategory: category, discountId });
+
+      // Sum does not contain taxes when filtering by category, it's net in that case and gross if there is no category
+      const netAmount = !category ? amount - taxAmountForCategory : amount;
+
       return {
-        amount: Math.round(
-          useNetPrice ? grossAmountForCategory - taxAmountForCategory : grossAmountForCategory,
-        ),
+        amount: Math.round(useNetPrice ? netAmount : netAmount + taxAmountForCategory),
         currency: this.currency,
       };
     },

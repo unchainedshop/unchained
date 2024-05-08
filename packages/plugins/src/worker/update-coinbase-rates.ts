@@ -82,6 +82,7 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
 
 WorkerDirector.registerAdapter(UpdateCoinbaseRates);
 
-WorkerDirector.configureAutoscheduling(UpdateCoinbaseRates, {
+WorkerDirector.configureAutoscheduling({
+  type: UpdateCoinbaseRates.type,
   schedule: everyMinute,
 });

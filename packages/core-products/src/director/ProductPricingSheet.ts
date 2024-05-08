@@ -35,9 +35,11 @@ export const ProductPricingSheet = (
       });
     },
 
-    addTax({ amount, rate, meta }) {
+    addTax({ amount, baseCategory, rate, meta, discountId }) {
       basePricingSheet.calculation.push({
         category: ProductPricingRowCategory.Tax,
+        baseCategory,
+        discountId,
         amount,
         isTaxable: false,
         isNetPrice: false,
@@ -46,16 +48,10 @@ export const ProductPricingSheet = (
       });
     },
 
-    taxSum() {
+    taxSum(filter) {
       return basePricingSheet.sum({
         category: ProductPricingRowCategory.Tax,
-      });
-    },
-
-    discountSum(discountId) {
-      return basePricingSheet.sum({
-        category: ProductPricingRowCategory.Discount,
-        discountId,
+        ...(filter || {}),
       });
     },
 
@@ -69,7 +65,10 @@ export const ProductPricingSheet = (
 
     discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
-        .getDiscountRows(explicitDiscountId)
+        .filterBy({
+          category: ProductPricingRowCategory.Discount,
+          discountId: explicitDiscountId,
+        })
         .map(({ discountId }) => discountId);
 
       return [...new Set(discountIds)]
@@ -88,13 +87,6 @@ export const ProductPricingSheet = (
           };
         })
         .filter(Boolean);
-    },
-
-    getDiscountRows(discountId: string) {
-      return basePricingSheet.filterBy({
-        category: ProductPricingRowCategory.Discount,
-        discountId,
-      });
     },
   };
 

@@ -176,14 +176,12 @@ export const configureOrdersModule = async ({
     const { modules } = unchainedAPI;
 
     const selector = generateDbFilterById(orderId);
-    let order = (await Orders.findOne(selector, {})) as Order;
+    const order = (await Orders.findOne(selector, {})) as Order;
 
     // Don't recalculate orders, only carts
     if (order.status !== null) return order;
 
     await updateDiscounts(order, unchainedAPI);
-
-    order = await initProviders(order, unchainedAPI);
 
     let orderPositions = (await findOrderPositions(order)) as OrderPosition[];
     orderPositions = await Promise.all(
@@ -213,15 +211,35 @@ export const configureOrdersModule = async ({
     );
 
     const calculation = await pricing.calculate();
+    const updated = new Date();
 
     await Orders.updateOne(selector, {
       $set: {
         calculation,
-        updated: new Date(),
+        updated,
       },
     });
 
-    return Orders.findOne(selector, {});
+    /*
+       // We have to do initProviders after calculation, only then filterSupportedProviders will work correctly and has access to recent pricing
+       // initProviders calls updateCalculation anyways recursively when a new payment or delivery provider gets set
+       // Thus, if for example a discount change leads to a free delivery and free payment due to free items amount, the following happens in the stack:
+        // 1. create discount
+        // 2. update calculation -> order pricing updated to items 0
+        // 3. initProviders with updated order -> filterSupportedProviders -> delivery provider is invalid -> set new delivery provider
+        // 4. update calculation -> order pricing updated to items 0 and delivery 0
+        // 5. initProviders with updated order -> filterSupportedProviders -> payment provider is invalid -> set new payment provider
+        // 6. update calculation -> order pricing updated to items 0, delivery 0, payment 0
+        // 7. initProviders with updated order -> all providers are valid -> return order
+    */
+    return initProviders(
+      {
+        ...order,
+        calculation,
+        updated,
+      },
+      unchainedAPI,
+    );
   };
 
   const orderQueries = configureOrdersModuleQueries({ Orders });

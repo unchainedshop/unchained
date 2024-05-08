@@ -9,7 +9,7 @@ export function resolveAssortmentLinkFromDatabase(
     const links = await AssortmentLinks.find(
       { childAssortmentId: assortmentId, ...selector },
       {
-        projection: { childAssortmentId: 1, parentAssortmentId: 1 },
+        projection: { _id: 1, childAssortmentId: 1, parentAssortmentId: 1 },
         sort: { sortKey: 1, parentAssortmentId: 1 },
       },
     ).toArray();

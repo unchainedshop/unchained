@@ -1,5 +1,8 @@
 import { DeliveryPricingAdapter, DeliveryPricingDirector } from '@unchainedshop/core-delivery';
-import { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing.js';
+import {
+  DeliveryPricingRowCategory,
+  IDeliveryPricingAdapter,
+} from '@unchainedshop/types/delivery.pricing.js';
 
 import { Order } from '@unchainedshop/types/orders.js';
 import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
@@ -62,6 +65,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
             pricingAdapter.resultSheet().addTax({
               amount: taxAmount,
               rate: taxRate,
+              baseCategory: DeliveryPricingRowCategory.Delivery,
               meta: { adapter: DeliverySwissTax.key },
             });
           } else {
@@ -69,6 +73,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
             pricingAdapter.resultSheet().addTax({
               amount: taxAmount,
               rate: taxRate,
+              baseCategory: DeliveryPricingRowCategory.Delivery,
               meta: { adapter: DeliverySwissTax.key },
             });
           }

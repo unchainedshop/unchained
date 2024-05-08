@@ -28,20 +28,24 @@ export const resolveRatioAndTaxDivisorForPricingSheet = (
 };
 
 export const calculateAmountToSplit = (
-  configuration: { rate?: number; fixedRate?: number; alreadyDeducted?: number },
+  configuration: { rate?: number; fixedRate?: number },
   amount: number,
 ) => {
   const deductionAmount = configuration.rate
     ? amount * configuration.rate
     : Math.min(configuration.fixedRate, amount);
 
-  const leftInDiscount = Math.max(0, deductionAmount - (configuration.alreadyDeducted ?? 0));
+  const leftInDiscount = Math.max(0, deductionAmount);
   return leftInDiscount;
 };
 
 export const applyRate = (configuration: { fixedRate?: number; rate?: number }, amount) => {
   const { rate, fixedRate } = configuration;
   return rate ? amount * rate : Math.min(fixedRate || 0, amount);
+};
+
+export const getTaxAmount = (total: number, rate: number, isNetPrice: boolean) => {
+  return isNetPrice ? total * rate : total - total / (1 + rate);
 };
 
 export const resolveAmountAndTax = (

@@ -60,7 +60,12 @@ export type RemoveFilesService = (
 export type UploadFileFromURLService = (
   params: {
     directoryName: string;
-    fileInput: { fileLink: string; fileName: string; headers?: Record<string, unknown> };
+    fileInput: {
+      fileLink: string;
+      fileName: string;
+      fileId?: string;
+      headers?: Record<string, unknown>;
+    };
     meta?: any;
   },
   unchainedAPI: UnchainedCore,

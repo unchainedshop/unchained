@@ -46,27 +46,24 @@ export const DeliveryPricingSheet = (
       });
     },
 
-    taxSum() {
+    taxSum(filter) {
       return basePricingSheet.sum({
         category: DeliveryPricingRowCategory.Tax,
-      });
-    },
-
-    discountSum(discountId) {
-      return basePricingSheet.sum({
-        category: DeliveryPricingRowCategory.Discount,
-        discountId,
+        ...(filter || {}),
       });
     },
 
     discountPrices(explicitDiscountId) {
       const discountIds = pricingSheet
-        .getDiscountRows(explicitDiscountId)
+        .filterBy({
+          category: DeliveryPricingRowCategory.Discount,
+          discountId: explicitDiscountId,
+        })
         .map(({ discountId }) => discountId);
 
       return [...new Set(discountIds)]
         .map((discountId) => {
-          const amount = basePricingSheet.sum({
+          const { currency, amount } = basePricingSheet.total({
             category: DeliveryPricingRowCategory.Discount,
             discountId,
           });
@@ -76,17 +73,10 @@ export const DeliveryPricingSheet = (
           return {
             discountId,
             amount: Math.round(amount),
-            currency: basePricingSheet.currency,
+            currency,
           };
         })
         .filter(Boolean);
-    },
-
-    getDiscountRows(discountId) {
-      return basePricingSheet.filterBy({
-        category: DeliveryPricingRowCategory.Discount,
-        discountId,
-      });
     },
   };
 

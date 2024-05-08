@@ -129,7 +129,7 @@ export const configureFiltersModule = async ({
     },
     {
       maxAge: 5000,
-      prmise: true,
+      promise: true,
       normalizer(args) {
         // args is arguments object as accessible in memoized function
         return `${args[0]._id}-${args[1].values?.toString()}`;

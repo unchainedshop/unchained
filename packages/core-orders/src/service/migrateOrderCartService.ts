@@ -21,6 +21,20 @@ export const migrateOrderCartsService: MigrateOrderCartsService = async (
   // Move positions
   unchainedAPI.modules.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: toCart._id });
 
+  // Move billing address if target order has none
+  if (fromCart.billingAddress && !toCart.billingAddress) {
+    await unchainedAPI.modules.orders.updateBillingAddress(
+      toCart._id,
+      fromCart.billingAddress,
+      unchainedAPI,
+    );
+  }
+
+  // Move contact data if target order has none
+  if (fromCart.contact && !toCart.contact) {
+    await unchainedAPI.modules.orders.updateContact(toCart._id, fromCart.contact, unchainedAPI);
+  }
+
   await unchainedAPI.modules.orders.updateCalculation(fromCart._id, unchainedAPI);
   return unchainedAPI.modules.orders.updateCalculation(toCart._id, unchainedAPI);
 };
