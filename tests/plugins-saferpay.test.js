@@ -5,7 +5,7 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 
 let db;
 let graphqlFetch;
-const { SAFERPAY_CUSTOMER_ID, SAFERPAY_USER, SAFERPAY_PW } = process.env;
+const { SAFERPAY_CUSTOMER_ID, SAFERPAY_PW } = process.env;
 
 const simulatePayment = async (paymentPageUrl) => {
   const redirect = await fetch(paymentPageUrl, {
@@ -16,13 +16,13 @@ const simulatePayment = async (paymentPageUrl) => {
     method: 'POST',
     duplex: 'half',
     body: new URLSearchParams({
-      selectionId: '4_OnlinePaymentService&1510' // Twint, no user input required
+      selectionId: '1510' // Twint, no user input required
     }),
   });
   await new Promise(r => setTimeout(r, 4000)); // Need to wait a few seconds after request
 }
 
-if (SAFERPAY_CUSTOMER_ID && SAFERPAY_USER && SAFERPAY_PW) {
+if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
   const terminalId = '17766514';
 
   describe('Plugins: Worldline Saferpay Payments', () => {
@@ -151,9 +151,7 @@ if (SAFERPAY_CUSTOMER_ID && SAFERPAY_USER && SAFERPAY_PW) {
           location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`)
         ).toBeTruthy();
 
-        const {
-          data: { checkoutCart },
-        } = await graphqlFetch({
+        await graphqlFetch({
           query: /* GraphQL */ `
           mutation checkoutCart(
             $orderId: ID!
@@ -209,7 +207,7 @@ if (SAFERPAY_CUSTOMER_ID && SAFERPAY_USER && SAFERPAY_PW) {
         await simulatePayment(location);
 
         const {
-          data: { checkoutCart },
+          data, errors,
         } = await graphqlFetch({
           query: /* GraphQL */ `
           mutation checkoutCart(
