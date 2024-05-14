@@ -68,7 +68,7 @@ module.exports = {
             'plugins/datatrans',
             'plugins/postfinance-checkout',
             'plugins/twilio',
-            'plugins/worldline-saferpay',
+            'plugins/saferpay',
             'plugins/push-notification'
           ],
           'Write your own Plugins': [

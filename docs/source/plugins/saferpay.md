@@ -13,13 +13,15 @@ You can create multiple terminals in the backoffice. The terminal ID is passed i
 
 ## Environment Variables
 
+
 | NAME                      | Default Value                          | Description                             |
 | ------------------------- | -------------------------------------- | --------------------------------------- |
-| `WORLDLINE_BASE_URL`      | `https://test.saferpay.com/api`        | `https://test.saferpay.com/api` for the test system, `https://www.saferpay.com/api` for the production system |
-| `WORLDLINE_CUSTOMER_ID`   |                                        |                                         |
-| `WORLDLINE_PW`            |                                        |
-| `WORLDLINE_SUCCESS_URL`   |                                        | URL that the user is forwarded to after a successful payment. `?order_id=<unchained id of the order>` is automatically added |
-| `WORLDLINE_FAILED_URL`    |                                        | URL that the user is forwarded to after a failed payment. `?order_id=<unchained id of the order>` is automatically added |
+| `SAFERPAY_BASE_URL`      | `https://test.saferpay.com/api`        | `https://test.saferpay.com/api` for the test system, `https://www.saferpay.com/api` for the production system |
+| `SAFERPAY_CUSTOMER_ID`   |                                        |                                         |
+| `SAFERPAY_USER`            |                                        |
+| `SAFERPAY_PW`            |                                        |
+| `SAFERPAY_WEBHOOK_PATH`            |                                        |
+| `SAFERPAY_RETURN_PATH`    |                                        | URL that the user is forwarded to after a successful/failed payment. `?order_id=<unchained id of the order>` is automatically added |
 
 
 ## Instantiate a provider
@@ -40,7 +42,7 @@ The mutation returns a stringified JSON object with the transaction ID and the l
 ```json
 {
     "transactionId": "<id>",
-    "location": "https://test.saferpay.com/vt2/api/PaymentPage/1/2/abc"
+    "location": "https://test.saferpay.com/vt2/api/PaymentPage/1/2/abc?transactionId=UNCHAINED_TRX_ID"
 }
 ```
 The user will be redirected to the success (or failure) URL after entering the payment credentials. To complete the order, you have to call `checkoutCart` and provide the previously retrieved `transactionId`

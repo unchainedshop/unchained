@@ -32,19 +32,22 @@ export interface PaymentPageInitializeInput extends Request {
   Wallets?: string[];
   Payer?: {
     IpAddress?: string;
+    Ipv6Address?: string;
     LanguageCode?: string;
+    BillingAddress?: Map<string, string>;
+    DeliveryAddress?: Map<string, string>;
   };
-  BillingAddress?: Map<string, string>;
-  DeliveryAddress?: Map<string, string>;
   RegisterAlias?: {
     IdGenerator: 'MANUAL' | 'RANDOM' | 'RANDOM_UNIQUE';
     Id?: string;
     Lifetime?: number;
   };
-  ReturnUrls: {
-    Success: string;
-    Fail: string;
-    Abort?: string;
+  ReturnUrl: {
+    Url: string;
+  };
+  Notification?: {
+    SuccessNotifyUrl?: string;
+    FailNotifyUrl?: string;
   };
 }
 
