@@ -23,7 +23,7 @@ const simulatePayment = async (paymentPageUrl) => {
 }
 
 if (SAFERPAY_CUSTOMER_ID && SAFERPAY_USER && SAFERPAY_PW) {
-  const terminalId = '17750037';
+  const terminalId = '17766514';
 
   describe('Plugins: Worldline Saferpay Payments', () => {
 

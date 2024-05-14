@@ -142,7 +142,8 @@ export const WordlineSaferpay: IPaymentAdapter = {
 
         return JSON.stringify({
           location: paymentPageInit.RedirectUrl,
-          transactionId: paymentPageInit.Token,
+          token: paymentPageInit.Token,
+          transactionId: saferpayTransactionId.toString('hex'),
         });
       },
 
