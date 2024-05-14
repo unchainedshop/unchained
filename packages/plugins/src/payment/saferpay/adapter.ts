@@ -35,8 +35,8 @@ export const WordlineSaferpay: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.saferpay',
-  label: 'Worldline Saferpay',
-  version: '1.0.0',
+  label: 'Worldline Saferpay API',
+  version: '1.40.0',
 
   typeSupported(type) {
     return type === 'GENERIC';
