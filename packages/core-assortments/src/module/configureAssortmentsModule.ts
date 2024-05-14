@@ -1,3 +1,4 @@
+import memoizee from 'memoizee';
 import { Tree } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import {
@@ -161,20 +162,33 @@ export const configureAssortmentsModule = async ({
     return [...assortmentSet];
   };
 
-  const findProductIds = async (
-    assortment: Assortment,
-    { forceLiveCollection = false, ignoreChildAssortments = false } = {},
-  ) => {
-    if (ignoreChildAssortments) {
-      const productAssignments = await findProductAssignments(assortment._id);
-      return productAssignments.map(({ productId }) => productId);
-    }
-    if (!forceLiveCollection) {
-      const cachedProductIds = await assortmentsSettings.getCachedProductIds(assortment._id);
-      if (cachedProductIds) return cachedProductIds;
-    }
-    return buildProductIds(assortment);
-  };
+  const findProductIds = memoizee(
+    async function findProductIdsRaw({
+      forceLiveCollection = false,
+      ignoreChildAssortments = false,
+      assortmentId,
+    }: {
+      assortmentId: string;
+      forceLiveCollection: boolean;
+      ignoreChildAssortments: boolean;
+    }) {
+      const assortment = await Assortments.findOne(generateDbFilterById(assortmentId), {});
+      if (!assortment) return [];
+      if (ignoreChildAssortments) {
+        const productAssignments = await findProductAssignments(assortment._id);
+        return productAssignments.map(({ productId }) => productId);
+      }
+      if (!forceLiveCollection) {
+        const cachedProductIds = await assortmentsSettings.getCachedProductIds(assortment._id);
+        if (cachedProductIds) return cachedProductIds;
+      }
+      return buildProductIds(assortment);
+    },
+    {
+      maxAge: 5000,
+      promise: true,
+    },
+  );
 
   const invalidateProductIdCache = async (
     assortment: Assortment,
@@ -209,7 +223,6 @@ export const configureAssortmentsModule = async ({
         return true;
       }),
     );
-
     return updateCount;
   };
 
@@ -235,6 +248,8 @@ export const configureAssortmentsModule = async ({
         level: LogLevel.Debug,
       },
     );
+
+    findProductIds.clear();
   };
 
   /*
@@ -285,15 +300,6 @@ export const configureAssortmentsModule = async ({
         sort: buildSortOptions(sort || defaultSortOption),
       });
       return assortments.toArray();
-    },
-
-    findProductIds: async ({ assortmentId, forceLiveCollection, ignoreChildAssortments }) => {
-      const assortment = await Assortments.findOne(generateDbFilterById(assortmentId), {});
-      if (!assortment) return [];
-      return findProductIds(assortment, {
-        forceLiveCollection,
-        ignoreChildAssortments,
-      });
     },
 
     children: async ({ assortmentId, includeInactive }) => {
@@ -435,6 +441,8 @@ export const configureAssortmentsModule = async ({
         return assortments;
       },
     },
+
+    findProductIds,
 
     // Sub entities
     media: assortmentMedia,

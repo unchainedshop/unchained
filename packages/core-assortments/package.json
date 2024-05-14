@@ -37,6 +37,7 @@
     "@unchainedshop/utils": "^2.8.17",
     "locale": "^0.1.0",
     "ramda": "^0.29.1",
+    "memoizee": "^0.4.15",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
