@@ -21,6 +21,8 @@ export type Filter = {
   type: FilterType;
 } & TimestampFields;
 
+export type FilterInputText = { locale: string; title: string; subtitle?: string };
+
 export type FilterOption = Filter & {
   filterOption: string;
 };

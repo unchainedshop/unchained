@@ -682,7 +682,7 @@ export default [
       """
       Creates new Filter along with the user who created it.
       """
-      createFilter(filter: CreateFilterInput!): Filter!
+      createFilter(filter: CreateFilterInput!, texts: [FilterTextInput!]!): Filter!
 
       """
       Updates the specified filter with the information passed.
@@ -705,13 +705,17 @@ export default [
       updateFilterTexts(
         filterId: ID!
         filterOptionValue: String
-        texts: [UpdateFilterTextInput!]!
+        texts: [FilterTextInput!]!
       ): [FilterTexts!]!
 
       """
       Adds new option to filters
       """
-      createFilterOption(filterId: ID!, option: CreateFilterOptionInput!): Filter!
+      createFilterOption(
+        filterId: ID!
+        option: CreateFilterOptionInput!
+        texts: [FilterTextInput!]
+      ): Filter!
 
       """
       Add a new ProductReview

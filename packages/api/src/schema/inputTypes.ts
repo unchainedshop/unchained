@@ -209,7 +209,6 @@ export default [
     input CreateFilterInput {
       key: String!
       type: FilterType!
-      title: String!
       options: [String!]
     }
 
@@ -223,7 +222,7 @@ export default [
       key: String
     }
 
-    input UpdateFilterTextInput {
+    input FilterTextInput {
       locale: String!
       title: String
       subtitle: String
