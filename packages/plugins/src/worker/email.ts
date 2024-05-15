@@ -21,7 +21,7 @@ const buildLink = ({ filename, content, href, contentType, encoding, path }) => 
     return `<a href="${href}">${filename}</a>`;
   }
   if (content && encoding === 'base64') {
-    return `<a target="_blank" href="${`data:${contentType};base64,${content}=`}">${filename}</a>`;
+    return `<a target="_blank" href="${`data:${contentType};base64,${content}`}">${filename}</a>`;
   }
   return '';
 };
