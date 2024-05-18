@@ -15,7 +15,7 @@ function getLocaleStrings(localeObj) {
 function findMatchingText(texts, localeStrings) {
   return localeStrings.reduce((acc, localeString) => {
     if (acc) return acc;
-    return texts.find((p) => p.locale === localeString);
+    return texts.find((p) => p.locale.toLowerCase() === localeString.toLowerCase());
   }, null);
 }
 
@@ -192,7 +192,6 @@ const loaders = async (
         ({ filterId, filterOptionValue }) =>
         (text) =>
           text.filterId === filterId && text.filterOptionValue === filterOptionValue;
-
       return getFilteredQueries({ queries, texts, filterFn });
     }),
 
