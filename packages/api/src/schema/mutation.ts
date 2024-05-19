@@ -392,7 +392,7 @@ export default [
       """
       Modify localized texts part of a product
       """
-      updateProductTexts(productId: ID!, texts: [UpdateProductTextInput!]!): [ProductTexts!]!
+      updateProductTexts(productId: ID!, texts: [ProductTextInput!]!): [ProductTexts!]!
 
       """
       Add a new media to a product's visualization
@@ -602,7 +602,7 @@ export default [
       """
       Modify localized texts part of an assortment
       """
-      updateAssortmentTexts(assortmentId: ID!, texts: [UpdateAssortmentTextInput!]!): [AssortmentTexts!]!
+      updateAssortmentTexts(assortmentId: ID!, texts: [AssortmentTextInput!]!): [AssortmentTexts!]!
 
       """
       Add a new product to an assortment

@@ -60,7 +60,7 @@ export default [
     }
 
     input CreateProductInput {
-      title: String!
+      texts: [ProductTextInput!]!
       type: String!
       tags: [LowerCaseString!]
     }
@@ -87,7 +87,7 @@ export default [
       meta: JSON
     }
 
-    input UpdateProductTextInput {
+    input ProductTextInput {
       locale: String!
       slug: String
       title: String
@@ -162,7 +162,7 @@ export default [
     input CreateAssortmentInput {
       isRoot: Boolean
       tags: [LowerCaseString!]
-      title: String!
+      texts: [AssortmentTextInput!]!
     }
 
     input UpdateAssortmentInput {
@@ -172,7 +172,7 @@ export default [
       sequence: Int
     }
 
-    input UpdateAssortmentTextInput {
+    input AssortmentTextInput {
       locale: String!
       slug: String
       title: String

@@ -80,8 +80,8 @@ export const buildFindSelector = ({
     selector.status = !includeDrafts
       ? { $eq: ProductStatus.ACTIVE }
       : {
-          $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
-        };
+        $in: [ProductStatus.ACTIVE, InternalProductStatus.DRAFT],
+      };
   }
 
   return selector;
@@ -325,7 +325,7 @@ export const configureProductsModule = async ({
     },
 
     // Mutations
-    create: async ({ locale, title, type, sequence, ...productData }) => {
+    create: async ({ texts, type, sequence, ...productData }) => {
       if (productData._id) {
         await deleteProductPermanently(
           {
@@ -342,8 +342,8 @@ export const configureProductsModule = async ({
         ...productData,
       });
 
-      if (locale) {
-        await productTexts.updateTexts(productId, [{ locale, title }]);
+      if (texts) {
+        await productTexts.updateTexts(productId, texts);
       }
 
       const product = await Products.findOne(generateDbFilterById(productId), {});

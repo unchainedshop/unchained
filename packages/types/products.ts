@@ -294,7 +294,7 @@ export type ProductsModule = {
 
   // Mutations
   create: (
-    doc: Product & { title: string; locale: string },
+    doc: Product & { texts: ProductText[] },
     options?: { autopublish?: boolean },
   ) => Promise<Product>;
 

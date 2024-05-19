@@ -341,10 +341,9 @@ export const configureAssortmentsModule = async ({
       isActive = true,
       isBase = false,
       isRoot = false,
-      locale,
       meta = {},
       sequence,
-      title,
+      texts,
       ...rest
     }) => {
       if (_id) await Assortments.deleteOne({ _id, deleted: { $ne: null } });
@@ -358,8 +357,8 @@ export const configureAssortmentsModule = async ({
         ...rest,
       });
 
-      if (locale) {
-        await assortmentTexts.updateTexts(assortmentId, [{ locale, title }]);
+      if (texts) {
+        await assortmentTexts.updateTexts(assortmentId, texts);
       }
 
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId));
