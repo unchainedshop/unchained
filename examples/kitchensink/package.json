@@ -22,8 +22,8 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
   },
   "scripts": {
     "lint": "prettier -w .",
@@ -57,7 +57,7 @@
     "open": "^10.1.0",
     "postfinancecheckout": "^4.5.0",
     "serve-static": "^1.15.0",
-    "stripe": "^14.25.0",
+    "stripe": "^15.7.0",
     "tiny-secp256k1": "^2.2.3",
     "twilio": "^5.0.4",
     "uuid": "^9.0.1",
