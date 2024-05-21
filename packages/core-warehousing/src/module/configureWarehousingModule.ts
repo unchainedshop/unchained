@@ -274,6 +274,21 @@ export const configureWarehousingModule = async ({
       await emit('TOKEN_INVALIDATED', { token });
     },
 
+    buildAccessKeyForToken: async (tokenId) => {
+      const token = await TokenSurrogates.findOne(generateDbFilterById(tokenId));
+      const payload = [
+        token._id,
+        token.walletAddress || token.userId,
+        process.env.UNCHAINED_SECRET,
+      ].join('');
+      const msgUint8 = new TextEncoder().encode(payload);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+      return hashHex;
+    },
+
     isActive: async (warehousingProvider, unchainedAPI) => {
       const actions = await WarehousingDirector.actions(warehousingProvider, {}, unchainedAPI);
       return actions.isActive();

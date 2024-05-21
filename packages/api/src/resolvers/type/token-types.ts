@@ -63,4 +63,10 @@ export const Token = {
 
     return isInvalidateable;
   },
+
+  accessKey: async (token: TokenSurrogate, _params: never, { modules }: Context) => {
+    // This generates a hash that is stable until ownership is changed and allows accessing token
+    // data and operations
+    return modules.warehousing.buildAccessKeyForToken(token._id);
+  },
 };

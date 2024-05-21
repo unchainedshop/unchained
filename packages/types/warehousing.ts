@@ -165,6 +165,8 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
 
   invalidateToken: (tokenId: string) => Promise<void>;
 
+  buildAccessKeyForToken: (tokenId: string) => Promise<string>;
+
   tokenizeItems: (
     order: Order,
     params: {

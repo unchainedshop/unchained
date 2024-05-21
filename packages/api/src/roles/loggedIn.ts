@@ -2,15 +2,18 @@ import { Context } from '@unchainedshop/types/api.js';
 import { User } from '@unchainedshop/types/user.js';
 
 export const loggedIn = (role: any, actions: Record<string, string>) => {
-  const isMyself = (
-    user: User,
-    foreignUser: { userId?: string } = {},
-    ownUser: { userId?: string } = {},
-  ) => {
-    if (user && user.username && user.services && user.emails && !foreignUser.userId) {
+  const isMyself = (user: User, params: { userId?: string } = {}, ownUser: { userId?: string } = {}) => {
+    // user wants to access a field of a user
+    if (user && !params.userId) {
       return user._id === ownUser.userId;
     }
-    return foreignUser.userId === ownUser.userId || !foreignUser.userId;
+    if (params.userId) {
+      // user wants to access a user object by userId
+      return params.userId === ownUser.userId;
+    }
+
+    // user wants to access himself
+    return true;
   };
 
   const isOwnedEmailAddress = (obj: any, params: { email?: string }, { user }: Context) => {
@@ -190,21 +193,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return credentials.userId === userId;
   };
 
-  const isOwnedToken = async (
-    obj: any,
-    { tokenId }: { tokenId: string },
-    { modules, userId, user }: Context,
-  ) => {
-    const token = await modules.warehousing.findToken({ tokenId });
-    if (!token) return true;
-    return (
-      token.userId === userId ||
-      user?.services?.web3?.some((service) => {
-        return service.address === token.walletAddress && service.verified;
-      })
-    );
-  };
-
   role.allow(actions.viewEvent, false);
   role.allow(actions.viewEvents, false);
   role.allow(actions.viewUser, isMyself);
@@ -240,8 +228,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.voteProductReview, () => true);
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
-  role.allow(actions.updateToken, isOwnedToken);
-  role.allow(actions.viewToken, isOwnedToken);
   role.allow(actions.stopImpersonation, () => true);
   role.allow(actions.impersonate, () => false);
   role.allow(actions.confirmMediaUpload, () => true);

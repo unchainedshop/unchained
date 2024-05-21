@@ -1,9 +1,32 @@
+import { Context } from '@unchainedshop/types/api.js';
+
 export const all = (role, actions) => {
   const isInLoginMutationResponse = (root) => {
     // eslint-disable-next-line
     if (root && root._inLoginMethodResponse) {
       return true;
     }
+    return false;
+  };
+
+  const isOwnedToken = async (obj: any, { tokenId }: { tokenId: string }, context: Context) => {
+    const { modules, userId, user } = context;
+
+    const token = await modules.warehousing.findToken({ tokenId });
+    if (!token) return true;
+
+    const isOwnedByUser =
+      token.userId === userId ||
+      user?.services?.web3?.some((service) => {
+        return service.address === token.walletAddress && service.verified;
+      });
+
+    if (isOwnedByUser) return true;
+
+    const accessKeyHeader = context.req.headers['x-token-accesskey'];
+    const accessKey = await context.modules.warehousing.buildAccessKeyForToken(tokenId);
+    if (accessKeyHeader === accessKey) return true;
+
     return false;
   };
 
@@ -82,6 +105,10 @@ export const all = (role, actions) => {
   role.allow(actions.manageTwoFactor, () => false);
   role.allow(actions.impersonate, () => false);
   role.allow(actions.stopImpersonation, () => false);
+
+  // access to token sometimes works via a X-Token-AccessKey Header and thus should also be allowed for anonymous users
+  role.allow(actions.updateToken, isOwnedToken);
+  role.allow(actions.viewToken, isOwnedToken);
 
   // only allow if query is not demanding for drafts
   role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);
