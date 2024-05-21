@@ -17,6 +17,8 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',
   'WAREHOUSING_PROVIDER_UPDATE',
   'WAREHOUSING_PROVIDER_REMOVE',
+  'TOKEN_OWNERSHIP_CHANGED',
+  'TOKEN_INVALIDATED',
 ];
 
 export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
@@ -153,7 +155,7 @@ export const configureWarehousingModule = async ({
     },
 
     updateTokenOwnership: async ({ tokenId, userId, walletAddress }) => {
-      await TokenSurrogates.updateOne(
+      const token = await TokenSurrogates.findOneAndUpdate(
         { _id: tokenId },
         {
           $set: {
@@ -161,7 +163,9 @@ export const configureWarehousingModule = async ({
             walletAddress,
           },
         },
+        { returnDocument: 'after' },
       );
+      await emit('TOKEN_OWNERSHIP_CHANGED', { token });
     },
 
     tokenizeItems: async (order, { items }, unchainedAPI) => {
@@ -253,6 +257,21 @@ export const configureWarehousingModule = async ({
         }
         return null;
       }, Promise.resolve(null));
+    },
+
+    invalidateToken: async (tokenId) => {
+      const token = await TokenSurrogates.findOneAndUpdate(
+        { _id: tokenId },
+        {
+          $set: {
+            invalidatedDate: new Date(),
+          },
+        },
+        {
+          returnDocument: 'after',
+        },
+      );
+      await emit('TOKEN_INVALIDATED', { token });
     },
 
     isActive: async (warehousingProvider, unchainedAPI) => {

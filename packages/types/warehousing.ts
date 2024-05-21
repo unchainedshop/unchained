@@ -36,6 +36,8 @@ export type TokenSurrogate = {
   _id?: string;
   userId?: string;
   walletAddress?: string;
+  invalidatedDate?: Date;
+  expiryDate?: Date;
   quantity: number;
   contractAddress: string;
   chainId: string;
@@ -160,6 +162,8 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     userId: string;
     walletAddress: string;
   }) => Promise<void>;
+
+  invalidateToken: (tokenId: string) => Promise<void>;
 
   tokenizeItems: (
     order: Order,

@@ -911,6 +911,7 @@ export default [
       """
       Tokenize
       """
+      invalidateToken(tokenId: ID!): Token!
       exportToken(tokenId: ID!, quantity: Int! = 1, recipientWalletAddress: String!): Token!
 
       """
