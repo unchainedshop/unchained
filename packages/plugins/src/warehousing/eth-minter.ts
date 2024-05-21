@@ -71,7 +71,7 @@ const ETHMinter: IWarehousingAdapter = {
         // Prepare metadata
 
         const chainId = configuration.find(({ key }) => key === 'chainId')?.value || undefined;
-        const meta = { contractStandard, orderId: orderPosition.orderId };
+        const meta = { contractStandard };
         const tokensCreated = await getTokensCreated();
 
         if (contractStandard === 'ERC721') {

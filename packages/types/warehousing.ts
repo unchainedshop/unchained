@@ -43,6 +43,7 @@ export type TokenSurrogate = {
   chainId: string;
   chainTokenId: string;
   productId: string;
+  orderPositionId: string;
   meta: any;
 };
 
@@ -77,7 +78,7 @@ export type WarehousingAdapterActions = {
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
-  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId' | 'productId'>>>;
+  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId' | 'productId' | 'orderPositionId'>>>;
   tokenMetadata: (chainTokenId: string, referenceDate: Date) => Promise<any>;
   isInvalidateable: (chainTokenId: string, referenceDate: Date) => Promise<boolean>;
 };

@@ -1,40 +1,91 @@
-import { ProductHelperTypes } from '@unchainedshop/types/products.js';
-import { ProductTypes } from '@unchainedshop/core-products';
+import { ProductText, Product as ProductType } from '@unchainedshop/types/products.js';
+import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
 import { objectInvert } from '@unchainedshop/utils';
+import { Context, SortOption } from '@unchainedshop/types/api.js';
+import { AssortmentPathLink } from '@unchainedshop/types/assortments.js';
+import { ProductMedia } from '@unchainedshop/types/products.media.js';
+import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 
-export const Product: ProductHelperTypes = {
-  __resolveType: (obj) => {
+export const Product = {
+  __resolveType: (product: ProductType): string => {
     const invertedProductTypes = objectInvert(ProductTypes);
-    return invertedProductTypes[obj.type];
+    return invertedProductTypes[product.type];
   },
 
-  assortmentPaths: async (obj, _, { modules }) => {
+  async assortmentPaths(
+    product: ProductType,
+    params: {
+      forceLocale?: string;
+    },
+    { modules }: Context,
+  ): Promise<
+    Array<{
+      links: Array<AssortmentPathLink>;
+    }>
+  > {
     return modules.assortments.breadcrumbs({
-      productId: obj._id,
+      productId: product._id,
     });
   },
 
-  media: async (obj, params, { modules }) => {
+  async media(
+    product: ProductType,
+    params: {
+      limit: number;
+      offset: number;
+      tags?: Array<string>;
+    },
+    { modules }: Context,
+  ): Promise<Array<ProductMedia>> {
     return modules.products.media.findProductMedias({
-      productId: obj._id,
+      productId: product._id,
       ...params,
     });
   },
 
-  reviews: async (obj, { limit = 10, offset = 0, sort, queryString }, { modules }) => {
+  async reviews(
+    product: ProductType,
+    {
+      limit = 10,
+      offset = 0,
+      sort,
+      queryString,
+    }: {
+      queryString?: string;
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+    { modules }: Context,
+  ): Promise<Array<ProductReview>> {
     return modules.products.reviews.findProductReviews({
-      productId: obj._id,
+      productId: product._id,
       limit,
       offset,
       sort,
       queryString,
     });
   },
-  reviewsCount: async (obj, params, { modules }) => {
-    return modules.products.reviews.count({ ...params, productId: obj._id });
+  async reviewsCount(
+    product: ProductType,
+    params: {
+      queryString?: string;
+    },
+    { modules }: Context,
+  ): Promise<number> {
+    return modules.products.reviews.count({ ...params, productId: product._id });
   },
 
-  siblings: async (product, params, { modules }) => {
+  async siblings(
+    product: ProductType,
+    params: {
+      assortmentId?: string;
+      limit: number;
+      offset: number;
+      includeInactive: boolean;
+    },
+    { modules }: Context,
+  ): Promise<Array<typeof product>> {
     const { assortmentId, limit, offset, includeInactive = false } = params;
 
     const productId = product._id;
@@ -57,14 +108,22 @@ export const Product: ProductHelperTypes = {
     });
   },
 
-  status(obj, _, { modules }) {
-    return modules.products.normalizedStatus(obj);
+  status(product: ProductType, _, { modules }: Context): ProductStatus {
+    return modules.products.normalizedStatus(product);
   },
 
-  async texts(obj, { forceLocale }, requestContext) {
+  async texts(
+    product: ProductType,
+    {
+      forceLocale,
+    }: {
+      forceLocale?: string;
+    },
+    requestContext: Context,
+  ): Promise<ProductText> {
     const { localeContext, loaders } = requestContext;
     return loaders.productTextLoader.load({
-      productId: obj._id,
+      productId: product._id,
       locale: forceLocale || localeContext.normalized,
     });
   },

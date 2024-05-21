@@ -141,9 +141,10 @@ export const WarehousingDirector: IWarehousingDirector = {
           const { order, orderPosition } = warehousingContext;
           return tokens.map((token) => {
             return {
+              ...token,
               userId: order.userId,
               productId: orderPosition.productId,
-              ...token,
+              orderPositionId: orderPosition._id,
             };
           });
         } catch (error) {

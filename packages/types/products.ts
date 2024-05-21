@@ -6,20 +6,18 @@ import { TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Country } from './countries.js';
 import { Currency } from './currencies.js';
-import { DeliveryProvider, DeliveryProviderType } from './delivery.js';
 import { IDiscountAdapter } from './discount.js';
 import { OrderPosition } from './orders.positions.js';
 import { OrderPrice } from './orders.pricing.js';
-import { ProductMedia, ProductMediaModule } from './products.media.js';
+import { ProductMediaModule } from './products.media.js';
 import {
   IProductPricingSheet,
   ProductPriceRate,
   ProductPricingCalculation,
   ProductPricingContext,
 } from './products.pricing.js';
-import { ProductReview, ProductReviewsModule } from './products.reviews.js';
-import { ProductVariationsModule, ProductVariation } from './products.variations.js';
-import { WarehousingProvider } from './warehousing.js';
+import { ProductReviewsModule } from './products.reviews.js';
+import { ProductVariationsModule } from './products.variations.js';
 
 export enum ProductStatus {
   DRAFT = 'DRAFT',
@@ -410,173 +408,6 @@ export interface ProductServices {
  */
 
 export type HelperType<P, T> = (product: Product, params: P, context: Context) => T;
-
-export interface ProductHelperTypes {
-  __resolveType: HelperType<never, string>;
-
-  assortmentPaths: HelperType<
-    { forceLocale?: string },
-    Promise<Array<{ links: Array<AssortmentPathLink> }>>
-  >;
-
-  media: HelperType<
-    {
-      limit: number;
-      offset: number;
-      tags?: Array<string>;
-    },
-    Promise<Array<ProductMedia>>
-  >;
-
-  reviews: HelperType<
-    {
-      queryString?: string;
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-    Promise<Array<ProductReview>>
-  >;
-
-  reviewsCount: HelperType<
-    {
-      queryString?: string;
-    },
-    Promise<number>
-  >;
-
-  siblings: HelperType<
-    {
-      assortmentId?: string;
-      limit: number;
-      offset: number;
-      includeInactive: boolean;
-    },
-    Promise<Array<Product>>
-  >;
-
-  status: HelperType<never, string>;
-
-  texts: HelperType<{ forceLocale?: string }, Promise<ProductText>>;
-}
-
-export interface BundleProductHelperTypes extends ProductHelperTypes {
-  bundleItems: HelperType<never, Array<ProductBundleItem>>;
-}
-
-export interface ConfigurableProductHelperTypes extends ProductHelperTypes {
-  assignments: HelperType<
-    { includeInactive: boolean },
-    Promise<Array<{ assignment: ProductAssignment; product: Product }>>
-  >;
-  products: HelperType<
-    { vectors: Array<ProductConfiguration>; includeInactive: boolean },
-    Promise<Array<Product>>
-  >;
-  variations: HelperType<{ limit: number; offset: number }, Promise<Array<ProductVariation>>>;
-  catalogPriceRange: HelperType<
-    {
-      currency?: string;
-      includeInactive: boolean;
-      quantity: number;
-      vectors: Array<ProductConfiguration>;
-    },
-    Promise<ProductPriceRange>
-  >;
-  simulatedPriceRange: HelperType<
-    {
-      currency?: string;
-      includeInactive: boolean;
-      quantity?: number;
-      vectors: Array<ProductConfiguration>;
-      useNetPrice: boolean;
-    },
-    Promise<ProductPriceRange>
-  >;
-}
-
-export interface PlanProductHelperTypes extends ProductHelperTypes {
-  catalogPrice: HelperType<{ quantity?: number; currency?: string }, Promise<ProductPrice>>;
-
-  leveledCatalogPrices: HelperType<
-    { currency?: string },
-    Promise<
-      Array<{
-        minQuantity: number;
-        maxQuantity: number;
-        price: ProductPrice;
-      }>
-    >
-  >;
-
-  simulatedPrice: HelperType<
-    { quantity?: number; currency?: string; useNetPrice?: boolean },
-    Promise<ProductPrice>
-  >;
-
-  salesUnit: HelperType<never, string>;
-  salesQuantityPerUnit: HelperType<never, string>;
-  defaultOrderQuantity: HelperType<never, number>;
-}
-
-export interface TokenizedProductHelperTypes extends PlanProductHelperTypes {
-  simulatedStocks: HelperType<
-    {
-      referenceDate: Date;
-    },
-    Promise<
-      Array<{
-        _id: string;
-        deliveryProvider?: DeliveryProvider;
-        warehousingProvider?: WarehousingProvider;
-        quantity?: number;
-      }>
-    >
-  >;
-
-  contractAddress: HelperType<never, string>;
-  contractStandard: HelperType<never, ProductContractStandard>;
-  contractConfiguration: HelperType<never, ProductContractConfiguration>;
-}
-
-export interface SimpleProductHelperTypes extends PlanProductHelperTypes {
-  simulatedDispatches: HelperType<
-    {
-      referenceDate: Date;
-      quantity: number;
-      deliveryProviderType: DeliveryProviderType;
-    },
-    Promise<
-      Array<{
-        _id: string;
-        deliveryProvider?: DeliveryProvider;
-        warehousingProvider?: WarehousingProvider;
-        shipping?: Date;
-        earliestDelivery?: Date;
-      }>
-    >
-  >;
-
-  simulatedStocks: HelperType<
-    {
-      referenceDate: Date;
-      deliveryProviderType: DeliveryProviderType;
-    },
-    Promise<
-      Array<{
-        _id: string;
-        deliveryProvider?: DeliveryProvider;
-        warehousingProvider?: WarehousingProvider;
-        quantity?: number;
-      }>
-    >
-  >;
-
-  baseUnit: HelperType<never, string>;
-  sku: HelperType<never, string>;
-  dimensions: HelperType<never, ProductSupply>;
-}
-
 export interface ProductAssortmentPathHelperTypes {
   assortmentProduct: (
     data: { assortmentId: string; productId: string; links: Array<AssortmentPathLink> },

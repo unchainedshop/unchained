@@ -54,6 +54,8 @@ export default [
       contractAddress: String
       contractStandard: SmartContractStandard
       contractConfiguration: ContractConfiguration
+      tokens: [Token!]!
+      tokensCount: Int!
     }
   `,
 ];
