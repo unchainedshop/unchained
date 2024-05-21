@@ -7,8 +7,6 @@ import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { Quotation } from '@unchainedshop/types/quotations.js';
 import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/types/warehousing.js';
-import { checkAction } from '../../../acl.js';
-import { actions } from '../../../roles/index.js';
 
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
   const { modules } = context;
