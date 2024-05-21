@@ -896,7 +896,10 @@ export default [
       """
       Sign a generic payment provider for registration
       """
-      signPaymentProviderForCredentialRegistration(paymentProviderId: ID!): String
+      signPaymentProviderForCredentialRegistration(
+        paymentProviderId: ID!
+        transactionContext: JSON
+      ): String
 
       """
       Sign a generic order payment

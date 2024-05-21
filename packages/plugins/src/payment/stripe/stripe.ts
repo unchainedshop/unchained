@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
 const stripe = new Stripe(STRIPE_SECRET, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2024-04-10',
 });
 
 export default stripe;
@@ -27,6 +27,7 @@ export const createRegistrationIntent = async (
       paymentProviderId,
       environment: STRIPE_WEBHOOK_ENVIRONMENT ?? null,
     },
+    usage: 'off_session',
     ...options,
   });
   return setupIntent;

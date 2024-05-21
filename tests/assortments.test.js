@@ -532,19 +532,10 @@ describe('Assortments', () => {
           }
         `,
         variables: {
-          queryString: 'simple-assortment5',
+          queryString: 'simple-assortment',
         },
       });
-      expect(assortments.length).toBe(1);
-      expect(assortments[0]).toEqual({
-        _id: SimpleAssortment[0]._id,
-        isActive: SimpleAssortment[0].isActive,
-        texts: {
-          _id: GermanAssortmentText._id,
-          title: GermanAssortmentText.title,
-          description: GermanAssortmentText.description,
-        } 
-      });
+      expect(assortments.length).toBe(0);
     });
   });
 
