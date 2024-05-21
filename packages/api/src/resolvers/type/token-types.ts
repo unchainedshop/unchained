@@ -2,6 +2,8 @@ import { Context } from '@unchainedshop/types/api.js';
 import { TokenStatus, TokenSurrogate } from '@unchainedshop/types/warehousing.js';
 import { WorkStatus } from '@unchainedshop/types/worker.js';
 import localePkg from 'locale';
+import { checkAction } from '../../acl.js';
+import { actions } from '../../roles/index.js';
 
 const { Locale } = localePkg;
 
@@ -64,7 +66,9 @@ export const Token = {
     return isInvalidateable;
   },
 
-  accessKey: async (token: TokenSurrogate, _params: never, { modules }: Context) => {
+  accessKey: async (token: TokenSurrogate, params: never, requestContext: Context) => {
+    const { modules } = requestContext;
+    await checkAction(requestContext, actions.viewToken, [undefined, { tokenId: token._id }]);
     // This generates a hash that is stable until ownership is changed and allows accessing token
     // data and operations
     return modules.warehousing.buildAccessKeyForToken(token._id);

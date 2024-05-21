@@ -10,85 +10,87 @@ import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
-import { PaymentProvider } from '@unchainedshop/types/payments.js';
 import { User } from '@unchainedshop/types/user.js';
 
-type HelperType<P, T> = (order: OrderType, params: P, context: Context) => T;
-
-export interface OrderHelperTypes {
-  supportedDeliveryProviders: HelperType<never, Promise<Array<DeliveryProvider>>>;
-  supportedPaymentProviders: HelperType<never, Promise<Array<PaymentProvider>>>;
-  currency: HelperType<never, Promise<Currency>>;
-  country: HelperType<never, Promise<Country>>;
-  discounts: HelperType<never, Promise<Array<OrderDiscount>>>;
-  delivery: HelperType<never, Promise<OrderDelivery>>;
-  enrollment: HelperType<never, Promise<Enrollment>>;
-  payment: HelperType<never, Promise<OrderPayment>>;
-  items: HelperType<never, Promise<Array<OrderPosition>>>;
-  status: HelperType<never, string>;
-  total: HelperType<{ category: string; useNetPrice: boolean }, Promise<OrderPrice>>;
-  user: HelperType<never, Promise<User>>;
-}
-
-export const Order: OrderHelperTypes = {
-  supportedDeliveryProviders: async (obj, _, context) =>
-    context.modules.delivery.findSupported(
+export const Order = {
+  async supportedDeliveryProviders(
+    order: OrderType,
+    _,
+    context: Context,
+  ): Promise<Array<DeliveryProvider>> {
+    return context.modules.delivery.findSupported(
       {
-        order: obj,
+        order,
       },
       context,
-    ),
-
-  supportedPaymentProviders: async (obj, _, context) =>
-    context.modules.payment.paymentProviders.findSupported(
-      {
-        order: obj,
-      },
-      context,
-    ),
-
-  currency: async (obj, _, { modules }) => modules.currencies.findCurrency({ isoCode: obj.currency }),
-  country: async (obj, _, { modules }) => modules.countries.findCountry({ isoCode: obj.countryCode }),
-
-  discounts: async (obj, _, { modules }) =>
-    modules.orders.discounts.findOrderDiscounts({ orderId: obj._id }),
-
-  delivery: async (obj, _, { modules }) =>
-    modules.orders.deliveries.findDelivery({
-      orderDeliveryId: obj.deliveryId,
-    }),
-
-  enrollment: async (obj, _, { modules }) =>
-    modules.enrollments.findEnrollment({
-      orderId: obj._id,
-    }),
-
-  items: async (obj, _, { modules }) =>
-    modules.orders.positions.findOrderPositions({
-      orderId: obj._id,
-    }),
-
-  payment: async (obj, _, { modules }) =>
-    modules.orders.payments.findOrderPayment({
-      orderPaymentId: obj.paymentId,
-    }),
-
-  status: (obj) => {
-    if (obj.status === null) {
-      return 'OPEN';
-    }
-    return obj.status;
+    );
   },
 
-  total: async (obj, params, { modules }) => {
-    const pricingSheet = modules.orders.pricingSheet(obj);
+  async supportedPaymentProviders(order: OrderType, _, context: Context) {
+    return context.modules.payment.paymentProviders.findSupported(
+      {
+        order,
+      },
+      context,
+    );
+  },
+
+  async currency(order: OrderType, _, { modules }: Context): Promise<Currency> {
+    return modules.currencies.findCurrency({ isoCode: order.currency });
+  },
+
+  async country(order: OrderType, _, { modules }: Context): Promise<Country> {
+    return modules.countries.findCountry({ isoCode: order.countryCode });
+  },
+
+  async discounts(order: OrderType, _, { modules }: Context): Promise<Array<OrderDiscount>> {
+    return modules.orders.discounts.findOrderDiscounts({ orderId: order._id });
+  },
+
+  async delivery(order: OrderType, _, { modules }: Context): Promise<OrderDelivery> {
+    return modules.orders.deliveries.findDelivery({
+      orderDeliveryId: order.deliveryId,
+    });
+  },
+
+  async enrollment(order: OrderType, _, { modules }: Context): Promise<Enrollment> {
+    return modules.enrollments.findEnrollment({
+      orderId: order._id,
+    });
+  },
+
+  async items(order: OrderType, _, { modules }: Context): Promise<Array<OrderPosition>> {
+    return modules.orders.positions.findOrderPositions({
+      orderId: order._id,
+    });
+  },
+
+  async payment(order: OrderType, _, { modules }: Context): Promise<OrderPayment> {
+    return modules.orders.payments.findOrderPayment({
+      orderPaymentId: order.paymentId,
+    });
+  },
+
+  status(order: OrderType): string {
+    if (order.status === null) {
+      return 'OPEN';
+    }
+    return order.status;
+  },
+
+  async total(
+    order: OrderType,
+    params: { category: string; useNetPrice: boolean },
+    { modules }: Context,
+  ): Promise<OrderPrice> {
+    const pricingSheet = modules.orders.pricingSheet(order);
 
     if (pricingSheet.isValid()) {
       const price = pricingSheet.total(params);
       return {
         _id: crypto
           .createHash('sha256')
-          .update([obj._id, JSON.stringify(params), JSON.stringify(price)].join(''))
+          .update([order._id, JSON.stringify(params), JSON.stringify(price)].join(''))
           .digest('hex'),
         ...price,
       };
@@ -96,5 +98,7 @@ export const Order: OrderHelperTypes = {
     return null;
   },
 
-  user: async (obj, _, { modules }) => modules.users.findUserById(obj.userId),
+  async user(order: OrderType, _, { modules }: Context): Promise<User> {
+    return modules.users.findUserById(order.userId);
+  },
 };

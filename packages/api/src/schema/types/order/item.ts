@@ -29,6 +29,7 @@ export default [
       discounts: [OrderItemDiscount!]
       dispatches: [Dispatch!]
       configuration: [ProductConfigurationParameter!]
+      tokens: [Token!]!
     }
   `,
 ];

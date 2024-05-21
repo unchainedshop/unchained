@@ -59,6 +59,7 @@ const actions: Record<string, string> = [
   'manageWarehousingProviders',
   'updateToken',
   'viewToken',
+  'viewTokens',
   'manageAssortments',
   'manageFilters',
   'createCart',
