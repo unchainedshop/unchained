@@ -131,7 +131,7 @@ export const WarehousingDirector: IWarehousingDirector = {
           return isInvalidateable;
         } catch (error) {
           log(error.message, { level: LogLevel.Error, ...error });
-          return {};
+          return false;
         }
       },
 

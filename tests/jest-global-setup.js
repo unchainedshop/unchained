@@ -1,8 +1,10 @@
-import { spawn } from 'child_process';
+import { spawn } from 'node:child_process';
+import dns from 'node:dns';
 import dotenv from 'dotenv-extended';
-
 import setupInMemoryMongoDB from '@shelf/jest-mongodb/lib/setup.js';
 import { wipeDatabase } from './helpers.js';
+
+dns.setDefaultResultOrder('ipv4first');
 
 dotenv.load();
 

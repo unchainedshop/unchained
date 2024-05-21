@@ -110,8 +110,6 @@ if (STRIPE_SECRET) {
           },
         );
 
-        console.log(confirmedIntent);
-
         expect(confirmedIntent).toMatchObject({
           status: 'succeeded',
         });
