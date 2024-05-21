@@ -44,12 +44,15 @@ export default [
 
     type Token @cacheControl(maxAge: 0, scope: PRIVATE) {
       _id: ID!
-      user: User
-      walletAddress: String
       product: TokenizedProduct!
       status: TokenExportStatus!
       quantity: Int!
+      isInvalidateable: Boolean!
+      invalidatedDate: DateTime
+      user: User
+      expiryDate: DateTime
       contractAddress: String
+      walletAddress: String
       chainId: String
       chainTokenId: String
       ercMetadata(forceLocale: String): JSON

@@ -27,6 +27,8 @@ export const WarehousingAdapter: Omit<IWarehousingAdapter, 'key' | 'label' | 've
       tokenize: async () => [],
 
       tokenMetadata: async () => ({}),
+
+      isInvalidateable: async () => false,
     };
   },
 

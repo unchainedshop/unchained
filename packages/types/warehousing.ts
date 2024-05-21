@@ -77,6 +77,7 @@ export type WarehousingAdapterActions = {
   commissioningTime: (quantity: number) => Promise<number>;
   tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId' | 'productId'>>>;
   tokenMetadata: (chainTokenId: string, referenceDate: Date) => Promise<any>;
+  isInvalidateable: (chainTokenId: string, referenceDate: Date) => Promise<boolean>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
@@ -102,6 +103,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     estimatedDispatch: () => Promise<EstimatedDispatch>;
     tokenize: () => Promise<Array<TokenSurrogate>>;
     tokenMetadata: (chainTokenId: string) => Promise<any>;
+    isInvalidateable: (chainTokenId: string) => Promise<boolean>;
   }>;
 };
 
@@ -175,6 +177,12 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Locale },
     unchainedAPI: UnchainedCore,
   ) => Promise<any>;
+
+  isInvalidateable: (
+    chainTokenId: string,
+    params: { product: Product; token: TokenSurrogate; referenceDate: Date },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
 
   // Mutations
   delete: (providerId: string) => Promise<WarehousingProvider>;

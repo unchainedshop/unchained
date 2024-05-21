@@ -124,6 +124,17 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
+      isInvalidateable: async (chainTokenId) => {
+        try {
+          const referenceDate = getReferenceDate(context);
+          const isInvalidateable = await adapter.isInvalidateable(chainTokenId, referenceDate);
+          return isInvalidateable;
+        } catch (error) {
+          log(error.message, { level: LogLevel.Error, ...error });
+          return {};
+        }
+      },
+
       tokenize: async () => {
         try {
           const tokens = await adapter.tokenize();

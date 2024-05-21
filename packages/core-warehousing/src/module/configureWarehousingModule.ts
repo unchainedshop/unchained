@@ -228,6 +228,33 @@ export const configureWarehousingModule = async ({
       }, Promise.resolve(null));
     },
 
+    isInvalidateable: async (chainTokenId, { token, product, referenceDate }, unchainedAPI) => {
+      const virtualProviders = await WarehousingProviders.find(
+        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
+      ).toArray();
+
+      const warehousingContext: WarehousingContext = {
+        product,
+        token,
+        quantity: token?.quantity || 1,
+        referenceDate,
+      };
+      return virtualProviders.reduce(async (lastPromise, provider) => {
+        const last = await lastPromise;
+        if (last) return last;
+        const currentDirector = await WarehousingDirector.actions(
+          provider,
+          warehousingContext,
+          unchainedAPI,
+        );
+        const isActive = await currentDirector.isActive();
+        if (isActive) {
+          return currentDirector.isInvalidateable(chainTokenId);
+        }
+        return null;
+      }, Promise.resolve(null));
+    },
+
     isActive: async (warehousingProvider, unchainedAPI) => {
       const actions = await WarehousingDirector.actions(warehousingProvider, {}, unchainedAPI);
       return actions.isActive();

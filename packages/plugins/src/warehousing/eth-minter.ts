@@ -3,10 +3,15 @@ import {
   WarehousingAdapter,
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
-import { generateDbObjectId } from '@unchainedshop/mongodb';
-import { ProductType, ProductContractStandard } from '@unchainedshop/types/products.js';
-import { IWarehousingAdapter, WarehousingError } from '@unchainedshop/types/warehousing.js';
+import { ProductContractStandard, ProductType } from '@unchainedshop/types/products.js';
+import {
+  IWarehousingAdapter,
+  WarehousingContext,
+  WarehousingError,
+} from '@unchainedshop/types/warehousing.js';
 import { systemLocale } from '@unchainedshop/utils';
+import { generateDbObjectId } from '@unchainedshop/mongodb';
+import { Context } from '@unchainedshop/types/api.js';
 
 const { MINTER_TOKEN_OFFSET = '0' } = process.env;
 
@@ -25,15 +30,17 @@ const ETHMinter: IWarehousingAdapter = {
   },
 
   actions: (configuration, context) => {
-    const { product, orderPosition, token, modules, locale } = context;
+    const { product, orderPosition, token, modules, locale } = context as WarehousingContext & Context;
+    const { contractAddress, contractStandard, tokenId, supply, ercMetadataProperties } =
+      product?.tokenization || {};
 
     const getTokensCreated = async () => {
       const existingTokens = await modules.warehousing.findTokens(
-        product.tokenization.contractStandard === ProductContractStandard.ERC721
-          ? { contractAddress: product.tokenization.contractAddress }
+        contractStandard === ProductContractStandard.ERC721
+          ? { contractAddress: contractStandard }
           : {
-              contractAddress: product.tokenization.contractAddress,
-              chainTokenId: product.tokenization.tokenId,
+              contractAddress: contractStandard,
+              chainTokenId: tokenId,
             },
       );
       const tokensCreated = existingTokens.reduce((acc, curToken) => {
@@ -55,7 +62,7 @@ const ETHMinter: IWarehousingAdapter = {
 
       stock: async () => {
         const tokensCreated = await getTokensCreated();
-        return product?.tokenization?.supply ? product.tokenization.supply - tokensCreated : 0;
+        return supply ? supply - tokensCreated : 0;
       },
 
       tokenize: async () => {
@@ -64,26 +71,25 @@ const ETHMinter: IWarehousingAdapter = {
         // Prepare metadata
 
         const chainId = configuration.find(({ key }) => key === 'chainId')?.value || undefined;
-        const { contractAddress, contractStandard, tokenId } = product?.tokenization || {};
-        const _id = generateDbObjectId();
-        const meta = { contractStandard };
+        const meta = { contractStandard, orderId: orderPosition.orderId };
         const tokensCreated = await getTokensCreated();
 
         if (contractStandard === 'ERC721') {
-          // ERC721 is non-fungible, thus every _id unique!
-          return new Array(orderPosition?.quantity).fill(null).map((_, i) => ({
-            _id,
+          // ERC721 is non-fungible, thus every chainTokenId unique!
+          const items = new Array(orderPosition?.quantity).fill(null).map((_, i) => ({
+            _id: generateDbObjectId(),
             chainTokenId: Number(parseInt(MINTER_TOKEN_OFFSET, 10) + tokensCreated + (i + 1)).toString(),
             contractAddress,
             quantity: 1,
             chainId,
             meta,
           }));
+          return items;
         }
         // ERC1155 is fungible, allow the same tokenId
         return [
           {
-            _id,
+            _id: generateDbObjectId(),
             chainTokenId: tokenId,
             contractAddress,
             quantity: orderPosition?.quantity,
@@ -118,7 +124,7 @@ const ETHMinter: IWarehousingAdapter = {
         const isDefaultLanguageActive = locale ? locale?.language === systemLocale.language : true;
         const localization = isDefaultLanguageActive
           ? {
-              uri: `${process.env.ROOT_URL}/erc-metadata/${product._id}/{locale}/${product.tokenization.tokenId}.json`,
+              uri: `${process.env.ROOT_URL}/erc-metadata/${product._id}/{locale}/${tokenId}.json`,
               default: systemLocale.language,
               locales: allLanguages.map((lang) => lang.isoCode),
             }
@@ -128,7 +134,7 @@ const ETHMinter: IWarehousingAdapter = {
           name,
           description: text.description,
           image: url,
-          properties: product.tokenization.ercMetadataProperties,
+          properties: ercMetadataProperties,
           localization,
           ...(token?.meta || {}),
         };
