@@ -82,8 +82,6 @@ export const configureFiltersModule = async ({
       },
       {
         projection: { _id: true },
-        readPreference: mongodb.ReadPreference.NEAREST,
-        readConcern: mongodb.ReadConcern.AVAILABLE,
       },
     );
     return products.map(({ _id }) => _id);
