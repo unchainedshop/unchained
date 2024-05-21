@@ -72,14 +72,6 @@ export const all = (role, actions) => {
   role.allow(actions.markOrderRejected, () => false);
   role.allow(actions.markOrderPaid, () => false);
   role.allow(actions.markOrderDelivered, () => false);
-  role.allow(actions.viewLogs, isInLoginMutationResponse);
-  role.allow(actions.viewUserRoles, isInLoginMutationResponse);
-  role.allow(actions.viewUserOrders, isInLoginMutationResponse);
-  role.allow(actions.viewUserTokens, isInLoginMutationResponse);
-  role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
-  role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
-  role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);
-  role.allow(actions.viewUserProductReviews, isInLoginMutationResponse);
   role.allow(actions.reviewProduct, () => false);
   role.allow(actions.updateProductReview, () => false);
   role.allow(actions.manageProductReviews, () => false);
@@ -106,29 +98,40 @@ export const all = (role, actions) => {
   role.allow(actions.impersonate, () => false);
   role.allow(actions.stopImpersonation, () => false);
 
-  // access to token sometimes works via a X-Token-AccessKey Header and thus should also be allowed for anonymous users
+  // special case: when doing a login mutation, the user is not logged in technically yet,
+  // but should be able to see user data of the user that is about to be logged in
+  role.allow(actions.viewLogs, isInLoginMutationResponse);
+  role.allow(actions.viewUserRoles, isInLoginMutationResponse);
+  role.allow(actions.viewUserOrders, isInLoginMutationResponse);
+  role.allow(actions.viewUserTokens, isInLoginMutationResponse);
+  role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
+  role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
+  role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);
+  role.allow(actions.viewUserProductReviews, isInLoginMutationResponse);
+
+  // special case: access to token sometimes works via a X-Token-AccessKey Header and thus should also be allowed for anonymous users
   role.allow(actions.updateToken, isOwnedToken);
   role.allow(actions.viewToken, isOwnedToken);
 
-  // only allow if query is not demanding for drafts
+  // only allow if query is not demanding for drafts or inactive item lists
   role.allow(actions.viewProducts, (root, { includeDrafts }) => !includeDrafts);
+  role.allow(actions.viewAssortments, (root, { includeInactive }) => !includeInactive);
+  role.allow(actions.viewCountries, (root, { includeInactive }) => !includeInactive);
+  role.allow(actions.viewCurrencies, (root, { includeInactive }) => !includeInactive);
+  role.allow(actions.viewFilters, (root, { includeInactive }) => !includeInactive);
+  role.allow(actions.viewLanguages, (root, { includeInactive }) => !includeInactive);
+  role.allow(actions.search, (root, { includeInactive }) => !includeInactive);
 
   // public
   role.allow(actions.viewUserPublicInfos, () => true);
   role.allow(actions.viewProduct, () => true);
-  role.allow(actions.viewLanguages, () => true);
   role.allow(actions.viewLanguage, () => true);
-  role.allow(actions.viewCountries, () => true);
   role.allow(actions.viewCountry, () => true);
-  role.allow(actions.viewCurrencies, () => true);
   role.allow(actions.viewCurrency, () => true);
   role.allow(actions.viewShopInfo, () => true);
-  role.allow(actions.viewAssortments, () => true);
   role.allow(actions.viewAssortment, () => true);
   role.allow(actions.viewFilter, () => true);
-  role.allow(actions.viewFilters, () => true);
   role.allow(actions.viewTranslations, () => true);
-  role.allow(actions.search, () => true);
   role.allow(actions.logout, () => true);
   role.allow(actions.logoutAllSessions, () => true);
   role.allow(actions.loginAsGuest, () => true);
