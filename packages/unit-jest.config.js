@@ -1,5 +1,5 @@
 export default {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm', // or other ESM presets
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts', '.tsx', '.jsx'],
   transform: {
@@ -11,6 +11,6 @@ export default {
     ],
   },
   moduleNameMapper: {
-    '(.+)\\.js': '$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
 };
