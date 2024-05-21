@@ -517,7 +517,6 @@ describe('Assortments', () => {
           query searchAssortments($queryString: String) {
             searchAssortments(
               queryString: $queryString
-              includeInactive: true
             ) {
               assortmentsCount
               assortments {
@@ -533,7 +532,7 @@ describe('Assortments', () => {
           }
         `,
         variables: {
-          queryString: 'simple-assortment',
+          queryString: 'simple-assortment5',
         },
       });
       expect(assortments.length).toBe(1);
