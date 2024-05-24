@@ -220,15 +220,18 @@ export const configureOrderDeliveriesModule = ({
         unchainedAPI,
       );
 
-      const selector = buildFindByIdSelector(orderDelivery._id);
-      await OrderDeliveries.updateOne(selector, {
-        $set: {
-          calculation,
-          updated: new Date(),
+      return OrderDeliveries.findOneAndUpdate(
+        buildFindByIdSelector(orderDelivery._id),
+        {
+          $set: {
+            calculation,
+            updated: new Date(),
+          },
         },
-      });
-
-      return OrderDeliveries.findOne(selector);
+        {
+          returnDocument: 'after',
+        },
+      );
     },
   };
 };

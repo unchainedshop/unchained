@@ -67,16 +67,14 @@ export const configureAssortmentFiltersModule = ({
         $set.sortKey = sortKey;
       }
 
-      await AssortmentFilters.updateOne(
+      const assortmentFilter = await AssortmentFilters.findOneAndUpdate(
         selector,
         {
           $set,
           $setOnInsert,
         },
-        { upsert: true },
+        { upsert: true, returnDocument: 'after' },
       );
-
-      const assortmentFilter = await AssortmentFilters.findOne(selector, {});
 
       await emit('ASSORTMENT_ADD_FILTER', { assortmentFilter });
 
@@ -121,8 +119,9 @@ export const configureAssortmentFiltersModule = ({
     update: async (assortmentFilterId, doc) => {
       const selector = generateDbFilterById(assortmentFilterId);
       const modifier = { $set: doc };
-      await AssortmentFilters.updateOne(selector, modifier);
-      return AssortmentFilters.findOne(selector, {});
+      return AssortmentFilters.findOneAndUpdate(selector, modifier, {
+        returnDocument: 'after',
+      });
     },
 
     updateManualOrder: async ({ sortKeys }) => {

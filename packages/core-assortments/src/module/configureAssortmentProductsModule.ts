@@ -97,16 +97,14 @@ export const configureAssortmentProductsModule = ({
         $set.sortKey = sortKey;
       }
 
-      await AssortmentProducts.updateOne(
+      const assortmentProduct = await AssortmentProducts.findOneAndUpdate(
         selector,
         {
           $set,
           $setOnInsert,
         },
-        { upsert: true },
+        { upsert: true, returnDocument: 'after' },
       );
-
-      const assortmentProduct = await AssortmentProducts.findOne(selector, {});
 
       await emit('ASSORTMENT_ADD_PRODUCT', { assortmentProduct });
 
@@ -171,9 +169,10 @@ export const configureAssortmentProductsModule = ({
           updated: new Date(),
         },
       };
-      await AssortmentProducts.updateOne(selector, modifier);
+      const assortmentProduct = await AssortmentProducts.findOneAndUpdate(selector, modifier, {
+        returnDocument: 'after',
+      });
 
-      const assortmentProduct = await AssortmentProducts.findOne(selector, {});
       if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentProduct.assortmentId] });
       }
