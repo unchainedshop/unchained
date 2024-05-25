@@ -24,7 +24,7 @@ export class SaferpayClient {
     specVersion?: string,
   ) {
     this.customerId = customerId;
-    this.specVersion = specVersion || '1.40';
+    this.specVersion = specVersion || '1.38';
     this.conn = new SaferpayConnection(baseUrl, user, password);
   }
 
