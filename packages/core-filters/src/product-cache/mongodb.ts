@@ -1,6 +1,7 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { FiltersSettingsOptions } from '@unchainedshop/types/filters.js';
 import crypto from 'crypto';
+import memoizee from 'memoizee';
 import { FiltersCollection } from '../db/FiltersCollection.js';
 
 const updateIfHashChanged = async (Collection, selector, doc) => {
@@ -30,8 +31,8 @@ const updateIfHashChanged = async (Collection, selector, doc) => {
 export default async function mongodbCache(db: mongodb.Db) {
   const { FilterProductIdCache } = await FiltersCollection(db);
 
-  return {
-    async getCachedProductIds(filterId) {
+  const getCachedProductIdsFromMemoryCache = memoizee(
+    async function getCachedProductIdsFromDatabase(filterId) {
       const filterProductIdCache = await FilterProductIdCache.find(
         {
           filterId,
@@ -47,6 +48,17 @@ export default async function mongodbCache(db: mongodb.Db) {
           .map((cache) => [cache.filterOptionValue, cache.productIds]),
       );
       return [allProductIds, productIdsMap];
+    },
+    {
+      maxAge: 7000,
+      promise: true,
+      primitive: true,
+    },
+  );
+
+  return {
+    async getCachedProductIds(filterId) {
+      return getCachedProductIdsFromMemoryCache(filterId);
     },
     async setCachedProductIds(filterId, productIds, productIdsMap) {
       const baseCacheId = await updateIfHashChanged(

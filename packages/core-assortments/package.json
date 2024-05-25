@@ -36,7 +36,6 @@
     "@unchainedshop/logger": "^2.9.0",
     "@unchainedshop/utils": "^2.9.0",
     "locale": "^0.1.0",
-    "memoizee": "^0.4.15",
     "ramda": "^0.30.0",
     "simpl-schema": "^3.4.6"
   },
