@@ -25,11 +25,11 @@ export default async function checkoutCart(
     return order;
   } catch (error) {
     log(error.message, { userId, orderId, level: LogLevel.Error });
-
     throw new OrderCheckoutError({
       userId,
       orderId,
       ...transactionContext,
+      detailCode: error.name || error.code,
       detailMessage: error.message,
     });
   }
