@@ -67,7 +67,6 @@ import './worker/error-notifications.js';
 import './worker/update-coinbase-rates.js';
 import { configureExportToken } from './worker/export-token.js';
 import { configureGenerateOrderAutoscheduling } from './worker/enrollment-order-generator.js';
-import { configureUpdateTokenOwnership } from './worker/update-token-ownership.js';
 
 // Asset Management
 import './files/gridfs/gridfs-adapter.js';
@@ -171,6 +170,5 @@ export const connectDefaultPluginsToExpress4 = (
   // );
 
   configureExportToken(unchainedAPI);
-  configureUpdateTokenOwnership(unchainedAPI);
   configureGenerateOrderAutoscheduling();
 };

@@ -1,8 +1,6 @@
-import { IWorkerAdapter, Work } from '@unchainedshop/types/worker.js';
-import { WorkerDirector, WorkerAdapter, WorkerEventTypes } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
+import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
-import { subscribe } from '@unchainedshop/events';
 
 const everyMinute = later.parse.cron('* * * * *');
 
@@ -32,7 +30,7 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
   async doWork(input, unchainedAPI) {
     const { modules } = unchainedAPI;
 
-    const tokens = await modules.warehousing.findTokens({});
+    const tokens = await modules.warehousing.findTokens({ walletAddress: { $exists: true } });
     const users = await modules.users.findUsers({ includeGuests: true, 'services.web3.verified': true });
     const accounts = users.flatMap((user) => {
       return user?.services?.web3?.flatMap((service) => {
@@ -62,18 +60,6 @@ export const RefreshTokens: IWorkerAdapter<void, any> = {
     return { success: true, result: { forked } };
   },
 };
-
-export const configureUpdateTokenOwnership = (unchainedAPI: UnchainedCore) => {
-  subscribe<Work>(WorkerEventTypes.FINISHED, async ({ payload: work }) => {
-    if (work.type === 'UPDATE_TOKEN_OWNERSHIP' && work.success) {
-      await Promise.all(
-        (work.result?.tokens || []).map(unchainedAPI.modules.warehousing.updateTokenOwnership),
-      );
-    }
-  });
-};
-
-export default configureUpdateTokenOwnership;
 
 WorkerDirector.registerAdapter(RefreshTokens);
 WorkerDirector.registerAdapter(UpdateTokenOwnership);
