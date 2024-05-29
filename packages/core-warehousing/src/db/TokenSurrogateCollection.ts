@@ -10,6 +10,21 @@ export const TokenSurrogateCollection = async (db: mongodb.Db) => {
         chainTokenId: 1,
       },
     },
+    {
+      index: {
+        userId: 1,
+      },
+    },
+    {
+      index: {
+        productId: 1,
+      },
+    },
+    {
+      index: {
+        orderPositionId: 1,
+      },
+    },
   ]);
 
   return TokenSurrogates;
