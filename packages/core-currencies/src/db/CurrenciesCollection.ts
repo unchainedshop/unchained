@@ -16,6 +16,11 @@ export const CurrenciesCollection = async (db: mongodb.Db) => {
         name: 'currencies_fulltext_search',
       },
     },
+    {
+      index: {
+        deleted: 1,
+      },
+    },
   ]);
 
   return Currencies;

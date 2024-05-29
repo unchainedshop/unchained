@@ -16,6 +16,11 @@ export const LanguagesCollection = async (db: mongodb.Db) => {
         name: 'languages_fulltext_search',
       },
     },
+    {
+      index: {
+        deleted: 1,
+      },
+    },
   ]);
 
   return Languages;

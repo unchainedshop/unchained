@@ -10,6 +10,11 @@ export const WarehousingProvidersCollection = async (db: mongodb.Db) => {
         type: 1,
       },
     },
+    {
+      index: {
+        deleted: 1,
+      },
+    },
   ]);
 
   return WarehousingProviders;
