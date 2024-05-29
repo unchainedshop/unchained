@@ -4,7 +4,7 @@ import { Filter, FilterInputText } from '@unchainedshop/types/filters.js';
 
 export default async function createFilter(
   root: Root,
-  { filter, texts }: { filter: Filter; texts: Array<FilterInputText> },
+  { filter, texts }: { filter: Filter; texts: FilterInputText[] },
   context: Context,
 ) {
   const { modules, localeContext, userId } = context;
@@ -19,5 +19,5 @@ export default async function createFilter(
     context,
   );
   await modules.filters.texts.updateTexts({ filterId: newFilter._id }, texts);
-  return modules.filters.findFilter({ filterId: newFilter._id });
+  return newFilter;
 }
