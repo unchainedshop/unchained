@@ -30,8 +30,8 @@ describe('Products', () => {
     it('create a new product', async () => {
       const { data: { createProduct } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation createProduct($product: CreateProductInput!) {
-            createProduct(product: $product) {
+          mutation createProduct($product: CreateProductInput!, $texts: [ProductTextInput!]) {
+            createProduct(product: $product, texts: $texts) {
               status
               tags
               texts {
@@ -53,11 +53,11 @@ describe('Products', () => {
           }
         `,
         variables: {
-          product: {
-            title: 'Simple Product',
+          product: {            
             type: 'SimpleProduct',
             tags: ['simple'],
           },
+          texts: [{title: 'Simple Product'}]
         },
       });
       expect(createProduct).toMatchObject({

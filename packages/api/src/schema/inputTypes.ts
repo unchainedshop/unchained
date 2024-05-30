@@ -160,7 +160,7 @@ export default [
 
     input CreateAssortmentInput {
       isRoot: Boolean
-      tags: [LowerCaseString!]      
+      tags: [LowerCaseString!]
     }
 
     input UpdateAssortmentInput {
