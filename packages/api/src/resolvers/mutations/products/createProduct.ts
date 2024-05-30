@@ -4,11 +4,10 @@ import { log } from '@unchainedshop/logger';
 
 export default async function createProduct(
   root: Root,
-  { productData, texts }: { productData: Product; texts?: ProductText[] },
+  { product: productData, texts }: { product: Product; texts?: ProductText[] },
   { modules, userId }: Context,
 ) {
   log('mutation createProduct', { userId });
-
   const newProduct = await modules.products.create(productData);
 
   if (texts) {

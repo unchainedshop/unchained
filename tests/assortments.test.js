@@ -565,7 +565,7 @@ describe('Assortments', () => {
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateAssortment($assortment: CreateAssortmentInput!, $texts: [AssortmentTextInput!]) {
-            createAssortment(assortment: $assortment) {
+            createAssortment(assortment: $assortment, texts: $texts) {
               _id
               created
               updated
@@ -619,7 +619,7 @@ describe('Assortments', () => {
             tags: ['test-assrtment-1', 'test-assortment-2'],
             
           },
-          texts: [{title: 'test assortment'}]
+          texts: [{title: 'test assortment', locale: "de"}]
         },
       });
       expect(createAssortment.tags).toEqual([
@@ -647,7 +647,7 @@ describe('Assortments', () => {
             isRoot: true,
             tags: ['test-assrtment-1', 'test-assortment-2'],            
           },
-          texts: [{title: 'test assortment'}]
+          texts: [{title: 'test assortment', locale: "de"}]
         },
       });
 

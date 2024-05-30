@@ -6,9 +6,9 @@ export default async function createAssortment(
   root: Root,
   {
     texts,
-    assortmentData,
+    assortment: assortmentData,
   }: {
-    assortmentData: Assortment;
+    assortment: Assortment;
     texts?: AssortmentText[];
   },
   { modules, userId }: Context,

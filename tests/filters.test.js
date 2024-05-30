@@ -479,7 +479,7 @@ describe('Filters', () => {
           mutation UpdateFilterTexts(
             $filterId: ID!
             $filterOptionValue: String
-            $texts: [UpdateFilterTextInput!]!
+            $texts: [FilterTextInput!]!
           ) {
             updateFilterTexts(
               filterId: $filterId
@@ -538,7 +538,7 @@ describe('Filters', () => {
             type: 'SINGLE_CHOICE',
             options: ['ST'],
           },
-          texts: [{title: 'Mengeneinheit Filter'}]
+          texts: [{title: 'Mengeneinheit Filter', locale: "de"}]
         },
       });
 

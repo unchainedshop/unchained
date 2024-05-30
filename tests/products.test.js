@@ -57,7 +57,7 @@ describe('Products', () => {
             type: 'SimpleProduct',
             tags: ['simple'],
           },
-          texts: [{title: 'Simple Product'}]
+          texts: [{title: 'Simple Product', locale: "de"}]
         },
       });
       expect(createProduct).toMatchObject({
