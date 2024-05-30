@@ -293,10 +293,7 @@ export type ProductsModule = {
   ) => Promise<Array<ProductPricingCalculation>>;
 
   // Mutations
-  create: (
-    doc: Product & { texts: ProductText[] },
-    options?: { autopublish?: boolean },
-  ) => Promise<Product>;
+  create: (doc: Product, options?: { autopublish?: boolean }) => Promise<Product>;
 
   delete: (productId: string) => Promise<number>;
   firstActiveProductProxy: (productId: string) => Promise<Product>;

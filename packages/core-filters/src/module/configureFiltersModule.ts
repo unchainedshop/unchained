@@ -95,16 +95,16 @@ export const configureFiltersModule = async ({
     const productIdsMap =
       filter.type === FilterType.SWITCH
         ? {
-            true: await findProductIds(filter, { value: true }, unchainedAPI),
-            false: await findProductIds(filter, { value: false }, unchainedAPI),
-          }
+          true: await findProductIds(filter, { value: true }, unchainedAPI),
+          false: await findProductIds(filter, { value: false }, unchainedAPI),
+        }
         : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
-            const accumulator = await accumulatorPromise;
-            return {
-              ...accumulator,
-              [option]: await findProductIds(filter, { value: option }, unchainedAPI),
-            };
-          }, Promise.resolve({}));
+          const accumulator = await accumulatorPromise;
+          return {
+            ...accumulator,
+            [option]: await findProductIds(filter, { value: option }, unchainedAPI),
+          };
+        }, Promise.resolve({}));
 
     return [allProductIds, productIdsMap];
   };
@@ -215,17 +215,13 @@ export const configureFiltersModule = async ({
     invalidateCache,
 
     // Mutations
-    create: async ({ locale, title, type, isActive = false, ...filterData }, unchainedAPI, options) => {
+    create: async ({ type, isActive = false, ...filterData }, unchainedAPI, options) => {
       const filterId = await mutations.create({
         isActive,
         created: new Date(),
         type: FilterType[type],
         ...filterData,
       });
-
-      if (locale) {
-        await filterTexts.updateTexts({ filterId }, [{ title, locale }]);
-      }
 
       const filter = await Filters.findOne(generateDbFilterById(filterId), {});
       if (!options?.skipInvalidation) {

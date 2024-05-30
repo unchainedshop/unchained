@@ -343,7 +343,6 @@ export const configureAssortmentsModule = async ({
       isRoot = false,
       meta = {},
       sequence,
-      texts,
       ...rest
     }) => {
       if (_id) await Assortments.deleteOne({ _id, deleted: { $ne: null } });
@@ -356,15 +355,10 @@ export const configureAssortmentsModule = async ({
         meta,
         ...rest,
       });
-
-      if (texts) {
-        await assortmentTexts.updateTexts(assortmentId, texts);
-      }
-
       const assortment = await Assortments.findOne(generateDbFilterById(assortmentId));
       await emit('ASSORTMENT_CREATE', { assortment });
 
-      return assortmentId;
+      return assortment;
     },
 
     update: async (_id, doc, options) => {
