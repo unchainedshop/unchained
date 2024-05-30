@@ -1,10 +1,10 @@
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders.js';
-import { Locker, MongoAdapter } from '@kontsedal/locco';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { generateDbFilterById } from '@unchainedshop/mongodb';
+import { createRequire } from 'node:module';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
 import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.js';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
@@ -23,6 +23,9 @@ import { configureOrderModuleProcessing } from './configureOrdersModule-processi
 import { configureOrdersModuleQueries } from './configureOrdersModule-queries.js';
 import { configureOrderModuleTransformations } from './configureOrdersModule-transformations.js';
 
+const require = createRequire(import.meta.url);
+const { Locker, MongoAdapter } = require('@kontsedal/locco');
+
 export const configureOrdersModule = async ({
   db,
   options: orderOptions = {},
@@ -36,7 +39,9 @@ export const configureOrdersModule = async ({
   const OrderPositions = await OrderPositionsCollection(db);
 
   const mongoAdapter = new MongoAdapter({
-    client: db,
+    client: {
+      db: () => db,
+    },
   });
   const locker = new Locker({
     adapter: mongoAdapter,

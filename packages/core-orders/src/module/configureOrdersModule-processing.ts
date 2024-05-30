@@ -268,9 +268,7 @@ export const configureOrderModuleProcessing = ({
         throw new Error(errors[0]);
       }
 
-      // Process order
-      const lock = await locker.lock(`checkout:${order._id}`).acquire();
-
+      const lock = await locker.lock(`order:checkout:${order._id}`, 1500).acquire();
       try {
         const processedOrder = await modules.orders.processOrder(
           order,
@@ -290,17 +288,18 @@ export const configureOrderModuleProcessing = ({
         );
         await modules.users.updateLastContact(processedOrder.userId, processedOrder.contact);
 
-        // Then eventually return new cart
+        // Then eventually build next cart
         const user = await modules.users.findUserById(processedOrder.userId);
         const locale = modules.users.userLocale(user);
-
-        return services.orders.nextUserCart(
+        await services.orders.nextUserCart(
           {
             user,
             countryCode: locale.country,
           },
           unchainedAPI,
         );
+
+        return processedOrder;
       } finally {
         await lock.release();
       }
@@ -311,15 +310,20 @@ export const configureOrderModuleProcessing = ({
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      return modules.orders.processOrder(
-        order,
-        {
-          paymentContext,
-          deliveryContext,
-          nextStatus: OrderStatus.CONFIRMED,
-        },
-        unchainedAPI,
-      );
+      const lock = await locker.lock(`order:confirm-reject:${order._id}`, 1500).acquire();
+      try {
+        return await modules.orders.processOrder(
+          order,
+          {
+            paymentContext,
+            deliveryContext,
+            nextStatus: OrderStatus.CONFIRMED,
+          },
+          unchainedAPI,
+        );
+      } finally {
+        await lock.release();
+      }
     },
 
     reject: async (order, { paymentContext, deliveryContext }, unchainedAPI) => {
@@ -327,15 +331,20 @@ export const configureOrderModuleProcessing = ({
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      return modules.orders.processOrder(
-        order,
-        {
-          paymentContext,
-          deliveryContext,
-          nextStatus: OrderStatus.REJECTED,
-        },
-        unchainedAPI,
-      );
+      const lock = await locker.lock(`order:confirm-reject:${order._id}`, 1500).acquire();
+      try {
+        return await modules.orders.processOrder(
+          order,
+          {
+            paymentContext,
+            deliveryContext,
+            nextStatus: OrderStatus.REJECTED,
+          },
+          unchainedAPI,
+        );
+      } finally {
+        await lock.release();
+      }
     },
 
     processOrder: async (initialOrder, params, unchainedAPI) => {

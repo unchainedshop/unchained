@@ -179,12 +179,12 @@ export const User: UserHelperTypes = {
     return context.modules.warehousing.findTokensForUser(user);
   },
 
-  country: async (user, params, context) => {
+  async country(user, params, context) {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return context.services.users.getUserCountry(user, context);
   },
 
-  enrollments: async (user, params, context) => {
+  async enrollments(user, params, context) {
     await checkAction(context, viewUserEnrollments, [user, params]);
     return context.modules.enrollments.findEnrollments({
       ...(params || {}),
