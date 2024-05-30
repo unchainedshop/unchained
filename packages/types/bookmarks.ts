@@ -2,8 +2,6 @@ import type { Filter } from 'mongodb';
 import { TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
 
-import { User } from './user.js';
-
 export type UserProductFilter = {
   userId: string;
   productId: string;
