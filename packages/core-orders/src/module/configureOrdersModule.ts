@@ -260,6 +260,7 @@ export const configureOrdersModule = async ({
     OrderDeliveries,
     OrderPayments,
     OrderPositions,
+    locker,
   });
   const orderMutations = configureOrderModuleMutations({
     Orders,
