@@ -60,7 +60,6 @@ export default [
     }
 
     input CreateProductInput {
-      texts: [ProductTextInput!]!
       type: String!
       tags: [LowerCaseString!]
     }
@@ -161,8 +160,7 @@ export default [
 
     input CreateAssortmentInput {
       isRoot: Boolean
-      tags: [LowerCaseString!]
-      texts: [AssortmentTextInput!]!
+      tags: [LowerCaseString!]      
     }
 
     input UpdateAssortmentInput {

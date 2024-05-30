@@ -18,6 +18,8 @@ export default async function createFilter(
     },
     context,
   );
-  await modules.filters.texts.updateTexts({ filterId: newFilter._id }, texts);
+  if (texts) {
+    await modules.filters.texts.updateTexts({ filterId: newFilter._id }, texts);
+  }
   return newFilter;
 }

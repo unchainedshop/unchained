@@ -6,9 +6,10 @@ export default async function createAssortment(
   root: Root,
   {
     texts,
-    ...assortmentData
-  }: Assortment & {
-    texts: AssortmentText[];
+    assortmentData,
+  }: {
+    assortmentData: Assortment;
+    texts?: AssortmentText[];
   },
   { modules, userId }: Context,
 ) {
@@ -19,7 +20,7 @@ export default async function createAssortment(
   });
 
   if (texts) {
-    modules.assortments.texts.updateTexts(assortment._id, texts);
+    await modules.assortments.texts.updateTexts(assortment._id, texts);
   }
 
   return assortment;

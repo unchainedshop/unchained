@@ -339,7 +339,7 @@ export default [
       """
       Create a new product
       """
-      createProduct(product: CreateProductInput!): Product!
+      createProduct(product: CreateProductInput!, texts: [ProductTextInput!]): Product!
 
       """
       Make the product visible on any shop listings (product queries)
@@ -581,7 +581,7 @@ export default [
       """
       Creates new assortment.
       """
-      createAssortment(assortment: CreateAssortmentInput!): Assortment!
+      createAssortment(assortment: CreateAssortmentInput!, texts: [AssortmentTextInput!]): Assortment!
 
       """
       Updates the provided assortment
@@ -682,7 +682,7 @@ export default [
       """
       Creates new Filter along with the user who created it.
       """
-      createFilter(filter: CreateFilterInput!, texts: [FilterTextInput!]!): Filter!
+      createFilter(filter: CreateFilterInput!, texts: [FilterTextInput!]): Filter!
 
       """
       Updates the specified filter with the information passed.
