@@ -1,5 +1,6 @@
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders.js';
+import { Locker, MongoAdapter } from '@kontsedal/locco';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
@@ -33,6 +34,14 @@ export const configureOrdersModule = async ({
   const OrderDiscounts = await OrderDiscountsCollection(db);
   const OrderPayments = await OrderPaymentsCollection(db);
   const OrderPositions = await OrderPositionsCollection(db);
+
+  const mongoAdapter = new MongoAdapter({
+    client: db,
+  });
+  const locker = new Locker({
+    adapter: mongoAdapter,
+    retrySettings: { retryDelay: 200, retryTimes: 10 },
+  });
 
   const findOrderPositions = async (order: Order) =>
     OrderPositions.find(

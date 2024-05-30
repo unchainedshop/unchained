@@ -1,7 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { Configuration } from '@unchainedshop/types/common.js';
-import { ProductNotFoundError, OrderQuantityTooLowError } from '../../../errors.js';
+import {
+  ProductNotFoundError,
+  OrderQuantityTooLowError,
+  OrderWrongStatusError,
+} from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function addMultipleCartProducts(
@@ -38,6 +42,7 @@ export default async function addMultipleCartProducts(
   );
 
   const order = await getOrderCart({ orderId, user }, context);
+  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   // Reduce is used to wait for each product to be added before processing the next (sequential processing)
   return itemsWithProducts.reduce(async (positionsPromise, { product, quantity, configuration }) => {

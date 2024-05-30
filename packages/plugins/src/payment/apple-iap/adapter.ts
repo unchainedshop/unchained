@@ -100,40 +100,33 @@ export const appleIAPHandler = async (req, res) => {
         });
 
         if (!orderPayment) throw new Error('Could not find any matching order payment');
-        const order = await modules.orders.findOrder({
-          orderId: orderPayment.orderId,
-        });
 
-        if (modules.orders.isCart(order)) {
-          // checkout if is cart, else just ignore because the cart is already checked out
-          // through submission of the receipt with GraphQL
-          const checkedOut = await modules.orders.checkout(
-            order._id,
-            {
-              paymentContext: {
+        const order = await modules.orders.checkout(
+          orderPayment.orderId,
+          {
+            paymentContext: {
                 receiptData: responseBody?.unified_receipt?.latest_receipt, // eslint-disable-line
-              },
             },
-            resolvedContext,
-          );
-          const orderId = checkedOut._id;
-          const enrollment = await modules.enrollments.findEnrollment({
+          },
+          resolvedContext,
+        );
+        const orderId = order._id;
+        const enrollment = await modules.enrollments.findEnrollment({
+          orderId,
+        });
+        await fixPeriods(
+          {
+            transactionId: latestTransaction.original_transaction_id,
+            transactions,
+            enrollmentId: enrollment._id,
             orderId,
-          });
-          await fixPeriods(
-            {
-              transactionId: latestTransaction.original_transaction_id,
-              transactions,
-              enrollmentId: enrollment._id,
-              orderId,
-            },
-            resolvedContext,
-          );
+          },
+          resolvedContext,
+        );
 
-          logger.info(`Apple IAP Webhook: Confirmed checkout for order ${checkedOut.orderNumber}`, {
-            orderId: checkedOut._id,
-          });
-        }
+        logger.info(`Apple IAP Webhook: Confirmed checkout for order ${order.orderNumber}`, {
+          orderId: order._id,
+        });
       } else {
         // Just store payment credentials, use the enrollments paymentProvider reference and
         // let the job do the rest

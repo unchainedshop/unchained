@@ -36,8 +36,8 @@ export interface BookmarksModule extends ModuleMutations<Bookmark> {
 
 export type MigrateBookmarksService = (
   params: {
-    fromUser: User;
-    toUser: User;
+    fromUserId: string;
+    toUserId: string;
     shouldMerge: boolean;
     countryContext: string;
   },

@@ -122,7 +122,7 @@ export const configureOrderModuleTransformations = ({
     },
     cart: async ({ orderNumber, countryContext }, user) => {
       const selector: mongodb.Filter<Order> = {
-        countryCode: countryContext || user.lastLogin.countryCode,
+        countryCode: countryContext || user.lastLogin?.countryCode,
         status: { $eq: null },
         userId: user._id,
       };

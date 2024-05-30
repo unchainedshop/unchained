@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
+import { OrderWrongStatusError } from '../../../errors.js';
 
 export default async function emptyCart(
   root: Root,
@@ -11,9 +12,11 @@ export default async function emptyCart(
 
   log('mutation emptyCart', { userId, orderId });
 
-  const cart = await getOrderCart({ orderId, user }, context);
-  if (!cart) return null;
+  const order = await getOrderCart({ orderId, user }, context);
+  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  await modules.orders.positions.removePositions({ orderId: cart._id }, context);
-  return modules.orders.findOrder({ orderId: cart._id });
+  if (!order) return null;
+
+  await modules.orders.positions.removePositions({ orderId: order._id }, context);
+  return modules.orders.findOrder({ orderId: order._id });
 }

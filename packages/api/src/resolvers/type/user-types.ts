@@ -167,7 +167,11 @@ export const User: UserHelperTypes = {
   async cart(user, params, context) {
     const { modules, countryContext } = context;
     await checkAction(context, viewUserOrders, [user, params]);
-    return modules.orders.cart({ countryContext, orderNumber: params.orderNumber }, user);
+    return modules.orders.cart({
+      countryContext: countryContext || user.lastLogin?.countryCode,
+      orderNumber: params.orderNumber,
+      userId: user._id,
+    });
   },
 
   async tokens(user, params, context) {

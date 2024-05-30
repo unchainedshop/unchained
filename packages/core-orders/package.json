@@ -34,6 +34,7 @@
     "@unchainedshop/events": "^2.9.4",
     "@unchainedshop/logger": "^2.9.4",
     "@unchainedshop/utils": "^2.9.4",
+    "@kontsedal/locco": "0.1.0",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {

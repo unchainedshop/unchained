@@ -2,6 +2,7 @@ import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { Address, Contact } from '@unchainedshop/types/common.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
+import { OrderWrongStatusError } from '../../../errors.js';
 
 interface UpdateCartParams {
   orderId?: string;
@@ -20,10 +21,10 @@ export default async function updateCart(root: Root, params: UpdateCartParams, c
   log('mutation updateCart', { userId });
 
   let order = await getOrderCart({ orderId, user }, context);
+  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   if (meta) {
-    await modules.orders.updateContext(order._id, meta, context);
-    order = await modules.orders.findOrder({ orderId: order._id });
+    order = await modules.orders.updateContext(order._id, meta, context);
   }
 
   if (billingAddress) {
