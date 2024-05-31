@@ -85,7 +85,7 @@ export const configureWarehousingModule = async ({
       return userTokens;
     },
 
-    findProviders: async (query, options) => {
+    findProviders: async (query, options = { sort: { created: 1 } }) => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },

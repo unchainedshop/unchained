@@ -69,7 +69,7 @@ export const configureDeliveryModule = async ({
       );
     },
 
-    findProviders: async (query, options) => {
+    findProviders: async (query, options = { sort: { created: 1 } }) => {
       const providers = DeliveryProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },

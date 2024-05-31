@@ -6,6 +6,7 @@ export const DeliveryProvidersCollection = async (db: mongodb.Db) => {
 
   await buildDbIndexes<DeliveryProvider>(DeliveryProviders, [
     { index: { type: 1 } },
+    { index: { created: 1 } },
     {
       index: {
         deleted: 1,

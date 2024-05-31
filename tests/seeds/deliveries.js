@@ -12,7 +12,7 @@ export const SimpleDeliveryProvider = {
 export const SendMailDeliveryProvider = {
   _id: 'send-mail-delivery-provider',
   adapterKey: 'shop.unchained.delivery.send-message',
-  created: new Date('2019-10-11T10:23:35.959+0000'),
+  created: new Date('2019-10-11T10:24:35.959+0000'),
   configuration: [],
   type: 'SHIPPING',
   updated: new Date('2019-10-11T10:23:37.337+0000'),
