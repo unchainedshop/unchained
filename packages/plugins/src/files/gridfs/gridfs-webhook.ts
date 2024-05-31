@@ -64,8 +64,9 @@ export const gridfsHandler = async (
         await pipeline(req, new PassThrough(), writeStream);
 
         const { length } = writeStream;
-        res.statusCode = 200;
         await services.files.linkFile({ fileId, size: length, type }, req.unchainedContext);
+
+        res.statusCode = 200;
         res.end();
         return;
       }
@@ -86,9 +87,9 @@ export const gridfsHandler = async (
       }
 
       const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
-      res.statusCode = 200;
       readStream.pipe(res, { end: false });
       await finished(readStream);
+      res.statusCode = 200;
       res.end();
       return;
     }
