@@ -11,20 +11,20 @@ export const migrateUserDataService: MigrateUserDataService = async (
 
   await unchainedAPI.services.orders.migrateOrderCarts(
     {
-      fromUser: userBeforeLogin,
-      toUser: user,
+      fromUserId: userIdBeforeLogin,
+      toUserId: userId,
       shouldMerge: userSettings.mergeUserCartsOnLogin,
-      countryContext: user.lastLogin.countryCode,
+      countryContext: userBeforeLogin.lastLogin.countryCode || user.lastLogin.countryCode,
     },
     unchainedAPI,
   );
 
   await unchainedAPI.services.bookmarks.migrateBookmarks(
     {
-      fromUser: userBeforeLogin,
-      toUser: user,
+      fromUserId: userIdBeforeLogin,
+      toUserId: userId,
       shouldMerge: userSettings.mergeUserCartsOnLogin,
-      countryContext: user.lastLogin.countryCode,
+      countryContext: userBeforeLogin.lastLogin.countryCode || user.lastLogin.countryCode,
     },
     unchainedAPI,
   );

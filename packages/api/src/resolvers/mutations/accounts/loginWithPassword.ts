@@ -45,13 +45,7 @@ export default async function loginWithPassword(
     await context.services.users.migrateUserData(context.userId, user._id, context);
   }
 
-  await context.modules.orders.ensureCartForUser(
-    {
-      user,
-      countryCode: context.countryContext,
-    },
-    context,
-  );
+  await context.services.orders.nextUserCart({ user, countryCode: context.countryContext }, context);
 
   return context.login(user);
 }

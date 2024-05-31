@@ -1,20 +1,23 @@
 import localePkg from 'locale';
 import bcrypt from 'bcryptjs';
 import { Address, Contact } from '@unchainedshop/types/common.js';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
-import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import {
-  Email,
   User,
-  UserData,
+  UserQuery,
+  Email,
   UserLastLogin,
   UserProfile,
-  UserQuery,
   UserSettingsOptions,
+  UserData,
 } from '@unchainedshop/types/user.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
+import {
+  generateDbFilterById,
+  buildSortOptions,
+  mongodb,
+  generateDbObjectId,
+} from '@unchainedshop/mongodb';
 import { systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
@@ -78,7 +81,6 @@ export const configureUsersModule = async ({
   // Migration
   addMigrations(migrationRepository);
 
-  const mutations = generateDbMutations<User>(Users, Schemas.User) as ModuleMutations<User>;
   const webAuthn = await configureUsersWebAuthnModule({ db, options });
 
   return {
@@ -285,12 +287,14 @@ export const configureUsersModule = async ({
         services.webAuthn = [webAuthnService];
       }
 
-      const userId = await mutations.create({
+      const { insertedId: userId } = await Users.insertOne({
         ...normalizedUserData,
+        _id: normalizedUserData._id || generateDbObjectId(),
         username,
         roles: roles || [],
         initialPassword: Boolean(initialPassword),
         emails: email ? [{ address: email, verified: false }] : [],
+        created: new Date(),
       });
 
       try {
@@ -493,7 +497,7 @@ export const configureUsersModule = async ({
 
     updateGuest: async (user: User, guest: boolean): Promise<void> => {
       const modifier = { $set: { guest } };
-      await mutations.update(user._id, modifier);
+      await Users.updateOne(generateDbFilterById(user._id), modifier);
       await emit('USER_UPDATE_GUEST', {
         user: removeConfidentialServiceHashes({
           ...user,
@@ -516,7 +520,6 @@ export const configureUsersModule = async ({
         returnDocument: 'after',
       });
 
-      const user = await Users.findOne({ _id: userId }, {});
       await emit('USER_UPDATE_HEARTBEAT', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -694,10 +697,10 @@ export const configureUsersModule = async ({
     updateUser: async (
       selector: mongodb.Filter<User>,
       modifier: mongodb.UpdateFilter<User>,
-      updateOptions: mongodb.UpdateOptions,
+      updateOptions?: mongodb.FindOneAndUpdateOptions,
     ): Promise<void> => {
-      const user = await Users.findOneAndUpdate(query, modifier, {
-        ...options,
+      const user = await Users.findOneAndUpdate(selector, modifier, {
+        ...updateOptions,
         returnDocument: 'after',
       });
       await emit('USER_UPDATE', {
