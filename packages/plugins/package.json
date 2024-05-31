@@ -80,14 +80,14 @@
     "lru-cache": "^10.0.0",
     "open": "^10.0.0",
     "postfinancecheckout": "^4.1.1",
-    "stripe": "15.7",
+    "stripe": "^15.8.0",
     "tiny-secp256k1": "^2.2.3",
     "twilio": "^5.1.0",
     "web-push": "^3.6.3"
   },
   "devDependencies": {
-    "@redis/client": "^1.5.14",
-    "@types/node": "^20.12.11",
+    "@redis/client": "^1.5.16",
+    "@types/node": "^20.12.13",
     "@unchainedshop/api": "^3.0.0-alpha1",
     "@unchainedshop/core-delivery": "^3.0.0-alpha1",
     "@unchainedshop/core-enrollments": "^3.0.0-alpha1",

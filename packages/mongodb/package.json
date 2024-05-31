@@ -36,10 +36,10 @@
     "mongodb": "^6.7.0"
   },
   "optionalDependencies": {
-    "mongodb-memory-server": "^9.1.6"
+    "mongodb-memory-server": "^9.3.0"
   },
   "devDependencies": {
-    "@types/node": "^20.12.11",
+    "@types/node": "^20.12.13",
     "@unchainedshop/types": "^3.0.0-alpha1",
     "jest": "^29.7.0",
     "typescript": "^5.4.5"
