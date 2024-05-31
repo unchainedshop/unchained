@@ -167,7 +167,11 @@ export const User: UserHelperTypes = {
   async cart(user, params, context) {
     const { modules, countryContext } = context;
     await checkAction(context, viewUserOrders, [user, params]);
-    return modules.orders.cart({ countryContext, orderNumber: params.orderNumber }, user);
+    return modules.orders.cart({
+      countryContext: countryContext || user.lastLogin?.countryCode,
+      orderNumber: params.orderNumber,
+      userId: user._id,
+    });
   },
 
   async tokens(user, params, context) {
@@ -175,12 +179,12 @@ export const User: UserHelperTypes = {
     return context.modules.warehousing.findTokensForUser(user);
   },
 
-  country: async (user, params, context) => {
+  async country(user, params, context) {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     return context.services.users.getUserCountry(user, context);
   },
 
-  enrollments: async (user, params, context) => {
+  async enrollments(user, params, context) {
     await checkAction(context, viewUserEnrollments, [user, params]);
     return context.modules.enrollments.findEnrollments({
       ...(params || {}),

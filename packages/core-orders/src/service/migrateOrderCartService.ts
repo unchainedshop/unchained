@@ -1,11 +1,17 @@
 import { MigrateOrderCartsService } from '@unchainedshop/types/orders.js';
 
 export const migrateOrderCartsService: MigrateOrderCartsService = async (
-  { fromUser, toUser, shouldMerge, countryContext },
+  { fromUserId, toUserId, shouldMerge, countryContext },
   unchainedAPI,
 ) => {
-  const fromCart = await unchainedAPI.modules.orders.cart({ countryContext }, fromUser);
-  const toCart = await unchainedAPI.modules.orders.cart({ countryContext }, toUser);
+  const fromCart = await unchainedAPI.modules.orders.cart({
+    countryContext,
+    userId: fromUserId,
+  });
+  const toCart = await unchainedAPI.modules.orders.cart({
+    countryContext,
+    userId: toUserId,
+  });
 
   if (!fromCart) {
     // No cart, don't copy
@@ -14,7 +20,7 @@ export const migrateOrderCartsService: MigrateOrderCartsService = async (
 
   if (!toCart || !shouldMerge) {
     // No destination cart, move whole cart
-    unchainedAPI.modules.orders.setCartOwner({ orderId: fromCart._id, userId: toUser._id });
+    unchainedAPI.modules.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
     return unchainedAPI.modules.orders.updateCalculation(fromCart._id, unchainedAPI);
   }
 

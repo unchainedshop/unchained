@@ -162,8 +162,8 @@ describe("Cart Checkout Flow", () => {
       });
     });
 
-    it("return error if trying to checkout the cart with invoice again", async () => {
-      const { errors } = await graphqlFetch({
+    it("return unchained order if trying to checkout the cart with invoice again", async () => {
+      const { data: { checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkoutCart($orderId: ID) {
             checkoutCart(orderId: $orderId) {
@@ -178,7 +178,10 @@ describe("Cart Checkout Flow", () => {
         },
       });
 
-      expect(errors[0].extensions.code).toEqual("OrderWrongStatusError");
+      expect(checkoutCart).toMatchObject({
+        orderNumber: "wishlist",
+        status: "CONFIRMED",
+      });
     });
   });
 });

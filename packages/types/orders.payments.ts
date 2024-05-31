@@ -99,7 +99,11 @@ export type OrderPaymentsModule = {
 
   markAsPaid: (payment: OrderPayment, meta: any) => Promise<void>;
 
-  updateContext: (orderPaymentId: string, context: any, unchainedAPI: UnchainedCore) => Promise<boolean>;
+  updateContext: (
+    orderPaymentId: string,
+    context: any,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPayment | null>;
 
   updateStatus: (
     orderPaymentId: string,

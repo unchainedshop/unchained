@@ -58,7 +58,7 @@ export const configurePaymentProvidersModule = (
       );
     },
 
-    findProviders: async (query, options) => {
+    findProviders: async (query, options = { sort: { created: 1 } }) => {
       const providers = PaymentProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },

@@ -1,10 +1,21 @@
-import { CreateUserCartService } from '@unchainedshop/types/orders.js';
+import { NextUserCartService } from '@unchainedshop/types/orders.js';
+import { ordersSettings } from '../orders-settings.js';
 
-export const createUserCartService: CreateUserCartService = async (
-  { user, orderNumber, countryCode },
+export const nextUserCartService: NextUserCartService = async (
+  { user, orderNumber, countryCode, forceCartCreation },
   unchainedAPI,
 ) => {
   const { modules, services } = unchainedAPI;
+
+  const cart = await modules.orders.cart({
+    countryContext: countryCode || user.lastLogin?.countryCode,
+    orderNumber,
+    userId: user._id,
+  });
+  if (cart) return cart;
+
+  const shouldCreateNewCart = forceCartCreation || !ordersSettings.ensureUserHasCart;
+  if (!shouldCreateNewCart) return null;
 
   const currency = await services.countries.resolveDefaultCurrencyCode(
     {

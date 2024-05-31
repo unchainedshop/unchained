@@ -8,6 +8,11 @@ export const PaymentProvidersCollection = async (db: mongodb.Db) => {
     { index: { type: 1 } },
     {
       index: {
+        created: 1,
+      },
+    },
+    {
+      index: {
         deleted: 1,
       },
     },

@@ -39,6 +39,7 @@ export const cryptopayHandler = async (req, res) => {
 
         if (orderPayment) {
           // Try to process order to next status
+          // TODO: Not sure if it's correct to use processOrder here if status is PENDING!
           const order = await modules.orders.findOrder({ orderId: orderPayment.orderId });
           if (order.status === null) {
             await modules.orders.checkout(order._id, {}, resolvedContext);

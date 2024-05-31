@@ -7,8 +7,8 @@ import {
   OrderPaymentNotFoundError,
   OrderPaymentTypeError,
   OrderWrongPaymentStatusError,
+  UserNoCartError,
 } from '../../../errors.js';
-import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function signPaymentProviderForCheckout(
   root: Root,
@@ -30,7 +30,11 @@ export default async function signPaymentProviderForCheckout(
     });
     if (!orderPayment) throw new OrderPaymentNotFoundError({ orderPaymentId });
   } else {
-    const order = await getOrderCart({ user: context.user }, context);
+    const order = await modules.orders.cart({
+      countryContext: context.countryContext || context.user.lastLogin?.countryCode,
+      userId,
+    });
+    if (!order) throw new UserNoCartError({ userId });
     orderPayment = await modules.orders.payments.findOrderPayment({
       orderPaymentId: order.paymentId,
     });

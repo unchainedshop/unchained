@@ -103,7 +103,7 @@ export interface QuotationData {
 export interface QuotationMutations {
   create: (doc: QuotationData, unchainedAPI: UnchainedCore) => Promise<Quotation>;
 
-  updateContext: (quotationId: string, context: any) => Promise<Quotation>;
+  updateContext: (quotationId: string, context: any) => Promise<Quotation | null>;
 
   updateProposal: (quotationId: string, proposal: QuotationProposal) => Promise<Quotation>;
 

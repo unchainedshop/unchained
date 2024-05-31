@@ -5,19 +5,19 @@ const hashBookmark = (bookmark) => {
 };
 
 export const migrateBookmarksService: MigrateBookmarksService = async (
-  { fromUser, toUser, shouldMerge },
+  { fromUserId, toUserId, shouldMerge },
   { modules },
 ) => {
-  const fromBookmarks = await modules.bookmarks.findBookmarks({ userId: fromUser._id });
+  const fromBookmarks = await modules.bookmarks.findBookmarks({ userId: fromUserId });
   if (!fromBookmarks) {
     // No bookmarks no copy needed
     return;
   }
   if (!shouldMerge) {
-    await modules.bookmarks.deleteByUserId(toUser._id);
-    await modules.bookmarks.replaceUserId(fromUser._id, toUser._id);
+    await modules.bookmarks.deleteByUserId(toUserId);
+    await modules.bookmarks.replaceUserId(fromUserId, toUserId);
   } else {
-    const toBookmarks = await modules.bookmarks.findBookmarks({ userId: toUser._id });
+    const toBookmarks = await modules.bookmarks.findBookmarks({ userId: toUserId });
     const toBookmarkHashes = toBookmarks.map(hashBookmark);
     const newBookmarkIds = fromBookmarks
       .filter((fromBookmark) => {
@@ -25,6 +25,6 @@ export const migrateBookmarksService: MigrateBookmarksService = async (
         return !toBookmarkHashes.includes(hash);
       })
       .map((bookmark) => bookmark._id);
-    await modules.bookmarks.replaceUserId(fromUser._id, toUser._id, newBookmarkIds);
+    await modules.bookmarks.replaceUserId(fromUserId, toUserId, newBookmarkIds);
   }
 };

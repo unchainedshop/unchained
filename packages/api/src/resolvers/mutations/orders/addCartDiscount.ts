@@ -1,6 +1,7 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 import { getOrderCart } from '../utils/getOrderCart.js';
+import { OrderWrongStatusError } from '../../../errors.js';
 
 export default async function addCartDiscount(
   root: Root,
@@ -11,7 +12,9 @@ export default async function addCartDiscount(
 
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
 
-  const cart = await getOrderCart({ orderId, user }, context);
+  const order = await getOrderCart({ orderId, user }, context);
 
-  return modules.orders.discounts.createManualOrderDiscount({ order: cart, code }, context);
+  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+
+  return modules.orders.discounts.createManualOrderDiscount({ order, code }, context);
 }

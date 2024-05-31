@@ -19,7 +19,7 @@ const simulatePayment = async (paymentPageUrl) => {
       selectionId: '1510' // Twint, no user input required
     }),
   });
-  await new Promise(r => setTimeout(r, 4000)); // Need to wait a few seconds after request
+  await new Promise(r => setTimeout(r, 10000)); // Need to wait a few seconds after request
 }
 
 if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
@@ -229,7 +229,7 @@ if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
 
         const orderPayment = await db.collection("order_payments").findOne({ _id: "saferpay-payment2" });
         expect(orderPayment.status).toBe("PAID");
-      }, 15000);
+      }, 20000);
     });
 
   });

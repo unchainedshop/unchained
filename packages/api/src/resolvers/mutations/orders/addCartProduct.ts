@@ -1,6 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import { Context, Root } from '@unchainedshop/types/api.js';
-import { ProductNotFoundError, OrderQuantityTooLowError, InvalidIdError } from '../../../errors.js';
+import {
+  ProductNotFoundError,
+  OrderQuantityTooLowError,
+  InvalidIdError,
+  OrderWrongStatusError,
+} from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function addCartProduct(
@@ -24,6 +29,8 @@ export default async function addCartProduct(
   if (!product) throw new ProductNotFoundError({ productId });
 
   const order = await getOrderCart({ orderId, user }, context);
+  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+
   const orderPosition = await modules.orders.positions.addProductItem(
     {
       quantity,

@@ -197,26 +197,28 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
 
       await unchainedAPI.services.orders.migrateOrderCarts(
         {
-          fromUser: userBeforeLogin,
-          toUser: user,
+          fromUserId: userBeforeLogin._id,
+          toUserId: user._id,
           shouldMerge: accountsSettings.mergeUserCartsOnLogin,
-          countryContext,
+          countryContext:
+            countryContext || userBeforeLogin.lastLogin?.countryCode || user.lastLogin?.countryCode,
         },
         unchainedAPI,
       );
 
       await unchainedAPI.services.bookmarks.migrateBookmarks(
         {
-          fromUser: userBeforeLogin,
-          toUser: user,
+          fromUserId: userBeforeLogin._id,
+          toUserId: user._id,
           shouldMerge: accountsSettings.mergeUserCartsOnLogin,
-          countryContext,
+          countryContext:
+            countryContext || userBeforeLogin.lastLogin?.countryCode || user.lastLogin?.countryCode,
         },
         unchainedAPI,
       );
     }
 
-    await unchainedAPI.modules.orders.ensureCartForUser(
+    return unchainedAPI.services.orders.nextUserCart(
       {
         user,
         countryCode: countryContext,

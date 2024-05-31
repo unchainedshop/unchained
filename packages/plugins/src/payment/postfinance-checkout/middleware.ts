@@ -19,6 +19,7 @@ export const postfinanceCheckoutHandler = async (req, res) => {
         orderPaymentId,
       });
       if (!orderPayment) throw new Error('Order Payment not found');
+
       const order = await context.modules.orders.checkout(
         orderPayment.orderId,
         {

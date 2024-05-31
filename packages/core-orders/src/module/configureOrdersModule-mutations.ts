@@ -209,26 +209,32 @@ export const configureOrderModuleMutations = ({
     },
 
     updateContext: async (orderId, context, unchainedAPI) => {
-      if (!context) return false;
-
-      log('Update Arbitrary Context', { orderId, context });
       const selector = generateDbFilterById<Order>(orderId);
       selector.status = { $in: [null, OrderStatus.PENDING] };
-      const order = await Orders.findOne(selector);
 
-      const result = await Orders.updateOne(selector, {
-        $set: {
-          context: { ...(order.context || {}), ...context },
-          updated: new Date(),
+      if (!context || Object.keys(context).length === 0) return Orders.findOne(selector, {});
+
+      log('Update Arbitrary Context', { orderId, context });
+      const contextSetters = Object.fromEntries(
+        Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
+      );
+      const result = await Orders.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            ...contextSetters,
+            updated: new Date(),
+          },
         },
-      });
+        { includeResultMetadata: true },
+      );
 
-      if (result.modifiedCount) {
+      if (result.ok) {
         const calculatedOrder = await updateCalculation(orderId, unchainedAPI);
         await emit('ORDER_UPDATE', { order: calculatedOrder, field: 'context' });
-        return true;
+        return calculatedOrder;
       }
-      return false;
+      return null;
     },
 
     updateCalculation,

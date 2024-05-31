@@ -1,5 +1,6 @@
 import { mongodb, generateDbFilterById } from '@unchainedshop/mongodb';
 import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders.js';
+import type { Locker } from '@kontsedal/locco';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
@@ -21,11 +22,13 @@ export const configureOrderModuleProcessing = ({
   OrderPositions,
   OrderDeliveries,
   OrderPayments,
+  locker,
 }: {
   Orders: mongodb.Collection<Order>;
   OrderPositions: mongodb.Collection<OrderPosition>;
   OrderDeliveries: mongodb.Collection<OrderDelivery>;
   OrderPayments: mongodb.Collection<OrderPayment>;
+  locker: Locker;
 }): OrderProcessing => {
   registerEvents(ORDER_PROCESSING_EVENTS);
 
@@ -250,12 +253,10 @@ export const configureOrderModuleProcessing = ({
   };
 
   return {
-    checkout: async (orderId, { orderContext, paymentContext, deliveryContext }, unchainedAPI) => {
-      const { modules } = unchainedAPI;
+    checkout: async (orderId, { paymentContext, deliveryContext }, unchainedAPI) => {
+      const { modules, services } = unchainedAPI;
 
-      await modules.orders.updateContext(orderId, orderContext, unchainedAPI);
-      let order = await modules.orders.findOrder({ orderId });
-
+      const order = await Orders.findOne(generateDbFilterById(orderId), {});
       if (order.status !== null) return order;
 
       const errors = [
@@ -267,87 +268,83 @@ export const configureOrderModuleProcessing = ({
         throw new Error(errors[0]);
       }
 
-      // Process order
-      order = await modules.orders.processOrder(
-        order,
-        {
-          paymentContext,
-          deliveryContext,
-        },
-        unchainedAPI,
-      );
+      const lock = await locker.lock(`order:checkout:${order._id}`, 1500).acquire();
+      try {
+        const processedOrder = await modules.orders.processOrder(
+          order,
+          {
+            paymentContext,
+            deliveryContext,
+          },
+          unchainedAPI,
+        );
 
-      // After checkout, store last checkout information on user
-      await modules.users.updateLastBillingAddress(order.userId, order.billingAddress);
-      await modules.users.updateLastContact(order.userId, order.contact);
+        await lock.extend(500);
 
-      // Then ensure new cart is created before we return from checkout
-      const user = await modules.users.findUserById(order.userId);
-      const locale = modules.users.userLocale(user);
-      await modules.orders.ensureCartForUser(
-        {
-          user,
-          countryCode: locale.country,
-        },
-        unchainedAPI,
-      );
+        // After checkout, store last checkout information on user
+        await modules.users.updateLastBillingAddress(
+          processedOrder.userId,
+          processedOrder.billingAddress,
+        );
+        await modules.users.updateLastContact(processedOrder.userId, processedOrder.contact);
 
-      return order;
+        // Then eventually build next cart
+        const user = await modules.users.findUserById(processedOrder.userId);
+        const locale = modules.users.userLocale(user);
+        await services.orders.nextUserCart(
+          {
+            user,
+            countryCode: locale.country,
+          },
+          unchainedAPI,
+        );
+
+        return processedOrder;
+      } finally {
+        await lock.release();
+      }
     },
 
-    confirm: async (orderId, { orderContext, paymentContext, deliveryContext }, unchainedAPI) => {
+    confirm: async (order, { paymentContext, deliveryContext }, unchainedAPI) => {
       const { modules } = unchainedAPI;
-
-      await modules.orders.updateContext(orderId, orderContext, unchainedAPI);
-      const order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      return modules.orders.processOrder(
-        order,
-        {
-          paymentContext,
-          deliveryContext,
-          nextStatus: OrderStatus.CONFIRMED,
-        },
-        unchainedAPI,
-      );
+      const lock = await locker.lock(`order:confirm-reject:${order._id}`, 1500).acquire();
+      try {
+        return await modules.orders.processOrder(
+          order,
+          {
+            paymentContext,
+            deliveryContext,
+            nextStatus: OrderStatus.CONFIRMED,
+          },
+          unchainedAPI,
+        );
+      } finally {
+        await lock.release();
+      }
     },
 
-    reject: async (orderId, { orderContext, paymentContext, deliveryContext }, unchainedAPI) => {
+    reject: async (order, { paymentContext, deliveryContext }, unchainedAPI) => {
       const { modules } = unchainedAPI;
-
-      await modules.orders.updateContext(orderId, orderContext, unchainedAPI);
-      const order = await modules.orders.findOrder({ orderId });
 
       if (order.status !== OrderStatus.PENDING) return order;
 
-      return modules.orders.processOrder(
-        order,
-        {
-          paymentContext,
-          deliveryContext,
-          nextStatus: OrderStatus.REJECTED,
-        },
-        unchainedAPI,
-      );
-    },
-
-    ensureCartForUser: async ({ user, countryCode }, unchainedAPI) => {
-      const { modules, services } = unchainedAPI;
-
-      if (!ordersSettings.ensureUserHasCart) return null;
-
-      const cart = await modules.orders.cart({ countryContext: countryCode }, user);
-      if (cart) return cart;
-
-      return services.orders.createUserCart(
-        {
-          user,
-          countryCode,
-        },
-        unchainedAPI,
-      );
+      const lock = await locker.lock(`order:confirm-reject:${order._id}`, 1500).acquire();
+      try {
+        return await modules.orders.processOrder(
+          order,
+          {
+            paymentContext,
+            deliveryContext,
+            nextStatus: OrderStatus.REJECTED,
+          },
+          unchainedAPI,
+        );
+      } finally {
+        await lock.release();
+      }
     },
 
     processOrder: async (initialOrder, params, unchainedAPI) => {

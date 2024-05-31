@@ -7,6 +7,7 @@ import {
   QuotationWrongStatusError,
   OrderQuantityTooLowError,
   InvalidIdError,
+  OrderWrongStatusError,
 } from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
 
@@ -42,6 +43,8 @@ export default async function addCartQuotation(
   }
 
   const order = await getOrderCart({ orderId, user }, context);
+  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+
   const product = await modules.products.findProduct({
     productId: quotation.productId,
   });
