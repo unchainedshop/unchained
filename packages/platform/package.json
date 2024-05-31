@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/platform",
-  "version": "2.9.4",
+  "version": "2.10.0",
   "main": "lib/platform-index.js",
   "exports": {
     ".": "./lib/platform-index.js",

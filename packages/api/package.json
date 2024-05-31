@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "2.9.4",
+  "version": "2.10.0",
   "main": "lib/api-index.js",
   "exports": {
     ".": "./lib/api-index.js",

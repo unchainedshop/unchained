@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-enrollments",
-  "version": "2.9.4",
+  "version": "2.10.0",
   "main": "lib/enrollments-index.js",
   "exports": {
     ".": "./lib/enrollments-index.js",
