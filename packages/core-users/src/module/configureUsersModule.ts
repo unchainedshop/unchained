@@ -270,15 +270,9 @@ export const configureUsersModule = async ({
         }
       }
 
-      if (username) {
-        if (!(await userSettings.validateUsername(username))) {
-          throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
-        }
-      }
-
       if (password) {
         if (!(await userSettings.validatePassword(password))) {
-          throw new Error(`Password ***** is invalid`, { cause: 'PASSWORD_INVALID' });
+          throw new Error(`Provided password is invalid`, { cause: 'PASSWORD_INVALID' });
         }
         services.password = await this.hashPassword(password);
       }
@@ -287,15 +281,23 @@ export const configureUsersModule = async ({
         services.webAuthn = [webAuthnService];
       }
 
-      const { insertedId: userId } = await Users.insertOne({
+      const doc = {
         ...normalizedUserData,
         _id: normalizedUserData._id || generateDbObjectId(),
-        username,
         roles: roles || [],
         initialPassword: Boolean(initialPassword),
         emails: email ? [{ address: email, verified: false }] : [],
         created: new Date(),
-      });
+      };
+
+      if (username) {
+        if (!(await userSettings.validateUsername(username))) {
+          throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
+        }
+        doc.username = username;
+      }
+
+      const { insertedId: userId } = await Users.insertOne(doc);
 
       try {
         const autoMessagingEnabled = skipMessaging

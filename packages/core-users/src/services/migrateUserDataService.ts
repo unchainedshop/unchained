@@ -14,7 +14,7 @@ export const migrateUserDataService: MigrateUserDataService = async (
       fromUserId: userIdBeforeLogin,
       toUserId: userId,
       shouldMerge: userSettings.mergeUserCartsOnLogin,
-      countryContext: userBeforeLogin.lastLogin.countryCode || user.lastLogin.countryCode,
+      countryContext: userBeforeLogin.lastLogin?.countryCode || user.lastLogin?.countryCode,
     },
     unchainedAPI,
   );
@@ -24,7 +24,7 @@ export const migrateUserDataService: MigrateUserDataService = async (
       fromUserId: userIdBeforeLogin,
       toUserId: userId,
       shouldMerge: userSettings.mergeUserCartsOnLogin,
-      countryContext: userBeforeLogin.lastLogin.countryCode || user.lastLogin.countryCode,
+      countryContext: userBeforeLogin.lastLogin?.countryCode || user.lastLogin?.countryCode,
     },
     unchainedAPI,
   );

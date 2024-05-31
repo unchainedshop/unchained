@@ -49,6 +49,7 @@ export const userSettings: UserSettings = {
         'roles',
         'emails',
         'services',
+        'username',
         'initialPassword',
       );
       customSchema.validate(user);
