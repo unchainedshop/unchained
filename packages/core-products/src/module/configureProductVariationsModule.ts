@@ -197,7 +197,9 @@ export const configureProductVariationsModule = async ({
     update: async (productVariationId, doc) => {
       const selector = generateDbFilterById(productVariationId);
       const modifier = { $set: doc };
-      return ProductVariations.findOneAndUpdate(selector, modifier);
+      return ProductVariations.findOneAndUpdate(selector, modifier, {
+        returnDocument: 'after',
+      });
     },
 
     addVariationOption: async (productVariationId, { value, title, locale }) => {
