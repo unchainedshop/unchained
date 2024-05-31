@@ -142,6 +142,7 @@ export const configureProductsModule = async ({
           published: new Date(),
         },
       });
+
       await emit('PRODUCT_PUBLISH', { product });
 
       return true;

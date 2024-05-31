@@ -197,23 +197,21 @@ export const configureProductVariationsModule = async ({
     update: async (productVariationId, doc) => {
       const selector = generateDbFilterById(productVariationId);
       const modifier = { $set: doc };
-      await ProductVariations.updateOne(selector, modifier);
-      return ProductVariations.findOne(selector, {});
+      return ProductVariations.findOneAndUpdate(selector, modifier);
     },
 
     addVariationOption: async (productVariationId, { value, title, locale }) => {
-      await ProductVariations.updateOne(generateDbFilterById(productVariationId), {
-        $set: {
-          updated: new Date(),
-        },
-        $addToSet: {
-          options: value,
-        },
-      });
-
-      const productVariation = await ProductVariations.findOne(
+      const productVariation = await ProductVariations.findOneAndUpdate(
         generateDbFilterById(productVariationId),
-        {},
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $addToSet: {
+            options: value,
+          },
+        },
+        { returnDocument: 'after' },
       );
 
       await upsertLocalizedText(

@@ -202,7 +202,7 @@ export const configureProductReviewsModule = async ({
             });
           }
 
-          await ProductReviews.updateOne(selector, {
+          const updatedProductReview = await ProductReviews.findOneAndUpdate(selector, {
             $push: {
               votes: {
                 timestamp: new Date(),
@@ -212,8 +212,6 @@ export const configureProductReviewsModule = async ({
               },
             },
           });
-
-          const updatedProductReview = await ProductReviews.findOne(selector, {});
 
           await emit('PRODUCT_REVIEW_ADD_VOTE', {
             productReview: updatedProductReview,

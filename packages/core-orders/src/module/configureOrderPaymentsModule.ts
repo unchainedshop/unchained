@@ -95,8 +95,7 @@ export const configureOrderPaymentsModule = ({
     }
 
     const selector = buildFindByIdSelector(orderPaymentId);
-    await OrderPayments.updateOne(selector, modifier);
-    return OrderPayments.findOne(selector, {});
+    return OrderPayments.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
   };
 
   return {

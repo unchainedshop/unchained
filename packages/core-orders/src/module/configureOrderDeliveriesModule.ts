@@ -60,8 +60,7 @@ export const configureOrderDeliveriesModule = ({
     }
 
     const selector = buildFindByIdSelector(orderDeliveryId);
-    await OrderDeliveries.updateOne(selector, modifier);
-    return OrderDeliveries.findOne(selector, {});
+    return OrderDeliveries.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
   };
 
   return {

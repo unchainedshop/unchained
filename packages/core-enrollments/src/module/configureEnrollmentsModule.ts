@@ -432,17 +432,18 @@ export const configureEnrollmentsModule = async ({
 
     removeEnrollmentPeriodByOrderId: async (enrollmentId, orderId) => {
       const selector = generateDbFilterById(enrollmentId);
-      await Enrollments.updateOne(selector, {
-        $set: {
-          updated: new Date(),
+      return Enrollments.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $pull: {
+            periods: { orderId: { $in: [orderId, undefined, null] } },
+          },
         },
-
-        $pull: {
-          periods: { orderId: { $in: [orderId, undefined, null] } },
-        },
-      });
-
-      return Enrollments.findOne(selector, {});
+        { returnDocument: 'after' },
+      );
     },
 
     updateBillingAddress: updateEnrollmentField('billingAddress'),
