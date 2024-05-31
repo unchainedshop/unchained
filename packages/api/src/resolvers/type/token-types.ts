@@ -1,36 +1,23 @@
 import { Context } from '@unchainedshop/types/api.js';
-import { Product } from '@unchainedshop/types/products.js';
-import { User } from '@unchainedshop/types/user.js';
 import { TokenStatus, TokenSurrogate } from '@unchainedshop/types/warehousing.js';
 import { WorkStatus } from '@unchainedshop/types/worker.js';
 import localePkg from 'locale';
+import { checkAction } from '../../acl.js';
+import { actions } from '../../roles/index.js';
 
 const { Locale } = localePkg;
 
-type HelperType<T> = (root: TokenSurrogate, params: never, context: Context) => Promise<T>;
-
-export interface TokenHelperTypes {
-  product: HelperType<Product>;
-  status: HelperType<TokenStatus>;
-  ercMetadata: (
-    root: TokenSurrogate,
-    params: { forceLocale?: string },
-    context: Context,
-  ) => Promise<any>;
-  user: HelperType<User>;
-}
-
-export const Token: TokenHelperTypes = {
-  product: async (token, _params, { modules }) => {
+export const Token = {
+  product: async (token: TokenSurrogate, params: never, { modules }: Context) => {
     return modules.products.findProduct({ productId: token.productId });
   },
 
-  user: async (token, _params, { modules }) => {
+  user: async (token: TokenSurrogate, params: never, { modules }: Context) => {
     if (!token.userId) return null;
     return modules.users.findUserById(token.userId);
   },
 
-  status: async (token, _params, { modules }) => {
+  status: async (token: TokenSurrogate, params: never, { modules }: Context) => {
     if (token.walletAddress && !token.userId) {
       return TokenStatus.DECENTRALIZED;
     }
@@ -42,7 +29,11 @@ export const Token: TokenHelperTypes = {
     return TokenStatus.CENTRALIZED;
   },
 
-  ercMetadata: async (token, { forceLocale }, context) => {
+  ercMetadata: async (
+    token: TokenSurrogate,
+    { forceLocale }: { forceLocale: string },
+    context: Context,
+  ) => {
     const { modules } = context;
     const product = await modules.products.findProduct({ productId: token.productId });
     const ercMetadata = await modules.warehousing.tokenMetadata(
@@ -57,5 +48,29 @@ export const Token: TokenHelperTypes = {
     );
 
     return ercMetadata;
+  },
+
+  isInvalidateable: async (token: TokenSurrogate, _params: never, context: Context) => {
+    const { modules } = context;
+    const product = await modules.products.findProduct({ productId: token.productId });
+    const isInvalidateable = await modules.warehousing.isInvalidateable(
+      token.chainTokenId,
+      {
+        token,
+        product,
+        referenceDate: new Date(),
+      },
+      context,
+    );
+
+    return isInvalidateable;
+  },
+
+  accessKey: async (token: TokenSurrogate, params: never, requestContext: Context) => {
+    const { modules } = requestContext;
+    await checkAction(requestContext, actions.updateToken, [undefined, { tokenId: token._id }]);
+    // This generates a hash that is stable until ownership is changed and allows accessing token
+    // data and operations
+    return modules.warehousing.buildAccessKeyForToken(token._id);
   },
 };

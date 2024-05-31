@@ -5,5 +5,5 @@ export interface Response {
   };
   ErrorName?: string;
   ErrorMessage?: string;
-  Behavior?: 'ABORT' | 'OTHER_MEANS' | 'RETRY' | 'RETRY_LATER';
+  Behavior?: 'ABORT' | 'OTHER_MEANS' | 'RETRY' | 'RETRY_LATER' | 'DO_NOT_RETRY';
 }

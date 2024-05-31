@@ -7,6 +7,11 @@ export const CountriesCollection = async (db: mongodb.Db) => {
   await buildDbIndexes<Country>(Countries, [
     { index: { isoCode: 1 }, options: { unique: true } },
     {
+      index: {
+        deleted: 1,
+      },
+    },
+    {
       index: { isoCode: 'text', _id: 'text' },
       options: {
         weights: {

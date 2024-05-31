@@ -85,6 +85,7 @@ import createWarehousingProvider from './warehousing/createWarehousingProvider.j
 import updateWarehousingProvider from './warehousing/updateWarehousingProvider.js';
 import removeWarehousingProvider from './warehousing/removeWarehousingProvider.js';
 import exportToken from './warehousing/exportToken.js';
+import invalidateToken from './warehousing/invalidateToken.js';
 import setPassword from './accounts/setPassword.js';
 import setRoles from './users/setRoles.js';
 import setUsername from './accounts/setUsername.js';
@@ -268,6 +269,7 @@ export default {
   updateWarehousingProvider: acl(actions.manageWarehousingProviders)(updateWarehousingProvider),
   removeWarehousingProvider: acl(actions.manageWarehousingProviders)(removeWarehousingProvider),
   exportToken: acl(actions.updateToken)(exportToken),
+  invalidateToken: acl(actions.updateToken)(invalidateToken),
   createFilter: acl(actions.manageFilters)(createFilter),
   updateFilter: acl(actions.manageFilters)(updateFilter),
   removeFilter: acl(actions.manageFilters)(removeFilter),

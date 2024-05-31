@@ -1,24 +1,62 @@
-import { ConfigurableProductHelperTypes } from '@unchainedshop/types/products.js';
+import {
+  Product as ProductType,
+  ProductAssignment,
+  ProductConfiguration,
+  ProductPriceRange,
+} from '@unchainedshop/types/products.js';
+import { Context } from '@unchainedshop/types/api.js';
+import { ProductVariation } from '@unchainedshop/types/products.variations.js';
 import { Product } from './product-types.js';
 
-export const ConfigurableProduct: ConfigurableProductHelperTypes = {
+export const ConfigurableProduct = {
   ...Product,
 
-  assignments: async (obj, params, { modules }) => {
-    return modules.products.proxyAssignments(obj, params);
+  async assignments(
+    product: ProductType,
+    params: {
+      includeInactive: boolean;
+    },
+    { modules }: Context,
+  ): Promise<
+    Array<{
+      assignment: ProductAssignment;
+      product: typeof product;
+    }>
+  > {
+    return modules.products.proxyAssignments(product, params);
   },
 
-  products: async (obj, { vectors, includeInactive }, { modules }) => {
-    return modules.products.proxyProducts(obj, vectors, {
+  async products(
+    product: ProductType,
+    {
+      vectors,
+      includeInactive,
+    }: {
+      vectors: Array<ProductConfiguration>;
+      includeInactive: boolean;
+    },
+    { modules }: Context,
+  ): Promise<Array<typeof product>> {
+    return modules.products.proxyProducts(product, vectors, {
       includeInactive,
     });
   },
 
-  catalogPriceRange: async (
-    obj,
-    { quantity, vectors, currency: forcedCurrencyCode, includeInactive },
-    requestContext,
-  ) => {
+  async catalogPriceRange(
+    product: ProductType,
+    {
+      quantity,
+      vectors,
+      currency: forcedCurrencyCode,
+      includeInactive,
+    }: {
+      currency?: string;
+      includeInactive: boolean;
+      quantity: number;
+      vectors: Array<ProductConfiguration>;
+    },
+    requestContext: Context,
+  ): Promise<ProductPriceRange> {
     const { countryContext, modules } = requestContext;
     const currencyCode =
       forcedCurrencyCode ||
@@ -28,7 +66,7 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
         },
         requestContext,
       ));
-    return modules.products.prices.catalogPriceRange(obj, {
+    return modules.products.prices.catalogPriceRange(product, {
       quantity,
       vectors,
       includeInactive,
@@ -37,19 +75,41 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
     });
   },
 
-  variations: async (obj, { limit = 10, offset = 0 }, { modules }) => {
+  async variations(
+    product: ProductType,
+    {
+      limit = 10,
+      offset = 0,
+    }: {
+      limit: number;
+      offset: number;
+    },
+    { modules }: Context,
+  ): Promise<Array<ProductVariation>> {
     return modules.products.variations.findProductVariations({
-      productId: obj._id,
+      productId: product._id,
       limit,
       offset,
     });
   },
 
   async simulatedPriceRange(
-    obj,
-    { currency: forcedCurrencyCode, quantity, useNetPrice, vectors, includeInactive },
-    requestContext,
-  ) {
+    product: ProductType,
+    {
+      currency: forcedCurrencyCode,
+      quantity,
+      useNetPrice,
+      vectors,
+      includeInactive,
+    }: {
+      currency?: string;
+      includeInactive: boolean;
+      quantity?: number;
+      vectors: Array<ProductConfiguration>;
+      useNetPrice: boolean;
+    },
+    requestContext: Context,
+  ): Promise<ProductPriceRange> {
     const { countryContext, modules } = requestContext;
     const currency =
       forcedCurrencyCode ||
@@ -60,7 +120,7 @@ export const ConfigurableProduct: ConfigurableProductHelperTypes = {
         requestContext,
       ));
     return modules.products.prices.simulatedPriceRange(
-      obj,
+      product,
       {
         quantity,
         currency,

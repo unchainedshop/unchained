@@ -36,11 +36,14 @@ export type TokenSurrogate = {
   _id?: string;
   userId?: string;
   walletAddress?: string;
+  invalidatedDate?: Date;
+  expiryDate?: Date;
   quantity: number;
   contractAddress: string;
   chainId: string;
   chainTokenId: string;
   productId: string;
+  orderPositionId: string;
   meta: any;
 };
 
@@ -75,8 +78,9 @@ export type WarehousingAdapterActions = {
   stock: (referenceDate: Date) => Promise<number>;
   productionTime: (quantityToProduce: number) => Promise<number>;
   commissioningTime: (quantity: number) => Promise<number>;
-  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId' | 'productId'>>>;
+  tokenize: () => Promise<Array<Omit<TokenSurrogate, 'userId' | 'productId' | 'orderPositionId'>>>;
   tokenMetadata: (chainTokenId: string, referenceDate: Date) => Promise<any>;
+  isInvalidateable: (chainTokenId: string, referenceDate: Date) => Promise<boolean>;
 };
 
 export type IWarehousingAdapter = IBaseAdapter & {
@@ -102,6 +106,7 @@ export type IWarehousingDirector = IBaseDirector<IWarehousingAdapter> & {
     estimatedDispatch: () => Promise<EstimatedDispatch>;
     tokenize: () => Promise<Array<TokenSurrogate>>;
     tokenMetadata: (chainTokenId: string) => Promise<any>;
+    isInvalidateable: (chainTokenId: string) => Promise<boolean>;
   }>;
 };
 
@@ -159,6 +164,10 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     walletAddress: string;
   }) => Promise<void>;
 
+  invalidateToken: (tokenId: string) => Promise<void>;
+
+  buildAccessKeyForToken: (tokenId: string) => Promise<string>;
+
   tokenizeItems: (
     order: Order,
     params: {
@@ -175,6 +184,12 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
     params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Locale },
     unchainedAPI: UnchainedCore,
   ) => Promise<any>;
+
+  isInvalidateable: (
+    chainTokenId: string,
+    params: { product: Product; token: TokenSurrogate; referenceDate: Date },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
 
   // Mutations
   delete: (providerId: string) => Promise<WarehousingProvider>;

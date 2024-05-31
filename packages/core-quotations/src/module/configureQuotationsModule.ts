@@ -129,9 +129,9 @@ export const configureQuotationsModule = async ({
 
     log(`New Status: ${status}`, { quotationId });
 
-    await Quotations.updateOne(selector, modifier);
-
-    const updatedQuotation = await Quotations.findOne(selector, {});
+    const updatedQuotation = await Quotations.findOneAndUpdate(selector, modifier, {
+      returnDocument: 'after',
+    });
 
     await emit('QUOTATION_UPDATE', { quotation, field: 'status' });
 

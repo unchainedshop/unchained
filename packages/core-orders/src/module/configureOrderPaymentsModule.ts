@@ -95,8 +95,7 @@ export const configureOrderPaymentsModule = ({
     }
 
     const selector = buildFindByIdSelector(orderPaymentId);
-    await OrderPayments.updateOne(selector, modifier);
-    return OrderPayments.findOne(selector, {});
+    return OrderPayments.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
   };
 
   return {
@@ -295,35 +294,35 @@ export const configureOrderPaymentsModule = ({
     },
 
     updateContext: async (orderPaymentId, context, unchainedAPI) => {
-      if (!context) return false;
-
       const selector = buildFindByIdSelector(orderPaymentId);
-      const orderPayment = await OrderPayments.findOne(selector, {});
-      const { orderId } = orderPayment;
+      if (!context || Object.keys(context).length === 0) return OrderPayments.findOne(selector, {});
 
       log(`OrderPayment ${orderPaymentId} -> Update Context`, {
-        orderId,
         context,
       });
-      const result = await OrderPayments.updateOne(selector, {
-        $set: {
-          context: { ...(orderPayment.context || {}), ...context },
-          updated: new Date(),
-        },
-      });
-
-      if (result.modifiedCount) {
-        await updateCalculation(orderId, unchainedAPI);
-        await emit('ORDER_UPDATE_PAYMENT', {
-          orderPayment: {
-            ...orderPayment,
-            context: { ...(orderPayment.context || {}), ...context },
+      const contextSetters = Object.fromEntries(
+        Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
+      );
+      const result = await OrderPayments.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            ...contextSetters,
+            updated: new Date(),
           },
+        },
+        { includeResultMetadata: true, returnDocument: 'after' },
+      );
+
+      if (result.ok) {
+        await updateCalculation(result.value.orderId, unchainedAPI);
+        await emit('ORDER_UPDATE_PAYMENT', {
+          orderPayment: result.value,
         });
-        return true;
+        return result.value;
       }
 
-      return false;
+      return null;
     },
 
     updateStatus,
@@ -340,15 +339,18 @@ export const configureOrderPaymentsModule = ({
         unchainedAPI,
       );
 
-      const selector = buildFindByIdSelector(orderPayment._id);
-      await OrderPayments.updateOne(selector, {
-        $set: {
-          calculation,
-          updated: new Date(),
+      return OrderPayments.findOneAndUpdate(
+        buildFindByIdSelector(orderPayment._id),
+        {
+          $set: {
+            calculation,
+            updated: new Date(),
+          },
         },
-      });
-
-      return OrderPayments.findOne(selector);
+        {
+          returnDocument: 'after',
+        },
+      );
     },
   };
 };

@@ -61,7 +61,7 @@ export type OrderDeliveriesModule = {
     orderDeliveryId: string,
     context: any,
     unchainedAPI: UnchainedCore,
-  ) => Promise<boolean>;
+  ) => Promise<OrderDelivery | null>;
 
   updateStatus: (
     orderDeliveryId: string,

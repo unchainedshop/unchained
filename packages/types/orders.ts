@@ -53,7 +53,6 @@ export type OrderTransactionContext = {
   transactionContext?: any;
   paymentContext?: any;
   deliveryContext?: any;
-  orderContext?: any;
   nextStatus?: OrderStatus;
 };
 export type OrderContextParams<P> = (
@@ -94,7 +93,7 @@ export interface OrderTransformations {
   ) => Promise<OrderPrice>;
 
   isCart: (order: Order) => boolean;
-  cart: (order: { countryContext?: string; orderNumber?: string }, user: User) => Promise<Order>;
+  cart: (order: { countryContext?: string; orderNumber?: string; userId: string }) => Promise<Order>;
   pricingSheet: (order: Order) => IOrderPricingSheet;
 }
 
@@ -104,20 +103,8 @@ export interface OrderProcessing {
     params: OrderTransactionContext,
     unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
-  confirm: (
-    orderId: string,
-    params: OrderTransactionContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
-  reject: (
-    orderId: string,
-    params: OrderTransactionContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
-  ensureCartForUser: (
-    params: { user: User; countryCode?: string },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
+  confirm: OrderContextParams<OrderTransactionContext>;
+  reject: OrderContextParams<OrderTransactionContext>;
   processOrder: OrderContextParams<OrderTransactionContext>;
   updateStatus: (orderId: string, params: { status: OrderStatus; info?: string }) => Promise<Order>;
 }
@@ -158,7 +145,7 @@ export interface OrderMutations {
     unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
   updateContact: (orderId: string, contact: Contact, unchainedAPI: UnchainedCore) => Promise<Order>;
-  updateContext: (orderId: string, context: any, unchainedAPI: UnchainedCore) => Promise<boolean>;
+  updateContext: (orderId: string, context: any, unchainedAPI: UnchainedCore) => Promise<Order | null>;
   updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
 }
 
@@ -179,26 +166,27 @@ export type OrdersModule = OrderQueries &
 
 export type MigrateOrderCartsService = (
   params: {
-    fromUser: User;
-    toUser: User;
+    fromUserId: string;
+    toUserId: string;
     shouldMerge: boolean;
     countryContext: string;
   },
   unchainedAPI: UnchainedCore,
 ) => Promise<Order>;
 
-export type CreateUserCartService = (
+export type NextUserCartService = (
   params: {
     user: User;
     orderNumber?: string;
     countryCode?: string;
+    forceCartCreation?: boolean;
   },
   unchainedAPI: UnchainedCore,
-) => Promise<Order>;
+) => Promise<Order | null>;
 
 export interface OrderServices {
   migrateOrderCarts: MigrateOrderCartsService;
-  createUserCart: CreateUserCartService;
+  nextUserCart: NextUserCartService;
 }
 
 /*
@@ -219,4 +207,5 @@ export interface OrdersSettingsOptions {
     validationParams: OrderSettingsOrderPositionValidation,
     context: UnchainedCore,
   ) => Promise<void>;
+  lockOrderDuringCheckout?: boolean;
 }

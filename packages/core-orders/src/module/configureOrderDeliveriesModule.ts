@@ -60,8 +60,7 @@ export const configureOrderDeliveriesModule = ({
     }
 
     const selector = buildFindByIdSelector(orderDeliveryId);
-    await OrderDeliveries.updateOne(selector, modifier);
-    return OrderDeliveries.findOne(selector, {});
+    return OrderDeliveries.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
   };
 
   return {
@@ -176,35 +175,34 @@ export const configureOrderDeliveriesModule = ({
     },
 
     updateContext: async (orderDeliveryId, context, unchainedAPI) => {
-      if (!context) return false;
-
       const selector = buildFindByIdSelector(orderDeliveryId);
-      const orderDelivery = await OrderDeliveries.findOne(selector, {});
-      const { orderId } = orderDelivery;
+      if (!context || Object.keys(context).length === 0) return OrderDeliveries.findOne(selector, {});
 
-      log(`OrderDelivery ${orderDeliveryId} -> Update Context`, {
-        orderId,
-      });
+      log(`OrderDelivery ${orderDeliveryId} -> Update Context`, { context });
+      const contextSetters = Object.fromEntries(
+        Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
+      );
 
-      const result = await OrderDeliveries.updateOne(selector, {
-        $set: {
-          context: { ...(orderDelivery.context || {}), ...context },
-          updated: new Date(),
-        },
-      });
-
-      if (result.modifiedCount) {
-        await updateCalculation(orderId, unchainedAPI);
-        await emit('ORDER_UPDATE_DELIVERY', {
-          orderDelivery: {
-            ...orderDelivery,
-            context: { ...(orderDelivery.context || {}), ...context },
+      const result = await OrderDeliveries.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            ...contextSetters,
+            updated: new Date(),
           },
+        },
+        { includeResultMetadata: true, returnDocument: 'after' },
+      );
+
+      if (result.ok) {
+        await updateCalculation(result.value.orderId, unchainedAPI);
+        await emit('ORDER_UPDATE_DELIVERY', {
+          orderDelivery: result.value,
         });
-        return true;
+        return result.value;
       }
 
-      return false;
+      return null;
     },
 
     updateStatus,
@@ -221,15 +219,18 @@ export const configureOrderDeliveriesModule = ({
         unchainedAPI,
       );
 
-      const selector = buildFindByIdSelector(orderDelivery._id);
-      await OrderDeliveries.updateOne(selector, {
-        $set: {
-          calculation,
-          updated: new Date(),
+      return OrderDeliveries.findOneAndUpdate(
+        buildFindByIdSelector(orderDelivery._id),
+        {
+          $set: {
+            calculation,
+            updated: new Date(),
+          },
         },
-      });
-
-      return OrderDeliveries.findOne(selector);
+        {
+          returnDocument: 'after',
+        },
+      );
     },
   };
 };

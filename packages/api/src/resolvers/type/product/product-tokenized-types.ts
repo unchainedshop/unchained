@@ -1,28 +1,49 @@
-import { TokenizedProductHelperTypes } from '@unchainedshop/types/products.js';
-import { WarehousingContext } from '@unchainedshop/types/warehousing.js';
+import {
+  Product,
+  ProductContractConfiguration,
+  ProductContractStandard,
+} from '@unchainedshop/types/products.js';
+import { WarehousingContext, WarehousingProvider } from '@unchainedshop/types/warehousing.js';
+import { Context } from '@unchainedshop/types/api.js';
+import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
 import { PlanProduct } from './product-plan-types.js';
+import { checkAction } from '../../../acl.js';
+import { actions } from '../../../roles/index.js';
 
-export const TokenizedProduct: TokenizedProductHelperTypes = {
+export const TokenizedProduct = {
   ...PlanProduct,
 
-  contractAddress(product) {
-    return product.tokenization?.contractAddress;
+  contractAddress({ tokenization }: Product): string {
+    return tokenization?.contractAddress;
   },
 
-  contractConfiguration(product) {
-    if (!product.tokenization) return null;
+  contractConfiguration({ tokenization }: Product): ProductContractConfiguration {
+    if (!tokenization) return null;
     return {
-      supply: product.tokenization.supply,
-      tokenId: product.tokenization.tokenId,
-      ercMetadataProperties: product.tokenization.ercMetadataProperties,
+      supply: tokenization.supply,
+      tokenId: tokenization.tokenId,
+      ercMetadataProperties: tokenization.ercMetadataProperties,
     };
   },
 
-  contractStandard(product) {
-    return product.tokenization?.contractStandard;
+  contractStandard({ tokenization }: Product): ProductContractStandard {
+    return tokenization?.contractStandard;
   },
 
-  simulatedStocks: async (obj, params, requestContext) => {
+  async simulatedStocks(
+    obj: Product,
+    params: {
+      referenceDate: Date;
+    },
+    requestContext: Context,
+  ): Promise<
+    Array<{
+      _id: string;
+      deliveryProvider?: DeliveryProvider;
+      warehousingProvider?: WarehousingProvider;
+      quantity?: number;
+    }>
+  > {
     const { modules } = requestContext;
     const { referenceDate } = params;
 
@@ -63,6 +84,15 @@ export const TokenizedProduct: TokenizedProductHelperTypes = {
 
       return result.concat(result, mappedWarehousingProviders);
     }, Promise.resolve([]));
+  },
+
+  async tokens(product: Product, params: never, requestContext: Context) {
+    await checkAction(requestContext, actions.viewTokens, [undefined, params]);
+
+    const tokens = await requestContext.modules.warehousing.findTokens({
+      productId: product._id,
+    });
+    return tokens;
   },
 };
 

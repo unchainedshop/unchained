@@ -5,7 +5,7 @@ import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 
 let db;
 let graphqlFetch;
-const { WORLDLINE_CUSTOMER_ID, WORLDLINE_USER, WORLDLINE_PW, WORLDLINE_SUCCESS_URL, WORLDLINE_FAILED_URL } = process.env;
+const { SAFERPAY_CUSTOMER_ID, SAFERPAY_PW } = process.env;
 
 const simulatePayment = async (paymentPageUrl) => {
   const redirect = await fetch(paymentPageUrl, {
@@ -16,14 +16,14 @@ const simulatePayment = async (paymentPageUrl) => {
     method: 'POST',
     duplex: 'half',
     body: new URLSearchParams({
-      selectionId: '4_OnlinePaymentService&1510' // Twint, no user input required
+      selectionId: '1510' // Twint, no user input required
     }),
   });
-  await new Promise(r => setTimeout(r, 4000)); // Need to wait a few seconds after request
+  await new Promise(r => setTimeout(r, 10000)); // Need to wait a few seconds after request
 }
 
-if (WORLDLINE_CUSTOMER_ID && WORLDLINE_USER && WORLDLINE_PW && WORLDLINE_SUCCESS_URL && WORLDLINE_FAILED_URL) {
-  const terminalId = '17750037';
+if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
+  const terminalId = '17766514';
 
   describe('Plugins: Worldline Saferpay Payments', () => {
 
@@ -35,7 +35,7 @@ if (WORLDLINE_CUSTOMER_ID && WORLDLINE_USER && WORLDLINE_PW && WORLDLINE_SUCCESS
       await db.collection('payment-providers').findOrInsertOne({
         ...SimplePaymentProvider,
         _id: 'saferpay-payment-provider',
-        adapterKey: 'shop.unchained.payment.worldline-saferpay',
+        adapterKey: 'shop.unchained.payment.saferpay',
         type: 'GENERIC',
         configuration: [{ key: 'terminalId', value: terminalId }],
       });
@@ -110,7 +110,7 @@ if (WORLDLINE_CUSTOMER_ID && WORLDLINE_USER && WORLDLINE_PW && WORLDLINE_SUCCESS
         );
 
         expect(
-          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${WORLDLINE_CUSTOMER_ID}/${terminalId}/`)
+          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`)
           ).toBeTruthy();
         expect(transactionId).toBeTruthy();
 
@@ -148,12 +148,10 @@ if (WORLDLINE_CUSTOMER_ID && WORLDLINE_USER && WORLDLINE_PW && WORLDLINE_SUCCESS
         );
 
         expect(
-          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${WORLDLINE_CUSTOMER_ID}/${terminalId}/`)
+          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`)
         ).toBeTruthy();
 
-        const {
-          data: { checkoutCart },
-        } = await graphqlFetch({
+        await graphqlFetch({
           query: /* GraphQL */ `
           mutation checkoutCart(
             $orderId: ID!
@@ -203,13 +201,13 @@ if (WORLDLINE_CUSTOMER_ID && WORLDLINE_USER && WORLDLINE_PW && WORLDLINE_SUCCESS
         );
 
         expect(
-          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${WORLDLINE_CUSTOMER_ID}/${terminalId}/`)
+          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`)
         ).toBeTruthy();
 
         await simulatePayment(location);
 
         const {
-          data: { checkoutCart },
+          data, errors,
         } = await graphqlFetch({
           query: /* GraphQL */ `
           mutation checkoutCart(
@@ -231,7 +229,7 @@ if (WORLDLINE_CUSTOMER_ID && WORLDLINE_USER && WORLDLINE_PW && WORLDLINE_SUCCESS
 
         const orderPayment = await db.collection("order_payments").findOne({ _id: "saferpay-payment2" });
         expect(orderPayment.status).toBe("PAID");
-      }, 15000);
+      }, 20000);
     });
 
   });

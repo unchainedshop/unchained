@@ -6,31 +6,7 @@ import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/types/order
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { Quotation } from '@unchainedshop/types/quotations.js';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
-
-type HelperType<P, T> = (orderPosition: OrderPosition, params: P, context: Context) => T;
-
-export interface OrderItemHelperTypes {
-  discounts: HelperType<never, Promise<Array<OrderPositionDiscount>>>;
-  dispatches: HelperType<
-    never,
-    Promise<
-      Array<{
-        _id: string;
-        deliveryProvider: DeliveryProvider;
-        warehousingProvider: WarehousingProvider;
-        shipping: Date;
-        earliestDelivery: Date;
-      }>
-    >
-  >;
-  order: HelperType<never, Promise<Order>>;
-  originalProduct: HelperType<never, Promise<Product>>;
-  product: HelperType<never, Promise<Product>>;
-  quotation: HelperType<never, Promise<Quotation>>;
-  total: HelperType<{ category: string; useNetPrice: boolean }, Promise<OrderPrice>>;
-  unitPrice: HelperType<{ useNetPrice: boolean }, Promise<OrderPrice>>;
-}
+import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/types/warehousing.js';
 
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {
   const { modules } = context;
@@ -43,23 +19,39 @@ const getPricingSheet = async (orderPosition: OrderPosition, context: Context) =
   return pricingSheet;
 };
 
-export const OrderItem: OrderItemHelperTypes = {
-  discounts: async (obj, _, context) => {
-    const pricingSheet = await getPricingSheet(obj, context);
+export const OrderItem = {
+  async discounts(
+    orderPosition: OrderPosition,
+    _,
+    context: Context,
+  ): Promise<Array<OrderPositionDiscount>> {
+    const pricingSheet = await getPricingSheet(orderPosition, context);
 
     if (pricingSheet.isValid()) {
       // IMPORTANT: Do not send any parameter to obj.discounts!
       return pricingSheet.discountPrices().map((discount) => ({
-        item: obj,
+        item: orderPosition,
         ...discount,
       }));
     }
     return [];
   },
 
-  dispatches: async (obj, _, { modules, loaders }) => {
-    const scheduling = obj.scheduling || [];
-    const order = await modules.orders.findOrder({ orderId: obj.orderId });
+  async dispatches(
+    orderPosition: OrderPosition,
+    _,
+    { modules, loaders }: Context,
+  ): Promise<
+    Array<{
+      _id: string;
+      deliveryProvider: DeliveryProvider;
+      warehousingProvider: WarehousingProvider;
+      shipping: Date;
+      earliestDelivery: Date;
+    }>
+  > {
+    const scheduling = orderPosition.scheduling || [];
+    const order = await modules.orders.findOrder({ orderId: orderPosition.orderId });
     const { countryCode, userId } = order;
 
     const orderDelivery = await modules.orders.deliveries.findDelivery({
@@ -69,7 +61,7 @@ export const OrderItem: OrderItemHelperTypes = {
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
     const product = await loaders.productLoader.load({
-      productId: obj.productId,
+      productId: orderPosition.productId,
     });
 
     return Promise.all(
@@ -82,7 +74,7 @@ export const OrderItem: OrderItemHelperTypes = {
           warehousingProvider,
           deliveryProvider,
           product,
-          quantity: obj.quantity,
+          quantity: orderPosition.quantity,
           country: countryCode,
           userId,
           // referenceDate,
@@ -95,38 +87,42 @@ export const OrderItem: OrderItemHelperTypes = {
     );
   },
 
-  order: async (obj, _, { modules }) => {
-    return modules.orders.findOrder({ orderId: obj.orderId });
+  async order(orderPosition: OrderPosition, _, { modules }: Context): Promise<Order> {
+    return modules.orders.findOrder({ orderId: orderPosition.orderId });
   },
 
-  originalProduct: async (obj, _, { loaders }) => {
+  async originalProduct(orderPosition: OrderPosition, _, { loaders }: Context): Promise<Product> {
     const product = await loaders.productLoader.load({
-      productId: obj.originalProductId,
+      productId: orderPosition.originalProductId,
     });
     return product;
   },
 
-  product: async (obj, _, { loaders }) => {
+  async product(orderPosition: OrderPosition, _, { loaders }: Context): Promise<Product> {
     const product = await loaders.productLoader.load({
-      productId: obj.productId,
+      productId: orderPosition.productId,
     });
     return product;
   },
 
-  quotation: async (obj, _, { modules }) => {
-    if (!obj.quotationId) return null;
-    return modules.quotations.findQuotation({ quotationId: obj.quotationId });
+  async quotation(orderPosition: OrderPosition, _, { modules }: Context): Promise<Quotation> {
+    if (!orderPosition.quotationId) return null;
+    return modules.quotations.findQuotation({ quotationId: orderPosition.quotationId });
   },
 
-  total: async (obj, params, context) => {
-    const pricingSheet = await getPricingSheet(obj, context);
+  async total(
+    orderPosition: OrderPosition,
+    params: { category: string; useNetPrice: boolean },
+    context: Context,
+  ): Promise<OrderPrice> {
+    const pricingSheet = await getPricingSheet(orderPosition, context);
 
     if (pricingSheet.isValid()) {
       const price = pricingSheet.total(params);
       return {
         _id: crypto
           .createHash('sha256')
-          .update([obj._id, JSON.stringify(params), JSON.stringify(price)].join(''))
+          .update([orderPosition._id, JSON.stringify(params), JSON.stringify(price)].join(''))
           .digest('hex'),
         ...price,
       };
@@ -134,19 +130,33 @@ export const OrderItem: OrderItemHelperTypes = {
     return null;
   },
 
-  unitPrice: async (obj, params, context) => {
-    const pricingSheet = await getPricingSheet(obj, context);
+  async unitPrice(
+    orderPosition: OrderPosition,
+    params: { useNetPrice: boolean },
+    context: Context,
+  ): Promise<OrderPrice> {
+    const pricingSheet = await getPricingSheet(orderPosition, context);
 
     if (pricingSheet.isValid()) {
       const price = pricingSheet.unitPrice(params);
       return {
         _id: crypto
           .createHash('sha256')
-          .update([`${obj._id}-unit`, price.amount, pricingSheet.currency].join(''))
+          .update([`${orderPosition._id}-unit`, price.amount, pricingSheet.currency].join(''))
           .digest('hex'),
         ...price,
       };
     }
     return null;
+  },
+
+  async tokens(
+    orderPosition: OrderPosition,
+    params: never,
+    { modules }: Context,
+  ): Promise<Array<TokenSurrogate>> {
+    return modules.warehousing.findTokens({
+      orderPositionId: orderPosition._id,
+    });
   },
 };

@@ -1,6 +1,6 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 export default {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm', // or other ESM presets
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
   transform: {
@@ -12,7 +12,7 @@ export default {
     ],
   },
   moduleNameMapper: {
-    '(.+)\\.js': '$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   rootDir: '.',
 };

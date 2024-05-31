@@ -124,15 +124,27 @@ export const WarehousingDirector: IWarehousingDirector = {
         }
       },
 
+      isInvalidateable: async (chainTokenId) => {
+        try {
+          const referenceDate = getReferenceDate(context);
+          const isInvalidateable = await adapter.isInvalidateable(chainTokenId, referenceDate);
+          return isInvalidateable;
+        } catch (error) {
+          log(error.message, { level: LogLevel.Error, ...error });
+          return false;
+        }
+      },
+
       tokenize: async () => {
         try {
           const tokens = await adapter.tokenize();
           const { order, orderPosition } = warehousingContext;
           return tokens.map((token) => {
             return {
+              ...token,
               userId: order.userId,
               productId: orderPosition.productId,
-              ...token,
+              orderPositionId: orderPosition._id,
             };
           });
         } catch (error) {

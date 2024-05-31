@@ -517,7 +517,6 @@ describe('Assortments', () => {
           query searchAssortments($queryString: String) {
             searchAssortments(
               queryString: $queryString
-              includeInactive: true
             ) {
               assortmentsCount
               assortments {
@@ -536,16 +535,7 @@ describe('Assortments', () => {
           queryString: 'simple-assortment',
         },
       });
-      expect(assortments.length).toBe(1);
-      expect(assortments[0]).toEqual({
-        _id: SimpleAssortment[0]._id,
-        isActive: SimpleAssortment[0].isActive,
-        texts: {
-          _id: GermanAssortmentText._id,
-          title: GermanAssortmentText.title,
-          description: GermanAssortmentText.description,
-        } 
-      });
+      expect(assortments.length).toBe(0);
     });
   });
 

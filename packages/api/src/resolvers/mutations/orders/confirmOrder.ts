@@ -7,7 +7,6 @@ export default async function confirmOrder(
   root: Root,
   params: {
     orderId: string;
-    orderContext?: any;
     paymentContext?: any;
     deliveryContext?: any;
   },
@@ -27,5 +26,5 @@ export default async function confirmOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  return modules.orders.confirm(order._id, transactionContext, context);
+  return modules.orders.confirm(order, transactionContext, context);
 }

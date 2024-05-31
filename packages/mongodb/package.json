@@ -33,7 +33,7 @@
   "dependencies": {
     "@unchainedshop/utils": "^3.0.0-alpha1",
     "lru-cache": "^10.2.2",
-    "mongodb": "^6.6.1"
+    "mongodb": "^6.7.0"
   },
   "optionalDependencies": {
     "mongodb-memory-server": "^9.1.6"

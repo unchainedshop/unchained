@@ -18,7 +18,8 @@ export class SaferpayConnection {
 
   private getHeaders() {
     return {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+      Accept: 'application/json',
       Authorization: `Basic ${Buffer.from(`${this.user}:${this.password}`, 'binary').toString(
         'base64',
       )}`,
@@ -29,9 +30,6 @@ export class SaferpayConnection {
     const res = await fetch(this.buildUrl(uri), {
       method: 'POST',
       body: JSON.stringify(data),
-      // eslint-disable-next-line
-      // @ts-ignore
-      duplex: 'half',
       headers: this.getHeaders(),
     });
     return res.json();

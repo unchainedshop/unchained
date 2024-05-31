@@ -7,7 +7,6 @@ export default async function checkoutCart(
   root: Root,
   params: {
     orderId: string;
-    orderContext?: any;
     paymentContext?: any;
     deliveryContext?: any;
   },
@@ -18,18 +17,19 @@ export default async function checkoutCart(
 
   log('mutation checkoutCart', { orderId: forceOrderId, userId });
 
-  const orderId = (await getOrderCart({ orderId: forceOrderId, user }, context))._id;
+  // Do not check for order status here! The checkout method will act accordingly
+  let order = await getOrderCart({ orderId: forceOrderId, user }, context);
 
   try {
-    const order = await modules.orders.checkout(orderId, transactionContext, context);
+    order = await modules.orders.checkout(order._id, transactionContext, context);
     return order;
   } catch (error) {
-    log(error.message, { userId, orderId, level: LogLevel.Error });
-
+    log(error.message, { userId, orderId: order._id, level: LogLevel.Error });
     throw new OrderCheckoutError({
       userId,
-      orderId,
+      orderId: order._id,
       ...transactionContext,
+      detailCode: error.name || error.code,
       detailMessage: error.message,
     });
   }

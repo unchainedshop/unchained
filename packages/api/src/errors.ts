@@ -208,6 +208,8 @@ export const TokenWrongStatusError = createError(
   'The current status of the token does not allow this operation',
 );
 
+export const TokenNotFoundError = createError('TokenNotFoundError', 'Token not found');
+
 export const CyclicAssortmentLinkNotSupportedError = createError(
   'CyclicAssortmentLinkNotSupported',
   'Cyclic assortment link detected, make sure child assortment is not assigned as a parent on the assortment graph',

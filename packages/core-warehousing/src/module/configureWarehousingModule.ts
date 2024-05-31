@@ -17,6 +17,8 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',
   'WAREHOUSING_PROVIDER_UPDATE',
   'WAREHOUSING_PROVIDER_REMOVE',
+  'TOKEN_OWNERSHIP_CHANGED',
+  'TOKEN_INVALIDATED',
 ];
 
 export const buildFindSelector = ({ type }: WarehousingProviderQuery = {}) => {
@@ -83,7 +85,7 @@ export const configureWarehousingModule = async ({
       return userTokens;
     },
 
-    findProviders: async (query, options) => {
+    findProviders: async (query, options = { sort: { created: 1 } }) => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
       return providers.toArray();
     },
@@ -153,7 +155,7 @@ export const configureWarehousingModule = async ({
     },
 
     updateTokenOwnership: async ({ tokenId, userId, walletAddress }) => {
-      await TokenSurrogates.updateOne(
+      const token = await TokenSurrogates.findOneAndUpdate(
         { _id: tokenId },
         {
           $set: {
@@ -161,7 +163,9 @@ export const configureWarehousingModule = async ({
             walletAddress,
           },
         },
+        { returnDocument: 'after' },
       );
+      await emit('TOKEN_OWNERSHIP_CHANGED', { token });
     },
 
     tokenizeItems: async (order, { items }, unchainedAPI) => {
@@ -226,6 +230,63 @@ export const configureWarehousingModule = async ({
         }
         return null;
       }, Promise.resolve(null));
+    },
+
+    isInvalidateable: async (chainTokenId, { token, product, referenceDate }, unchainedAPI) => {
+      const virtualProviders = await WarehousingProviders.find(
+        buildFindSelector({ type: WarehousingProviderType.VIRTUAL }),
+      ).toArray();
+
+      const warehousingContext: WarehousingContext = {
+        product,
+        token,
+        quantity: token?.quantity || 1,
+        referenceDate,
+      };
+      return virtualProviders.reduce(async (lastPromise, provider) => {
+        const last = await lastPromise;
+        if (last) return last;
+        const currentDirector = await WarehousingDirector.actions(
+          provider,
+          warehousingContext,
+          unchainedAPI,
+        );
+        const isActive = await currentDirector.isActive();
+        if (isActive) {
+          return currentDirector.isInvalidateable(chainTokenId);
+        }
+        return null;
+      }, Promise.resolve(null));
+    },
+
+    invalidateToken: async (tokenId) => {
+      const token = await TokenSurrogates.findOneAndUpdate(
+        { _id: tokenId },
+        {
+          $set: {
+            invalidatedDate: new Date(),
+          },
+        },
+        {
+          returnDocument: 'after',
+        },
+      );
+      await emit('TOKEN_INVALIDATED', { token });
+    },
+
+    buildAccessKeyForToken: async (tokenId) => {
+      const token = await TokenSurrogates.findOne(generateDbFilterById(tokenId));
+      const payload = [
+        token._id,
+        token.walletAddress || token.userId,
+        process.env.UNCHAINED_SECRET,
+      ].join('');
+      const msgUint8 = new TextEncoder().encode(payload);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+      return hashHex;
     },
 
     isActive: async (warehousingProvider, unchainedAPI) => {

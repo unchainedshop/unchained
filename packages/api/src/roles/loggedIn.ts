@@ -2,15 +2,18 @@ import { Context } from '@unchainedshop/types/api.js';
 import { User } from '@unchainedshop/types/user.js';
 
 export const loggedIn = (role: any, actions: Record<string, string>) => {
-  const isMyself = (
-    user: User,
-    foreignUser: { userId?: string } = {},
-    ownUser: { userId?: string } = {},
-  ) => {
-    if (user && user.username && user.services && user.emails && !foreignUser.userId) {
+  const isMyself = (user: User, params: { userId?: string } = {}, ownUser: { userId?: string } = {}) => {
+    // user wants to access a field of a user
+    if (user && !params.userId) {
       return user._id === ownUser.userId;
     }
-    return foreignUser.userId === ownUser.userId || !foreignUser.userId;
+    if (params.userId) {
+      // user wants to access a user object by userId
+      return params.userId === ownUser.userId;
+    }
+
+    // user wants to access himself
+    return true;
   };
 
   const isOwnedEmailAddress = (obj: any, params: { email?: string }, { user }: Context) => {
@@ -188,21 +191,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     // to let the resolver throw a good exception
     if (!credentials) return true;
     return credentials.userId === userId;
-  };
-
-  const isOwnedToken = async (
-    obj: any,
-    { tokenId }: { tokenId: string },
-    { modules, userId, user }: Context,
-  ) => {
-    const token = await modules.warehousing.findToken({ tokenId });
-    if (!token) return true;
-    return (
-      token.userId === userId ||
-      user?.services?.web3?.some((service) => {
-        return service.address === token.walletAddress && service.verified;
-      })
-    );
   };
 
   role.allow(actions.viewEvent, false);

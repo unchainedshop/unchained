@@ -74,14 +74,19 @@ if (STRIPE_SECRET) {
             query: /* GraphQL */ `
               mutation signPaymentProviderForCredentialRegistration(
                 $paymentProviderId: ID!
+                $transactionContext: JSON
               ) {
                 signPaymentProviderForCredentialRegistration(
-                  paymentProviderId: $paymentProviderId
+                  paymentProviderId: $paymentProviderId, transactionContext: $transactionContext
                 )
               }
             `,
             variables: {
               paymentProviderId: 'stripe-payment-provider',
+              transactionContext: {
+                payment_method: "pm_card_visa",
+                payment_method_types: ["card"]
+              }
             },
           });
 
@@ -94,7 +99,7 @@ if (STRIPE_SECRET) {
           signPaymentProviderForCredentialRegistration.split('_secret_');
       }, 10000);
       it('Confirm the setup intent', async () => {
-        const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2023-10-16' });
+        const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
         
         const confirmedIntent = await stripe.setupIntents.confirm(
           idAndSecret[0],

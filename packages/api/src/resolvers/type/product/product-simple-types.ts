@@ -1,11 +1,26 @@
-import { SimpleProductHelperTypes } from '@unchainedshop/types/products.js';
-import { WarehousingContext } from '@unchainedshop/types/warehousing.js';
+import { Product, ProductSupply } from '@unchainedshop/types/products.js';
+import { WarehousingContext, WarehousingProvider } from '@unchainedshop/types/warehousing.js';
+import { Context } from '@unchainedshop/types/api.js';
+import { DeliveryProviderType } from '@unchainedshop/core-delivery';
+import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
 import { PlanProduct } from './product-plan-types.js';
 
-export const SimpleProduct: SimpleProductHelperTypes = {
+export const SimpleProduct = {
   ...PlanProduct,
 
-  simulatedDispatches: async (obj, params, requestContext) => {
+  async simulatedDispatches(
+    obj: Product,
+    params: { referenceDate: Date; quantity: number; deliveryProviderType: DeliveryProviderType },
+    requestContext: Context,
+  ): Promise<
+    Array<{
+      _id: string;
+      deliveryProvider?: DeliveryProvider;
+      warehousingProvider?: WarehousingProvider;
+      shipping?: Date;
+      earliestDelivery?: Date;
+    }>
+  > {
     const { deliveryProviderType, referenceDate, quantity } = params;
     const { modules } = requestContext;
 
@@ -51,7 +66,21 @@ export const SimpleProduct: SimpleProductHelperTypes = {
     }, Promise.resolve([]));
   },
 
-  simulatedStocks: async (obj, params, requestContext) => {
+  async simulatedStocks(
+    obj: Product,
+    params: {
+      referenceDate: Date;
+      deliveryProviderType: DeliveryProviderType;
+    },
+    requestContext: Context,
+  ): Promise<
+    Array<{
+      _id: string;
+      deliveryProvider?: DeliveryProvider;
+      warehousingProvider?: WarehousingProvider;
+      quantity?: number;
+    }>
+  > {
     const { modules } = requestContext;
     const { referenceDate, deliveryProviderType } = params;
 
@@ -96,13 +125,15 @@ export const SimpleProduct: SimpleProductHelperTypes = {
     }, Promise.resolve([]));
   },
 
-  baseUnit: (obj) => {
-    return obj.warehousing && obj.warehousing.baseUnit;
+  baseUnit({ warehousing }): string {
+    return warehousing?.baseUnit;
   },
-  sku: (obj) => {
-    return obj.warehousing && obj.warehousing.sku;
+
+  sku({ warehousing }): string {
+    return warehousing?.sku;
   },
-  dimensions: ({ supply }) => {
+
+  dimensions({ supply }): ProductSupply {
     if (!supply) return null;
     const { weightInGram, heightInMillimeters, lengthInMillimeters, widthInMillimeters } = supply;
     return {

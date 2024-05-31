@@ -14,14 +14,13 @@ const generateOrder = async (
   enrollment: Enrollment,
   params: {
     orderProducts: Array<{ orderPosition: OrderPosition; product: Product }>;
-    orderContext?: any;
   } & { [x: string]: any },
   unchainedAPI: UnchainedCore,
 ) => {
   if (!enrollment.payment || !enrollment.delivery) return null;
 
   const { modules } = unchainedAPI;
-  const { orderProducts, orderContext, ...configuration } = params;
+  const { orderProducts, ...configuration } = params;
   let order = await modules.orders.create({
     userId: enrollment.userId,
     currency: enrollment.currencyCode,
@@ -68,7 +67,6 @@ const generateOrder = async (
     {
       paymentContext,
       deliveryContext,
-      orderContext,
     },
     unchainedAPI,
   );

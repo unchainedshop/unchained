@@ -1,10 +1,15 @@
-import { PlanProductHelperTypes } from '@unchainedshop/types/products.js';
+import { ProductPrice, Product as ProductType } from '@unchainedshop/types/products.js';
+import { Context } from '@unchainedshop/types/api.js';
 import { Product } from './product-types.js';
 
-export const PlanProduct: PlanProductHelperTypes = {
+export const PlanProduct = {
   ...Product,
 
-  catalogPrice: async (product, { quantity, currency: forcedCurrencyCode }, requestContext) => {
+  async catalogPrice(
+    product: ProductType,
+    { quantity, currency: forcedCurrencyCode }: { quantity?: number; currency?: string },
+    requestContext: Context,
+  ): Promise<ProductPrice> {
     const { modules, countryContext } = requestContext;
     const currencyCode =
       forcedCurrencyCode ||
@@ -21,11 +26,15 @@ export const PlanProduct: PlanProductHelperTypes = {
     });
   },
 
-  simulatedPrice: async (
-    obj,
-    { currency: forcedCurrencyCode, quantity, useNetPrice },
-    requestContext,
-  ) => {
+  async simulatedPrice(
+    obj: ProductType,
+    {
+      currency: forcedCurrencyCode,
+      quantity,
+      useNetPrice,
+    }: { quantity?: number; currency?: string; useNetPrice?: boolean },
+    requestContext: Context,
+  ): Promise<ProductPrice> {
     const { countryContext, modules } = requestContext;
     const currency =
       forcedCurrencyCode ||
@@ -42,7 +51,17 @@ export const PlanProduct: PlanProductHelperTypes = {
     );
   },
 
-  leveledCatalogPrices: async (obj, { currency: forcedCurrencyCode }, requestContext) => {
+  async leveledCatalogPrices(
+    obj: ProductType,
+    { currency: forcedCurrencyCode }: { currency?: string },
+    requestContext: Context,
+  ): Promise<
+    Array<{
+      minQuantity: number;
+      maxQuantity: number;
+      price: ProductPrice;
+    }>
+  > {
     const { countryContext, modules } = requestContext;
     const currency =
       forcedCurrencyCode ||
@@ -55,13 +74,13 @@ export const PlanProduct: PlanProductHelperTypes = {
     return modules.products.prices.catalogPricesLeveled(obj, { currency, country: countryContext });
   },
 
-  salesUnit(obj) {
-    return obj.commerce && obj.commerce.salesUnit;
+  salesUnit({ commerce }: ProductType): string {
+    return commerce?.salesUnit;
   },
-  salesQuantityPerUnit(obj) {
-    return obj.commerce && obj.commerce.salesQuantityPerUnit;
+  salesQuantityPerUnit({ commerce }: ProductType): string {
+    return commerce?.salesQuantityPerUnit;
   },
-  defaultOrderQuantity(obj) {
-    return obj.commerce && obj.commerce.defaultOrderQuantity;
+  defaultOrderQuantity({ commerce }: ProductType): number {
+    return commerce?.defaultOrderQuantity;
   },
 };

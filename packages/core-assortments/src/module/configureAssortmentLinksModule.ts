@@ -98,7 +98,7 @@ export const configureAssortmentLinksModule = ({
         $set.sortKey = sortKey;
       }
 
-      await AssortmentLinks.updateOne(
+      const assortmentLink = await AssortmentLinks.findOneAndUpdate(
         selector,
         {
           $set,
@@ -106,10 +106,9 @@ export const configureAssortmentLinksModule = ({
         },
         {
           upsert: true,
+          returnDocument: 'after',
         },
       );
-
-      const assortmentLink = await AssortmentLinks.findOne(selector, {});
 
       await emit('ASSORTMENT_ADD_LINK', { assortmentLink });
 
@@ -129,9 +128,10 @@ export const configureAssortmentLinksModule = ({
           updated: new Date(),
         },
       };
-      await AssortmentLinks.updateOne(selector, modifier);
+      const assortmentLink = await AssortmentLinks.findOneAndUpdate(selector, modifier, {
+        returnDocument: 'after',
+      });
 
-      const assortmentLink = await AssortmentLinks.findOne(selector, {});
       if (!options?.skipInvalidation) {
         await invalidateCache({ assortmentIds: [assortmentLink.childAssortmentId] });
       }
@@ -141,9 +141,7 @@ export const configureAssortmentLinksModule = ({
     delete: async (assortmentLinkId, options) => {
       const selector = generateDbFilterById(assortmentLinkId);
 
-      const assortmentLink = await AssortmentLinks.findOne(selector, {});
-
-      await AssortmentLinks.deleteOne(selector);
+      const assortmentLink = await AssortmentLinks.findOneAndDelete(selector);
 
       await emit('ASSORTMENT_REMOVE_LINK', {
         assortmentLinkId: assortmentLink._id,

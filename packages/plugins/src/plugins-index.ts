@@ -12,13 +12,12 @@ import './delivery/stores.js';
 import './payment/invoice.js';
 import './payment/invoice-prepaid.js';
 import './payment/paypal-checkout.js';
-import './payment/worldline-saferpay/index.js';
 import { datatransHandler } from './payment/datatrans-v2/index.js';
 import { configureCryptopayModule, cryptopayHandler } from './payment/cryptopay/index.js';
 import { appleIAPHandler, configureAppleTransactionsModule } from './payment/apple-iap/index.js';
 import { stripeHandler } from './payment/stripe/index.js';
 import { postfinanceCheckoutHandler } from './payment/postfinance-checkout/index.js';
-
+import { configureSaferpayTransactionsModule, saferpayHandler } from './payment/saferpay/index.js';
 import { payrexxHandler } from './payment/payrexx/index.js';
 
 // Warehousing
@@ -68,7 +67,6 @@ import './worker/error-notifications.js';
 import './worker/update-coinbase-rates.js';
 import { configureExportToken } from './worker/export-token.js';
 import { configureGenerateOrderAutoscheduling } from './worker/enrollment-order-generator.js';
-import { configureUpdateTokenOwnership } from './worker/update-token-ownership.js';
 
 // Asset Management
 import './files/gridfs/gridfs-adapter.js';
@@ -84,6 +82,7 @@ const {
   APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap',
   // MINIO_PUT_SERVER_PATH = '/minio',
   GRIDFS_PUT_SERVER_PATH = '/gridfs',
+  SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook',
 } = process.env;
 
 // import './files/minio/minio-adapter';
@@ -97,6 +96,9 @@ export const defaultModules: Record<
 > = {
   appleTransactions: {
     configure: configureAppleTransactionsModule,
+  },
+  saferpayTransactions: {
+    configure: configureSaferpayTransactionsModule,
   },
   gridfsFileUploads: {
     configure: configureGridFSFileUploadModule,
@@ -153,6 +155,8 @@ export const connectDefaultPluginsToExpress4 = (
     payrexxHandler,
   );
 
+  useMiddlewareWithCurrentContext(app, SAFERPAY_WEBHOOK_PATH, saferpayHandler);
+
   // useMiddlewareWithCurrentContext(
   //   app,
   //   MINIO_PUT_SERVER_PATH,
@@ -163,6 +167,5 @@ export const connectDefaultPluginsToExpress4 = (
   // );
 
   configureExportToken(unchainedAPI);
-  configureUpdateTokenOwnership(unchainedAPI);
   configureGenerateOrderAutoscheduling();
 };

@@ -1,10 +1,10 @@
-import { BundleProductHelperTypes } from '@unchainedshop/types/products.js';
+import { ProductBundleItem } from '@unchainedshop/types/products.js';
 import { Product } from './product-types.js';
 
-export const BundleProduct: BundleProductHelperTypes = {
+export const BundleProduct = {
   ...Product,
 
-  bundleItems(product) {
+  bundleItems(product): Array<ProductBundleItem> {
     return product.bundleItems ? product.bundleItems : [];
   },
 };

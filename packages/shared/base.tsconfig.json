@@ -9,17 +9,20 @@
       "lib": [
         "ES2022"
       ],
-      "module": "Node16",
-      "moduleResolution": "Node16",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
       "noImplicitReturns": true,
       "noUnusedLocals": false,
       "preserveWatchOutput": true,
       "skipLibCheck": true,
       "sourceMap": true,
-      "target": "ES2022",
+      "target": "esnext",
       "types": [
         "node",
         "jest"
       ]
+    },
+    "watchOptions": {
+      "excludeDirectories": ["./node_modules", "./lib"]
     }
   }

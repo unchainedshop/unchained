@@ -1,8 +1,10 @@
-import { spawn } from 'child_process';
+import { spawn } from 'node:child_process';
+import dns from 'node:dns';
 import dotenv from 'dotenv-extended';
-
 import setupInMemoryMongoDB from '@shelf/jest-mongodb/lib/setup.js';
 import { wipeDatabase } from './helpers.js';
+
+dns.setDefaultResultOrder('ipv4first');
 
 dotenv.load();
 
@@ -34,6 +36,8 @@ const startAndWaitForApp = async () => {
           CRYPTOPAY_ETH_XPUB:
             'xpub6DWGtXnV4tfoCvDZyao1zh4664ZZ7hw2TFgGiKskeAZ1ga2Uen8epiDQzaHYrFkn2X5wf6sbTgpHqsNzaTuGstEhmN2nR2szqGyoWuiYHrf',
           CRYPTOPAY_BTC_TESTNET: '1',
+          SAFERPAY_CUSTOMER_ID: '274656',
+          SAFERPAY_USER: 'API_274656_75522257',
         },
       });
       global.__SUBPROCESS_UNCHAINED__.stdout.on('data', (data) => {

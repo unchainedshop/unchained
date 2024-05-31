@@ -2,6 +2,8 @@ import localePkg from 'locale';
 import bcrypt from 'bcryptjs';
 import { Address, Contact } from '@unchainedshop/types/common.js';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
+import { User, UserQuery, UsersModule } from '@unchainedshop/types/user.js';
 import {
   Email,
   User,
@@ -12,13 +14,8 @@ import {
   UserSettingsOptions,
 } from '@unchainedshop/types/user.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-  buildSortOptions,
-  mongodb,
-} from '@unchainedshop/mongodb';
-import { Schemas, systemLocale } from '@unchainedshop/utils';
+import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
+import { systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { UsersCollection } from '../db/UsersCollection.js';
@@ -484,8 +481,10 @@ export const configureUsersModule = async ({
         },
       };
 
-      await mutations.update(_id, modifier);
-      const user = await Users.findOne(userFilter, {});
+      const user = await Users.findOneAndUpdate(userFilter, modifier, {
+        returnDocument: 'after',
+      });
+
       await emit('USER_UPDATE_AVATAR', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -513,7 +512,10 @@ export const configureUsersModule = async ({
         },
       };
 
-      await mutations.update(userId, modifier);
+      const user = await Users.findOneAndUpdate(generateDbFilterById(userId), modifier, {
+        returnDocument: 'after',
+      });
+
       const user = await Users.findOne({ _id: userId }, {});
       await emit('USER_UPDATE_HEARTBEAT', {
         user: removeConfidentialServiceHashes(user),
@@ -550,8 +552,7 @@ export const configureUsersModule = async ({
         },
       });
 
-      await mutations.delete(userId);
-      const user = await Users.findOne(userFilter, {});
+      const user = await Users.findOneAndDelete(userFilter);
       await emit('USER_REMOVE', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -586,8 +587,10 @@ export const configureUsersModule = async ({
         modifier.$set.meta = meta;
       }
 
-      await mutations.update(userId, modifier);
-      const user = await Users.findOne(userFilter, {});
+      const user = await Users.findOneAndUpdate(userFilter, modifier, {
+        returnDocument: 'after',
+      });
+
       await emit('USER_UPDATE_PROFILE', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -616,8 +619,10 @@ export const configureUsersModule = async ({
           .join(' ');
       }
 
-      await mutations.update(_id, modifier);
-      const updatedUser = await Users.findOne(userFilter, {});
+      const updatedUser = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
+        returnDocument: 'after',
+      });
+
       await emit('USER_UPDATE_BILLING_ADDRESS', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -642,8 +647,10 @@ export const configureUsersModule = async ({
         modifier.$set['profile.phoneMobile'] = lastContact.telNumber;
       }
 
-      await mutations.update(_id, modifier);
-      const updatedUser = await Users.findOne(userFilter, {});
+      const updatedUser = await Users.findOneAndUpdate(userFilter, modifier, {
+        returnDocument: 'after',
+      });
+
       await emit('USER_UPDATE_LAST_CONTACT', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -651,16 +658,17 @@ export const configureUsersModule = async ({
     },
 
     updateRoles: async (_id: string, roles: Array<string>): Promise<User> => {
-      const userFilter = generateDbFilterById(_id);
-
       const modifier = {
         $set: {
           updated: new Date(),
           roles,
         },
       };
-      await mutations.update(_id, modifier);
-      const user = await Users.findOne(userFilter, {});
+
+      const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
+        returnDocument: 'after',
+      });
+
       await emit('USER_UPDATE_ROLE', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -668,17 +676,15 @@ export const configureUsersModule = async ({
     },
 
     updateTags: async (_id: string, tags: Array<string>): Promise<User> => {
-      const userFilter = generateDbFilterById(_id);
-
       const modifier = {
         $set: {
           updated: new Date(),
           tags,
         },
       };
-
-      await mutations.update(_id, modifier);
-      const user = await Users.findOne(userFilter, {});
+      const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
+        returnDocument: 'after',
+      });
       await emit('USER_UPDATE_TAGS', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -690,8 +696,10 @@ export const configureUsersModule = async ({
       modifier: mongodb.UpdateFilter<User>,
       updateOptions: mongodb.UpdateOptions,
     ): Promise<void> => {
-      await Users.updateOne(selector, modifier, updateOptions);
-      const user = await Users.findOne(selector);
+      const user = await Users.findOneAndUpdate(query, modifier, {
+        ...options,
+        returnDocument: 'after',
+      });
       await emit('USER_UPDATE', {
         user: removeConfidentialServiceHashes(user),
       });

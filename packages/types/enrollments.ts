@@ -149,7 +149,7 @@ export interface EnrollmentMutations {
 
   updateContact: (enrollmentId: string, contact: Contact) => Promise<Enrollment>;
 
-  updateContext: (enrollmentId: string, context: any) => Promise<Enrollment>;
+  updateContext: (enrollmentId: string, context: any) => Promise<Enrollment | null>;
 
   updateDelivery: (enrollmentId: string, delivery: Enrollment['delivery']) => Promise<Enrollment>;
 
@@ -183,7 +183,6 @@ export interface EnrollmentAdapterActions {
   configurationForOrder: (params: {
     period: EnrollmentPeriod;
     products: Array<Product>;
-    orderContext?: any;
   }) => Promise<any>;
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;

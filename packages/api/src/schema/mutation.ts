@@ -153,7 +153,7 @@ export default [
       Process the checkout (automatically charge & deliver if possible), the cart will get
       transformed to an ordinary order if everything goes well.
       """
-      checkoutCart(orderId: ID, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
+      checkoutCart(orderId: ID, paymentContext: JSON, deliveryContext: JSON): Order!
 
       """
       Change the quantity or configuration of an item in an open order.align-baselineAll
@@ -264,12 +264,12 @@ export default [
       """
       Manually confirm an order which is in progress
       """
-      confirmOrder(orderId: ID!, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
+      confirmOrder(orderId: ID!, paymentContext: JSON, deliveryContext: JSON): Order!
 
       """
       Manually reject an order which is in progress
       """
-      rejectOrder(orderId: ID!, orderContext: JSON, paymentContext: JSON, deliveryContext: JSON): Order!
+      rejectOrder(orderId: ID!, paymentContext: JSON, deliveryContext: JSON): Order!
 
       """
       Manually mark an unpaid/partially paid order as fully paid
@@ -846,7 +846,10 @@ export default [
       """
       Sign a generic payment provider for registration
       """
-      signPaymentProviderForCredentialRegistration(paymentProviderId: ID!): String
+      signPaymentProviderForCredentialRegistration(
+        paymentProviderId: ID!
+        transactionContext: JSON
+      ): String
 
       """
       Sign a generic order payment
@@ -861,6 +864,7 @@ export default [
       """
       Tokenize
       """
+      invalidateToken(tokenId: ID!): Token!
       exportToken(tokenId: ID!, quantity: Int! = 1, recipientWalletAddress: String!): Token!
 
       """
