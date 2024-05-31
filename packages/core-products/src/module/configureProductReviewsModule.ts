@@ -202,16 +202,20 @@ export const configureProductReviewsModule = async ({
             });
           }
 
-          const updatedProductReview = await ProductReviews.findOneAndUpdate(selector, {
-            $push: {
-              votes: {
-                timestamp: new Date(),
-                type,
-                meta,
-                userId,
+          const updatedProductReview = await ProductReviews.findOneAndUpdate(
+            selector,
+            {
+              $push: {
+                votes: {
+                  timestamp: new Date(),
+                  type,
+                  meta,
+                  userId,
+                },
               },
             },
-          });
+            { returnDocument: 'after' },
+          );
 
           await emit('PRODUCT_REVIEW_ADD_VOTE', {
             productReview: updatedProductReview,

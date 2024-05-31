@@ -21,7 +21,7 @@ export const SendMailDeliveryProvider = {
 export const PickupDeliveryProvider = {
   _id: 'pickup-delivery-provider',
   adapterKey: 'shop.unchained.stores',
-  created: new Date('2019-10-11T10:23:35.959+0000'),
+  created: new Date('2019-10-11T10:25:35.959+0000'),
   configuration: [
     {
       key: 'stores',
