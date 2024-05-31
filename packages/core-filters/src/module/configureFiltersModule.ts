@@ -239,16 +239,19 @@ export const configureFiltersModule = async ({
 
     createFilterOption: async (filterId, { value, title, locale }, unchainedAPI) => {
       const selector = generateDbFilterById(filterId);
-      await Filters.updateOne(selector, {
-        $set: {
-          updated: new Date(),
+      const filter = await Filters.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $addToSet: {
+            options: value,
+          },
         },
-        $addToSet: {
-          options: value,
-        },
-      });
+        { returnDocument: 'after' },
+      );
 
-      const filter = await Filters.findOne(selector, {});
       await invalidateProductIdCache(filter, unchainedAPI);
       filterProductIds.clear();
 
@@ -270,16 +273,19 @@ export const configureFiltersModule = async ({
 
     removeFilterOption: async ({ filterId, filterOptionValue }, unchainedAPI) => {
       const selector = generateDbFilterById(filterId);
-      await Filters.updateOne(selector, {
-        $set: {
-          updated: new Date(),
+      const filter = await Filters.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $pull: {
+            options: filterOptionValue,
+          },
         },
-        $pull: {
-          options: filterOptionValue,
-        },
-      });
+        { returnDocument: 'after' },
+      );
 
-      const filter = await Filters.findOne(selector, {});
       await invalidateProductIdCache(filter, unchainedAPI);
       filterProductIds.clear();
 

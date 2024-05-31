@@ -127,9 +127,9 @@ export const configureEnrollmentsModule = async ({
 
     log(`New Status: ${status}`, { enrollmentId });
 
-    await Enrollments.updateOne(selector, modifier);
-
-    const updatedEnrollment = await Enrollments.findOne(selector, {});
+    const updatedEnrollment = await Enrollments.findOneAndUpdate(selector, modifier, {
+      returnDocument: 'after',
+    });
 
     await emit('ENROLLMENT_UPDATE', { enrollment, field: 'status' });
 
@@ -305,20 +305,25 @@ export const configureEnrollmentsModule = async ({
     addEnrollmentPeriod: async (enrollmentId, period) => {
       const { start, end, orderId, isTrial } = period;
       const selector = generateDbFilterById(enrollmentId);
-      await Enrollments.updateOne(selector, {
-        $push: {
-          periods: {
-            start,
-            end,
-            orderId,
-            isTrial,
+      const enrollment = await Enrollments.findOneAndUpdate(
+        selector,
+        {
+          $push: {
+            periods: {
+              start,
+              end,
+              orderId,
+              isTrial,
+            },
+          },
+          $set: {
+            updated: new Date(),
           },
         },
-        $set: {
-          updated: new Date(),
+        {
+          returnDocument: 'after',
         },
-      });
-      const enrollment = await Enrollments.findOne(selector, {});
+      );
 
       await emit('ENROLLMENT_ADD_PERIOD', { enrollment });
 
@@ -427,17 +432,18 @@ export const configureEnrollmentsModule = async ({
 
     removeEnrollmentPeriodByOrderId: async (enrollmentId, orderId) => {
       const selector = generateDbFilterById(enrollmentId);
-      await Enrollments.updateOne(selector, {
-        $set: {
-          updated: new Date(),
+      return Enrollments.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            updated: new Date(),
+          },
+          $pull: {
+            periods: { orderId: { $in: [orderId, undefined, null] } },
+          },
         },
-
-        $pull: {
-          periods: { orderId: { $in: [orderId, undefined, null] } },
-        },
-      });
-
-      return Enrollments.findOne(selector, {});
+        { returnDocument: 'after' },
+      );
     },
 
     updateBillingAddress: updateEnrollmentField('billingAddress'),

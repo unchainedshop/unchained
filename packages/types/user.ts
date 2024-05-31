@@ -1,4 +1,4 @@
-import type { Filter, FindOptions, UpdateFilter, UpdateOptions } from 'mongodb';
+import type { Filter, FindOptions, UpdateFilter, FindOneAndUpdateOptions } from 'mongodb';
 import { SortOption } from './api.js';
 import { Address, Contact, Locale, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
@@ -131,7 +131,7 @@ export type UsersModule = {
   updateUser: (
     selector: Filter<User>,
     modifier: UpdateFilter<User>,
-    options: UpdateOptions,
+    options: FindOneAndUpdateOptions,
   ) => Promise<void>;
   addPushSubscription: (
     userId: string,

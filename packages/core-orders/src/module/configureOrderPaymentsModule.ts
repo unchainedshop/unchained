@@ -95,8 +95,7 @@ export const configureOrderPaymentsModule = ({
     }
 
     const selector = buildFindByIdSelector(orderPaymentId);
-    await OrderPayments.updateOne(selector, modifier);
-    return OrderPayments.findOne(selector, {});
+    return OrderPayments.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
   };
 
   return {
@@ -340,15 +339,18 @@ export const configureOrderPaymentsModule = ({
         unchainedAPI,
       );
 
-      const selector = buildFindByIdSelector(orderPayment._id);
-      await OrderPayments.updateOne(selector, {
-        $set: {
-          calculation,
-          updated: new Date(),
+      return OrderPayments.findOneAndUpdate(
+        buildFindByIdSelector(orderPayment._id),
+        {
+          $set: {
+            calculation,
+            updated: new Date(),
+          },
         },
-      });
-
-      return OrderPayments.findOne(selector);
+        {
+          returnDocument: 'after',
+        },
+      );
     },
   };
 };

@@ -67,16 +67,14 @@ export const configureAssortmentFiltersModule = ({
         $set.sortKey = sortKey;
       }
 
-      await AssortmentFilters.updateOne(
+      const assortmentFilter = await AssortmentFilters.findOneAndUpdate(
         selector,
         {
           $set,
           $setOnInsert,
         },
-        { upsert: true },
+        { upsert: true, returnDocument: 'after' },
       );
-
-      const assortmentFilter = await AssortmentFilters.findOne(selector, {});
 
       await emit('ASSORTMENT_ADD_FILTER', { assortmentFilter });
 
@@ -86,11 +84,7 @@ export const configureAssortmentFiltersModule = ({
     delete: async (assortmentFilterId) => {
       const selector: mongodb.Filter<AssortmentFilter> = generateDbFilterById(assortmentFilterId);
 
-      const assortmentFilter = await AssortmentFilters.findOne(selector, {
-        projection: { _id: 1 },
-      });
-
-      await AssortmentFilters.deleteOne(selector);
+      const assortmentFilter = await AssortmentFilters.findOneAndDelete(selector);
 
       await emit('ASSORTMENT_REMOVE_FILTER', {
         assortmentFilterId: assortmentFilter._id,
@@ -121,8 +115,9 @@ export const configureAssortmentFiltersModule = ({
     update: async (assortmentFilterId, doc) => {
       const selector = generateDbFilterById(assortmentFilterId);
       const modifier = { $set: doc };
-      await AssortmentFilters.updateOne(selector, modifier);
-      return AssortmentFilters.findOne(selector, {});
+      return AssortmentFilters.findOneAndUpdate(selector, modifier, {
+        returnDocument: 'after',
+      });
     },
 
     updateManualOrder: async ({ sortKeys }) => {

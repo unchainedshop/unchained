@@ -109,13 +109,12 @@ export const configureOrderPositionsModule = ({
 
     delete: async (orderPositionId, unchainedAPI) => {
       const selector = buildFindByIdSelector(orderPositionId);
-      const orderPosition = await OrderPositions.findOne(selector, {});
 
       log(`Remove Position ${orderPositionId}`, {
-        orderId: orderPosition.orderId,
+        orderPositionId,
       });
 
-      await OrderPositions.deleteOne(selector);
+      const orderPosition = await OrderPositions.findOneAndDelete(selector, {});
 
       await updateCalculation(orderPosition.orderId, unchainedAPI);
 
@@ -280,11 +279,15 @@ export const configureOrderPositionsModule = ({
         }),
       );
 
-      await OrderPositions.updateOne(generateDbFilterById(orderPosition._id), {
-        $set: { scheduling },
-      });
-
-      return OrderPositions.findOne(generateDbFilterById(orderPosition._id), {});
+      return OrderPositions.findOneAndUpdate(
+        generateDbFilterById(orderPosition._id),
+        {
+          $set: { scheduling },
+        },
+        {
+          returnDocument: 'after',
+        },
+      );
     },
 
     updateCalculation: async (orderPosition, unchainedAPI) => {
@@ -296,13 +299,15 @@ export const configureOrderPositionsModule = ({
         { item: orderPosition, configuration: orderPosition.configuration },
         unchainedAPI,
       );
-      const selector = buildFindByIdSelector(orderPosition._id);
-
-      await OrderPositions.updateOne(selector, {
-        $set: { calculation },
-      });
-
-      return OrderPositions.findOne(selector, {});
+      return OrderPositions.findOneAndUpdate(
+        buildFindByIdSelector(orderPosition._id),
+        {
+          $set: { calculation },
+        },
+        {
+          returnDocument: 'after',
+        },
+      );
     },
 
     addProductItem: async (orderPosition: OrderPosition, { order, product }, unchainedAPI) => {

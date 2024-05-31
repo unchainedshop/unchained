@@ -60,8 +60,7 @@ export const configureOrderDeliveriesModule = ({
     }
 
     const selector = buildFindByIdSelector(orderDeliveryId);
-    await OrderDeliveries.updateOne(selector, modifier);
-    return OrderDeliveries.findOne(selector, {});
+    return OrderDeliveries.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
   };
 
   return {
@@ -220,15 +219,18 @@ export const configureOrderDeliveriesModule = ({
         unchainedAPI,
       );
 
-      const selector = buildFindByIdSelector(orderDelivery._id);
-      await OrderDeliveries.updateOne(selector, {
-        $set: {
-          calculation,
-          updated: new Date(),
+      return OrderDeliveries.findOneAndUpdate(
+        buildFindByIdSelector(orderDelivery._id),
+        {
+          $set: {
+            calculation,
+            updated: new Date(),
+          },
         },
-      });
-
-      return OrderDeliveries.findOne(selector);
+        {
+          returnDocument: 'after',
+        },
+      );
     },
   };
 };

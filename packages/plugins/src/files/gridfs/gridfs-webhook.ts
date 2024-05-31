@@ -84,6 +84,7 @@ export const gridfsHandler = async (
       if (file?.length) {
         res.setHeader('Content-Length', file?.length.toString());
       }
+
       const readStream = await modules.gridfsFileUploads.createReadStream(directoryName, fileId);
       res.statusCode = 200;
       readStream.pipe(res, { end: false });

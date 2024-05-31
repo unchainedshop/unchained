@@ -185,8 +185,7 @@ export const configureProductMediaModule = async ({
     update: async (productMediaId, doc) => {
       const selector = generateDbFilterById(productMediaId);
       const modifier = { $set: doc };
-      await ProductMedias.updateOne(selector, modifier);
-      return ProductMedias.findOne(selector, {});
+      return ProductMedias.findOneAndUpdate(selector, modifier, { returnDocument: 'after' });
     },
 
     updateManualOrder: async ({ sortKeys }) => {
