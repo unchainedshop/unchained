@@ -118,13 +118,8 @@ export const configureAssortmentProductsModule = ({
     delete: async (assortmentProductId, options) => {
       const selector = generateDbFilterById(assortmentProductId);
 
-      const assortmentProduct = await AssortmentProducts.findOne(selector, {
-        projection: { _id: 1, assortmentId: 1 },
-      });
-
+      const assortmentProduct = await AssortmentProducts.findOneAndDelete(selector);
       if (!assortmentProduct) return [];
-
-      await AssortmentProducts.deleteOne(selector);
 
       await emit('ASSORTMENT_REMOVE_PRODUCT', {
         assortmentProductId: assortmentProduct._id,

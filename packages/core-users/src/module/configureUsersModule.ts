@@ -224,8 +224,7 @@ export const configureUsersModule = async ({
         },
       });
 
-      await Users.deleteOne(userFilter);
-      const user = await Users.findOne(userFilter, {});
+      const user = await Users.findOneAndDelete(userFilter);
       await emit('USER_REMOVE', {
         user: removeConfidentialServiceHashes(user),
       });

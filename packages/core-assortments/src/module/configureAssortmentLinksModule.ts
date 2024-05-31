@@ -141,9 +141,7 @@ export const configureAssortmentLinksModule = ({
     delete: async (assortmentLinkId, options) => {
       const selector = generateDbFilterById(assortmentLinkId);
 
-      const assortmentLink = await AssortmentLinks.findOne(selector, {});
-
-      await AssortmentLinks.deleteOne(selector);
+      const assortmentLink = await AssortmentLinks.findOneAndDelete(selector);
 
       await emit('ASSORTMENT_REMOVE_LINK', {
         assortmentLinkId: assortmentLink._id,

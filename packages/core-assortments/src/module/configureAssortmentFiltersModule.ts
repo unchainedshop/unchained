@@ -84,11 +84,7 @@ export const configureAssortmentFiltersModule = ({
     delete: async (assortmentFilterId) => {
       const selector: mongodb.Filter<AssortmentFilter> = generateDbFilterById(assortmentFilterId);
 
-      const assortmentFilter = await AssortmentFilters.findOne(selector, {
-        projection: { _id: 1 },
-      });
-
-      await AssortmentFilters.deleteOne(selector);
+      const assortmentFilter = await AssortmentFilters.findOneAndDelete(selector);
 
       await emit('ASSORTMENT_REMOVE_FILTER', {
         assortmentFilterId: assortmentFilter._id,

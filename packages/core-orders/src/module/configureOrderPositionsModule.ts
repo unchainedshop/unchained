@@ -109,13 +109,12 @@ export const configureOrderPositionsModule = ({
 
     delete: async (orderPositionId, unchainedAPI) => {
       const selector = buildFindByIdSelector(orderPositionId);
-      const orderPosition = await OrderPositions.findOne(selector, {});
 
       log(`Remove Position ${orderPositionId}`, {
-        orderId: orderPosition.orderId,
+        orderPositionId,
       });
 
-      await OrderPositions.deleteOne(selector);
+      const orderPosition = await OrderPositions.findOneAndDelete(selector, {});
 
       await updateCalculation(orderPosition.orderId, unchainedAPI);
 
