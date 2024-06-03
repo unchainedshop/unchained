@@ -160,7 +160,7 @@ const ticketingModule = {
       }).toArray();
       const allTokens = await unchainedAPI.modules.warehousing.findTokens({});
 
-      await allPasses.reduce(async (acc, pass) => { // eslint-disable-line
+      await allPasses.reduce(async (acc, pass) => {
         await acc;
 
         // Check if binary is already invalidated, if so, skip
@@ -174,6 +174,8 @@ const ticketingModule = {
           logger.info('Ticket redeemed, void pass', rawData);
           await upsertAppleWalletPass(redeemedToken, unchainedAPI);
         }
+
+        return acc;
       }, Promise.resolve(null));
     };
 
