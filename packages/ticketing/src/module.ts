@@ -160,7 +160,7 @@ const ticketingModule = {
       }).toArray();
       const allTokens = await unchainedAPI.modules.warehousing.findTokens({});
 
-      await allPasses.reduce(async (acc, pass) => {
+      await allPasses.reduce(async (acc, pass) => { // eslint-disable-line
         await acc;
 
         // Check if binary is already invalidated, if so, skip
