@@ -1,0 +1,57 @@
+{
+  "name": "@unchainedshop/ticketing",
+  "version": "2.10.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": "./lib/index.js",
+    "./*": "./lib/*"
+  },
+  "typesVersions": {
+    "*": {
+      "mobile-tickets/*": [
+        "./lib/mobile-tickets/*"
+      ],
+      "pdf-tickets/*": [
+        "./lib/pdf-tickets/*"
+      ]
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "keywords": [
+    "unchained",
+    "ecommerce",
+    "core"
+  ],
+  "author": "Joël Meiller",
+  "license": "EUPL-1.2",
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "peerDependencies": {
+    "@hyperlink/node-apn": "*",
+    "express": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.13",
+    "@unchainedshop/api": "^2.10.0",
+    "@unchainedshop/logger": "^2.10.0",
+    "@unchainedshop/types": "^2.10.0",
+    "@unchainedshop/events": "^2.10.0",
+    "@unchainedshop/core-worker": "^2.10.0",
+    "@unchainedshop/core-files": "^2.10.0",
+    "@unchainedshop/mongodb": "^2.10.0"
+  }
+}
