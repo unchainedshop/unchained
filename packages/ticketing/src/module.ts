@@ -160,12 +160,10 @@ const ticketingModule = {
       }).toArray();
       const allTokens = await unchainedAPI.modules.warehousing.findTokens({});
 
-      await allPasses.reduce(async (acc, pass) => {
-        await acc;
-
+      for (const pass of allPasses) {
         // Check if binary is already invalidated, if so, skip
         const rawData = pass.meta.rawData as TokenSurrogate;
-        if (rawData.invalidatedDate) return acc;
+        if (rawData.invalidatedDate) continue;
 
         const redeemedToken = allTokens.find((t) => t._id === rawData._id && t.invalidatedDate);
 
@@ -174,9 +172,7 @@ const ticketingModule = {
           logger.info('Ticket redeemed, void pass', rawData);
           await upsertAppleWalletPass(redeemedToken, unchainedAPI);
         }
-
-        return acc;
-      }, Promise.resolve(null));
+      }
     };
 
     return {
