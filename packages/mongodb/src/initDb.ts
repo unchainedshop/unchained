@@ -27,7 +27,9 @@ export const stopDb = async () => {
 
 const initDb = async (): Promise<Db> => {
   const url = process.env.MONGO_URL || (await startDb());
-  const client = new MongoClient(url);
+  const client = new MongoClient(url, {
+    compressors: 'zstd',
+  });
   await client.connect();
   const db = client.db();
   return db;
