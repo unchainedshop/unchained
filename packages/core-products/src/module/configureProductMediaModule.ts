@@ -162,9 +162,7 @@ export const configureProductMediaModule = async ({
         selector._id = { $nin: excludedProductMediaIds };
       }
 
-      const ids = await ProductMedias.find(selector, { projection: { _id: true } })
-        .map((m) => m._id)
-        .toArray();
+      const ids = await ProductMedias.distinct('_id', selector);
 
       await ProductMediaTexts.deleteMany({ productMediaId: { $in: ids } });
 

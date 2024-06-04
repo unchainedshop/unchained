@@ -11,9 +11,9 @@ export const AssortmentMediaCollection = async (db: mongodb.Db) => {
   // Assortment Indexes
   await buildDbIndexes(AssortmentMedia, [
     { index: { mediaId: 1 } },
-    { index: { assortmentId: 1 } },
-    { index: { sortKey: 1 } },
-    { index: { tags: 1 } },
+    { index: { assortmentId: 1, sortKey: 1 } },
+    { index: { tags: 1, sortKey: 1 } },
+    { index: { assortmentId: 1, tags: 1, sortKey: 1 } },
   ]);
 
   // AssortmentTexts indexes
