@@ -16,7 +16,6 @@ export const idProvider = () =>
 
 export const dateProvider = (date) => date || new Date();
 
-// eslint-disable-next-line import/prefer-default-export
 export const createDbManager = (db) => {
   const mongoStorage = new MongoDBInterface(db, {
     convertUserIdToMongoObjectId: false,

@@ -5,5 +5,4 @@ export class UnchainedAccountsPassword extends AccountsPassword<
   User & { id: string; deactivated: boolean }
 > {}
 
-// eslint-disable-next-line import/prefer-default-export
 export const accountsPassword = new UnchainedAccountsPassword({});
