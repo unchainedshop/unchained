@@ -14,6 +14,8 @@ import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/
 import { ApolloServerPluginLandingPageGraphiQLPlayground } from 'apollo-graphiql-playground';
 import { log } from '@unchainedshop/logger';
 import serveStatic from 'serve-static';
+import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
+import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 import seed from './seed.js';
 import { UnchainedUserContext } from '@unchainedshop/types/api.js';

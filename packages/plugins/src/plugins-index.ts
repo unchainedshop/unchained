@@ -25,8 +25,6 @@ import './warehousing/store.js';
 import './warehousing/eth-minter.js';
 
 // Pricing
-import './pricing/discount-half-price-manual.js';
-import './pricing/discount-100-off.js';
 import './pricing/free-payment.js';
 import './pricing/free-delivery.js';
 import './pricing/order-items.js';
