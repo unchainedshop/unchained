@@ -189,7 +189,7 @@ export const configureProductVariationsModule = async ({
       });
     },
 
-    addVariationOption: async (productVariationId, { value, title, locale }) => {
+    addVariationOption: async (productVariationId, { value }) => {
       const productVariation = await ProductVariations.findOneAndUpdate(
         generateDbFilterById(productVariationId),
         {
@@ -202,16 +202,6 @@ export const configureProductVariationsModule = async ({
         },
         { returnDocument: 'after' },
       );
-
-      await upsertLocalizedText(
-        {
-          productVariationId,
-          productVariationOptionValue: value,
-        },
-        locale,
-        { title },
-      );
-
       await emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation, value });
 
       return productVariation;

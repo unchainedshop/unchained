@@ -464,7 +464,8 @@ export default [
       """
       createProductVariationOption(
         productVariationId: ID!
-        option: CreateProductVariationOptionInput!
+        option: String!
+        texts: [VariationTextInput!]
       ): ProductVariation!
 
       """

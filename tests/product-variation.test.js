@@ -308,11 +308,13 @@ describe('ProductsVariation', () => {
           query: /* GraphQL */ `
             mutation CreateProductVariationOption(
               $productVariationId: ID!
-              $option: CreateProductVariationOptionInput!
+              $option: String!
+              $texts: [VariationTextInput!]
             ) {
               createProductVariationOption(
                 productVariationId: $productVariationId
                 option: $option
+                texts: $texts
               ) {
                 _id
                 texts {
@@ -332,10 +334,8 @@ describe('ProductsVariation', () => {
           `,
           variables: {
             productVariationId: ProductVariations[0]._id,
-            option: {
-              value: 'key-1',
-              title: 'product variation option title',
-            },
+            option: 'key-1',
+            texts: [{title: 'product variation option title', locale: "de"}]                            
           },
         });
       expect(createProductVariationOption._id).toBe(ProductVariations[0]._id);
@@ -353,11 +353,13 @@ describe('ProductsVariation', () => {
         query: /* GraphQL */ `
           mutation CreateProductVariationOption(
             $productVariationId: ID!
-            $option: CreateProductVariationOptionInput!
+            $option: String!
+              $texts: [VariationTextInput!]
           ) {
             createProductVariationOption(
               productVariationId: $productVariationId
               option: $option
+              texts: $texts
             ) {
               _id
             }
@@ -365,10 +367,8 @@ describe('ProductsVariation', () => {
         `,
         variables: {
           productVariationId: 'invalid-product-variation',
-          option: {
-            value: 'key-1',
-            title: 'product variation option title',
-          },
+          option: 'key-1',
+          texts: [{title: 'product variation option title', locale: "de"}]
         },
       });
       expect(errors[0]?.extensions?.code).toEqual(
@@ -384,11 +384,13 @@ describe('ProductsVariation', () => {
         query: /* GraphQL */ `
           mutation CreateProductVariationOption(
             $productVariationId: ID!
-            $option: CreateProductVariationOptionInput!
+            $option: String!
+            $texts: [VariationTextInput!]
           ) {
             createProductVariationOption(
               productVariationId: $productVariationId
               option: $option
+              texts: $texts
             ) {
               _id
             }
@@ -396,10 +398,8 @@ describe('ProductsVariation', () => {
         `,
         variables: {
           productVariationId: ProductVariations[0]._id,
-          option: {
-            value: 'key-1',
-            title: 'product variation option title',
-          },
+          option: 'key-1',
+          texts: [{title: 'product variation option title', locale: "de"}]
         },
       });
 

@@ -75,11 +75,6 @@ export default [
       type: ProductVariationType!
     }
 
-    input CreateProductVariationOptionInput {
-      value: String!
-      title: String!
-    }
-
     input ProductAssignmentVectorInput {
       key: String!
       value: String!

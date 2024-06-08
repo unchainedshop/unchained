@@ -65,10 +65,7 @@ export type ProductVariationsModule = {
 
   update: (productMediaId: string, doc: ProductVariation) => Promise<ProductVariation>;
 
-  addVariationOption: (
-    productVariationId: string,
-    data: { value: string; title: string; locale: string },
-  ) => Promise<ProductVariation>;
+  addVariationOption: (productVariationId: string, data: { value: string }) => Promise<ProductVariation>;
 
   removeVariationOption: (
     productVariationId: string,

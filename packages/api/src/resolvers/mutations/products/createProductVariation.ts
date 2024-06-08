@@ -39,6 +39,6 @@ export default async function F(
   });
 
   if (texts.length) {
-    await modules.products.variations.texts.updateVariationTexts(newVariation._id, texts, variation.key);
+    await modules.products.variations.texts.updateVariationTexts(newVariation._id, texts);
   }
 }

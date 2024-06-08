@@ -1,16 +1,18 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import { VariationInputText } from '@unchainedshop/types/products.variations.js';
 import { InvalidIdError, ProductVariationNotFoundError } from '../../../errors.js';
 
 export default async function createProductVariationOption(
   root: Root,
   params: {
-    option: { value: string; title: string };
+    option: string;
+    texts?: VariationInputText[];
     productVariationId: string;
   },
-  { modules, localeContext, userId }: Context,
+  { modules, userId }: Context,
 ) {
-  const { option: inputData, productVariationId } = params;
+  const { option, productVariationId, texts } = params;
 
   log(`mutation createProductVariationOption ${productVariationId}`, {
     userId,
@@ -23,8 +25,13 @@ export default async function createProductVariationOption(
   });
   if (!variation) throw new ProductVariationNotFoundError({ productVariationId });
 
-  return modules.products.variations.addVariationOption(productVariationId, {
-    ...inputData,
-    locale: localeContext.language,
+  const newOption = await modules.products.variations.addVariationOption(productVariationId, {
+    value: option,
   });
+
+  if (texts?.length) {
+    modules.products.variations.texts.updateVariationTexts(productVariationId, texts, option);
+  }
+
+  return newOption;
 }
