@@ -295,6 +295,7 @@ export default [
       Update Avatar of any user or logged in user if userId is not provided
       """
       updateUserAvatar(avatar: Upload!, userId: ID): User!
+        @deprecated(reason: "Use prepareUserAvatarUpload instead")
 
       """
       Set tags of user
@@ -398,6 +399,7 @@ export default [
       Add a new media to a product's visualization
       """
       addProductMedia(productId: ID!, media: Upload!): ProductMedia!
+        @deprecated(reason: "Use prepareProductMediaUpload instead")
 
       """
       Remove a media asset from a product's visualization
@@ -445,7 +447,7 @@ export default [
       """
       createProductVariation(
         productId: ID!
-        variation: String!
+        variation: CreateProductVariationInput!
         texts: [VariationTextInput!]
       ): ProductVariation!
 
@@ -665,6 +667,7 @@ export default [
       Add a new media to a assortment
       """
       addAssortmentMedia(assortmentId: ID!, media: Upload!): AssortmentMedia!
+        @deprecated(reason: "Use prepareAssortmentMediaUpload instead")
 
       """
       Remove a media asset from a assortment
