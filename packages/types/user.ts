@@ -217,6 +217,9 @@ export type UsersModule = {
   ) => Promise<void>;
   removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
   deleteAccount: (params: { userId?: string }, context: UnchainedCore) => Promise<boolean>;
+  hashPassword(password: string): Promise<{
+    pbkdf2: string;
+  }>;
 };
 
 /*

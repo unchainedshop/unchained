@@ -147,6 +147,7 @@ export interface OrderMutations {
   updateContact: (orderId: string, contact: Contact, unchainedAPI: UnchainedCore) => Promise<Order>;
   updateContext: (orderId: string, context: any, unchainedAPI: UnchainedCore) => Promise<Order | null>;
   updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
+  deleteUserOrders: (userId: string) => Promise<number>;
 }
 
 export type OrdersModule = OrderQueries &
@@ -187,8 +188,6 @@ export type NextUserCartService = (
 export interface OrderServices {
   migrateOrderCarts: MigrateOrderCartsService;
   nextUserCart: NextUserCartService;
-  removeUserTraces: RemoveUserTracesOrderService;
-  createUserCart: CreateUserCartService;
 }
 
 /*

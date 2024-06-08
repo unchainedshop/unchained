@@ -35,15 +35,8 @@ const start = async () => {
       }),
     ],
     options: {
-      accounts: {
-        password: {
-          twoFactor: {
-            appName: 'Example',
-          },
-        },
-      },
       users: {
-        enableRightToBeForgotten: true
+        enableRightToBeForgotten: true,
       },
       payment: {
         filterSupportedProviders: async ({ providers }) => {

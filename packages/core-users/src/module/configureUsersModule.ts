@@ -11,8 +11,7 @@ import {
   UserData,
   UsersModule,
 } from '@unchainedshop/types/user.js';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import { log, LogLevel } from '@unchainedshop/logger';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,

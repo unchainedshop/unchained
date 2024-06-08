@@ -84,8 +84,7 @@ export const configureOrderPositionsModule = ({
       const originalProductId = originalProduct ? originalProduct._id : undefined;
 
       log(
-        `Create ${quantity}x Position with Product ${productId} ${
-          quotationId ? ` (${quotationId})` : ''
+        `Create ${quantity}x Position with Product ${productId} ${quotationId ? ` (${quotationId})` : ''
         }`,
         { orderId, productId, originalProductId },
       );
@@ -371,6 +370,13 @@ export const configureOrderPositionsModule = ({
       await emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
 
       return upsertedOrderPosition;
+    },
+    deleteUserOrderPositionsByOrderIds: async (orderIds) => {
+      log(`OrderPosition -> Delete User orders`, {
+        orderIds,
+      });
+      const deleteUserOrdersResult = await OrderPositions.deleteMany({ orderId: { $in: orderIds } });
+      return deleteUserOrdersResult.deletedCount;
     },
   };
 };
