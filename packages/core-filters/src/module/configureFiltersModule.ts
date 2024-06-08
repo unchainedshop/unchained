@@ -95,16 +95,16 @@ export const configureFiltersModule = async ({
     const productIdsMap =
       filter.type === FilterType.SWITCH
         ? {
-          true: await findProductIds(filter, { value: true }, unchainedAPI),
-          false: await findProductIds(filter, { value: false }, unchainedAPI),
-        }
+            true: await findProductIds(filter, { value: true }, unchainedAPI),
+            false: await findProductIds(filter, { value: false }, unchainedAPI),
+          }
         : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
-          const accumulator = await accumulatorPromise;
-          return {
-            ...accumulator,
-            [option]: await findProductIds(filter, { value: option }, unchainedAPI),
-          };
-        }, Promise.resolve({}));
+            const accumulator = await accumulatorPromise;
+            return {
+              ...accumulator,
+              [option]: await findProductIds(filter, { value: option }, unchainedAPI),
+            };
+          }, Promise.resolve({}));
 
     return [allProductIds, productIdsMap];
   };

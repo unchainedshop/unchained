@@ -131,24 +131,11 @@ export const configureProductVariationsModule = async ({
     },
 
     // Mutations
-    create: async ({
-      type,
-      locale,
-      title,
-      ...doc
-    }: ProductVariation & { title: string; locale: string }) => {
+    create: async ({ type, ...doc }: ProductVariation & { title: string; locale: string }) => {
       const productVariationId = await mutations.create({
         type: ProductVariationType[type],
         ...doc,
       });
-
-      await upsertLocalizedText(
-        {
-          productVariationId,
-        },
-        locale,
-        { title },
-      );
 
       const productVariation = await ProductVariations.findOne(
         generateDbFilterById(productVariationId),

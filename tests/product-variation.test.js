@@ -130,10 +130,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [VariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
               texts {
@@ -159,8 +161,9 @@ describe('ProductsVariation', () => {
           variation: {
             key: 'key-1',
             type: 'COLOR',
-            title: 'product variation title',
+            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
 
@@ -179,10 +182,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [VariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
             }
@@ -192,9 +197,9 @@ describe('ProductsVariation', () => {
           productId: PlanProduct._id,
           variation: {
             key: 'key-1',
-            type: 'COLOR',
-            title: 'product variation title',
+            type: 'COLOR',            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
 
@@ -211,10 +216,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [VariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
             }
@@ -224,9 +231,9 @@ describe('ProductsVariation', () => {
           productId: 'invalid-product-id',
           variation: {
             key: 'key-1',
-            type: 'COLOR',
-            title: 'product variation title',
+            type: 'COLOR',            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
       expect(errors[0]?.extensions.code).toEqual('ProductNotFoundError');
@@ -238,10 +245,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [VariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
             }
@@ -251,9 +260,9 @@ describe('ProductsVariation', () => {
           productId: '',
           variation: {
             key: 'key-1',
-            type: 'COLOR',
-            title: 'product variation title',
+            type: 'COLOR',            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
       expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
@@ -268,10 +277,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [VariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
             }
@@ -281,9 +292,9 @@ describe('ProductsVariation', () => {
           productId: SimpleProduct._id,
           variation: {
             key: 'key-1',
-            type: 'COLOR',
-            title: 'product variation title',
+            type: 'COLOR',            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
       expect(errors[0].extensions?.code).toEqual('NoPermissionError');

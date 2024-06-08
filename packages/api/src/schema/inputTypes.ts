@@ -64,10 +64,15 @@ export default [
       tags: [LowerCaseString!]
     }
 
+    input VariationTextInput {
+      locale: String!
+      title: String
+      subtitle: String
+    }
+
     input CreateProductVariationInput {
       key: String!
       type: ProductVariationType!
-      title: String!
     }
 
     input CreateProductVariationOptionInput {

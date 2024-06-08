@@ -25,6 +25,8 @@ export type ProductVariationText = {
   title?: string;
 } & TimestampFields;
 
+export type VariationInputText = { locale: string; title: string; subtitle?: string };
+
 export type ProductVariationOption = {
   _id: string;
   texts: ProductVariationText;

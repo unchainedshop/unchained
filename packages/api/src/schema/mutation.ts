@@ -443,7 +443,11 @@ export default [
       """
       Creates new product variation for a product.
       """
-      createProductVariation(productId: ID!, variation: CreateProductVariationInput!): ProductVariation!
+      createProductVariation(
+        productId: ID!
+        variation: String!
+        texts: [VariationTextInput!]
+      ): ProductVariation!
 
       """
       Adds one product as bundle for another products
