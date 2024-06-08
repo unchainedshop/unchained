@@ -210,11 +210,6 @@ export default [
       options: [String!]
     }
 
-    input CreateFilterOptionInput {
-      value: String!
-      title: String!
-    }
-
     input UpdateFilterInput {
       isActive: Boolean
       key: String

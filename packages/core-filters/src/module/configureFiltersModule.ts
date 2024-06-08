@@ -95,16 +95,16 @@ export const configureFiltersModule = async ({
     const productIdsMap =
       filter.type === FilterType.SWITCH
         ? {
-            true: await findProductIds(filter, { value: true }, unchainedAPI),
-            false: await findProductIds(filter, { value: false }, unchainedAPI),
-          }
+          true: await findProductIds(filter, { value: true }, unchainedAPI),
+          false: await findProductIds(filter, { value: false }, unchainedAPI),
+        }
         : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
-            const accumulator = await accumulatorPromise;
-            return {
-              ...accumulator,
-              [option]: await findProductIds(filter, { value: option }, unchainedAPI),
-            };
-          }, Promise.resolve({}));
+          const accumulator = await accumulatorPromise;
+          return {
+            ...accumulator,
+            [option]: await findProductIds(filter, { value: option }, unchainedAPI),
+          };
+        }, Promise.resolve({}));
 
     return [allProductIds, productIdsMap];
   };
@@ -233,7 +233,7 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    createFilterOption: async (filterId, { value, title, locale }, unchainedAPI) => {
+    createFilterOption: async (filterId, { value }, unchainedAPI) => {
       const selector = generateDbFilterById(filterId);
       const filter = await Filters.findOneAndUpdate(
         selector,
@@ -252,10 +252,6 @@ export const configureFiltersModule = async ({
       filterProductIds.clear();
 
       await emit('FILTER_UPDATE', { filterId, options: filter.options, updated: filter.updated });
-
-      if (locale) {
-        await filterTexts.updateTexts({ filterId, filterOptionValue: value }, [{ title, locale }]);
-      }
 
       return filter;
     },

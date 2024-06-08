@@ -711,11 +711,7 @@ export default [
       """
       Adds new option to filters
       """
-      createFilterOption(
-        filterId: ID!
-        option: CreateFilterOptionInput!
-        texts: [FilterTextInput!]
-      ): Filter!
+      createFilterOption(filterId: ID!, option: String!, texts: [FilterTextInput!]): Filter!
 
       """
       Add a new ProductReview

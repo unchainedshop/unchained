@@ -98,7 +98,7 @@ export type FiltersModule = {
 
   createFilterOption: (
     filterId: string,
-    option: { value: string; title: string; locale: string },
+    option: { value: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<Filter>;
 
