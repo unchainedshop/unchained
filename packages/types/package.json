@@ -39,7 +39,7 @@
     "@apollo/server": "^4.10.4",
     "@types/locale": "^0.1.4",
     "@types/node": "^20.14.2",
-    "mongodb": "^6.7.0",
+    "mongodb": "^6.x",
     "simpl-schema": "^3.4.6",
     "typedoc": "^0.25.13",
     "typescript": "^5.4.5"

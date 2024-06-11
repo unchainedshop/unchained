@@ -34,7 +34,7 @@
     "@mongodb-js/zstd": "^1.2.0",
     "@unchainedshop/utils": "^2.10.3",
     "lru-cache": "^10.2.2",
-    "mongodb": "^6.7.0"
+    "mongodb": "^6.x"
   },
   "optionalDependencies": {
     "mongodb-memory-server": "^9.3.0"
