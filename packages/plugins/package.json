@@ -80,9 +80,9 @@
     "lru-cache": "^10.0.0",
     "open": "^10.0.0",
     "postfinancecheckout": "^4.1.1",
-    "stripe": "^15.9.0",
+    "stripe": "^15.10.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.1.0",
+    "twilio": "^5.1.1",
     "web-push": "^3.6.3"
   },
   "devDependencies": {
