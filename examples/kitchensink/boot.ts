@@ -32,8 +32,8 @@ const start = async () => {
     context: withAccessToken(),
     plugins: [
       responseCachePlugin({
-        sessionId(ctx) {
-          return (ctx.contextValue as any).userId || null;
+        async sessionId(ctx) {
+          return (ctx.contextValue as UnchainedUserContext).userId || null;
         },
         async shouldReadFromCache(ctx) {
           if ((ctx.contextValue as UnchainedUserContext)?.user?.roles?.includes('admin')) return false;

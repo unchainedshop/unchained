@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/ticketing",
-  "version": "2.10.3",
+  "version": "2.10.4",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
@@ -41,25 +41,25 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^2.x",
-    "@unchainedshop/core-files": "^2.x",
-    "@unchainedshop/core-worker": "^2.x",
-    "@unchainedshop/events": "^2.x",
-    "@unchainedshop/logger": "^2.x",
-    "@unchainedshop/mongodb": "^2.x"
+    "@unchainedshop/api": "^2.10.4",
+    "@unchainedshop/core-files": "^2.10.4",
+    "@unchainedshop/core-worker": "^2.10.4",
+    "@unchainedshop/events": "^2.10.4",
+    "@unchainedshop/logger": "^2.10.4",
+    "@unchainedshop/mongodb": "^2.10.4"
   },
   "peerDependencies": {
-    "@hyperlink/node-apn": "^5.x",
-    "express": "^4.x"
+    "@hyperlink/node-apn": "^5.1.4",
+    "express": "^4.19.2"
   },
   "devDependencies": {
-    "@types/node": "^20.x",
-    "@unchainedshop/api": "^2.x",
-    "@unchainedshop/core-files": "^2.x",
-    "@unchainedshop/core-worker": "^2.x",
-    "@unchainedshop/events": "^2.x",
-    "@unchainedshop/logger": "^2.x",
-    "@unchainedshop/mongodb": "^2.x",
-    "@unchainedshop/types": "^2.x"
+    "@types/node": "^20.14.2",
+    "@unchainedshop/api": "^2.10.4",
+    "@unchainedshop/core-files": "^2.10.4",
+    "@unchainedshop/core-worker": "^2.10.4",
+    "@unchainedshop/events": "^2.10.4",
+    "@unchainedshop/logger": "^2.10.4",
+    "@unchainedshop/mongodb": "^2.10.4",
+    "@unchainedshop/types": "^2.10.4"
   }
 }
