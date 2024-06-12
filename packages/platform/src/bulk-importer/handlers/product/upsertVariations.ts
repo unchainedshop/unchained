@@ -26,28 +26,32 @@ export default async function upsertVariations({ variations, productId }, unchai
       );
 
       await Promise.all(
-        options.map(async ({ content: optionContent, value: optionValue }) =>
-          modules.products.variations.texts.updateVariationTexts(
-            variation._id,
-            Object.entries(optionContent).map(([locale, localizedData]: [string, any]) => {
-              return {
-                locale,
-                ...localizedData,
-              };
-            }),
-            optionValue,
-          ),
-        ),
-      );
-      await modules.products.variations.texts.updateVariationTexts(
-        variation._id,
-        Object.entries(content).map(([locale, localizedData]: [string, any]) => {
-          return {
-            locale,
-            ...localizedData,
-          };
+        options.map(async ({ content: optionContent, value: optionValue }) => {
+          if (optionContent) {
+            await modules.products.variations.texts.updateVariationTexts(
+              variation._id,
+              Object.entries(optionContent).map(([locale, localizedData]: [string, any]) => {
+                return {
+                  locale,
+                  ...localizedData,
+                };
+              }),
+              optionValue,
+            );
+          }
         }),
       );
+      if (content) {
+        await modules.products.variations.texts.updateVariationTexts(
+          variation._id,
+          Object.entries(content).map(([locale, localizedData]: [string, any]) => {
+            return {
+              locale,
+              ...localizedData,
+            };
+          }),
+        );
+      }
       return variation._id;
     }),
   );
