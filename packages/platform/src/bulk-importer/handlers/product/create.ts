@@ -35,16 +35,18 @@ export default async function createProduct(
     throw new Error(`Can't create product ${_id}, fields missing?`);
   }
 
-  logger.debug('create localized content for product', specification.content);
-  await modules.products.texts.updateTexts(
-    _id,
-    Object.entries(specification.content).map(([locale, localizedData]: [string, any]) => {
-      return {
-        locale,
-        ...localizedData,
-      };
-    }),
-  );
+  if (specification.content) {
+    logger.debug('create localized content for product', specification.content);
+    await modules.products.texts.updateTexts(
+      _id,
+      Object.entries(specification.content).map(([locale, localizedData]: [string, any]) => {
+        return {
+          locale,
+          ...localizedData,
+        };
+      }),
+    );
+  }
 
   logger.debug('create product variations', variations);
   await upsertVariations(

@@ -325,7 +325,7 @@ export const configureProductsModule = async ({
     },
 
     // Mutations
-    create: async ({ locale, title, type, sequence, ...productData }) => {
+    create: async ({ type, sequence, ...productData }) => {
       if (productData._id) {
         await deleteProductPermanently(
           {
@@ -341,10 +341,6 @@ export const configureProductsModule = async ({
         sequence: sequence ?? (await Products.countDocuments({})) + 10,
         ...productData,
       });
-
-      if (locale) {
-        await productTexts.updateTexts(productId, [{ locale, title }]);
-      }
 
       const product = await Products.findOne(generateDbFilterById(productId), {});
       await emit('PRODUCT_CREATE', { product });

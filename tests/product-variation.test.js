@@ -125,15 +125,17 @@ describe('ProductsVariation', () => {
 
   describe('mutation.createProductVariation for admin user should', () => {
     it('create product variation successfully when passed CONFIGURABLE_PRODUCT product type', async () => {
-      const { data: { createProductVariation } = {} } = await graphqlFetch({
+      const { data: { createProductVariation } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
               texts {
@@ -159,8 +161,9 @@ describe('ProductsVariation', () => {
           variation: {
             key: 'key-1',
             type: 'COLOR',
-            title: 'product variation title',
+            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
 
@@ -179,10 +182,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
             }
@@ -192,9 +197,9 @@ describe('ProductsVariation', () => {
           productId: PlanProduct._id,
           variation: {
             key: 'key-1',
-            type: 'COLOR',
-            title: 'product variation title',
+            type: 'COLOR',            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
 
@@ -211,10 +216,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
             }
@@ -224,9 +231,9 @@ describe('ProductsVariation', () => {
           productId: 'invalid-product-id',
           variation: {
             key: 'key-1',
-            type: 'COLOR',
-            title: 'product variation title',
+            type: 'COLOR',            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
       expect(errors[0]?.extensions.code).toEqual('ProductNotFoundError');
@@ -238,10 +245,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
             }
@@ -251,9 +260,9 @@ describe('ProductsVariation', () => {
           productId: '',
           variation: {
             key: 'key-1',
-            type: 'COLOR',
-            title: 'product variation title',
+            type: 'COLOR',            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
       expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
@@ -268,10 +277,12 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
               variation: $variation
+              texts: $texts
             ) {
               _id
             }
@@ -281,9 +292,9 @@ describe('ProductsVariation', () => {
           productId: SimpleProduct._id,
           variation: {
             key: 'key-1',
-            type: 'COLOR',
-            title: 'product variation title',
+            type: 'COLOR',            
           },
+          texts: [{title: 'product variation title', locale: "de"}]
         },
       });
       expect(errors[0].extensions?.code).toEqual('NoPermissionError');
@@ -297,11 +308,13 @@ describe('ProductsVariation', () => {
           query: /* GraphQL */ `
             mutation CreateProductVariationOption(
               $productVariationId: ID!
-              $option: CreateProductVariationOptionInput!
+              $option: String!
+              $texts: [ProductVariationTextInput!]
             ) {
               createProductVariationOption(
                 productVariationId: $productVariationId
                 option: $option
+                texts: $texts
               ) {
                 _id
                 texts {
@@ -321,10 +334,8 @@ describe('ProductsVariation', () => {
           `,
           variables: {
             productVariationId: ProductVariations[0]._id,
-            option: {
-              value: 'key-1',
-              title: 'product variation option title',
-            },
+            option: 'key-1',
+            texts: [{title: 'product variation option title', locale: "de"}]                            
           },
         });
       expect(createProductVariationOption._id).toBe(ProductVariations[0]._id);
@@ -342,11 +353,13 @@ describe('ProductsVariation', () => {
         query: /* GraphQL */ `
           mutation CreateProductVariationOption(
             $productVariationId: ID!
-            $option: CreateProductVariationOptionInput!
+            $option: String!
+              $texts: [ProductVariationTextInput!]
           ) {
             createProductVariationOption(
               productVariationId: $productVariationId
               option: $option
+              texts: $texts
             ) {
               _id
             }
@@ -354,10 +367,8 @@ describe('ProductsVariation', () => {
         `,
         variables: {
           productVariationId: 'invalid-product-variation',
-          option: {
-            value: 'key-1',
-            title: 'product variation option title',
-          },
+          option: 'key-1',
+          texts: [{title: 'product variation option title', locale: "de"}]
         },
       });
       expect(errors[0]?.extensions?.code).toEqual(
@@ -373,11 +384,13 @@ describe('ProductsVariation', () => {
         query: /* GraphQL */ `
           mutation CreateProductVariationOption(
             $productVariationId: ID!
-            $option: CreateProductVariationOptionInput!
+            $option: String!
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariationOption(
               productVariationId: $productVariationId
               option: $option
+              texts: $texts
             ) {
               _id
             }
@@ -385,10 +398,8 @@ describe('ProductsVariation', () => {
         `,
         variables: {
           productVariationId: ProductVariations[0]._id,
-          option: {
-            value: 'key-1',
-            title: 'product variation option title',
-          },
+          option: 'key-1',
+          texts: [{title: 'product variation option title', locale: "de"}]
         },
       });
 
@@ -404,7 +415,7 @@ describe('ProductsVariation', () => {
             mutation UpdateProductVariationTexts(
               $productVariationId: ID!
               $productVariationOptionValue: String
-              $texts: [UpdateProductVariationTextInput!]!
+              $texts: [ProductVariationTextInput!]!
             ) {
               updateProductVariationTexts(
                 productVariationId: $productVariationId
@@ -444,7 +455,7 @@ describe('ProductsVariation', () => {
           mutation UpdateProductVariationTexts(
             $productVariationId: ID!
             $productVariationOptionValue: String
-            $texts: [UpdateProductVariationTextInput!]!
+            $texts: [ProductVariationTextInput!]!
           ) {
             updateProductVariationTexts(
               productVariationId: $productVariationId
@@ -477,7 +488,7 @@ describe('ProductsVariation', () => {
           mutation UpdateProductVariationTexts(
             $productVariationId: ID!
             $productVariationOptionValue: String
-            $texts: [UpdateProductVariationTextInput!]!
+            $texts: [ProductVariationTextInput!]!
           ) {
             updateProductVariationTexts(
               productVariationId: $productVariationId
@@ -511,7 +522,7 @@ describe('ProductsVariation', () => {
           mutation UpdateProductVariationTexts(
             $productVariationId: ID!
             $productVariationOptionValue: String
-            $texts: [UpdateProductVariationTextInput!]!
+            $texts: [ProductVariationTextInput!]!
           ) {
             updateProductVariationTexts(
               productVariationId: $productVariationId

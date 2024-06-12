@@ -22,9 +22,10 @@ describe('FilterOption', () => {
         query: /* GraphQL */ `
           mutation CreateFilterOption(
             $filterId: ID!
-            $option: CreateFilterOptionInput!
+            $option: String!
+            $texts: [FilterTextInput!]
           ) {
-            createFilterOption(filterId: $filterId, option: $option) {
+            createFilterOption(filterId: $filterId, option: $option, texts: $texts) {
               _id
               updated
               created
@@ -49,10 +50,11 @@ describe('FilterOption', () => {
         `,
         variables: {
           filterId: MultiChoiceFilter._id,
-          option: {
-            value: 'test-filter-option',
+          option: 'test-filter-option',
+          texts: [{
             title: 'test-filter-option-title',
-          },
+            locale: 'de'
+          }]                              
         },
       });
       expect(
@@ -71,19 +73,21 @@ describe('FilterOption', () => {
         query: /* GraphQL */ `
           mutation CreateFilterOption(
             $filterId: ID!
-            $option: CreateFilterOptionInput!
+            $option: String!
+            $texts: [FilterTextInput!]
           ) {
-            createFilterOption(filterId: $filterId, option: $option) {
+            createFilterOption(filterId: $filterId, option: $option, texts: $texts) {
               _id
             }
           }
         `,
         variables: {
           filterId: 'invalid-id',
-          option: {
-            value: 'test-filter-option',
+          option: 'test-filter-option',
+          texts: [{
             title: 'test-filter-option-title',
-          },
+            locale: "de"
+          }]                    
         },
       });
       expect(errors[0].extensions?.code).toEqual('FilterNotFoundError');
@@ -94,19 +98,22 @@ describe('FilterOption', () => {
         query: /* GraphQL */ `
           mutation CreateFilterOption(
             $filterId: ID!
-            $option: CreateFilterOptionInput!
+            $option: String!
+            $texts: [FilterTextInput!]
           ) {
-            createFilterOption(filterId: $filterId, option: $option) {
+            createFilterOption(filterId: $filterId, option: $option, texts: $texts) {
               _id
             }
           }
         `,
         variables: {
           filterId: '',
-          option: {
-            value: 'test-filter-option',
-            title: 'test-filter-option-title',
-          },
+          option: 'test-filter-option',
+          texts: [
+{title: 'test-filter-option-title', 
+  locale: "de"
+}
+          ]                      
         },
       });
       expect(errors[0].extensions?.code).toEqual('InvalidIdError');
@@ -120,19 +127,21 @@ describe('FilterOption', () => {
         query: /* GraphQL */ `
           mutation CreateFilterOption(
             $filterId: ID!
-            $option: CreateFilterOptionInput!
+            $option: String!
+            $texts: [FilterTextInput!]
           ) {
-            createFilterOption(filterId: $filterId, option: $option) {
+            createFilterOption(filterId: $filterId, option: $option, texts: $texts) {
               _id
             }
           }
         `,
         variables: {
           filterId: MultiChoiceFilter._id,
-          option: {
-            value: 'test-filter-option',
-            title: 'test-filter-option-title',
-          },
+          option: 'test-filter-option',
+            texts: [{
+              title: 'test-filter-option-title',
+              locale: "de"
+            }]                      
         },
       });
       expect(errors[0].extensions?.code).toEqual('NoPermissionError');

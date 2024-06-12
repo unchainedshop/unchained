@@ -1,14 +1,15 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import { FilterInputText } from '@unchainedshop/types/filters.js';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function createFilterOption(
   root: Root,
-  params: { filterId: string; option: { value: string; title: string } },
+  params: { filterId: string; option: string; texts?: FilterInputText[] },
   context: Context,
 ) {
   const { modules, userId } = context;
-  const { filterId, option } = params;
+  const { filterId, option, texts } = params;
 
   log(`mutation createFilterOption ${filterId}`, { userId });
 
@@ -16,10 +17,11 @@ export default async function createFilterOption(
 
   if (!(await modules.filters.filterExists({ filterId }))) throw new FilterNotFoundError({ filterId });
 
-  const filter = await modules.filters.createFilterOption(
-    filterId,
-    { ...option, locale: context.localeContext.language },
-    context,
-  );
+  const filter = await modules.filters.createFilterOption(filterId, { value: option }, context);
+
+  if (texts) {
+    await modules.filters.texts.updateTexts({ filterId, filterOptionValue: option }, texts);
+  }
+
   return filter;
 }

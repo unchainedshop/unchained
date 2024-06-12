@@ -60,20 +60,19 @@ export default [
     }
 
     input CreateProductInput {
-      title: String!
       type: String!
       tags: [LowerCaseString!]
+    }
+
+    input ProductVariationTextInput {
+      locale: String!
+      title: String
+      subtitle: String
     }
 
     input CreateProductVariationInput {
       key: String!
       type: ProductVariationType!
-      title: String!
-    }
-
-    input CreateProductVariationOptionInput {
-      value: String!
-      title: String!
     }
 
     input ProductAssignmentVectorInput {
@@ -87,7 +86,7 @@ export default [
       meta: JSON
     }
 
-    input UpdateProductTextInput {
+    input ProductTextInput {
       locale: String!
       slug: String
       title: String
@@ -98,13 +97,7 @@ export default [
       labels: [String!]
     }
 
-    input UpdateProductMediaTextInput {
-      locale: String!
-      title: String
-      subtitle: String
-    }
-
-    input UpdateProductVariationTextInput {
+    input ProductMediaTextInput {
       locale: String!
       title: String
       subtitle: String
@@ -162,7 +155,6 @@ export default [
     input CreateAssortmentInput {
       isRoot: Boolean
       tags: [LowerCaseString!]
-      title: String!
     }
 
     input UpdateAssortmentInput {
@@ -172,7 +164,7 @@ export default [
       sequence: Int
     }
 
-    input UpdateAssortmentTextInput {
+    input AssortmentTextInput {
       locale: String!
       slug: String
       title: String
@@ -195,7 +187,7 @@ export default [
       sortKey: Int!
     }
 
-    input UpdateAssortmentMediaTextInput {
+    input AssortmentMediaTextInput {
       locale: String!
       title: String
       subtitle: String
@@ -209,13 +201,7 @@ export default [
     input CreateFilterInput {
       key: String!
       type: FilterType!
-      title: String!
       options: [String!]
-    }
-
-    input CreateFilterOptionInput {
-      value: String!
-      title: String!
     }
 
     input UpdateFilterInput {
@@ -223,7 +209,7 @@ export default [
       key: String
     }
 
-    input UpdateFilterTextInput {
+    input FilterTextInput {
       locale: String!
       title: String
       subtitle: String

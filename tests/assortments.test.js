@@ -564,8 +564,8 @@ describe('Assortments', () => {
         data: { createAssortment },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateAssortment($assortment: CreateAssortmentInput!) {
-            createAssortment(assortment: $assortment) {
+          mutation CreateAssortment($assortment: CreateAssortmentInput!, $texts: [AssortmentTextInput!]) {
+            createAssortment(assortment: $assortment, texts: $texts) {
               _id
               created
               updated
@@ -617,8 +617,9 @@ describe('Assortments', () => {
           assortment: {
             isRoot: true,
             tags: ['test-assrtment-1', 'test-assortment-2'],
-            title: 'test assortment',
+            
           },
+          texts: [{title: 'test assortment', locale: "de"}]
         },
       });
       expect(createAssortment.tags).toEqual([
@@ -635,8 +636,8 @@ describe('Assortments', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation CreateAssortment($assortment: CreateAssortmentInput!) {
-            createAssortment(assortment: $assortment) {
+          mutation CreateAssortment($assortment: CreateAssortmentInput!, $texts: [AssortmentTextInput!]) {
+            createAssortment(assortment: $assortment, texts: $texts) {
               _id
             }
           }
@@ -644,9 +645,9 @@ describe('Assortments', () => {
         variables: {
           assortment: {
             isRoot: true,
-            tags: ['test-assrtment-1', 'test-assortment-2'],
-            title: 'test assortment',
+            tags: ['test-assrtment-1', 'test-assortment-2'],            
           },
+          texts: [{title: 'test assortment', locale: "de"}]
         },
       });
 

@@ -29,7 +29,7 @@ describe('AssortmentTexts', () => {
         query: /* GraphQL */ `
           mutation UpdateAssortmentTexts(
             $assortmentId: ID!
-            $texts: [UpdateAssortmentTextInput!]!
+            $texts: [AssortmentTextInput!]!
           ) {
             updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
               _id
@@ -56,7 +56,7 @@ describe('AssortmentTexts', () => {
         query: /* GraphQL */ `
           mutation UpdateAssortmentTexts(
             $assortmentId: ID!
-            $texts: [UpdateAssortmentTextInput!]!
+            $texts: [AssortmentTextInput!]!
           ) {
             updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
               _id
@@ -85,7 +85,7 @@ describe('AssortmentTexts', () => {
         query: /* GraphQL */ `
           mutation UpdateAssortmentTexts(
             $assortmentId: ID!
-            $texts: [UpdateAssortmentTextInput!]!
+            $texts: [AssortmentTextInput!]!
           ) {
             updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
               _id
@@ -117,7 +117,7 @@ describe('AssortmentTexts', () => {
         query: /* GraphQL */ `
           mutation UpdateAssortmentTexts(
             $assortmentId: ID!
-            $texts: [UpdateAssortmentTextInput!]!
+            $texts: [AssortmentTextInput!]!
           ) {
             updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
               _id

@@ -131,24 +131,11 @@ export const configureProductVariationsModule = async ({
     },
 
     // Mutations
-    create: async ({
-      type,
-      locale,
-      title,
-      ...doc
-    }: ProductVariation & { title: string; locale: string }) => {
+    create: async ({ type, ...doc }: ProductVariation & { title: string; locale: string }) => {
       const productVariationId = await mutations.create({
         type: ProductVariationType[type],
         ...doc,
       });
-
-      await upsertLocalizedText(
-        {
-          productVariationId,
-        },
-        locale,
-        { title },
-      );
 
       const productVariation = await ProductVariations.findOne(
         generateDbFilterById(productVariationId),
@@ -202,7 +189,7 @@ export const configureProductVariationsModule = async ({
       });
     },
 
-    addVariationOption: async (productVariationId, { value, title, locale }) => {
+    addVariationOption: async (productVariationId, { value }) => {
       const productVariation = await ProductVariations.findOneAndUpdate(
         generateDbFilterById(productVariationId),
         {
@@ -215,16 +202,6 @@ export const configureProductVariationsModule = async ({
         },
         { returnDocument: 'after' },
       );
-
-      await upsertLocalizedText(
-        {
-          productVariationId,
-          productVariationOptionValue: value,
-        },
-        locale,
-        { title },
-      );
-
       await emit('PRODUCT_VARIATION_OPTION_CREATE', { productVariation, value });
 
       return productVariation;

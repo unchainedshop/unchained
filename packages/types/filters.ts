@@ -21,6 +21,8 @@ export type Filter = {
   type: FilterType;
 } & TimestampFields;
 
+export type FilterInputText = { locale: string; title: string; subtitle?: string };
+
 export type FilterOption = Filter & {
   filterOption: string;
 };
@@ -96,7 +98,7 @@ export type FiltersModule = {
 
   createFilterOption: (
     filterId: string,
-    option: { value: string; title: string; locale: string },
+    option: { value: string },
     unchainedAPI: UnchainedCore,
   ) => Promise<Filter>;
 

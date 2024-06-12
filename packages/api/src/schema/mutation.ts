@@ -295,6 +295,7 @@ export default [
       Update Avatar of any user or logged in user if userId is not provided
       """
       updateUserAvatar(avatar: Upload!, userId: ID): User!
+        @deprecated(reason: "Use prepareUserAvatarUpload instead")
 
       """
       Set tags of user
@@ -339,7 +340,7 @@ export default [
       """
       Create a new product
       """
-      createProduct(product: CreateProductInput!): Product!
+      createProduct(product: CreateProductInput!, texts: [ProductTextInput!]): Product!
 
       """
       Make the product visible on any shop listings (product queries)
@@ -392,12 +393,13 @@ export default [
       """
       Modify localized texts part of a product
       """
-      updateProductTexts(productId: ID!, texts: [UpdateProductTextInput!]!): [ProductTexts!]!
+      updateProductTexts(productId: ID!, texts: [ProductTextInput!]!): [ProductTexts!]!
 
       """
       Add a new media to a product's visualization
       """
       addProductMedia(productId: ID!, media: Upload!): ProductMedia!
+        @deprecated(reason: "Use prepareProductMediaUpload instead")
 
       """
       Remove a media asset from a product's visualization
@@ -414,7 +416,7 @@ export default [
       """
       updateProductMediaTexts(
         productMediaId: ID!
-        texts: [UpdateProductMediaTextInput!]!
+        texts: [ProductMediaTextInput!]!
       ): [ProductMediaTexts!]!
 
       """
@@ -437,13 +439,17 @@ export default [
       updateProductVariationTexts(
         productVariationId: ID!
         productVariationOptionValue: String
-        texts: [UpdateProductVariationTextInput!]!
+        texts: [ProductVariationTextInput!]!
       ): [ProductVariationTexts!]!
 
       """
       Creates new product variation for a product.
       """
-      createProductVariation(productId: ID!, variation: CreateProductVariationInput!): ProductVariation!
+      createProductVariation(
+        productId: ID!
+        variation: CreateProductVariationInput!
+        texts: [ProductVariationTextInput!]
+      ): ProductVariation!
 
       """
       Adds one product as bundle for another products
@@ -460,7 +466,8 @@ export default [
       """
       createProductVariationOption(
         productVariationId: ID!
-        option: CreateProductVariationOptionInput!
+        option: String!
+        texts: [ProductVariationTextInput!]
       ): ProductVariation!
 
       """
@@ -581,7 +588,7 @@ export default [
       """
       Creates new assortment.
       """
-      createAssortment(assortment: CreateAssortmentInput!): Assortment!
+      createAssortment(assortment: CreateAssortmentInput!, texts: [AssortmentTextInput!]): Assortment!
 
       """
       Updates the provided assortment
@@ -602,7 +609,7 @@ export default [
       """
       Modify localized texts part of an assortment
       """
-      updateAssortmentTexts(assortmentId: ID!, texts: [UpdateAssortmentTextInput!]!): [AssortmentTexts!]!
+      updateAssortmentTexts(assortmentId: ID!, texts: [AssortmentTextInput!]!): [AssortmentTexts!]!
 
       """
       Add a new product to an assortment
@@ -660,6 +667,7 @@ export default [
       Add a new media to a assortment
       """
       addAssortmentMedia(assortmentId: ID!, media: Upload!): AssortmentMedia!
+        @deprecated(reason: "Use prepareAssortmentMediaUpload instead")
 
       """
       Remove a media asset from a assortment
@@ -676,13 +684,13 @@ export default [
       """
       updateAssortmentMediaTexts(
         assortmentMediaId: ID!
-        texts: [UpdateAssortmentMediaTextInput!]!
+        texts: [AssortmentMediaTextInput!]!
       ): [AssortmentMediaTexts!]!
 
       """
       Creates new Filter along with the user who created it.
       """
-      createFilter(filter: CreateFilterInput!): Filter!
+      createFilter(filter: CreateFilterInput!, texts: [FilterTextInput!]): Filter!
 
       """
       Updates the specified filter with the information passed.
@@ -705,13 +713,13 @@ export default [
       updateFilterTexts(
         filterId: ID!
         filterOptionValue: String
-        texts: [UpdateFilterTextInput!]!
+        texts: [FilterTextInput!]!
       ): [FilterTexts!]!
 
       """
       Adds new option to filters
       """
-      createFilterOption(filterId: ID!, option: CreateFilterOptionInput!): Filter!
+      createFilterOption(filterId: ID!, option: String!, texts: [FilterTextInput!]): Filter!
 
       """
       Add a new ProductReview

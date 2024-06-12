@@ -26,11 +26,11 @@ describe("ProductText", () => {
         subtitle: "subtitle-et",
         vendor: "vendor-et",
       };
-      const { data: { updateProductTexts } = {} } = await graphqlFetch({
+      const { data: { updateProductTexts } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateProductTexts(
             $productId: ID!
-            $texts: [UpdateProductTextInput!]!
+            $texts: [ProductTextInput!]!
           ) {
             updateProductTexts(productId: $productId, texts: $texts) {
               _id
@@ -50,7 +50,7 @@ describe("ProductText", () => {
           texts: [textRecord],
         },
       });
-
+console.log(errors)
       expect(updateProductTexts.length).toEqual(1);
       expect(updateProductTexts[0]).toMatchObject(textRecord);
     });
@@ -60,7 +60,7 @@ describe("ProductText", () => {
         query: /* GraphQL */ `
           mutation UpdateProductTexts(
             $productId: ID!
-            $texts: [UpdateProductTextInput!]!
+            $texts: [ProductTextInput!]!
           ) {
             updateProductTexts(productId: $productId, texts: $texts) {
               _id
@@ -92,7 +92,7 @@ describe("ProductText", () => {
         query: /* GraphQL */ `
           mutation UpdateProductTexts(
             $productId: ID!
-            $texts: [UpdateProductTextInput!]!
+            $texts: [ProductTextInput!]!
           ) {
             updateProductTexts(productId: $productId, texts: $texts) {
               _id
@@ -127,7 +127,7 @@ describe("ProductText", () => {
         query: /* GraphQL */ `
           mutation UpdateProductTexts(
             $productId: ID!
-            $texts: [UpdateProductTextInput!]!
+            $texts: [ProductTextInput!]!
           ) {
             updateProductTexts(productId: $productId, texts: $texts) {
               _id

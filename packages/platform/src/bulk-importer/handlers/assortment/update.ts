@@ -19,6 +19,7 @@ export default async function updateAssortment(payload: any, { logger }, unchain
     specification.tags = convertTagsToLowerCase(specification?.tags);
 
     await unchainedAPI.modules.assortments.update(_id, { ...specification });
+
     if (specification.content) {
       logger.debug('replace localized content for assortment', specification.content);
       await modules.assortments.texts.updateTexts(

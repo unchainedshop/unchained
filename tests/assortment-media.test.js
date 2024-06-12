@@ -421,7 +421,7 @@ describe("AssortmentMedia", () => {
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
             $assortmentMediaId: ID!
-            $texts: [UpdateAssortmentMediaTextInput!]!
+            $texts: [AssortmentMediaTextInput!]!
           ) {
             updateAssortmentMediaTexts(
               assortmentMediaId: $assortmentMediaId
@@ -457,7 +457,7 @@ describe("AssortmentMedia", () => {
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
             $assortmentMediaId: ID!
-            $texts: [UpdateAssortmentMediaTextInput!]!
+            $texts: [AssortmentMediaTextInput!]!
           ) {
             updateAssortmentMediaTexts(
               assortmentMediaId: $assortmentMediaId
@@ -486,7 +486,7 @@ describe("AssortmentMedia", () => {
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
             $assortmentMediaId: ID!
-            $texts: [UpdateAssortmentMediaTextInput!]!
+            $texts: [AssortmentMediaTextInput!]!
           ) {
             updateAssortmentMediaTexts(
               assortmentMediaId: $assortmentMediaId
@@ -517,7 +517,7 @@ describe("AssortmentMedia", () => {
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
             $assortmentMediaId: ID!
-            $texts: [UpdateAssortmentMediaTextInput!]!
+            $texts: [AssortmentMediaTextInput!]!
           ) {
             updateAssortmentMediaTexts(
               assortmentMediaId: $assortmentMediaId

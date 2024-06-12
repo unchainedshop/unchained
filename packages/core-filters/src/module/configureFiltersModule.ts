@@ -215,17 +215,13 @@ export const configureFiltersModule = async ({
     invalidateCache,
 
     // Mutations
-    create: async ({ locale, title, type, isActive = false, ...filterData }, unchainedAPI, options) => {
+    create: async ({ type, isActive = false, ...filterData }, unchainedAPI, options) => {
       const filterId = await mutations.create({
         isActive,
         created: new Date(),
         type: FilterType[type],
         ...filterData,
       });
-
-      if (locale) {
-        await filterTexts.updateTexts({ filterId }, [{ title, locale }]);
-      }
 
       const filter = await Filters.findOne(generateDbFilterById(filterId), {});
       if (!options?.skipInvalidation) {
@@ -237,7 +233,7 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    createFilterOption: async (filterId, { value, title, locale }, unchainedAPI) => {
+    createFilterOption: async (filterId, { value }, unchainedAPI) => {
       const selector = generateDbFilterById(filterId);
       const filter = await Filters.findOneAndUpdate(
         selector,
@@ -256,10 +252,6 @@ export const configureFiltersModule = async ({
       filterProductIds.clear();
 
       await emit('FILTER_UPDATE', { filterId, options: filter.options, updated: filter.updated });
-
-      if (locale) {
-        await filterTexts.updateTexts({ filterId, filterOptionValue: value }, [{ title, locale }]);
-      }
 
       return filter;
     },

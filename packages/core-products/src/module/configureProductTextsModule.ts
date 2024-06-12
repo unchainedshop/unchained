@@ -147,12 +147,9 @@ export const configureProductTextsModule = ({
 
     // Mutations
     updateTexts: async (productId, texts) => {
-      const productTexts = texts
-        ? await Promise.all(
-            texts.map(async ({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
-          )
-        : [];
-
+      const productTexts = await Promise.all(
+        texts.map(async ({ locale, ...text }) => upsertLocalizedText(productId, locale, text)),
+      );
       return productTexts;
     },
 

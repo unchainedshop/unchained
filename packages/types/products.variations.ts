@@ -25,6 +25,8 @@ export type ProductVariationText = {
   title?: string;
 } & TimestampFields;
 
+export type VariationInputText = { locale: string; title: string; subtitle?: string };
+
 export type ProductVariationOption = {
   _id: string;
   texts: ProductVariationText;
@@ -63,10 +65,7 @@ export type ProductVariationsModule = {
 
   update: (productMediaId: string, doc: ProductVariation) => Promise<ProductVariation>;
 
-  addVariationOption: (
-    productVariationId: string,
-    data: { value: string; title: string; locale: string },
-  ) => Promise<ProductVariation>;
+  addVariationOption: (productVariationId: string, data: { value: string }) => Promise<ProductVariation>;
 
   removeVariationOption: (
     productVariationId: string,

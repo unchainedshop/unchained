@@ -103,7 +103,7 @@ export type AssortmentsModule = {
   }) => Promise<Array<{ links: Array<AssortmentPathLink> }>>;
 
   // Mutations
-  create: (doc: Assortment & { title: string; locale: string }) => Promise<string>;
+  create: (doc: Assortment) => Promise<Assortment>;
 
   update: (
     assortmentId: string,

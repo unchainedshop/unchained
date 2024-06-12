@@ -34,16 +34,18 @@ export default async function createAssortment(
     throw new Error(`Can't create assortment ${_id}, fields missing?`);
   }
 
-  logger.debug('create localized content for assortment', specification.content);
-  await modules.assortments.texts.updateTexts(
-    _id,
-    Object.entries(specification.content).map(([locale, localizedData]: [string, any]) => {
-      return {
-        locale,
-        ...localizedData,
-      };
-    }),
-  );
+  if (specification.content) {
+    logger.debug('create localized content for assortment', specification.content);
+    await modules.assortments.texts.updateTexts(
+      _id,
+      Object.entries(specification.content).map(([locale, localizedData]: [string, any]) => {
+        return {
+          locale,
+          ...localizedData,
+        };
+      }),
+    );
+  }
 
   logger.debug('create assortment products', products);
   await upsertAssortmentProducts(

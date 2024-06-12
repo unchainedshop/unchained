@@ -359,7 +359,7 @@ describe('Filters', () => {
           mutation UpdateFilterTexts(
             $filterId: ID!
             $filterOptionValue: String
-            $texts: [UpdateFilterTextInput!]!
+            $texts: [FilterTextInput!]!
           ) {
             updateFilterTexts(
               filterId: $filterId
@@ -412,7 +412,7 @@ describe('Filters', () => {
           mutation UpdateFilterTexts(
             $filterId: ID!
             $filterOptionValue: String
-            $texts: [UpdateFilterTextInput!]!
+            $texts: [FilterTextInput!]!
           ) {
             updateFilterTexts(
               filterId: $filterId
@@ -444,7 +444,7 @@ describe('Filters', () => {
           mutation UpdateFilterTexts(
             $filterId: ID!
             $filterOptionValue: String
-            $texts: [UpdateFilterTextInput!]!
+            $texts: [FilterTextInput!]!
           ) {
             updateFilterTexts(
               filterId: $filterId
@@ -479,7 +479,7 @@ describe('Filters', () => {
           mutation UpdateFilterTexts(
             $filterId: ID!
             $filterOptionValue: String
-            $texts: [UpdateFilterTextInput!]!
+            $texts: [FilterTextInput!]!
           ) {
             updateFilterTexts(
               filterId: $filterId
@@ -511,8 +511,8 @@ describe('Filters', () => {
     it('create a new single choice filter', async () => {
       const { data: { createFilter } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation createFilter($filter: CreateFilterInput!) {
-            createFilter(filter: $filter) {
+          mutation createFilter($filter: CreateFilterInput!, $texts: [FilterTextInput!]) {
+            createFilter(filter: $filter, texts: $texts) {
               _id
               isActive
               texts {
@@ -534,11 +534,11 @@ describe('Filters', () => {
         `,
         variables: {
           filter: {
-            key: 'warehousing.baseUnit',
-            title: 'Mengeneinheit Filter',
+            key: 'warehousing.baseUnit',            
             type: 'SINGLE_CHOICE',
             options: ['ST'],
           },
+          texts: [{title: 'Mengeneinheit Filter', locale: "de"}]
         },
       });
 
