@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "2.10.4",
+  "version": "2.10.5",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -40,7 +40,6 @@
     "dev": "run-p --print-label dev:*",
     "dev:kitchensink": "cd examples/kitchensink && npm run dev",
     "dev:watch-packages": "workspaces-run --ignore '@unchainedshop/shared' --only-fs 'packages/**' --parallel -- npm run watch",
-    "publish-packages": "(npm run build || true) && npm publish -ws",
     "update-version": "npm version --no-git-tag-version --workspaces --include-workspace-root",
     "build": "npm run build --workspaces --if-present",
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit --config ./packages/unit-jest.config.js",
