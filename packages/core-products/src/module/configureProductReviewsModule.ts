@@ -170,7 +170,6 @@ export const configureProductReviewsModule = async ({
 
       return productReview;
     },
-
     votes: {
       userIdsThatVoted,
 

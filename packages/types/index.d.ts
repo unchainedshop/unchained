@@ -88,6 +88,9 @@ import {
   QuotationsSettingsOptions,
   QuotationStatus as QuotationStatusType,
 } from './quotations.js';
+
+import { UserServices, UserSettingsOptions, UsersModule } from './user.js';
+
 import {
   IWarehousingAdapter,
   IWarehousingDirector,
@@ -345,6 +348,12 @@ declare module '@unchainedshop/core-quotations' {
   const QuotationAdapter: IQuotationAdapter;
   const QuotationDirector: IQuotationDirector;
   const QuotationError: typeof QuotationErrorType;
+}
+
+declare module '@unchainedshop/core-users' {
+  function configureUsersModule(params: ModuleInput<UserSettingsOptions>): Promise<UsersModule>;
+
+  const userServices: UserServices;
 }
 
 declare module '@unchainedshop/core-warehousing' {

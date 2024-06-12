@@ -154,7 +154,6 @@ export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
 /*
  * Settings
  */
-
 export interface QuotationsSettingsOptions {
   quotationNumberHashFn?: (quotation: Quotation, index: number) => string;
 }
