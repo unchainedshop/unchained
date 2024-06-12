@@ -111,7 +111,9 @@ export const createLoggedInGraphqlFetch = async (token = ADMIN_TOKEN) => {
 };
 
 export const putFile = async (file, { url, type }) => {
+  const signal = AbortSignal.timeout(5000);
   const response = await fetch(url, {
+    signal,
     method: 'PUT',
     duplex: 'half',
     body: file,
