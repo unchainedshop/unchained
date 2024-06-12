@@ -29,8 +29,8 @@ export default async function createProductVariationOption(
     value: option,
   });
 
-  if (texts?.length) {
-    modules.products.variations.texts.updateVariationTexts(productVariationId, texts, option);
+  if (texts) {
+    await modules.products.variations.texts.updateVariationTexts(productVariationId, texts, option);
   }
 
   return newOption;

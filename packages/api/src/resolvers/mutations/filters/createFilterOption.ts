@@ -19,7 +19,7 @@ export default async function createFilterOption(
 
   const filter = await modules.filters.createFilterOption(filterId, { value: option }, context);
 
-  if (texts?.length) {
+  if (texts) {
     await modules.filters.texts.updateTexts({ filterId, filterOptionValue: option }, texts);
   }
 

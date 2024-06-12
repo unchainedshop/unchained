@@ -38,7 +38,7 @@ export default async function F(
     ...variation,
   });
 
-  if (texts.length) {
+  if (texts) {
     await modules.products.variations.texts.updateVariationTexts(newVariation._id, texts);
   }
 
