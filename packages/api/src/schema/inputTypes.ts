@@ -64,7 +64,7 @@ export default [
       tags: [LowerCaseString!]
     }
 
-    input VariationTextInput {
+    input ProductVariationTextInput {
       locale: String!
       title: String
       subtitle: String
@@ -97,13 +97,7 @@ export default [
       labels: [String!]
     }
 
-    input UpdateProductMediaTextInput {
-      locale: String!
-      title: String
-      subtitle: String
-    }
-
-    input UpdateProductVariationTextInput {
+    input ProductMediaTextInput {
       locale: String!
       title: String
       subtitle: String
@@ -193,7 +187,7 @@ export default [
       sortKey: Int!
     }
 
-    input UpdateAssortmentMediaTextInput {
+    input AssortmentMediaTextInput {
       locale: String!
       title: String
       subtitle: String

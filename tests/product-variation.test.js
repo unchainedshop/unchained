@@ -130,7 +130,7 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
-            $texts: [VariationTextInput!]
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
@@ -182,7 +182,7 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
-            $texts: [VariationTextInput!]
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
@@ -216,7 +216,7 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
-            $texts: [VariationTextInput!]
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
@@ -245,7 +245,7 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
-            $texts: [VariationTextInput!]
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
@@ -277,7 +277,7 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
-            $texts: [VariationTextInput!]
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariation(
               productId: $productId
@@ -309,7 +309,7 @@ describe('ProductsVariation', () => {
             mutation CreateProductVariationOption(
               $productVariationId: ID!
               $option: String!
-              $texts: [VariationTextInput!]
+              $texts: [ProductVariationTextInput!]
             ) {
               createProductVariationOption(
                 productVariationId: $productVariationId
@@ -354,7 +354,7 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariationOption(
             $productVariationId: ID!
             $option: String!
-              $texts: [VariationTextInput!]
+              $texts: [ProductVariationTextInput!]
           ) {
             createProductVariationOption(
               productVariationId: $productVariationId
@@ -385,7 +385,7 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariationOption(
             $productVariationId: ID!
             $option: String!
-            $texts: [VariationTextInput!]
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariationOption(
               productVariationId: $productVariationId
@@ -415,7 +415,7 @@ describe('ProductsVariation', () => {
             mutation UpdateProductVariationTexts(
               $productVariationId: ID!
               $productVariationOptionValue: String
-              $texts: [UpdateProductVariationTextInput!]!
+              $texts: [ProductVariationTextInput!]!
             ) {
               updateProductVariationTexts(
                 productVariationId: $productVariationId
@@ -455,7 +455,7 @@ describe('ProductsVariation', () => {
           mutation UpdateProductVariationTexts(
             $productVariationId: ID!
             $productVariationOptionValue: String
-            $texts: [UpdateProductVariationTextInput!]!
+            $texts: [ProductVariationTextInput!]!
           ) {
             updateProductVariationTexts(
               productVariationId: $productVariationId
@@ -488,7 +488,7 @@ describe('ProductsVariation', () => {
           mutation UpdateProductVariationTexts(
             $productVariationId: ID!
             $productVariationOptionValue: String
-            $texts: [UpdateProductVariationTextInput!]!
+            $texts: [ProductVariationTextInput!]!
           ) {
             updateProductVariationTexts(
               productVariationId: $productVariationId
@@ -522,7 +522,7 @@ describe('ProductsVariation', () => {
           mutation UpdateProductVariationTexts(
             $productVariationId: ID!
             $productVariationOptionValue: String
-            $texts: [UpdateProductVariationTextInput!]!
+            $texts: [ProductVariationTextInput!]!
           ) {
             updateProductVariationTexts(
               productVariationId: $productVariationId

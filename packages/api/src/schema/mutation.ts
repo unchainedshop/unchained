@@ -416,7 +416,7 @@ export default [
       """
       updateProductMediaTexts(
         productMediaId: ID!
-        texts: [UpdateProductMediaTextInput!]!
+        texts: [ProductMediaTextInput!]!
       ): [ProductMediaTexts!]!
 
       """
@@ -439,7 +439,7 @@ export default [
       updateProductVariationTexts(
         productVariationId: ID!
         productVariationOptionValue: String
-        texts: [UpdateProductVariationTextInput!]!
+        texts: [ProductVariationTextInput!]!
       ): [ProductVariationTexts!]!
 
       """
@@ -448,7 +448,7 @@ export default [
       createProductVariation(
         productId: ID!
         variation: CreateProductVariationInput!
-        texts: [VariationTextInput!]
+        texts: [ProductVariationTextInput!]
       ): ProductVariation!
 
       """
@@ -467,7 +467,7 @@ export default [
       createProductVariationOption(
         productVariationId: ID!
         option: String!
-        texts: [VariationTextInput!]
+        texts: [ProductVariationTextInput!]
       ): ProductVariation!
 
       """
@@ -684,7 +684,7 @@ export default [
       """
       updateAssortmentMediaTexts(
         assortmentMediaId: ID!
-        texts: [UpdateAssortmentMediaTextInput!]!
+        texts: [AssortmentMediaTextInput!]!
       ): [AssortmentMediaTexts!]!
 
       """

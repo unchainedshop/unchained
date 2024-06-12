@@ -385,7 +385,7 @@ describe('ProductsVariation', () => {
         query: /* GraphQL */ `
           mutation UpdateproductMediaTexts(
             $productMediaId: ID!
-            $texts: [UpdateProductMediaTextInput!]!
+            $texts: [ProductMediaTextInput!]!
           ) {
             updateProductMediaTexts(
               productMediaId: $productMediaId
@@ -421,7 +421,7 @@ describe('ProductsVariation', () => {
         query: /* GraphQL */ `
           mutation UpdateproductMediaTexts(
             $productMediaId: ID!
-            $texts: [UpdateProductMediaTextInput!]!
+            $texts: [ProductMediaTextInput!]!
           ) {
             updateProductMediaTexts(
               productMediaId: $productMediaId
@@ -448,7 +448,7 @@ describe('ProductsVariation', () => {
         query: /* GraphQL */ `
           mutation UpdateproductMediaTexts(
             $productMediaId: ID!
-            $texts: [UpdateProductMediaTextInput!]!
+            $texts: [ProductMediaTextInput!]!
           ) {
             updateProductMediaTexts(
               productMediaId: $productMediaId
@@ -479,7 +479,7 @@ describe('ProductsVariation', () => {
         query: /* GraphQL */ `
           mutation UpdateproductMediaTexts(
             $productMediaId: ID!
-            $texts: [UpdateProductMediaTextInput!]!
+            $texts: [ProductMediaTextInput!]!
           ) {
             updateProductMediaTexts(
               productMediaId: $productMediaId
