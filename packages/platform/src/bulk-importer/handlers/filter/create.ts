@@ -60,17 +60,19 @@ export default async function createFilter(
   if (options) {
     logger.debug('create localized content for filter options', content);
     await Promise.all(
-      options.map(async ({ content: optionContent, value: optionValue }) =>
-        modules.filters.texts.updateTexts(
-          { filterId: _id, filterOptionValue: optionValue },
-          Object.entries(optionContent).map(([locale, localizedData]: [string, any]) => {
-            return {
-              locale,
-              ...localizedData,
-            };
-          }),
-        ),
-      ),
+      options.map(async ({ content: optionContent, value: optionValue }) => {
+        if (optionContent) {
+          await modules.filters.texts.updateTexts(
+            { filterId: _id, filterOptionValue: optionValue },
+            Object.entries(optionContent).map(([locale, localizedData]: [string, any]) => {
+              return {
+                locale,
+                ...localizedData,
+              };
+            }),
+          );
+        }
+      }),
     );
   }
 

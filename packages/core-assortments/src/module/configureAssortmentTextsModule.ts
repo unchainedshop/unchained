@@ -150,12 +150,9 @@ export const configureAssortmentTextsModule = ({
 
     // Mutations
     updateTexts: async (assortmentId, texts) => {
-      const assortmentTexts = Array.isArray(texts)
-        ? await Promise.all(
-            texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentId, locale, text)),
-          )
-        : [];
-
+      const assortmentTexts = await Promise.all(
+        texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentId, locale, text)),
+      );
       return assortmentTexts;
     },
 
