@@ -51,7 +51,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "prepare": "npm run clean && tsc",
+    "prepublishOnly": "npm run clean && tsc",
     "watch": "tsc -w",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
@@ -75,19 +75,19 @@
     "@redis/client": "^1.5.8",
     "bip32": "^4.0.0",
     "escape-string-regexp": "^5.0.0",
-    "ethers": "^6.13.0",
+    "ethers": "^6.13.1",
     "express": "^4.x",
     "lru-cache": "^10.0.0",
     "open": "^10.0.0",
     "postfinancecheckout": "^4.1.1",
-    "stripe": "^15.10.0",
+    "stripe": "^15.12.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.1.1",
+    "twilio": "^5.2.0",
     "web-push": "^3.6.3"
   },
   "devDependencies": {
     "@redis/client": "^1.5.16",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.5",
     "@unchainedshop/api": "^2.10.5",
     "@unchainedshop/core-delivery": "^2.10.5",
     "@unchainedshop/core-enrollments": "^2.10.5",
@@ -116,7 +116,7 @@
     "open": "^10.1.0",
     "postfinancecheckout": "^4.5.0",
     "request": "^2.88.2",
-    "ts-jest": "^29.1.4",
+    "ts-jest": "^29.1.5",
     "typescript": "^5.4.5",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

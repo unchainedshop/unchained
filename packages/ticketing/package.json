@@ -20,7 +20,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "prepare": "npm run clean && tsc",
+    "prepublishOnly": "npm run clean && tsc",
     "watch": "tsc -w",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
@@ -49,11 +49,11 @@
     "@unchainedshop/mongodb": "^2.10.5"
   },
   "peerDependencies": {
-    "@hyperlink/node-apn": "~5",
-    "express": "~4"
+    "@hyperlink/node-apn": "^5.1.4",
+    "express": "^4.19.2"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.5",
     "@unchainedshop/api": "^2.10.5",
     "@unchainedshop/core-files": "^2.10.5",
     "@unchainedshop/core-worker": "^2.10.5",

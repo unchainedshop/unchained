@@ -10,7 +10,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "prepare": "npm run clean && tsc",
+    "prepublishOnly": "npm run clean && tsc",
     "watch": "tsc -w",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
@@ -41,10 +41,10 @@
   },
   "devDependencies": {
     "@types/locale": "^0.1.4",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.5",
     "@unchainedshop/types": "^2.10.5",
     "jest": "^29.7.0",
-    "ts-jest": "^29.1.4",
+    "ts-jest": "^29.1.5",
     "typescript": "^5.4.5"
   }
 }
