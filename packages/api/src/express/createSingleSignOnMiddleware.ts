@@ -4,6 +4,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import cookie from 'cookie';
+import { getCurrentContextResolver } from '../context.js';
 
 const { ROOT_URL, NODE_ENV, UNCHAINED_CLOUD_ENDPOINT } = process.env;
 
@@ -63,25 +64,24 @@ const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
   throw new Error('Invalid token/domain pair');
 };
 
-export default function singleSignOnMiddleware(contextResolver: UnchainedContextResolver) {
-  return async (req: IncomingMessage & { query?: any }, res, next) => {
-    try {
-      if (req.query?.token && UNCHAINED_CLOUD_ENDPOINT) {
-        const context = await contextResolver({ req, res });
-        const authCookie = await loginWithSingleSignOn(req.query.token, context);
+export default async function singleSignOnMiddleware(req: IncomingMessage & { query?: any }, res, next) {
+  try {
+    if (req.query?.token && UNCHAINED_CLOUD_ENDPOINT) {
+      const contextResolver = getCurrentContextResolver();
+      const context = await contextResolver({ req, res });
+      const authCookie = await loginWithSingleSignOn(req.query.token, context);
 
-        if (authCookie) {
-          res.writeHead(303, {
-            'Set-Cookie': authCookie,
-            Location: '/',
-          });
-          res.end();
-          return;
-        }
+      if (authCookie) {
+        res.writeHead(303, {
+          'Set-Cookie': authCookie,
+          Location: '/',
+        });
+        res.end();
+        return;
       }
-    } catch (e) {
-      logger.error(e.message);
     }
-    next();
-  };
+  } catch (e) {
+    logger.error(e.message);
+  }
+  next();
 }

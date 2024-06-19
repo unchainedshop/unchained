@@ -14,20 +14,24 @@ const {
   GRAPHQL_API_PATH = '/graphql',
 } = process.env;
 
+const addContext = async function middlewareWithContext(
+  req: IncomingMessage & { unchainedContext: UnchainedCore },
+  res: OutgoingMessage,
+  next,
+) {
+  try {
+    const context = getCurrentContextResolver();
+    req.unchainedContext = await context({ req, res });
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const useMiddlewareWithCurrentContext = (expressApp, path, ...middleware) => {
-  const context = getCurrentContextResolver();
-  const addContext = async function middlewareWithContext(
-    req: IncomingMessage & { unchainedContext: UnchainedCore },
-    res: OutgoingMessage,
-    next,
-  ) {
-    try {
-      req.unchainedContext = await context({ req, res });
-      next();
-    } catch (error) {
-      next(error);
-    }
-  };
+  if (!path) {
+    throw new Error('Path is required for useMiddlewareWithCurrentContext');
+  }
 
   expressApp.use(path, addContext, ...middleware);
 };
@@ -37,16 +41,8 @@ export const connect = (
   { apolloGraphQLServer }: { apolloGraphQLServer: ApolloServer },
   options?: { corsOrigins?: any },
 ) => {
-  const contextResolver = getCurrentContextResolver();
-
-  expressApp.use(
-    GRAPHQL_API_PATH,
-    createApolloMiddleware(contextResolver, apolloGraphQLServer, options),
-  );
-  expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware(contextResolver));
-  expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware(contextResolver));
-  expressApp.use(
-    ['/', '/.well-known/unchained/cloud-sso'],
-    createSingleSignOnMiddleware(contextResolver),
-  );
+  expressApp.use(GRAPHQL_API_PATH, createApolloMiddleware(apolloGraphQLServer, options));
+  expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
+  expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
+  expressApp.use(['/', '/.well-known/unchained/cloud-sso'], createSingleSignOnMiddleware);
 };
