@@ -175,6 +175,12 @@ const ticketingModule = {
       }
     };
 
+    const buildMagicKey = async (orderId: string) => {
+      const msgUint8 = new TextEncoder().encode([orderId, process.env.UNCHAINED_SECRET].join(''));
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      return Buffer.from(hashBuffer).toString('hex');
+    };
+
     return {
       upsertAppleWalletPass,
       findAppleWalletPass,
@@ -183,6 +189,7 @@ const ticketingModule = {
       findUpdatedAppleWalletPasses,
       invalidateAppleWalletPasses,
       upsertGoogleWalletPass,
+      buildMagicKey,
     };
   },
 };

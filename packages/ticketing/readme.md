@@ -91,3 +91,9 @@ export default async (token, unchainedAPI: UnchainedCore) => {
   return { asURL };
 };
 ```
+
+## Magic Key Order Access
+
+Sometimes it's handy for users to allow them to access their orders and their tickets without actually logging in. For this you can generate a "magic key" that allows access to a single order and it's tickets via a request http header called `x-magic-key`.
+
+For example: To retrieve the magic-key when sending an order-confirmation e-mail, just call `await modules.passes.buildMagicKey(orderId);` and append it to an URL like https://my-shop/:orderId?otp=:magicKey and then in the storefront, use the magic key and send it along via x-magic-key http header when using queries that are guarded by the actions `viewOrder`, `updateToken` and `viewToken`

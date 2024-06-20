@@ -9,6 +9,7 @@ import loadGoogleWalletHandler from './mobile-tickets/google-webservice.js';
 import loadPDFHandler from './pdf-tickets/print-webservice.js';
 import passes from './module.js';
 import type { TicketingAPI } from './types.js';
+import setupMagicKey from './magic-key.js';
 
 export type { TicketingAPI, RendererTypes };
 
@@ -65,6 +66,13 @@ export default function setupTicketing(
     createAppleWalletPass,
     createGoogleWalletPass,
   });
+
+  if (!process.env.UNCHAINED_SECRET)
+    throw new Error(
+      'Unchained Ticketing needs the UNCHAINED_SECRET environment variable to be set in order to allow magic key access to orders and tokens.',
+    );
+
+  setupMagicKey();
 
   subscribe('TOKEN_INVALIDATED', async () => {
     await unchainedAPI.modules.passes.invalidateAppleWalletPasses(unchainedAPI);
