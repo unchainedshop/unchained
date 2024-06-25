@@ -6,7 +6,6 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { Db } from 'mongodb';
 import { getCurrentContextResolver } from '../context.js';
-import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import createApolloMiddleware from './createApolloMiddleware.js';
 import setupPassport from './passport/setup.js';
@@ -77,12 +76,7 @@ export const connect = (
   expressApp.use(passport.session());
   expressApp.use(passport.authenticate('access-token', { session: false }));
 
-  const contextResolver = getCurrentContextResolver();
-
-  expressApp.use(
-    GRAPHQL_API_PATH,
-    createApolloMiddleware(contextResolver, apolloGraphQLServer, options),
-  );
-  expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware(contextResolver));
-  expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware(contextResolver));
+  expressApp.use(GRAPHQL_API_PATH, createApolloMiddleware(apolloGraphQLServer, options));
+  expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
+  expressApp.use(BULK_IMPORT_API_PATH, createERCMetadataMiddleware);
 };

@@ -700,7 +700,7 @@ export const configureUsersModule = async ({
       selector: mongodb.Filter<User>,
       modifier: mongodb.UpdateFilter<User>,
       updateOptions?: mongodb.FindOneAndUpdateOptions,
-    ): Promise<void> => {
+    ): Promise<User> => {
       const user = await Users.findOneAndUpdate(selector, modifier, {
         ...updateOptions,
         returnDocument: 'after',
