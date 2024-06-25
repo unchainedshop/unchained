@@ -20,7 +20,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "tsc && typedoc",
+    "prepublishOnly": "npm run clean && tsc && typedoc",
     "watch": "tsc -w",
     "test": "echo 'No tests'"
   },
