@@ -50,7 +50,7 @@ export default async function resetPassword(
     //   } catch (e) {
     //     /* */
     //   }
-    }
+    // }
   } catch (e) {
     if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId: user._id });
     else throw e;
