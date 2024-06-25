@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-filters",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "main": "lib/filters-index.js",
   "exports": {
     ".": "./lib/filters-index.js",
@@ -31,17 +31,17 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^2.11.0",
-    "@unchainedshop/logger": "^2.11.0",
-    "@unchainedshop/mongodb": "^2.11.0",
-    "@unchainedshop/utils": "^2.11.0",
+    "@unchainedshop/events": "^2.11.1",
+    "@unchainedshop/logger": "^2.11.1",
+    "@unchainedshop/mongodb": "^2.11.1",
+    "@unchainedshop/utils": "^2.11.1",
     "locale": "^0.1.0",
     "memoizee": "^0.4.17",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",
-    "@unchainedshop/types": "^2.11.0",
+    "@unchainedshop/types": "^2.11.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.5",
     "typescript": "^5.4.5"
