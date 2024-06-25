@@ -18,7 +18,7 @@ export default async function removeWeb3Address(
     throw new UserWeb3AddressNotFoundError({ userId, address });
   }
 
-  await modules.users.updateUser(
+  return modules.users.updateUser(
     { _id: userId },
     {
       $pull: {
@@ -27,6 +27,4 @@ export default async function removeWeb3Address(
     },
     {},
   );
-
-  return modules.users.findUserById(userId);
 }

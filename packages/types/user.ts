@@ -132,7 +132,7 @@ export type UsersModule = {
     selector: Filter<User>,
     modifier: UpdateFilter<User>,
     options: FindOneAndUpdateOptions,
-  ) => Promise<void>;
+  ) => Promise<User>;
   addPushSubscription: (
     userId: string,
     subscription: any,

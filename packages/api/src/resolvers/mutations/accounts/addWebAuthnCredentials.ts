@@ -15,7 +15,7 @@ export default async function addWebAuthnCredentials(
     credentials,
   );
 
-  await modules.users.updateUser(
+  return modules.users.updateUser(
     { _id: userId },
     {
       $push: {
@@ -24,6 +24,4 @@ export default async function addWebAuthnCredentials(
     },
     {},
   );
-
-  return modules.users.findUserById(userId);
 }

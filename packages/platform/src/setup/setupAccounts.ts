@@ -166,8 +166,7 @@ export const setupAccounts = (unchainedAPI: UnchainedCore) => {
               unchainedAPI,
             );
           }
-          await modules.users.updateAvatar(newUserId, file._id);
-          return unchainedAPI.modules.users.findUser({ _id: newUserId });
+          return modules.users.updateAvatar(newUserId, file._id);
         }
       }
 

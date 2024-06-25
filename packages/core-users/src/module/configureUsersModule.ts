@@ -367,6 +367,7 @@ export const configureUsersModule = async ({
       await emit('USER_UPDATE', {
         user: removeConfidentialServiceHashes(user),
       });
+      return user;
     },
 
     addPushSubscription: async (userId, subscription, { userAgent, unsubscribeFromOtherUsers }) => {

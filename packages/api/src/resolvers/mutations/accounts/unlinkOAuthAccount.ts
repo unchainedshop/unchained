@@ -12,7 +12,7 @@ export default async function unlinkOAuthAccount(
     userId,
   });
 
-  await modules.users.updateUser(
+  return modules.users.updateUser(
     { _id: userId },
     {
       $pull: {
@@ -21,6 +21,4 @@ export default async function unlinkOAuthAccount(
     },
     { upsert: true },
   );
-
-  return modules.users.findUserById(userId);
 }

@@ -22,7 +22,7 @@ export default async function addWeb3Address(
   if (foundAlreadyExistingEntryForAddress) return user;
 
   const nonce = Math.floor(Math.random() * 1000000).toString();
-  await modules.users.updateUser(
+  return modules.users.updateUser(
     { _id: userId },
     {
       $push: {
@@ -34,6 +34,4 @@ export default async function addWeb3Address(
     },
     {},
   );
-
-  return modules.users.findUserById(userId);
 }

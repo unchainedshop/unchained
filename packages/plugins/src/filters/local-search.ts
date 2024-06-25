@@ -1,9 +1,17 @@
 import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
 import { IFilterAdapter } from '@unchainedshop/types/filters.js';
-import escapeStringRegexp from 'escape-string-regexp';
 import { mongodb } from '@unchainedshop/mongodb';
 import { ProductText } from '@unchainedshop/types/products.js';
 import { AssortmentText } from '@unchainedshop/types/assortments.js';
+
+function escapeStringRegexp(string) {
+  if (typeof string !== 'string') {
+    throw new TypeError('Expected a string');
+  }
+  // Escape characters with special meaning either inside or outside character sets.
+  // Use a simple backslash escape when it’s always valid, and a `\xnn` escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
+  return string.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
+}
 
 const { AMAZON_DOCUMENTDB_COMPAT_MODE } = process.env;
 

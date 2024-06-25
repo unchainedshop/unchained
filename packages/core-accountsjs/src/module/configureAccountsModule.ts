@@ -104,11 +104,12 @@ export const configureAccountsModule = async ({
     createImpersonationToken: async (userId, rawContext: Context) => {
       // TODO: rawContext does not contain user and locale date anymore
       // following the type but the code still depends on it
+      // FIXME: sets the impersonatorId on ALL loginTokens and not only the actual loginToken that was used!
       const { modules } = rawContext;
 
-      const { user: tokenUser, token: loginToken } = await accountsServer.loginWithUser(userId);
+      const { token: loginToken } = await accountsServer.loginWithUser(userId);
 
-      await modules.users.updateUser(
+      const tokenUser = await modules.users.updateUser(
         {
           _id: userId,
           'services.resume.loginTokens': {
