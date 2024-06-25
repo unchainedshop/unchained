@@ -200,9 +200,12 @@ export const configureProductMediaModule = async ({
         }),
       );
 
-      const productMedias = await ProductMedias.find({
-        _id: { $in: changedProductMediaIds },
-      }).toArray();
+      const productMedias = await ProductMedias.find(
+        {
+          _id: { $in: changedProductMediaIds },
+        },
+        { sort: { sortKey: 1 } },
+      ).toArray();
 
       await emit('PRODUCT_REORDER_MEDIA', { productMedias });
 
