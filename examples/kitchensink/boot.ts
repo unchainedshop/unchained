@@ -8,6 +8,8 @@ import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/
 import { ApolloServerPluginLandingPageGraphiQLPlayground } from 'apollo-graphiql-playground';
 import { log } from '@unchainedshop/logger';
 import serveStatic from 'serve-static';
+import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
+import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 import seed from './seed.js';
 import { UnchainedUserContext } from '@unchainedshop/types/api.js';
@@ -21,8 +23,8 @@ const start = async () => {
     modules: defaultModules,
     plugins: [
       responseCachePlugin({
-        sessionId(ctx) {
-          return (ctx.contextValue as any).userId || null;
+        async sessionId(ctx) {
+          return (ctx.contextValue as UnchainedUserContext).userId || null;
         },
         async shouldReadFromCache(ctx) {
           if ((ctx.contextValue as UnchainedUserContext)?.user?.roles?.includes('admin')) return false;

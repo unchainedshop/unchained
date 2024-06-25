@@ -162,9 +162,7 @@ export const configureProductMediaModule = async ({
         selector._id = { $nin: excludedProductMediaIds };
       }
 
-      const ids = await ProductMedias.find(selector, { projection: { _id: true } })
-        .map((m) => m._id)
-        .toArray();
+      const ids = await ProductMedias.distinct('_id', selector);
 
       await ProductMediaTexts.deleteMany({ productMediaId: { $in: ids } });
 
@@ -202,9 +200,12 @@ export const configureProductMediaModule = async ({
         }),
       );
 
-      const productMedias = await ProductMedias.find({
-        _id: { $in: changedProductMediaIds },
-      }).toArray();
+      const productMedias = await ProductMedias.find(
+        {
+          _id: { $in: changedProductMediaIds },
+        },
+        { sort: { sortKey: 1 } },
+      ).toArray();
 
       await emit('PRODUCT_REORDER_MEDIA', { productMedias });
 

@@ -16,7 +16,7 @@ export default async function removeWebAuthnCredentials(
     throw new UserWebAuthnCredentialsNotFoundError({ userId, credentialsId });
   }
 
-  await modules.users.updateUser(
+  return modules.users.updateUser(
     { _id: userId },
     {
       $pull: {
@@ -25,6 +25,4 @@ export default async function removeWebAuthnCredentials(
     },
     {},
   );
-
-  return modules.users.findUserById(userId);
 }

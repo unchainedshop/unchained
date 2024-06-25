@@ -11,7 +11,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "npm run clean && tsc",
+    "prepublishOnly": "npm run clean && tsc",
     "watch": "tsc -w",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --detectOpenHandles --forceExit"
@@ -33,6 +33,9 @@
   "dependencies": {
     "@unchainedshop/utils": "^3.0.0-alpha1",
     "lru-cache": "^10.2.2",
+  },
+  "peerDependencies": {
+    "@mongodb-js/zstd": "^1.2.0",
     "mongodb": "^6.7.0"
   },
   "optionalDependencies": {

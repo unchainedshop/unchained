@@ -20,6 +20,37 @@ export default async function resetPassword(
 
   try {
     await modules.users.setPassword(user._id, params.newPassword);
+
+    // TODO: Verify E-Mail after reset!
+    // if (resetTicket.address) {
+    //   // Try verifying the E-Mail along the way
+    //   try {
+    //     const updatedUser = await modules.users.updateUser(
+    //       {
+    //         _id: userWithNewPassword.id,
+    //         emails: {
+    //           $elemMatch: {
+    //             address: emailRegexOperator(resetTicket.address),
+    //             verified: false,
+    //           },
+    //         },
+    //       },
+    //       {
+    //         $set: {
+    //           'emails.$[email].verified': true,
+    //         },
+    //       },
+    //       {
+    //         arrayFilters: [{ 'email.address': resetTicket.address }],
+    //       },
+    //     );
+    //     if (updatedUser) {
+    //       await modules.accounts.emit('VerifyEmailSuccess', updatedUser);
+    //     }
+    //   } catch (e) {
+    //     /* */
+    //   }
+    }
   } catch (e) {
     if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId: user._id });
     else throw e;

@@ -44,7 +44,7 @@ export default async function verifyWeb3Address(
     return service;
   });
 
-  await modules.users.updateUser(
+  return modules.users.updateUser(
     { _id: userId },
     {
       $set: {
@@ -55,6 +55,4 @@ export default async function verifyWeb3Address(
     },
     {},
   );
-
-  return modules.users.findUserById(userId);
 }

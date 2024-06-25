@@ -268,7 +268,7 @@ export const configureOrderModuleProcessing = ({
         throw new Error(errors[0]);
       }
 
-      const lock = await locker.lock(`order:checkout:${order._id}`, 1500).acquire();
+      const lock = await locker.lock(`order:checkout:${order._id}`, 5000).acquire();
       try {
         const processedOrder = await modules.orders.processOrder(
           order,
@@ -278,8 +278,6 @@ export const configureOrderModuleProcessing = ({
           },
           unchainedAPI,
         );
-
-        await lock.extend(500);
 
         // After checkout, store last checkout information on user
         await modules.users.updateLastBillingAddress(

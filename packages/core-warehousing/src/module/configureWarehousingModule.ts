@@ -261,7 +261,7 @@ export const configureWarehousingModule = async ({
 
     invalidateToken: async (tokenId) => {
       const token = await TokenSurrogates.findOneAndUpdate(
-        { _id: tokenId },
+        { _id: tokenId, invalidatedDate: null },
         {
           $set: {
             invalidatedDate: new Date(),
@@ -271,7 +271,9 @@ export const configureWarehousingModule = async ({
           returnDocument: 'after',
         },
       );
-      await emit('TOKEN_INVALIDATED', { token });
+      if (token) {
+        await emit('TOKEN_INVALIDATED', { token });
+      }
     },
 
     buildAccessKeyForToken: async (tokenId) => {

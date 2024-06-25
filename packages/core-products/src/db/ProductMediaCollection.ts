@@ -8,9 +8,9 @@ export const ProductMediaCollection = async (db: mongodb.Db) => {
   // ProductMedia Indexes
   await buildDbIndexes(ProductMedias, [
     { index: { mediaId: 1 } },
-    { index: { productId: 1 } },
-    { index: { sortKey: 1 } },
-    { index: { tags: 1 } },
+    { index: { productId: 1, sortKey: 1 } },
+    { index: { tags: 1, sortKey: 1 } },
+    { index: { productId: 1, tags: 1, sortKey: 1 } },
   ]);
 
   // ProductMediaTexts indexes

@@ -1,3 +1,4 @@
+import { slugify } from '@unchainedshop/utils';
 import Stripe from 'stripe';
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
@@ -39,9 +40,8 @@ export const createOrderPaymentIntent = async ({ order, orderPayment, pricing },
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(amount),
     currency: currency.toLowerCase(),
-    description: `${reference} #${order.orderNumber}`,
-    statement_descriptor: order.orderNumber,
-    statement_descriptor_suffix: reference,
+    description: `${reference}`,
+    statement_descriptor_suffix: slugify(reference),
     receipt_email: order.contact?.emailAddress,
     setup_future_usage: 'off_session', // Verify your integration in this guide by including this parameter
     metadata: {

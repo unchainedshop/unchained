@@ -85,5 +85,3 @@ connectDefaultPluginsToExpress4(app, engine);
 5. The userId’s that were used to set some internal db fields about updatedBy / createdBy need to be dropped from various functions. This will most propably affect seed code. Typescript will help you with that.
 
 6. Examine the API Breaking Changes in the Changelog for API incompatibilities between 1.2 and 2.0.
-
-

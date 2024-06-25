@@ -2,12 +2,11 @@ import cors from 'cors';
 import { expressMiddleware } from '@apollo/server/express4';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 import e from 'express';
+import { getCurrentContextResolver } from '../context.js';
 
-export default function createApolloMiddleware(
-  contextResolver,
-  apolloGraphQLServer,
-  { corsOrigins = undefined } = {},
-) {
+export default function createApolloMiddleware(apolloGraphQLServer, { corsOrigins = undefined } = {}) {
+  const contextResolver = getCurrentContextResolver();
+
   const originFn =
     corsOrigins && Array.isArray(corsOrigins)
       ? (origin, callback) => {
