@@ -1,7 +1,6 @@
 /// <reference lib="dom" />
 import { IncomingMessage } from 'http';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedContextResolver } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import cookie from 'cookie';
 import { getCurrentContextResolver } from '../context.js';

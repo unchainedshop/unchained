@@ -26,14 +26,10 @@ export type PlatformOptions = {
     handlers?: Record<string, BulkImportHandler>;
   };
   context?: any;
-  modules?: UnchainedCoreOptions['modules'];
-  services?: UnchainedCoreOptions['modules'];
-  options?: UnchainedCoreOptions['options'];
-  rolesOptions?: UnchainedCoreOptions['roleOptions'];
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
   introspection?: boolean;
   adminUiConfig?: AdminUiConfig;
-};
+} & Partial<Pick<UnchainedCoreOptions, 'modules' | 'services' | 'options' | 'rolesOptions'>>;
 
 const logger = createLogger('unchained');
 
@@ -92,7 +88,7 @@ export const startPlatform = async ({
     modules,
     services,
     options,
-    roleOptions: rolesOptions,
+    rolesOptions,
   });
 
   const isWorkQueueEnabled = checkWorkQueueEnabled(workQueueOptions);

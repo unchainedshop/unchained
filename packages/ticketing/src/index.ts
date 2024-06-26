@@ -8,13 +8,20 @@ import loadAppleWalletHandler from './mobile-tickets/apple-webservice.js';
 import loadGoogleWalletHandler from './mobile-tickets/google-webservice.js';
 import loadPDFHandler from './pdf-tickets/print-webservice.js';
 import passes from './module.js';
+import ticketing from './services.js';
+
 import type { TicketingAPI } from './types.js';
 import setupMagicKey from './magic-key.js';
+import { TicketingServices } from './services.js';
 
 export type { TicketingAPI, RendererTypes };
 
 export const ticketingModules = {
   passes,
+};
+
+export const ticketingServices: TicketingServices = {
+  ticketing,
 };
 
 export function setupPDFTickets(

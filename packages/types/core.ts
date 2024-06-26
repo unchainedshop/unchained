@@ -66,5 +66,5 @@ export interface UnchainedCoreOptions {
   >;
   services: Record<string, any>;
   options: ModuleOptions;
-  roleOptions: IRoleOptionConfig;
+  rolesOptions: IRoleOptionConfig;
 }
