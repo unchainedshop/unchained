@@ -208,7 +208,7 @@ const ticketingModule = {
       );
     };
 
-    const isTicketCancelled = async (token: TokenSurrogate) => {
+    const isTicketCancelled = (token: TokenSurrogate) => {
       return Boolean(token.meta?.cancelled);
     };
 
