@@ -114,7 +114,7 @@ export const createOrderPaymentIntent = async (
     amount: Math.round(amount),
     currency: currency.toLowerCase(),
     description,
-    statement_descriptor_suffix: order._id,
+    statement_descriptor_suffix: `${order._id.substring(0, 4)}..${order._id.substring(order._id.length - 4)}`,
     setup_future_usage: 'off_session', // Verify your integration in this guide by including this parameter
     customer,
     metadata: {
