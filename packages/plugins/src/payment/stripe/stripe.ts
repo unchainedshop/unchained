@@ -64,8 +64,8 @@ export const createRegistrationIntent = async (
   },
   options: Record<string, any> = {},
 ) => {
-  const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'} ${userId}${email ? ` (#${email})` : ''}`;
   const customer = options?.customer || (await upsertCustomer({ userId, name, email }));
+  const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'} ${userId}${email ? ` (#${email})` : ''}`;
 
   const setupIntent = await stripe.setupIntents.create({
     description,
@@ -83,11 +83,17 @@ export const createRegistrationIntent = async (
 
 export const createOrderPaymentIntent = async (
   {
+    userId,
+    name,
+    email,
     order,
     orderPayment,
     pricing,
     descriptorPrefix,
   }: {
+    userId: string;
+    name: string;
+    email: string;
     order: Order;
     orderPayment: OrderPayment;
     pricing: IOrderPricingSheet;
@@ -96,20 +102,9 @@ export const createOrderPaymentIntent = async (
   options: Record<string, any> = {},
 ) => {
   const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'} ${order._id}${order.orderNumber ? ` (#${order.orderNumber})` : ''}`;
-
-  const name =
-    [order.billingAddress?.firstName, order.billingAddress?.lastName].filter(Boolean).join(' ') ||
-    order.billingAddress?.company;
-
-  const customer =
-    options?.customer ||
-    (await upsertCustomer({
-      userId: order.userId,
-      name,
-      email: order.contact?.emailAddress,
-    }));
-
+  const customer = options?.customer || (await upsertCustomer({ userId, name, email }));
   const { currency, amount } = pricing.total({ useNetPrice: false });
+
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(amount),
     currency: currency.toLowerCase(),
@@ -117,10 +112,11 @@ export const createOrderPaymentIntent = async (
     statement_descriptor_suffix: `${order._id.substring(0, 4)}..${order._id.substring(order._id.length - 4)}`,
     setup_future_usage: 'off_session', // Verify your integration in this guide by including this parameter
     customer,
+    receipt_email: order.contact?.emailAddress,
     metadata: {
-      userId: order.userId,
       orderPaymentId: orderPayment._id,
       orderId: order._id,
+      userId,
       environment,
     },
     ...options,

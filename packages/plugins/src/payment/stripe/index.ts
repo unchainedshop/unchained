@@ -22,6 +22,18 @@ const Stripe: IPaymentAdapter = {
     const { modules } = params.context;
 
     const descriptorPrefix = params.config.find(({ key }) => key === 'descriptorPrefix')?.value;
+
+    const getUserData = async (forcedUserId) => {
+      const userId = forcedUserId || params.paymentContext?.userId;
+      const user = await modules.users.findUserById(userId);
+      const email = modules.users.primaryEmail(user)?.address;
+      const name = user.profile.displayName || user.username || email;
+      return {
+        email,
+        name,
+        userId,
+      };
+    };
     const adapterActions = {
       ...PaymentAdapter.actions(params),
 
@@ -71,18 +83,15 @@ const Stripe: IPaymentAdapter = {
 
         if (orderPayment) {
           const pricing = await modules.orders.pricingSheet(order);
+          const { userId, name, email } = await getUserData(order?.userId);
           const paymentIntent = await createOrderPaymentIntent(
-            { order, orderPayment, pricing, descriptorPrefix },
+            { userId, name, email, order, orderPayment, pricing, descriptorPrefix },
             transactionContext,
           );
           return paymentIntent.client_secret;
         }
 
-        const userId = order?.userId || params.paymentContext?.userId;
-        const user = await modules.users.findUserById(userId);
-        const email = modules.users.primaryEmail(user)?.address;
-        const name = user.profile.displayName || user.username || email;
-
+        const { userId, name, email } = await getUserData(order?.userId);
         const paymentIntent = await createRegistrationIntent(
           { userId, name, email, paymentProviderId, descriptorPrefix },
           transactionContext,
@@ -99,13 +108,13 @@ const Stripe: IPaymentAdapter = {
         const orderPayment = await modules.orders.payments.findOrderPayment({
           orderPaymentId: order.paymentId,
         });
-
+        const { userId, name, email } = await getUserData(order?.userId);
         const pricing = await modules.orders.pricingSheet(order);
 
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)
           : await createOrderPaymentIntent(
-              { orderPayment, order, pricing, descriptorPrefix },
+              { userId, name, email, orderPayment, order, pricing, descriptorPrefix },
               {
                 customer: paymentCredentials.meta?.customer,
                 confirm: true,
