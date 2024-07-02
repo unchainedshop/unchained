@@ -1,6 +1,6 @@
 import { Order } from '@unchainedshop/types/orders.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
-import { IOrderPricingSheet, OrderPricingCalculation } from '@unchainedshop/types/orders.pricing.js';
+import { IOrderPricingSheet } from '@unchainedshop/types/orders.pricing.js';
 import Stripe from 'stripe';
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
@@ -9,13 +9,14 @@ const stripe = new Stripe(STRIPE_SECRET, {
   apiVersion: '2024-04-10',
 });
 
+const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
+
 export default stripe;
 
-export const upsertCustomer = async ({ userId, name, email }) => {
+export const upsertCustomer = async ({ userId, name, email }): Promise<string> => {
   try {
     const { data } = await stripe.customers.search({ query: `metadata["userId"]:"${userId}"` });
     const existingCustomer = data[0];
-    const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
 
     if (
       existingCustomer.name !== name ||
@@ -30,10 +31,10 @@ export const upsertCustomer = async ({ userId, name, email }) => {
         name,
         email,
       });
-      return updatedCustomer;
+      return updatedCustomer.id;
     }
 
-    return existingCustomer;
+    return existingCustomer.id;
   } catch (e) {
     const customer = await stripe.customers.create({
       metadata: {
@@ -43,21 +44,36 @@ export const upsertCustomer = async ({ userId, name, email }) => {
       name,
       email,
     });
-    return customer;
+    return customer.id;
   }
 };
 
 export const createRegistrationIntent = async (
-  { userId, name, email, paymentProviderId },
-  options = {},
+  {
+    userId,
+    name,
+    email,
+    paymentProviderId,
+    descriptorPrefix,
+  }: {
+    userId: string;
+    name: string;
+    email: string;
+    paymentProviderId: string;
+    descriptorPrefix?: string;
+  },
+  options: Record<string, any> = {},
 ) => {
-  const customer = await upsertCustomer({ userId, name, email });
+  const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'} ${userId}${email ? ` (#${email})` : ''}`;
+  const customer = options?.customer || (await upsertCustomer({ userId, name, email }));
+
   const setupIntent = await stripe.setupIntents.create({
-    customer: customer.id,
+    description,
+    customer,
     metadata: {
       userId,
       paymentProviderId,
-      environment: STRIPE_WEBHOOK_ENVIRONMENT ?? null,
+      environment,
     },
     usage: 'off_session',
     ...options,
@@ -70,31 +86,42 @@ export const createOrderPaymentIntent = async (
     order,
     orderPayment,
     pricing,
-  }: { order: Order; orderPayment: OrderPayment; pricing: IOrderPricingSheet },
-  options = {},
+    descriptorPrefix,
+  }: {
+    order: Order;
+    orderPayment: OrderPayment;
+    pricing: IOrderPricingSheet;
+    descriptorPrefix?: string;
+  },
+  options: Record<string, any> = {},
 ) => {
+  const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'} ${order._id}${order.orderNumber ? ` (#${order.orderNumber})` : ''}`;
+
   const name =
     [order.billingAddress?.firstName, order.billingAddress?.lastName].filter(Boolean).join(' ') ||
     order.billingAddress?.company;
 
-  const customer = await upsertCustomer({
-    userId: order.userId,
-    name,
-    email: order.contact?.emailAddress,
-  });
+  const customer =
+    options?.customer ||
+    (await upsertCustomer({
+      userId: order.userId,
+      name,
+      email: order.contact?.emailAddress,
+    }));
 
-  const reference = EMAIL_WEBSITE_NAME || 'Unchained';
   const { currency, amount } = pricing.total({ useNetPrice: false });
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(amount),
     currency: currency.toLowerCase(),
-    description: `${reference}${STRIPE_WEBHOOK_ENVIRONMENT ? ` (${STRIPE_WEBHOOK_ENVIRONMENT})` : ''}: ${order._id}${order.orderNumber ? ` (#${order.orderNumber})` : ''}`,
+    description,
     statement_descriptor_suffix: order._id,
     setup_future_usage: 'off_session', // Verify your integration in this guide by including this parameter
-    customer: customer.id,
+    customer,
     metadata: {
+      userId: order.userId,
       orderPaymentId: orderPayment._id,
-      environment: STRIPE_WEBHOOK_ENVIRONMENT ?? null,
+      orderId: order._id,
+      environment,
     },
     ...options,
   });

@@ -21,6 +21,8 @@ const Stripe: IPaymentAdapter = {
   actions: (params) => {
     const { modules } = params.context;
 
+    const descriptorPrefix = params.config.find(({ key }) => key === 'descriptorPrefix')?.value;
+    console.log({ descriptorPrefix });
     const adapterActions = {
       ...PaymentAdapter.actions(params),
 
@@ -71,7 +73,7 @@ const Stripe: IPaymentAdapter = {
         if (orderPayment) {
           const pricing = await modules.orders.pricingSheet(order);
           const paymentIntent = await createOrderPaymentIntent(
-            { order, orderPayment, pricing },
+            { order, orderPayment, pricing, descriptorPrefix },
             transactionContext,
           );
           return paymentIntent.client_secret;
@@ -83,7 +85,7 @@ const Stripe: IPaymentAdapter = {
         const name = user.profile.displayName || user.username || email;
 
         const paymentIntent = await createRegistrationIntent(
-          { userId, name, email, paymentProviderId },
+          { userId, name, email, paymentProviderId, descriptorPrefix },
           transactionContext,
         );
         return paymentIntent.client_secret;
@@ -104,7 +106,7 @@ const Stripe: IPaymentAdapter = {
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)
           : await createOrderPaymentIntent(
-              { orderPayment, order, pricing },
+              { orderPayment, order, pricing, descriptorPrefix },
               {
                 customer: paymentCredentials.meta?.customer,
                 confirm: true,

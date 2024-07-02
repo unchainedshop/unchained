@@ -21,6 +21,7 @@ if (STRIPE_SECRET) {
         _id: 'stripe-payment-provider',
         adapterKey: 'shop.unchained.payment.stripe',
         type: 'GENERIC',
+        configuration: [{ key: "descriptorPrefix", value: "Book Shop" }]
       });
 
       // Add a demo order ready to checkout
