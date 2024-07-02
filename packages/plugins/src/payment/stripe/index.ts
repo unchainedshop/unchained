@@ -22,7 +22,6 @@ const Stripe: IPaymentAdapter = {
     const { modules } = params.context;
 
     const descriptorPrefix = params.config.find(({ key }) => key === 'descriptorPrefix')?.value;
-    console.log({ descriptorPrefix });
     const adapterActions = {
       ...PaymentAdapter.actions(params),
 
