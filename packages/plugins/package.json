@@ -85,7 +85,7 @@
     "web-push": "^3.6.3"
   },
   "devDependencies": {
-    "@redis/client": "^1.5.16",
+    "@redis/client": "^1.5.17",
     "@types/node": "^20.14.9",
     "@unchainedshop/api": "^2.11.3",
     "@unchainedshop/core-delivery": "^2.11.3",
