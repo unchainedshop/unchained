@@ -40,7 +40,7 @@
     "@unchainedshop/core-delivery": "^2.11.3",
     "@unchainedshop/core-payment": "^2.11.3",
     "@unchainedshop/platform": "^2.11.3",
-    "@unchainedshop/plugins": "^2.11.3",
+    "@unchainedshop/plugins": "^2.11.6",
     "@unchainedshop/types": "^2.11.3",
     "apollo-graphiql-playground": "^0.1.5",
     "bip32": "^4.0.0",

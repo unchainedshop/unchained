@@ -37,7 +37,7 @@
     "@unchainedshop/file-upload": "^2.11.3",
     "@unchainedshop/logger": "^2.11.3",
     "@unchainedshop/mongodb": "^2.11.3",
-    "@unchainedshop/plugins": "^2.11.3",
+    "@unchainedshop/plugins": "^2.11.6",
     "@unchainedshop/roles": "^2.11.3",
     "@unchainedshop/utils": "^2.11.3",
     "event-iterator": "^2.0.0",
