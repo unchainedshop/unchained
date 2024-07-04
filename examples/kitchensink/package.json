@@ -2,7 +2,7 @@
   "name": "example-kitchensink",
   "description": "Kitchensink for Unchained Engine",
   "private": true,
-  "version": "2.11.3",
+  "version": "2.12.0",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -28,7 +28,7 @@
   "scripts": {
     "lint": "prettier -w .",
     "clean": "rm -rf lib",
-    "prepublishOnly": "npm run clean && tsc",
+    "build": "npm run clean && tsc",
     "start": "node lib/boot.js",
     "dev:run": "node --experimental-fetch --no-warnings --loader ts-node/esm boot.ts",
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
@@ -36,12 +36,12 @@
   "dependencies": {
     "@apollo/server-plugin-response-cache": "^4.1.3",
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@unchainedshop/api": "^2.11.3",
-    "@unchainedshop/core-delivery": "^2.11.3",
-    "@unchainedshop/core-payment": "^2.11.3",
-    "@unchainedshop/platform": "^2.11.3",
-    "@unchainedshop/plugins": "^2.11.6",
-    "@unchainedshop/types": "^2.11.3",
+    "@unchainedshop/api": "^2.12.0",
+    "@unchainedshop/core-delivery": "^2.12.0",
+    "@unchainedshop/core-payment": "^2.12.0",
+    "@unchainedshop/platform": "^2.12.0",
+    "@unchainedshop/plugins": "^2.12.0",
+    "@unchainedshop/types": "^2.12.0",
     "apollo-graphiql-playground": "^0.1.5",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.6",
@@ -70,6 +70,6 @@
     "nodemon": "^3.1.4",
     "prettier": "^3.3.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.3"
   }
 }

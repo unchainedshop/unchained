@@ -1,20 +1,16 @@
 {
     "compilerOptions": {
-      "allowJs": true,
       "allowSyntheticDefaultImports": true,
       "declaration": true,
+      "declarationMap": true,
       "esModuleInterop": true,
-      "experimentalDecorators": true,
       "forceConsistentCasingInFileNames": true,
       "lib": [
         "esnext"
       ],
       "module": "NodeNext",
       "moduleResolution": "NodeNext",
-      "noImplicitReturns": true,
-      "noUnusedLocals": false,
       "preserveWatchOutput": true,
-      "skipLibCheck": true,
       "sourceMap": true,
       "target": "esnext",
       "types": [

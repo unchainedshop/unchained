@@ -8,7 +8,7 @@ export default function shopInfo(
   context: Context,
 ): {
   version?: string;
-  externalLinks: Array<string>;
+  externalLinks: () => Array<string>;
   adminUiConfig?: Record<string, any>;
   vapidPublicKey?: string;
   oAuthProviders?: () => Promise<Array<IOAuth2Adapter>>;
@@ -18,7 +18,14 @@ export default function shopInfo(
 
   return {
     version: context.version,
-    externalLinks: JSON.parse((process.env.EXTERNAL_LINKS as any) || []),
+    externalLinks: () => {
+      try {
+        const parsed = JSON.parse(process.env.EXTERNAL_LINKS);
+        return parsed;
+      } catch (e) {
+        return [];
+      }
+    },
     adminUiConfig: {
       customProperties: adminUiConfig?.customProperties ?? [],
     },

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/ticketing",
-  "version": "2.11.7",
+  "version": "2.12.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
@@ -41,13 +41,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^2.11.3",
-    "@unchainedshop/core-files": "^2.11.3",
-    "@unchainedshop/core-warehousing": "^2.11.3",
-    "@unchainedshop/core-worker": "^2.11.3",
-    "@unchainedshop/events": "^2.11.3",
-    "@unchainedshop/logger": "^2.11.3",
-    "@unchainedshop/mongodb": "^2.11.3"
+    "@unchainedshop/api": "^2.12.0",
+    "@unchainedshop/core-files": "^2.12.0",
+    "@unchainedshop/core-warehousing": "^2.12.0",
+    "@unchainedshop/core-worker": "^2.12.0",
+    "@unchainedshop/events": "^2.12.0",
+    "@unchainedshop/logger": "^2.12.0",
+    "@unchainedshop/mongodb": "^2.12.0"
   },
   "peerDependencies": {
     "@hyperlink/node-apn": "^5.1.4",
@@ -55,6 +55,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.9",
-    "@unchainedshop/types": "^2.11.3"
+    "@unchainedshop/types": "^2.12.0"
   }
 }

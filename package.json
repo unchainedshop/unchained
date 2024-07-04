@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "2.11.3",
+  "version": "2.12.0",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -68,7 +68,7 @@
     "prettier": "^3.3.2",
     "stripe": "^15.12.0",
     "ts-jest": "^29.1.5",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.3",
     "workspaces-run": "^1.0.2"
   }
 }

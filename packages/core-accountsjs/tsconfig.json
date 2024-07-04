@@ -1,11 +1,10 @@
 {
   "extends": "../shared/base.tsconfig.json",
   "compilerOptions": {
+    "skipLibCheck": true,
     "rootDir": "src",
-    "outDir": "lib",
+    "outDir": "lib"
   },
   "exclude": ["**/*.test.ts", "**/*.test.js", "tests"],
-  "include": [
-    "./src"
-  ]
+  "include": ["./src"]
 }
