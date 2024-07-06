@@ -10,6 +10,11 @@ export type Event = {
   payload?: Record<string, unknown>;
 } & TimestampFields;
 
+export type EventReport = {
+  count: number;
+  type: string;
+};
+
 export type EventQuery = {
   types?: Array<string>;
   queryString?: string;
@@ -30,4 +35,5 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   type: (event: Event) => string;
 
   count: (query: EventQuery) => Promise<number>;
+  getReport: (params?: { from: Date }) => Promise<EventReport[]>;
 }

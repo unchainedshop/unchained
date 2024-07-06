@@ -7,6 +7,7 @@ import { ModuleCreateMutation, ModuleInput, ModuleMutations } from '@unchainedsh
 import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { EventsSchema } from '../db/EventsSchema.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
+import { EventReport } from '@unchainedshop/types/events.js';
 
 export type EventQuery = {
   types?: Array<string>;
@@ -41,6 +42,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   type: (event: Event) => string;
 
   count: (query: EventQuery) => Promise<number>;
+  getReport: (params?: { from: Date }) => Promise<EventReport[]>;
 }
 
 export const configureEventsModule = async ({
@@ -80,6 +82,36 @@ export const configureEventsModule = async ({
     count: async (query) => {
       const count = await Events.countDocuments(buildFindSelector(query));
       return count;
+    },
+    getReport: async ({ from }) => {
+      const pipeline = [];
+      if (from) {
+        const date = new Date(from);
+        pipeline.push({
+          $match: {
+            $or: [{ created: { $gte: date } }, { updated: { $gte: date } }],
+          },
+        });
+      }
+      pipeline.push(
+        ...[
+          {
+            $group: {
+              _id: '$type',
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              type: '$_id',
+              count: 1,
+            },
+          },
+        ],
+      );
+
+      return Events.aggregate(pipeline).toArray() as Promise<EventReport[]>;
     },
   };
 };
