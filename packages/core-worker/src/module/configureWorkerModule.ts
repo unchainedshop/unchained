@@ -506,7 +506,7 @@ export const configureWorkerModule = async ({
       );
     },
 
-    getReport: async ({ from }) => {
+    getReport: async ({ from } = { from: null }) => {
       const pipeline = [];
       if (from) {
         const date = new Date(from);
