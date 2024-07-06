@@ -25,6 +25,17 @@ export default [
       customProperties: [AdminUiConfigCustomEntityInterface!]!
     }
 
+    type ActivityReport {
+      today: [JSON]!
+      all: [JSON]!
+      sinceInstanceStart: [JSON]!
+    }
+
+    type ShopActivityReport {
+      workItems: ActivityReport!
+      events: ActivityReport!
+      orders: ActivityReport!
+    }
     type Shop @cacheControl(maxAge: 180) {
       _id: ID!
       language: Language
@@ -35,6 +46,7 @@ export default [
       adminUiConfig: AdminUiConfig!
       oAuthProviders: [OAuthProvider!]!
       vapidPublicKey: String
+      activities: ShopActivityReport
     }
   `,
 ];

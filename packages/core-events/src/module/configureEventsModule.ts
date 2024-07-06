@@ -83,7 +83,7 @@ export const configureEventsModule = async ({
       const count = await Events.countDocuments(buildFindSelector(query));
       return count;
     },
-    getReport: async ({ from }) => {
+    getReport: async ({ from } = { from: null }) => {
       const pipeline = [];
       if (from) {
         const date = new Date(from);

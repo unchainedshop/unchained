@@ -11,6 +11,7 @@ export interface ShopHelperTypes {
   country: HelperType<Country>;
   language: HelperType<Language>;
   userRoles: HelperType<Array<string>>;
+  activities: HelperType<any>;
 }
 
 export const Shop: ShopHelperTypes = {
@@ -30,5 +31,43 @@ export const Shop: ShopHelperTypes = {
     return Object.values(allRoles)
       .map(({ name }) => name)
       .filter((name) => name.substring(0, 2) !== '__');
+  },
+  activities: async (_root, _params, { modules }) => {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const uptime = process.uptime();
+    const instanceStartTime = new Date(Date.now() - uptime * 1000);
+    try {
+      const ordersToday = await modules.orders.getReport({ from: startOfToday });
+      const ordersSinceInstanceStart = await modules.orders.getReport({ from: instanceStartTime });
+      const allOrders = await modules.orders.getReport();
+      const workerToday = await modules.worker.getReport({ from: startOfToday });
+      const workerSinceInstanceStart = await modules.worker.getReport({ from: instanceStartTime });
+      const allWorks = await modules.worker.getReport();
+      const eventsToday = await modules.events.getReport({ from: startOfToday });
+      const eventsSinceInstanceStart = await modules.events.getReport({ from: instanceStartTime });
+      const allEvents = await modules.events.getReport();
+      return {
+        workItems: {
+          today: workerToday,
+          sinceInstanceStart: workerSinceInstanceStart,
+          all: allWorks,
+        },
+        events: {
+          today: eventsToday,
+          sinceInstanceStart: eventsSinceInstanceStart,
+          all: allEvents,
+        },
+        orders: {
+          today: ordersToday,
+          sinceInstanceStart: ordersSinceInstanceStart,
+          all: allOrders,
+        },
+      };
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   },
 };
