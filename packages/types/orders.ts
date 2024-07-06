@@ -17,6 +17,11 @@ export enum OrderStatus {
   REJECTED = 'REJECTED',
 }
 
+export type OrderReport = {
+  count: number;
+  status: OrderStatus | 'CART';
+};
+
 export type Order = {
   _id?: string;
   billingAddress?: Address;
@@ -79,6 +84,7 @@ export interface OrderQueries {
   ) => Promise<Array<Order>>;
   count: (query: OrderQuery) => Promise<number>;
   orderExists: (params: { orderId: string }) => Promise<boolean>;
+  getReport: (params?: { from: Date }) => Promise<OrderReport[]>;
 }
 export interface OrderTransformations {
   discounted: (

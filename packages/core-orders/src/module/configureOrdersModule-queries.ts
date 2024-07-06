@@ -1,5 +1,11 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import { Order, OrderQueries, OrderQuery, OrderStatus } from '@unchainedshop/types/orders.js';
+import {
+  Order,
+  OrderQueries,
+  OrderQuery,
+  OrderReport,
+  OrderStatus,
+} from '@unchainedshop/types/orders.js';
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
@@ -20,6 +26,19 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
   }
 
   return selector;
+};
+
+const normalizeOrderAggregateResult = (result = []): OrderReport[] => {
+  const allStatuses = ['PENDING', 'CART', 'CONFIRMED', 'FULLFILLED', 'REJECTED'];
+
+  const statusCountMap = result.reduce((map, { status, count }) => {
+    map[status] = count;
+    return map;
+  }, {});
+  return allStatuses.map((status: OrderStatus | 'CART') => ({
+    status,
+    count: (statusCountMap[status] || 0) as number,
+  }));
 };
 
 export const configureOrdersModuleQueries = ({
@@ -56,6 +75,41 @@ export const configureOrdersModuleQueries = ({
       }
 
       return Orders.find(selector, findOptions).toArray();
+    },
+
+    getReport: async ({ from } = { from: null }) => {
+      const pipeline = [];
+      if (from)
+        pipeline.push({
+          $match: {
+            $or: [{ created: { $gte: new Date(from) } }, { updated: { $gte: new Date(from) } }],
+          },
+        });
+      pipeline.push(
+        ...[
+          {
+            $group: {
+              _id: '$status',
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $addFields: {
+              status: {
+                $cond: { if: { $eq: ['$_id', null] }, then: 'CART', else: '$_id' },
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              status: 1,
+              count: 1,
+            },
+          },
+        ],
+      );
+      return normalizeOrderAggregateResult(await Orders.aggregate(pipeline).toArray());
     },
 
     orderExists: async ({ orderId }) => {
