@@ -1,6 +1,6 @@
 import os from 'os';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
+import { Work, WorkerModule, WorkerReport, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
@@ -97,6 +97,18 @@ const defaultSort: Array<{ key: string; value: SortDirection }> = [
   { key: 'originalWorkId', value: SortDirection.ASC },
   { key: 'created', value: SortDirection.ASC },
 ];
+const normalizeWorkQueueAggregateResult = (result = []): WorkerReport[] => {
+  const allStatuses = ['DELETED', 'NEW', 'ALLOCATED', 'SUCCESS', 'FAILED'];
+
+  const statusCountMap = result.reduce((map, { status, count }) => {
+    map[status] = count;
+    return map;
+  }, {});
+  return allStatuses.map((status: WorkStatus) => ({
+    status,
+    count: statusCountMap[status] || 0,
+  }));
+};
 
 export const configureWorkerModule = async ({
   db,
@@ -492,6 +504,92 @@ export const configureWorkerModule = async ({
           }),
         ),
       );
+    },
+
+    getReport: async ({ from }) => {
+      const pipeline = [];
+      if (from) {
+        const date = new Date(from);
+        pipeline.push({
+          $match: {
+            $or: [{ created: { $gte: date } }, { updated: { $gte: date } }],
+          },
+        });
+      }
+
+      pipeline.push(
+        ...[
+          {
+            $addFields: {
+              status: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $ne: [{ $type: '$deleted' }, 'missing'] },
+                      then: 'DELETED',
+                    },
+                    {
+                      case: {
+                        $and: [
+                          { $eq: [{ $type: '$started' }, 'missing'] },
+                          { $eq: [{ $type: '$deleted' }, 'missing'] },
+                        ],
+                      },
+                      then: 'NEW',
+                    },
+                    {
+                      case: {
+                        $and: [
+                          { $ne: [{ $type: '$started' }, 'missing'] },
+                          { $eq: [{ $type: '$finished' }, 'missing'] },
+                          { $eq: [{ $type: '$deleted' }, 'missing'] },
+                        ],
+                      },
+                      then: 'ALLOCATED',
+                    },
+                    {
+                      case: {
+                        $and: [
+                          { $ne: [{ $type: '$finished' }, 'missing'] },
+                          { $eq: ['$success', true] },
+                          { $eq: [{ $type: '$deleted' }, 'missing'] },
+                        ],
+                      },
+                      then: 'SUCCESS',
+                    },
+                    {
+                      case: {
+                        $and: [
+                          { $ne: [{ $type: '$finished' }, 'missing'] },
+                          { $eq: ['$success', false] },
+                          { $eq: [{ $type: '$deleted' }, 'missing'] },
+                        ],
+                      },
+                      then: 'FAILED',
+                    },
+                  ],
+                  default: 'UNKNOWN',
+                },
+              },
+            },
+          },
+          {
+            $group: {
+              _id: '$status',
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              status: '$_id',
+              count: 1,
+            },
+          },
+        ],
+      );
+
+      return normalizeWorkQueueAggregateResult(await WorkQueue.aggregate(pipeline).toArray());
     },
   };
 };
