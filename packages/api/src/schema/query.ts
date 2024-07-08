@@ -474,6 +474,8 @@ export default [
       Determines if a token is valid/active for email verification
       """
       validateVerifyEmailToken(token: String!): Boolean!
+
+      shopAnalytics: ShopAnalytics
     }
   `,
 ];

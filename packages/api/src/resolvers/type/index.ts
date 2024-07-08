@@ -70,6 +70,8 @@ import { Web3Address } from './web3-address.js';
 import { OAuthAccount } from './oauth-account.js';
 import { OAuthProvider } from './oauth-provider.js';
 
+import { ShopAnalytics } from './shop-analytics.js';
+
 const types = {
   Assortment,
   AssortmentFilter,
@@ -142,6 +144,7 @@ const types = {
   Web3Address,
   OAuthAccount,
   OAuthProvider,
+  ShopAnalytics,
 };
 
 export default types;

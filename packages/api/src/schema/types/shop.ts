@@ -31,7 +31,9 @@ export default [
       sinceInstanceStart: [JSON]!
     }
 
-    type ShopActivityReport {
+    type ShopAnalytics {
+      instanceStartTime: Timestamp
+      startOfToday: Timestamp
       workItems: ActivityReport!
       events: ActivityReport!
       orders: ActivityReport!
@@ -46,7 +48,6 @@ export default [
       adminUiConfig: AdminUiConfig!
       oAuthProviders: [OAuthProvider!]!
       vapidPublicKey: String
-      activities: ShopActivityReport
     }
   `,
 ];
