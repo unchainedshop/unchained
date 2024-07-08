@@ -14,7 +14,7 @@ export const nextUserCartService: NextUserCartService = async (
   });
   if (cart) return cart;
 
-  const shouldCreateNewCart = forceCartCreation || !ordersSettings.ensureUserHasCart;
+  const shouldCreateNewCart = forceCartCreation || ordersSettings.ensureUserHasCart;
   if (!shouldCreateNewCart) return null;
 
   const currency = await services.countries.resolveDefaultCurrencyCode(

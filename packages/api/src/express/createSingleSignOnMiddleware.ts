@@ -5,12 +5,18 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import cookie from 'cookie';
 import { getCurrentContextResolver } from '../context.js';
 
-const { ROOT_URL, NODE_ENV, UNCHAINED_CLOUD_ENDPOINT } = process.env;
+const {
+  ROOT_URL,
+  NODE_ENV,
+  UNCHAINED_CLOUD_ENDPOINT,
+  UNCHAINED_COOKIE_NAME = 'unchained_token',
+  UNCHAINED_COOKIE_DOMAIN,
+} = process.env;
 
 const logger = createLogger('unchained:unchained-cloud-sso');
 
 const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
-  const domain = process.env.UNCHAINED_COOKIE_DOMAIN || new URL(ROOT_URL).hostname || 'localhost';
+  const domain = UNCHAINED_COOKIE_DOMAIN || new URL(ROOT_URL).hostname || 'localhost';
   const result = await fetch(UNCHAINED_CLOUD_ENDPOINT, {
     method: 'POST',
     headers: {
@@ -49,7 +55,7 @@ const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
       ));
     const { tokenExpires, token } = await context.modules.accounts.createLoginToken(ssoUserId, context);
     const expires = new Date(tokenExpires || new Date().getTime() + 100000);
-    const authCookie = cookie.serialize(process.env.UNCHAINED_COOKIE_NAME, token, {
+    const authCookie = cookie.serialize(UNCHAINED_COOKIE_NAME, token, {
       domain,
       httpOnly: true,
       expires,
