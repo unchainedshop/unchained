@@ -37,7 +37,7 @@ const normalizeOrderAggregateResult = (result = []): OrderReport[] => {
   }, {});
   return allStatuses.map((status: OrderStatus | 'CART') => ({
     status,
-    count: (statusCountMap[status] || 0) as number,
+    count: statusCountMap[status] || 0,
   }));
 };
 

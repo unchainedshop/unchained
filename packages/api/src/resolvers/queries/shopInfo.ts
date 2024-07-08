@@ -7,7 +7,6 @@ export default function shopInfo(
   _: never,
   context: Context,
 ): {
-  activities?: () => Promise<any>;
   version?: string;
   externalLinks: () => Array<string>;
   adminUiConfig?: Record<string, any>;
