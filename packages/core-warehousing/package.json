@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-warehousing",
-  "version": "2.12.0",
+  "version": "2.12.1",
   "main": "lib/warehousing-index.js",
   "exports": {
     ".": "./lib/warehousing-index.js",
@@ -31,14 +31,14 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^2.12.0",
-    "@unchainedshop/logger": "^2.12.0",
-    "@unchainedshop/utils": "^2.12.0",
+    "@unchainedshop/events": "^2.12.1",
+    "@unchainedshop/logger": "^2.12.1",
+    "@unchainedshop/utils": "^2.12.1",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
-    "@types/node": "^20.14.9",
-    "@unchainedshop/types": "^2.12.0",
+    "@types/node": "^20.14.10",
+    "@unchainedshop/types": "^2.12.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.5",
     "typescript": "^5.5.3"

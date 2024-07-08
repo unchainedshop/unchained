@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-accountsjs",
-  "version": "2.12.0",
+  "version": "2.12.1",
   "main": "lib/accounts-index.js",
   "exports": {
     ".": "./lib/accounts-index.js",
@@ -36,14 +36,14 @@
     "@accounts/mongo-password": "^0.33.0",
     "@accounts/password": "^0.32.2",
     "@accounts/server": "0.33.1",
-    "@unchainedshop/logger": "^2.12.0",
-    "@unchainedshop/utils": "^2.12.0",
+    "@unchainedshop/logger": "^2.12.1",
+    "@unchainedshop/utils": "^2.12.1",
     "fido2-lib": "^3.5.3",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.9",
-    "@unchainedshop/types": "^2.12.0",
+    "@types/node": "^20.14.10",
+    "@unchainedshop/types": "^2.12.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.5",
     "typescript": "^5.5.3"
