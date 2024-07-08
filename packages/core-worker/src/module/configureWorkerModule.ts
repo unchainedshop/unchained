@@ -21,6 +21,29 @@ const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const logger = createLogger('unchained:core-worker');
 
+const WORK_STATUS_FILTER_MAP = {
+  [WorkStatus.DELETED]: { deleted: { $exists: true } },
+  [WorkStatus.NEW]: {
+    started: { $exists: false },
+    deleted: { $exists: false },
+  },
+  [WorkStatus.ALLOCATED]: {
+    started: { $exists: true },
+    finished: { $exists: false },
+    deleted: { $exists: false },
+  },
+  [WorkStatus.SUCCESS]: {
+    finished: { $exists: true },
+    success: true,
+    deleted: { $exists: false },
+  },
+  [WorkStatus.FAILED]: {
+    finished: { $exists: true },
+    success: false,
+    deleted: { $exists: false },
+  },
+};
+
 export const buildQuerySelector = ({
   created,
   scheduled,
@@ -37,30 +60,8 @@ export const buildQuerySelector = ({
   queryString?: string;
   types?: Array<string>;
 }) => {
-  const filterMap = {
-    [WorkStatus.DELETED]: { deleted: { $exists: true } },
-    [WorkStatus.NEW]: {
-      started: { $exists: false },
-      deleted: { $exists: false },
-    },
-    [WorkStatus.ALLOCATED]: {
-      started: { $exists: true },
-      finished: { $exists: false },
-      deleted: { $exists: false },
-    },
-    [WorkStatus.SUCCESS]: {
-      finished: { $exists: true },
-      success: true,
-      deleted: { $exists: false },
-    },
-    [WorkStatus.FAILED]: {
-      finished: { $exists: true },
-      success: false,
-      deleted: { $exists: false },
-    },
-  };
   const statusQuery = {
-    $or: Object.entries(filterMap).reduce(
+    $or: Object.entries(WORK_STATUS_FILTER_MAP).reduce(
       (acc, [key, filter]) => (status?.includes(key as WorkStatus) ? [...acc, filter] : acc),
       [],
     ),
@@ -89,6 +90,24 @@ export const buildQuerySelector = ({
   if (queryString) (query as any).$text = { $search: queryString };
 
   return { ...query, ...rest };
+};
+
+const convertFilterMapToPipelineBranches = () => {
+  return Object.entries(WORK_STATUS_FILTER_MAP).map(([status, conditions]) => {
+    const caseConditions = Object.entries(conditions).map(([field, condition]) => {
+      if (typeof condition === 'object' && '$exists' in condition) {
+        return condition.$exists
+          ? { $ne: [{ $type: `$${field}` }, 'missing'] }
+          : { $eq: [{ $type: `$${field}` }, 'missing'] };
+      }
+      return { $eq: [`$${field}`, condition] };
+    });
+
+    return {
+      case: caseConditions.length > 1 ? { $and: caseConditions } : caseConditions[0],
+      then: status,
+    };
+  });
 };
 
 const defaultSort: Array<{ key: string; value: SortDirection }> = [
@@ -518,75 +537,29 @@ export const configureWorkerModule = async ({
       }
 
       pipeline.push(
-        ...[
-          {
-            $addFields: {
-              status: {
-                $switch: {
-                  branches: [
-                    {
-                      case: { $ne: [{ $type: '$deleted' }, 'missing'] },
-                      then: 'DELETED',
-                    },
-                    {
-                      case: {
-                        $and: [
-                          { $eq: [{ $type: '$started' }, 'missing'] },
-                          { $eq: [{ $type: '$deleted' }, 'missing'] },
-                        ],
-                      },
-                      then: 'NEW',
-                    },
-                    {
-                      case: {
-                        $and: [
-                          { $ne: [{ $type: '$started' }, 'missing'] },
-                          { $eq: [{ $type: '$finished' }, 'missing'] },
-                          { $eq: [{ $type: '$deleted' }, 'missing'] },
-                        ],
-                      },
-                      then: 'ALLOCATED',
-                    },
-                    {
-                      case: {
-                        $and: [
-                          { $ne: [{ $type: '$finished' }, 'missing'] },
-                          { $eq: ['$success', true] },
-                          { $eq: [{ $type: '$deleted' }, 'missing'] },
-                        ],
-                      },
-                      then: 'SUCCESS',
-                    },
-                    {
-                      case: {
-                        $and: [
-                          { $ne: [{ $type: '$finished' }, 'missing'] },
-                          { $eq: ['$success', false] },
-                          { $eq: [{ $type: '$deleted' }, 'missing'] },
-                        ],
-                      },
-                      then: 'FAILED',
-                    },
-                  ],
-                  default: 'UNKNOWN',
-                },
+        {
+          $addFields: {
+            status: {
+              $switch: {
+                branches: convertFilterMapToPipelineBranches(),
+                default: 'UNKNOWN',
               },
             },
           },
-          {
-            $group: {
-              _id: '$status',
-              count: { $sum: 1 },
-            },
+        },
+        {
+          $group: {
+            _id: '$status',
+            count: { $sum: 1 },
           },
-          {
-            $project: {
-              _id: 0,
-              status: '$_id',
-              count: 1,
-            },
+        },
+        {
+          $project: {
+            _id: 0,
+            status: '$_id',
+            count: 1,
           },
-        ],
+        },
       );
 
       return normalizeWorkQueueAggregateResult(await WorkQueue.aggregate(pipeline).toArray());
