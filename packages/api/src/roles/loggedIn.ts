@@ -231,4 +231,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.stopImpersonation, () => true);
   role.allow(actions.impersonate, () => false);
   role.allow(actions.confirmMediaUpload, () => true);
+  role.allow(actions.viewShopAnalytics, () => false);
 };

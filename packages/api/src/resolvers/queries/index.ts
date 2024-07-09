@@ -140,5 +140,5 @@ export default {
   eventsCount: acl(actions.viewEvents)(eventsCount),
   validateResetPasswordToken: acl(actions.resetPassword)(validateResetPasswordToken),
   validateVerifyEmailToken: acl(actions.verifyEmail)(validateVerifyEmailToken),
-  shopAnalytics,
+  shopAnalytics: acl(actions.viewShopAnalytics)(shopAnalytics),
 };
