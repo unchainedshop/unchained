@@ -1,4 +1,4 @@
-export default function shopInfo() {
+export default function shopAnalytics() {
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
