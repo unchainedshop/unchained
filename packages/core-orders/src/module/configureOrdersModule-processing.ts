@@ -56,9 +56,12 @@ export const configureOrderModuleProcessing = ({
       case OrderStatus.FULLFILLED:
         $set.fullfilled = order.fullfilled || date;
       case OrderStatus.REJECTED: // eslint-disable-line no-fallthrough
-        $set.rejected = order.rejected || date;
       case OrderStatus.CONFIRMED: // eslint-disable-line no-fallthrough
-        $set.confirmed = order.confirmed || date;
+        if (status === OrderStatus.REJECTED) {
+          $set.rejected = order.rejected || date;
+        } else {
+          $set.confirmed = order.confirmed || date;
+        }
       case OrderStatus.PENDING: // eslint-disable-line no-fallthrough
         $set.ordered = order.ordered || date;
         $set.orderNumber = order.orderNumber || (await findNewOrderNumber(order));
