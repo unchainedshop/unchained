@@ -102,7 +102,7 @@ const Datatrans: IPaymentAdapter = {
               .map((f) => f.trim());
 
             const { amount: discountSum } = pricingForOrderPayment.total({
-              category: PaymentPricingRowCategory.Tax,
+              category: PaymentPricingRowCategory.Discount,
               discountId: staticDiscountId,
             });
             const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;

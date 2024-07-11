@@ -1,11 +1,12 @@
-import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
-import { MediaObjectsCollection } from '@unchainedshop/core-files/db/MediaObjectsCollection.js';
 import { createLogger } from '@unchainedshop/logger';
+import { buildDbIndexes } from '@unchainedshop/mongodb';
+import { MediaObjectsCollection } from '@unchainedshop/core-files/db/MediaObjectsCollection.js';
+import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing/db/TokenSurrogateCollection.js';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
-import { mongodb } from '@unchainedshop/mongodb';
 import { File } from '@unchainedshop/types/files.js';
-import { RendererTypes, getRenderer } from './template-registry.js';
 
+import { RendererTypes, getRenderer } from './template-registry.js';
 import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.js';
 
 export const APPLE_WALLET_PASSES_FILE_DIRECTORY = 'apple-wallet-passes';
@@ -14,7 +15,23 @@ const logger = createLogger('unchained:apple-wallet-webservice');
 
 const ticketingModule = {
   configure: async ({ db }: ModuleInput<Record<string, never>>) => {
-    const MediaObjects = (await MediaObjectsCollection(db)) as mongodb.Collection<File>;
+    const MediaObjects = await MediaObjectsCollection(db);
+    const TokenSurrogates = await TokenSurrogateCollection(db);
+
+    await buildDbIndexes(TokenSurrogates as any, [
+      { index: { 'meta.cancelled': 1 }, options: { sparse: true } },
+    ]);
+
+    await buildDbIndexes(MediaObjects as any, [
+      { index: { path: 1, 'meta.passTypeIdentifier': 1, 'meta.serialNumber': 1 } },
+      {
+        index: {
+          path: 1,
+          'meta.passTypeIdentifier': 1,
+          'meta.registrations.deviceLibraryIdentifier': 1,
+        },
+      } as any,
+    ]);
 
     const upsertAppleWalletPass = async (token: TokenSurrogate, unchainedAPI: UnchainedCore) => {
       const createAppleWalletPass = getRenderer(RendererTypes.APPLE_WALLET);
@@ -158,7 +175,7 @@ const ticketingModule = {
       const allPasses = await MediaObjects.find({
         path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
       }).toArray();
-      const allTokens = await unchainedAPI.modules.warehousing.findTokens({});
+      const allTokens = await TokenSurrogates.find({}).toArray();
 
       for (const pass of allPasses) {
         // Check if binary is already invalidated, if so, skip
@@ -181,6 +198,37 @@ const ticketingModule = {
       return Buffer.from(hashBuffer).toString('hex');
     };
 
+    const cancelTicket = async (tokenId: string) => {
+      return TokenSurrogates.findOneAndUpdate(
+        { _id: tokenId },
+        { $set: { 'meta.cancelled': true } },
+        {
+          returnDocument: 'after',
+        },
+      );
+    };
+
+    const isTicketCancelled = (token: TokenSurrogate) => {
+      return Boolean(token.meta?.cancelled);
+    };
+
+    const getTicketsCreated = async (
+      {
+        productId,
+      }: {
+        productId: string;
+      },
+      { skipCancelled }: { skipCancelled?: boolean } = {},
+    ): Promise<number> => {
+      const selector: any = {
+        productId,
+      };
+      if (skipCancelled) {
+        selector['meta.cancelled'] = null;
+      }
+      return TokenSurrogates.countDocuments(selector);
+    };
+
     return {
       upsertAppleWalletPass,
       findAppleWalletPass,
@@ -190,6 +238,9 @@ const ticketingModule = {
       invalidateAppleWalletPasses,
       upsertGoogleWalletPass,
       buildMagicKey,
+      cancelTicket,
+      isTicketCancelled,
+      getTicketsCreated,
     };
   },
 };

@@ -1,15 +1,13 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 
-const { EXTERNAL_LINKS = '[]' } = process.env;
-
 export default function shopInfo(
   root: Root,
   _: never,
   context: Context,
 ): {
   version?: string;
-  externalLinks: Array<string>;
+  externalLinks: () => Array<string>;
   adminUiConfig?: Record<string, any>;
   vapidPublicKey?: string;
 } {
@@ -18,7 +16,14 @@ export default function shopInfo(
 
   return {
     version: context.version,
-    externalLinks: JSON.parse(EXTERNAL_LINKS),
+    externalLinks: () => {
+      try {
+        const parsed = JSON.parse(process.env.EXTERNAL_LINKS);
+        return parsed;
+      } catch (e) {
+        return [];
+      }
+    },
     adminUiConfig: {
       customProperties: adminUiConfig?.customProperties ?? [],
     },

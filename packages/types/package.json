@@ -20,7 +20,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "tsc && typedoc",
+    "prepublishOnly": "npm run clean && tsc && typedoc",
     "watch": "tsc -w",
     "test": "echo 'No tests'"
   },
@@ -38,10 +38,10 @@
     "@accounts/types": "^0.33.2",
     "@apollo/server": "^4.10.4",
     "@types/locale": "^0.1.4",
-    "@types/node": "^20.14.8",
-    "mongodb": "^6.7.0",
+    "@types/node": "^20.14.10",
+    "mongodb": "=6.7.0",
     "simpl-schema": "^3.4.6",
-    "typedoc": "^0.25.13",
-    "typescript": "^5.4.5"
+    "typedoc": "^0.26.4",
+    "typescript": "^5.5.3"
   }
 }

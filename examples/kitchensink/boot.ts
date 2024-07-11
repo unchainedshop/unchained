@@ -7,12 +7,16 @@ import { startPlatform, connectPlatformToExpress4, setAccessToken } from '@uncha
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
 import { ApolloServerPluginLandingPageGraphiQLPlayground } from 'apollo-graphiql-playground';
 import { log } from '@unchainedshop/logger';
+import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
+import { TicketingAPI } from '@unchainedshop/ticketing';
+
 import serveStatic from 'serve-static';
 import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 import seed from './seed.js';
 import { UnchainedUserContext } from '@unchainedshop/types/api.js';
+import ticketingServices from '@unchainedshop/ticketing/services.js';
 
 const start = async () => {
   const app = express();
@@ -20,7 +24,8 @@ const start = async () => {
 
   const engine = await startPlatform({
     introspection: true,
-    modules: defaultModules,
+    modules: { ...defaultModules, ...ticketingModules },
+    services: { ...ticketingServices },
     plugins: [
       responseCachePlugin({
         async sessionId(ctx) {
@@ -61,6 +66,13 @@ const start = async () => {
 
   connectPlatformToExpress4(app, engine);
   connectDefaultPluginsToExpress4(app, engine);
+
+  // Unchained Ticketing Extension
+  setupTicketing(app, engine.unchainedAPI as TicketingAPI, {
+    renderOrderPDF: console.log,
+    createAppleWalletPass: console.log,
+    createGoogleWalletPass: console.log,
+  });
 
   app.use(serveStatic('static', { index: ['index.html'] }));
 

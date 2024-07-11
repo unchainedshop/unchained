@@ -290,8 +290,8 @@ declare module '@unchainedshop/core-orders' {
   const OrderDeliveryStatus: typeof OrderDeliveryStatusType;
   const OrderPaymentStatus: typeof OrderPaymentStatusType;
 
-  const OrderDiscountAdapter: IDiscountAdapter;
-  const OrderDiscountDirector: IDiscountDirector;
+  const OrderDiscountAdapter: IDiscountAdapter<unknown>;
+  const OrderDiscountDirector: IDiscountDirector<unknown>;
 
   const OrderPricingAdapter: IOrderPricingAdapter;
   const OrderPricingDirector: IOrderPricingDirector;
@@ -371,5 +371,5 @@ declare module '@unchainedshop/core-worker' {
     batchCount?: number;
     schedule: WorkerSchedule | string;
   }>;
-  const FailedRescheduler: IScheduler;
+  const FailedRescheduler: IScheduler<unknown>;
 }
