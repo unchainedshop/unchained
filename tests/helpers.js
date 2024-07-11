@@ -98,7 +98,7 @@ export const createLoggedInGraphqlFetch = async (token = ADMIN_TOKEN) => {
 
   const link = createUploadLink({
     uri,
-    // includeExtensions: true,
+    includeExtensions: true,
     // fetchOptions: {
     //   duplex: 'half',
     // },
