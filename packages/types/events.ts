@@ -12,7 +12,7 @@ export type Event = {
 
 export type EventReport = {
   count: number;
-  type: string;
+  event: string;
 };
 
 export type EventQuery = {

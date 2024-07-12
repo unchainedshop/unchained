@@ -477,7 +477,7 @@ export default [
 
       shopAnalytics: ShopAnalytics
 
-      eventStatistics(from: Timestamp, to: Timestamp): [EventStatistics]!
+      eventStatistics(type: String, from: Timestamp, to: Timestamp): [EventStatistics]!
       orderStatistics(from: Timestamp, to: Timestamp): OrderStatistics!
       workStatistics(type: String, from: Timestamp, to: Timestamp): [WorkStatistics]!
     }
