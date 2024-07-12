@@ -19,6 +19,7 @@ import { QuotationsSchema } from '../db/QuotationsSchema.js';
 import { QuotationStatus } from '../db/QuotationStatus.js';
 import { QuotationDirector } from '../quotations-index.js';
 import { quotationsSettings } from '../quotations-settings.js';
+import { resolveBestCurrency } from '@unchainedshop/utils';
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 
@@ -322,14 +323,11 @@ export const configureQuotationsModule = async ({
 
     // Mutations
     create: async ({ countryCode, ...quotationData }, unchainedAPI) => {
-      const { services } = unchainedAPI;
+      const { modules } = unchainedAPI;
 
-      const currency = await services.countries.resolveDefaultCurrencyCode(
-        {
-          isoCode: countryCode,
-        },
-        unchainedAPI,
-      );
+      const countryObject = await modules.countries.findCountry({ isoCode: countryCode });
+      const currencies = await modules.currencies.findCurrencies({ includeInactive: false });
+      const currency = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
       const quotationId = await mutations.create({
         ...quotationData,

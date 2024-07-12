@@ -1,9 +1,10 @@
+import { Currency } from '@unchainedshop/types/currencies.js';
 import type { Locale as LocaleType, Locales as LocalesType } from 'locale';
 import localePkg from 'locale';
 
 const { Locales, Locale } = localePkg;
 
-const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH' } = process.env;
+const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH', UNCHAINED_CURRENCY = 'CHF' } = process.env;
 
 export const systemLocale = new Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNTRY}`);
 
@@ -30,6 +31,22 @@ export const resolveBestCountry = (localeCountry, shopCountry, countries) => {
     }
   }
   return localeCountry || systemLocale.country;
+};
+
+export const resolveBestCurrency = (localeCurrency, currencies: Array<Currency>) => {
+  if (localeCurrency) {
+    const resolvedCurrency = currencies.find((currency) => currency.isoCode === localeCurrency);
+    if (resolvedCurrency) {
+      return resolvedCurrency.isoCode;
+    }
+  }
+
+  const fallbackCurrency = currencies.find((currency) => currency.isoCode === UNCHAINED_CURRENCY);
+  if (fallbackCurrency) {
+    return fallbackCurrency.isoCode;
+  }
+
+  return currencies?.[0]?.isoCode || UNCHAINED_CURRENCY;
 };
 
 export const resolveUserRemoteAddress = (req) => {

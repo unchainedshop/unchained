@@ -28,6 +28,7 @@ export const findLocalizedText = async <T extends Document>(
     l: locale,
   });
 
+  console.log({ cacheKey });
   const cachedText = textCache.get(cacheKey);
 
   if (cachedText) return cachedText as T;

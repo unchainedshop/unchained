@@ -44,7 +44,8 @@ export default [
     input UpdateCountryInput {
       isoCode: String!
       isActive: Boolean
-      defaultCurrencyId: String
+      defaultCurrencyCode: String
+      defaultCurrencyId: String @deprecated(reason: "Use defaultCurrencyCode instead")
     }
 
     input CreateCurrencyInput {

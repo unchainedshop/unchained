@@ -1,5 +1,6 @@
 import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing.js';
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
+import { resolveBestCurrency } from '@unchainedshop/utils';
 
 export const ProductPrice: IProductPricingAdapter = {
   ...ProductPricingAdapter,
@@ -20,22 +21,11 @@ export const ProductPrice: IProductPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
-        const {
-          product,
-          country,
-          currency: forcedCurrency,
-          quantity,
-          modules,
-          services,
-        } = params.context;
+        const { product, country, currency: forcedCurrency, quantity, modules } = params.context;
+        const countryObject = await modules.countries.findCountry({ isoCode: country });
+        const currencies = await modules.currencies.findCurrencies({ includeInactive: false });
         const currency =
-          forcedCurrency ||
-          (await services.countries.resolveDefaultCurrencyCode(
-            {
-              isoCode: country,
-            },
-            params.context,
-          ));
+          forcedCurrency || resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
         const price = await modules.products.prices.price(product, { country, currency, quantity });
         if (price) {

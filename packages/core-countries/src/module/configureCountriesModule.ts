@@ -6,6 +6,7 @@ import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
 import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.js';
 import { CountriesSchema } from '../db/CountriesSchema.js';
+import addMigrations from '../migrations/addMigrations.js';
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 
@@ -18,8 +19,12 @@ export const buildFindSelector = ({ includeInactive = false, queryString = '' }:
 
 export const configureCountriesModule = async ({
   db,
+  migrationRepository,
 }: ModuleInput<Record<string, never>>): Promise<CountriesModule> => {
   registerEvents(COUNTRY_EVENTS);
+
+  // Migration
+  addMigrations(migrationRepository);
 
   const Countries = await CountriesCollection(db);
 

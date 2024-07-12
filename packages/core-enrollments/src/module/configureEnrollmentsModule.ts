@@ -20,6 +20,7 @@ import { EnrollmentsSchema } from '../db/EnrollmentsSchema.js';
 import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
 import { EnrollmentDirector } from '../enrollments-index.js';
 import { enrollmentsSettings } from '../enrollments-settings.js';
+import { resolveBestCurrency } from '@unchainedshop/utils';
 
 const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_ADD_PERIOD',
@@ -334,16 +335,12 @@ export const configureEnrollmentsModule = async ({
       { countryCode, currencyCode, orderIdForFirstPeriod, ...enrollmentData },
       unchainedAPI,
     ) => {
-      const { services } = unchainedAPI;
+      const { modules } = unchainedAPI;
 
+      const countryObject = await modules.countries.findCountry({ isoCode: countryCode });
+      const currencies = await modules.currencies.findCurrencies({ includeInactive: false });
       const currency =
-        currencyCode ||
-        (await services.countries.resolveDefaultCurrencyCode(
-          {
-            isoCode: countryCode,
-          },
-          unchainedAPI,
-        ));
+        currencyCode || resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
       const enrollmentId = await mutations.create({
         ...enrollmentData,
