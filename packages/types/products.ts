@@ -371,7 +371,6 @@ export type ProductsModule = {
     findTexts: (query: Filter<ProductText>, options?: FindOptions) => Promise<Array<ProductText>>;
 
     findLocalizedText: (params: { productId: string; locale?: string }) => Promise<ProductText>;
-    searchTexts: ({ searchText }: { searchText: string }) => Promise<Array<string>>;
 
     // Mutations
     updateTexts: (

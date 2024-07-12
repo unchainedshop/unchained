@@ -7,9 +7,6 @@ description: Learn about the layered approach of Unchained
   Enables you to manage bookmarks
   - **migrateBookmarksService(params: [MigrateBookmarksService](https://docs.unchained.shop/types/types/bookmarks.MigrateBookmarksService.html))**: Used to migrate bookmarked products from one user account to another. Useful for example when we want to keep a product a user has bookmarked before registering after they register.
 
-### `countryServices`
-- **resolveDefaultCurrencyCode(params: [ResolveDefaultCurrencyCodeService](https://docs.unchained.shop/types/types/countries.ResolveDefaultCurrencyCodeService.html))**: returns a default currency for a given country code passed as its only argument. 
-
 ### `fileServices`
 
   - **linkFile(params: [LinkFileService](https://docs.unchained.shop/types/types/files.LinkFileService.html))**: Used to link files uploaded to an S3-compatible storage server after a successful upload using `createSignedURL`.

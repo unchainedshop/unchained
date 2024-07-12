@@ -33,6 +33,7 @@ export type SortOption = {
 export interface UnchainedLocaleContext {
   countryContext: string;
   localeContext: Locale;
+  currencyContext: string;
   remoteAddress?: string;
   remotePort?: string;
   userAgent?: string;

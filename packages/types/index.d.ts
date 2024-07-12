@@ -3,7 +3,7 @@ import { AssortmentsModule, AssortmentsSettings, AssortmentsSettingsOptions } fr
 
 import { BookmarkServices, BookmarksModule } from './bookmarks.js';
 
-import { CountriesModule, CountryServices } from './countries.js';
+import { CountriesModule } from './countries.js';
 import { CurrenciesModule } from './currencies.js';
 import {
   DeliveryError as DeliveryErrorType,
@@ -139,8 +139,6 @@ declare module '@unchainedshop/core-countries' {
   function configureCountriesModule(
     params: ModuleInput<Record<string, never>>,
   ): Promise<CountriesModule>;
-
-  const countryServices: CountryServices;
 }
 
 declare module '@unchainedshop/core-currencies' {

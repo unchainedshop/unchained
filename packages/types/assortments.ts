@@ -290,7 +290,6 @@ export type AssortmentsModule = {
     findTexts: (query: Filter<AssortmentText>, options?: FindOptions) => Promise<Array<AssortmentText>>;
 
     findLocalizedText: (params: { assortmentId: string; locale?: string }) => Promise<AssortmentText>;
-    searchTexts: ({ searchText }: { searchText: string }) => Promise<Array<string>>;
 
     // Mutations
     updateTexts: (

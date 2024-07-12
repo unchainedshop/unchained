@@ -58,14 +58,7 @@ export const ConfigurableProduct = {
     requestContext: Context,
   ): Promise<ProductPriceRange> {
     const { countryContext, modules } = requestContext;
-    const currencyCode =
-      forcedCurrencyCode ||
-      (await requestContext.services.countries.resolveDefaultCurrencyCode(
-        {
-          isoCode: countryContext,
-        },
-        requestContext,
-      ));
+    const currencyCode = forcedCurrencyCode || requestContext.currencyContext;
     return modules.products.prices.catalogPriceRange(product, {
       quantity,
       vectors,
@@ -111,14 +104,8 @@ export const ConfigurableProduct = {
     requestContext: Context,
   ): Promise<ProductPriceRange> {
     const { countryContext, modules } = requestContext;
-    const currency =
-      forcedCurrencyCode ||
-      (await requestContext.services.countries.resolveDefaultCurrencyCode(
-        {
-          isoCode: countryContext,
-        },
-        requestContext,
-      ));
+    const currency = forcedCurrencyCode || requestContext.currencyContext;
+
     return modules.products.prices.simulatedPriceRange(
       product,
       {

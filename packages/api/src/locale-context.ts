@@ -23,6 +23,8 @@ const localeContextCache = new lruCache.LRUCache({
   ttl,
 });
 
+const { UNCHAINED_CURRENCY = 'CHF' } = process.env;
+
 export const getLocaleContext = async (
   req: IncomingMessage,
   res: OutgoingMessage,
@@ -36,6 +38,7 @@ export const getLocaleContext = async (
 
   if (cachedContext) return { remoteAddress, remotePort, userAgent, ...cachedContext };
 
+  console.log('LOCALE CONTEXT CACHE MISS');
   // return the parsed locale by bcp47 and
   // return the best resolved normalized locale by locale according to system-wide configuration
   // else fallback to base language & base country
@@ -68,9 +71,20 @@ export const getLocaleContext = async (
   log(`Locale Context: Resolved ${localeContext.normalized} ${countryContext}`, {
     level: LogLevel.Debug,
   });
+
+  const countryObject = countries.find((country) => country.isoCode === countryContext);
+  const currencyObject =
+    countryObject?.defaultCurrencyId &&
+    (await unchainedAPI.modules.currencies.findCurrency({
+      currencyId: countryObject.defaultCurrencyId,
+    }));
+
+  const currencyContext = currencyObject?.isoCode || UNCHAINED_CURRENCY;
+
   const newContext: UnchainedLocaleContext = {
     localeContext,
     countryContext,
+    currencyContext,
   };
   localeContextCache.set(cacheKey, newContext);
 
