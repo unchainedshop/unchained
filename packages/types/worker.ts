@@ -11,8 +11,12 @@ export enum WorkStatus {
 }
 
 export type WorkerReport = {
-  count: number;
-  status: WorkStatus;
+  type: string;
+  createdCount: number;
+  errorCount: number;
+  successCount: number;
+  startedCount: number;
+  deletedCount: number;
 };
 
 export type Work = {
@@ -108,7 +112,7 @@ export type WorkerModule = {
     referenceDate: Date;
   }) => Promise<Array<Work>>;
 
-  getReport: (params?: { from: Date }) => Promise<WorkerReport[]>;
+  getReport: (params?: { type?: string; from?: Date; to?: Date }) => Promise<WorkerReport[]>;
 };
 
 /*

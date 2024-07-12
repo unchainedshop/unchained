@@ -81,5 +81,14 @@ export default [
       updated: DateTime
       user: User
     }
+
+    type OrderStatistics {
+      createdCount: Int!
+      updatedCount: Int!
+      checkoutCount: Int!
+      rejectionCount: Int!
+      confirmationCount: Int!
+      fullfilledCount: Int!
+    }
   `,
 ];

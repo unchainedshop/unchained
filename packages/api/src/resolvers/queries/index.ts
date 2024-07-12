@@ -65,6 +65,7 @@ import token from './warehousing/token.js';
 import tokens from './warehousing/tokens.js';
 import work from './worker/work.js';
 import workQueue from './worker/workQueue.js';
+import workStatistics from './worker/workStatistics.js';
 import workQueueCount from './worker/workQueueCount.js';
 import impersonator from './users/impersonator.js';
 import validateResetPasswordToken from './users/validateResetPasswordToken.js';
@@ -140,5 +141,6 @@ export default {
   eventsCount: acl(actions.viewEvents)(eventsCount),
   validateResetPasswordToken: acl(actions.resetPassword)(validateResetPasswordToken),
   validateVerifyEmailToken: acl(actions.verifyEmail)(validateVerifyEmailToken),
-  shopAnalytics: acl(actions.viewShopAnalytics)(shopAnalytics),
+  shopAnalytics: acl(actions.viewStatistics)(shopAnalytics),
+  workStatistics: acl(actions.viewStatistics)(workStatistics),
 };
