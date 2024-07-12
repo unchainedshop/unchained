@@ -116,19 +116,30 @@ const defaultSort: Array<{ key: string; value: SortDirection }> = [
   { key: 'originalWorkId', value: SortDirection.ASC },
   { key: 'created', value: SortDirection.ASC },
 ];
-const normalizeWorkQueueAggregateResult = (result = []): WorkerReport[] => {
-  const allStatuses = ['DELETED', 'NEW', 'ALLOCATED', 'SUCCESS', 'FAILED'];
+const normalizeWorkQueueAggregateResult = (data = []): WorkerReport[] => {
+  const statusToFieldMap = {
+    NEW: 'createdCount',
+    ALLOCATED: 'startedCount',
+    FAILED: 'errorCount',
+    SUCCESS: 'successCount',
+    DELETED: 'deletedCount',
+  };
 
-  const statusCountMap = result.reduce((map, { status, count }) => {
-    map[status] = count;
-    return map;
-  }, {});
-  return allStatuses.map((status: WorkStatus) => ({
-    status,
-    count: statusCountMap[status] || 0,
-  }));
+  return data.map((item) => {
+    const workStatistics = {
+      type: item.type,
+      ...Object.values(statusToFieldMap).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+    };
+
+    item.statuses.forEach(({ status, count }) => {
+      if (statusToFieldMap[status]) {
+        workStatistics[statusToFieldMap[status]] = count;
+      }
+    });
+
+    return workStatistics;
+  }) as unknown as WorkerReport[];
 };
-
 export const configureWorkerModule = async ({
   db,
   options,
@@ -525,17 +536,33 @@ export const configureWorkerModule = async ({
       );
     },
 
-    getReport: async ({ from } = { from: null }) => {
+    getReport: async ({ type, from, to } = { type: null, from: null, to: null }) => {
       const pipeline = [];
-      if (from) {
-        const date = new Date(from);
+      const matchConditions = [];
+      if (from || to) {
+        if (from) {
+          const fromDate = new Date(from);
+          matchConditions.push({
+            $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
+          });
+        }
+        if (to) {
+          const toDate = new Date(to);
+          matchConditions.push({
+            $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
+          });
+        }
+      }
+      if (type) {
+        matchConditions.push({ type });
+      }
+      if (matchConditions.length > 0) {
         pipeline.push({
           $match: {
-            $or: [{ created: { $gte: date } }, { updated: { $gte: date } }],
+            $and: matchConditions,
           },
         });
       }
-
       pipeline.push(
         {
           $addFields: {
@@ -549,20 +576,35 @@ export const configureWorkerModule = async ({
         },
         {
           $group: {
-            _id: '$status',
+            _id: {
+              type: '$type',
+              status: '$status',
+            },
             count: { $sum: 1 },
           },
         },
         {
+          $group: {
+            _id: '$_id.type',
+            statuses: {
+              $push: {
+                status: '$_id.status',
+                count: '$count',
+              },
+            },
+          },
+        },
+
+        {
           $project: {
             _id: 0,
-            status: '$_id',
-            count: 1,
+            type: '$_id',
+            statuses: 1,
           },
         },
       );
 
-      return normalizeWorkQueueAggregateResult(await WorkQueue.aggregate(pipeline).toArray());
+      return normalizeWorkQueueAggregateResult(await WorkQueue.aggregate(pipeline).toArray()) as any;
     },
   };
 };
