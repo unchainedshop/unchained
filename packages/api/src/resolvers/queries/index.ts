@@ -71,6 +71,7 @@ import impersonator from './users/impersonator.js';
 import validateResetPasswordToken from './users/validateResetPasswordToken.js';
 import validateVerifyEmailToken from './users/validateVerifyEmailToken.js';
 import shopAnalytics from './shopAnalytics.js';
+import eventStatistics from './events/eventStatistics.js';
 
 export default {
   me,
@@ -143,4 +144,5 @@ export default {
   validateVerifyEmailToken: acl(actions.verifyEmail)(validateVerifyEmailToken),
   shopAnalytics: acl(actions.viewStatistics)(shopAnalytics),
   workStatistics: acl(actions.viewStatistics)(workStatistics),
+  eventStatistics: acl(actions.viewStatistics)(eventStatistics),
 };

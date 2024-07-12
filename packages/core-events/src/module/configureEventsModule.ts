@@ -42,7 +42,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   type: (event: Event) => string;
 
   count: (query: EventQuery) => Promise<number>;
-  getReport: (params?: { from: Date }) => Promise<EventReport[]>;
+  getReport: (params?: { from?: Date; to?: Date; type?: string }) => Promise<EventReport[]>;
 }
 
 export const configureEventsModule = async ({
@@ -83,13 +83,30 @@ export const configureEventsModule = async ({
       const count = await Events.countDocuments(buildFindSelector(query));
       return count;
     },
-    getReport: async ({ from } = { from: null }) => {
+    getReport: async ({ from, to, type } = { from: null, to: null, type: null }) => {
       const pipeline = [];
-      if (from) {
-        const date = new Date(from);
+      const matchConditions = [];
+      if (from || to) {
+        if (from) {
+          const fromDate = new Date(from);
+          matchConditions.push({
+            $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
+          });
+        }
+        if (to) {
+          const toDate = new Date(to);
+          matchConditions.push({
+            $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
+          });
+        }
+      }
+      if (type) {
+        matchConditions.push({ type });
+      }
+      if (matchConditions.length > 0) {
         pipeline.push({
           $match: {
-            $or: [{ created: { $gte: date } }, { updated: { $gte: date } }],
+            $and: matchConditions,
           },
         });
       }
@@ -104,7 +121,7 @@ export const configureEventsModule = async ({
           {
             $project: {
               _id: 0,
-              type: '$_id',
+              event: '$_id',
               count: 1,
             },
           },
