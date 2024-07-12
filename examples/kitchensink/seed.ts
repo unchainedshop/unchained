@@ -60,7 +60,7 @@ export default async (unchainedAPI) => {
         const currency = await modules.currencies.findCurrency({
           currencyId,
         });
-        return currency;
+        return currency.isoCode;
       }),
     );
 
@@ -70,7 +70,7 @@ export default async (unchainedAPI) => {
           {
             isoCode: code,
             isActive: true,
-            defaultCurrencyId: currencies[key]._id,
+            defaultCurrencyCode: currencies[key],
           },
           adminId,
         );
@@ -111,7 +111,7 @@ export default async (unchainedAPI) => {
     logger.log(`
       initialized database with
       \ncountries: ${countries.join(',')}
-      \ncurrencies: ${currencies.map((c) => c.isoCode).join(',')}
+      \ncurrencies: ${currencies.join(',')}
       \nlanguages: ${languages.join(',')}
       \ndeliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})\npaymentProvider: ${
         paymentProvider._id

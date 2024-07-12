@@ -135,19 +135,6 @@ export const configureAssortmentTextsModule = ({
       return text;
     },
 
-    searchTexts: async ({ searchText }) => {
-      const assortmentIds = AssortmentTexts.find(
-        { $text: { $search: searchText } },
-        {
-          projection: {
-            assortmentId: 1,
-          },
-        },
-      ).map(({ assortmentId }) => assortmentId);
-
-      return assortmentIds.toArray();
-    },
-
     // Mutations
     updateTexts: async (assortmentId, texts) => {
       const assortmentTexts = await Promise.all(

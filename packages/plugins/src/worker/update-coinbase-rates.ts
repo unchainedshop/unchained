@@ -3,7 +3,7 @@ import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
-import { systemLocale } from '@unchainedshop/utils';
+import { resolveBestCurrency } from '@unchainedshop/utils';
 
 const getExchangeRates = async (base) => {
   return fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${base}`, {
@@ -24,17 +24,10 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
   type: 'UPDATE_COINBASE_RATES',
 
   doWork: async (input, unchainedAPI) => {
-    const { modules, services } = unchainedAPI;
-
     try {
-      const currencyCode = await services.countries.resolveDefaultCurrencyCode(
-        {
-          isoCode: systemLocale.country,
-        },
-        unchainedAPI,
-      );
+      const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: true });
+      const currencyCode = resolveBestCurrency(null, currencies); // Get fallback currency
 
-      const currencies = await modules.currencies.findCurrencies({ includeInactive: true });
       const currencyCodes = currencies.map((currency) => currency.isoCode);
 
       const {
@@ -61,7 +54,7 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
             currencyCodes.includes(rate.quoteCurrency) && rate.quoteCurrency !== rate.baseCurrency,
         );
 
-      const success = await modules.products.prices.rates.updateRates(rates);
+      const success = await unchainedAPI.modules.products.prices.rates.updateRates(rates);
       return {
         success,
         result: {

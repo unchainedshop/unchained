@@ -1,11 +1,12 @@
 import { NextUserCartService } from '@unchainedshop/types/orders.js';
 import { ordersSettings } from '../orders-settings.js';
+import { resolveBestCurrency } from '@unchainedshop/utils';
 
 export const nextUserCartService: NextUserCartService = async (
   { user, orderNumber, countryCode, forceCartCreation },
   unchainedAPI,
 ) => {
-  const { modules, services } = unchainedAPI;
+  const { modules } = unchainedAPI;
 
   const cart = await modules.orders.cart({
     countryContext: countryCode || user.lastLogin?.countryCode,
@@ -17,12 +18,9 @@ export const nextUserCartService: NextUserCartService = async (
   const shouldCreateNewCart = forceCartCreation || ordersSettings.ensureUserHasCart;
   if (!shouldCreateNewCart) return null;
 
-  const currency = await services.countries.resolveDefaultCurrencyCode(
-    {
-      isoCode: countryCode,
-    },
-    unchainedAPI,
-  );
+  const countryObject = await modules.countries.findCountry({ isoCode: countryCode });
+  const currencies = await modules.currencies.findCurrencies({ includeInactive: false });
+  const currency = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
   const order = await modules.orders.create({
     userId: user._id,

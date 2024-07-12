@@ -5,7 +5,7 @@ export const CountriesSchema = new SimpleSchema(
   {
     isoCode: { type: String, required: true },
     isActive: Boolean,
-    defaultCurrencyId: String,
+    defaultCurrencyCode: String,
     ...Schemas.timestampFields,
   },
   { requiredByDefault: false },

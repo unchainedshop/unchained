@@ -132,19 +132,6 @@ export const configureProductTextsModule = ({
       return text;
     },
 
-    searchTexts: async ({ searchText }) => {
-      const productIds = ProductTexts.find(
-        { $text: { $search: searchText } },
-        {
-          projection: {
-            productId: 1,
-          },
-        },
-      ).map(({ productId }) => productId);
-
-      return productIds.toArray();
-    },
-
     // Mutations
     updateTexts: async (productId, texts) => {
       const productTexts = await Promise.all(

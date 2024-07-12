@@ -2,68 +2,80 @@ import { IncomingMessage, OutgoingMessage } from 'http';
 import { UnchainedLocaleContext } from '@unchainedshop/types/api.js';
 import localePkg from 'locale';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { resolveBestCountry, resolveBestSupported, systemLocale } from '@unchainedshop/utils';
+import {
+  resolveBestCountry,
+  resolveBestSupported,
+  resolveBestCurrency,
+  resolveUserRemoteAddress,
+  systemLocale,
+} from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import * as lruCache from 'lru-cache';
+import memoizee from 'memoizee';
 
 const { Locales } = localePkg;
 
 const { NODE_ENV } = process.env;
 
-const ttl = NODE_ENV === 'production' ? 1000 * 60 : 0; // minute or second
+export const resolveDefaultContext = memoizee(
+  async ({ acceptLang, acceptCountry }, unchainedAPI) => {
+    const languages = await unchainedAPI.modules.languages.findLanguages(
+      { includeInactive: false },
+      { projection: { isoCode: 1, isActive: 1 } },
+    );
 
-const localeContextCache = new lruCache.LRUCache({
-  max: 500,
-  ttl,
-});
+    const countries = await unchainedAPI.modules.countries.findCountries(
+      { includeInactive: false },
+      { projection: { isoCode: 1, isActive: 1 } },
+    );
+
+    const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });
+
+    const supportedLocaleStrings = languages.reduce((accumulator, language) => {
+      const added = countries.map((country) => {
+        return `${language.isoCode}-${country.isoCode}`;
+      });
+      return accumulator.concat(added);
+    }, []);
+
+    const supportedLocales = new Locales(supportedLocaleStrings, systemLocale.code);
+
+    const localeContext = resolveBestSupported(acceptLang, supportedLocales);
+    const countryContext = resolveBestCountry(localeContext.country, acceptCountry, countries);
+
+    const countryObject = countries.find((country) => country.isoCode === countryContext);
+    const currencyContext = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
+
+    log(`Locale Context: Resolved ${localeContext.normalized} ${countryContext} ${currencyContext}`, {
+      level: LogLevel.Debug,
+    });
+
+    const newContext: UnchainedLocaleContext = {
+      localeContext,
+      countryContext,
+      currencyContext,
+    };
+
+    return newContext;
+  },
+  {
+    maxAge: NODE_ENV === 'production' ? 1000 * 60 : 100, // minute or 100ms
+    promise: true,
+    normalizer(args) {
+      return `${args[0].acceptLang}-${args[0].acceptCountry}`;
+    },
+  },
+);
 
 export const getLocaleContext = async (
   req: IncomingMessage,
   res: OutgoingMessage,
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLocaleContext> => {
-  const cacheKey = `${req.headers['accept-language']}:${req.headers['x-shop-country']}`;
-  const cachedContext = localeContextCache.get(cacheKey) as UnchainedLocaleContext;
-
-  if (cachedContext) return cachedContext;
-
-  // return the parsed locale by bcp47 and
-  // return the best resolved normalized locale by locale according to system-wide configuration
-  // else fallback to base language & base country
-
-  const languages = await unchainedAPI.modules.languages.findLanguages(
-    { includeInactive: false },
-    { projection: { isoCode: 1, isActive: 1 } },
+  const userAgent = req.headers['user-agent'];
+  const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
+  const context = await resolveDefaultContext(
+    { acceptLang: req.headers['accept-language'], acceptCountry: req.headers['x-shop-country'] },
+    unchainedAPI,
   );
-
-  const countries = await unchainedAPI.modules.countries.findCountries(
-    { includeInactive: false },
-    { projection: { isoCode: 1, isActive: 1 } },
-  );
-
-  const supportedLocaleStrings = languages.reduce((accumulator, language) => {
-    const added = countries.map((country) => {
-      return `${language.isoCode}-${country.isoCode}`;
-    });
-    return accumulator.concat(added);
-  }, []);
-
-  const supportedLocales = new Locales(supportedLocaleStrings, systemLocale.code);
-
-  const localeContext = resolveBestSupported(req.headers['accept-language'], supportedLocales);
-  const countryContext = resolveBestCountry(
-    localeContext.country,
-    req.headers['x-shop-country'],
-    countries,
-  );
-  log(`Locale Context: Resolved ${localeContext.normalized} ${countryContext}`, {
-    level: LogLevel.Debug,
-  });
-  const newContext: UnchainedLocaleContext = {
-    localeContext,
-    countryContext,
-  };
-  localeContextCache.set(cacheKey, newContext);
-
-  return newContext;
+  return { remoteAddress, remotePort, userAgent, ...context };
 };

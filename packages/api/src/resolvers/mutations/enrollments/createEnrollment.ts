@@ -13,7 +13,7 @@ export default async function createEnrollment(
   { contact, plan, billingAddress, payment, delivery, meta },
   context: Context,
 ) {
-  const { countryContext, modules, userId } = context;
+  const { countryContext, currencyContext, modules, userId } = context;
 
   log('mutation createEnrollment', { userId });
 
@@ -40,6 +40,7 @@ export default async function createEnrollment(
       configuration,
       contact,
       countryCode: countryContext,
+      currencyCode: currencyContext,
       delivery,
       meta,
       payment,

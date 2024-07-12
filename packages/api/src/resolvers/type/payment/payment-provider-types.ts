@@ -59,17 +59,10 @@ export const PaymentProvider: PaymentProviderHelperTypes = {
     { currency: currencyCode, orderId, useNetPrice, context: providerContext },
     requestContext,
   ) {
-    const { modules, services, countryContext: country, user } = requestContext;
+    const { modules, countryContext: country, user } = requestContext;
     const order = await modules.orders.findOrder({ orderId });
 
-    const currency =
-      currencyCode ||
-      (await services.countries.resolveDefaultCurrencyCode(
-        {
-          isoCode: country,
-        },
-        requestContext,
-      ));
+    const currency = currencyCode || requestContext.currencyContext;
 
     const pricingDirector = await PaymentPricingDirector.actions(
       {

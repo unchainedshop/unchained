@@ -33,7 +33,6 @@
   "dependencies": {
     "@unchainedshop/events": "^3.0.0-alpha1",
     "@unchainedshop/utils": "^3.0.0-alpha1",
-    "lru-cache": "^11.0.0",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {

@@ -4,7 +4,7 @@ export const BaseCountry = {
   _id: 'ch',
   isoCode: 'CH',
   isActive: true,
-  defaultCurrencyId: 'chf',
+  defaultCurrencyCode: 'CHF',
 };
 
 export const BaseLanguage = {

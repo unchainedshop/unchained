@@ -1,7 +1,7 @@
 import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core.js';
 import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
 import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
-import { configureCountriesModule, countryServices } from '@unchainedshop/core-countries';
+import { configureCountriesModule } from '@unchainedshop/core-countries';
 import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
 import { configureDeliveryModule } from '@unchainedshop/core-delivery';
 import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
@@ -147,7 +147,6 @@ export const initCore = async ({
     },
     services: {
       bookmarks: bookmarkServices,
-      countries: countryServices,
       files: fileServices,
       orders: orderServices,
       products: productServices,
