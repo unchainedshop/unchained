@@ -31,13 +31,6 @@ export default [
       sinceInstanceStart: [JSON]!
     }
 
-    type ShopAnalytics {
-      instanceStartTime: Timestamp
-      startOfToday: Timestamp
-      workItems: ActivityReport!
-      events: ActivityReport!
-      orders: ActivityReport!
-    }
     type Shop @cacheControl(maxAge: 180) {
       _id: ID!
       language: Language

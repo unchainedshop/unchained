@@ -70,7 +70,6 @@ import workQueueCount from './worker/workQueueCount.js';
 import impersonator from './users/impersonator.js';
 import validateResetPasswordToken from './users/validateResetPasswordToken.js';
 import validateVerifyEmailToken from './users/validateVerifyEmailToken.js';
-import shopAnalytics from './shopAnalytics.js';
 import eventStatistics from './events/eventStatistics.js';
 
 export default {
@@ -142,7 +141,6 @@ export default {
   eventsCount: acl(actions.viewEvents)(eventsCount),
   validateResetPasswordToken: acl(actions.resetPassword)(validateResetPasswordToken),
   validateVerifyEmailToken: acl(actions.verifyEmail)(validateVerifyEmailToken),
-  shopAnalytics: acl(actions.viewStatistics)(shopAnalytics),
   workStatistics: acl(actions.viewStatistics)(workStatistics),
   eventStatistics: acl(actions.viewStatistics)(eventStatistics),
 };

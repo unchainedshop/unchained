@@ -474,9 +474,6 @@ export default [
       Determines if a token is valid/active for email verification
       """
       validateVerifyEmailToken(token: String!): Boolean!
-
-      shopAnalytics: ShopAnalytics
-
       eventStatistics(type: String, from: Timestamp, to: Timestamp): [EventStatistics]!
       orderStatistics(from: Timestamp, to: Timestamp): OrderStatistics!
       workStatistics(type: String, from: Timestamp, to: Timestamp): [WorkStatistics]!
