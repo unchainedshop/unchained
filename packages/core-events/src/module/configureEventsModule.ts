@@ -87,17 +87,21 @@ export const configureEventsModule = async ({
       const pipeline = [];
       const matchConditions = [];
       if (from || to) {
+        const dateConditions = [];
         if (from) {
           const fromDate = new Date(from);
-          matchConditions.push({
+          dateConditions.push({
             $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
           });
         }
         if (to) {
           const toDate = new Date(to);
-          matchConditions.push({
+          dateConditions.push({
             $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
           });
+        }
+        if (dateConditions.length > 0) {
+          matchConditions.push({ $and: dateConditions });
         }
       }
       if (type) {
