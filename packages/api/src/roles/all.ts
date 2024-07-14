@@ -96,7 +96,7 @@ export const all = (role, actions) => {
   role.allow(actions.impersonate, () => false);
   role.allow(actions.stopImpersonation, () => false);
   role.allow(actions.viewTokens, () => false);
-  role.allow(actions.viewStatistics, () => true);
+  role.allow(actions.viewStatistics, () => false);
 
   // special case: when doing a login mutation, the user is not logged in technically yet,
   // but should be able to see user data of the user that is about to be logged in

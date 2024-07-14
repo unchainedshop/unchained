@@ -28,17 +28,22 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
   return selector;
 };
 
-const normalizeOrderAggregateResult = (result = []): OrderReport[] => {
-  const allStatuses = ['PENDING', 'CART', 'CONFIRMED', 'FULLFILLED', 'REJECTED'];
+const normalizeOrderAggregateResult = (data = []): OrderReport => {
+  const statusToFieldMap = {
+    CART: 'createdCount',
+    PENDING: 'checkoutCount',
+    REJECTED: 'rejectionCount',
+    CONFIRMED: 'confirmationCount',
+    FULLFILLED: 'fullfilledCount',
+  };
+  const orderStatistics = {
+    ...Object.values(statusToFieldMap).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+  } as OrderReport;
 
-  const statusCountMap = result.reduce((map, { status, count }) => {
-    map[status] = count;
-    return map;
-  }, {});
-  return allStatuses.map((status: OrderStatus | 'CART') => ({
-    status,
-    count: statusCountMap[status] || 0,
-  }));
+  data.forEach((item) => {
+    orderStatistics[statusToFieldMap[item.status]] = item.count;
+  });
+  return orderStatistics;
 };
 
 export const configureOrdersModuleQueries = ({
@@ -77,14 +82,34 @@ export const configureOrdersModuleQueries = ({
       return Orders.find(selector, findOptions).toArray();
     },
 
-    getReport: async ({ from } = { from: null }) => {
+    getReport: async ({ from, to } = { from: null, to: null }) => {
       const pipeline = [];
-      if (from)
+      const matchConditions = [];
+      if (from || to) {
+        const dateConditions = [];
+        if (from) {
+          const fromDate = new Date(from);
+          dateConditions.push({
+            $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
+          });
+        }
+        if (to) {
+          const toDate = new Date(to);
+          dateConditions.push({
+            $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
+          });
+        }
+        if (dateConditions.length > 0) {
+          matchConditions.push({ $and: dateConditions });
+        }
+      }
+      if (matchConditions.length > 0) {
         pipeline.push({
           $match: {
-            $or: [{ created: { $gte: new Date(from) } }, { updated: { $gte: new Date(from) } }],
+            $and: matchConditions,
           },
         });
+      }
       pipeline.push(
         ...[
           {
