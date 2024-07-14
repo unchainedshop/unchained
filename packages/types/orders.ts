@@ -19,8 +19,12 @@ export enum OrderStatus {
 }
 
 export type OrderReport = {
-  count: number;
-  status: OrderStatus | 'CART';
+  createdCount: number;
+  updatedCount: number;
+  checkoutCount: number;
+  rejectionCount: number;
+  confirmationCount: number;
+  fullfilledCount: number;
 };
 
 export type Order = {
@@ -85,7 +89,7 @@ export interface OrderQueries {
   ) => Promise<Array<Order>>;
   count: (query: OrderQuery) => Promise<number>;
   orderExists: (params: { orderId: string }) => Promise<boolean>;
-  getReport: (params?: { from: Date }) => Promise<OrderReport[]>;
+  getReport: (params?: { from?: Date; to?: Date }) => Promise<OrderReport>;
 }
 export interface OrderTransformations {
   discounted: (

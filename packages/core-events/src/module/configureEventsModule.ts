@@ -114,6 +114,7 @@ export const configureEventsModule = async ({
           },
         });
       }
+
       pipeline.push(
         ...[
           {

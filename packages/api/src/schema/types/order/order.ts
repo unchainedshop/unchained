@@ -84,7 +84,6 @@ export default [
 
     type OrderStatistics {
       createdCount: Int!
-      updatedCount: Int!
       checkoutCount: Int!
       rejectionCount: Int!
       confirmationCount: Int!
