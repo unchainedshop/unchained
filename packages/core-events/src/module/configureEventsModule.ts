@@ -42,7 +42,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   type: (event: Event) => string;
 
   count: (query: EventQuery) => Promise<number>;
-  getReport: (params?: { from?: Date; to?: Date; type?: string }) => Promise<EventReport[]>;
+  getReport: (params?: { from?: Date; to?: Date; types?: string[] }) => Promise<EventReport[]>;
 }
 
 export const configureEventsModule = async ({
@@ -83,7 +83,7 @@ export const configureEventsModule = async ({
       const count = await Events.countDocuments(buildFindSelector(query));
       return count;
     },
-    getReport: async ({ from, to, type } = { from: null, to: null, type: null }) => {
+    getReport: async ({ from, to, types } = { from: null, to: null, types: null }) => {
       const pipeline = [];
       const matchConditions = [];
       if (from || to) {
@@ -104,8 +104,8 @@ export const configureEventsModule = async ({
           matchConditions.push({ $and: dateConditions });
         }
       }
-      if (type) {
-        matchConditions.push({ type });
+      if (types && Array.isArray(types) && types.length) {
+        matchConditions.push({ type: { $in: types } });
       }
       if (matchConditions.length > 0) {
         pipeline.push({

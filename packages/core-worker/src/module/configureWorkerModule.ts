@@ -536,7 +536,7 @@ export const configureWorkerModule = async ({
       );
     },
 
-    getReport: async ({ type, from, to } = { type: null, from: null, to: null }) => {
+    getReport: async ({ types, from, to } = { types: null, from: null, to: null }) => {
       const pipeline = [];
       const matchConditions = [];
       if (from || to) {
@@ -557,8 +557,8 @@ export const configureWorkerModule = async ({
           matchConditions.push({ $and: dateConditions });
         }
       }
-      if (type) {
-        matchConditions.push({ type });
+      if (types && Array.isArray(types) && types.length) {
+        matchConditions.push({ type: { $in: types } });
       }
       if (matchConditions.length > 0) {
         pipeline.push({
