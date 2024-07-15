@@ -35,5 +35,5 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   type: (event: Event) => string;
 
   count: (query: EventQuery) => Promise<number>;
-  getReport: (params?: { from?: Date; to?: Date; type?: string }) => Promise<EventReport[]>;
+  getReport: (params?: { from?: Date; to?: Date; types?: string[] }) => Promise<EventReport[]>;
 }

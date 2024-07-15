@@ -474,9 +474,19 @@ export default [
       Determines if a token is valid/active for email verification
       """
       validateVerifyEmailToken(token: String!): Boolean!
-      eventStatistics(type: String, from: Timestamp, to: Timestamp): [EventStatistics]!
+
+      """
+      Returns aggregated report of all the events that occurred in the system
+      """
+      eventStatistics(types: [String!], from: Timestamp, to: Timestamp): [EventStatistics]!
+      """
+      Returns aggregated report of all the orders that occurred in the system
+      """
       orderStatistics(from: Timestamp, to: Timestamp): OrderStatistics!
-      workStatistics(type: String, from: Timestamp, to: Timestamp): [WorkStatistics]!
+      """
+      Returns aggregated report of all the worker jobs that occurred in the system
+      """
+      workStatistics(types: [String!], from: Timestamp, to: Timestamp): [WorkStatistics]!
     }
   `,
 ];

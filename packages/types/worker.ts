@@ -112,7 +112,7 @@ export type WorkerModule = {
     referenceDate: Date;
   }) => Promise<Array<Work>>;
 
-  getReport: (params?: { type?: string; from?: Date; to?: Date }) => Promise<WorkerReport[]>;
+  getReport: (params?: { types?: string[]; from?: Date; to?: Date }) => Promise<WorkerReport[]>;
 };
 
 /*
