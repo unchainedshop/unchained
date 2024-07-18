@@ -25,10 +25,8 @@ export const buildFindByIdSelector = (orderDiscountId: string) =>
 
 export const configureOrderDiscountsModule = ({
   OrderDiscounts,
-  updateCalculation,
 }: {
   OrderDiscounts: mongodb.Collection<OrderDiscount>;
-  updateCalculation: OrdersModule['updateCalculation'];
 }): OrderDiscountsModule => {
   registerEvents(ORDER_DISCOUNT_EVENTS);
 
@@ -74,12 +72,8 @@ export const configureOrderDiscountsModule = ({
       const adapter = await getAdapter(discount, unchainedAPI);
       if (!adapter) return null;
       await adapter.release();
-
-      await OrderDiscounts.deleteOne(selector);
-      await updateCalculation(discount.orderId, unchainedAPI);
-    } else {
-      await OrderDiscounts.deleteOne(selector);
     }
+    await OrderDiscounts.deleteOne(selector);
     await emit('ORDER_REMOVE_DISCOUNT', { discount });
     return discount;
   };
@@ -199,7 +193,6 @@ export const configureOrderDiscountsModule = ({
 
         try {
           const reservedDiscount = await reserveDiscount(newDiscount, unchainedAPI);
-          await updateCalculation(order._id, unchainedAPI);
           await emit('ORDER_ADD_DISCOUNT', { discount: reserveDiscount });
           return reservedDiscount;
         } catch (error) {
