@@ -293,7 +293,7 @@ export const configureOrderPaymentsModule = ({
       await emit('ORDER_PAY', { orderPayment });
     },
 
-    updateContext: async (orderPaymentId, context, unchainedAPI) => {
+    updateContext: async (orderPaymentId, context) => {
       const selector = buildFindByIdSelector(orderPaymentId);
       if (!context || Object.keys(context).length === 0) return OrderPayments.findOne(selector, {});
 
@@ -315,7 +315,6 @@ export const configureOrderPaymentsModule = ({
       );
 
       if (result.ok) {
-        await updateCalculation(result.value.orderId, unchainedAPI);
         await emit('ORDER_UPDATE_PAYMENT', {
           orderPayment: result.value,
         });

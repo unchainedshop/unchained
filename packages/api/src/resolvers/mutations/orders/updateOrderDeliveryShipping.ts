@@ -32,5 +32,12 @@ export default async function updateOrderDeliveryShipping(
       required: DeliveryProviderType.SHIPPING,
     });
 
-  return modules.orders.deliveries.updateContext(orderDeliveryId, { address, meta }, context);
+  await modules.orders.deliveries.updateContext(orderDeliveryId, {
+    address,
+    meta,
+  });
+  await modules.orders.updateCalculation(orderDelivery.orderId, context);
+  return modules.orders.deliveries.findDelivery({
+    orderDeliveryId,
+  });
 }

@@ -95,7 +95,7 @@ export const configureOrdersModule = async ({
     await Promise.all(
       systemDiscounts
         .filter((key) => currentDiscountKeys.indexOf(key) === -1)
-        .map((discountKey) =>
+        .map(async (discountKey) =>
           modules.orders.discounts.create({
             orderId: order._id,
             discountKey,

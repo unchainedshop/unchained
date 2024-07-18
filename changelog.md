@@ -1,3 +1,9 @@
+# Unchained Engine v2.13
+
+## Minor
+- updateContext functions now do not recalculate itself, this is important to speed up performance and reduce race conditions when there is many changes from third party plugins and events
+
+
 # Unchained Engine v2.8
 
 ## Minor

@@ -174,7 +174,7 @@ export const configureOrderDeliveriesModule = ({
       return orderDelivery;
     },
 
-    updateContext: async (orderDeliveryId, context, unchainedAPI) => {
+    updateContext: async (orderDeliveryId, context) => {
       const selector = buildFindByIdSelector(orderDeliveryId);
       if (!context || Object.keys(context).length === 0) return OrderDeliveries.findOne(selector, {});
 
@@ -195,7 +195,6 @@ export const configureOrderDeliveriesModule = ({
       );
 
       if (result.ok) {
-        await updateCalculation(result.value.orderId, unchainedAPI);
         await emit('ORDER_UPDATE_DELIVERY', {
           orderDelivery: result.value,
         });
