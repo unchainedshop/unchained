@@ -24,7 +24,7 @@ export default async function updateCart(root: Root, params: UpdateCartParams, c
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   if (meta) {
-    order = await modules.orders.updateContext(order._id, meta, context);
+    order = await modules.orders.updateContext(order._id, meta);
   }
 
   if (billingAddress) {
@@ -43,5 +43,6 @@ export default async function updateCart(root: Root, params: UpdateCartParams, c
     order = await modules.orders.setDeliveryProvider(order._id, deliveryProviderId, context);
   }
 
-  return order;
+  // Recalculate, then return
+  return modules.orders.updateCalculation(order._id, context);
 }

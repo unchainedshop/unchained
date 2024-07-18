@@ -74,39 +74,6 @@ export const configureOrderPositionsModule = ({
 
     // Mutations
 
-    create: async (
-      { configuration, context, quantity, quotationId },
-      { order, product, originalProduct },
-      unchainedAPI,
-    ) => {
-      const orderId = order._id;
-      const productId = product._id;
-      const originalProductId = originalProduct ? originalProduct._id : undefined;
-
-      log(
-        `Create ${quantity}x Position with Product ${productId} ${
-          quotationId ? ` (${quotationId})` : ''
-        }`,
-        { orderId, productId, originalProductId },
-      );
-
-      const positionId = await mutations.create({
-        orderId,
-        productId,
-        originalProductId,
-        quotationId,
-        quantity,
-        configuration,
-        context,
-        calculation: [],
-        scheduling: [],
-      });
-
-      await updateCalculation(orderId, unchainedAPI);
-
-      return OrderPositions.findOne(buildFindByIdSelector(positionId));
-    },
-
     delete: async (orderPositionId, unchainedAPI) => {
       const selector = buildFindByIdSelector(orderPositionId);
 

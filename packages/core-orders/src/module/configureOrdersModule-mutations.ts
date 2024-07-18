@@ -81,7 +81,11 @@ export const configureOrderModuleMutations = ({
         updated: { $gte: minValidDate },
       }).toArray();
 
-      await Promise.all(orders.map((order) => initProviders(order, unchainedAPI)));
+      await Promise.allSettled(
+        orders.map(async (order) => {
+          await updateCalculation(order._id, unchainedAPI);
+        }),
+      );
     },
 
     setCartOwner: async ({ orderId, userId }) => {
@@ -103,8 +107,7 @@ export const configureOrderModuleMutations = ({
       );
     },
 
-    setDeliveryProvider: async (orderId, deliveryProviderId, unchainedAPI) => {
-      const { modules } = unchainedAPI;
+    setDeliveryProvider: async (orderId, deliveryProviderId, { modules }) => {
       const delivery = await OrderDeliveries.findOne({
         orderId,
         deliveryProviderId,
@@ -124,14 +127,16 @@ export const configureOrderModuleMutations = ({
       log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
 
       const selector = generateDbFilterById(orderId);
-      await Orders.updateOne(selector, {
-        $set: {
-          deliveryId,
-          updated: new Date(),
+      const order = await Orders.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            deliveryId,
+            updated: new Date(),
+          },
         },
-      });
-
-      const order = await updateCalculation(orderId, unchainedAPI);
+        { returnDocument: 'after' },
+      );
 
       await emit('ORDER_SET_DELIVERY_PROVIDER', {
         order,
@@ -162,11 +167,13 @@ export const configureOrderModuleMutations = ({
       log(`Set Payment Provider ${paymentProviderId}`, { orderId });
 
       const selector = generateDbFilterById(orderId);
-      await Orders.updateOne(selector, {
-        $set: { paymentId, updated: new Date() },
-      });
-
-      const order = await updateCalculation(orderId, unchainedAPI);
+      const order = await Orders.findOneAndUpdate(
+        selector,
+        {
+          $set: { paymentId, updated: new Date() },
+        },
+        { returnDocument: 'after' },
+      );
 
       await emit('ORDER_SET_PAYMENT_PROVIDER', {
         order,
@@ -176,39 +183,45 @@ export const configureOrderModuleMutations = ({
       return order;
     },
 
-    updateBillingAddress: async (orderId, billingAddress, unchainedAPI) => {
+    updateBillingAddress: async (orderId, billingAddress) => {
       log('Update Invoicing Address', { orderId });
 
       const selector = generateDbFilterById(orderId);
-      await Orders.updateOne(selector, {
-        $set: {
-          billingAddress,
-          updated: new Date(),
+      const order = await Orders.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            billingAddress,
+            updated: new Date(),
+          },
         },
-      });
+        { returnDocument: 'after' },
+      );
 
-      const order = await updateCalculation(orderId, unchainedAPI);
       await emit('ORDER_UPDATE', { order, field: 'billing' });
       return order;
     },
 
-    updateContact: async (orderId, contact, unchainedAPI) => {
+    updateContact: async (orderId, contact) => {
       log('Update Contact', { orderId });
 
       const selector = generateDbFilterById(orderId);
-      await Orders.updateOne(selector, {
-        $set: {
-          contact,
-          updated: new Date(),
+      const order = await Orders.findOneAndUpdate(
+        selector,
+        {
+          $set: {
+            contact,
+            updated: new Date(),
+          },
         },
-      });
+        { returnDocument: 'after' },
+      );
 
-      const order = await updateCalculation(orderId, unchainedAPI);
       await emit('ORDER_UPDATE', { order, field: 'contact' });
       return order;
     },
 
-    updateContext: async (orderId, context, unchainedAPI) => {
+    updateContext: async (orderId, context) => {
       const selector = generateDbFilterById<Order>(orderId);
       selector.status = { $in: [null, OrderStatus.PENDING] };
 
@@ -226,13 +239,12 @@ export const configureOrderModuleMutations = ({
             updated: new Date(),
           },
         },
-        { includeResultMetadata: true },
+        { includeResultMetadata: true, returnDocument: 'after' },
       );
 
       if (result.ok) {
-        const calculatedOrder = await updateCalculation(orderId, unchainedAPI);
-        await emit('ORDER_UPDATE', { order: calculatedOrder, field: 'context' });
-        return calculatedOrder;
+        await emit('ORDER_UPDATE', { order: result.value, field: 'context' });
+        return result.value;
       }
       return null;
     },

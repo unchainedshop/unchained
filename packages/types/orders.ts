@@ -139,13 +139,9 @@ export interface OrderMutations {
     unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
 
-  updateBillingAddress: (
-    orderId: string,
-    billingAddress: Address,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
-  updateContact: (orderId: string, contact: Contact, unchainedAPI: UnchainedCore) => Promise<Order>;
-  updateContext: (orderId: string, context: any, unchainedAPI: UnchainedCore) => Promise<Order | null>;
+  updateBillingAddress: (orderId: string, billingAddress: Address) => Promise<Order>;
+  updateContact: (orderId: string, contact: Contact) => Promise<Order>;
+  updateContext: (orderId: string, context: any) => Promise<Order | null>;
   updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
 }
 
