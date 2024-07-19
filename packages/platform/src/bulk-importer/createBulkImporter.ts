@@ -14,6 +14,7 @@ export type BulkImportOperation = (
   options: {
     bulk: (collection: string) => typeof mongodb.BulkOperationBase;
     createShouldUpsertIfIDExists?: boolean;
+    updateShouldUpsertIfIDNotExists?: boolean;
     skipCacheInvalidation?: boolean;
     logger?: any;
   },
@@ -53,7 +54,12 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     const bulkOperations = {};
     const preparationIssues = [];
     const processedOperations = {};
-    const { logger, createShouldUpsertIfIDExists, skipCacheInvalidation } = options;
+    const {
+      logger,
+      createShouldUpsertIfIDExists,
+      skipCacheInvalidation,
+      updateShouldUpsertIfIDNotExists,
+    } = options;
 
     const bulk = (collectionName: string) => {
       const Collection = db.collection(collectionName);
@@ -63,7 +69,7 @@ export const createBulkImporterFactory = (db, bulkImporterOptions: any): BulkImp
     };
 
     logger.info(
-      `Configure event import with options: createShouldUpsertIfIDExists=${createShouldUpsertIfIDExists} skipCacheInvalidation=${skipCacheInvalidation}`,
+      `Configure event import with options: createShouldUpsertIfIDExists=${createShouldUpsertIfIDExists} updateShouldUpsertIfIDNotExists=${updateShouldUpsertIfIDNotExists} skipCacheInvalidation=${skipCacheInvalidation}`,
     );
 
     return {

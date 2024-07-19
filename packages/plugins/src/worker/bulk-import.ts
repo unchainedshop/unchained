@@ -62,11 +62,16 @@ export const BulkImportWorker: IWorkerAdapter<any, Record<string, unknown>> = {
 
   doWork: async (rawPayload, unchainedAPI) => {
     try {
-      const { createShouldUpsertIfIDExists = false, skipCacheInvalidation = false } = rawPayload;
+      const {
+        createShouldUpsertIfIDExists = false,
+        skipCacheInvalidation = false,
+        updateShouldUpsertIfIDNotExists = false,
+      } = rawPayload;
 
       const bulkImporter = unchainedAPI.bulkImporter.createBulkImporter({
         logger,
         createShouldUpsertIfIDExists,
+        updateShouldUpsertIfIDNotExists,
         skipCacheInvalidation,
       });
 

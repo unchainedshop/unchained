@@ -4,12 +4,20 @@ import upsertAssortmentChildren from './upsertAssortmentChildren.js';
 import upsertAssortmentFilters from './upsertAssortmentFilters.js';
 import upsertMedia from './upsertMedia.js';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
+import createAssortment from './create.js';
 
-export default async function updateAssortment(payload: any, { logger }, unchainedAPI: UnchainedCore) {
+export default async function updateAssortment(
+  payload: any,
+  { logger, createShouldUpsertIfIDExists, updateShouldUpsertIfIDNotExists },
+  unchainedAPI: UnchainedCore,
+) {
   const { modules } = unchainedAPI;
   const { media, specification, products, children, filters, _id } = payload;
 
   if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {
+    if (updateShouldUpsertIfIDNotExists) {
+      return createAssortment(payload, { logger, createShouldUpsertIfIDExists }, unchainedAPI);
+    }
     throw new Error(`Can't update non-existing assortment ${_id}`);
   }
 

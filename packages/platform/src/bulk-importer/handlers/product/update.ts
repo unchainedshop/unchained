@@ -2,12 +2,20 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import upsertVariations from './upsertVariations.js';
 import upsertMedia from './upsertMedia.js';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure.js';
+import createProduct from './create.js';
 
-export default async function createProduct(payload: any, { logger }, unchainedAPI: UnchainedCore) {
+export default async function updateProduct(
+  payload: any,
+  { logger, updateShouldUpsertIfIDNotExists, createShouldUpsertIfIDExists },
+  unchainedAPI: UnchainedCore,
+) {
   const { modules } = unchainedAPI;
   const { specification, media, variations, _id } = payload;
 
   if (!(await modules.products.productExists({ productId: _id }))) {
+    if (updateShouldUpsertIfIDNotExists) {
+      return createProduct(payload, { logger, createShouldUpsertIfIDExists }, unchainedAPI);
+    }
     throw new Error(`Can't update non-existing product ${_id}`);
   }
 
