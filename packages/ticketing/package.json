@@ -54,7 +54,7 @@
     "express": "^4.19.2"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.14.12",
     "@unchainedshop/types": "^2.12.2"
   }
 }

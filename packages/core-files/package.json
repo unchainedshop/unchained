@@ -39,7 +39,7 @@
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.14.12",
     "@unchainedshop/types": "^2.12.2",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.3",

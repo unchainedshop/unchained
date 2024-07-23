@@ -1,7 +1,0 @@
-.git
-.build
-.tmp
-.db
-lib
-node_modules
-.eslintcache

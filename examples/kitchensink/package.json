@@ -63,7 +63,7 @@
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.14.12",
     "mongodb-memory-server": "^9.3.0",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",

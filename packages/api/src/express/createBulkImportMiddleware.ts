@@ -19,7 +19,7 @@ const methodWrongHandler = (res) => () => {
 };
 
 export default async function bulkImportMiddleware(
-  req: IncomingMessage & { unchainedContext: Context },
+  req: IncomingMessage & { query?: any; unchainedContext: Context },
   res,
 ) {
   try {
