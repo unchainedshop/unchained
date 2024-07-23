@@ -278,7 +278,6 @@ export const configureOrdersModule = async ({
 
   const orderDiscountsModule = configureOrderDiscountsModule({
     OrderDiscounts,
-    updateCalculation,
   });
 
   const orderPositionsModule = configureOrderPositionsModule({
@@ -288,12 +287,10 @@ export const configureOrdersModule = async ({
 
   const orderPaymentsModule = configureOrderPaymentsModule({
     OrderPayments,
-    updateCalculation,
   });
 
   const orderDeliveriesModule = configureOrderDeliveriesModule({
     OrderDeliveries,
-    updateCalculation,
   });
 
   return {

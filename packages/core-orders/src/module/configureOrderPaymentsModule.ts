@@ -1,5 +1,4 @@
 import { ModuleMutations } from '@unchainedshop/types/core.js';
-import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
   OrderPayment,
   OrderPaymentsModule,
@@ -35,10 +34,8 @@ export const buildFindByContextDataSelector = (context: any): mongodb.Filter<Ord
 
 export const configureOrderPaymentsModule = ({
   OrderPayments,
-  updateCalculation,
 }: {
   OrderPayments: mongodb.Collection<OrderPayment>;
-  updateCalculation: OrdersModule['updateCalculation'];
 }): OrderPaymentsModule => {
   registerEvents(ORDER_PAYMENT_EVENTS);
 

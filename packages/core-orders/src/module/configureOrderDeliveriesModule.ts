@@ -1,7 +1,5 @@
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
-
-import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
   OrderDeliveriesModule,
   OrderDelivery,
@@ -18,10 +16,8 @@ export const buildFindByIdSelector = (orderDeliveryId: string) =>
 
 export const configureOrderDeliveriesModule = ({
   OrderDeliveries,
-  updateCalculation,
 }: {
   OrderDeliveries: mongodb.Collection<OrderDelivery>;
-  updateCalculation: OrdersModule['updateCalculation'];
 }): OrderDeliveriesModule => {
   registerEvents(ORDER_DELIVERY_EVENTS);
 

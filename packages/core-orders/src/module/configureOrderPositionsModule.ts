@@ -1,15 +1,8 @@
-import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-  generateDbObjectId,
-  mongodb,
-} from '@unchainedshop/mongodb';
-import { OrderPositionsSchema } from '../db/OrderPositionsSchema.js';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { ordersSettings } from '../orders-settings.js';
 
 const ORDER_POSITION_EVENTS: string[] = [
@@ -33,11 +26,6 @@ export const configureOrderPositionsModule = ({
   updateCalculation: OrdersModule['updateCalculation'];
 }): OrderPositionsModule => {
   registerEvents(ORDER_POSITION_EVENTS);
-
-  const mutations = generateDbMutations<OrderPosition>(OrderPositions, OrderPositionsSchema, {
-    permanentlyDeleteByDefault: true,
-    hasCreateOnly: false,
-  }) as ModuleMutations<OrderPosition>;
 
   return {
     // Queries
@@ -71,8 +59,6 @@ export const configureOrderPositionsModule = ({
         quantity: orderPosition.quantity,
       });
     },
-
-    // Mutations
 
     delete: async (orderPositionId, unchainedAPI) => {
       const selector = buildFindByIdSelector(orderPositionId);
