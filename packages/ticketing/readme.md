@@ -16,8 +16,6 @@ import { modules, setupTicketing } from "@unchainedshop/ticketing";
     options: {},
   });
 
-  await engine.apolloGraphQLServer.start();
-
   connectPlatformToExpress4(app, engine, { corsOrigins: [] });
 
   // Unchained Ticketing Extension

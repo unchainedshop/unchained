@@ -107,7 +107,7 @@ export const startPlatform = async ({
   setupTemplates(unchainedAPI);
 
   // Start the graphQL server
-  const apolloGraphQLServer = await startAPIServer({
+  const apolloGraphQLServer = await startAPIServer<unknown>({
     unchainedAPI,
     roles: configuredRoles,
     events: configuredEvents,

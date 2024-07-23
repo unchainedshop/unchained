@@ -40,8 +40,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "@apollo/server": "^4.10.4",
-    "cookie": "~0.6"
+    "cookie": "~0.6",
+    "graphql-yoga": "^5.6.1"
   },
   "optionalDependencies": {
     "express": "~4"

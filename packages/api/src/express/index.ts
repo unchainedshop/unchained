@@ -1,12 +1,11 @@
 import { IncomingMessage, OutgoingMessage } from 'http';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { ApolloServer } from '@apollo/server';
 import type e from 'express';
 import { getCurrentContextResolver } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
-import createApolloMiddleware from './createApolloMiddleware.js';
 import createSingleSignOnMiddleware from './createSingleSignOnMiddleware.js';
+import { YogaServer } from 'graphql-yoga';
 
 const {
   BULK_IMPORT_API_PATH = '/bulk-import',
@@ -38,10 +37,9 @@ export const useMiddlewareWithCurrentContext = (expressApp, path, ...middleware)
 
 export const connect = (
   expressApp: e.Express,
-  { apolloGraphQLServer }: { apolloGraphQLServer: ApolloServer },
-  options?: { corsOrigins?: any },
+  { apolloGraphQLServer }: { apolloGraphQLServer: YogaServer<any, any> },
 ) => {
-  expressApp.use(GRAPHQL_API_PATH, createApolloMiddleware(apolloGraphQLServer, options));
+  expressApp.use(GRAPHQL_API_PATH, apolloGraphQLServer.handle);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
   expressApp.use(['/', '/.well-known/unchained/cloud-sso'], createSingleSignOnMiddleware);

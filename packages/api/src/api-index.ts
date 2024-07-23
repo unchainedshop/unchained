@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { UnchainedServerOptions } from '@unchainedshop/types/api.js';
-import type { ApolloServer } from '@apollo/server';
 import createGraphQLServer from './createGraphQLServer.js';
 import {
   createContextResolver,
@@ -35,14 +34,10 @@ const packageJson = loadJSON('../package.json');
 
 const { UNCHAINED_API_VERSION = packageJson?.version || '2.x' } = process.env;
 
-export const startAPIServer = async (options: UnchainedServerOptions): Promise<ApolloServer> => {
-  const {
-    unchainedAPI,
-    roles,
-    context: customContext,
-    adminUiConfig,
-    ...apolloServerOptions
-  } = options || {};
+export const startAPIServer = async <GraphQLServerOptions>(
+  options: UnchainedServerOptions & GraphQLServerOptions,
+) => {
+  const { unchainedAPI, roles, context: customContext, adminUiConfig, ...serverOptions } = options || {};
 
   const contextResolver = createContextResolver(
     unchainedAPI,
@@ -59,5 +54,5 @@ export const startAPIServer = async (options: UnchainedServerOptions): Promise<A
       : contextResolver,
   );
 
-  return createGraphQLServer(apolloServerOptions);
+  return createGraphQLServer(serverOptions);
 };
