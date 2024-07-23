@@ -3,11 +3,7 @@ import createFilter from './create.js';
 
 export default async function updateFilter(
   payload: any,
-  {
-    logger,
-    updateShouldUpsertIfIDNotExists,
-    createShouldUpsertIfIDExists,
-  }: { logger: any; updateShouldUpsertIfIDNotExists: boolean; createShouldUpsertIfIDExists: boolean },
+  { logger, updateShouldUpsertIfIDNotExists }: { logger: any; updateShouldUpsertIfIDNotExists: boolean },
   unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
@@ -15,7 +11,7 @@ export default async function updateFilter(
 
   if (!(await modules.filters.filterExists({ filterId: _id }))) {
     if (updateShouldUpsertIfIDNotExists) {
-      return createFilter(payload, { logger, createShouldUpsertIfIDExists }, unchainedAPI);
+      return createFilter(payload, { logger, createShouldUpsertIfIDExists: false }, unchainedAPI);
     }
     throw new Error(`Can't update non-existing filter ${_id}`);
   }

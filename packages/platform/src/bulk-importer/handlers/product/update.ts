@@ -6,7 +6,7 @@ import createProduct from './create.js';
 
 export default async function updateProduct(
   payload: any,
-  { logger, updateShouldUpsertIfIDNotExists, createShouldUpsertIfIDExists },
+  { logger, updateShouldUpsertIfIDNotExists },
   unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
@@ -14,7 +14,7 @@ export default async function updateProduct(
 
   if (!(await modules.products.productExists({ productId: _id }))) {
     if (updateShouldUpsertIfIDNotExists) {
-      return createProduct(payload, { logger, createShouldUpsertIfIDExists }, unchainedAPI);
+      return createProduct(payload, { logger, createShouldUpsertIfIDExists: false }, unchainedAPI);
     }
     throw new Error(`Can't update non-existing product ${_id}`);
   }
