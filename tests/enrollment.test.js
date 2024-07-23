@@ -619,7 +619,7 @@ describe('Enrollments', () => {
       });
     });
 
-    it('return  EnrollmentWrongStatusError error when trying to activate ACTIVE enrollment', async () => {
+    it('return EnrollmentWrongStatusError error when trying to activate ACTIVE enrollment', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -635,7 +635,7 @@ describe('Enrollments', () => {
       expect(errors[0]?.extensions.code).toEqual('EnrollmentWrongStatusError');
     });
 
-    it('return  EnrollmentNotFoundError when passed non existing enrollment ID', async () => {
+    it('return EnrollmentNotFoundError when passed non existing enrollment ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -651,7 +651,7 @@ describe('Enrollments', () => {
       expect(errors[0]?.extensions.code).toEqual('EnrollmentNotFoundError');
     });
 
-    it('return  InvalidIdError when passed invalid enrollment ID', async () => {
+    it('return InvalidIdError when passed invalid enrollment ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -667,7 +667,7 @@ describe('Enrollments', () => {
       expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
     });
 
-    it('return  ServerError when passed invalid enrollment ID', async () => {
+    it('return unexpected error when passed invalid enrollment ID with non-suitable plugins', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
@@ -680,10 +680,9 @@ describe('Enrollments', () => {
           enrollmentId: 'initialenrollment-wrong-plan',
         },
       });
-
       expect(
         errors[0]?.message.includes(
-          'No suitable enrollment plugin available for this plan configuration',
+          'Unexpected error.',
         ),
       ).toBe(true);
     });

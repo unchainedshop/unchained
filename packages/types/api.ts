@@ -97,12 +97,3 @@ export type Context = UnchainedCore & {
   UnchainedHTTPServerContext;
 
 export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => Promise<Context>;
-
-export type UnchainedServerOptions = {
-  unchainedAPI: UnchainedCore;
-  roles?: any;
-  context?: any;
-  events: Array<string>;
-  workTypes: Array<string>;
-  adminUiConfig?: AdminUiConfig;
-};

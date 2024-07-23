@@ -27,7 +27,6 @@ const start = async () => {
   app.use(cookieParser());
 
   const engine = await startPlatform({
-    introspection: true,
     modules: { ...defaultModules, ...ticketingModules },
     services: { ...ticketingServices },
     context: withAccessToken(),
@@ -54,8 +53,6 @@ const start = async () => {
       },
     },
   });
-
-  console.log(engine.apolloGraphQLServer);
 
   await seed(engine.unchainedAPI);
   await setAccessToken(engine.unchainedAPI, 'admin', 'secret');

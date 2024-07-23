@@ -56,13 +56,11 @@
     "accounting": "0.4.1",
     "dataloader": "^2.2.2",
     "graphql-scalars": "^1.23.0",
-    "graphql-upload": "^16.0.2",
     "locale": "0.1.0",
     "lodash.isnumber": "3.0.3",
     "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/graphql-upload": "^16.0.7",
     "@types/locale": "^0.1.4",
     "@types/node": "^20.14.10",
     "@unchainedshop/types": "^2.12.2",

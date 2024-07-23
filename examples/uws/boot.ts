@@ -27,7 +27,6 @@ const start = async () => {
   }
 
   const engine = await startPlatform({
-    introspection: true,
     modules: { ...defaultModules, ...ticketingModules },
     services: { ...ticketingServices },
     context: withAccessToken(),

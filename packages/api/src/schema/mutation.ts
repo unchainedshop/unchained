@@ -332,11 +332,6 @@ export default [
       removeEmail(email: String!, userId: ID): User!
 
       """
-      Update Avatar of any user or logged in user if userId is not provided
-      """
-      updateUserAvatar(avatar: Upload!, userId: ID): User!
-
-      """
       Set tags of user
       """
       setUserTags(tags: [LowerCaseString]!, userId: ID!): User!
@@ -433,11 +428,6 @@ export default [
       Modify localized texts part of a product
       """
       updateProductTexts(productId: ID!, texts: [UpdateProductTextInput!]!): [ProductTexts!]!
-
-      """
-      Add a new media to a product's visualization
-      """
-      addProductMedia(productId: ID!, media: Upload!): ProductMedia!
 
       """
       Remove a media asset from a product's visualization
@@ -706,10 +696,6 @@ export default [
       Reorder the products in an assortment
       """
       reorderAssortmentFilters(sortKeys: [ReorderAssortmentFilterInput!]!): [AssortmentFilter!]!
-      """
-      Add a new media to a assortment
-      """
-      addAssortmentMedia(assortmentId: ID!, media: Upload!): AssortmentMedia!
 
       """
       Remove a media asset from a assortment

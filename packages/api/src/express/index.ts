@@ -35,11 +35,8 @@ export const useMiddlewareWithCurrentContext = (expressApp, path, ...middleware)
   expressApp.use(path, addContext, ...middleware);
 };
 
-export const connect = (
-  expressApp: e.Express,
-  { apolloGraphQLServer }: { apolloGraphQLServer: YogaServer<any, any> },
-) => {
-  expressApp.use(GRAPHQL_API_PATH, apolloGraphQLServer.handle);
+export const connect = (expressApp: e.Express, { yogaServer }: { yogaServer: YogaServer<any, any> }) => {
+  expressApp.use(GRAPHQL_API_PATH, yogaServer.handle);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
   expressApp.use(['/', '/.well-known/unchained/cloud-sso'], createSingleSignOnMiddleware);

@@ -18,6 +18,7 @@ const LicensedEnrollments: IEnrollmentAdapter = {
   label: 'Simple Licensed Enrollments',
 
   isActivatedFor: (productPlan) => {
+    console.log({ productPlan });
     return productPlan?.usageCalculationType === 'LICENSED';
   },
 

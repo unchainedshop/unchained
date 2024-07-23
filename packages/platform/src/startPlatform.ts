@@ -1,4 +1,4 @@
-import { startAPIServer, roles } from '@unchainedshop/api';
+import { startAPIServer, GraphQLServerOptions, roles } from '@unchainedshop/api';
 import { initCore } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
@@ -17,19 +17,14 @@ import { createMigrationRepository } from './migrations/migrationRepository.js';
 export { MessageTypes };
 
 export type PlatformOptions = {
-  typeDefs?: Array<string>;
-  resolvers?: any;
-  schema?: any;
-  plugins?: any[];
-  cache?: any;
   bulkImporter?: {
     handlers?: Record<string, BulkImportHandler>;
   };
   context?: any;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
-  introspection?: boolean;
   adminUiConfig?: AdminUiConfig;
-} & Partial<Pick<UnchainedCoreOptions, 'modules' | 'services' | 'options' | 'rolesOptions'>>;
+} & Partial<Pick<UnchainedCoreOptions, 'modules' | 'services' | 'options' | 'rolesOptions'>> &
+  GraphQLServerOptions;
 
 const logger = createLogger('unchained');
 
@@ -55,21 +50,15 @@ export const queueWorkers: Array<any> = [];
 export const startPlatform = async ({
   modules = {},
   services = {},
-  typeDefs = [],
-  resolvers = [],
   options = {},
   adminUiConfig = {},
   rolesOptions = {},
   bulkImporter: bulkImporterOptions,
-  schema,
-  plugins,
-  cache,
   workQueueOptions,
-  context,
-  introspection,
+  ...arbitraryGraphQLServerOptions
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
-  apolloGraphQLServer: any;
+  yogaServer: any;
 }> => {
   exitOnMissingEnvironmentVariables();
 
@@ -107,19 +96,13 @@ export const startPlatform = async ({
   setupTemplates(unchainedAPI);
 
   // Start the graphQL server
-  const apolloGraphQLServer = await startAPIServer<unknown>({
+  const yogaServer = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
     events: configuredEvents,
     workTypes: configuredWorkTypes,
-    typeDefs,
-    resolvers,
-    schema,
-    plugins,
-    cache,
-    context,
-    introspection,
     adminUiConfig,
+    ...arbitraryGraphQLServerOptions,
   });
 
   // Setup work queues for scheduled work
@@ -134,5 +117,5 @@ export const startPlatform = async ({
     setImmediate(() => unchainedAPI.modules.filters.invalidateCache({}, unchainedAPI));
   }
 
-  return { unchainedAPI, apolloGraphQLServer };
+  return { unchainedAPI, yogaServer };
 };

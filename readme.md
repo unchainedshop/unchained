@@ -75,6 +75,8 @@ Now, start the GraphQL server, connect it to Express and load the custom modules
 
 ```
 const engine = await startPlatform({ … });
+
+await engine.apolloGraphQLServer.start(); // Counterintuitively, this has to be done before the platform is connected to express
   
 connectPlatformToExpress4(app, engine);
 connectDefaultPluginsToExpress4(app, engine);

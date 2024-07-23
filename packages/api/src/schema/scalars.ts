@@ -1,7 +1,7 @@
 export default [
   /* GraphQL */ `
     scalar JSON
-    scalar Upload
+    scalar File
     scalar DateTime
     scalar Date
     scalar Timestamp
