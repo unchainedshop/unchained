@@ -28,11 +28,11 @@ export default async function updateCart(root: Root, params: UpdateCartParams, c
   }
 
   if (billingAddress) {
-    order = await modules.orders.updateBillingAddress(order._id, billingAddress, context);
+    order = await modules.orders.updateBillingAddress(order._id, billingAddress);
   }
 
   if (contact) {
-    order = await modules.orders.updateContact(order._id, contact, context);
+    order = await modules.orders.updateContact(order._id, contact);
   }
 
   if (paymentProviderId) {
