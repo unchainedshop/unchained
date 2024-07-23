@@ -3,7 +3,6 @@ import { buildDefaultTypeDefs } from './schema/index.js';
 import resolvers from './resolvers/index.js';
 import { actions } from './roles/index.js';
 import { createYoga, createSchema } from 'graphql-yoga';
-import { getCurrentContextResolver } from './context.js';
 
 const logger = createLogger('unchained:api');
 
@@ -34,8 +33,8 @@ export default async (options) => {
   const server = createYoga({
     schema,
     logging: logger,
-    context: async (ctx) => {
-      return getCurrentContextResolver()(ctx as any);
+    context: async (ctx: any) => {
+      return (ctx.req as any)?.unchainedContext;
     },
     ...apolloServerOptions,
   });

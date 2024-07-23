@@ -1,6 +1,5 @@
 import './load_env.js';
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import http from 'http';
 import {
   startPlatform,
@@ -23,8 +22,6 @@ import ticketingServices from '@unchainedshop/ticketing/services.js';
 const start = async () => {
   const app = express();
   const httpServer = http.createServer(app);
-
-  app.use(cookieParser());
 
   const engine = await startPlatform({
     modules: { ...defaultModules, ...ticketingModules },

@@ -1,4 +1,3 @@
-import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express/index.js';
 import { checkAction } from '@unchainedshop/api/acl.js';
 import { actions } from '@unchainedshop/api/roles/index.js';
 import express, { Request, Response } from 'express';
@@ -32,8 +31,7 @@ export async function printTicketsHandler(req: Request & { unchainedContext: Con
 }
 
 export default function connectPrintWebservice(app) {
-  useMiddlewareWithCurrentContext(
-    app,
+  app.use(
     UNCHAINED_PDF_PRINT_HANDLER_PATH,
     express.json({
       type: 'application/json',

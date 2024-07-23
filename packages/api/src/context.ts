@@ -1,4 +1,4 @@
-import { UnchainedContextResolver, AdminUiConfig } from '@unchainedshop/types/api.js';
+import { AdminUiConfig, Context, UnchainedHTTPServerContext } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import instantiateLoaders from './loaders/index.js';
 import { getLocaleContext } from './locale-context.js';
@@ -11,6 +11,10 @@ export const getCurrentContextResolver = (): UnchainedContextResolver => context
 export const setCurrentContextResolver = (newContext: UnchainedContextResolver) => {
   context = newContext;
 };
+
+export type UnchainedContextResolver = (
+  params: UnchainedHTTPServerContext,
+) => Promise<Omit<Context, 'req' | 'res'>>;
 
 export const createContextResolver =
   (
@@ -25,8 +29,6 @@ export const createContextResolver =
     const localeContext = await getLocaleContext(req, res, unchainedAPI);
 
     return {
-      req,
-      res,
       ...apolloContext,
       ...unchainedAPI,
       ...userContext,

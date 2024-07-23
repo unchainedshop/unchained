@@ -3,7 +3,7 @@ import { IncomingMessage } from 'http';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import cookie from 'cookie';
-import { getCurrentContextResolver } from '../context.js';
+import { Context } from '@unchainedshop/types/api.js';
 
 const {
   ROOT_URL,
@@ -69,11 +69,14 @@ const loginWithSingleSignOn = async (remoteToken, context: UnchainedCore) => {
   throw new Error('Invalid token/domain pair');
 };
 
-export default async function singleSignOnMiddleware(req: IncomingMessage & { query?: any }, res, next) {
+export default async function singleSignOnMiddleware(
+  req: IncomingMessage & { query?: any } & { unchainedContext: Context },
+  res,
+  next,
+) {
   try {
     if (req.query?.token && UNCHAINED_CLOUD_ENDPOINT) {
-      const contextResolver = getCurrentContextResolver();
-      const context = await contextResolver({ req, res });
+      const context = req.unchainedContext;
       const authCookie = await loginWithSingleSignOn(req.query.token, context);
 
       if (authCookie) {

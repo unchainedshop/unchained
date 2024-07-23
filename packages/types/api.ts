@@ -95,5 +95,3 @@ export type Context = UnchainedCore & {
   UnchainedLocaleContext &
   UnchainedLoaders &
   UnchainedHTTPServerContext;
-
-export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => Promise<Context>;
