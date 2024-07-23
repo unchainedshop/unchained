@@ -14,7 +14,6 @@ export default function shopInfo(
   oAuthProviders?: () => Promise<Array<IOAuth2Adapter>>;
 } {
   const { adminUiConfig } = context;
-  console.log(context);
   log('query shopInfo', { userId: context.userId });
 
   return {
