@@ -1,13 +1,10 @@
-import { IncomingMessage, OutgoingMessage } from 'http';
-import { UnchainedLocaleContext } from '@unchainedshop/types/api.js';
+import { UnchainedLocaleContext, UnchainedHTTPServerContext } from '@unchainedshop/types/api.js';
 import localePkg from 'locale';
-import 'abort-controller/polyfill.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
   resolveBestCountry,
   resolveBestSupported,
   resolveBestCurrency,
-  resolveUserRemoteAddress,
   systemLocale,
 } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
@@ -16,6 +13,8 @@ import memoizee from 'memoizee';
 const { Locales } = localePkg;
 
 const { NODE_ENV } = process.env;
+
+export type GetHeaderFn = (key: string) => string | string[];
 
 export const resolveDefaultContext = memoizee(
   async ({ acceptLang, acceptCountry }, unchainedAPI) => {
@@ -68,14 +67,19 @@ export const resolveDefaultContext = memoizee(
 );
 
 export const getLocaleContext = async (
-  req: IncomingMessage,
-  res: OutgoingMessage,
+  {
+    remoteAddress,
+    remotePort,
+    getHeader,
+  }: {
+    remoteAddress: string;
+    remotePort: number;
+  } & UnchainedHTTPServerContext,
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedLocaleContext> => {
-  const userAgent = req.headers['user-agent'];
-  const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
+  const userAgent = getHeader('user-agent');
   const context = await resolveDefaultContext(
-    { acceptLang: req.headers['accept-language'], acceptCountry: req.headers['x-shop-country'] },
+    { acceptLang: getHeader('accept-language'), acceptCountry: getHeader('x-shop-country') },
     unchainedAPI,
   );
   return { remoteAddress, remotePort, userAgent, ...context };

@@ -5,7 +5,20 @@ import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import createSingleSignOnMiddleware from './createSingleSignOnMiddleware.js';
 import cookieParser from 'cookie-parser';
 import { YogaServer } from 'graphql-yoga';
-import { Context } from '@unchainedshop/types/api.js';
+
+const resolveUserRemoteAddress = (req) => {
+  const remoteAddress =
+    req.headers['x-real-ip'] ||
+    req.headers['x-forwarded-for'] ||
+    req.connection?.remoteAddress ||
+    req.socket?.remoteAddress ||
+    req.connection?.socket?.remoteAddress;
+
+  const remotePort =
+    req.connection?.remotePort || req.socket?.remotePort || req.connection?.socket?.remotePort;
+
+  return { remoteAddress, remotePort };
+};
 
 const {
   BULK_IMPORT_API_PATH = '/bulk-import',
@@ -14,13 +27,18 @@ const {
 } = process.env;
 
 const addContext = async function middlewareWithContext(
-  req: e.Request & { unchainedContext: null | Context },
+  req: e.Request & { cookies: any },
   res: e.Response,
-  next,
+  next: e.NextFunction,
 ) {
   try {
+    const setHeader = (key, value) => res.setHeader(key, value);
+    const getHeader = (key) => req.headers[key];
+    const cookies = req.cookies;
+    const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
+
     const context = getCurrentContextResolver();
-    req.unchainedContext = await context({ req, res });
+    req.unchainedContext = await context({ setHeader, getHeader, cookies, remoteAddress, remotePort });
     next();
   } catch (error) {
     next(error);

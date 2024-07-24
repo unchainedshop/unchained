@@ -1,4 +1,3 @@
-import type { IncomingMessage, OutgoingMessage } from 'http';
 import type { Locale } from 'locale';
 import type DataLoader from 'dataloader';
 import { User } from './user.js';
@@ -74,11 +73,6 @@ export interface UnchainedLoaders {
   };
 }
 
-export interface UnchainedHTTPServerContext {
-  req: IncomingMessage;
-  res: OutgoingMessage;
-}
-
 export interface CustomAdminUiProperties {
   entityName: string;
   inlineFragment: string;
@@ -86,6 +80,11 @@ export interface CustomAdminUiProperties {
 export interface AdminUiConfig {
   customProperties?: CustomAdminUiProperties[];
 }
+
+export type UnchainedHTTPServerContext = {
+  setHeader: (key: string, value: string) => void;
+  getHeader: (key: string) => string | string[];
+};
 
 export type Context = UnchainedCore & {
   version?: string;

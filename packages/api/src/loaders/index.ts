@@ -1,4 +1,3 @@
-import { IncomingMessage, OutgoingMessage } from 'http';
 import DataLoader from 'dataloader';
 import { systemLocale } from '@unchainedshop/utils';
 import localePkg from 'locale';
@@ -32,11 +31,7 @@ function getFilteredQueries({ queries, texts, filterFn }) {
   });
 }
 
-const loaders = async (
-  req: IncomingMessage,
-  res: OutgoingMessage,
-  unchainedAPI: UnchainedCore,
-): Promise<UnchainedLoaders['loaders']> => {
+const loaders = async (unchainedAPI: UnchainedCore): Promise<UnchainedLoaders['loaders']> => {
   return {
     assortmentLoader: new DataLoader(
       async (queries) => {

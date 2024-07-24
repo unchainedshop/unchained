@@ -13,8 +13,12 @@ export const setCurrentContextResolver = (newContext: UnchainedContextResolver) 
 };
 
 export type UnchainedContextResolver = (
-  params: UnchainedHTTPServerContext,
-) => Promise<Omit<Context, 'req' | 'res'>>;
+  params: UnchainedHTTPServerContext & {
+    cookies?: Record<string, string>;
+    remoteAddress?: string;
+    remotePort?: number;
+  },
+) => Promise<Context>;
 
 export const createContextResolver =
   (
@@ -23,13 +27,13 @@ export const createContextResolver =
     version: string,
     adminUiConfig?: AdminUiConfig,
   ): UnchainedContextResolver =>
-  async ({ req, res, ...apolloContext }) => {
-    const loaders = await instantiateLoaders(req, res, unchainedAPI);
-    const userContext = await getUserContext(req, res, unchainedAPI);
-    const localeContext = await getLocaleContext(req, res, unchainedAPI);
+  async ({ getHeader, setHeader, cookies, remoteAddress, remotePort }) => {
+    const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader, cookies };
+    const loaders = await instantiateLoaders(unchainedAPI);
+    const userContext = await getUserContext(abstractHttpServerContext, unchainedAPI);
+    const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
 
     return {
-      ...apolloContext,
       ...unchainedAPI,
       ...userContext,
       ...localeContext,
@@ -37,5 +41,7 @@ export const createContextResolver =
       roles,
       version,
       adminUiConfig,
+      setHeader,
+      getHeader,
     };
   };

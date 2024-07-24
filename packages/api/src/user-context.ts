@@ -1,5 +1,4 @@
-import { IncomingMessage, OutgoingMessage } from 'http';
-import { UnchainedUserContext } from '@unchainedshop/types/api.js';
+import { UnchainedUserContext, UnchainedHTTPServerContext } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import cookie from 'cookie';
 
@@ -15,8 +14,7 @@ const {
 } = process.env;
 
 export const getUserContext = async (
-  req: IncomingMessage & { cookies?: any },
-  res: OutgoingMessage,
+  { cookies, setHeader, getHeader }: { cookies?: any } & UnchainedHTTPServerContext,
   unchainedAPI: UnchainedCore,
 ): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
@@ -24,7 +22,7 @@ export const getUserContext = async (
   const domain = UNCHAINED_COOKIE_DOMAIN;
   const path = UNCHAINED_COOKIE_PATH;
 
-  let loginToken = req.cookies?.[cookieName];
+  let loginToken = cookies?.[cookieName];
 
   function setLoginToken(token: string, expires: Date) {
     if (!domain) return;
@@ -37,11 +35,13 @@ export const getUserContext = async (
       sameSite: 'lax',
       secure: NODE_ENV === 'production',
     });
-    res.setHeader('Set-Cookie', authCookie);
+    setHeader('Set-Cookie', authCookie);
   }
 
-  if (req.headers.authorization) {
-    const [type, token] = req.headers.authorization.split(' ');
+  const authorizationHeader = getHeader('authorization') as string;
+
+  if (authorizationHeader) {
+    const [type, token] = authorizationHeader.split(' ');
     if (type === 'Bearer') {
       loginToken = token;
     }

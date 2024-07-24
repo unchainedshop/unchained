@@ -60,8 +60,8 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
 
   setCurrentContextResolver(
     customContext
-      ? ({ req, res }) => {
-          return customContext({ req, res }, contextResolver);
+      ? (props) => {
+          return customContext(props, contextResolver);
         }
       : contextResolver,
   );

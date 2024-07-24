@@ -9,12 +9,13 @@ const contextIdentity = (params) => params;
 export default (fn: (context: Context) => any = contextIdentity): any => {
   return async (params, unchainedContextFn) => {
     const unchainedContext = await unchainedContextFn(params);
+
     const newContext = {
       userId: unchainedContext.userId,
       user: unchainedContext.user,
     };
-    if (!unchainedContext.userId && params.req.headers.authorization) {
-      const [type, userToken] = params.req.headers.authorization.split(' ');
+    if (!unchainedContext.userId && params.getHeader('authorization')) {
+      const [type, userToken] = (params.getHeader('authorization') as string).split(' ');
       if (type === 'Bearer' && userToken) {
         const [username, secret] = userToken.split(':');
         const user = await unchainedContext.modules.users.findUser({

@@ -23,7 +23,7 @@ export const all = (role, actions) => {
 
     if (isOwnedByUser) return true;
 
-    const accessKeyHeader = context.req.headers['x-token-accesskey'];
+    const accessKeyHeader = context.getHeader('x-token-accesskey') as string;
     const accessKey = await context.modules.warehousing.buildAccessKeyForToken(tokenId);
     if (accessKeyHeader === accessKey) return true;
 

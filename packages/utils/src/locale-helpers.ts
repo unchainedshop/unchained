@@ -48,17 +48,3 @@ export const resolveBestCurrency = (localeCurrency, currencies: Array<Currency>)
 
   return currencies?.[0]?.isoCode || UNCHAINED_CURRENCY;
 };
-
-export const resolveUserRemoteAddress = (req) => {
-  const remoteAddress =
-    req.headers['x-real-ip'] ||
-    req.headers['x-forwarded-for'] ||
-    req.connection?.remoteAddress ||
-    req.socket?.remoteAddress ||
-    req.connection?.socket?.remoteAddress;
-
-  const remotePort =
-    req.connection?.remotePort || req.socket?.remotePort || req.connection?.socket?.remotePort;
-
-  return { remoteAddress, remotePort };
-};

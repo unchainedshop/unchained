@@ -1,4 +1,3 @@
-import 'abort-controller/polyfill.js';
 import { Locale } from '@unchainedshop/types/common.js';
 import type { Collection, Document, Filter } from 'mongodb';
 import { systemLocale } from '@unchainedshop/utils';
