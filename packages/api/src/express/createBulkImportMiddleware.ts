@@ -30,6 +30,7 @@ export default async function bulkImportMiddleware(req, res) {
 
     const input: any = {
       createShouldUpsertIfIDExists: !!req.query?.createShouldUpsertIfIDExists,
+      updateShouldUpsertIfIDNotExists: !!req.query?.updateShouldUpsertIfIDNotExists,
       skipCacheInvalidation: !!req.query?.skipCacheInvalidation,
       remoteAddress: context.remoteAddress,
     };

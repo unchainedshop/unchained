@@ -1,14 +1,18 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+import createFilter from './create.js';
 
 export default async function updateFilter(
   payload: any,
-  { logger }: { logger: any },
+  { logger, updateShouldUpsertIfIDNotExists }: { logger: any; updateShouldUpsertIfIDNotExists: boolean },
   unchainedAPI: UnchainedCore,
 ) {
   const { modules } = unchainedAPI;
   const { specification, _id } = payload;
 
   if (!(await modules.filters.filterExists({ filterId: _id }))) {
+    if (updateShouldUpsertIfIDNotExists) {
+      return createFilter(payload, { logger, createShouldUpsertIfIDExists: false }, unchainedAPI);
+    }
     throw new Error(`Can't update non-existing filter ${_id}`);
   }
 
