@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 import moniker from 'moniker';
 import { randomValueHex } from '@unchainedshop/utils';
+import { Context } from '../../../types.js';
 
-export default async function loginAsGuest(root: Root, _: any, context: Context) {
+export default async function loginAsGuest(root: never, _: any, context: Context) {
   log('mutation loginAsGuest');
 
   const guestname = `${moniker.choose()}-${randomValueHex(5)}`;

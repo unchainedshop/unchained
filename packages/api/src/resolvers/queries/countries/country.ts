@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function country(
-  root: Root,
+  root: never,
   { countryId }: { countryId: string },
   { modules, userId }: Context,
 ) {

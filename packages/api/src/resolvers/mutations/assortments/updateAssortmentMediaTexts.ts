@@ -1,10 +1,10 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { AssortmentMediaText } from '@unchainedshop/types/assortments.media.js';
 import { log } from '@unchainedshop/logger';
 import { AssortmentMediaNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function updateAssortmentMediaTexts(
-  root: Root,
+  root: never,
   { texts, assortmentMediaId }: { texts: Array<AssortmentMediaText>; assortmentMediaId: string },
   { modules, userId }: Context,
 ) {

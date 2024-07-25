@@ -2,7 +2,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { checkAction } from '../acl.js';
 import { actions } from '../roles/index.js';
 import { IncomingMessage } from 'http';
-import { Context } from '@unchainedshop/api';
+import { Context } from '../types.js';
 
 const logger = createLogger('unchained:bulk-import');
 

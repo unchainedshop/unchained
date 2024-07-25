@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { WarehousingProviderQuery } from '@unchainedshop/types/warehousing.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function warehousingProvidersCount(
-  root: Root,
+  root: never,
   params: WarehousingProviderQuery,
   { modules, userId }: Context,
 ) {

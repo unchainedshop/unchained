@@ -1,10 +1,10 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { OrderCheckoutError } from '../../../errors.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function checkoutCart(
-  root: Root,
+  root: never,
   params: {
     orderId: string;
     paymentContext?: any;

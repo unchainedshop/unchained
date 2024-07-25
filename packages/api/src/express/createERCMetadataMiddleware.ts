@@ -3,7 +3,7 @@ import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
 import { systemLocale } from '@unchainedshop/utils';
 import localePkg from 'locale';
-import { Context } from '@unchainedshop/api';
+import { Context } from '../types.js';
 
 const { Locale } = localePkg;
 

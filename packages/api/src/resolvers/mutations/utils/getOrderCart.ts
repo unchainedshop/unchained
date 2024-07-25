@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../types.js';
 import { User } from '@unchainedshop/types/user.js';
 import { OrderNotFoundError } from '../../../errors.js';
 

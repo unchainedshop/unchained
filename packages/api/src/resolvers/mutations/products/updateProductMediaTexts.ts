@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductMediaText } from '@unchainedshop/types/products.media.js';
 import { ProductMediaNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateProductMediaTexts(
-  root: Root,
+  root: never,
   { productMediaId, texts }: { productMediaId: string; texts: Array<ProductMediaText> },
   { modules, userId }: Context,
 ) {

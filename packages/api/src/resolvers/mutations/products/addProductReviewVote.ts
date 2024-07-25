@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductReviewVoteType } from '@unchainedshop/types/products.reviews.js';
 import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function addProductReviewVote(
-  root: Root,
+  root: never,
   params: { type: ProductReviewVoteType; meta?: any; productReviewId: string },
   { modules, userId }: Context,
 ) {

@@ -1,8 +1,8 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function prepareUserAvatarUpload(
-  root: Root,
+  root: never,
   params: { mediaName: string; userId: string },
   context: Context,
 ) {

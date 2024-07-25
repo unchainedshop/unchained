@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { UserNotFoundError, InvalidIdError, PasswordInvalidError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function setPassword(
-  root: Root,
+  root: never,
   params: { newPassword: string; userId: string },
   { modules, userId }: Context,
 ) {

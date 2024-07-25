@@ -1,4 +1,4 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import {
   InvalidIdError,
@@ -8,7 +8,7 @@ import {
 } from '../../../errors.js';
 
 export default async function invalidateToken(
-  root: Root,
+  root: never,
   { tokenId }: { tokenId: string },
   context: Context,
 ) {

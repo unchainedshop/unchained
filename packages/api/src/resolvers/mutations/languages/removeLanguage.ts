@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, LanguageNotFoundError } from '../../../errors.js';
 
 export default async function removeLanguage(
-  root: Root,
+  root: never,
   { languageId }: { languageId: string },
   { userId, modules }: Context,
 ) {

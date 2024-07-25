@@ -1,8 +1,8 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function allocateWork(
-  root: Root,
+  root: never,
   { types, worker }: { types?: Array<string>; worker?: string },
   { modules, userId }: Context,
 ) {

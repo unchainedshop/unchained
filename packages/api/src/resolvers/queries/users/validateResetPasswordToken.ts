@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 export default async function validateResetPasswordToken(
-  root: Root,
+  root: never,
   params: { token: string },
   context: Context,
 ) {

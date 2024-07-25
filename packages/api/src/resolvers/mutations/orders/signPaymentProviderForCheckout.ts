@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments.js';
 import {
@@ -11,7 +11,7 @@ import {
 } from '../../../errors.js';
 
 export default async function signPaymentProviderForCheckout(
-  root: Root,
+  root: never,
   params: { orderPaymentId: string; transactionContext: any },
   context: Context,
 ) {

@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { LanguageQuery } from '@unchainedshop/types/languages.js';
+import { Context } from '../../../types.js';
 
 export default async function languages(
-  root: Root,
+  root: never,
   params: LanguageQuery & { limit: number; offset: number; sort?: Array<SortOption> },
   { modules, userId }: Context,
 ) {

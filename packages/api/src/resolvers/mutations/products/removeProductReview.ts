@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, ProductReviewNotFoundError } from '../../../errors.js';
 
 export default async function removeProductReview(
-  root: Root,
+  root: never,
   { productReviewId }: { productReviewId: string },
   { modules, userId }: Context,
 ) {

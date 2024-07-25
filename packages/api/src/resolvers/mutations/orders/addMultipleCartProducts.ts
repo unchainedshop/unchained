@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { Configuration } from '@unchainedshop/types/common.js';
 import {
   ProductNotFoundError,
@@ -9,7 +9,7 @@ import {
 import { getOrderCart } from '../utils/getOrderCart.js';
 
 export default async function addMultipleCartProducts(
-  root: Root,
+  root: never,
   params: {
     orderId: string;
     items: Array<{

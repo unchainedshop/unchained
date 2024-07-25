@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
 import { UserProfile } from '@unchainedshop/types/user.js';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { UserNotFoundError } from '../../../errors.js';
 
 export default async function updateUserProfile(
-  root: Root,
+  root: never,
   params: { profile: UserProfile; meta?: any; userId: string },
   { modules, userId }: Context,
 ) {

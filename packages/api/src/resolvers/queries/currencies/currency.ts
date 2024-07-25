@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function currency(
-  root: Root,
+  root: never,
   { currencyId }: { currencyId: string },
   { modules, userId }: Context,
 ) {

@@ -1,8 +1,8 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function translatedProductVariationTexts(
-  root: Root,
+  root: never,
   params: { productVariationId: string; productVariationOptionValue?: string },
   { modules, userId }: Context,
 ) {

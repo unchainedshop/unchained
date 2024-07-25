@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { AssortmentText } from '@unchainedshop/types/assortments.js';
 import { InvalidIdError, AssortmentNotFoundError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function updateAssortmentTexts(
-  root: Root,
+  root: never,
   { texts, assortmentId }: { texts: Array<AssortmentText>; assortmentId: string },
   { modules, userId }: Context,
 ) {

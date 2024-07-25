@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateProductReview(
-  root: Root,
+  root: never,
   params: { productReviewId: string; productReview: ProductReview },
   { modules, userId }: Context,
 ) {

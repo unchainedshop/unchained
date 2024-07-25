@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductVariationText } from '@unchainedshop/types/products.variations.js';
 import { ProductVariationNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function F(
-  root: Root,
+  root: never,
   params: {
     productVariationId: string;
     productVariationOptionValue?: string;

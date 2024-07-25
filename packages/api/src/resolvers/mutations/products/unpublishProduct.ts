@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductNotFoundError, ProductWrongStatusError, InvalidIdError } from '../../../errors.js';
 
 export default async function unpublishProduct(
-  root: Root,
+  root: never,
   { productId }: { productId: string },
   { modules, userId }: Context,
 ) {

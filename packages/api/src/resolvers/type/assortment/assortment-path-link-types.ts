@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../types.js';
 import {
   AssortmentPathLink as AssortmentPathLinkType,
   AssortmentLink as AssortmentLinkType,

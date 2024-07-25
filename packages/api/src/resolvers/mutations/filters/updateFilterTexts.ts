@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function updateFilterTexts(
-  root: Root,
+  root: never,
   params: {
     texts: Array<{ locale: string; title?: string; subtitle?: string }>;
     filterId: string;

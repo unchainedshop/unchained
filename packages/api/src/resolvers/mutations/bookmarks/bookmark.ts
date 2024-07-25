@@ -1,14 +1,14 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import {
   InvalidIdError,
   ProductNotFoundError,
   BookmarkNotFoundError,
   MultipleBookmarksFound,
 } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function bookmark(
-  root: Root,
+  root: never,
   { productId, bookmarked }: { productId: string; bookmarked: string },
   { userId, modules }: Context,
 ) {

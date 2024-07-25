@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 import { UserNotFoundError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function sendVerificationEmail(
-  root: Root,
+  root: never,
   { email }: { email: string },
   { modules, userId }: Context,
 ) {

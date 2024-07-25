@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, UserNotFoundError } from '../../../errors.js';
 
 export default async function updateUserProfile(
-  root: Root,
+  root: never,
   params: { tags: Array<string>; userId: string },
   { modules, userId }: Context,
 ) {

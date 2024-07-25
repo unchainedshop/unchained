@@ -1,10 +1,10 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { PaymentProvider } from '@unchainedshop/types/payments.js';
 import { log } from '@unchainedshop/logger';
 import { ProviderConfigurationInvalid } from '../../../errors.js';
 
 export default async (
-  root: Root,
+  root: never,
   { paymentProvider }: { paymentProvider: PaymentProvider },
   { modules, userId }: Context,
 ) => {

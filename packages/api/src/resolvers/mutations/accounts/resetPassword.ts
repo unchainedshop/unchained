@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { InvalidResetTokenError, PasswordInvalidError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function resetPassword(
-  root: Root,
+  root: never,
   params: { newPassword?: string; token: string },
   context: Context,
 ) {

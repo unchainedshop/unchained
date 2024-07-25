@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { OrderNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function setOrderPaymentProvider(
-  root: Root,
+  root: never,
   params: { orderId: string; paymentProviderId: string },
   context: Context,
 ) {

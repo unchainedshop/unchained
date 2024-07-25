@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { DeliverProviderNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function removeDeliveryProvider(
-  root: Root,
+  root: never,
   { deliveryProviderId }: { deliveryProviderId: string },
   { modules, userId }: Context,
 ) {

@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { SearchFilterQuery } from '@unchainedshop/types/filters.js';
 import { QueryStringRequiredError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function searchProducts(
-  root: Root,
+  root: never,
   query: {
     assortmentId?: string;
     filterQuery?: SearchFilterQuery;

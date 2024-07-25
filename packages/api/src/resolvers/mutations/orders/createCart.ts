@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { OrderNumberAlreadyExistsError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function createCart(
-  root: Root,
+  root: never,
   { orderNumber }: { orderNumber: string },
   context: Context,
 ) {

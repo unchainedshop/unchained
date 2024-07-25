@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { UserNotFoundError } from '../../../errors.js';
 
 export default async function heartbeat(
-  root: Root,
+  root: never,
   _: any,
   { countryContext, localeContext, modules, remoteAddress, remotePort, userAgent, userId }: Context,
 ) {

@@ -1,11 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import { ProductTypes } from '@unchainedshop/core-products';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductBundleItem } from '@unchainedshop/types/products.js';
 import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.js';
 
 export default async function createProductBundleItem(
-  root: Root,
+  root: never,
   { productId, item }: { productId: string; item: ProductBundleItem },
   { modules, userId }: Context,
 ) {

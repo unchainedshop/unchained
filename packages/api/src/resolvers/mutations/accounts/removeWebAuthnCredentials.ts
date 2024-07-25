@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { UserWebAuthnCredentialsNotFoundError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function removeWebAuthnCredentials(
-  root: Root,
+  root: never,
   { credentialsId }: { credentialsId: string },
   { modules, userId, user }: Context,
 ) {

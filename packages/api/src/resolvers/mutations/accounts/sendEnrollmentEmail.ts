@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { UserNotFoundError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function sendEnrollmentEmail(
-  root: Root,
+  root: never,
   { email }: { email: string },
   { modules, userId }: Context,
 ) {

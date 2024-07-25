@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { InvalidEmailVerificationTokenError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
-export default async function verifyEmail(root: Root, { token }: { token: any }, context: Context) {
+export default async function verifyEmail(root: never, { token }: { token: any }, context: Context) {
   const { modules, userId } = context;
 
   log(`mutation verifyEmail ${userId}`, { userId });

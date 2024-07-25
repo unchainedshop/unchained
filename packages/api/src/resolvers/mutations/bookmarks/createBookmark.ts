@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { BookmarkAlreadyExistsError, InvalidIdError, ProductNotFoundError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function createBookmark(
-  root: Root,
+  root: never,
   { productId, userId, meta }: { productId: string; userId: string; meta?: any },
   { modules, userId: currentUserId }: Context,
 ) {

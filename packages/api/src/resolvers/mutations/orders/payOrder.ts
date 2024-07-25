@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { OrderPaymentStatus } from '@unchainedshop/types/orders.payments.js';
 import {
   OrderNotFoundError,
@@ -8,7 +8,7 @@ import {
   InvalidIdError,
 } from '../../../errors.js';
 
-export default async function payOrder(root: Root, { orderId }: { orderId: string }, context: Context) {
+export default async function payOrder(root: never, { orderId }: { orderId: string }, context: Context) {
   const { modules, userId } = context;
 
   log('mutation payOrder', { orderId, userId });

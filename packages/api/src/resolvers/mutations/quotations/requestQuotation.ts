@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { Configuration } from '@unchainedshop/types/common.js';
 import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function requestQuotation(
-  root: Root,
+  root: never,
   params: { productId: string; configuration: Configuration },
   context: Context,
 ) {

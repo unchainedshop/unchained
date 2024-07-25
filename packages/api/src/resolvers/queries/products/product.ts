@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError } from '../../../errors.js';
 
 export default async function product(
-  root: Root,
+  root: never,
   { productId, slug }: { productId?: string; slug?: string },
   { modules, userId }: Context,
 ) {

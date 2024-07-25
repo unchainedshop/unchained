@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { InvalidIdError } from '../../../errors.js';
 
 export default async function warehousingProvider(
-  root: Root,
+  root: never,
   { warehousingProviderId }: { warehousingProviderId: string },
   { modules, userId }: Context,
 ) {

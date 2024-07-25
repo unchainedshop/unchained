@@ -1,10 +1,10 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { log } from '@unchainedshop/logger';
 import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.js';
 
 export default async function activateEnrollment(
-  root: Root,
+  root: never,
   { enrollmentId }: { enrollmentId: string },
   context: Context,
 ) {

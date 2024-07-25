@@ -1,5 +1,5 @@
-import { Context } from '@unchainedshop/api';
 import { log } from '@unchainedshop/logger';
+import { Context } from '../../../types.js';
 
 const addPushSubscription = async (
   _,

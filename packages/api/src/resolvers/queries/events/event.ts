@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 export default async function event(
-  root: Root,
+  root: never,
   { eventId }: { eventId: string },
   { modules, userId }: Context,
 ) {

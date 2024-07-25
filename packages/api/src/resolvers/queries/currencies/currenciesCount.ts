@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { CurrencyQuery } from '@unchainedshop/types/currencies.js';
+import { Context } from '../../../types.js';
 
 export default async function currenciesCount(
-  root: Root,
+  root: never,
   params: CurrencyQuery,
   { modules, userId }: Context,
 ) {

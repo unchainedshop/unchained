@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { Address, Contact } from '@unchainedshop/types/common.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
 import { OrderWrongStatusError } from '../../../errors.js';
@@ -13,7 +13,7 @@ interface UpdateCartParams {
   meta?: any;
 }
 
-export default async function updateCart(root: Root, params: UpdateCartParams, context: Context) {
+export default async function updateCart(root: never, params: UpdateCartParams, context: Context) {
   const { orderId, billingAddress, contact, paymentProviderId, deliveryProviderId, meta } = params;
 
   const { modules, userId, user } = context;

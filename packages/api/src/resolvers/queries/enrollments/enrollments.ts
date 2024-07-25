@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { EnrollmentQuery } from '@unchainedshop/types/enrollments.js';
+import { Context } from '../../../types.js';
 
 export default async function enrollments(
-  root: Root,
+  root: never,
   params: EnrollmentQuery & {
     limit?: number;
     offset?: number;

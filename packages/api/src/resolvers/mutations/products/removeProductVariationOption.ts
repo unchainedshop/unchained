@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { InvalidIdError, ProductVariationNotFoundError } from '../../../errors.js';
 
 export default async function removeProductVariationOption(
-  root: Root,
+  root: never,
   params: { productVariationId: string; productVariationOptionValue: string },
   { modules, userId }: Context,
 ) {

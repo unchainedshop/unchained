@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { Configuration } from '@unchainedshop/types/common.js';
 import {
   OrderQuantityTooLowError,
@@ -10,7 +10,7 @@ import {
 } from '../../../errors.js';
 
 export default async function updateCartItem(
-  root: Root,
+  root: never,
   params: {
     itemId: string;
     quantity?: number;

@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 import { BookmarkNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function removeBookmark(
-  root: Root,
+  root: never,
   { bookmarkId }: { bookmarkId: string },
   { userId, modules }: Context,
 ) {

@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
 import { mongodb } from '@unchainedshop/mongodb';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { PaymentProvider } from '@unchainedshop/types/payments.js';
 
 export default async function paymentProvidersCount(
-  root: Root,
+  root: never,
   params: mongodb.Filter<PaymentProvider>,
   { modules, userId }: Context,
 ) {

@@ -1,9 +1,9 @@
-import { Context } from '@unchainedshop/api';
 import {
   Assortment,
   AssortmentFilter as AssortmentFilterType,
 } from '@unchainedshop/types/assortments.js';
 import { Filter } from '@unchainedshop/types/filters.js';
+import { Context } from '../../../types.js';
 
 type HelperType<T> = (assortmentFilter: AssortmentFilterType, _: never, context: Context) => T;
 

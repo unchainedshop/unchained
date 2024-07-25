@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 export default async function translatedProductMediaTexts(
-  root: Root,
+  root: never,
   { productMediaId }: { productMediaId: string },
   { modules, userId }: Context,
 ) {

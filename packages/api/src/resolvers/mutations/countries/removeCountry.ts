@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 import { CountryNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function removeCountry(
-  root: Root,
+  root: never,
   { countryId }: { countryId: string },
   { userId, modules }: Context,
 ) {

@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { OrderPaymentNotFoundError, InvalidIdError, OrderPaymentTypeError } from '../../../errors.js';
 
 export default async function updateOrderPaymentGeneric(
-  root: Root,
+  root: never,
   { orderPaymentId, meta }: { orderPaymentId: string; meta?: any },
   context: Context,
 ) {

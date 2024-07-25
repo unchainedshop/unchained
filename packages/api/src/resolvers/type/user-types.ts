@@ -1,4 +1,4 @@
-import { Context, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { Bookmark } from '@unchainedshop/types/bookmarks.js';
 import { Contact } from '@unchainedshop/types/common.js';
 import { Country } from '@unchainedshop/types/countries.js';
@@ -22,6 +22,7 @@ import { Roles, permissions } from '@unchainedshop/roles';
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 import { checkAction, checkTypeResolver } from '../../acl.js';
 import { actions } from '../../roles/index.js';
+import { Context } from '../../types.js';
 
 type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
 

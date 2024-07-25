@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function removeFilterOption(
-  root: Root,
+  root: never,
   { filterId, filterOptionValue }: { filterId: string; filterOptionValue: string },
   context: Context,
 ) {

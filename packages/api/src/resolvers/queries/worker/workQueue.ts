@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { WorkStatus } from '@unchainedshop/types/worker.js';
+import { Context } from '../../../types.js';
 
 export default async function workQueue(
-  root: Root,
+  root: never,
   {
     limit,
     offset,

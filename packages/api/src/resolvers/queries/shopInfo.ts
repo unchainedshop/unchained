@@ -1,8 +1,8 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../types.js';
 import { log } from '@unchainedshop/logger';
 
 export default function shopInfo(
-  root: Root,
+  root: never,
   _: never,
   context: Context,
 ): {

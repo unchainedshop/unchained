@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, WarehousingProviderNotFoundError } from '../../../errors.js';
 
 export default async function removeWarehousingProvider(
-  root: Root,
+  root: never,
   { warehousingProviderId }: { warehousingProviderId: string },
   { modules, userId }: Context,
 ) {

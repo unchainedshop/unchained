@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 type CountEventsParams = Parameters<Context['modules']['events']['count']>['0'];
 
 export default async function eventsCount(
-  root: Root,
+  root: never,
   params: CountEventsParams,
   { modules, userId }: Context,
 ) {

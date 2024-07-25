@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { QuotationQuery } from '@unchainedshop/types/quotations.js';
+import { Context } from '../../../types.js';
 
 export default async function quotations(
-  root: Root,
+  root: never,
   params: QuotationQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
   { modules, userId }: Context,
 ) {

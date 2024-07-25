@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 export default async function translatedFilterTexts(
-  root: Root,
+  root: never,
   { filterId, filterOptionValue }: { filterId: string; filterOptionValue?: string },
   { modules, userId }: Context,
 ) {

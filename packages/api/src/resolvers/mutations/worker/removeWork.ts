@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, WorkNotFoundOrWrongStatus } from '../../../errors.js';
 
 export default async function removeWork(
-  root: Root,
+  root: never,
   { workId }: { workId: string },
   { modules, userId }: Context,
 ) {

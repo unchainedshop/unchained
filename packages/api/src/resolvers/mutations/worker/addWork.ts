@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { WorkData } from '@unchainedshop/types/worker.js';
 
-export default async function addWork(root: Root, workData: WorkData, { modules, userId }: Context) {
+export default async function addWork(root: never, workData: WorkData, { modules, userId }: Context) {
   const { type, input } = workData;
 
   log(`mutation addWork ${type} ${JSON.stringify(input)}`, { userId });

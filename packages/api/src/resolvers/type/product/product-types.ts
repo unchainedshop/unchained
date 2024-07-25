@@ -1,10 +1,11 @@
 import { ProductText, Product as ProductType } from '@unchainedshop/types/products.js';
 import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
 import { objectInvert } from '@unchainedshop/utils';
-import { Context, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { AssortmentPathLink } from '@unchainedshop/types/assortments.js';
 import { ProductMedia } from '@unchainedshop/types/products.media.js';
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';
+import { Context } from '../../../types.js';
 
 export const Product = {
   __resolveType: (product: ProductType): string => {

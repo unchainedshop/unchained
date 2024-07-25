@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { CurrencyQuery } from '@unchainedshop/types/currencies.js';
+import { Context } from '../../../types.js';
 
 export default async function currencies(
-  root: Root,
+  root: never,
   params: CurrencyQuery & { limit: number; offset: number; sort?: Array<SortOption> },
   { modules, userId }: Context,
 ) {

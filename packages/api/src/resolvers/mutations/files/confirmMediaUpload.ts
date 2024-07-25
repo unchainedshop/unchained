@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { FileUploadExpiredError, FileNotFoundError } from '../../../errors.js';
 
 export default async function confirmMediaUpload(
-  root: Root,
+  root: never,
   { mediaUploadTicketId: fileId, size, type },
   context: Context,
 ) {

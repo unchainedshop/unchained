@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 type FindEventsParams = Parameters<Context['modules']['events']['findEvents']>['0'];
 
 export default async function events(
-  root: Root,
+  root: never,
   params: FindEventsParams,
   { modules, userId }: Context,
 ) {

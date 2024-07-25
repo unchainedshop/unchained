@@ -1,8 +1,8 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import { Context } from '../../../types.js';
 
 export default async function prepareAssortmentMediaUpload(
-  root: Root,
+  root: never,
   { mediaName, assortmentId }: { mediaName: string; assortmentId: string },
   context: Context,
 ) {

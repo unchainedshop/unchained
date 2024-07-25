@@ -1,7 +1,7 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
+import { Context } from '../../../types.js';
 
-export default async function logout(root: Root, _: never, context: Context) {
+export default async function logout(root: never, _: never, context: Context) {
   const { userId } = context;
 
   log('mutation logout', { userId });

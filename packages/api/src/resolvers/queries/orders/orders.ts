@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { OrderQuery } from '@unchainedshop/types/orders.js';
+import { Context } from '../../../types.js';
 
 export default async function orders(
-  root: Root,
+  root: never,
   params: OrderQuery & { limit?: number; offset?: number; sort?: Array<SortOption> },
   { modules, userId }: Context,
 ) {

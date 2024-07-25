@@ -1,10 +1,10 @@
 import { log } from '@unchainedshop/logger';
 import { ProductTypes } from '@unchainedshop/core-products';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.js';
 
 export default async function removeBundleItem(
-  root: Root,
+  root: never,
   { productId, index }: { productId: string; index: number },
   { modules, userId }: Context,
 ) {

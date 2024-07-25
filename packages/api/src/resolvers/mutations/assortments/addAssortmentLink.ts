@@ -1,4 +1,3 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { AssortmentLink } from '@unchainedshop/types/assortments.js';
 import { log } from '@unchainedshop/logger';
 import {
@@ -6,9 +5,10 @@ import {
   CyclicAssortmentLinkNotSupportedError,
   InvalidIdError,
 } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function addAssortmentLink(
-  root: Root,
+  root: never,
   { parentAssortmentId, childAssortmentId, ...assortmentLink }: AssortmentLink,
   { modules, userId }: Context,
 ) {

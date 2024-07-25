@@ -1,11 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import { ProductTypes } from '@unchainedshop/core-products';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductPlan } from '@unchainedshop/types/products.js';
 import { ProductNotFoundError, InvalidIdError, ProductWrongStatusError } from '../../../errors.js';
 
 export default async function updateProductPlan(
-  root: Root,
+  root: never,
   { plan, productId }: { plan: ProductPlan; productId: string },
   { modules, userId }: Context,
 ) {

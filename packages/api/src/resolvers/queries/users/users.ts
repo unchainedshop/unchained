@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { UserQuery } from '@unchainedshop/types/user.js';
+import { Context } from '../../../types.js';
 
 export default async function users(
-  root: Root,
+  root: never,
   params: UserQuery & {
     limit?: number;
     offset?: number;

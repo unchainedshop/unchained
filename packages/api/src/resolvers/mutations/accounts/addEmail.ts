@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { EmailAlreadyExistsError, UserNotFoundError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function addEmail(
-  root: Root,
+  root: never,
   params: { email: string; userId?: string },
   { modules, userId }: Context,
 ) {

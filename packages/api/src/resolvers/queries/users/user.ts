@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 export default async function user(
-  root: Root,
+  root: never,
   params: { userId?: string },
   { modules, userId }: Context,
 ) {

@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/api';
+import { Context } from '../../../types.js';
 import {
   Assortment as AssortmentType,
   AssortmentFilter,

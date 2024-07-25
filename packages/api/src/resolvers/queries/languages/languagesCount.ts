@@ -1,9 +1,9 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { LanguageQuery } from '@unchainedshop/types/languages.js';
 import { log } from '@unchainedshop/logger';
 
 export default async function languagesCount(
-  root: Root,
+  root: never,
   params: LanguageQuery,
   { modules, userId }: Context,
 ) {

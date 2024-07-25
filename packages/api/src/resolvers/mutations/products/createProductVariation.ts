@@ -1,11 +1,11 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { ProductVariationType, VariationInputText } from '@unchainedshop/types/products.variations.js';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';
 
 export default async function F(
-  root: Root,
+  root: never,
   params: {
     productId: string;
     variation: {

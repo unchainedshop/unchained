@@ -1,10 +1,10 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { Language } from '@unchainedshop/types/languages.js';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, LanguageNotFoundError } from '../../../errors.js';
 
 export default async function updateLanguage(
-  root: Root,
+  root: never,
   { language, languageId }: { language: Language; languageId: string },
   { userId, modules }: Context,
 ) {

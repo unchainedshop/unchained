@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { Filter, FilterInputText } from '@unchainedshop/types/filters.js';
+import { Context } from '../../../types.js';
 
 export default async function createFilter(
-  root: Root,
+  root: never,
   { filter, texts }: { filter: Filter; texts: FilterInputText[] },
   context: Context,
 ) {

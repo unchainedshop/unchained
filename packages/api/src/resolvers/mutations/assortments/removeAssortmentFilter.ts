@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { AssortmentFilterNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function removeAssortmentFilter(
-  root: Root,
+  root: never,
   { assortmentFilterId }: { assortmentFilterId: string },
   { modules, userId }: Context,
 ) {

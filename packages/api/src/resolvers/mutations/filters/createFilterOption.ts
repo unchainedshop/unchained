@@ -1,10 +1,10 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { FilterInputText } from '@unchainedshop/types/filters.js';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function createFilterOption(
-  root: Root,
+  root: never,
   params: { filterId: string; option: string; texts?: FilterInputText[] },
   context: Context,
 ) {

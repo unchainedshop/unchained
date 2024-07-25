@@ -1,10 +1,9 @@
 import { log } from '@unchainedshop/logger';
-
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { InvalidCredentialsError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function loginWithPassword(
-  root: Root,
+  root: never,
   params: {
     username?: string;
     email?: string;

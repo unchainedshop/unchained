@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { AssortmentMediaNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function removeAssortmentMedia(
-  root: Root,
+  root: never,
   { assortmentMediaId }: { assortmentMediaId: string },
   { modules, userId }: Context,
 ) {

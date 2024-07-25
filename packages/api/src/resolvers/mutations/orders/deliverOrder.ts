@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { OrderDeliveryStatus } from '@unchainedshop/types/orders.deliveries.js';
 import {
   OrderNotFoundError,
@@ -9,7 +9,7 @@ import {
 } from '../../../errors.js';
 
 export default async function deliverOrder(
-  root: Root,
+  root: never,
   { orderId }: { orderId: string },
   context: Context,
 ) {

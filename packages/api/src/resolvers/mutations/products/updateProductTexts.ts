@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function updateProductTexts(
-  root: Root,
+  root: never,
   { texts, productId },
   { modules, userId }: Context,
 ) {

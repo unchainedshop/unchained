@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 export default async function createWebAuthnCredentialRequestOptions(
-  root: Root,
+  root: never,
   { extensionOptions, username }: { username: string; extensionOptions: any },
   { modules, userId, getHeader }: Context,
 ) {

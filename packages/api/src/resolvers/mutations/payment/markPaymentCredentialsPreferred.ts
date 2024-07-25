@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { PaymentCredentialsNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function makePaymentCredentialsPreferred(
-  root: Root,
+  root: never,
   { paymentCredentialsId }: { paymentCredentialsId: string },
   { modules, userId }: Context,
 ) {

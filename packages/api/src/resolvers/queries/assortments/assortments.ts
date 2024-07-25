@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { AssortmentQuery } from '@unchainedshop/types/assortments.js';
+import { Context } from '../../../types.js';
 
 export default async function assortments(
-  root: Root,
+  root: never,
   params: AssortmentQuery & {
     limit?: number;
     offset?: number;

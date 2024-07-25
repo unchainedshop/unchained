@@ -1,10 +1,10 @@
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import { getOrderCart } from '../utils/getOrderCart.js';
 import { OrderWrongStatusError } from '../../../errors.js';
 
 export default async function addCartDiscount(
-  root: Root,
+  root: never,
   { orderId, code }: { orderId?: string; code: string },
   context: Context,
 ) {

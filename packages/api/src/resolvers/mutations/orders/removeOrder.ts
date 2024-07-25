@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
 import { OrderNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function removeOrder(
-  root: Root,
+  root: never,
   { orderId }: { orderId: string },
   { modules, userId }: Context,
 ) {

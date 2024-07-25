@@ -1,9 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context, SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/types/api.js';
 import { FilterQuery } from '@unchainedshop/types/filters.js';
+import { Context } from '../../../types.js';
 
 export default async function filters(
-  root: Root,
+  root: never,
   params: FilterQuery & {
     limit?: number;
     offset?: number;

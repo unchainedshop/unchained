@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
 import { UserWeb3InvalidAddressError } from '../../../errors.js';
+import { Context } from '../../../types.js';
 
 export default async function addWeb3Address(
-  root: Root,
+  root: never,
   { address }: { address: any },
   { modules, userId, user }: Context,
 ) {

@@ -1,9 +1,9 @@
 import { log } from '@unchainedshop/logger';
-import { Context, Root } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 import { AssortmentQuery } from '@unchainedshop/types/assortments.js';
 
 export default async function assortmentsCount(
-  root: Root,
+  root: never,
   params: AssortmentQuery,
   { modules, userId }: Context,
 ) {
