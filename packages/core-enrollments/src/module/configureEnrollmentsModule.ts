@@ -8,7 +8,6 @@ import {
 } from '@unchainedshop/types/enrollments.js';
 import type { Locale } from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { log } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
   generateDbMutations,
@@ -126,8 +125,6 @@ export const configureEnrollmentsModule = async ({
         break;
     }
 
-    log(`New Status: ${status}`, { enrollmentId });
-
     const updatedEnrollment = await Enrollments.findOneAndUpdate(selector, modifier, {
       returnDocument: 'after',
     });
@@ -201,21 +198,12 @@ export const configureEnrollmentsModule = async ({
     return enrollment;
   };
 
-  const updateEnrollmentField =
-    (fieldKey: string) => async (enrollmentId: string, fieldValue: any, userId?: string) => {
-      log(`Update enrollment field ${fieldKey.toUpperCase()}`, {
-        enrollmentId,
-        userId,
-      });
-
-      await mutations.update(enrollmentId, { $set: { [fieldKey]: fieldValue } });
-
-      const enrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId), {});
-
-      await emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
-
-      return enrollment;
-    };
+  const updateEnrollmentField = (fieldKey: string) => async (enrollmentId: string, fieldValue: any) => {
+    await mutations.update(enrollmentId, { $set: { [fieldKey]: fieldValue } });
+    const enrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId), {});
+    await emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
+    return enrollment;
+  };
 
   return {
     // Queries
@@ -450,10 +438,6 @@ export const configureEnrollmentsModule = async ({
     updatePayment: updateEnrollmentField('payment'),
 
     updatePlan: async (enrollmentId, plan, unchainedAPI) => {
-      log(`Update enrollment plan fields`, {
-        enrollmentId,
-      });
-
       await mutations.update(enrollmentId, {
         productId: plan.productId,
         quantity: plan.quantity,

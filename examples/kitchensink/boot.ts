@@ -1,11 +1,10 @@
 import './load_env.js';
 import express from 'express';
 import http from 'http';
-import responseCachePlugin from '@apollo/server-plugin-response-cache';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { useExecutionCancellation } from 'graphql-yoga';
+import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import { startPlatform, connectPlatformToExpress4, setAccessToken } from '@unchainedshop/platform';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
-import { ApolloServerPluginLandingPageGraphiQLPlayground } from 'apollo-graphiql-playground';
 import { log } from '@unchainedshop/logger';
 import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
 import { TicketingAPI } from '@unchainedshop/ticketing';
@@ -15,30 +14,26 @@ import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 import seed from './seed.js';
-import { UnchainedUserContext } from '@unchainedshop/types/api.js';
 import ticketingServices from '@unchainedshop/ticketing/services.js';
+import cookie from 'cookie';
+
+const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;
 
 const start = async () => {
   const app = express();
   const httpServer = http.createServer(app);
-
   const engine = await startPlatform({
-    introspection: true,
     modules: { ...defaultModules, ...ticketingModules },
     services: { ...ticketingServices },
     plugins: [
-      responseCachePlugin({
-        async sessionId(ctx) {
-          return (ctx.contextValue as UnchainedUserContext).userId || null;
+      useExecutionCancellation(),
+      useResponseCache({
+        ttl: 0,
+        session(req) {
+          const auth = req.headers.get('authorization');
+          const cookies = cookie.parse(req.headers.get('cookie') || '');
+          return auth || cookies[UNCHAINED_COOKIE_NAME] || null;
         },
-        async shouldReadFromCache(ctx) {
-          if ((ctx.contextValue as UnchainedUserContext)?.user?.roles?.includes('admin')) return false;
-          return true;
-        },
-      }),
-      ApolloServerPluginDrainHttpServer({ httpServer }),
-      ApolloServerPluginLandingPageGraphiQLPlayground({
-        shouldPersistHeaders: true,
       }),
     ],
     options: {
@@ -60,9 +55,6 @@ const start = async () => {
 
   await seed(engine.unchainedAPI);
   await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
-
-  // Start the GraphQL Server
-  await engine.apolloGraphQLServer.start();
 
   connectPlatformToExpress4(app, engine);
   connectDefaultPluginsToExpress4(app, engine);

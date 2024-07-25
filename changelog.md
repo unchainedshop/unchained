@@ -21,6 +21,7 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Drop oAuth support (if you want this, use a passport plugin)
 
 ## Minor
+- updateContext functions now do not recalculate itself, this is important to speed up performance and reduce race conditions when there is many changes from third party plugins and events
 
 ## Patch
 

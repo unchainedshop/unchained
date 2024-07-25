@@ -1,15 +1,6 @@
-import { ModuleMutations } from '@unchainedshop/types/core.js';
-import { OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { log } from '@unchainedshop/logger';
-import {
-  generateDbFilterById,
-  generateDbMutations,
-  generateDbObjectId,
-  mongodb,
-} from '@unchainedshop/mongodb';
-import { OrderPositionsSchema } from '../db/OrderPositionsSchema.js';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { ordersSettings } from '../orders-settings.js';
 
 const ORDER_POSITION_EVENTS: string[] = [
@@ -27,17 +18,10 @@ export const buildFindByIdSelector = (orderPositionId: string, orderId?: string)
 
 export const configureOrderPositionsModule = ({
   OrderPositions,
-  updateCalculation,
 }: {
   OrderPositions: mongodb.Collection<OrderPosition>;
-  updateCalculation: OrdersModule['updateCalculation'];
 }): OrderPositionsModule => {
   registerEvents(ORDER_POSITION_EVENTS);
-
-  const mutations = generateDbMutations<OrderPosition>(OrderPositions, OrderPositionsSchema, {
-    permanentlyDeleteByDefault: true,
-    hasCreateOnly: false,
-  }) as ModuleMutations<OrderPosition>;
 
   return {
     // Queries
@@ -72,68 +56,18 @@ export const configureOrderPositionsModule = ({
       });
     },
 
-    // Mutations
-
-    create: async (
-      { configuration, context, quantity, quotationId },
-      { order, product, originalProduct },
-      unchainedAPI,
-    ) => {
-      const orderId = order._id;
-      const productId = product._id;
-      const originalProductId = originalProduct ? originalProduct._id : undefined;
-
-      log(
-        `Create ${quantity}x Position with Product ${productId} ${
-          quotationId ? ` (${quotationId})` : ''
-        }`,
-        { orderId, productId, originalProductId },
-      );
-
-      const positionId = await mutations.create({
-        orderId,
-        productId,
-        originalProductId,
-        quotationId,
-        quantity,
-        configuration,
-        context,
-        calculation: [],
-        scheduling: [],
-      });
-
-      await updateCalculation(orderId, unchainedAPI);
-
-      return OrderPositions.findOne(buildFindByIdSelector(positionId));
-    },
-
-    delete: async (orderPositionId, unchainedAPI) => {
+    delete: async (orderPositionId) => {
       const selector = buildFindByIdSelector(orderPositionId);
-
-      log(`Remove Position ${orderPositionId}`, {
-        orderPositionId,
-      });
-
       const orderPosition = await OrderPositions.findOneAndDelete(selector, {});
-
-      await updateCalculation(orderPosition.orderId, unchainedAPI);
-
       await emit('ORDER_REMOVE_CART_ITEM', {
         orderPosition,
       });
-
       return { ...orderPosition, calculation: [] };
     },
 
-    removePositions: async ({ orderId }, unchainedAPI) => {
-      log('Remove Positions', { orderId });
-
+    removePositions: async ({ orderId }) => {
       const result = await OrderPositions.deleteMany({ orderId });
-
-      await updateCalculation(orderId, unchainedAPI);
-
       await emit('ORDER_EMPTY_CART', { orderId, count: result.deletedCount });
-
       return result.deletedCount;
     },
 
@@ -173,11 +107,9 @@ export const configureOrderPositionsModule = ({
         unchainedAPI,
       );
 
-      await OrderPositions.updateOne(selector, modifier);
-
-      await updateCalculation(order._id, unchainedAPI);
-
-      const updatedOrderPosition = await OrderPositions.findOne(selector, {});
+      const updatedOrderPosition = await OrderPositions.findOneAndUpdate(selector, modifier, {
+        returnDocument: 'after',
+      });
 
       await emit('ORDER_UPDATE_CART_ITEM', {
         orderPosition: updatedOrderPosition,
@@ -186,9 +118,7 @@ export const configureOrderPositionsModule = ({
       return updatedOrderPosition;
     },
 
-    removeProductByIdFromAllOpenPositions: async (productId, unchainedAPI) => {
-      log('Remove Position Product', { productId });
-
+    removeProductByIdFromAllOpenPositions: async (productId) => {
       const positions = await OrderPositions.aggregate([
         {
           $match: {
@@ -211,15 +141,7 @@ export const configureOrderPositionsModule = ({
       ]).toArray();
 
       const positionIds = positions.map((o) => o._id);
-      const result = await OrderPositions.deleteMany({ _id: { $in: positionIds } });
-
-      const orderIdsToRecalculate = positions.map((o) => o.orderId);
-      await Promise.all(
-        [...new Set(orderIdsToRecalculate)].map(async (orderIdToRecalculate) => {
-          await updateCalculation(orderIdToRecalculate, unchainedAPI);
-        }),
-      );
-
+      await OrderPositions.deleteMany({ _id: { $in: positionIds } });
       await Promise.all(
         positions.map(async (orderPosition) => {
           await emit('ORDER_REMOVE_CART_ITEM', {
@@ -228,7 +150,8 @@ export const configureOrderPositionsModule = ({
         }),
       );
 
-      return result.deletedCount;
+      const orderIdsToRecalculate = positions.map((o) => o.orderId);
+      return orderIdsToRecalculate;
     },
 
     updateScheduling: async ({ order, orderDelivery, orderPosition }, unchainedAPI) => {
@@ -291,10 +214,6 @@ export const configureOrderPositionsModule = ({
     },
 
     updateCalculation: async (orderPosition, unchainedAPI) => {
-      log(`OrderPosition ${orderPosition._id} -> Update Calculation`, {
-        orderId: orderPosition.orderId,
-      });
-
       const calculation = await unchainedAPI.modules.products.calculate(
         { item: orderPosition, configuration: orderPosition.configuration },
         unchainedAPI,
@@ -363,8 +282,6 @@ export const configureOrderPositionsModule = ({
         },
         { upsert: true },
       );
-
-      await updateCalculation(orderId, unchainedAPI);
 
       const upsertedOrderPosition = await OrderPositions.findOne(selector);
 

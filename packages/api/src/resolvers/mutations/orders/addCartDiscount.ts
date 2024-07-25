@@ -16,5 +16,7 @@ export default async function addCartDiscount(
 
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  return modules.orders.discounts.createManualOrderDiscount({ order, code }, context);
+  const discount = await modules.orders.discounts.createManualOrderDiscount({ order, code }, context);
+  await modules.orders.updateCalculation(order._id, context);
+  return discount;
 }

@@ -1,7 +1,7 @@
 import { Context, Root } from '@unchainedshop/types/api.js';
 import { log } from '@unchainedshop/logger';
 import { WorkStatus } from '@unchainedshop/types/worker.js';
-import { InvalidIdError, TokenWrongStatusError } from '../../../errors.js';
+import { InvalidIdError, TokenNotFoundError, TokenWrongStatusError } from '../../../errors.js';
 
 export default async function exportToken(
   root: Root,
@@ -19,27 +19,26 @@ export default async function exportToken(
   if (!tokenId) throw new InvalidIdError({ tokenId });
 
   const token = await modules.warehousing.findToken({ tokenId });
+  if (!token) throw new TokenNotFoundError({ tokenId });
 
-  if (token) {
-    if (token.walletAddress && !token.userId) {
-      throw new TokenWrongStatusError({ tokenId });
-    }
-    const workItems = await modules.worker.findWorkQueue({
-      types: ['EXPORT_TOKEN'],
-      status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
+  if (token.walletAddress && !token.userId) {
+    throw new TokenWrongStatusError({ tokenId });
+  }
+  const workItems = await modules.worker.findWorkQueue({
+    types: ['EXPORT_TOKEN'],
+    status: [WorkStatus.NEW, WorkStatus.ALLOCATED],
+  });
+  const existingWork = workItems.find((item) => item.input?.token?._id === token._id);
+  if (!existingWork) {
+    await modules.worker.addWork({
+      type: 'EXPORT_TOKEN',
+      retries: 5,
+      input: {
+        token,
+        quantity,
+        recipientWalletAddress,
+      },
     });
-    const existingWork = workItems.find((item) => item.input?.token?._id === token._id);
-    if (!existingWork) {
-      await modules.worker.addWork({
-        type: 'EXPORT_TOKEN',
-        retries: 5,
-        input: {
-          token,
-          quantity,
-          recipientWalletAddress,
-        },
-      });
-    }
   }
 
   return modules.warehousing.findToken({ tokenId });

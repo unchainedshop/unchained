@@ -122,9 +122,6 @@ export interface OrderMutations {
 
   delete: (orderId: string) => Promise<number>;
 
-  initProviders: (order: Order, unchainedAPI: UnchainedCore) => Promise<Order>;
-  invalidateProviders: (unchainedAPI: UnchainedCore, maxAgeDays: number) => Promise<void>;
-
   setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
   moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
 
@@ -139,20 +136,20 @@ export interface OrderMutations {
     unchainedAPI: UnchainedCore,
   ) => Promise<Order>;
 
-  updateBillingAddress: (
-    orderId: string,
-    billingAddress: Address,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Order>;
-  updateContact: (orderId: string, contact: Contact, unchainedAPI: UnchainedCore) => Promise<Order>;
-  updateContext: (orderId: string, context: any, unchainedAPI: UnchainedCore) => Promise<Order | null>;
-  updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
+  updateBillingAddress: (orderId: string, billingAddress: Address) => Promise<Order>;
+  updateContact: (orderId: string, contact: Contact) => Promise<Order>;
+  updateContext: (orderId: string, context: any) => Promise<Order | null>;
 }
 
 export type OrdersModule = OrderQueries &
   OrderTransformations &
   OrderProcessing &
   OrderMutations & {
+    // Order context recalculations
+    initProviders: (order: Order, unchainedAPI: UnchainedCore) => Promise<Order>;
+    updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
+    invalidateProviders: (unchainedAPI: UnchainedCore, maxAgeDays: number) => Promise<void>;
+
     // Sub entities
     deliveries: OrderDeliveriesModule;
     discounts: OrderDiscountsModule;

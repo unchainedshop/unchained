@@ -39,20 +39,10 @@ export type OrderPositionsModule = {
     unchainedAPI: UnchainedCore,
   ) => IProductPricingSheet;
 
-  // Mutations
-  create: (
-    doc: Partial<OrderPosition>,
-    params: { order: Order; product: Product; originalProduct?: Product },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<OrderPosition>;
+  delete: (orderPositionId: string) => Promise<OrderPosition>;
 
-  delete: (orderPositionId: string, unchainedAPI: UnchainedCore) => Promise<OrderPosition>;
-
-  removePositions: ({ orderId }: { orderId: string }, unchainedAPI: UnchainedCore) => Promise<number>;
-  removeProductByIdFromAllOpenPositions: (
-    productId: string,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<number>;
+  removePositions: ({ orderId }: { orderId: string }) => Promise<number>;
+  removeProductByIdFromAllOpenPositions: (productId: string) => Promise<Array<string>>;
 
   updateProductItem: (
     doc: {

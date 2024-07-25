@@ -1,5 +1,3 @@
-import type { IncomingMessage, OutgoingMessage } from 'http';
-import type { ApolloServerOptions } from '@apollo/server';
 import type { Locale } from 'locale';
 import type DataLoader from 'dataloader';
 import { User } from './user.js';
@@ -78,11 +76,6 @@ export interface UnchainedLoaders {
   };
 }
 
-export interface UnchainedHTTPServerContext {
-  req: IncomingMessage;
-  res: OutgoingMessage;
-}
-
 export interface CustomAdminUiProperties {
   entityName: string;
   inlineFragment: string;
@@ -90,6 +83,11 @@ export interface CustomAdminUiProperties {
 export interface AdminUiConfig {
   customProperties?: CustomAdminUiProperties[];
 }
+
+export type UnchainedHTTPServerContext = {
+  setHeader: (key: string, value: string) => void;
+  getHeader: (key: string) => string | string[];
+};
 
 export type Context = UnchainedCore & {
   version?: string;
@@ -99,14 +97,3 @@ export type Context = UnchainedCore & {
   UnchainedLocaleContext &
   UnchainedLoaders &
   UnchainedHTTPServerContext;
-
-export type UnchainedContextResolver = (params: UnchainedHTTPServerContext) => Promise<Context>;
-
-export type UnchainedServerOptions = {
-  unchainedAPI: UnchainedCore;
-  roles?: any;
-  context?: any;
-  events: Array<string>;
-  workTypes: Array<string>;
-  adminUiConfig?: AdminUiConfig;
-} & ApolloServerOptions<Context>;

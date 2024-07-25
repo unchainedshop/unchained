@@ -232,7 +232,7 @@ export const configureAssortmentsModule = async ({
     log(
       `Invalidated productId cache for ${totalInvalidatedAssortments} of ${assortments.length} base assortments`,
       {
-        level: LogLevel.Debug,
+        level: LogLevel.Verbose,
       },
     );
   };

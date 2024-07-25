@@ -9,7 +9,6 @@ import createUser from './accounts/createUser.js';
 import verifyEmail from './accounts/verifyEmail.js';
 import sendVerificationEmail from './accounts/sendVerificationEmail.js';
 import sendEnrollmentEmail from './accounts/sendEnrollmentEmail.js';
-import addAssortmentMedia from './assortments/addAssortmentMedia.js';
 import forgotPassword from './accounts/forgotPassword.js';
 import resetPassword from './accounts/resetPassword.js';
 import addEmail from './accounts/addEmail.js';
@@ -21,7 +20,6 @@ import removeWebAuthnCredentials from './accounts/removeWebAuthnCredentials.js';
 import addWeb3Address from './accounts/addWeb3Address.js';
 import removeWeb3Address from './accounts/removeWeb3Address.js';
 import verifyWeb3Address from './accounts/verifyWeb3Address.js';
-import updateUserAvatar from './users/updateUserAvatar.js';
 import updateUserProfile from './users/updateUserProfile.js';
 import removeUser from './users/removeUser.js';
 import setUserTags from './users/setUserTags.js';
@@ -50,7 +48,6 @@ import removeProductVariation from './products/removeProductVariation.js';
 import updateProductVariationTexts from './products/updateProductVariationTexts.js';
 import removeProductVariationOption from './products/removeProductVariationOption.js';
 import confirmMediaUpload from './files/confirmMediaUpload.js';
-import addProductMedia from './products/addProductMedia.js';
 import removeProductMedia from './products/removeProductMedia.js';
 import reorderProductMedia from './products/reorderProductMedia.js';
 import updateProductCommerce from './products/updateProductCommerce.js';
@@ -183,7 +180,6 @@ export default {
   heartbeat: acl(actions.heartbeat)(heartbeat),
   addEmail: acl(actions.updateUser)(addEmail),
   removeEmail: acl(actions.updateUser)(removeEmail),
-  updateUserAvatar: acl(actions.updateUser)(updateUserAvatar),
   prepareUserAvatarUpload: acl(actions.updateUser)(prepareUserAvatarUpload),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
   removeUser: acl(actions.updateUser)(removeUser),
@@ -210,7 +206,6 @@ export default {
   updateProduct: acl(actions.manageProducts)(updateProduct),
   updateProductTexts: acl(actions.manageProducts)(updateProductTexts),
   updateProductMediaTexts: acl(actions.manageProducts)(updateProductMediaTexts),
-  addProductMedia: acl(actions.manageProducts)(addProductMedia),
   confirmMediaUpload: acl(actions.confirmMediaUpload)(confirmMediaUpload),
   prepareProductMediaUpload: acl(actions.manageProducts)(prepareProductMediaUpload),
   reorderProductMedia: acl(actions.manageProducts)(reorderProductMedia),
@@ -277,7 +272,6 @@ export default {
   removeFilterOption: acl(actions.manageFilters)(removeFilterOption),
   createFilterOption: acl(actions.manageFilters)(createFilterOption),
   createAssortment: acl(actions.manageAssortments)(createAssortment),
-  addAssortmentMedia: acl(actions.manageAssortments)(addAssortmentMedia),
   prepareAssortmentMediaUpload: acl(actions.manageAssortments)(prepareAssortmentMediaUpload),
   updateAssortment: acl(actions.manageAssortments)(updateAssortment),
   setBaseAssortment: acl(actions.manageAssortments)(setBaseAssortment),

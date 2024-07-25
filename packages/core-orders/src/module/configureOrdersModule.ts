@@ -95,7 +95,7 @@ export const configureOrdersModule = async ({
     await Promise.all(
       systemDiscounts
         .filter((key) => currentDiscountKeys.indexOf(key) === -1)
-        .map((discountKey) =>
+        .map(async (discountKey) =>
           modules.orders.discounts.create({
             orderId: order._id,
             discountKey,
@@ -256,6 +256,23 @@ export const configureOrdersModule = async ({
     );
   };
 
+  const invalidateProviders = async (unchainedAPI, maxAgeDays = 30) => {
+    const ONE_DAY_IN_MILLISECONDS = 86400000;
+
+    const minValidDate = new Date(new Date().getTime() - maxAgeDays * ONE_DAY_IN_MILLISECONDS);
+
+    const orders = await Orders.find({
+      status: { $eq: null },
+      updated: { $gte: minValidDate },
+    }).toArray();
+
+    await Promise.allSettled(
+      orders.map(async (order) => {
+        await updateCalculation(order._id, unchainedAPI);
+      }),
+    );
+  };
+
   const orderQueries = configureOrdersModuleQueries({ Orders });
   const orderTransformations = configureOrderModuleTransformations({
     Orders,
@@ -272,28 +289,22 @@ export const configureOrdersModule = async ({
     OrderDeliveries,
     OrderPayments,
     OrderPositions,
-    initProviders,
-    updateCalculation,
   });
 
   const orderDiscountsModule = configureOrderDiscountsModule({
     OrderDiscounts,
-    updateCalculation,
   });
 
   const orderPositionsModule = configureOrderPositionsModule({
     OrderPositions,
-    updateCalculation,
   });
 
   const orderPaymentsModule = configureOrderPaymentsModule({
     OrderPayments,
-    updateCalculation,
   });
 
   const orderDeliveriesModule = configureOrderDeliveriesModule({
     OrderDeliveries,
-    updateCalculation,
   });
 
   return {
@@ -301,6 +312,10 @@ export const configureOrdersModule = async ({
     ...orderTransformations,
     ...orderProcessing,
     ...orderMutations,
+
+    initProviders,
+    updateCalculation,
+    invalidateProviders,
 
     // Subentities
     deliveries: orderDeliveriesModule,

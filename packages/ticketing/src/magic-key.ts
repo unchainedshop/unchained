@@ -5,23 +5,21 @@ import { TicketingAPI } from './types.js';
 const isMagicKeyValidForOrder = async (
   obj: any,
   { orderId }: { orderId: string },
-  { modules, req }: Context & TicketingAPI,
+  { modules, getHeader }: Context & TicketingAPI,
 ) => {
   const order = await modules.orders.findOrder({ orderId });
   // always return true if orderId leads to nothing to show potentially allowed actions
   if (!order) return true;
 
   const magicKey = await modules.passes.buildMagicKey(order._id);
-  return magicKey === req.headers['x-magic-key'];
+  return magicKey === getHeader('x-magic-key');
 };
 
 const isMagicKeyValidForToken = async (
   obj: any,
   { tokenId }: { tokenId: string },
-  context: Context & TicketingAPI,
+  { modules, getHeader }: Context & TicketingAPI,
 ) => {
-  const { modules, req } = context;
-
   const token = await modules.warehousing.findToken({ tokenId });
   // always return true if tokenId leads to nothing to show potentially allowed actions
   if (!token) return true;
@@ -33,7 +31,7 @@ const isMagicKeyValidForToken = async (
   if (order.userId !== token.userId) return false;
 
   const magicKey = await modules.passes.buildMagicKey(order._id);
-  return magicKey === req.headers['x-magic-key'];
+  return magicKey === getHeader('x-magic-key');
 };
 
 export default () => {

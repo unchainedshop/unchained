@@ -41,7 +41,7 @@ export default async function updateCartItem(
 
   if (quantity !== null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
-  return modules.orders.positions.updateProductItem(
+  const updatedOrderPosition = await modules.orders.positions.updateProductItem(
     { quantity, configuration },
     {
       order,
@@ -50,4 +50,6 @@ export default async function updateCartItem(
     },
     context,
   );
+  await modules.orders.updateCalculation(order._id, context);
+  return updatedOrderPosition;
 }

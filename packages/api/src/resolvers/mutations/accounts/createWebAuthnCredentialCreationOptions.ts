@@ -4,14 +4,14 @@ import { Context, Root } from '@unchainedshop/types/api.js';
 export default async function createWebAuthnCredentialCreationOptions(
   root: Root,
   { extensionOptions, username }: { username: string; extensionOptions: any },
-  { modules, userId, req }: Context,
+  { modules, userId, getHeader }: Context,
 ) {
   log(`mutation createWebAuthnCredentialCreationOptions ${username}`, {
     userId,
   });
 
   const options = await modules.users.webAuthn.createCredentialCreationOptions(
-    req.headers.origin,
+    getHeader('origin') as string,
     username,
     extensionOptions,
   );

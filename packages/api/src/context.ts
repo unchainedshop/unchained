@@ -1,4 +1,4 @@
-import { UnchainedContextResolver, AdminUiConfig } from '@unchainedshop/types/api.js';
+import { AdminUiConfig, Context, UnchainedHTTPServerContext } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import instantiateLoaders from './loaders/index.js';
 import { getLocaleContext } from './locale-context.js';
@@ -12,6 +12,14 @@ export const setCurrentContextResolver = (newContext: UnchainedContextResolver) 
   context = newContext;
 };
 
+export type UnchainedContextResolver = (
+  params: UnchainedHTTPServerContext & {
+    cookies?: Record<string, string>;
+    remoteAddress?: string;
+    remotePort?: number;
+  },
+) => Promise<Context>;
+
 export const createContextResolver =
   (
     unchainedAPI: UnchainedCore,
@@ -19,15 +27,13 @@ export const createContextResolver =
     version: string,
     adminUiConfig?: AdminUiConfig,
   ): UnchainedContextResolver =>
-  async ({ req, res, ...apolloContext }) => {
-    const loaders = await instantiateLoaders(req, res, unchainedAPI);
-    const userContext = await getUserContext(req, res, unchainedAPI);
-    const localeContext = await getLocaleContext(req, res, unchainedAPI);
+  async ({ getHeader, setHeader, cookies, remoteAddress, remotePort }) => {
+    const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader, cookies };
+    const loaders = await instantiateLoaders(unchainedAPI);
+    const userContext = await getUserContext(abstractHttpServerContext, unchainedAPI);
+    const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
 
     return {
-      req,
-      res,
-      ...apolloContext,
       ...unchainedAPI,
       ...userContext,
       ...localeContext,
@@ -35,5 +41,7 @@ export const createContextResolver =
       roles,
       version,
       adminUiConfig,
+      setHeader,
+      getHeader,
     };
   };

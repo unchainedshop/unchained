@@ -92,6 +92,7 @@ export const Assortment: AssortmentHelperTypes = {
     });
   },
 
+  // TODO: Use a loader!
   async media(obj, params, { modules }) {
     return modules.assortments.media.findAssortmentMedias({
       assortmentId: obj._id,

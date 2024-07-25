@@ -292,12 +292,6 @@ export default [
       removeEmail(email: String!, userId: ID): User!
 
       """
-      Update Avatar of any user or logged in user if userId is not provided
-      """
-      updateUserAvatar(avatar: Upload!, userId: ID): User!
-        @deprecated(reason: "Use prepareUserAvatarUpload instead")
-
-      """
       Set tags of user
       """
       setUserTags(tags: [LowerCaseString]!, userId: ID!): User!
@@ -663,11 +657,6 @@ export default [
       Reorder the products in an assortment
       """
       reorderAssortmentFilters(sortKeys: [ReorderAssortmentFilterInput!]!): [AssortmentFilter!]!
-      """
-      Add a new media to a assortment
-      """
-      addAssortmentMedia(assortmentId: ID!, media: Upload!): AssortmentMedia!
-        @deprecated(reason: "Use prepareAssortmentMediaUpload instead")
 
       """
       Remove a media asset from a assortment

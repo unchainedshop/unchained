@@ -53,14 +53,16 @@ const generateOrder = async (
   }
 
   const { paymentProviderId, context: paymentContext } = enrollment.payment;
-
   if (paymentProviderId) {
     await modules.orders.setPaymentProvider(orderId, paymentProviderId, unchainedAPI);
   }
+
   const { deliveryProviderId, context: deliveryContext } = enrollment.delivery;
   if (deliveryProviderId) {
     await modules.orders.setDeliveryProvider(orderId, deliveryProviderId, unchainedAPI);
   }
+
+  await modules.orders.updateCalculation(orderId, unchainedAPI);
 
   order = await modules.orders.checkout(
     order._id,

@@ -1,14 +1,11 @@
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
-
-import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
   OrderDeliveriesModule,
   OrderDelivery,
   OrderDeliveryStatus,
 } from '@unchainedshop/types/orders.deliveries.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { log } from '@unchainedshop/logger';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema.js';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
@@ -18,10 +15,8 @@ export const buildFindByIdSelector = (orderDeliveryId: string) =>
 
 export const configureOrderDeliveriesModule = ({
   OrderDeliveries,
-  updateCalculation,
 }: {
   OrderDeliveries: mongodb.Collection<OrderDelivery>;
-  updateCalculation: OrdersModule['updateCalculation'];
 }): OrderDeliveriesModule => {
   registerEvents(ORDER_DELIVERY_EVENTS);
 
@@ -40,8 +35,6 @@ export const configureOrderDeliveriesModule = ({
     orderDeliveryId,
     { status, info },
   ) => {
-    log(`OrderDelivery ${orderDeliveryId} -> New Status: ${status}`);
-
     const date = new Date();
     const modifier: mongodb.UpdateFilter<OrderDelivery> = {
       $set: { status, updated: new Date() },
@@ -174,11 +167,9 @@ export const configureOrderDeliveriesModule = ({
       return orderDelivery;
     },
 
-    updateContext: async (orderDeliveryId, context, unchainedAPI) => {
+    updateContext: async (orderDeliveryId, context) => {
       const selector = buildFindByIdSelector(orderDeliveryId);
       if (!context || Object.keys(context).length === 0) return OrderDeliveries.findOne(selector, {});
-
-      log(`OrderDelivery ${orderDeliveryId} -> Update Context`, { context });
       const contextSetters = Object.fromEntries(
         Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
       );
@@ -195,7 +186,6 @@ export const configureOrderDeliveriesModule = ({
       );
 
       if (result.ok) {
-        await updateCalculation(result.value.orderId, unchainedAPI);
         await emit('ORDER_UPDATE_DELIVERY', {
           orderDelivery: result.value,
         });
@@ -208,10 +198,6 @@ export const configureOrderDeliveriesModule = ({
     updateStatus,
 
     updateCalculation: async (orderDelivery, unchainedAPI) => {
-      log(`OrderDelivery ${orderDelivery._id} -> Update Calculation`, {
-        orderId: orderDelivery.orderId,
-      });
-
       const calculation = await unchainedAPI.modules.delivery.calculate(
         {
           item: orderDelivery,

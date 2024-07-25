@@ -1,4 +1,3 @@
-import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express/index.js';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import express from 'express';
 
@@ -110,26 +109,12 @@ export const connectDefaultPluginsToExpress4 = (
   app,
   { unchainedAPI }: { unchainedAPI: UnchainedCore },
 ) => {
-  useMiddlewareWithCurrentContext(app, GRIDFS_PUT_SERVER_PATH, gridfsHandler);
+  app.use(GRIDFS_PUT_SERVER_PATH, gridfsHandler);
+  app.use(CRYPTOPAY_WEBHOOK_PATH, express.json(), cryptopayHandler);
+  app.use(STRIPE_WEBHOOK_PATH, express.raw({ type: 'application/json' }), stripeHandler);
+  app.use(PFCHECKOUT_WEBHOOK_PATH, express.json(), postfinanceCheckoutHandler);
 
-  useMiddlewareWithCurrentContext(app, CRYPTOPAY_WEBHOOK_PATH, express.json(), cryptopayHandler);
-
-  useMiddlewareWithCurrentContext(
-    app,
-    STRIPE_WEBHOOK_PATH,
-    express.raw({ type: 'application/json' }),
-    stripeHandler,
-  );
-
-  useMiddlewareWithCurrentContext(
-    app,
-    PFCHECKOUT_WEBHOOK_PATH,
-    express.json(),
-    postfinanceCheckoutHandler,
-  );
-
-  useMiddlewareWithCurrentContext(
-    app,
+  app.use(
     DATATRANS_WEBHOOK_PATH,
     express.text({
       type: 'application/json',
@@ -137,8 +122,7 @@ export const connectDefaultPluginsToExpress4 = (
     datatransHandler,
   );
 
-  useMiddlewareWithCurrentContext(
-    app,
+  app.use(
     APPLE_IAP_WEBHOOK_PATH,
     express.json({
       strict: false,
@@ -146,17 +130,10 @@ export const connectDefaultPluginsToExpress4 = (
     appleIAPHandler,
   );
 
-  useMiddlewareWithCurrentContext(
-    app,
-    PAYREXX_WEBHOOK_PATH,
-    express.json({ type: 'application/json' }),
-    payrexxHandler,
-  );
+  app.use(PAYREXX_WEBHOOK_PATH, express.json({ type: 'application/json' }), payrexxHandler);
+  app.use(SAFERPAY_WEBHOOK_PATH, saferpayHandler);
 
-  useMiddlewareWithCurrentContext(app, SAFERPAY_WEBHOOK_PATH, saferpayHandler);
-
-  // useMiddlewareWithCurrentContext(
-  //   app,
+  // app.use(
   //   MINIO_PUT_SERVER_PATH,
   //   express.json({
   //     strict: false,

@@ -29,16 +29,12 @@ export const migrateOrderCartsService: MigrateOrderCartsService = async (
 
   // Move billing address if target order has none
   if (fromCart.billingAddress && !toCart.billingAddress) {
-    await unchainedAPI.modules.orders.updateBillingAddress(
-      toCart._id,
-      fromCart.billingAddress,
-      unchainedAPI,
-    );
+    await unchainedAPI.modules.orders.updateBillingAddress(toCart._id, fromCart.billingAddress);
   }
 
   // Move contact data if target order has none
   if (fromCart.contact && !toCart.contact) {
-    await unchainedAPI.modules.orders.updateContact(toCart._id, fromCart.contact, unchainedAPI);
+    await unchainedAPI.modules.orders.updateContact(toCart._id, fromCart.contact);
   }
 
   await unchainedAPI.modules.orders.updateCalculation(fromCart._id, unchainedAPI);

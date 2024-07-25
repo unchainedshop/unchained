@@ -13,7 +13,15 @@ export const removeProductService: RemoveProductService = async ({ productId }, 
     case ProductStatus.DRAFT:
       await modules.bookmarks.deleteByProductId(productId);
       await modules.assortments.products.delete(productId);
-      await modules.orders.positions.removeProductByIdFromAllOpenPositions(productId, unchainedAPI);
+      const orderIdsToRecalculate = await modules.orders.positions.removeProductByIdFromAllOpenPositions(
+        productId,
+        unchainedAPI,
+      );
+      await Promise.all(
+        [...new Set(orderIdsToRecalculate)].map(async (orderIdToRecalculate) => {
+          await modules.orders.updateCalculation(orderIdToRecalculate, unchainedAPI);
+        }),
+      );
       await modules.products.delete(productId);
       break;
     default:

@@ -3,7 +3,7 @@ import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
 import { systemLocale } from '@unchainedshop/utils';
 import localePkg from 'locale';
-import { getCurrentContextResolver } from '../context.js';
+import { Context } from '@unchainedshop/types/api.js';
 
 const { Locale } = localePkg;
 
@@ -21,15 +21,17 @@ const methodWrongHandler = (res) => () => {
   res.end();
 };
 
-export default async function ercMetadataMiddleware(req: IncomingMessage, res) {
+export default async function ercMetadataMiddleware(
+  req: IncomingMessage & { unchainedContext: Context },
+  res,
+) {
   try {
     if (req.method !== 'GET') {
       methodWrongHandler(res)();
       return;
     }
 
-    const contextResolver = getCurrentContextResolver();
-    const context = await contextResolver({ req, res });
+    const context = req.unchainedContext;
     const url = new URL(req.url, process.env.ROOT_URL);
     const parsedPath = path.parse(url.pathname);
 

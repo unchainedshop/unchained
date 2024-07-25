@@ -1,7 +1,6 @@
 import {
   resolveBestCountry,
   resolveBestSupported,
-  resolveUserRemoteAddress,
   slugify,
   systemLocale,
 } from '@unchainedshop/utils';
@@ -13,7 +12,6 @@ describe('Utils', () => {
     expect(systemLocale).toBeDefined();
     expect(resolveBestCountry).toBeInstanceOf(Function)
     expect(resolveBestSupported).toBeInstanceOf(Function)
-    expect(resolveUserRemoteAddress).toBeInstanceOf(Function)
   });
 
 describe('generateHashId', () => {

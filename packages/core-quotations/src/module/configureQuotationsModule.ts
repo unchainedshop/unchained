@@ -7,7 +7,6 @@ import {
   QuotationsSettingsOptions,
 } from '@unchainedshop/types/quotations.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { log } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
   generateDbMutations,
@@ -128,8 +127,6 @@ export const configureQuotationsModule = async ({
       },
     };
 
-    log(`New Status: ${status}`, { quotationId });
-
     const updatedQuotation = await Quotations.findOneAndUpdate(selector, modifier, {
       returnDocument: 'after',
     });
@@ -199,10 +196,6 @@ export const configureQuotationsModule = async ({
 
   const updateQuotationFields =
     (fieldKeys: Array<string>) => async (quotationId: string, values: any) => {
-      log(`Update quotation fields ${fieldKeys.join(', ').toUpperCase()}`, {
-        quotationId,
-      });
-
       const modifier = {
         $set: fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
       };

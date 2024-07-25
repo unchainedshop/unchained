@@ -204,48 +204,6 @@ describe('Auth for admin users', () => {
     });
   });
 
-  describe('Mutation.updateUserAvatar', () => {
-    it('update the avatar of a foreign user', async () => {
-      const avatarBuffer = readFileSync(path.resolve(__dirname, `./assets/zurich.jpg`));
-      const avatar = new Blob(avatarBuffer, { type: "image/jpeg" });
-      
-      const {
-        errors,
-        data,
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation updateUserAvatar($userId: ID, $avatar: Upload!) {
-            updateUserAvatar(userId: $userId, avatar: $avatar) {
-              _id
-              avatar {
-                name
-                url
-              }
-            }
-          }
-        `,
-        variables: {
-          userId: User._id,
-          avatar,
-        },
-      });
-      
-
-      const { updateUserAvatar } = data;
-
-      expect(updateUserAvatar).toMatchObject({
-        _id: User._id,
-        avatar: {
-          name: 'blob',
-        },
-      });
-      // const hash = crypto.createHash('sha256');
-      // const download = await (await fetch(updateUserAvatar.avatar.url)).text();
-      // hash.update(download)
-      // expect(hash.digest('hex')).toBe('98a5675d5f4b4fecf80c26e344e5e97f185c11a54b4008bb76fa017bb45d60fd')
-    }, 99999);
-  });
-
   describe('Mutation.addEmail', () => {
     it('add an e-mail to a foreign user', async () => {
       const email = 'newuser2@unchained.local';

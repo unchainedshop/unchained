@@ -33,12 +33,12 @@ export default async function updateOrderDeliveryPickUp(
       required: DeliveryProviderType.PICKUP,
     });
 
-  return modules.orders.deliveries.updateContext(
+  await modules.orders.deliveries.updateContext(orderDeliveryId, {
+    orderPickUpLocationId,
+    meta,
+  });
+  await modules.orders.updateCalculation(orderDelivery.orderId, context);
+  return modules.orders.deliveries.findDelivery({
     orderDeliveryId,
-    {
-      orderPickUpLocationId,
-      meta,
-    },
-    context,
-  );
+  });
 }

@@ -1,13 +1,14 @@
 import fs from 'fs';
 import path from 'path';
-import { UnchainedServerOptions } from '@unchainedshop/types/api.js';
-import type { ApolloServer } from '@apollo/server';
+import { AdminUiConfig } from '@unchainedshop/types/api.js';
 import createGraphQLServer from './createGraphQLServer.js';
 import {
   createContextResolver,
   setCurrentContextResolver,
   getCurrentContextResolver,
 } from './context.js';
+import { YogaServerOptions } from 'graphql-yoga';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export * from './context.js';
 export * as acl from './acl.js';
@@ -34,14 +35,19 @@ const packageJson = loadJSON('../package.json');
 
 const { UNCHAINED_API_VERSION = packageJson?.version || '2.x' } = process.env;
 
-export const startAPIServer = async (options: UnchainedServerOptions): Promise<ApolloServer> => {
-  const {
-    unchainedAPI,
-    roles,
-    context: customContext,
-    adminUiConfig,
-    ...apolloServerOptions
-  } = options || {};
+export type GraphQLServerOptions = YogaServerOptions<any, any>;
+
+export type UnchainedServerOptions = GraphQLServerOptions & {
+  unchainedAPI: UnchainedCore;
+  roles?: any;
+  context?: any;
+  events: Array<string>;
+  workTypes: Array<string>;
+  adminUiConfig?: AdminUiConfig;
+};
+
+export const startAPIServer = async (options: UnchainedServerOptions) => {
+  const { unchainedAPI, roles, context: customContext, adminUiConfig, ...serverOptions } = options || {};
 
   const contextResolver = createContextResolver(
     unchainedAPI,
@@ -52,11 +58,11 @@ export const startAPIServer = async (options: UnchainedServerOptions): Promise<A
 
   setCurrentContextResolver(
     customContext
-      ? ({ req, res }) => {
-          return customContext({ req, res }, contextResolver);
+      ? (props) => {
+          return customContext(props, contextResolver);
         }
       : contextResolver,
   );
 
-  return createGraphQLServer(apolloServerOptions);
+  return createGraphQLServer(serverOptions);
 };

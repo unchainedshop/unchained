@@ -1,5 +1,4 @@
 import { createLogger } from '@unchainedshop/logger';
-import { useMiddlewareWithCurrentContext } from '@unchainedshop/api/express/index.js';
 import express, { Request, Response } from 'express';
 import { TicketingAPI } from '../types.js';
 
@@ -234,8 +233,7 @@ export const appleWalletHandler = async (
 };
 
 export default function loadAppleWalletHandler(app) {
-  useMiddlewareWithCurrentContext(
-    app,
+  app.use(
     APPLE_WALLET_WEBSERVICE_PATH,
     express.json({
       type: 'application/json',

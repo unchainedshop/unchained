@@ -14,9 +14,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let graphqlFetch;
 
-const productMediaBuffer = fs.readFileSync(path.resolve(__dirname, `./assets/zurich.jpg`));
-const productMediaFile = new Blob(productMediaBuffer, { type: "image/jpeg" });
-
 const productMediaFile2 = fs.createReadStream(
   path.resolve(__dirname, `./assets/zurich.jpg`)
 );
@@ -28,82 +25,6 @@ describe('ProductsVariation', () => {
   beforeAll(async () => {
     await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-  });
-
-  describe('Mutation.addProductMedia for admin user should', () => {
-    it('upload product media correctly', async () => {
-      import.meta.jest.setTimeout(10000);
-      const {
-        data: { addProductMedia },
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addProductMedia($productId: ID!, $media: Upload!){
-            addProductMedia(productId: $productId, media: $media){
-              _id
-              tags
-              sortKey
-              file {
-                _id
-                name
-                type
-                url
-              }
-            }
-          }
-        `,
-        variables: {
-          productId: SimpleProduct._id,
-          media: productMediaFile,
-        },
-      });
-
-      expect(addProductMedia?.file).toMatchObject({
-        name: 'blob',
-        type: 'image/jpeg',
-      });
-    }, 10000);
-
-    it('return ProductNotFoundError when passed non existing product ID', async () => {
-      import.meta.jest.setTimeout(10000);
-      const {
-        errors,
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addProductMedia($productId: ID!, $media: Upload!){
-            addProductMedia(productId: $productId, media: $media){
-              _id
-            }
-          }
-        `,
-        variables: {
-          productId: 'non-existing-id',
-          media: productMediaFile,
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('ProductNotFoundError');
-    });
-
-    it('return InvalidIdError when passed Invalid product ID', async () => {
-      import.meta.jest.setTimeout(10000);
-      const {
-        errors,
-      } = await graphqlFetch({
-        query: /* GraphQL */ `
-          mutation addProductMedia($productId: ID!, $media: Upload!){
-            addProductMedia(productId: $productId, media: $media){
-              _id
-            }
-          }
-        `,
-        variables: {
-          productId: '',
-          media: productMediaFile,
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
-    });
   });
 
   describe('Mutation.prepareProductMediaUpload for admin user should', () => {
@@ -232,55 +153,6 @@ describe('ProductsVariation', () => {
         type: 'image/jpg',
         size: 8615,
       });
-    });
-  });
-
-  describe('Mutation.addProductMedia for normal user should', () => {
-    it('return NoPermissionError', async () => {
-      const userGraphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
-
-      const {
-        errors,
-      } = await userGraphqlFetch({
-        query: /* GraphQL */ `
-          mutation addProductMedia($productId: ID!, $media: Upload!){
-            addProductMedia(productId: $productId, media: $media){
-              _id
-            }
-          }
-        `,
-        variables: {
-          productId: SimpleProduct._id,
-          media: productMediaFile,
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
-    });
-  });
-
-  describe('Mutation.addProductMedia for anonymous user should', () => {
-    it('return NoPermissionError', async () => {
-      import.meta.jest.setTimeout(10000);
-      const anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
-
-      const {
-        errors,
-      } = await anonymousGraphqlFetch({
-        query: /* GraphQL */ `
-          mutation addProductMedia($productId: ID!, $media: Upload!){
-            addProductMedia(productId: $productId, media: $media){
-              _id
-            }
-          }
-        `,
-        variables: {
-          productId: SimpleProduct._id,
-          media: productMediaFile,
-        },
-      });
-
-      expect(errors[0]?.extensions?.code).toEqual('NoPermissionError');
     });
   });
 

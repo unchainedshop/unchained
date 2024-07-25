@@ -68,7 +68,6 @@ const resolverDefs = {
 import { startPlatform } from '@unchainedshop/platform'
 
 await startPlatform({
-  introspection: true,
   typeDefs: [...typeDefs],
   resolvers: [resolvers],
 })
