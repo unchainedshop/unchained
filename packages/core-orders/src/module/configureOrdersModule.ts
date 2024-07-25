@@ -256,6 +256,23 @@ export const configureOrdersModule = async ({
     );
   };
 
+  const invalidateProviders = async (unchainedAPI, maxAgeDays = 30) => {
+    const ONE_DAY_IN_MILLISECONDS = 86400000;
+
+    const minValidDate = new Date(new Date().getTime() - maxAgeDays * ONE_DAY_IN_MILLISECONDS);
+
+    const orders = await Orders.find({
+      status: { $eq: null },
+      updated: { $gte: minValidDate },
+    }).toArray();
+
+    await Promise.allSettled(
+      orders.map(async (order) => {
+        await updateCalculation(order._id, unchainedAPI);
+      }),
+    );
+  };
+
   const orderQueries = configureOrdersModuleQueries({ Orders });
   const orderTransformations = configureOrderModuleTransformations({
     Orders,
@@ -272,8 +289,6 @@ export const configureOrdersModule = async ({
     OrderDeliveries,
     OrderPayments,
     OrderPositions,
-    initProviders,
-    updateCalculation,
   });
 
   const orderDiscountsModule = configureOrderDiscountsModule({
@@ -298,6 +313,10 @@ export const configureOrdersModule = async ({
     ...orderTransformations,
     ...orderProcessing,
     ...orderMutations,
+
+    initProviders,
+    updateCalculation,
+    invalidateProviders,
 
     // Subentities
     deliveries: orderDeliveriesModule,

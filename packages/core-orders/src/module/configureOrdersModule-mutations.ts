@@ -1,9 +1,8 @@
 import { ModuleMutations } from '@unchainedshop/types/core.js';
-import { Order, OrderStatus, OrderMutations, OrdersModule } from '@unchainedshop/types/orders.js';
+import { Order, OrderStatus, OrderMutations } from '@unchainedshop/types/orders.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { log, LogLevel } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { OrdersSchema } from '../db/OrdersSchema.js';
@@ -21,15 +20,11 @@ export const configureOrderModuleMutations = ({
   OrderDeliveries,
   OrderPayments,
   OrderPositions,
-  initProviders,
-  updateCalculation,
 }: {
   Orders: mongodb.Collection<Order>;
   OrderDeliveries: mongodb.Collection<OrderDelivery>;
   OrderPayments: mongodb.Collection<OrderPayment>;
   OrderPositions: mongodb.Collection<OrderPosition>;
-  initProviders: OrdersModule['initProviders'];
-  updateCalculation: OrdersModule['updateCalculation'];
 }): OrderMutations => {
   registerEvents(ORDER_EVENTS);
 
@@ -63,29 +58,6 @@ export const configureOrderModuleMutations = ({
       const deletedCount = await mutations.delete(orderId);
       await emit('ORDER_REMOVE', { orderId });
       return deletedCount;
-    },
-
-    initProviders,
-
-    invalidateProviders: async (unchainedAPI, maxAgeDays = 30) => {
-      log('Orders: Start invalidating cart providers', {
-        level: LogLevel.Verbose,
-      });
-
-      const ONE_DAY_IN_MILLISECONDS = 86400000;
-
-      const minValidDate = new Date(new Date().getTime() - maxAgeDays * ONE_DAY_IN_MILLISECONDS);
-
-      const orders = await Orders.find({
-        status: { $eq: null },
-        updated: { $gte: minValidDate },
-      }).toArray();
-
-      await Promise.allSettled(
-        orders.map(async (order) => {
-          await updateCalculation(order._id, unchainedAPI);
-        }),
-      );
     },
 
     setCartOwner: async ({ orderId, userId }) => {
@@ -123,8 +95,6 @@ export const configureOrderModuleMutations = ({
             status: null,
           })
         )._id;
-
-      log(`Set Delivery Provider ${deliveryProviderId}`, { orderId });
 
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOneAndUpdate(
@@ -164,8 +134,6 @@ export const configureOrderModuleMutations = ({
             status: null,
           })
         )._id;
-      log(`Set Payment Provider ${paymentProviderId}`, { orderId });
-
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOneAndUpdate(
         selector,
@@ -184,8 +152,6 @@ export const configureOrderModuleMutations = ({
     },
 
     updateBillingAddress: async (orderId, billingAddress) => {
-      log('Update Invoicing Address', { orderId });
-
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOneAndUpdate(
         selector,
@@ -203,8 +169,6 @@ export const configureOrderModuleMutations = ({
     },
 
     updateContact: async (orderId, contact) => {
-      log('Update Contact', { orderId });
-
       const selector = generateDbFilterById(orderId);
       const order = await Orders.findOneAndUpdate(
         selector,
@@ -227,7 +191,6 @@ export const configureOrderModuleMutations = ({
 
       if (!context || Object.keys(context).length === 0) return Orders.findOne(selector, {});
 
-      log('Update Arbitrary Context', { orderId, context });
       const contextSetters = Object.fromEntries(
         Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
       );
@@ -248,7 +211,5 @@ export const configureOrderModuleMutations = ({
       }
       return null;
     },
-
-    updateCalculation,
   };
 };

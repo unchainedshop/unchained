@@ -38,7 +38,7 @@ const start = async () => {
         ttl: 0,
         session(req) {
           const auth = req.headers.get('authorization');
-          const cookies = cookie.parse(req.headers.get('cookie'));
+          const cookies = cookie.parse(req.headers.get('cookie') || '');
           return auth || cookies[UNCHAINED_COOKIE_NAME] || null;
         },
       }),
