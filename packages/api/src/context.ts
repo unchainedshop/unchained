@@ -2,7 +2,6 @@ import { AdminUiConfig, Context, UnchainedHTTPServerContext } from '@unchainedsh
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import instantiateLoaders from './loaders/index.js';
 import { getLocaleContext } from './locale-context.js';
-import { getUserContext } from './user-context.js';
 
 let context;
 
@@ -17,6 +16,10 @@ export type UnchainedContextResolver = (
     cookies?: Record<string, string>;
     remoteAddress?: string;
     remotePort?: number;
+    user?: any;
+    userId?: string;
+    login: (user: any) => Promise<{ _id: string; user: any; tokenExpires: Date }>;
+    logout: () => Promise<boolean>;
   },
 ) => Promise<Context>;
 
@@ -27,16 +30,18 @@ export const createContextResolver =
     version: string,
     adminUiConfig?: AdminUiConfig,
   ): UnchainedContextResolver =>
-  async ({ getHeader, setHeader, cookies, remoteAddress, remotePort }) => {
+  async ({ getHeader, setHeader, cookies, remoteAddress, remotePort, user, userId, login, logout }) => {
     const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader, cookies };
     const loaders = await instantiateLoaders(unchainedAPI);
-    const userContext = await getUserContext(abstractHttpServerContext, unchainedAPI);
     const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
 
     return {
       ...unchainedAPI,
-      ...userContext,
       ...localeContext,
+      user,
+      userId,
+      login,
+      logout,
       loaders,
       roles,
       version,

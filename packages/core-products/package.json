@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-products",
-  "version": "3.0.0-alpha1",
+  "version": "3.0.0-alpha2",
   "main": "lib/products-index.js",
   "exports": {
     ".": "./lib/products-index.js",
@@ -31,16 +31,16 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-alpha1",
-    "@unchainedshop/file-upload": "^3.0.0-alpha1",
-    "@unchainedshop/utils": "^3.0.0-alpha1",
+    "@unchainedshop/events": "^3.0.0-alpha2",
+    "@unchainedshop/file-upload": "^3.0.0-alpha2",
+    "@unchainedshop/utils": "^3.0.0-alpha2",
     "locale": "^0.1.0",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
     "@types/locale": "^0.1.4",
     "@types/node": "^20.14.12",
-    "@unchainedshop/types": "^3.0.0-alpha1",
+    "@unchainedshop/types": "^3.0.0-alpha2",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.3",
     "typescript": "^5.5.4"

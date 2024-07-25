@@ -24,7 +24,7 @@ export default async function removeCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const removedOrderPosition = await modules.orders.positions.delete(itemId, context);
+  const removedOrderPosition = await modules.orders.positions.delete(itemId);
   await modules.orders.updateCalculation(order._id, context);
   return removedOrderPosition;
 }

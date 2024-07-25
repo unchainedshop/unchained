@@ -390,12 +390,6 @@ export default [
       updateProductTexts(productId: ID!, texts: [ProductTextInput!]!): [ProductTexts!]!
 
       """
-      Add a new media to a product's visualization
-      """
-      addProductMedia(productId: ID!, media: Upload!): ProductMedia!
-        @deprecated(reason: "Use prepareProductMediaUpload instead")
-
-      """
       Remove a media asset from a product's visualization
       """
       removeProductMedia(productMediaId: ID!): ProductMedia!

@@ -2,7 +2,6 @@ import type e from 'express';
 import { getCurrentContextResolver } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
-import createSingleSignOnMiddleware from './createSingleSignOnMiddleware.js';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
@@ -10,6 +9,8 @@ import { YogaServer } from 'graphql-yoga';
 import setupPassport from './passport/setup.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { emit } from '@unchainedshop/events';
+import { API_EVENTS } from '../events.js';
 
 const resolveUserRemoteAddress = (req) => {
   const remoteAddress =
@@ -47,15 +48,80 @@ const addContext = async function middlewareWithContext(
     const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
 
     const context = getCurrentContextResolver();
-    req.unchainedContext = await context({ setHeader, getHeader, cookies, remoteAddress, remotePort });
+
+    const login = async (user) => {
+      await new Promise((resolve, reject) => {
+        (req as any).login(user, (error, result) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(result);
+        });
+      });
+
+      const tokenObject = {
+        _id: (req as any).sessionID,
+        /* eslint-disable-next-line */
+        tokenExpires: new Date((req as any).session?.cookie._expires),
+      };
+
+      await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, { userId: user._id, ...tokenObject });
+
+      /* eslint-disable-next-line */
+      (user as any)._inLoginMethodResponse = true;
+      return { user, ...tokenObject };
+    };
+
+    const logout = async (sessionId?: string) => { /* eslint-disable-line */
+      // TODO: this should only logout an explicitly provided session if sessionID
+      // has been provided
+      // express-session destroy
+      const { user } = req as any;
+      if (!user) return false;
+
+      const tokenObject = {
+        _id: sessionId || (req as any).sessionID,
+        userId: user._id,
+      };
+
+      await new Promise((resolve, reject) => {
+        (req as any).logout((error, result) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(result);
+        });
+      });
+
+      await emit(API_EVENTS.API_LOGOUT, tokenObject);
+      return true;
+    };
+
+    (req as any).unchainedContext = await context({
+      setHeader,
+      getHeader,
+      cookies,
+      remoteAddress,
+      remotePort,
+      login,
+      logout,
+      user: (req as any).user,
+      userId: (req as any).user?._id,
+    });
     next();
   } catch (error) {
     next(error);
   }
 };
 
-export const connect = (expressApp: e.Express, { yogaServer, db,
-  unchainedAPI }: { yogaServer: YogaServer<any, any>, db: mongodb.Db; unchainedAPI: UnchainedCore }) => {
+export const connect = (
+  expressApp: e.Express,
+  {
+    yogaServer,
+    db,
+    unchainedAPI,
+  }: { yogaServer: YogaServer<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
+) => {
   expressApp.use(cookieParser(), addContext);
   const passport = setupPassport(unchainedAPI);
   expressApp.use(passport.initialize());
@@ -85,5 +151,4 @@ export const connect = (expressApp: e.Express, { yogaServer, db,
   expressApp.use(GRAPHQL_API_PATH, yogaServer.handle);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
-  expressApp.use(['/', '/.well-known/unchained/cloud-sso'], createSingleSignOnMiddleware);
 };

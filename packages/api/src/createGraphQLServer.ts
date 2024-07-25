@@ -13,7 +13,7 @@ export default async (options) => {
     events = [],
     workTypes = [],
     schema: customSchema,
-    ...apolloServerOptions
+    ...graphQLServerOptions
   } = options || {};
 
   const schema =
@@ -36,7 +36,7 @@ export default async (options) => {
     context: async (ctx: any) => {
       return (ctx.req as any)?.unchainedContext;
     },
-    ...apolloServerOptions,
+    ...graphQLServerOptions,
   });
 
   return server;
