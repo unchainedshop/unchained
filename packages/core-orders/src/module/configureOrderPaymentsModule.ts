@@ -5,7 +5,6 @@ import {
   OrderPaymentStatus,
 } from '@unchainedshop/types/orders.payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { log } from '@unchainedshop/logger';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema.js';
 
@@ -67,8 +66,6 @@ export const configureOrderPaymentsModule = ({
     orderPaymentId,
     { status, transactionId, info },
   ) => {
-    log(`OrderPayment ${orderPaymentId} -> New Status: ${status}`);
-
     const date = new Date();
     const modifier: mongodb.UpdateFilter<OrderPayment> = {
       $set: { status, updated: new Date() },
@@ -294,9 +291,6 @@ export const configureOrderPaymentsModule = ({
       const selector = buildFindByIdSelector(orderPaymentId);
       if (!context || Object.keys(context).length === 0) return OrderPayments.findOne(selector, {});
 
-      log(`OrderPayment ${orderPaymentId} -> Update Context`, {
-        context,
-      });
       const contextSetters = Object.fromEntries(
         Object.entries(context).map(([key, value]) => [`context.${key}`, value]),
       );
@@ -324,10 +318,6 @@ export const configureOrderPaymentsModule = ({
     updateStatus,
 
     updateCalculation: async (orderPayment, unchainedAPI) => {
-      log(`OrderPayment ${orderPayment._id} -> Update Calculation`, {
-        orderId: orderPayment.orderId,
-      });
-
       const calculation = await unchainedAPI.modules.payment.paymentProviders.calculate(
         {
           item: orderPayment,

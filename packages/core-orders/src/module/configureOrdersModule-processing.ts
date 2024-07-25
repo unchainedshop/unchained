@@ -5,7 +5,6 @@ import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { log } from '@unchainedshop/logger';
 import { ProductType } from '@unchainedshop/types/products.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { ordersSettings } from '../orders-settings.js';
@@ -94,7 +93,6 @@ export const configureOrderModuleProcessing = ({
     );
 
     if (modificationResult.ok) {
-      log(`New Status: ${status}`, { orderId });
       if (order.status === null) {
         // The first time that an order transitions away from cart is a checkout event
         await emit('ORDER_CHECKOUT', { order: modificationResult.value, oldStatus: order.status });
@@ -149,11 +147,6 @@ export const configureOrderModuleProcessing = ({
     const validationErrors = await Promise.all(
       orderPositions.map(async (orderPosition) => {
         const errors = [];
-
-        log(`OrderPosition ${orderPosition._id} -> Validate ${orderPosition.quantity}`, {
-          orderId: orderPosition.orderId,
-        });
-
         const product = await unchainedAPI.modules.products.findProduct({
           productId: orderPosition.productId,
         });

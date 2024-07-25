@@ -297,7 +297,6 @@ export const configureOrdersModule = async ({
 
   const orderPositionsModule = configureOrderPositionsModule({
     OrderPositions,
-    updateCalculation,
   });
 
   const orderPaymentsModule = configureOrderPaymentsModule({

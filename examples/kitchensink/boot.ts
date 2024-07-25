@@ -27,7 +27,6 @@ const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;
 const start = async () => {
   const app = express();
   const httpServer = http.createServer(app);
-
   const engine = await startPlatform({
     modules: { ...defaultModules, ...ticketingModules },
     services: { ...ticketingServices },
@@ -44,13 +43,6 @@ const start = async () => {
       }),
     ],
     options: {
-      accounts: {
-        password: {
-          twoFactor: {
-            appName: 'Example',
-          },
-        },
-      },
       payment: {
         filterSupportedProviders: async ({ providers }) => {
           return providers.sort((left, right) => {

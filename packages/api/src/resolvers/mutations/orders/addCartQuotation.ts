@@ -58,7 +58,7 @@ export default async function addCartQuotation(
     context,
   );
 
-  return modules.orders.positions.addProductItem(
+  const updatedOrderPosition = await modules.orders.positions.addProductItem(
     {
       quantity: quotationConfiguration.quantity,
       configuration: quotationConfiguration.configuration,
@@ -67,4 +67,6 @@ export default async function addCartQuotation(
     { order, product },
     context,
   );
+  await modules.orders.updateCalculation(order._id, context);
+  return updatedOrderPosition;
 }

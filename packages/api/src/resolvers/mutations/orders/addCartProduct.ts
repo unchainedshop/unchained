@@ -39,6 +39,6 @@ export default async function addCartProduct(
     { order, product },
     context,
   );
-
+  await modules.orders.updateCalculation(order._id, context);
   return orderPosition;
 }
