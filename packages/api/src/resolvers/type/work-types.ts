@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { Work as WorkType } from '@unchainedshop/types/worker.js';
 import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
 

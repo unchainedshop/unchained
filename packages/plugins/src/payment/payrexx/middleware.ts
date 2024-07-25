@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core-payment:payrexx:webhook');

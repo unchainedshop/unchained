@@ -22,7 +22,7 @@ import {
   WarehousingContext,
   WarehousingProviderType,
 } from '@unchainedshop/types/warehousing.js';
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 
 const Store: IWarehousingAdapter = {
   key: 'shop.unchained.warehousing.store',

@@ -1,4 +1,22 @@
-import { ProductCatalogPriceHelperTypes } from '@unchainedshop/types/products.js';
+import { Country } from '@unchainedshop/types/countries.js';
+import { Currency } from '@unchainedshop/types/currencies.js';
+import { ProductPrice } from '@unchainedshop/types/products.js';
+import { Context } from '../../../types.js';
+
+export type ProductCatalogHelperType<P, T> = (
+  productPrice: ProductPrice,
+  params: P,
+  context: Context,
+) => T;
+
+export interface ProductCatalogPriceHelperTypes {
+  isTaxable: ProductCatalogHelperType<never, boolean>;
+
+  isNetPrice: ProductCatalogHelperType<never, boolean>;
+
+  country: ProductCatalogHelperType<never, Promise<Country>>;
+  currency: ProductCatalogHelperType<never, Promise<Currency>>;
+}
 
 export const ProductCatalogPrice: ProductCatalogPriceHelperTypes = {
   isTaxable: ({ isTaxable }) => {

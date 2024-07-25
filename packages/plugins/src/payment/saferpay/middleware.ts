@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { buildSignature } from './buildSignature.js';
 import { SaferpayTransactionsModule } from './module/configureSaferpayTransactionsModule.js';

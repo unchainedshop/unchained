@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { EnrollmentPeriod as EnrollmentPeriodType } from '@unchainedshop/types/enrollments.js';
 import { Order } from '@unchainedshop/types/orders.js';
 

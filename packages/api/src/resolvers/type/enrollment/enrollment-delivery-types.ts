@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
 import { Enrollment } from '@unchainedshop/types/enrollments.js';
 

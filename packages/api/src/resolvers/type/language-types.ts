@@ -1,5 +1,5 @@
 import { Language as LanguageType } from '@unchainedshop/types/languages.js';
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 
 export interface LanguageHelperTypes {
   isBase: (language: LanguageType, params: never, context: Context) => boolean;

@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { Context, UnchainedHTTPServerContext } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import instantiateLoaders from './loaders/index.js';
 import { getLocaleContext } from './locale-context.js';
 import { UnchainedServerOptions } from './api-index.js';
+import { Context, UnchainedHTTPServerContext } from './types.js';
 
 let context;
 

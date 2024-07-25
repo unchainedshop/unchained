@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { Country } from '@unchainedshop/types/countries.js';
 import { Language } from '@unchainedshop/types/languages.js';
 import { checkAction } from '../../acl.js';

@@ -1,7 +1,7 @@
 import { checkAction } from '@unchainedshop/api/acl.js';
 import { actions } from '@unchainedshop/api/roles/index.js';
 import express, { Request, Response } from 'express';
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { RendererTypes, getRenderer } from '../template-registry.js';
 
 const { UNCHAINED_PDF_PRINT_HANDLER_PATH = '/rest/print_tickets' } = process.env;

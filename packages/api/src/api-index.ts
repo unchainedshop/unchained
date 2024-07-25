@@ -1,4 +1,3 @@
-import { AdminUiConfig } from '@unchainedshop/types/api.js';
 import createGraphQLServer from './createGraphQLServer.js';
 import {
   createContextResolver,
@@ -7,8 +6,10 @@ import {
 } from './context.js';
 import { YogaServerOptions } from 'graphql-yoga';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { AdminUiConfig } from './types.js';
 
 export * from './context.js';
+export * from './types.js';
 export * as acl from './acl.js';
 export * as errors from './errors.js';
 export * as express from './express/index.js';

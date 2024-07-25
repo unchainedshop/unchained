@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { TokenStatus, TokenSurrogate } from '@unchainedshop/types/warehousing.js';
 import { WorkStatus } from '@unchainedshop/types/worker.js';
 import localePkg from 'locale';

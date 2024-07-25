@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { Order } from '@unchainedshop/types/orders.js';
 import { OrderDiscount as OrderDiscountType } from '@unchainedshop/types/orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from '@unchainedshop/types/orders.pricing.js';

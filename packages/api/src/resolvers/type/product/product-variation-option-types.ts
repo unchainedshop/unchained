@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { ProductVariationText } from '@unchainedshop/types/products.variations.js';
 
 export type OptionHelperType<P, T> = (

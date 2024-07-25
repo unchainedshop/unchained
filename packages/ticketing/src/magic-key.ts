@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { roles } from '@unchainedshop/api';
 import { TicketingAPI } from './types.js';
 

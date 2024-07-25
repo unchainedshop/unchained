@@ -1,7 +1,7 @@
 import { OrderDelivery as OrderDeliveryType } from '@unchainedshop/types/orders.deliveries.js';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { objectInvert } from '@unchainedshop/utils';
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 
 const OrderDeliveryMap = {
   OrderDeliveryShipping: DeliveryProviderType.SHIPPING,

@@ -1,5 +1,5 @@
 import { File as FileType } from '@unchainedshop/types/files.js';
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 
 export interface MediaHelperTypes {
   url: (language: FileType, params: Record<string, any>, context: Context) => string;

@@ -4,7 +4,7 @@ import {
   ProductConfiguration,
   ProductPriceRange,
 } from '@unchainedshop/types/products.js';
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { ProductVariation } from '@unchainedshop/types/products.variations.js';
 import { Product } from './product-types.js';
 

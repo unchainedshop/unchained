@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { EnrollmentPlan as EnrollmentPlanType } from '@unchainedshop/types/enrollments.js';
 import { Product } from '@unchainedshop/types/products.js';
 

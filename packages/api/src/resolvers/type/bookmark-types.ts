@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { Bookmark as BookmarkType } from '@unchainedshop/types/bookmarks.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { User } from '@unchainedshop/types/user.js';

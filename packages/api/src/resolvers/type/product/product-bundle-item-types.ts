@@ -1,4 +1,9 @@
-import { ProductBundleItemHelperTypes } from '@unchainedshop/types/products.js';
+import { Product, ProductBundleItem as ProductBundleItemType } from '@unchainedshop/types/products.js';
+import { Context } from '../../../types.js';
+
+export interface ProductBundleItemHelperTypes {
+  product: (bundleItem: ProductBundleItemType, _: never, context: Context) => Promise<Product>;
+}
 
 export const ProductBundleItem: ProductBundleItemHelperTypes = {
   product: async (productItem, _, { loaders }) => {

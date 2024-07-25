@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { Product } from '@unchainedshop/types/products.js';
 import {
   ProductReview as ProductReviewType,

@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { User } from '@unchainedshop/types/user.js';
 
 export const loggedIn = (role: any, actions: Record<string, string>) => {

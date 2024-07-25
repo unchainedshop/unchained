@@ -1,4 +1,4 @@
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { Country as CountryType } from '@unchainedshop/types/countries.js';
 import { Currency } from '@unchainedshop/types/currencies.js';
 

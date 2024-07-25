@@ -1,10 +1,8 @@
 import type { FindOptions, UpdateFilter, Filter } from 'mongodb';
 
-import { Context, SortOption } from './api.js';
-import { AssortmentPathLink, AssortmentProduct } from './assortments.js';
+import { SortOption } from './api.js';
 import { TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
-import { Country } from './countries.js';
 import { Currency } from './currencies.js';
 import { IDiscountAdapter } from './discount.js';
 import { OrderPosition } from './orders.positions.js';
@@ -397,38 +395,6 @@ export type RemoveProductService = (
 
 export interface ProductServices {
   removeProduct: RemoveProductService;
-}
-
-/*
- * API Types
- */
-
-export type HelperType<P, T> = (product: Product, params: P, context: Context) => T;
-export interface ProductAssortmentPathHelperTypes {
-  assortmentProduct: (
-    data: { assortmentId: string; productId: string; links: Array<AssortmentPathLink> },
-    _: never,
-    context: Context,
-  ) => Promise<AssortmentProduct>;
-}
-
-export interface ProductBundleItemHelperTypes {
-  product: (bundleItem: ProductBundleItem, _: never, context: Context) => Promise<Product>;
-}
-
-export type ProductCatalogHelperType<P, T> = (
-  productPrice: ProductPrice,
-  params: P,
-  context: Context,
-) => T;
-
-export interface ProductCatalogPriceHelperTypes {
-  isTaxable: ProductCatalogHelperType<never, boolean>;
-
-  isNetPrice: ProductCatalogHelperType<never, boolean>;
-
-  country: ProductCatalogHelperType<never, Promise<Country>>;
-  currency: ProductCatalogHelperType<never, Promise<Currency>>;
 }
 
 /*

@@ -1,5 +1,5 @@
 import { Quotation as QuotationType } from '@unchainedshop/types/quotations.js';
-import { Context } from '@unchainedshop/types/api.js';
+import { Context } from '@unchainedshop/api';
 import { User } from '@unchainedshop/types/user.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { Country } from '@unchainedshop/types/countries.js';

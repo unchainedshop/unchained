@@ -1,4 +1,3 @@
-import { UnchainedLocaleContext, UnchainedHTTPServerContext } from '@unchainedshop/types/api.js';
 import localePkg from 'locale';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
@@ -9,6 +8,7 @@ import {
 } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import memoizee from 'memoizee';
+import { UnchainedHTTPServerContext, UnchainedLocaleContext } from './types.js';
 
 const { Locales } = localePkg;
 
