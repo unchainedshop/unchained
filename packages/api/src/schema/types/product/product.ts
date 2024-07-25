@@ -53,7 +53,7 @@ export default [
     """
     Abstract Product
     """
-    interface Product @cacheControl(maxAge: 180) {
+    interface Product {
       _id: ID!
       sequence: Int!
       status: ProductStatus!

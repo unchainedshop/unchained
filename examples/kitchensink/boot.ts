@@ -1,6 +1,8 @@
 import './load_env.js';
 import express from 'express';
 import http from 'http';
+import { useExecutionCancellation } from 'graphql-yoga';
+import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
 import {
   startPlatform,
   connectPlatformToExpress4,
@@ -18,6 +20,9 @@ import '@unchainedshop/plugins/pricing/discount-100-off.js';
 
 import seed from './seed.js';
 import ticketingServices from '@unchainedshop/ticketing/services.js';
+import cookie from 'cookie';
+
+const { UNCHAINED_COOKIE_NAME = 'unchained_token' } = process.env;
 
 const start = async () => {
   const app = express();
@@ -27,6 +32,17 @@ const start = async () => {
     modules: { ...defaultModules, ...ticketingModules },
     services: { ...ticketingServices },
     context: withAccessToken(),
+    plugins: [
+      useExecutionCancellation(),
+      useResponseCache({
+        ttl: 0,
+        session(req) {
+          const auth = req.headers.get('authorization');
+          const cookies = cookie.parse(req.headers.get('cookie'));
+          return auth || cookies[UNCHAINED_COOKIE_NAME] || null;
+        },
+      }),
+    ],
     options: {
       accounts: {
         password: {

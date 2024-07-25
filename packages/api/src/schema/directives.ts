@@ -5,10 +5,6 @@ export default [
       PRIVATE
     }
 
-    directive @cacheControl(
-      maxAge: Int
-      scope: CacheControlScope
-      inheritMaxAge: Boolean
-    ) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+    directive @cacheControl(maxAge: Int, scope: CacheControlScope) on FIELD_DEFINITION | OBJECT
   `,
 ];

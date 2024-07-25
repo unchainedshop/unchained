@@ -22,7 +22,7 @@ export default [
     """
     Tokenized Product (Blockchain materialized Product)
     """
-    type TokenizedProduct implements Product {
+    type TokenizedProduct implements Product @cacheControl(maxAge: 180) {
       _id: ID!
       sequence: Int!
       status: ProductStatus!

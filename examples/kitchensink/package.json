@@ -34,6 +34,7 @@
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
+    "@graphql-yoga/plugin-response-cache": "^3.8.1",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@unchainedshop/api": "^2.12.2",
     "@unchainedshop/core-delivery": "^2.12.2",
