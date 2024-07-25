@@ -28,6 +28,7 @@ export const Product = {
     });
   },
 
+  // TODO: Use a loader!
   async media(
     product: ProductType,
     params: {

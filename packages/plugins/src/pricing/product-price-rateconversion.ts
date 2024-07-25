@@ -46,7 +46,8 @@ export const ProductPriceRateConversion: IProductPricingAdapter = {
           isoCode: targetCurrency,
         });
 
-        if (!targetCurrencyObj?.isActive) return pricingAdapter.calculate();
+        if (!targetCurrencyObj?.isActive || !fromCurrencyObj?.isActive)
+          return pricingAdapter.calculate();
 
         const rateData = await modules.products.prices.rates.getRate(fromCurrencyObj, targetCurrencyObj);
 
