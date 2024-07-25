@@ -9,6 +9,7 @@ export default async function confirmOrder(
     orderId: string;
     paymentContext?: any;
     deliveryContext?: any;
+    comment?: string;
   },
   context: Context,
 ) {

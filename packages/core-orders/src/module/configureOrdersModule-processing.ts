@@ -249,7 +249,7 @@ export const configureOrderModuleProcessing = ({
   };
 
   return {
-    checkout: async (orderId, { paymentContext, deliveryContext }, unchainedAPI) => {
+    checkout: async (orderId, transactionContext, unchainedAPI) => {
       const { modules, services } = unchainedAPI;
 
       const order = await Orders.findOne(generateDbFilterById(orderId), {});
@@ -268,10 +268,7 @@ export const configureOrderModuleProcessing = ({
       try {
         const processedOrder = await modules.orders.processOrder(
           order,
-          {
-            paymentContext,
-            deliveryContext,
-          },
+          transactionContext,
           unchainedAPI,
         );
 
@@ -299,7 +296,7 @@ export const configureOrderModuleProcessing = ({
       }
     },
 
-    confirm: async (order, { paymentContext, deliveryContext }, unchainedAPI) => {
+    confirm: async (order, transactionContext, unchainedAPI) => {
       const { modules } = unchainedAPI;
 
       if (order.status !== OrderStatus.PENDING) return order;
@@ -309,8 +306,7 @@ export const configureOrderModuleProcessing = ({
         return await modules.orders.processOrder(
           order,
           {
-            paymentContext,
-            deliveryContext,
+            ...transactionContext,
             nextStatus: OrderStatus.CONFIRMED,
           },
           unchainedAPI,
@@ -320,7 +316,7 @@ export const configureOrderModuleProcessing = ({
       }
     },
 
-    reject: async (order, { paymentContext, deliveryContext }, unchainedAPI) => {
+    reject: async (order, transactionContext, unchainedAPI) => {
       const { modules } = unchainedAPI;
 
       if (order.status !== OrderStatus.PENDING) return order;
@@ -330,8 +326,7 @@ export const configureOrderModuleProcessing = ({
         return await modules.orders.processOrder(
           order,
           {
-            paymentContext,
-            deliveryContext,
+            ...transactionContext,
             nextStatus: OrderStatus.REJECTED,
           },
           unchainedAPI,
@@ -341,9 +336,14 @@ export const configureOrderModuleProcessing = ({
       }
     },
 
-    processOrder: async (initialOrder, params, unchainedAPI) => {
+    processOrder: async (initialOrder, orderTransactionContext, unchainedAPI) => {
       const { modules } = unchainedAPI;
-      const { paymentContext, deliveryContext, nextStatus: forceNextStatus } = params;
+      const {
+        paymentContext,
+        deliveryContext,
+        nextStatus: forceNextStatus,
+        comment,
+      } = orderTransactionContext;
 
       const orderId = initialOrder._id;
       let order = initialOrder;
@@ -393,7 +393,7 @@ export const configureOrderModuleProcessing = ({
           // numbers that are needed for delivery
           order = await updateStatus(orderId, {
             status: OrderStatus.CONFIRMED,
-            info: 'before delivery',
+            info: comment,
           });
 
           const orderDelivery = await modules.orders.deliveries.findDelivery({
@@ -473,7 +473,7 @@ export const configureOrderModuleProcessing = ({
         nextStatus = await findNextStatus(nextStatus, order, unchainedAPI);
       }
 
-      return updateStatus(order._id, { status: nextStatus, info: 'order processed' });
+      return updateStatus(order._id, { status: nextStatus, info: comment });
     },
 
     updateStatus,

@@ -9,6 +9,7 @@ import { OrderPositionsModule } from './orders.positions.js';
 import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 import { Product } from './products.js';
 import { User } from './user.js';
+import { info } from 'console';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -50,9 +51,9 @@ export type OrderQuery = {
 };
 
 export type OrderTransactionContext = {
-  transactionContext?: any;
   paymentContext?: any;
   deliveryContext?: any;
+  comment?: string;
   nextStatus?: OrderStatus;
 };
 export type OrderContextParams<P> = (
