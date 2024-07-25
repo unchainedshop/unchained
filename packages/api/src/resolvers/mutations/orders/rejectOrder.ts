@@ -9,6 +9,7 @@ export default async function rejectOrder(
     orderId: string;
     paymentContext?: any;
     deliveryContext?: any;
+    comment?: string;
   },
   context: Context,
 ) {
@@ -16,6 +17,7 @@ export default async function rejectOrder(
   const { orderId, ...transactionContext } = params;
 
   log('mutation rejectOrder', { orderId, userId });
+
   if (!orderId) throw new InvalidIdError({ orderId });
 
   const order = await modules.orders.findOrder({ orderId });

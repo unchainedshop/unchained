@@ -304,12 +304,12 @@ export default [
       """
       Manually confirm an order which is in progress
       """
-      confirmOrder(orderId: ID!, paymentContext: JSON, deliveryContext: JSON): Order!
+      confirmOrder(orderId: ID!, paymentContext: JSON, deliveryContext: JSON, comment: String): Order!
 
       """
       Manually reject an order which is in progress
       """
-      rejectOrder(orderId: ID!, paymentContext: JSON, deliveryContext: JSON): Order!
+      rejectOrder(orderId: ID!, paymentContext: JSON, deliveryContext: JSON, comment: String): Order!
 
       """
       Manually mark an unpaid/partially paid order as fully paid

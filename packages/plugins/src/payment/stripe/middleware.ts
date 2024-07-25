@@ -80,9 +80,6 @@ export const stripeHandler = async (request, response) => {
       const order = await modules.orders.checkout(
         orderPayment.orderId,
         {
-          transactionContext: {
-            paymentIntentId: paymentIntent.id,
-          },
           paymentContext: {
             paymentIntentId: paymentIntent.id,
           },
