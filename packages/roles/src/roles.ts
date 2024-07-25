@@ -1,14 +1,14 @@
 import clone from 'lodash.clone';
 import { has } from './utils/has.js';
 import { isFunction } from './utils/isFunction.js';
-import { Context } from '@unchainedshop/types/api.js';
 
+type RoleUserContext = { userId?: string; user?: any };
 export interface RoleInterface {
   name: string;
   allowRules: {
     [name: string]: any;
   };
-  allow(action: string, fn: (root: any, props: any, context: Context) => Promise<boolean>): void;
+  allow(action: string, fn: (root: any, props: any, context: RoleUserContext) => Promise<boolean>): void;
   helpers: Record<string, unknown>;
 }
 
@@ -28,12 +28,16 @@ export interface RolesInterface {
   registerHelper(name: string): void;
   getUserRoles(userId: string, roles: Array<string>, includeSpecial: boolean): string[];
   allow(
-    context: Context,
+    context: RoleUserContext,
     roles: Array<string>,
     action?: string,
     args?: CheckPermissionArgs,
   ): Promise<boolean>;
-  userHasPermission(context: Context, action: string, args: CheckPermissionArgs): Promise<boolean>;
+  userHasPermission(
+    context: RoleUserContext,
+    action: string,
+    args: CheckPermissionArgs,
+  ): Promise<boolean>;
   adminRole?: RoleInterface;
   loggedInRole?: RoleInterface;
   allRole?: RoleInterface;
@@ -44,7 +48,7 @@ export interface RoleInterface {
   allowRules: {
     [name: string]: any;
   };
-  allow(action: string, fn: (root: any, props: any, context: Context) => Promise<boolean>): void;
+  allow(action: string, fn: (root: any, props: any, context: RoleUserContext) => Promise<boolean>): void;
   helpers: Record<string, unknown>;
 }
 

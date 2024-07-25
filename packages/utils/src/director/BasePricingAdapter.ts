@@ -8,9 +8,9 @@ import {
 import { log, LogLevel } from '@unchainedshop/logger';
 
 export const BasePricingAdapter = <
-  Context extends BasePricingAdapterContext,
+  PricingAdapterContext extends BasePricingAdapterContext,
   Calculation extends PricingCalculation,
->(): IPricingAdapter<Context, Calculation, IPricingSheet<Calculation>> => ({
+>(): IPricingAdapter<PricingAdapterContext, Calculation, IPricingSheet<Calculation>> => ({
   key: '',
   label: '',
   version: '',
@@ -22,7 +22,7 @@ export const BasePricingAdapter = <
 
   actions: (params) => {
     const calculation = [];
-    const actions: IPricingAdapterActions<Calculation, Context> = {
+    const actions: IPricingAdapterActions<Calculation, PricingAdapterContext> = {
       calculate: async () => {
         return [];
       },
@@ -30,7 +30,7 @@ export const BasePricingAdapter = <
       getContext: () => params.context,
     };
 
-    return actions as IPricingAdapterActions<Calculation, Context> & {
+    return actions as IPricingAdapterActions<Calculation, PricingAdapterContext> & {
       resultSheet: () => IPricingSheet<Calculation>;
     };
   },
