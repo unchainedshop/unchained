@@ -11,7 +11,7 @@ import {
 } from '@unchainedshop/types/warehousing.js';
 import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
-import { Context } from '@unchainedshop/types/api.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 const { MINTER_TOKEN_OFFSET = '0' } = process.env;
 
@@ -30,7 +30,8 @@ const ETHMinter: IWarehousingAdapter = {
   },
 
   actions: (configuration, context) => {
-    const { product, orderPosition, token, modules, locale } = context as WarehousingContext & Context;
+    const { product, orderPosition, token, modules, locale } = context as WarehousingContext &
+      UnchainedCore;
     const { contractAddress, contractStandard, tokenId, supply, ercMetadataProperties } =
       product?.tokenization || {};
 

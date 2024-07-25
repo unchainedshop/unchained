@@ -1,4 +1,3 @@
-import { Context } from '@unchainedshop/types/api.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
 
@@ -10,7 +9,7 @@ export type PDFRenderer = (
     orderId: string;
     variant?: string;
   },
-  context: Context,
+  context: UnchainedCore,
 ) => Promise<NodeJS.ReadableStream>;
 
 export type PassRenderer = (

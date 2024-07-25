@@ -1,11 +1,10 @@
-import { startAPIServer, GraphQLServerOptions, roles } from '@unchainedshop/api';
-import { initCore } from '@unchainedshop/core';
+import { startAPIServer, GraphQLServerOptions, roles, UnchainedServerOptions } from '@unchainedshop/api';
+import { initCore, UnchainedCoreOptions } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { WorkerDirector } from '@unchainedshop/core-worker';
-import { AdminUiConfig } from '@unchainedshop/types/api.js';
 import { Db } from 'mongodb';
 import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
 import { runMigrations } from './migrations/runMigrations.js';
@@ -14,6 +13,7 @@ import { SetupCartsOptions, setupCarts } from './setup/setupCarts.js';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.js';
 import { SetupWorkqueueOptions, setupWorkqueue } from './setup/setupWorkqueue.js';
 import { createMigrationRepository } from './migrations/migrationRepository.js';
+import { IRoleOptionConfig } from '@unchainedshop/roles';
 
 export { MessageTypes };
 
@@ -22,10 +22,11 @@ export type PlatformOptions = {
     handlers?: Record<string, BulkImportHandler>;
   };
   context?: any;
+  rolesOptions: IRoleOptionConfig;
   workQueueOptions?: SetupWorkqueueOptions & SetupCartsOptions;
-  adminUiConfig?: AdminUiConfig;
-} & Partial<Pick<UnchainedCoreOptions, 'modules' | 'services' | 'options' | 'rolesOptions'>> &
-  GraphQLServerOptions;
+} & Partial<Pick<UnchainedCoreOptions, 'modules' | 'services' | 'options'>> &
+  GraphQLServerOptions &
+  Omit<UnchainedServerOptions, 'roles'>;
 
 const logger = createLogger('unchained');
 
@@ -52,7 +53,6 @@ export const startPlatform = async ({
   modules = {},
   services = {},
   options = {},
-  adminUiConfig = {},
   rolesOptions = {},
   bulkImporter: bulkImporterOptions,
   workQueueOptions,
@@ -79,7 +79,6 @@ export const startPlatform = async ({
     modules,
     services,
     options,
-    rolesOptions,
   });
 
   const isWorkQueueEnabled = checkWorkQueueEnabled(workQueueOptions);
@@ -103,7 +102,6 @@ export const startPlatform = async ({
     roles: configuredRoles,
     events: configuredEvents,
     workTypes: configuredWorkTypes,
-    adminUiConfig,
     ...arbitraryGraphQLServerOptions,
   });
 

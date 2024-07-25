@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { AdminUiConfig } from '@unchainedshop/types/api.js';
 import createGraphQLServer from './createGraphQLServer.js';
 import {
@@ -7,7 +5,7 @@ import {
   setCurrentContextResolver,
   getCurrentContextResolver,
 } from './context.js';
-import { YogaSchemaDefinition, YogaServerOptions } from 'graphql-yoga';
+import { YogaServerOptions } from 'graphql-yoga';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export * from './context.js';
@@ -17,47 +15,34 @@ export * as express from './express/index.js';
 export * as roles from './roles/index.js';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
-export const loadJSON = (filename) => {
-  try {
-    const base = typeof __filename !== 'undefined' && __filename;
-    if (!base)
-      return {
-        version: process.env.npm_package_version,
-      };
-    const absolutePath = path.resolve(path.dirname(base), filename);
-    const data = JSON.parse(fs.readFileSync(absolutePath, 'utf-8'));
-    return data;
-  } catch (e) {
-    return null;
-  }
-};
-const packageJson = loadJSON('../package.json');
-
-const { UNCHAINED_API_VERSION = packageJson?.version || '2.x' } = process.env;
-
 export type GraphQLServerOptions = YogaServerOptions<any, any> & {
   typeDefs: Array<string>;
   resolvers: Record<string, any>;
 };
 
-export type UnchainedServerOptions = GraphQLServerOptions & {
-  unchainedAPI: UnchainedCore;
+export type UnchainedServerOptions = {
   roles?: any;
-  context?: any;
-  events: Array<string>;
-  workTypes: Array<string>;
   adminUiConfig?: AdminUiConfig;
 };
 
-export const startAPIServer = async (options: UnchainedServerOptions) => {
-  const { unchainedAPI, roles, context: customContext, adminUiConfig, ...serverOptions } = options || {};
-
-  const contextResolver = createContextResolver(
+export const startAPIServer = async (
+  options: GraphQLServerOptions &
+    UnchainedServerOptions & {
+      unchainedAPI: UnchainedCore;
+      context?: any;
+      events: Array<string>;
+      workTypes: Array<string>;
+    },
+) => {
+  const {
     unchainedAPI,
+    context: customContext,
     roles,
-    UNCHAINED_API_VERSION,
-    adminUiConfig,
-  );
+    adminUiConfig = {},
+    ...serverOptions
+  } = options || {};
+
+  const contextResolver = createContextResolver(unchainedAPI, { roles, adminUiConfig });
 
   setCurrentContextResolver(
     customContext

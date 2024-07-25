@@ -1,5 +1,4 @@
 import type { Filter, FindOptions } from 'mongodb';
-import { Context } from './api.js';
 import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 import { Order } from './orders.js';
@@ -9,7 +8,6 @@ import {
   PaymentPricingCalculation,
   PaymentPricingContext,
 } from './payments.pricing.js';
-import { User } from './user.js';
 
 export enum PaymentProviderType {
   CARD = 'CARD',
@@ -272,16 +270,4 @@ export interface PaymentSettings {
   filterSupportedProviders: FilterProviders;
   determineDefaultProvider: DetermineDefaultProvider;
   configureSettings: (options?: PaymentSettingsOptions) => void;
-}
-
-/*
- * API Types
- */
-
-export type HelperType<P, T> = (credentials: PaymentCredentials, params: P, context: Context) => T;
-
-export interface PaymentCredentialsHelperTypes {
-  user: HelperType<never, Promise<User>>;
-  paymentProvider: HelperType<never, Promise<PaymentProvider>>;
-  isValid: HelperType<never, Promise<boolean>>;
 }

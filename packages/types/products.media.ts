@@ -1,7 +1,5 @@
 import type { Filter, FindOptions } from 'mongodb';
-import { Context } from './api.js';
 import { TimestampFields } from './common.js';
-import { File } from './files.js';
 
 export type ProductMedia = {
   _id?: string;
@@ -71,10 +69,3 @@ export type ProductMediaModule = {
     ) => Promise<Array<ProductMediaText>>;
   };
 };
-
-export type HelperType<P, T> = (productMedia: ProductMedia, params: P, context: Context) => T;
-
-export interface ProductMediaHelperTypes {
-  texts: HelperType<{ forceLocale?: string }, Promise<ProductMediaText>>;
-  file: HelperType<never, Promise<File>>;
-}

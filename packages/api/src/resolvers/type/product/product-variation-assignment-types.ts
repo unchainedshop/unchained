@@ -1,4 +1,17 @@
-import { ProductVariationAssignmentHelperTypes } from '@unchainedshop/types/products.variations.js';
+import { Context } from '@unchainedshop/types/api.js';
+import { Product, ProductAssignment, ProductConfiguration } from '@unchainedshop/types/products.js';
+
+export type AssignmentHelperType<T> = (
+  data: { product: Product; assignment: ProductAssignment },
+  _: never,
+  context: Context,
+) => T;
+
+export interface ProductVariationAssignmentHelperTypes {
+  _id: AssignmentHelperType<string>;
+  vectors: AssignmentHelperType<Array<{ product: Product } & ProductConfiguration>>;
+  product: AssignmentHelperType<Promise<Product>>;
+}
 
 export const ProductVariationAssignment: ProductVariationAssignmentHelperTypes = {
   _id: ({ product, assignment }) => {

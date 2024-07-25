@@ -1,4 +1,4 @@
-import { CheckPermissionArgs } from '@unchainedshop/types/roles.js';
+import { CheckPermissionArgs } from '@unchainedshop/roles';
 import { Roles } from '@unchainedshop/roles';
 import { NoPermissionError, PermissionSystemError } from './errors.js';
 

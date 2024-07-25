@@ -1,4 +1,9 @@
-import { UnchainedCore, UnchainedCoreOptions } from '@unchainedshop/types/core.js';
+import {
+  Migration,
+  MigrationRepository,
+  ModuleInput,
+  UnchainedCore,
+} from '@unchainedshop/types/core.js';
 import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
 import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
 import { configureCountriesModule } from '@unchainedshop/core-countries';
@@ -17,6 +22,22 @@ import { configureQuotationsModule } from '@unchainedshop/core-quotations';
 import { configureUsersModule, userServices } from '@unchainedshop/core-users';
 import { configureWarehousingModule } from '@unchainedshop/core-warehousing';
 import { configureWorkerModule } from '@unchainedshop/core-worker';
+import { mongodb } from '@unchainedshop/mongodb';
+import { ModuleOptions } from '@unchainedshop/types/modules.js';
+
+export interface UnchainedCoreOptions {
+  db: mongodb.Db;
+  migrationRepository: MigrationRepository<Migration>;
+  bulkImporter: any;
+  modules: Record<
+    string,
+    {
+      configure: (params: ModuleInput<any>) => any;
+    }
+  >;
+  services: Record<string, any>;
+  options: ModuleOptions;
+}
 
 export const initCore = async ({
   db,

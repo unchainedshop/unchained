@@ -1,4 +1,4 @@
-export { Roles, Role } from './roles.js';
+export * from './roles.js';
 
 export { has } from './utils/has.js';
 export { isFunction } from './utils/isFunction.js';

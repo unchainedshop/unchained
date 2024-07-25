@@ -1,5 +1,17 @@
-import { PaymentCredentialsHelperTypes } from '@unchainedshop/types/payments.js';
+import { Context } from '@unchainedshop/types/api.js';
+import {
+  PaymentCredentials as PaymentCredentialsType,
+  PaymentProvider,
+} from '@unchainedshop/types/payments.js';
+import { User } from '@unchainedshop/types/user.js';
 
+export type HelperType<P, T> = (credentials: PaymentCredentialsType, params: P, context: Context) => T;
+
+export interface PaymentCredentialsHelperTypes {
+  user: HelperType<never, Promise<User>>;
+  paymentProvider: HelperType<never, Promise<PaymentProvider>>;
+  isValid: HelperType<never, Promise<boolean>>;
+}
 export const PaymentCredentials: PaymentCredentialsHelperTypes = {
   async user(obj, _, { modules }) {
     return modules.users.findUserById(obj.userId);

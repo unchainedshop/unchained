@@ -1,6 +1,4 @@
-import { Context } from './api.js';
 import { TimestampFields } from './common.js';
-import { Product, ProductAssignment, ProductConfiguration } from './products.js';
 
 export enum ProductVariationType {
   COLOR = 'COLOR',
@@ -93,52 +91,3 @@ export type ProductVariationsModule = {
     ) => Promise<Array<ProductVariationText>>;
   };
 };
-
-export type HelperType<P, T> = (productVariation: ProductVariation, params: P, context: Context) => T;
-
-export interface ProductVariationHelperTypes {
-  options: HelperType<
-    never,
-    Array<{
-      _id: string;
-      productVariationOption: string;
-    }>
-  >;
-  texts: HelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
-}
-
-export type OptionHelperType<P, T> = (
-  option: { _id: string; productVariationOption: string },
-  params: P,
-  context: Context,
-) => T;
-
-export interface ProductVariationOptionHelperTypes {
-  _id: OptionHelperType<never, string>;
-  texts: OptionHelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
-  value: OptionHelperType<never, string>;
-}
-
-export type AssignmentHelperType<T> = (
-  data: { product: Product; assignment: ProductAssignment },
-  _: never,
-  context: Context,
-) => T;
-
-export interface ProductVariationAssignmentHelperTypes {
-  _id: AssignmentHelperType<string>;
-  vectors: AssignmentHelperType<Array<{ product: Product } & ProductConfiguration>>;
-  product: AssignmentHelperType<Promise<Product>>;
-}
-
-export type AssignmentVectorHelperType<T> = (
-  data: { product: Product } & ProductConfiguration,
-  _: never,
-  context: Context,
-) => T;
-
-export interface ProductVariationAssignmentVectorHelperTypes {
-  _id: AssignmentVectorHelperType<string>;
-  option: AssignmentVectorHelperType<Promise<{ _id: string; productVariationOption: string }>>;
-  variation: AssignmentVectorHelperType<Promise<ProductVariation>>;
-}

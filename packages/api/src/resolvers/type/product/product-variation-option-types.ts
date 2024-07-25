@@ -1,5 +1,17 @@
-import { ProductVariationOptionHelperTypes } from '@unchainedshop/types/products.variations.js';
+import { Context } from '@unchainedshop/types/api.js';
+import { ProductVariationText } from '@unchainedshop/types/products.variations.js';
 
+export type OptionHelperType<P, T> = (
+  option: { _id: string; productVariationOption: string },
+  params: P,
+  context: Context,
+) => T;
+
+export interface ProductVariationOptionHelperTypes {
+  _id: OptionHelperType<never, string>;
+  texts: OptionHelperType<{ forceLocale?: string }, Promise<ProductVariationText>>;
+  value: OptionHelperType<never, string>;
+}
 export const ProductVariationOption: ProductVariationOptionHelperTypes = {
   _id: (obj) => {
     return `${obj._id}:${obj.productVariationOption}`;
