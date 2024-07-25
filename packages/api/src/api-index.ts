@@ -7,7 +7,7 @@ import {
   setCurrentContextResolver,
   getCurrentContextResolver,
 } from './context.js';
-import { YogaServerOptions } from 'graphql-yoga';
+import { YogaSchemaDefinition, YogaServerOptions } from 'graphql-yoga';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export * from './context.js';
@@ -35,7 +35,10 @@ const packageJson = loadJSON('../package.json');
 
 const { UNCHAINED_API_VERSION = packageJson?.version || '2.x' } = process.env;
 
-export type GraphQLServerOptions = YogaServerOptions<any, any>;
+export type GraphQLServerOptions = YogaServerOptions<any, any> & {
+  typeDefs: Array<string>;
+  resolvers: Record<string, any>;
+};
 
 export type UnchainedServerOptions = GraphQLServerOptions & {
   unchainedAPI: UnchainedCore;
