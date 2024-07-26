@@ -74,7 +74,7 @@
   "optionalDependencies": {
     "@redis/client": "^1.5.8",
     "bip32": "^4.0.0",
-    "ethers": "^6.13.1",
+    "ethers": "^6.13.2",
     "express": "^4.x",
     "open": "^10.0.0",
     "postfinancecheckout": "^4.1.1",

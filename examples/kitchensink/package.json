@@ -34,7 +34,7 @@
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@graphql-yoga/plugin-response-cache": "^3.8.1",
+    "@graphql-yoga/plugin-response-cache": "^3.8.2",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@unchainedshop/api": "^3.0.0-alpha2",
     "@unchainedshop/core-delivery": "^3.0.0-alpha2",
@@ -46,7 +46,7 @@
     "bitcoinjs-lib": "^6.1.6",
     "cookie-parser": "^1.4.6",
     "dotenv-extended": "^2.9.0",
-    "ethers": "^6.13.1",
+    "ethers": "^6.13.2",
     "event-iterator": "^2.0.0",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
