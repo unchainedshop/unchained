@@ -7,7 +7,6 @@ The module accepts the following keys
 
 - setCachedProductIds
 - getCachedProductIds
-- skipInvalidationOnStartup: default is `false`
 
 To support sorting other than the default order index, extend available sort codes:
 

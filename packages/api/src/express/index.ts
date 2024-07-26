@@ -11,6 +11,7 @@ import { mongodb } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { emit } from '@unchainedshop/events';
 import { API_EVENTS } from '../events.js';
+import { User } from '@unchainedshop/types/user.js';
 
 const resolveUserRemoteAddress = (req) => {
   const remoteAddress =
@@ -49,7 +50,7 @@ const addContext = async function middlewareWithContext(
 
     const context = getCurrentContextResolver();
 
-    const login = async (user) => {
+    const login = async (user: User) => {
       await new Promise((resolve, reject) => {
         (req as any).login(user, (error, result) => {
           if (error) {
@@ -117,13 +118,14 @@ const addContext = async function middlewareWithContext(
 export const connect = (
   expressApp: e.Express,
   {
-    yogaServer,
+    graphqlHandler,
     db,
     unchainedAPI,
-  }: { yogaServer: YogaServer<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
+  }: { graphqlHandler: YogaServer<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
 ) => {
-  expressApp.use(cookieParser(), addContext);
   const passport = setupPassport(unchainedAPI);
+
+  expressApp.use(cookieParser(), addContext);
   expressApp.use(passport.initialize());
   expressApp.use(
     session({
@@ -148,7 +150,7 @@ export const connect = (
   );
   expressApp.use(passport.session());
   expressApp.use(passport.authenticate('access-token', { session: false }));
-  expressApp.use(GRAPHQL_API_PATH, yogaServer.handle);
+  expressApp.use(GRAPHQL_API_PATH, graphqlHandler);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
 };

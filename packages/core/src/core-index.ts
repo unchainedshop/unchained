@@ -42,9 +42,9 @@ export interface UnchainedCoreOptions {
 export const initCore = async ({
   db,
   migrationRepository,
-  modules,
-  services,
   bulkImporter,
+  modules = {},
+  services = {},
   options = {},
 }: UnchainedCoreOptions): Promise<UnchainedCore> => {
   const assortments = await configureAssortmentsModule({

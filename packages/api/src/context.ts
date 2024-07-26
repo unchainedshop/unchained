@@ -46,7 +46,10 @@ const packageJson = loadJSON('../package.json');
 const { UNCHAINED_API_VERSION = packageJson?.version || '2.x' } = process.env;
 
 export const createContextResolver =
-  (unchainedAPI: UnchainedCore, unchainedConfig: UnchainedServerOptions): UnchainedContextResolver =>
+  (
+    unchainedAPI: UnchainedCore,
+    unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig'>,
+  ): UnchainedContextResolver =>
   async ({ getHeader, setHeader, cookies, remoteAddress, remotePort, user, userId, login, logout }) => {
     const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader, cookies };
     const loaders = await instantiateLoaders(unchainedAPI);
