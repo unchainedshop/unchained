@@ -9,3 +9,4 @@ export { DeliveryProviderType } from './director/DeliveryProviderType.js';
 
 export { DeliveryPricingAdapter } from './director/DeliveryPricingAdapter.js';
 export { DeliveryPricingDirector } from './director/DeliveryPricingDirector.js';
+export { DeliveryPricingSheet } from './director/DeliveryPricingSheet.js';

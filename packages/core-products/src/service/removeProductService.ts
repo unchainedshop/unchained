@@ -1,6 +1,11 @@
 /* eslint-disable no-case-declarations */
-import { RemoveProductService } from '@unchainedshop/types/products.js';
 import { ProductStatus } from '../db/ProductStatus.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+
+export type RemoveProductService = (
+  params: { productId: string },
+  unchainedAPI: UnchainedCore,
+) => Promise<boolean>;
 
 export const removeProductService: RemoveProductService = async ({ productId }, unchainedAPI) => {
   const { modules } = unchainedAPI;

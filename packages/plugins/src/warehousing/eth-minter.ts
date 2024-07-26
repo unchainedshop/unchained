@@ -3,7 +3,7 @@ import {
   WarehousingAdapter,
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
-import { ProductContractStandard, ProductType } from '@unchainedshop/types/products.js';
+import { ProductContractStandard } from '@unchainedshop/types/products.js';
 import {
   IWarehousingAdapter,
   WarehousingContext,
@@ -12,6 +12,7 @@ import {
 import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { ProductTypes } from '@unchainedshop/core-products';
 
 const { MINTER_TOKEN_OFFSET = '0' } = process.env;
 
@@ -54,7 +55,7 @@ const ETHMinter: IWarehousingAdapter = {
       ...WarehousingAdapter.actions(configuration, context),
 
       isActive() {
-        return product?.type === ProductType.TokenizedProduct;
+        return product?.type === ProductTypes.TokenizedProduct;
       },
 
       configurationError() {

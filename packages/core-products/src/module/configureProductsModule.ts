@@ -1,9 +1,14 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   Product,
+  ProductAssignment,
+  ProductBundleItem,
+  ProductConfiguration,
+  ProductDiscount,
+  ProductPrice,
+  ProductPriceRange,
   ProductQuery,
-  ProductsModule,
-  ProductsSettingsOptions,
+  ProductText,
 } from '@unchainedshop/types/products.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -25,8 +30,20 @@ import { configureProductPricesModule } from './configureProductPrices.js';
 import { configureProductReviewsModule } from './configureProductReviewsModule.js';
 import { configureProductTextsModule } from './configureProductTextsModule.js';
 import { configureProductVariationsModule } from './configureProductVariationsModule.js';
-import { productsSettings } from '../products-settings.js';
+import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
 import addMigrations from '../migrations/addMigrations.js';
+import {
+  IProductPricingSheet,
+  ProductPriceRate,
+  ProductPricingCalculation,
+  ProductPricingContext,
+} from '@unchainedshop/types/products.pricing.js';
+import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
+import { Currency } from '@unchainedshop/types/currencies.js';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { ProductMediaModule } from '@unchainedshop/types/products.media.js';
+import { ProductReviewsModule } from '@unchainedshop/types/products.reviews.js';
+import { ProductVariationsModule } from '@unchainedshop/types/products.variations.js';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',
@@ -85,6 +102,227 @@ export const buildFindSelector = ({
   }
 
   return selector;
+};
+
+export type ProductsModule = {
+  // Queries
+  findProduct: (params: { productId?: string; slug?: string; sku?: string }) => Promise<Product>;
+
+  findProducts: (
+    params: ProductQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<Product>>;
+
+  count: (query: ProductQuery) => Promise<number>;
+  productExists: (params: { productId?: string; slug?: string }) => Promise<boolean>;
+
+  // Transformations
+  interface: (productDiscount: ProductDiscount) => IDiscountAdapter<unknown>;
+
+  isActive: (product: Product) => boolean;
+  isDraft: (product: Product) => boolean;
+
+  normalizedStatus: (product: Product) => ProductStatus;
+
+  pricingSheet: (params: {
+    calculation: Array<ProductPricingCalculation>;
+    currency: string;
+    quantity: number;
+  }) => IProductPricingSheet;
+
+  proxyAssignments: (
+    product: Product,
+    options: { includeInactive?: boolean },
+  ) => Promise<Array<{ assignment: ProductAssignment; product: Product }>>;
+
+  proxyProducts: (
+    product: Product,
+    vectors: Array<ProductConfiguration>,
+    options: { includeInactive?: boolean },
+  ) => Promise<Array<Product>>;
+
+  resolveOrderableProduct: (
+    product: Product,
+    params: { configuration?: Array<ProductConfiguration> },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Product>;
+
+  prices: {
+    price: (
+      product: Product,
+      params: { country: string; currency?: string; quantity?: number },
+    ) => Promise<ProductPrice>;
+
+    userPrice: (
+      prodct: Product,
+      params: {
+        userId: string;
+        country: string;
+        currency: string;
+        quantity?: number;
+        useNetPrice?: boolean;
+        configuration?: Array<ProductConfiguration>;
+      },
+      unchainedAPI: UnchainedCore,
+    ) => Promise<ProductPrice>;
+
+    catalogPrices: (prodct: Product) => Array<ProductPrice>;
+    catalogPricesLeveled: (
+      product: Product,
+      params: { currency: string; country: string },
+    ) => Promise<
+      Array<{
+        minQuantity: number;
+        maxQuantity: number;
+        price: ProductPrice;
+      }>
+    >;
+    catalogPriceRange: (
+      product: Product,
+      params: {
+        country: string;
+        currency: string;
+        includeInactive?: boolean;
+        quantity?: number;
+        vectors: Array<ProductConfiguration>;
+      },
+    ) => Promise<ProductPriceRange>;
+
+    simulatedPriceRange: (
+      prodct: Product,
+      params: {
+        userId: string;
+        country: string;
+        currency: string;
+        includeInactive?: boolean;
+        quantity?: number;
+        useNetPrice?: boolean;
+        vectors: Array<ProductConfiguration>;
+      },
+      unchainedAPI: UnchainedCore,
+    ) => Promise<ProductPriceRange>;
+
+    rates: {
+      getRate(
+        baseCurrency: Currency,
+        quoteCurrency: Currency,
+        referenceDate?: Date,
+      ): Promise<{ rate: number; expiresAt: Date } | null>;
+      getRateRange(
+        baseCurrency: Currency,
+        quoteCurrency: Currency,
+        referenceDate?: Date,
+      ): Promise<{ min: number; max: number } | null>;
+      updateRates(rates: Array<ProductPriceRate>): Promise<boolean>;
+    };
+  };
+
+  // Product adapter
+
+  calculate: (
+    pricingContext: ProductPricingContext & { item: OrderPosition },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Array<ProductPricingCalculation>>;
+
+  // Mutations
+  create: (doc: Product, options?: { autopublish?: boolean }) => Promise<Product>;
+
+  delete: (productId: string) => Promise<number>;
+  firstActiveProductProxy: (productId: string) => Promise<Product>;
+  firstActiveProductBundle: (productId: string) => Promise<Product>;
+  deleteProductPermanently: (
+    params: { productId: string },
+    options?: { keepReviews: boolean },
+  ) => Promise<number>;
+
+  update: (productId: string, doc: mongodb.UpdateFilter<Product>) => Promise<string>;
+
+  publish: (product: Product) => Promise<boolean>;
+  unpublish: (product: Product) => Promise<boolean>;
+
+  /*
+   * Product bundle items
+   */
+
+  bundleItems: {
+    addBundleItem: (productId: string, doc: ProductBundleItem) => Promise<string>;
+    removeBundleItem: (productId: string, index: number) => Promise<ProductBundleItem>;
+  };
+
+  /*
+   * Product assignments
+   */
+
+  assignments: {
+    addProxyAssignment: (
+      productId: string,
+      params: { proxyId: string; vectors: Array<ProductConfiguration> },
+    ) => Promise<string>;
+    removeAssignment: (
+      productId: string,
+      params: { vectors: Array<ProductConfiguration> },
+    ) => Promise<number>;
+  };
+
+  /*
+   * Product sub entities (Media, Variations & Reviews)
+   */
+  media: ProductMediaModule;
+  reviews: ProductReviewsModule;
+  variations: ProductVariationsModule;
+
+  /*
+   * Product search
+   */
+
+  search: {
+    buildActiveStatusFilter: () => mongodb.Filter<Product>;
+    buildActiveDraftStatusFilter: () => mongodb.Filter<Product>;
+    countFilteredProducts: (params: {
+      productIds: Array<string>;
+      productSelector: mongodb.Filter<Product>;
+    }) => Promise<number>;
+    findFilteredProducts: (params: {
+      limit?: number;
+      offset?: number;
+      productIds: Array<string>;
+      productSelector: mongodb.Filter<Product>;
+      sort?: mongodb.FindOptions['sort'];
+    }) => Promise<Array<Product>>;
+  };
+
+  /*
+   * Product texts
+   */
+
+  texts: {
+    // Queries
+    findTexts: (
+      query: mongodb.Filter<ProductText>,
+      options?: mongodb.FindOptions,
+    ) => Promise<Array<ProductText>>;
+
+    findLocalizedText: (params: { productId: string; locale?: string }) => Promise<ProductText>;
+
+    // Mutations
+    updateTexts: (
+      productId: string,
+      texts: Array<Omit<ProductText, 'productId'>>,
+    ) => Promise<Array<ProductText>>;
+
+    makeSlug: (data: { slug?: string; title: string; productId: string }) => Promise<string>;
+
+    deleteMany: ({
+      productId,
+    }: {
+      productId?: string;
+      excludedProductIds?: string[];
+    }) => Promise<number>;
+  };
 };
 
 export const configureProductsModule = async ({

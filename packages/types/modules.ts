@@ -4,18 +4,19 @@ import { CountriesModule } from './countries.js';
 import { CurrenciesModule } from './currencies.js';
 import { DeliveryModule, DeliverySettingsOptions } from './delivery.js';
 import { EnrollmentsModule, EnrollmentsSettingsOptions } from './enrollments.js';
-import { EventsModule } from './events.js';
 import { FilesModule, FilesSettingsOptions } from './files.js';
 import { FiltersModule, FiltersSettingsOptions } from './filters.js';
 import { LanguagesModule } from './languages.js';
 import { MessagingModule } from './messaging.js';
 import { OrdersModule, OrdersSettingsOptions } from './orders.js';
 import { PaymentModule, PaymentSettingsOptions } from './payments.js';
-import { ProductsModule, ProductsSettingsOptions } from './products.js';
 import { QuotationsModule, QuotationsSettingsOptions } from './quotations.js';
 import { UsersModule, UserSettingsOptions } from './user.js';
 import { WarehousingModule } from './warehousing.js';
 import { WorkerModule, WorkerSettingsOptions } from './worker.js';
+
+import type { EventsModule } from '@unchainedshop/core-events';
+import type { ProductsModule, ProductsSettingsOptions } from '@unchainedshop/core-products';
 
 export interface Modules {
   assortments: AssortmentsModule;

@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["./*.ts", "./*.d.ts"],
+  "entryPoints": ["./*.ts"],
   "out": "lib/docs",
   "tsconfig": "./tsconfig.json",
   "githubPages": false,

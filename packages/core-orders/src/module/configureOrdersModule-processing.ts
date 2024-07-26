@@ -1,12 +1,14 @@
 import { mongodb, generateDbFilterById } from '@unchainedshop/mongodb';
-import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders.js';
+import { ProductTypes } from '@unchainedshop/core-products';
+import { emit, registerEvents } from '@unchainedshop/events';
+
 import type { Locker } from '@kontsedal/locco';
+import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { emit, registerEvents } from '@unchainedshop/events';
-import { ProductType } from '@unchainedshop/types/products.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
+
 import { ordersSettings } from '../orders-settings.js';
 
 const ORDER_PROCESSING_EVENTS: string[] = [
@@ -421,7 +423,7 @@ export const configureOrderModuleProcessing = ({
             }),
           );
           const tokenizedItems = mappedProductOrderPositions.filter(
-            (item) => item.product?.type === ProductType.TokenizedProduct,
+            (item) => item.product?.type === ProductTypes.TokenizedProduct,
           );
           if (tokenizedItems.length > 0) {
             // Give virtual warehouse a chance to instantiate new virtual objects
@@ -436,7 +438,7 @@ export const configureOrderModuleProcessing = ({
 
           // Enrollments: Generate enrollments for plan products
           const planItems = mappedProductOrderPositions.filter(
-            (item) => item.product?.type === ProductType.PlanProduct && !order.originEnrollmentId,
+            (item) => item.product?.type === ProductTypes.PlanProduct && !order.originEnrollmentId,
           );
           if (planItems.length > 0) {
             await modules.enrollments.createFromCheckout(

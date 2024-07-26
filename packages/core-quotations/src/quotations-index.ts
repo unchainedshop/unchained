@@ -6,3 +6,5 @@ export { QuotationAdapter } from './director/QuotationAdapter.js';
 export { QuotationDirector } from './director/QuotationDirector.js';
 
 export { quotationsSettings } from './quotations-settings.js';
+
+export { QuotationError } from './director/QuotationError.js';

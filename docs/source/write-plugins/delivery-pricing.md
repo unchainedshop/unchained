@@ -14,9 +14,7 @@ below is an example of delivery price for the above delivery adapter that will c
 import {
   DeliveryPricingAdapter,
   DeliveryPricingSheet,
-  IDeliveryPricingSheet,
 } from '@unchainedshop/core-delivery';
-import { DeliveryPricingAdapterContext, Calculation, PricingAdapterContext } from '@unchainedshop/types';
 import type { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing.js';
 import { Discount } from '@unchainedshop/types/discount.js';
 
@@ -26,24 +24,22 @@ export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {
   label: 'Pickup Fee',
   orderIndex: 10,
 
-  isActivatedFor: ({ provider }: DeliveryPricingAdapterContext) => {
+  isActivatedFor: ({ provider }) => {
     return provider.adapterKey === 'ch.shop.delivery.pickupr';
   },
 
   actions: (
-    context: DeliveryPricingAdapterContext,
-    calculationSheet: IDeliveryPricingSheet,
-    discounts: Array<Discount>,
-  ): IPricingAdapterActions<Calculation, DeliveryPricingAdapterContext> & {
-    resultSheet: () => IDeliveryPricingSheet;
-  } => {
+    context,
+    calculationSheet,
+    discounts,
+  ) => {
     const calculation = [];
     const { currency } = context;
     const resultSheet = DeliveryPricingSheet({ currency });
     return {
-      getCalculation: (): Calculation[] => calculation,
-      getContext: (): DeliveryPricingAdapterContext => context,
-      calculate: async (): Promise<Calculation[]> => {
+      getCalculation: () => calculation,
+      getContext: () => context,
+      calculate: async () => {
         resultSheet.addFee({
           amount: 50,
           isNetPrice: false,

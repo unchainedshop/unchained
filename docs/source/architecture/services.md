@@ -19,12 +19,6 @@ description: Learn about the layered approach of Unchained
   - **migrateOrderCartsService(params: [MigrateOrderCartsService](https://docs.unchained.shop/types/types/orders.MigrateOrderCartsService.html))**: Used to migrate order cart from one user to another. useful for example when we want to keep products a user has added to cart before logging in after they log in.
   - **createUserCartService(params: [CreateUserCartService](https://docs.unchained.shop/types/types/orders.CreateUserCartService.html))**: Used to create cart for current user or a user with the specified ID through its arguments.
 
-### `paymentServices`
-  - **chargeService(params: [ChargeService](https://docs.unchained.shop/types/types/payments.ChargeService.html))**: Used to charge order payment with the provided payment.
-  - **registerPaymentCredentialsService(params: [RegisterPaymentCredentialsService](https://docs.unchained.shop/types/types/payments.RegisterPaymentCredentialsService.html))**: Used to assign user payment credential to the provided payment provider.
-  - **cancelService(params: [CancelService](https://docs.unchained.shop/types/types/payments.CancelService.html))**: Used for canceling payment
-  - **confirmService(params: [ConfirmService](https://docs.unchained.shop))**:  Used to confirm a payment when received. 
-
 ### `productServices`
 - **removeProduct(params: [RemoveProductService](https://docs.unchained.shop/types/types/products.RemoveProductService.html))**: Used to delete product. **Note once a product is deleted there is no way reverting the action**.
 

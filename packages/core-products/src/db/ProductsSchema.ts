@@ -1,13 +1,13 @@
 import { Schemas } from '@unchainedshop/utils';
 import SimpleSchema from 'simpl-schema';
 
-export const ProductTypes = {
-  SimpleProduct: 'SIMPLE_PRODUCT',
-  ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
-  BundleProduct: 'BUNDLE_PRODUCT',
-  PlanProduct: 'PLAN_PRODUCT',
-  TokenizedProduct: 'TOKENIZED_PRODUCT',
-};
+export enum ProductTypes {
+  SimpleProduct = 'SIMPLE_PRODUCT',
+  ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
+  BundleProduct = 'BUNDLE_PRODUCT',
+  PlanProduct = 'PLAN_PRODUCT',
+  TokenizedProduct = 'TOKENIZED_PRODUCT',
+}
 
 const ProductCommerceSchema = new SimpleSchema(
   {
