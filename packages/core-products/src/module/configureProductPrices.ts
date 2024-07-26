@@ -1,11 +1,12 @@
 import crypto from 'crypto';
-import { Product, ProductConfiguration, ProductsModule } from '@unchainedshop/types/products.js';
+import { Product, ProductConfiguration } from '@unchainedshop/types/products.js';
 import { IProductPricingSheet, ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
 import { Currency } from '@unchainedshop/types/currencies.js';
 import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
 import { ProductPriceRates } from '../db/ProductPriceRates.js';
+import { ProductsModule } from '../../lib/products-index.js';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {

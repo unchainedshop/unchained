@@ -1,4 +1,4 @@
-import { Product, ProductsModule, ProductText } from '@unchainedshop/types/products.js';
+import { Product, ProductText } from '@unchainedshop/types/products.js';
 import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findUnusedSlug } from '@unchainedshop/utils';
@@ -9,6 +9,7 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { productsSettings } from '../products-settings.js';
+import { ProductsModule } from '../../lib/products-index.js';
 
 const { Locale } = localePkg;
 
