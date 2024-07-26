@@ -1,4 +1,4 @@
-import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   Enrollment,

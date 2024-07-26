@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { Context } from '../../../types.js';
 
 export default async function productReviews(

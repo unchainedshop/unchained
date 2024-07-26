@@ -2,7 +2,7 @@ import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/countries.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.js';
 import { CountriesSchema } from '../db/CountriesSchema.js';

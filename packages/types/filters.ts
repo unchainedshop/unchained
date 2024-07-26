@@ -1,5 +1,5 @@
 import type { Db, FindOptions, Document, Filter as MongoDBFilter } from 'mongodb';
-import { SortOption } from './api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { Assortment } from './assortments.js';
 import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';

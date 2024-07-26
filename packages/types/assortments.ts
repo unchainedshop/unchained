@@ -1,5 +1,5 @@
 import type { Filter, FindOptions, Db } from 'mongodb';
-import { SortOption } from './api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { AssortmentMediaModule } from './assortments.media.js';
 import { TimestampFields, Tree } from './common.js';
 

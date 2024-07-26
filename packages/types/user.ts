@@ -1,5 +1,5 @@
 import type { Db, Filter, FindOptions, UpdateFilter, FindOneAndUpdateOptions } from 'mongodb';
-import { SortOption } from './api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { Address, Contact, Locale, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Country } from './countries.js';

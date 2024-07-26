@@ -13,7 +13,7 @@ import {
   buildSortOptions,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
 import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema.js';
 

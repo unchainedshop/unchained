@@ -1,6 +1,6 @@
 import type { FindOptions, UpdateFilter, Filter } from 'mongodb';
 
-import { SortOption } from './api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Currency } from './currencies.js';

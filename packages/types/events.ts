@@ -1,5 +1,5 @@
 import type { Filter, FindOptions } from 'mongodb';
-import { SortOption } from './api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { ModuleCreateMutation } from './core.js';
 import { TimestampFields } from './common.js';
 

@@ -1,4 +1,4 @@
-import { SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/utils';
 import type { Sort } from 'mongodb';
 
 const SORT_DIRECTIONS = {

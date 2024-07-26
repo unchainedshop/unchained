@@ -8,9 +8,8 @@ import {
   buildSortOptions,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { SortDirection } from '@unchainedshop/types/api.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { buildObfuscatedFieldsFilter } from '@unchainedshop/utils';
+import { buildObfuscatedFieldsFilter, SortDirection } from '@unchainedshop/utils';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
 import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';

@@ -1,4 +1,4 @@
-import { SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { Bookmark } from '@unchainedshop/types/bookmarks.js';
 import { Contact } from '@unchainedshop/types/common.js';
 import { Country } from '@unchainedshop/types/countries.js';

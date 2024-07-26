@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { SortOption } from '@unchainedshop/types/api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { UserQuery } from '@unchainedshop/types/user.js';
 import { Context } from '../../../types.js';
 

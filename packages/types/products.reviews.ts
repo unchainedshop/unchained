@@ -1,5 +1,5 @@
 import type { Filter } from 'mongodb';
-import { SortOption } from './api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { TimestampFields } from './common.js';
 
 export enum ProductReviewVoteType {

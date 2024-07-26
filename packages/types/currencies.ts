@@ -1,4 +1,4 @@
-import { SortOption } from './api.js';
+import { SortOption } from '@unchainedshop/utils';
 import { TimestampFields } from './common.js';
 import { ModuleMutations } from './core.js';
 

@@ -20,7 +20,7 @@ import {
 } from '@unchainedshop/mongodb';
 import { systemLocale } from '@unchainedshop/utils';
 import { FileDirector } from '@unchainedshop/file-upload';
-import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
 import { userSettings } from '../users-settings.js';

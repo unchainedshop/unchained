@@ -1,7 +1,7 @@
 import memoizee from 'memoizee';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
+import { SortDirection, SortOption } from '@unchainedshop/utils';
 import {
   mongodb,
   generateDbFilterById,
