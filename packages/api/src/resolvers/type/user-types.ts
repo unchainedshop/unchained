@@ -1,5 +1,5 @@
-import { SortOption } from '@unchainedshop/utils';
-import { Bookmark } from '@unchainedshop/types/bookmarks.js';
+import type { Bookmark } from '@unchainedshop/core-bookmarks';
+import { SortOption, Locale } from '@unchainedshop/utils';
 import { Contact } from '@unchainedshop/types/common.js';
 import { Country } from '@unchainedshop/types/countries.js';
 import { Enrollment, EnrollmentStatus } from '@unchainedshop/types/enrollments.js';
@@ -16,7 +16,6 @@ import {
   WebAuthnCredentials,
   PushSubscription,
 } from '@unchainedshop/types/user.js';
-import type { Locale } from 'locale';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
 import { Roles, permissions } from '@unchainedshop/roles';
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';

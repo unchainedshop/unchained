@@ -1,4 +1,3 @@
-import { Locale } from '@unchainedshop/types/common.js';
 import type { Collection, Document, Filter } from 'mongodb';
 import { systemLocale } from '@unchainedshop/utils';
 
@@ -12,7 +11,7 @@ const extendSelectorWithLocale = (selector, locale) => {
 export const findLocalizedText = async <T extends Document>(
   collection: Collection<T>,
   selector: Filter<T>,
-  locale: Locale,
+  locale: typeof systemLocale,
 ): Promise<T> => {
   const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale), {
     sort: { updated: -1 },

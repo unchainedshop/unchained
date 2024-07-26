@@ -1,9 +1,8 @@
 import type { WorkData, IWorkerAdapter, WorkResult } from '../worker-index.js';
-import type { IBaseDirector } from '@unchainedshop/types/common.js';
 import type { UnchainedCore } from '@unchainedshop/types/core.js';
 
 import { log, LogLevel } from '@unchainedshop/logger';
-import { BaseDirector } from '@unchainedshop/utils';
+import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';
 import { Work } from '../types.js';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
@@ -38,7 +37,7 @@ const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
 export const WorkerDirector: IWorkerDirector = {
   ...baseDirector,
 
-  getActivePluginTypes: ({ external } = {}) => {
+  getActivePluginTypes: ({ external } = { external: false }) => {
     return WorkerDirector.getAdapters()
       .filter((adapter) => {
         if (external === null || external === undefined) return true;

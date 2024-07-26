@@ -1,5 +1,12 @@
-import { IBaseAdapter, IBaseDirector } from '@unchainedshop/types/common.js';
 import { log } from '@unchainedshop/logger';
+import { IBaseAdapter } from './BaseAdapter.js';
+
+export interface IBaseDirector<Adapter extends IBaseAdapter> {
+  getAdapters: (options?: { adapterFilter?: (adapter: Adapter) => boolean }) => Array<Adapter>;
+  getAdapter: (key: string) => Adapter;
+  registerAdapter: (A: Adapter) => void;
+  unregisterAdapter: (key: string) => boolean;
+}
 
 export const BaseDirector = <AdapterType extends IBaseAdapter>(
   directorName: string,

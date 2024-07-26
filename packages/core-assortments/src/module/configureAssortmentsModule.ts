@@ -1,4 +1,4 @@
-import { Tree } from '@unchainedshop/types/common.js';
+import type { Tree } from '@unchainedshop/utils';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import {
   AssortmentsModule,

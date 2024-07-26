@@ -1,5 +1,4 @@
 import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments.js';
-import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -9,8 +8,7 @@ import {
 } from '@unchainedshop/mongodb';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.js';
-
-const { Locale } = localePkg;
+import { Locale } from '@unchainedshop/utils';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 

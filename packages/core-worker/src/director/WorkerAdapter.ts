@@ -1,5 +1,5 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import type { IBaseAdapter } from '@unchainedshop/types/common.js';
+import type { IBaseAdapter } from '@unchainedshop/utils';
 import type { UnchainedCore } from '@unchainedshop/types/core.js';
 export interface WorkResult<Result> {
   success: boolean;

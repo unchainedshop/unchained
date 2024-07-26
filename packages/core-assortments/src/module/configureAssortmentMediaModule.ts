@@ -5,7 +5,7 @@ import {
 } from '@unchainedshop/types/assortments.media.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 
-import localePkg from 'locale';
+import { Locale } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -17,8 +17,6 @@ import {
 import { FileDirector } from '@unchainedshop/file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
 import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema.js';
-
-const { Locale } = localePkg;
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',

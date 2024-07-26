@@ -1,5 +1,4 @@
 import { Product, ProductText } from '@unchainedshop/types/products.js';
-import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import {
@@ -10,8 +9,7 @@ import {
 } from '@unchainedshop/mongodb';
 import { productsSettings } from '../products-settings.js';
 import { ProductsModule } from '../products-index.js';
-
-const { Locale } = localePkg;
+import { Locale } from '@unchainedshop/utils';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
 

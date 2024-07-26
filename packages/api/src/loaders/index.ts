@@ -1,11 +1,8 @@
 import DataLoader from 'dataloader';
-import { systemLocale } from '@unchainedshop/utils';
-import localePkg from 'locale';
+import { systemLocale, Locale } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { ProductStatus } from '@unchainedshop/core-products';
 import { UnchainedLoaders } from '../types.js';
-
-const { Locale } = localePkg;
 
 function getLocaleStrings(localeObj) {
   return [localeObj.normalized, localeObj.language, systemLocale.normalized, systemLocale.language];

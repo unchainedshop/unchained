@@ -1,8 +1,8 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { IBaseAdapter } from '@unchainedshop/types/common.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { File, UploadFileData } from '@unchainedshop/types/files.js';
 import { Readable } from 'stream';
+import { IBaseAdapter } from '@unchainedshop/utils';
 
 export interface IFileAdapter extends IBaseAdapter {
   createSignedURL: (

@@ -1,7 +1,3 @@
-import type { Locale, Locales } from 'locale';
-
-export { Locale, Locales };
-
 /*
  * Data definitions
  */
@@ -38,38 +34,3 @@ export interface Contact {
   telNumber?: string;
   emailAddress?: string;
 }
-
-/*
- * Adapter & Director
- */
-
-export enum LogLevel {
-  Verbose = 'verbose',
-  Info = 'info',
-  Debug = 'debug',
-  Error = 'error',
-  Warning = 'warn',
-}
-
-export interface IBaseAdapter {
-  key: string;
-  label: string;
-  version: string;
-  log: (
-    message: string,
-    options?: {
-      level?: LogLevel;
-      [x: string]: any;
-    },
-  ) => void;
-}
-
-export interface IBaseDirector<Adapter extends IBaseAdapter> {
-  getAdapters: (options?: { adapterFilter?: (adapter: Adapter) => boolean }) => Array<Adapter>;
-  getAdapter: (key: string) => Adapter;
-  registerAdapter: (A: Adapter) => void;
-  unregisterAdapter: (key: string) => boolean;
-}
-
-export type NodeOrTree<T> = string | Tree<T>; // eslint-disable-line
-export type Tree<T> = Array<NodeOrTree<T>>;

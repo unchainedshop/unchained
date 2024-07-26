@@ -4,7 +4,6 @@ import {
   ProductVariationText,
 } from '@unchainedshop/types/products.variations.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -15,8 +14,7 @@ import {
 } from '@unchainedshop/mongodb';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
 import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
-
-const { Locale } = localePkg;
+import { Locale } from '@unchainedshop/utils';
 
 const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_CREATE_VARIATION',

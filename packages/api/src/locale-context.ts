@@ -1,4 +1,3 @@
-import localePkg from 'locale';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
   resolveBestCountry,
@@ -9,8 +8,7 @@ import {
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import memoizee from 'memoizee';
 import { UnchainedHTTPServerContext, UnchainedLocaleContext } from './types.js';
-
-const { Locales } = localePkg;
+import { Locale } from '@unchainedshop/utils';
 
 const { NODE_ENV } = process.env;
 

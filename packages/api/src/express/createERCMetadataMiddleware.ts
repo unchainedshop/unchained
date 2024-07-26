@@ -1,11 +1,8 @@
 import { IncomingMessage } from 'http';
 import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
-import { systemLocale } from '@unchainedshop/utils';
-import localePkg from 'locale';
+import { systemLocale, Locale } from '@unchainedshop/utils';
 import { Context } from '../types.js';
-
-const { Locale } = localePkg;
 
 const logger = createLogger('unchained:erc-metadata');
 

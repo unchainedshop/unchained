@@ -1,18 +1,12 @@
 import { Country } from '@unchainedshop/types/countries.js';
 import { Currency } from '@unchainedshop/types/currencies.js';
-import type { Locale as LocaleType, Locales as LocalesType } from 'locale';
-import localePkg from 'locale';
-
-const { Locales, Locale } = localePkg;
+import { Locale, Locales } from 'locale';
 
 const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH', UNCHAINED_CURRENCY = 'CHF' } = process.env;
 
 export const systemLocale = new Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNTRY}`);
 
-export const resolveBestSupported = (
-  acceptLanguage: string,
-  supportedLocales: LocalesType,
-): LocaleType => {
+export const resolveBestSupported = (acceptLanguage: string, supportedLocales: Locales): Locale => {
   const acceptLocale = new Locales(acceptLanguage);
   const bestLocale = acceptLocale.best(supportedLocales);
   if (!bestLocale) return systemLocale;

@@ -1,4 +1,3 @@
-import localePkg from 'locale';
 import bcrypt from 'bcryptjs';
 import { Address, Contact } from '@unchainedshop/types/common.js';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
@@ -27,8 +26,7 @@ import { userSettings } from '../users-settings.js';
 import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
-
-const { Locale } = localePkg;
+import { Locale } from '@unchainedshop/utils';
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
@@ -235,7 +233,7 @@ export const configureUsersModule = async ({
       )?.[0];
     },
 
-    userLocale(user: User): localePkg.Locale {
+    userLocale(user: User): Locale {
       if (!user?.lastLogin?.locale) return systemLocale;
       return new Locale(user.lastLogin.locale);
     },

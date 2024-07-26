@@ -25,12 +25,14 @@ export type SortOption = {
   value: SortDirection;
 };
 
+export type NodeOrTree<T> = string | Tree<T>; // eslint-disable-line
+export type Tree<T> = Array<NodeOrTree<T>>;
 /*
  * Director
  */
 
-export { BaseAdapter } from './director/BaseAdapter.js';
-export { BaseDirector } from './director/BaseDirector.js';
+export { BaseAdapter, IBaseAdapter } from './director/BaseAdapter.js';
+export { BaseDirector, IBaseDirector } from './director/BaseDirector.js';
 export { BasePricingAdapter } from './director/BasePricingAdapter.js';
 export { BasePricingDirector } from './director/BasePricingDirector.js';
 export { BasePricingSheet } from './director/BasePricingSheet.js';

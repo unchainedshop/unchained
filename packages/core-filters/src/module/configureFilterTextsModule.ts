@@ -1,9 +1,7 @@
 import { FiltersModule, FilterText } from '@unchainedshop/types/filters.js';
-import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-
-const { Locale } = localePkg;
+import { Locale } from '@unchainedshop/utils';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXT'];
 

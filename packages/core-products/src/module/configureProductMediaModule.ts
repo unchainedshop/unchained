@@ -4,7 +4,6 @@ import {
   ProductMediaText,
 } from '@unchainedshop/types/products.media.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import localePkg from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -16,8 +15,7 @@ import {
 import { FileDirector } from '@unchainedshop/file-upload';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
 import { ProductMediaSchema } from '../db/ProductMediaSchema.js';
-
-const { Locale } = localePkg;
+import { Locale } from '@unchainedshop/utils';
 
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',

@@ -1,4 +1,4 @@
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, SortOption, Locale } from '@unchainedshop/utils';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   Enrollment,
@@ -6,7 +6,6 @@ import {
   EnrollmentsModule,
   EnrollmentsSettingsOptions,
 } from '@unchainedshop/types/enrollments.js';
-import type { Locale } from 'locale';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
