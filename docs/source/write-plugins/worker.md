@@ -13,8 +13,7 @@ Below is an example of work adapter that checks if all works are healthy and wor
 
 
 ```typescript
-import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
-import { WorkerAdapter } from '@unchainedshop/core-worker';
+import { IWorkerAdapter } from '@unchainedshop/core-worker';
 
 const wait = async (time: number) => {
   return new Promise((resolve) => {

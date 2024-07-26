@@ -13,10 +13,10 @@ import { PaymentModule, PaymentSettingsOptions } from './payments.js';
 import { QuotationsModule, QuotationsSettingsOptions } from './quotations.js';
 import { UsersModule, UserSettingsOptions } from './user.js';
 import { WarehousingModule } from './warehousing.js';
-import { WorkerModule, WorkerSettingsOptions } from './worker.js';
 
 import type { EventsModule } from '@unchainedshop/core-events';
 import type { ProductsModule, ProductsSettingsOptions } from '@unchainedshop/core-products';
+import type { WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
 
 export interface Modules {
   assortments: AssortmentsModule;

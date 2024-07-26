@@ -3,7 +3,7 @@ import { join, isAbsolute } from 'path';
 import { tmpdir } from 'os';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
-import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
+import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import open from 'open';
 import nodemailer from 'nodemailer';
 

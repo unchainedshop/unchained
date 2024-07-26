@@ -1,5 +1,10 @@
-import { IWorkerAdapter, Work } from '@unchainedshop/types/worker.js';
-import { WorkerDirector, WorkerAdapter, WorkerEventTypes } from '@unchainedshop/core-worker';
+import {
+  WorkerDirector,
+  WorkerAdapter,
+  WorkerEventTypes,
+  Work,
+  IWorkerAdapter,
+} from '@unchainedshop/core-worker';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { subscribe } from '@unchainedshop/events';
 

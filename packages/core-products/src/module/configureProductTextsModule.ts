@@ -9,7 +9,7 @@ import {
   generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { productsSettings } from '../products-settings.js';
-import { ProductsModule } from '../../lib/products-index.js';
+import { ProductsModule } from '../products-index.js';
 
 const { Locale } = localePkg;
 

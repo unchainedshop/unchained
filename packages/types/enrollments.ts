@@ -1,5 +1,6 @@
 import type { FindOptions } from 'mongodb';
-import { SortOption } from '@unchainedshop/utils';
+import type { WorkerSchedule } from '@unchainedshop/core-worker';
+import type { SortOption } from '@unchainedshop/utils';
 import {
   Address,
   Configuration,
@@ -13,7 +14,6 @@ import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderPosition } from './orders.positions.js';
 import { Product, ProductPlan } from './products.js';
-import { WorkerSchedule } from './worker.js';
 
 export enum EnrollmentStatus {
   INITIAL = 'INITIAL',

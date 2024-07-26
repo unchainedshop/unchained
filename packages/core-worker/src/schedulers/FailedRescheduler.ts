@@ -1,7 +1,9 @@
-import { IScheduler, Work, WorkData } from '@unchainedshop/types/worker.js';
 import { log } from '@unchainedshop/logger';
 import { subscribe } from '@unchainedshop/events';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { WorkData } from '../worker-index.js';
+import { Work } from '../types.js';
 
 export interface FailedReschedulerParams {
   retryInput?: (
@@ -9,6 +11,20 @@ export interface FailedReschedulerParams {
     priorInput: Record<string, any>,
   ) => Promise<Record<string, any> | null>;
 }
+
+export type IScheduler<P> = {
+  key: string;
+  label: string;
+  version: string;
+
+  actions: (
+    params: P,
+    unchainedAPI: UnchainedCore,
+  ) => {
+    start: () => void;
+    stop: () => void;
+  };
+};
 
 export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
   key: 'shop.unchained.scheduler.failed',

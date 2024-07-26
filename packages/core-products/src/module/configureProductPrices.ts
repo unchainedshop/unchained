@@ -6,7 +6,7 @@ import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
 import { getPriceLevels } from './utils/getPriceLevels.js';
 import { getPriceRange } from './utils/getPriceRange.js';
 import { ProductPriceRates } from '../db/ProductPriceRates.js';
-import { ProductsModule } from '../../lib/products-index.js';
+import { ProductsModule } from '../products-index.js';
 
 export const getDecimals = (originDecimals) => {
   if (originDecimals === null || originDecimals === undefined) {

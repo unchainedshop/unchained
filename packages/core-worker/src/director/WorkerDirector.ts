@@ -1,12 +1,33 @@
-import {
-  IWorkerAdapter,
-  IWorkerDirector,
-  WorkScheduleConfiguration,
-} from '@unchainedshop/types/worker.js';
+import type { WorkData, IWorkerAdapter, WorkResult } from '../worker-index.js';
+import type { IBaseDirector } from '@unchainedshop/types/common.js';
+import type { UnchainedCore } from '@unchainedshop/types/core.js';
+
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
+import { Work } from '../types.js';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
+
+export interface WorkerSchedule {
+  schedules: Array<Record<string, any>>;
+  exceptions: Array<Record<string, any>>;
+}
+
+export type WorkScheduleConfiguration = Pick<WorkData, 'timeout' | 'retries' | 'priority' | 'worker'> & {
+  type: string;
+  input?: (workData: Omit<WorkData, 'input'>) => Promise<Record<string, any> | null>;
+  schedule: WorkerSchedule;
+  scheduleId?: string;
+};
+
+export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
+  getActivePluginTypes: (options?: { external?: boolean }) => Array<string>;
+  getAdapterByType: (type: string) => IWorkerAdapter<any, any>;
+  disableAutoscheduling: (scheduleId: string) => void;
+  configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
+  getAutoSchedules: () => Array<[string, WorkScheduleConfiguration]>;
+  doWork: (work: Work, unchainedAPI: UnchainedCore) => Promise<WorkResult<any>>;
+};
 
 const AutoScheduleMap = new Map<string, WorkScheduleConfiguration>();
 

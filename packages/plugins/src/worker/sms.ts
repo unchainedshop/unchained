@@ -1,6 +1,6 @@
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
-import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
+import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import Twilio from 'twilio';
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM } = process.env;

@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
+import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
 import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';

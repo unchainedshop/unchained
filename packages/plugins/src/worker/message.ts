@@ -1,6 +1,5 @@
-import { IWorkerAdapter, Work } from '@unchainedshop/types/worker.js';
 import { MessagingDirector } from '@unchainedshop/core-messaging';
-import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
+import { WorkerAdapter, WorkerDirector, IWorkerAdapter, Work } from '@unchainedshop/core-worker';
 import { createLogger } from '@unchainedshop/logger';
 
 export const messagingLogger = createLogger('unchained:core-messaging');

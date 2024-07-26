@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { TokenStatus, TokenSurrogate } from '@unchainedshop/types/warehousing.js';
-import { WorkStatus } from '@unchainedshop/types/worker.js';
+import { WorkStatus } from '@unchainedshop/core-worker';
 import localePkg from 'locale';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';

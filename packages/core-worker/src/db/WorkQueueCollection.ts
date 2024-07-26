@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Work } from '@unchainedshop/types/worker.js';
+import { Work } from '../types.js';
 
 const ONE_DAY_IN_SECONDS = 86400;
 

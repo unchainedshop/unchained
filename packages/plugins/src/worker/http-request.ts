@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { IWorkerAdapter } from '@unchainedshop/types/worker.js';
+import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { log, LogLevel } from '@unchainedshop/logger';
 

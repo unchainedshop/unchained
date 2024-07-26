@@ -1,7 +1,34 @@
-import { IWorker, WorkData } from '@unchainedshop/types/worker.js';
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import { WorkerDirector } from '../director/WorkerDirector.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { Work } from '../types.js';
+
+export type WorkData = Pick<
+  Partial<Work>,
+  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker'
+> & { type: string };
+
+export type IWorker<P extends { workerId?: string }> = {
+  key: string;
+  label: string;
+  version: string;
+  type: string;
+  external: boolean;
+
+  getFloorDate: (date?: Date) => Date;
+
+  actions: (
+    params: P,
+    unchainedAPI: UnchainedCore,
+  ) => {
+    autorescheduleTypes: (options: { referenceDate: Date }) => Promise<Array<Work | null>>;
+    process: (options: { maxWorkItemCount?: number; referenceDate?: Date }) => Promise<void>;
+    reset: () => Promise<void>;
+    start: () => void;
+    stop: () => void;
+  };
+};
 
 interface WorkerParams {
   workerId?: string;

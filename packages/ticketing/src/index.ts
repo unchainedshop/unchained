@@ -1,8 +1,7 @@
 import express from 'express';
 import { subscribe } from '@unchainedshop/events';
 import { RawPayloadType } from '@unchainedshop/events/EventDirector.js';
-import { WorkerEventTypes } from '@unchainedshop/core-worker';
-import { Work } from '@unchainedshop/types/worker.js';
+import { WorkerEventTypes, Work } from '@unchainedshop/core-worker';
 import { RendererTypes, registerRenderer } from './template-registry.js';
 import loadAppleWalletHandler from './mobile-tickets/apple-webservice.js';
 import loadGoogleWalletHandler from './mobile-tickets/google-webservice.js';

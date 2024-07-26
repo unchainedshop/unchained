@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { WorkData } from '@unchainedshop/types/worker.js';
+import { WorkData } from '@unchainedshop/core-worker';
 
 export default async function addWork(root: never, workData: WorkData, { modules, userId }: Context) {
   const { type, input } = workData;

@@ -1,4 +1,4 @@
-import { IWorkerAdapter, WorkStatus } from '@unchainedshop/types/worker.js';
+import { IWorkerAdapter, WorkStatus } from '@unchainedshop/core-worker';
 import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
 

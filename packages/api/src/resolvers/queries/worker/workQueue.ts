@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
-import { WorkStatus } from '@unchainedshop/types/worker.js';
+import { WorkStatus } from '@unchainedshop/core-worker';
 import { Context } from '../../../types.js';
 
 export default async function workQueue(

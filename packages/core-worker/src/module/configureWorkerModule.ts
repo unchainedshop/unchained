@@ -1,6 +1,7 @@
+import type { WorkData, WorkResult } from '../worker-index.js';
+import type { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+
 import os from 'os';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
@@ -9,16 +10,78 @@ import {
   mongodb,
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { buildObfuscatedFieldsFilter, SortDirection } from '@unchainedshop/utils';
+import { buildObfuscatedFieldsFilter, SortDirection, SortOption } from '@unchainedshop/utils';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
 import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { WorkStatus } from '../director/WorkStatus.js';
+import { Work } from '../types.js';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const logger = createLogger('unchained:core-worker');
+
+export interface WorkerSettingsOptions {
+  blacklistedVariables?: string[];
+}
+
+export type WorkQueueQuery = {
+  created?: { end?: Date; start?: Date };
+  types?: Array<string>;
+  status: Array<WorkStatus>;
+  queryString?: string;
+  scheduled?: { end?: Date; start?: Date };
+};
+
+export type WorkerModule = {
+  activeWorkTypes: () => Promise<Array<string>>;
+  findWork: (query: { workId?: string; originalWorkId?: string }) => Promise<Work>;
+  findWorkQueue: (
+    query: WorkQueueQuery & {
+      sort?: Array<SortOption>;
+      limit?: number;
+      skip?: number;
+    },
+  ) => Promise<Array<Work>>;
+  count: (query: WorkQueueQuery) => Promise<number>;
+  workExists: (query: { workId?: string; originalWorkId?: string }) => Promise<boolean>;
+
+  // Transformations
+  status: (work: Work) => WorkStatus;
+
+  type: (work: Work) => string;
+
+  // Mutations
+  addWork: (data: WorkData) => Promise<Work>;
+
+  allocateWork: (doc: { types: Array<string>; worker: string }) => Promise<Work>;
+
+  processNextWork: (unchainedAPI: UnchainedCore, workerId?: string) => Promise<Work>;
+
+  rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
+
+  ensureOneWork: (work: WorkData, workId: string) => Promise<Work>;
+
+  ensureNoWork: (work: { priority: number; type: string }) => Promise<void>;
+
+  finishWork: (
+    _id: string,
+    data: WorkResult<any> & {
+      finished?: Date;
+      started?: Date;
+      worker?: string;
+    },
+  ) => Promise<Work | null>;
+
+  deleteWork: (_id: string) => Promise<Work | null>;
+
+  markOldWorkAsFailed: (params: {
+    types: Array<string>;
+    worker: string;
+    referenceDate: Date;
+  }) => Promise<Array<Work>>;
+};
 
 export const buildQuerySelector = ({
   created,
