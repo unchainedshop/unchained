@@ -1,4 +1,14 @@
-import { MigrateBookmarksService } from '@unchainedshop/types/bookmarks.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+
+export type MigrateBookmarksService = (
+  params: {
+    fromUserId: string;
+    toUserId: string;
+    shouldMerge: boolean;
+    countryContext: string;
+  },
+  unchainedAPI: UnchainedCore,
+) => Promise<void>;
 
 const hashBookmark = (bookmark) => {
   return `${bookmark.productId}:${bookmark.userId}:${JSON.stringify(bookmark.meta || {})}`;

@@ -1,11 +1,32 @@
 import { emit, registerEvents } from '@unchainedshop/events';
-import { Bookmark, BookmarksModule } from '@unchainedshop/types/bookmarks.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { BookmarksCollection } from '../db/BookmarksCollection.js';
 import { BookmarkSchema } from '../db/BookmarksSchema.js';
+import { TimestampFields } from '@unchainedshop/types/common.js';
 
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'];
+
+export type Bookmark = {
+  _id?: string;
+  userId: string;
+  productId: string;
+  meta?: any;
+} & TimestampFields;
+
+/*
+ * Module
+ */
+
+export interface BookmarksModule extends ModuleMutations<Bookmark> {
+  findBookmarksByUserId: (userId: string) => Promise<Array<Bookmark>>;
+  findBookmarkById: (bookmarkId: string) => Promise<Bookmark>;
+  findBookmarks: (query: mongodb.Filter<Bookmark>) => Promise<Array<Bookmark>>;
+  replaceUserId: (fromUserId: string, toUserId: string, bookmarkIds?: Array<string>) => Promise<number>;
+  deleteByUserId: (toUserId: string) => Promise<number>;
+  deleteByProductId: (productId: string) => Promise<number>;
+  deleteByUserIdAndMeta: (meta: any) => Promise<number>;
+}
 
 export const configureBookmarksModule = async ({
   db,

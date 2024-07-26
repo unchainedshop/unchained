@@ -1,5 +1,5 @@
 import type { ProductServices } from '@unchainedshop/core-products';
-import { BookmarkServices } from './bookmarks.js';
+import type { BookmarkServices } from '@unchainedshop/core-bookmarks';
 import { FileServices } from './files.js';
 import { OrderServices } from './orders.js';
 import { UserServices } from './user.js';
