@@ -1,3 +1,4 @@
+import { Country } from '@unchainedshop/types/countries.js';
 import { Currency } from '@unchainedshop/types/currencies.js';
 import type { Locale as LocaleType, Locales as LocalesType } from 'locale';
 import localePkg from 'locale';
@@ -18,9 +19,13 @@ export const resolveBestSupported = (
   return bestLocale;
 };
 
-export const resolveBestCountry = (localeCountry, shopCountry, countries) => {
+export const resolveBestCountry = (
+  localeCountry: string,
+  shopCountry: string,
+  countries: Array<Country>,
+) => {
   if (shopCountry) {
-    const resolvedCountry = countries.reduce((lastResolved, country) => {
+    const resolvedCountry = countries.reduce<string>((lastResolved, country) => {
       if (shopCountry === country.isoCode) {
         return country.isoCode;
       }
@@ -33,7 +38,7 @@ export const resolveBestCountry = (localeCountry, shopCountry, countries) => {
   return localeCountry || systemLocale.country;
 };
 
-export const resolveBestCurrency = (localeCurrency, currencies: Array<Currency>) => {
+export const resolveBestCurrency = (localeCurrency: string, currencies: Array<Currency>) => {
   if (localeCurrency) {
     const resolvedCurrency = currencies.find((currency) => currency.isoCode === localeCurrency);
     if (resolvedCurrency) {

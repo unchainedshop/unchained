@@ -12,17 +12,15 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { emit } from '@unchainedshop/events';
 import { API_EVENTS } from '../events.js';
 import { User } from '@unchainedshop/types/user.js';
+import { IncomingMessage } from 'http';
 
-const resolveUserRemoteAddress = (req) => {
+const resolveUserRemoteAddress = (req: IncomingMessage) => {
   const remoteAddress =
-    req.headers['x-real-ip'] ||
-    req.headers['x-forwarded-for'] ||
-    req.connection?.remoteAddress ||
-    req.socket?.remoteAddress ||
-    req.connection?.socket?.remoteAddress;
+    (req.headers['x-real-ip'] as string) ||
+    (req.headers['x-forwarded-for'] as string) ||
+    req.socket?.remoteAddress;
 
-  const remotePort =
-    req.connection?.remotePort || req.socket?.remotePort || req.connection?.socket?.remotePort;
+  const remotePort = req.socket?.remotePort;
 
   return { remoteAddress, remotePort };
 };
