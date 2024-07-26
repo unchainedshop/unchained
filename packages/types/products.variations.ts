@@ -1,4 +1,4 @@
-import { TimestampFields } from './common.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export enum ProductVariationType {
   COLOR = 'COLOR',

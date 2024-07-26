@@ -1,5 +1,5 @@
 import type { Filter, FindOptions } from 'mongodb';
-import { TimestampFields } from './common.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type AssortmentMedia = {
   _id?: string;

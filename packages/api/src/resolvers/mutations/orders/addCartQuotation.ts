@@ -1,7 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { QuotationStatus } from '@unchainedshop/core-quotations';
 import { Context } from '../../../types.js';
-import { Configuration } from '@unchainedshop/types/common.js';
 import {
   QuotationNotFoundError,
   QuotationWrongStatusError,
@@ -17,7 +16,7 @@ export default async function addCartQuotation(
     orderId?: string;
     quotationId: string;
     quantity: number;
-    configuration: Configuration;
+    configuration: Array<{ key: string; value: string }>;
   },
   context: Context,
 ) {

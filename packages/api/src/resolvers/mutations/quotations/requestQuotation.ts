@@ -1,11 +1,10 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { Configuration } from '@unchainedshop/types/common.js';
 import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function requestQuotation(
   root: never,
-  params: { productId: string; configuration: Configuration },
+  params: { productId: string; configuration: Array<{ key: string; value: string }> },
   context: Context,
 ) {
   const { countryContext, modules, userId } = context;

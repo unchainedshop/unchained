@@ -1,5 +1,4 @@
 import type { FindOptions } from 'mongodb';
-import { TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
 import { DeliveryProvider } from './delivery.js';
 import { Order } from './orders.js';
@@ -7,6 +6,7 @@ import { OrderPosition } from './orders.positions.js';
 import { Product } from './products.js';
 import { User } from './user.js';
 import { IBaseAdapter, IBaseDirector, Locale } from '@unchainedshop/utils';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',

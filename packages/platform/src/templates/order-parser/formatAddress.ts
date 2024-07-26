@@ -1,4 +1,4 @@
-import { Address } from '@unchainedshop/types/common.js';
+import type { Address } from '@unchainedshop/mongodb';
 
 export const formatAddress = (address: Address) => {
   return [

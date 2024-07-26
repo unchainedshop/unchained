@@ -1,7 +1,7 @@
 import type { Filter, FindOptions, Db } from 'mongodb';
 import { SortOption, Tree } from '@unchainedshop/utils';
 import { AssortmentMediaModule } from './assortments.media.js';
-import { TimestampFields } from './common.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type Assortment = {
   _id?: string;

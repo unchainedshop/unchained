@@ -1,6 +1,6 @@
 import type { Filter } from 'mongodb';
-import { TimestampFields } from './common.js';
 import { OrderPrice } from './orders.pricing.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export enum ProductContractStandard {
   ERC721 = 'ERC721',

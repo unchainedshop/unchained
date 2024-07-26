@@ -1,4 +1,4 @@
-import { Tree } from '@unchainedshop/types/common.js';
+import { Tree } from '@unchainedshop/utils';
 import { concatItemsByLevels, divideTreeByLevels, fillToSameLengthArray, fillUp } from './zipTreeByDeepness.js';
 
 

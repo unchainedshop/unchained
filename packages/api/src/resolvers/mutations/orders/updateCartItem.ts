@@ -1,6 +1,5 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { Configuration } from '@unchainedshop/types/common.js';
 import {
   OrderQuantityTooLowError,
   OrderItemNotFoundError,
@@ -14,7 +13,7 @@ export default async function updateCartItem(
   params: {
     itemId: string;
     quantity?: number;
-    configuration?: Configuration;
+    configuration?: Array<{ key: string; value: string }>;
   },
   context: Context,
 ) {

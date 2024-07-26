@@ -1,7 +1,7 @@
 import type { FindOptions } from 'mongodb';
 import { IBaseAdapter, IBaseDirector, SortOption } from '@unchainedshop/utils';
-import { Configuration, LogFields, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
+import type { TimestampFields, LogFields } from '@unchainedshop/mongodb';
 
 export enum QuotationStatus {
   REQUESTED = 'REQUESTED',
@@ -20,7 +20,7 @@ export enum QuotationError {
 
 export type Quotation = {
   _id?: string;
-  configuration?: Configuration;
+  configuration?: Array<{ key: string; value: string }>;
   context?: any;
   countryCode?: string;
   currency?: string;
@@ -45,7 +45,7 @@ export type QuotationQuery = {
 
 export interface QuotationItemConfiguration {
   quantity?: number;
-  configuration: Configuration;
+  configuration: Array<{ key: string; value: string }>;
 }
 
 // Queries
@@ -94,7 +94,7 @@ export interface QuotationProcessing {
 
 // Mutations
 export interface QuotationData {
-  configuration?: Configuration;
+  configuration?: Array<{ key: string; value: string }>;
   countryCode?: string;
   productId: string;
   userId: string;

@@ -1,6 +1,6 @@
 import type { mongodb } from '@unchainedshop/mongodb';
 import { buildDbIndexes } from '@unchainedshop/mongodb';
-import { TimestampFields } from '@unchainedshop/types/common.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 const TWO_DAYS_SEC = 172800;
 

@@ -1,7 +1,7 @@
 import type { FindOptions } from 'mongodb';
 import { SortOption } from '@unchainedshop/utils';
-import { TimestampFields } from './common.js';
 import { ModuleMutations } from './core.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type Country = {
   _id?: string;

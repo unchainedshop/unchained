@@ -1,5 +1,5 @@
-import { TimestampFields } from '@unchainedshop/types/common.js';
 import { mongodb } from '@unchainedshop/mongodb';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type CryptopayTransaction = {
   _id?: string;

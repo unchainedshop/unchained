@@ -1,10 +1,10 @@
 import type { FindOptions } from 'mongodb';
-import { LogFields, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 import { IPaymentPricingSheet } from './payments.pricing.js';
+import type { TimestampFields, LogFields } from '@unchainedshop/mongodb';
 
 export enum OrderPaymentStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status

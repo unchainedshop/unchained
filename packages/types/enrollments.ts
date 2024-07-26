@@ -1,11 +1,11 @@
 import type { FindOptions } from 'mongodb';
 import type { WorkerSchedule } from '@unchainedshop/core-worker';
 import type { IBaseAdapter, IBaseDirector, SortOption } from '@unchainedshop/utils';
-import { Address, Configuration, Contact, LogFields, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderPosition } from './orders.positions.js';
 import { Product, ProductPlan } from './products.js';
+import type { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
 
 export enum EnrollmentStatus {
   INITIAL = 'INITIAL',
@@ -22,7 +22,7 @@ export interface EnrollmentPeriod {
 }
 
 export interface EnrollmentPlan {
-  configuration: Configuration;
+  configuration: Array<{ key: string; value: string }>;
   productId: string;
   quantity: number;
 }
@@ -36,7 +36,7 @@ export type EnrollmentQuery = {
 export type Enrollment = {
   _id?: string;
   billingAddress: Address;
-  configuration: Configuration;
+  configuration: Array<{ key: string; value: string }>;
   contact: Contact;
   context?: any;
   countryCode?: string;
@@ -100,7 +100,7 @@ export interface EnrollmentProcessing {
 // Mutations
 export interface EnrollmentData {
   billingAddress: Address;
-  configuration?: Configuration;
+  configuration?: Array<{ key: string; value: string }>;
   contact: Contact;
   countryCode?: string;
   currencyCode?: string;

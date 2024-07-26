@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import type { FindOptions } from 'mongodb';
-import { TimestampFields } from './common.js';
 import { ModuleMutations, UnchainedCore } from './core.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type File = {
   _id?: string;

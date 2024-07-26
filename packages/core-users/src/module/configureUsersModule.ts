@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import { Address, Contact } from '@unchainedshop/types/common.js';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   User,
@@ -27,6 +26,7 @@ import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js'
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
 import { Locale } from '@unchainedshop/utils';
+import type { Address, Contact } from '@unchainedshop/mongodb';
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',

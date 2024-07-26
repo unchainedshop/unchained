@@ -3,7 +3,7 @@ import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { BookmarksCollection } from '../db/BookmarksCollection.js';
 import { BookmarkSchema } from '../db/BookmarksSchema.js';
-import { TimestampFields } from '@unchainedshop/types/common.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'];
 

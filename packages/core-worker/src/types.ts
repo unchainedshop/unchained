@@ -1,4 +1,4 @@
-import type { TimestampFields } from '@unchainedshop/types/common.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type Work = {
   _id?: string;

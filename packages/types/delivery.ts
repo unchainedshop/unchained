@@ -1,7 +1,7 @@
 import type { Filter, FindOptions } from 'mongodb';
 import type { Work } from '@unchainedshop/core-worker';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
-import { TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 
 import {

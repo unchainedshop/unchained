@@ -1,6 +1,5 @@
 import type { Bookmark } from '@unchainedshop/core-bookmarks';
 import { SortOption, Locale } from '@unchainedshop/utils';
-import { Contact } from '@unchainedshop/types/common.js';
 import { Country } from '@unchainedshop/types/countries.js';
 import { Enrollment, EnrollmentStatus } from '@unchainedshop/types/enrollments.js';
 import { File } from '@unchainedshop/types/files.js';
@@ -22,6 +21,7 @@ import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 import { checkAction, checkTypeResolver } from '../../acl.js';
 import { actions } from '../../roles/index.js';
 import { Context } from '../../types.js';
+import type { Contact } from '@unchainedshop/mongodb';
 
 type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
 

@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { Address, Contact } from '@unchainedshop/types/common.js';
 import { getOrderCart } from '../utils/getOrderCart.js';
 import { OrderWrongStatusError } from '../../../errors.js';
+import type { Address, Contact } from '@unchainedshop/mongodb';
 
 interface UpdateCartParams {
   orderId?: string;

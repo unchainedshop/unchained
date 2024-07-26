@@ -1,6 +1,5 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { Configuration } from '@unchainedshop/types/common.js';
 import {
   ProductNotFoundError,
   OrderQuantityTooLowError,
@@ -15,7 +14,7 @@ export default async function addMultipleCartProducts(
     items: Array<{
       productId: string;
       quantity: number;
-      configuration?: Configuration;
+      configuration?: Array<{ key: string; value: string }>;
     }>;
   },
   context: Context,

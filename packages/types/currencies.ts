@@ -1,6 +1,6 @@
 import { SortOption } from '@unchainedshop/utils';
-import { TimestampFields } from './common.js';
 import { ModuleMutations } from './core.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type Currency = {
   _id?: string;

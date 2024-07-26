@@ -2,8 +2,8 @@ import { log } from '@unchainedshop/logger';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { Context } from '../../../types.js';
 import { EnrollmentPlan, Enrollment } from '@unchainedshop/types/enrollments.js';
-import { Address, Contact } from '@unchainedshop/types/common.js';
 import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.js';
+import type { Address, Contact } from '@unchainedshop/mongodb';
 
 type UpdateEnrollmentParams = {
   enrollmentId: string;

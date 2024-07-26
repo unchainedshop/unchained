@@ -1,10 +1,10 @@
 import SimpleSchema from 'simpl-schema';
-import { TimestampFields } from '@unchainedshop/types/common.js';
 import { ModuleCreateMutation, ModuleMutations } from '@unchainedshop/types/core.js';
 import { Collection, UpdateFilter } from 'mongodb';
 import { checkId } from './check-id.js';
 import { generateDbObjectId } from './generate-db-object-id.js';
 import { generateDbFilterById } from './generate-db-filter-by-id.js';
+import type { TimestampFields } from './mongodb-index.js';
 
 export const generateDbMutations = <T extends TimestampFields & { _id?: string }>(
   collection: Collection<T>,

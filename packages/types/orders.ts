@@ -1,6 +1,5 @@
 import type { FindOptions } from 'mongodb';
 import { SortOption } from '@unchainedshop/utils';
-import { Address, Configuration, Contact, LogFields, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { OrderDeliveriesModule } from './orders.deliveries.js';
 import { OrderDiscount, OrderDiscountsModule } from './orders.discounts.js';
@@ -9,7 +8,7 @@ import { OrderPositionsModule } from './orders.positions.js';
 import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 import { Product } from './products.js';
 import { User } from './user.js';
-import { info } from 'console';
+import type { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -195,7 +194,7 @@ export interface OrderSettingsOrderPositionValidation {
   order: Order;
   product: Product;
   quantityDiff?: number;
-  configuration?: Configuration;
+  configuration?: Array<{ key: string; value: string }>;
 }
 
 export interface OrdersSettingsOptions {

@@ -1,5 +1,4 @@
 import type { FindOptions } from 'mongodb';
-import { Configuration, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderDelivery } from './orders.deliveries.js';
@@ -7,11 +6,12 @@ import { OrderDiscount } from './orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 import { Product } from './products.js';
 import { IProductPricingSheet, ProductPricingCalculation } from './products.pricing.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type OrderPosition = {
   _id?: string;
   calculation: Array<ProductPricingCalculation>;
-  configuration: Configuration;
+  configuration: Array<{ key: string; value: string }>;
   context?: any;
   orderId: string;
   originalProductId?: string;
@@ -47,7 +47,7 @@ export type OrderPositionsModule = {
   updateProductItem: (
     doc: {
       context?: any;
-      configuration?: Configuration;
+      configuration?: Array<{ key: string; value: string }>;
       quantity?: number;
     },
     params: { order: Order; product: Product; orderPosition: OrderPosition },
@@ -71,7 +71,7 @@ export type OrderPositionsModule = {
   addProductItem: (
     doc: {
       context?: any;
-      configuration?: Configuration;
+      configuration?: Array<{ key: string; value: string }>;
       orderId?: string;
       originalProductId?: string;
       productId?: string;
