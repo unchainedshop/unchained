@@ -123,9 +123,9 @@ export const connect = (
 ) => {
   const passport = setupPassport(unchainedAPI);
 
-  expressApp.use(cookieParser(), addContext);
-  expressApp.use(passport.initialize());
   expressApp.use(
+    cookieParser(),
+    passport.initialize(),
     session({
       secret: process.env.UNCHAINED_TOKEN_SECRET,
       store: MongoStore.create({
@@ -145,9 +145,10 @@ export const connect = (
         maxAge: 1000 * 60 * 60 * 24 * 7,
       },
     }),
+    passport.session(),
+    passport.authenticate('access-token', { session: false }),
+    addContext,
   );
-  expressApp.use(passport.session());
-  expressApp.use(passport.authenticate('access-token', { session: false }));
   expressApp.use(GRAPHQL_API_PATH, graphqlHandler);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
