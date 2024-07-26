@@ -1,5 +1,5 @@
 import mustache from 'mustache';
-import { MessagingModule } from '@unchainedshop/types/messaging.js';
+import { MessagingModule } from '@unchainedshop/core-messaging';
 import { createLogger } from '@unchainedshop/logger';
 import { ModuleInput } from '@unchainedshop/types/core.js';
 

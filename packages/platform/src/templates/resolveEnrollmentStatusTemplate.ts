@@ -1,4 +1,4 @@
-import { TemplateResolver } from '@unchainedshop/types/messaging.js';
+import { TemplateResolver } from '@unchainedshop/core-messaging';
 
 const { EMAIL_FROM, EMAIL_WEBSITE_NAME, EMAIL_WEBSITE_URL } = process.env;
 

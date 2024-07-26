@@ -1,4 +1,4 @@
-import { TemplateResolver } from '@unchainedshop/types/messaging.js';
+import { TemplateResolver } from '@unchainedshop/core-messaging';
 import { systemLocale } from '@unchainedshop/utils';
 import { transformOrderToText } from './order-parser/index.js';
 
