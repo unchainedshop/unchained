@@ -1,5 +1,5 @@
 import type { Filter, FindOptions } from 'mongodb';
-import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
+import { TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderPayment } from './orders.payments.js';
@@ -8,6 +8,7 @@ import {
   PaymentPricingCalculation,
   PaymentPricingContext,
 } from './payments.pricing.js';
+import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 
 export enum PaymentProviderType {
   CARD = 'CARD',

@@ -1,7 +1,7 @@
 import type { Filter, FindOptions } from 'mongodb';
 import type { Work } from '@unchainedshop/core-worker';
 
-import { IBaseAdapter, IBaseDirector, TimestampFields } from './common.js';
+import { TimestampFields } from './common.js';
 import { ModuleMutationsWithReturnDoc, UnchainedCore } from './core.js';
 
 import {
@@ -15,6 +15,7 @@ import { OrderPosition } from './orders.positions.js';
 import { Product } from './products.js';
 import { User } from './user.js';
 import { WarehousingProvider } from './warehousing.js';
+import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 
 export enum DeliveryProviderType {
   SHIPPING = 'SHIPPING',

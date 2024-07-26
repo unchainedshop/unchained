@@ -1,15 +1,7 @@
 import type { FindOptions } from 'mongodb';
 import type { WorkerSchedule } from '@unchainedshop/core-worker';
-import type { SortOption } from '@unchainedshop/utils';
-import {
-  Address,
-  Configuration,
-  Contact,
-  IBaseAdapter,
-  IBaseDirector,
-  LogFields,
-  TimestampFields,
-} from './common.js';
+import type { IBaseAdapter, IBaseDirector, SortOption } from '@unchainedshop/utils';
+import { Address, Configuration, Contact, LogFields, TimestampFields } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderPosition } from './orders.positions.js';

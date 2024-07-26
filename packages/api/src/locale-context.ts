@@ -8,7 +8,7 @@ import {
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import memoizee from 'memoizee';
 import { UnchainedHTTPServerContext, UnchainedLocaleContext } from './types.js';
-import { Locale } from '@unchainedshop/utils';
+import { Locales } from '@unchainedshop/utils';
 
 const { NODE_ENV } = process.env;
 

@@ -1,4 +1,4 @@
-import { Locale } from '@unchainedshop/types/common.js';
+import { Locale } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order } from '@unchainedshop/types/orders.js';
 import formatPrice from './formatPrice.js';

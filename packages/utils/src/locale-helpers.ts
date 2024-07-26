@@ -4,6 +4,8 @@ import { Locale, Locales } from 'locale';
 
 const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH', UNCHAINED_CURRENCY = 'CHF' } = process.env;
 
+export { Locale, Locales };
+
 export const systemLocale = new Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNTRY}`);
 
 export const resolveBestSupported = (acceptLanguage: string, supportedLocales: Locales): Locale => {

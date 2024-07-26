@@ -1,8 +1,8 @@
-import { IBaseAdapter, IBaseDirector } from './common.js';
 import { UnchainedCore } from './core.js';
 import { Order } from './orders.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { IPricingSheet, PricingCalculation } from './pricing.js';
+import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 
 export interface DiscountContext {
   code?: string;

@@ -49,7 +49,7 @@ const LocalSearch: IFilterAdapter = {
             };
 
         if (productIds) {
-          selector.productId = { $in: [...new Set(productIds)] };
+          selector.productId = { $in: [...new Set(productIds)] as any };
         }
 
         const products = await params.modules.products.texts.findTexts(selector, {
