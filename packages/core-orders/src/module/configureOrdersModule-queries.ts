@@ -80,7 +80,7 @@ export const configureOrdersModuleQueries = ({
     },
 
     getReport: async ({ from, to } = { from: null, to: null }) => {
-      const pipeline = [];
+
       const selector: any = { $exists: true };
       if (from || to) {
         if (from) {
@@ -93,7 +93,7 @@ export const configureOrdersModuleQueries = ({
         }
       }
 
-      pipeline.push([
+      const pipeline = [
         {
           $facet: {
             orderedCount: [
@@ -147,7 +147,7 @@ export const configureOrdersModuleQueries = ({
             confirmedCount: { $arrayElemAt: ['$confirmedCount.count', 0] },
           },
         },
-      ]);
+      ];
       const [facetedResult] = await Orders.aggregate(pipeline).toArray();
       return normalizeOrderAggregateResult(facetedResult);
     },
