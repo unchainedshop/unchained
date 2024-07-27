@@ -1,6 +1,6 @@
 import type { ProductServices } from '@unchainedshop/core-products';
 import type { BookmarkServices } from '@unchainedshop/core-bookmarks';
-import { FileServices } from './files.js';
+import type { FileServices } from '@unchainedshop/core-files';
 import { OrderServices } from './orders.js';
 import { UserServices } from './user.js';
 

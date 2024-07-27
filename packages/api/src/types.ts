@@ -13,7 +13,7 @@ import {
   AssortmentText,
 } from '@unchainedshop/core-assortments';
 import { AssortmentMediaText } from '@unchainedshop/core-assortments';
-import { File } from '@unchainedshop/types/files.js';
+import { File } from '@unchainedshop/core-files';
 
 export interface UnchainedUserContext {
   login: (user: User) => Promise<{ _id: string; tokenExpires: Date }>;

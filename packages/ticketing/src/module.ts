@@ -4,7 +4,7 @@ import { MediaObjectsCollection } from '@unchainedshop/core-files/db/MediaObject
 import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing/db/TokenSurrogateCollection.js';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
-import { File } from '@unchainedshop/types/files.js';
+import { File } from '@unchainedshop/core-files';
 
 import { RendererTypes, getRenderer } from './template-registry.js';
 import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.js';

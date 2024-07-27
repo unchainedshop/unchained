@@ -1,6 +1,12 @@
-import { File, RemoveFilesService } from '@unchainedshop/types/files.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { getFileAdapter } from '../utils/getFileAdapter.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { File } from '../types.js';
+
+export type RemoveFilesService = (
+  params: { fileIds: Array<string> },
+  unchainedAPI: UnchainedCore,
+) => Promise<number>;
 
 export const removeFilesService: RemoveFilesService = async ({ fileIds }, unchainedAPI) => {
   const {

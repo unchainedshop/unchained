@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { File } from '@unchainedshop/types/files.js';
+import { File } from '../types.js';
 
 export const MediaObjectsCollection = async (db: mongodb.Db) => {
   const MediaObjects = db.collection<File>('media_objects');

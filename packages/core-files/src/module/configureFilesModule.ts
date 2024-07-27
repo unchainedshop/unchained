@@ -1,12 +1,23 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { File, FilesModule, FilesSettingsOptions } from '@unchainedshop/types/files.js';
+import { File } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection.js';
 import { MediaObjectsSchema } from '../db/MediaObjectsSchema.js';
-import { filesSettings } from '../files-settings.js';
+import { filesSettings, FilesSettingsOptions } from '../files-settings.js';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
+
+export type FilesModule = ModuleMutations<File> & {
+  // Query
+  findFile: (params: { fileId?: string }, options?: mongodb.FindOptions) => Promise<File>;
+
+  getUrl: (file: File, params: Record<string, any>) => string | null;
+
+  findFiles: (selector: any, options?: mongodb.FindOptions) => Promise<Array<File>>;
+
+  deleteMany: (fileIds: Array<string>) => Promise<number>;
+};
 
 export const configureFilesModule = async ({
   db,

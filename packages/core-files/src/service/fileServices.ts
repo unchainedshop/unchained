@@ -1,10 +1,24 @@
-import { FileServices } from '@unchainedshop/types/files.js';
-import { linkFileService } from './linkFileService.js';
-import { createSignedURLService } from './createSignedURLService.js';
-import { uploadFileFromURLService } from './uploadFileFromURLService.js';
-import { uploadFileFromStreamService } from './uploadFileFromStreamService.js';
-import { removeFilesService } from './removeFilesService.js';
-import { createDownloadStreamService } from './createDownloadStreamService.js';
+import { LinkFileService, linkFileService } from './linkFileService.js';
+import { CreateSignedURLService, createSignedURLService } from './createSignedURLService.js';
+import { UploadFileFromURLService, uploadFileFromURLService } from './uploadFileFromURLService.js';
+import {
+  UploadFileFromStreamService,
+  uploadFileFromStreamService,
+} from './uploadFileFromStreamService.js';
+import { RemoveFilesService, removeFilesService } from './removeFilesService.js';
+import {
+  CreateDownloadStreamService,
+  createDownloadStreamService,
+} from './createDownloadStreamService.js';
+
+export interface FileServices {
+  linkFile: LinkFileService;
+  uploadFileFromStream: UploadFileFromStreamService;
+  uploadFileFromURL: UploadFileFromURLService;
+  createSignedURL: CreateSignedURLService;
+  removeFiles: RemoveFilesService;
+  createDownloadStream: CreateDownloadStreamService;
+}
 
 export const fileServices: FileServices = {
   linkFile: linkFileService,

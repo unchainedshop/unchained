@@ -1,6 +1,6 @@
 import { Context } from '../../../types.js';
 import { AssortmentMediaType, AssortmentMediaText } from '@unchainedshop/core-assortments';
-import { File } from '@unchainedshop/types/files.js';
+import { File } from '@unchainedshop/core-files';
 
 type HelperType<P, T> = (assortmentMedia: AssortmentMediaType, params: P, context: Context) => T;
 

@@ -10,7 +10,7 @@ import {
   resolveExpirationDate,
   IFileAdapter,
 } from '@unchainedshop/file-upload';
-import { UploadFileData } from '@unchainedshop/types/files.js';
+import { UploadFileData } from '@unchainedshop/core-files';
 import sign from './sign.js';
 
 const { ROOT_URL } = process.env;

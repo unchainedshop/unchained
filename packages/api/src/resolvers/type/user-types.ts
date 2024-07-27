@@ -1,7 +1,7 @@
 import type { Bookmark } from '@unchainedshop/core-bookmarks';
 import { SortOption, Locale } from '@unchainedshop/utils';
 import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { File } from '@unchainedshop/types/files.js';
+import { File } from '@unchainedshop/core-files';
 import { Language } from '@unchainedshop/types/languages.js';
 import { Order } from '@unchainedshop/types/orders.js';
 import { PaymentCredentials } from '@unchainedshop/types/payments.js';

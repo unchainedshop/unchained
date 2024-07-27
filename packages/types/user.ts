@@ -1,7 +1,7 @@
 import type { Db, Filter, FindOptions, UpdateFilter, FindOneAndUpdateOptions } from 'mongodb';
 import { Locale, SortOption } from '@unchainedshop/utils';
 import { UnchainedCore } from './core.js';
-import { File } from './files.js';
+import { File } from '@unchainedshop/core-files';
 import { Language } from './languages.js';
 import type { TimestampFields, Address, Contact } from '@unchainedshop/mongodb';
 

@@ -2,7 +2,7 @@ import https from 'https';
 import http, { OutgoingHttpHeaders } from 'http';
 import { Readable } from 'stream';
 import { URL } from 'url';
-import { UploadFileData } from '@unchainedshop/types/files.js';
+import { UploadFileData } from '@unchainedshop/core-files';
 import {
   FileAdapter,
   FileDirector,

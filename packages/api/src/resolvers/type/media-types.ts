@@ -1,4 +1,4 @@
-import { File as FileType } from '@unchainedshop/types/files.js';
+import { File as FileType } from '@unchainedshop/core-files';
 import { Context } from '@unchainedshop/api';
 
 export interface MediaHelperTypes {

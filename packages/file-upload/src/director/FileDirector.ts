@@ -1,6 +1,6 @@
 import { BaseDirector } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { File } from '@unchainedshop/types/files.js';
+import { File } from '@unchainedshop/core-files';
 import { IFileAdapter } from './FileAdapter.js';
 
 export type UploadFileCallback = (file: File, unchainedAPI: UnchainedCore) => Promise<void>;
