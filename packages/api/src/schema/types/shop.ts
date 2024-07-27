@@ -25,12 +25,6 @@ export default [
       customProperties: [AdminUiConfigCustomEntityInterface!]!
     }
 
-    type ActivityReport {
-      today: [JSON]!
-      all: [JSON]!
-      sinceInstanceStart: [JSON]!
-    }
-
     type Shop @cacheControl(maxAge: 180) {
       _id: ID!
       language: Language

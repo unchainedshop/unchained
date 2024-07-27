@@ -28,22 +28,19 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
   return selector;
 };
 
-const normalizeOrderAggregateResult = (data = []): OrderReport => {
+const normalizeOrderAggregateResult = (data = {}): OrderReport => {
   const statusToFieldMap = {
-    CART: 'createdCount',
-    PENDING: 'checkoutCount',
-    REJECTED: 'rejectionCount',
-    CONFIRMED: 'confirmationCount',
-    FULLFILLED: 'fullfilledCount',
+    createdCount: 0,
+    orderedCount: 0,
+    rejectedCount: 0,
+    confirmedCount: 0,
+    fullFilledCount: 0,
   };
-  const orderStatistics = {
-    ...Object.values(statusToFieldMap).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
-  } as OrderReport;
 
-  data.forEach((item) => {
-    orderStatistics[statusToFieldMap[item.status]] = item.count;
+  Object.entries(data).forEach(([key, value]) => {
+    statusToFieldMap[key] = value;
   });
-  return orderStatistics;
+  return statusToFieldMap;
 };
 
 export const configureOrdersModuleQueries = ({
@@ -84,57 +81,75 @@ export const configureOrdersModuleQueries = ({
 
     getReport: async ({ from, to } = { from: null, to: null }) => {
       const pipeline = [];
-      const matchConditions = [];
+      const selector: any = { $exists: true };
       if (from || to) {
-        const dateConditions = [];
         if (from) {
           const fromDate = new Date(from);
-          dateConditions.push({
-            $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
-          });
+          selector.$gte = fromDate;
         }
         if (to) {
           const toDate = new Date(to);
-          dateConditions.push({
-            $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
-          });
-        }
-        if (dateConditions.length > 0) {
-          matchConditions.push({ $and: dateConditions });
+          selector.$lte = toDate;
         }
       }
-      if (matchConditions.length > 0) {
-        pipeline.push({
-          $match: {
-            $and: matchConditions,
-          },
-        });
-      }
-      pipeline.push(
-        ...[
-          {
-            $group: {
-              _id: '$status',
-              count: { $sum: 1 },
-            },
-          },
-          {
-            $addFields: {
-              status: {
-                $cond: { if: { $eq: ['$_id', null] }, then: 'CART', else: '$_id' },
+
+      pipeline.push([
+        {
+          $facet: {
+            orderedCount: [
+              {
+                $match: {
+                  ordered: selector,
+                },
               },
-            },
+              { $count: 'count' },
+            ],
+            fullFilledCount: [
+              {
+                $match: {
+                  fullfilled: selector,
+                },
+              },
+              { $count: 'count' },
+            ],
+            rejectedCount: [
+              {
+                $match: {
+                  rejected: selector,
+                },
+              },
+              { $count: 'count' },
+            ],
+            createdCount: [
+              {
+                $match: {
+                  created: selector,
+                },
+              },
+              { $count: 'count' },
+            ],
+            confirmedCount: [
+              {
+                $match: {
+                  confirmed: selector,
+                },
+              },
+              { $count: 'count' },
+            ],
           },
-          {
-            $project: {
-              _id: 0,
-              status: 1,
-              count: 1,
-            },
+        },
+        {
+          $project: {
+            orderedCount: { $arrayElemAt: ['$orderedCount.count', 0] },
+            fullFilledCount: { $arrayElemAt: ['$fullFilledCount.count', 0] },
+            rejectedCount: { $arrayElemAt: ['$rejectedCount.count', 0] },
+            createdCount: { $arrayElemAt: ['$createdCount.count', 0] },
+            confirmedCount: { $arrayElemAt: ['$confirmedCount.count', 0] },
           },
-        ],
-      );
-      return normalizeOrderAggregateResult(await Orders.aggregate(pipeline).toArray());
+        },
+      ]);
+      const [facetedResult] = await Orders.aggregate(pipeline).toArray();
+      return normalizeOrderAggregateResult(facetedResult);
     },
 
     orderExists: async ({ orderId }) => {
