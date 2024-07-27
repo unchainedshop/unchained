@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Country } from '@unchainedshop/types/countries.js';
+import { Country } from '@unchainedshop/core-countries';
 import { Context } from '../../../types.js';
 
 export default async function createCountry(

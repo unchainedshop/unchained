@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
-import { CountryQuery } from '@unchainedshop/types/countries.js';
+import { CountryQuery } from '@unchainedshop/core-countries';
 import { Context } from '../../../types.js';
 
 export default async function countries(

@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { Country } from '@unchainedshop/types/countries.js';
+import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/types/currencies.js';
 import { Enrollment as EnrollmentType, EnrollmentPlan } from '@unchainedshop/types/enrollments.js';
 import { User } from '@unchainedshop/types/user.js';

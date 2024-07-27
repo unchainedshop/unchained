@@ -7,7 +7,7 @@ import {
   AssortmentProduct,
   AssortmentText,
 } from '@unchainedshop/core-assortments';
-import { AssortmentMedia } from '@unchainedshop/types/assortments.media.js';
+import { AssortmentMediaType } from '@unchainedshop/core-assortments';
 import { SearchFilterQuery, SearchProducts } from '@unchainedshop/types/filters.js';
 
 type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
@@ -27,7 +27,7 @@ export interface AssortmentHelperTypes {
       offset: number;
       tags?: Array<string>;
     },
-    Promise<Array<AssortmentMedia>>
+    Promise<Array<AssortmentMediaType>>
   >;
 
   productAssignments: HelperType<never, Promise<Array<AssortmentProduct>>>;

@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Country } from '@unchainedshop/types/countries.js';
+import { Country } from '../countries-index.js';
 
 export const CountriesCollection = async (db: mongodb.Db) => {
   const Countries = db.collection<Country>('countries');

@@ -1,6 +1,6 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { AssortmentFilter } from './configureAssortmentsModule.js';
+import { AssortmentFilter } from '../types.js';
 
 const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_ADD_FILTER',

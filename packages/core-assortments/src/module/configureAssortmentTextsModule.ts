@@ -8,8 +8,7 @@ import {
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.js';
 import { Locale } from '@unchainedshop/utils';
-import { Assortment, AssortmentText } from './configureAssortmentsModule.js';
-
+import { Assortment, AssortmentText } from '../types.js';
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
 export type AssortmentTextsModule = {

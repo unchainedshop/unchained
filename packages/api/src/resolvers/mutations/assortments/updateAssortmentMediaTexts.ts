@@ -1,4 +1,4 @@
-import { AssortmentMediaText } from '@unchainedshop/types/assortments.media.js';
+import { AssortmentMediaText } from '@unchainedshop/core-assortments';
 import { log } from '@unchainedshop/logger';
 import { AssortmentMediaNotFoundError, InvalidIdError } from '../../../errors.js';
 import { Context } from '../../../types.js';

@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { Country } from '@unchainedshop/types/countries.js';
+import { Country } from '@unchainedshop/core-countries';
 import { Language } from '@unchainedshop/types/languages.js';
 import { checkAction } from '../../acl.js';
 import { allRoles, actions } from '../../roles/index.js';

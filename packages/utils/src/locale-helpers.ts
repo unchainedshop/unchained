@@ -1,4 +1,4 @@
-import { Country } from '@unchainedshop/types/countries.js';
+import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/types/currencies.js';
 import localePkg, { Locale, Locales } from 'locale';
 import type { Locale as LocaleType, Locales as LocalesType } from 'locale';

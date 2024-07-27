@@ -1,10 +1,10 @@
 import type { Db, Filter, FindOptions, UpdateFilter, FindOneAndUpdateOptions } from 'mongodb';
 import { Locale, SortOption } from '@unchainedshop/utils';
 import { UnchainedCore } from './core.js';
-import { Country } from './countries.js';
 import { File } from './files.js';
 import { Language } from './languages.js';
 import type { TimestampFields, Address, Contact } from '@unchainedshop/mongodb';
+import { Country } from '@unchainedshop/core-countries';
 
 export interface PushSubscription {
   _id: string;
@@ -228,15 +228,12 @@ export type UpdateUserAvatarAfterUploadService = (
 
 export type GetUserLanguageService = (user: User, context: UnchainedCore) => Promise<Language>;
 
-export type GetUserCountryService = (user: User, context: UnchainedCore) => Promise<Country>;
-
 export type MigrateUserDataService = (
   userIdBeforeLogin,
   userId,
   unchainedAPI: UnchainedCore,
 ) => Promise<void>;
 export interface UserServices {
-  getUserCountry: GetUserCountryService;
   getUserLanguage: GetUserLanguageService;
   updateUserAvatarAfterUpload: UpdateUserAvatarAfterUploadService;
   migrateUserData: MigrateUserDataService;

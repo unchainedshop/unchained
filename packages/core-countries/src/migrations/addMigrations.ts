@@ -1,6 +1,6 @@
 import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
 import { CountriesCollection } from '../db/CountriesCollection.js';
-import { Country } from '@unchainedshop/types/countries.js';
+import { Country } from '../countries-index.js';
 
 export default function addMigrations(repository: MigrationRepository<Migration>) {
   repository?.register({

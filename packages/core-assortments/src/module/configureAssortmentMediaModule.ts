@@ -1,7 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
 import type { Filter, FindOptions } from 'mongodb';
-import type { TimestampFields } from '@unchainedshop/mongodb';
-
 import { Locale } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -14,6 +12,7 @@ import {
 import { FileDirector } from '@unchainedshop/file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
 import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema.js';
+import { AssortmentMediaText, AssortmentMediaType } from '../types.js';
 
 const ASSORTMENT_MEDIA_EVENTS = [
   'ASSORTMENT_ADD_MEDIA',
@@ -28,23 +27,6 @@ FileDirector.registerFileUploadCallback('assortment-media', async (file, { modul
     mediaId: file._id,
   });
 });
-
-export type AssortmentMediaType = {
-  _id?: string;
-  mediaId: string;
-  assortmentId: string;
-  sortKey: number;
-  tags: Array<string>;
-  meta?: any;
-} & TimestampFields;
-
-export type AssortmentMediaText = {
-  _id?: string;
-  assortmentMediaId: string;
-  locale?: string;
-  title?: string;
-  subtitle?: string;
-} & TimestampFields;
 
 export type AssortmentMediaModule = {
   // Queries

@@ -1,6 +1,5 @@
 import type { Bookmark } from '@unchainedshop/core-bookmarks';
 import { SortOption, Locale } from '@unchainedshop/utils';
-import { Country } from '@unchainedshop/types/countries.js';
 import { Enrollment, EnrollmentStatus } from '@unchainedshop/types/enrollments.js';
 import { File } from '@unchainedshop/types/files.js';
 import { Language } from '@unchainedshop/types/languages.js';
@@ -22,6 +21,7 @@ import { checkAction, checkTypeResolver } from '../../acl.js';
 import { actions } from '../../roles/index.js';
 import { Context } from '../../types.js';
 import type { Contact } from '@unchainedshop/mongodb';
+import type { Country } from '@unchainedshop/core-countries';
 
 type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
 
@@ -174,7 +174,10 @@ export const User: UserHelperTypes = {
 
   async country(user, params, context) {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.services.users.getUserCountry(user, context);
+    const userLocale = context.modules.users.userLocale(user);
+    return context.modules.countries.findCountry({
+      isoCode: userLocale.country.toUpperCase(),
+    });
   },
 
   async enrollments(user, params, context) {

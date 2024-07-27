@@ -1,5 +1,4 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { CountriesModule, Country, CountryQuery } from '@unchainedshop/types/countries.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
@@ -7,6 +6,38 @@ import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.js';
 import { CountriesSchema } from '../db/CountriesSchema.js';
 import addMigrations from '../migrations/addMigrations.js';
+
+import type { FindOptions } from 'mongodb';
+import type { TimestampFields } from '@unchainedshop/mongodb';
+
+export type Country = {
+  _id?: string;
+  isoCode: string;
+  isActive?: boolean;
+  defaultCurrencyCode?: string;
+} & TimestampFields;
+
+export type CountryQuery = {
+  includeInactive?: boolean;
+  queryString?: string;
+};
+export type CountriesModule = ModuleMutations<Country> & {
+  findCountry: (params: { countryId?: string; isoCode?: string }) => Promise<Country>;
+  findCountries: (
+    params: CountryQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+    options?: FindOptions,
+  ) => Promise<Array<Country>>;
+  count: (query: CountryQuery) => Promise<number>;
+  countryExists: (params: { countryId: string }) => Promise<boolean>;
+
+  flagEmoji: (country: Country) => string;
+  isBase: (country: Country) => boolean;
+  name: (country: Country, language: string) => string;
+};
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
 

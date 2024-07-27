@@ -6,7 +6,7 @@ import {
   AssortmentProduct,
   AssortmentProductIdCacheRecord,
   AssortmentText,
-} from '../module/configureAssortmentsModule.js';
+} from '../types.js';
 
 export const AssortmentsCollection = async (db: mongodb.Db) => {
   const Assortments = db.collection<Assortment>('assortments');

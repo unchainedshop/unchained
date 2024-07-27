@@ -12,7 +12,7 @@ import {
   AssortmentProduct,
   AssortmentText,
 } from '@unchainedshop/core-assortments';
-import { AssortmentMediaText } from '@unchainedshop/types/assortments.media.js';
+import { AssortmentMediaText } from '@unchainedshop/core-assortments';
 import { File } from '@unchainedshop/types/files.js';
 
 export interface UnchainedUserContext {
