@@ -19,11 +19,10 @@ export enum OrderStatus {
 
 export type OrderReport = {
   createdCount: number;
-  updatedCount: number;
-  checkoutCount: number;
-  rejectionCount: number;
-  confirmationCount: number;
-  fullfilledCount: number;
+  orderedCount: number;
+  rejectedCount: number;
+  confirmedCount: number;
+  fullFilledCount: number;
 };
 
 export type Order = {
