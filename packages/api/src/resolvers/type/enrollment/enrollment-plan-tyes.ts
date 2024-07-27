@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { EnrollmentPlan as EnrollmentPlanType } from '@unchainedshop/types/enrollments.js';
+import { EnrollmentPlan as EnrollmentPlanType } from '@unchainedshop/core-enrollments';
 import { Product } from '@unchainedshop/types/products.js';
 
 type HelperType<T> = (enrollmentPlan: EnrollmentPlanType, _: never, context: Context) => T;

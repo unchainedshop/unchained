@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { EnrollmentQuery } from '@unchainedshop/types/enrollments.js';
+import { EnrollmentQuery } from '@unchainedshop/core-enrollments';
 
 export default async function enrollmentsCount(
   root: never,

@@ -1,6 +1,6 @@
 import type { Bookmark } from '@unchainedshop/core-bookmarks';
 import { SortOption, Locale } from '@unchainedshop/utils';
-import { Enrollment, EnrollmentStatus } from '@unchainedshop/types/enrollments.js';
+import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { File } from '@unchainedshop/types/files.js';
 import { Language } from '@unchainedshop/types/languages.js';
 import { Order } from '@unchainedshop/types/orders.js';

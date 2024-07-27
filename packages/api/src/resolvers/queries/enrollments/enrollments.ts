@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
-import { EnrollmentQuery } from '@unchainedshop/types/enrollments.js';
+import { EnrollmentQuery } from '@unchainedshop/core-enrollments';
 import { Context } from '../../../types.js';
 
 export default async function enrollments(

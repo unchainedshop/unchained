@@ -2,23 +2,118 @@ import { SortDirection, SortOption, Locale } from '@unchainedshop/utils';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   Enrollment,
+  EnrollmentData,
+  EnrollmentPeriod,
+  EnrollmentPlan,
   EnrollmentQuery,
-  EnrollmentsModule,
-  EnrollmentsSettingsOptions,
-} from '@unchainedshop/types/enrollments.js';
+} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
   generateDbMutations,
   buildSortOptions,
   mongodb,
+  Address,
+  Contact,
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
 import { EnrollmentsSchema } from '../db/EnrollmentsSchema.js';
 import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
 import { EnrollmentDirector } from '../enrollments-index.js';
-import { enrollmentsSettings } from '../enrollments-settings.js';
+import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
+import { Order } from '@unchainedshop/types/orders.js';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { Product } from '@unchainedshop/types/products.js';
+
+// Queries
+
+export interface EnrollmentQueries {
+  findEnrollment: (
+    params: { enrollmentId?: string; orderId?: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<Enrollment>;
+  findEnrollments: (
+    params: EnrollmentQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+  ) => Promise<Array<Enrollment>>;
+  openEnrollmentWithProduct(params: { productId: string }): Promise<Enrollment | null>;
+  count: (params: EnrollmentQuery) => Promise<number>;
+}
+
+// Transformations
+
+export interface EnrollmentTransformations {
+  normalizedStatus: (enrollment: Enrollment) => string;
+  isExpired: (enrollment: Enrollment, params: { referenceDate?: Date }) => boolean;
+}
+
+// Processing
+
+export type EnrollmentContextParams = (
+  enrollment: Enrollment,
+  unchainedAPI: UnchainedCore,
+) => Promise<Enrollment>;
+
+export interface EnrollmentProcessing {
+  terminateEnrollment: EnrollmentContextParams;
+  activateEnrollment: EnrollmentContextParams;
+}
+
+export interface EnrollmentMutations {
+  addEnrollmentPeriod: (enrollmentId: string, period: EnrollmentPeriod) => Promise<Enrollment>;
+
+  create: (doc: EnrollmentData, unchainedAPI: UnchainedCore) => Promise<Enrollment>;
+
+  createFromCheckout: (
+    order: Order,
+    params: {
+      items: Array<{
+        orderPosition: OrderPosition;
+        product: Product;
+      }>;
+      context: {
+        paymentContext?: any;
+        deliveryContext?: any;
+      };
+    },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<void>;
+
+  delete: (enrollmentId: string) => Promise<number>;
+
+  removeEnrollmentPeriodByOrderId: (enrollmentId: string, orderId: string) => Promise<Enrollment>;
+
+  updateBillingAddress: (enrollmentId: string, billingAddress: Address) => Promise<Enrollment>;
+
+  updateContact: (enrollmentId: string, contact: Contact) => Promise<Enrollment>;
+
+  updateContext: (enrollmentId: string, context: any) => Promise<Enrollment | null>;
+
+  updateDelivery: (enrollmentId: string, delivery: Enrollment['delivery']) => Promise<Enrollment>;
+
+  updatePayment: (enrollmentId: string, payment: Enrollment['payment']) => Promise<Enrollment>;
+
+  updatePlan: (
+    enrollmentId: string,
+    plan: EnrollmentPlan,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Enrollment>;
+
+  updateStatus: (
+    enrollmentId: string,
+    params: { status: EnrollmentStatus; info?: string },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Enrollment>;
+}
+
+export type EnrollmentsModule = EnrollmentQueries &
+  EnrollmentTransformations &
+  EnrollmentProcessing &
+  EnrollmentMutations;
 
 const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_ADD_PERIOD',

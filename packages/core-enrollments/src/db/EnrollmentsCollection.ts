@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Enrollment } from '@unchainedshop/types/enrollments.js';
+import { Enrollment } from '../types.js';
 
 export const EnrollmentsCollection = async (db: mongodb.Db) => {
   const Enrollments = db.collection<Enrollment>('enrollments');

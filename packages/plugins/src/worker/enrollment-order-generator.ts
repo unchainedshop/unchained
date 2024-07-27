@@ -1,4 +1,4 @@
-import { Enrollment } from '@unchainedshop/types/enrollments.js';
+import { Enrollment } from '@unchainedshop/core-enrollments';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { IWorkerAdapter } from '@unchainedshop/core-worker';
