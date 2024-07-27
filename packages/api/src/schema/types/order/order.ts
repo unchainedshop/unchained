@@ -84,10 +84,10 @@ export default [
 
     type OrderStatistics {
       createdCount: Int!
-      checkoutCount: Int!
-      rejectionCount: Int!
-      confirmationCount: Int!
-      fullfilledCount: Int!
+      orderedCount: Int!
+      rejectedCount: Int!
+      confirmedCount: Int!
+      fullFilledCount: Int!
     }
   `,
 ];
