@@ -6,7 +6,7 @@ import {
   AssortmentPathLink,
   AssortmentProduct,
   AssortmentText,
-} from '@unchainedshop/types/assortments.js';
+} from '@unchainedshop/core-assortments';
 import { AssortmentMedia } from '@unchainedshop/types/assortments.media.js';
 import { SearchFilterQuery, SearchProducts } from '@unchainedshop/types/filters.js';
 

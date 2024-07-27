@@ -1,8 +1,8 @@
-import { AssortmentLink, AssortmentsModule } from '@unchainedshop/types/assortments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { walkUpFromAssortment } from '../utils/breadcrumbs/build-paths.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
+import { AssortmentLink, InvalidateCacheFn } from './configureAssortmentsModule.js';
 
 const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_ADD_LINK',
@@ -10,13 +10,63 @@ const ASSORTMENT_LINK_EVENTS = [
   'ASSORTMENT_REORDER_LINKS',
 ];
 
+export type AssortmentLinksModule = {
+  // Queries
+  findLink: (
+    query: {
+      assortmentLinkId?: string;
+      parentAssortmentId?: string;
+      childAssortmentId?: string;
+    },
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<AssortmentLink>;
+  findLinks: (
+    query: {
+      assortmentId?: string;
+      assortmentIds?: string[];
+      parentAssortmentId?: string;
+      parentAssortmentIds?: string[];
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<AssortmentLink>>;
+
+  // Mutations
+  create: (doc: AssortmentLink, options?: { skipInvalidation?: boolean }) => Promise<AssortmentLink>;
+
+  delete: (
+    assortmentLinkId: string,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<AssortmentLink>;
+
+  deleteMany: (
+    selector: mongodb.Filter<AssortmentLink>,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<number>;
+
+  update: (
+    assortmentLinkId: string,
+    doc: AssortmentLink,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<AssortmentLink>;
+
+  updateManualOrder: (
+    params: {
+      sortKeys: Array<{
+        assortmentLinkId: string;
+        sortKey: number;
+      }>;
+    },
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<Array<AssortmentLink>>;
+};
+
 export const configureAssortmentLinksModule = ({
   AssortmentLinks,
   invalidateCache,
 }: {
   AssortmentLinks: mongodb.Collection<AssortmentLink>;
-  invalidateCache: AssortmentsModule['invalidateCache'];
-}): AssortmentsModule['links'] => {
+  invalidateCache: InvalidateCacheFn;
+}): AssortmentLinksModule => {
   registerEvents(ASSORTMENT_LINK_EVENTS);
 
   return {

@@ -1,4 +1,4 @@
-import { AssortmentFilter } from '@unchainedshop/types/assortments.js';
+import { AssortmentFilter } from '@unchainedshop/core-assortments';
 import { log } from '@unchainedshop/logger';
 import { AssortmentNotFoundError, FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 import { Context } from '../../../types.js';

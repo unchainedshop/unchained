@@ -2,7 +2,7 @@ import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
 import { IFilterAdapter } from '@unchainedshop/types/filters.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { ProductText } from '@unchainedshop/types/products.js';
-import { AssortmentText } from '@unchainedshop/types/assortments.js';
+import { AssortmentText } from '@unchainedshop/core-assortments';
 
 function escapeStringRegexp(string) {
   if (typeof string !== 'string') {

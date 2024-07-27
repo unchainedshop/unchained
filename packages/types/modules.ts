@@ -1,4 +1,3 @@
-import { AssortmentsModule, AssortmentsSettingsOptions } from './assortments.js';
 import { CountriesModule } from './countries.js';
 import { CurrenciesModule } from './currencies.js';
 import { DeliveryModule, DeliverySettingsOptions } from './delivery.js';
@@ -17,6 +16,7 @@ import type { ProductsModule, ProductsSettingsOptions } from '@unchainedshop/cor
 import type { WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
 import type { BookmarksModule } from '@unchainedshop/core-bookmarks';
 import type { MessagingModule } from '@unchainedshop/core-messaging';
+import type { AssortmentsModule, AssortmentsSettingsOptions } from '@unchainedshop/core-assortments';
 
 export interface Modules {
   assortments: AssortmentsModule;

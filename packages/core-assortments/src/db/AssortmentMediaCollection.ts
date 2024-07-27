@@ -1,8 +1,5 @@
-import {
-  AssortmentMedia as AssortmentMediaType,
-  AssortmentMediaText,
-} from '@unchainedshop/types/assortments.media.js';
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { AssortmentMediaText, AssortmentMediaType } from '../module/configureAssortmentMediaModule.js';
 
 export const AssortmentMediaCollection = async (db: mongodb.Db) => {
   const AssortmentMedia = db.collection<AssortmentMediaType>('assortment_media');

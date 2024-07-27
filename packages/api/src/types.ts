@@ -11,7 +11,7 @@ import {
   AssortmentLink,
   AssortmentProduct,
   AssortmentText,
-} from '@unchainedshop/types/assortments.js';
+} from '@unchainedshop/core-assortments';
 import { AssortmentMediaText } from '@unchainedshop/types/assortments.media.js';
 import { File } from '@unchainedshop/types/files.js';
 

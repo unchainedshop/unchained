@@ -3,7 +3,7 @@ import {
   AssortmentPathLink as AssortmentPathLinkType,
   AssortmentLink as AssortmentLinkType,
   AssortmentText,
-} from '@unchainedshop/types/assortments.js';
+} from '@unchainedshop/core-assortments';
 
 type HelperType<P, T> = (assortmentPathLink: AssortmentPathLinkType, params: P, context: Context) => T;
 

@@ -1,4 +1,3 @@
-import { Assortment, AssortmentsModule, AssortmentText } from '@unchainedshop/types/assortments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -9,8 +8,34 @@ import {
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.js';
 import { Locale } from '@unchainedshop/utils';
+import { Assortment, AssortmentText } from './configureAssortmentsModule.js';
 
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
+
+export type AssortmentTextsModule = {
+  // Queries
+  findTexts: (
+    query: mongodb.Filter<AssortmentText>,
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<AssortmentText>>;
+
+  findLocalizedText: (params: { assortmentId: string; locale?: string }) => Promise<AssortmentText>;
+
+  // Mutations
+  updateTexts: (
+    assortmentId: string,
+    texts: Array<Omit<AssortmentText, 'assortmentId'>>,
+  ) => Promise<Array<AssortmentText>>;
+
+  makeSlug: (data: { slug?: string; title: string; assortmentId: string }) => Promise<string>;
+
+  deleteMany: ({
+    assortmentId,
+  }: {
+    assortmentId?: string;
+    excludedAssortmentIds?: string[];
+  }) => Promise<number>;
+};
 
 export const configureAssortmentTextsModule = ({
   Assortments,
@@ -18,7 +43,7 @@ export const configureAssortmentTextsModule = ({
 }: {
   Assortments: mongodb.Collection<Assortment>;
   AssortmentTexts: mongodb.Collection<AssortmentText>;
-}): AssortmentsModule['texts'] => {
+}): AssortmentTextsModule => {
   registerEvents(ASSORTMENT_TEXT_EVENTS);
 
   const makeSlug = async ({ slug, title, assortmentId }) => {

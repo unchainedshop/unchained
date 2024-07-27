@@ -2,7 +2,7 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Filter, SearchQuery } from '@unchainedshop/types/filters.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { Product } from '@unchainedshop/types/products.js';
-import { Assortment } from '@unchainedshop/types/assortments.js';
+import { Assortment } from '@unchainedshop/core-assortments';
 
 export type CleanedSearchQuery = Omit<SearchQuery, 'query'> & {
   filterQuery: Record<string, Array<string>>;

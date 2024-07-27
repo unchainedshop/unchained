@@ -1,6 +1,6 @@
-import { AssortmentFilter, AssortmentsModule } from '@unchainedshop/types/assortments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import { AssortmentFilter } from './configureAssortmentsModule.js';
 
 const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_ADD_FILTER',
@@ -8,11 +8,42 @@ const ASSORTMENT_FILTER_EVENTS = [
   'ASSORTMENT_REORDER_FILTERS',
 ];
 
+export type AssortmentFiltersModule = {
+  // Queries
+  findFilter: (
+    params: { assortmentFilterId: string },
+
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<AssortmentFilter>;
+  findFilters: (
+    params: {
+      assortmentId: string;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<AssortmentFilter>>;
+  findFilterIds: (params: { assortmentId: string }) => Promise<Array<string>>;
+
+  // Mutations
+  create: (doc: AssortmentFilter) => Promise<AssortmentFilter>;
+
+  delete: (assortmentFilterId: string) => Promise<Array<{ _id: string }>>;
+  deleteMany: (selector: mongodb.Filter<AssortmentFilter>) => Promise<number>;
+
+  update: (assortmentFilterId: string, doc: AssortmentFilter) => Promise<AssortmentFilter>;
+
+  updateManualOrder: (params: {
+    sortKeys: Array<{
+      assortmentFilterId: string;
+      sortKey: number;
+    }>;
+  }) => Promise<Array<AssortmentFilter>>;
+};
+
 export const configureAssortmentFiltersModule = ({
   AssortmentFilters,
 }: {
   AssortmentFilters: mongodb.Collection<AssortmentFilter>;
-}): AssortmentsModule['filters'] => {
+}): AssortmentFiltersModule => {
   registerEvents(ASSORTMENT_FILTER_EVENTS);
 
   return {

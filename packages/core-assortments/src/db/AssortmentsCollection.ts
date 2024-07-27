@@ -1,12 +1,12 @@
 import { buildDbIndexes, mongodb } from '@unchainedshop/mongodb';
 import {
   Assortment,
-  AssortmentText,
-  AssortmentProduct,
-  AssortmentLink,
   AssortmentFilter,
+  AssortmentLink,
+  AssortmentProduct,
   AssortmentProductIdCacheRecord,
-} from '@unchainedshop/types/assortments.js';
+  AssortmentText,
+} from '../module/configureAssortmentsModule.js';
 
 export const AssortmentsCollection = async (db: mongodb.Db) => {
   const Assortments = db.collection<Assortment>('assortments');

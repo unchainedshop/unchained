@@ -1,4 +1,4 @@
-import { AssortmentLink } from '@unchainedshop/types/assortments.js';
+import { AssortmentLink } from '@unchainedshop/core-assortments';
 import { log } from '@unchainedshop/logger';
 import {
   AssortmentNotFoundError,

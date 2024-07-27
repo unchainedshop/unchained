@@ -2,7 +2,7 @@ import { ProductText, Product as ProductType } from '@unchainedshop/types/produc
 import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
 import { objectInvert } from '@unchainedshop/utils';
 import { SortOption } from '@unchainedshop/utils';
-import { AssortmentPathLink } from '@unchainedshop/types/assortments.js';
+import { AssortmentPathLink } from '@unchainedshop/core-assortments';
 import { ProductMedia } from '@unchainedshop/types/products.media.js';
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 import { Context } from '../../../types.js';

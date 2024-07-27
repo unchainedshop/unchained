@@ -1,6 +1,6 @@
-import { AssortmentProduct, AssortmentsModule } from '@unchainedshop/types/assortments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import { AssortmentProduct, InvalidateCacheFn } from './configureAssortmentsModule.js';
 
 const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_ADD_PRODUCT',
@@ -8,13 +8,66 @@ const ASSORTMENT_PRODUCT_EVENTS = [
   'ASSORTMENT_REORDER_PRODUCTS',
 ];
 
+export type AssortmentProductsModule = {
+  // Queries
+  findAssortmentIds: (params: { productId: string; tags?: Array<string> }) => Promise<Array<string>>;
+  findProductIds: (params: { assortmentId: string; tags?: Array<string> }) => Promise<Array<string>>;
+
+  findProduct: (params: { assortmentProductId: string }) => Promise<AssortmentProduct>;
+
+  findProducts: (
+    params: {
+      assortmentId?: string;
+      assortmentIds?: Array<string>;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<AssortmentProduct>>;
+
+  findProductSiblings: (params: {
+    productId: string;
+    assortmentIds: Array<string>;
+  }) => Promise<Array<string>>;
+
+  // Mutations
+  create: (
+    doc: AssortmentProduct,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<AssortmentProduct>;
+
+  delete: (
+    assortmentProductId: string,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<Array<{ _id: string; assortmentId: string }>>;
+
+  deleteMany: (
+    selector: mongodb.Filter<AssortmentProduct>,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<number>;
+
+  update: (
+    assortmentProductId: string,
+    doc: AssortmentProduct,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<AssortmentProduct>;
+
+  updateManualOrder: (
+    params: {
+      sortKeys: Array<{
+        assortmentProductId: string;
+        sortKey: number;
+      }>;
+    },
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<Array<AssortmentProduct>>;
+};
+
 export const configureAssortmentProductsModule = ({
   AssortmentProducts,
   invalidateCache,
 }: {
   AssortmentProducts: mongodb.Collection<AssortmentProduct>;
-  invalidateCache: AssortmentsModule['invalidateCache'];
-}): AssortmentsModule['products'] => {
+  invalidateCache: InvalidateCacheFn;
+}): AssortmentProductsModule => {
   registerEvents(ASSORTMENT_PRODUCT_EVENTS);
 
   return {

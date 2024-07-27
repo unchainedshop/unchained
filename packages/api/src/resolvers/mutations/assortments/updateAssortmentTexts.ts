@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { AssortmentText } from '@unchainedshop/types/assortments.js';
+import { AssortmentText } from '@unchainedshop/core-assortments';
 import { InvalidIdError, AssortmentNotFoundError } from '../../../errors.js';
 import { Context } from '../../../types.js';
 

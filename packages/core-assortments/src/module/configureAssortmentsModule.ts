@@ -1,12 +1,5 @@
-import type { Tree } from '@unchainedshop/utils';
+import { Tree, SortOption, SortDirection } from '@unchainedshop/utils';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import {
-  AssortmentsModule,
-  Assortment,
-  AssortmentLink,
-  AssortmentQuery,
-  AssortmentsSettingsOptions,
-} from '@unchainedshop/types/assortments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
@@ -16,19 +9,196 @@ import {
   buildSortOptions,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
 import addMigrations from '../migrations/addMigrations.js';
 import { AssortmentsCollection } from '../db/AssortmentsCollection.js';
 import { AssortmentsSchema } from '../db/AssortmentsSchema.js';
-import { configureAssortmentFiltersModule } from './configureAssortmentFiltersModule.js';
-import { configureAssortmentLinksModule } from './configureAssortmentLinksModule.js';
-import { assortmentsSettings } from '../assortments-settings.js';
-import { configureAssortmentProductsModule } from './configureAssortmentProductsModule.js';
-import { configureAssortmentTextsModule } from './configureAssortmentTextsModule.js';
+import {
+  AssortmentFiltersModule,
+  configureAssortmentFiltersModule,
+} from './configureAssortmentFiltersModule.js';
+import {
+  AssortmentLinksModule,
+  configureAssortmentLinksModule,
+} from './configureAssortmentLinksModule.js';
+import { assortmentsSettings, AssortmentsSettingsOptions } from '../assortments-settings.js';
+import {
+  AssortmentProductsModule,
+  configureAssortmentProductsModule,
+} from './configureAssortmentProductsModule.js';
+import {
+  AssortmentTextsModule,
+  configureAssortmentTextsModule,
+} from './configureAssortmentTextsModule.js';
 import { configureAssortmentMediaModule } from './configureAssortmentMediaModule.js';
 import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.js';
+
+import type { Filter, FindOptions } from 'mongodb';
+import { AssortmentMediaModule } from './configureAssortmentMediaModule.js';
+import type { TimestampFields } from '@unchainedshop/mongodb';
+
+export type Assortment = {
+  _id?: string;
+  isActive: boolean;
+  isBase: boolean;
+  isRoot: boolean;
+  meta?: any;
+  sequence: number;
+  slugs: Array<string>;
+  tags: Array<string>;
+} & TimestampFields;
+
+export type AssortmentFilter = {
+  _id?: string;
+  assortmentId: string;
+  filterId: string;
+  meta?: any;
+  sortKey: number;
+  tags: Array<string>;
+} & TimestampFields;
+
+export type AssortmentLink = {
+  _id?: string;
+  childAssortmentId: string;
+  meta?: any;
+  parentAssortmentId: string;
+  sortKey: number;
+  tags: Array<string>;
+} & TimestampFields;
+
+export type AssortmentProduct = {
+  _id?: string;
+  assortmentId: string;
+  meta?: any;
+  productId: string;
+  sortKey: number;
+  tags: Array<string>;
+} & TimestampFields;
+
+export type AssortmentProductIdCacheRecord = {
+  _id?: string;
+  productIds: Array<string>;
+} & TimestampFields;
+
+export type AssortmentText = {
+  _id?: string;
+  assortmentId: string;
+  description?: string;
+  locale: string;
+  slug?: string;
+  subtitle?: string;
+  title?: string;
+} & TimestampFields;
+
+export type AssortmentQuery = {
+  queryString?: string;
+  assortmentIds?: Array<string>;
+  assortmentSelector?: Filter<Assortment>;
+  includeInactive?: boolean;
+  includeLeaves?: boolean;
+  slugs?: Array<string>;
+  tags?: Array<string>;
+};
+
+export interface AssortmentPathLink {
+  assortmentId: string;
+  childAssortmentId: string;
+  parentIds: string[];
+}
+
+export type InvalidateCacheFn = (
+  params: AssortmentQuery,
+  options?: { skipUpstreamTraversal: boolean },
+) => void;
+
+export type AssortmentsModule = {
+  // Queries
+  assortmentExists: (query: { assortmentId?: string; slug?: string }) => Promise<boolean>;
+
+  children: (query: { assortmentId: string; includeInactive?: boolean }) => Promise<Array<Assortment>>;
+
+  count: (query: AssortmentQuery) => Promise<number>;
+
+  findAssortment: (query: { assortmentId?: string; slug?: string }) => Promise<Assortment>;
+
+  findAssortments: (
+    query: AssortmentQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+    options?: FindOptions,
+  ) => Promise<Array<Assortment>>;
+
+  findProductIds: (params: {
+    assortmentId: string;
+    forceLiveCollection?: boolean;
+    ignoreChildAssortments?: boolean;
+  }) => Promise<Array<string>>;
+
+  breadcrumbs: (params: {
+    assortmentId?: string;
+    productId?: string;
+  }) => Promise<Array<{ links: Array<AssortmentPathLink> }>>;
+
+  // Mutations
+  create: (doc: Assortment) => Promise<Assortment>;
+
+  update: (
+    assortmentId: string,
+    doc: Assortment,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<string>;
+
+  delete: (assortmentId: string, options?: { skipInvalidation?: boolean }) => Promise<number>;
+
+  invalidateCache: InvalidateCacheFn;
+
+  setBase: (assortmentId: string) => Promise<void>;
+
+  /*
+   * Assortment media
+   */
+  media: AssortmentMediaModule;
+
+  /*
+   * Assortment filters
+   */
+  filters: AssortmentFiltersModule;
+
+  /*
+   * Assortment links
+   */
+
+  links: AssortmentLinksModule;
+
+  /*
+   * Assortment products
+   */
+
+  products: AssortmentProductsModule;
+
+  /*
+   * Assortment Filter Search
+   */
+
+  search: {
+    findFilteredAssortments: (params: {
+      assortmentIds: Array<string>;
+      assortmentSelector: Filter<Assortment>;
+      limit: number;
+      offset: number;
+      sort: FindOptions['sort'];
+    }) => Promise<Array<Assortment>>;
+  };
+
+  /*
+   * Assortment texts
+   */
+
+  texts: AssortmentTextsModule;
+};
 
 const ASSORTMENT_EVENTS = [
   'ASSORTMENT_CREATE',
