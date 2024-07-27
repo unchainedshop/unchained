@@ -4,7 +4,6 @@ import { UnchainedCore } from './core.js';
 import { File } from './files.js';
 import { Language } from './languages.js';
 import type { TimestampFields, Address, Contact } from '@unchainedshop/mongodb';
-import { Country } from '@unchainedshop/core-countries';
 
 export interface PushSubscription {
   _id: string;

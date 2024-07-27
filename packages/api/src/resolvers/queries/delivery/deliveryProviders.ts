@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { DeliveryProviderQuery } from '@unchainedshop/types/delivery.js';
+import { DeliveryProviderQuery } from '@unchainedshop/core-delivery';
 
 export default async function deliveryProviders(
   root: never,

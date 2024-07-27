@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Enrollment } from '@unchainedshop/types/enrollments.js';
 
 type HelperType<T> = (enrollmentDelivery: Enrollment['delivery'], _: never, context: Context) => T;

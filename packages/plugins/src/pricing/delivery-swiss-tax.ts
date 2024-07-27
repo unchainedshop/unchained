@@ -5,7 +5,7 @@ import {
 } from '@unchainedshop/types/delivery.pricing.js';
 
 import { Order } from '@unchainedshop/types/orders.js';
-import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { SwissTaxCategories } from './tax/ch.js';
 
 const getTaxRate = ({ order, provider }: { order?: Order; provider?: DeliveryProvider }) => {

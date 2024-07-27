@@ -1,18 +1,80 @@
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
-  DeliveryContext,
-  DeliveryModule,
-  DeliveryProvider,
-  DeliverySettingsOptions,
-} from '@unchainedshop/types/delivery.js';
+  ModuleInput,
+  ModuleMutations,
+  ModuleMutationsWithReturnDoc,
+  UnchainedCore,
+} from '@unchainedshop/types/core.js';
+import { DeliveryContext, DeliveryInterface, DeliveryProvider, DeliveryProviderType } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
 import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet.js';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection.js';
 import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema.js';
-import { deliverySettings } from '../delivery-settings.js';
+import { deliverySettings, DeliverySettingsOptions } from '../delivery-settings.js';
 import { DeliveryDirector } from '../director/DeliveryDirector.js';
 import { DeliveryPricingDirector } from '../director/DeliveryPricingDirector.js';
+import {
+  DeliveryPricingCalculation,
+  DeliveryPricingContext,
+  IDeliveryPricingSheet,
+} from '@unchainedshop/types/delivery.pricing.js';
+import { DeliveryError } from '../delivery-index.js';
+import { Order } from '@unchainedshop/types/orders.js';
+
+export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
+  // Queries
+  count: (query: mongodb.Filter<DeliveryProvider>) => Promise<number>;
+  findProvider: (
+    query: {
+      deliveryProviderId: string;
+    } & mongodb.Filter<DeliveryProvider>,
+    options?: mongodb.FindOptions,
+  ) => Promise<DeliveryProvider>;
+  findProviders: (
+    query: mongodb.Filter<DeliveryProvider>,
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<DeliveryProvider>>;
+
+  providerExists: (query: { deliveryProviderId: string }) => Promise<boolean>;
+
+  pricingSheet: (params: {
+    calculation: Array<DeliveryPricingCalculation>;
+    currency: string;
+  }) => IDeliveryPricingSheet;
+
+  // Delivery adapter
+  findInterface: (params: DeliveryProvider) => DeliveryInterface;
+  findInterfaces: (params: { type: DeliveryProviderType }) => Array<DeliveryInterface>;
+  findSupported: (
+    params: { order: Order },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Array<DeliveryProvider>>;
+  determineDefault: (
+    deliveryProviders: Array<DeliveryProvider>,
+    params: { order: Order },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<DeliveryProvider>;
+
+  isActive: (deliveryProvider: DeliveryProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
+  configurationError: (
+    deliveryProvider: DeliveryProvider,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<DeliveryError>;
+
+  isAutoReleaseAllowed: (
+    deliveryProvider: DeliveryProvider,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
+  calculate: (
+    pricingContext: DeliveryPricingContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Array<DeliveryPricingCalculation>>;
+  send: (
+    deliveryProviderId: string,
+    deliveryContext: DeliveryContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<any>;
+};
 
 const DELIVERY_PROVIDER_EVENTS: string[] = [
   'DELIVERY_PROVIDER_CREATE',

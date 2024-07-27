@@ -1,7 +1,4 @@
-import {
-  Assortment,
-  AssortmentFilter as AssortmentFilterType,
-} from '@unchainedshop/core-assortments';
+import { Assortment, AssortmentFilter as AssortmentFilterType } from '@unchainedshop/core-assortments';
 import { Filter } from '@unchainedshop/types/filters.js';
 import { Context } from '../../../types.js';
 

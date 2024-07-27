@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { DeliveryProviderType, IDeliveryAdapter } from '@unchainedshop/types/delivery.js';
+import { DeliveryProviderType, IDeliveryAdapter } from '@unchainedshop/core-delivery';
 import { DeliveryAdapter, DeliveryDirector, DeliveryError } from '@unchainedshop/core-delivery';
 
 const fetchPickMupLocations = async (key: string, idsFilter?: string) => {

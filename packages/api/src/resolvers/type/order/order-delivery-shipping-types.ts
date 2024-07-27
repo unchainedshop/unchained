@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/types/orders.deliveries.js';
 import type { Address } from '@unchainedshop/mongodb';
 

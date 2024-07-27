@@ -1,9 +1,25 @@
-import {
-  DeliveryProvider,
-  DeliverySettings,
-  DetermineDefaultProvider,
-  FilterProviders,
-} from '@unchainedshop/types/delivery.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { DeliveryProvider, FilterProviders } from './types.js';
+import { Order } from '@unchainedshop/types/orders.js';
+
+export type DetermineDefaultProvider = (
+  params: {
+    providers: Array<DeliveryProvider>;
+    order: Order;
+  },
+  unchainedAPI: UnchainedCore,
+) => Promise<DeliveryProvider>;
+export interface DeliverySettingsOptions {
+  sortProviders?: (a: DeliveryProvider, b: DeliveryProvider) => number;
+  filterSupportedProviders?: FilterProviders;
+  determineDefaultProvider?: DetermineDefaultProvider;
+}
+
+export interface DeliverySettings {
+  filterSupportedProviders: FilterProviders;
+  determineDefaultProvider: DetermineDefaultProvider;
+  configureSettings: (options?: DeliverySettingsOptions) => void;
+}
 
 const sortByCreationDate = (left: DeliveryProvider, right: DeliveryProvider) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();

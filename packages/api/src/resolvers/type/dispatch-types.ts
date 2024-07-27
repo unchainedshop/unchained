@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Product } from '@unchainedshop/types/products.js';
 import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
 

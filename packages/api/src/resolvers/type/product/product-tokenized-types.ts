@@ -5,7 +5,7 @@ import {
 } from '@unchainedshop/types/products.js';
 import { WarehousingContext, WarehousingProvider } from '@unchainedshop/types/warehousing.js';
 import { Context } from '@unchainedshop/api';
-import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { PlanProduct } from './product-plan-types.js';
 import { checkAction } from '../../../acl.js';
 import { actions } from '../../../roles/index.js';

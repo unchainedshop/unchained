@@ -1,6 +1,6 @@
-export { configureDeliveryModule } from './module/configureDeliveryModule.js';
-
-export { deliverySettings } from './delivery-settings.js';
+export * from './types.js';
+export * from './module/configureDeliveryModule.js';
+export * from './delivery-settings.js';
 
 export { DeliveryAdapter } from './director/DeliveryAdapter.js';
 export { DeliveryDirector } from './director/DeliveryDirector.js';

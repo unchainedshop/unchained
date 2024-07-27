@@ -1,4 +1,4 @@
-import { DeliveryProvider } from './delivery.js';
+import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Order } from './orders.js';
 import { OrderDelivery } from './orders.deliveries.js';
 import { OrderDiscount } from './orders.discounts.js';

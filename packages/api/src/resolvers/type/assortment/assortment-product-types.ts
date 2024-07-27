@@ -1,8 +1,5 @@
 import { Context } from '../../../types.js';
-import {
-  Assortment,
-  AssortmentProduct as AssortmentProductType,
-} from '@unchainedshop/core-assortments';
+import { Assortment, AssortmentProduct as AssortmentProductType } from '@unchainedshop/core-assortments';
 import { Product } from '@unchainedshop/types/products.js';
 
 type HelperType<T> = (assortmentProduct: AssortmentProductType, _: never, context: Context) => T;

@@ -1,4 +1,3 @@
-import { DeliveryModule, DeliverySettingsOptions } from './delivery.js';
 import { EnrollmentsModule, EnrollmentsSettingsOptions } from './enrollments.js';
 import { FilesModule, FilesSettingsOptions } from './files.js';
 import { FiltersModule, FiltersSettingsOptions } from './filters.js';
@@ -13,6 +12,7 @@ import type { AssortmentsModule, AssortmentsSettingsOptions } from '@unchainedsh
 import type { BookmarksModule } from '@unchainedshop/core-bookmarks';
 import type { CountriesModule } from '@unchainedshop/core-countries';
 import type { CurrenciesModule } from '@unchainedshop/core-currencies';
+import type { DeliveryModule, DeliverySettingsOptions } from '@unchainedshop/core-delivery';
 
 import type { EventsModule } from '@unchainedshop/core-events';
 import type { ProductsModule, ProductsSettingsOptions } from '@unchainedshop/core-products';
