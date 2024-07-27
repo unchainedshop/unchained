@@ -1,5 +1,5 @@
 import { Country } from '@unchainedshop/core-countries';
-import { Currency } from '@unchainedshop/types/currencies.js';
+import { Currency } from '@unchainedshop/core-currencies';
 import { ProductPrice } from '@unchainedshop/types/products.js';
 import { Context } from '../../../types.js';
 

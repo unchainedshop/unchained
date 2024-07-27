@@ -1,5 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { CurrenciesModule, Currency, CurrencyQuery } from '@unchainedshop/types/currencies.js';
+import { Currency, CurrencyQuery } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
@@ -7,6 +7,19 @@ import { CurrenciesCollection } from '../db/CurrenciesCollection.js';
 import { CurrenciesSchema } from '../db/CurrenciesSchema.js';
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
+
+export type CurrenciesModule = ModuleMutations<Currency> & {
+  findCurrency: (params: { currencyId?: string; isoCode?: string }) => Promise<Currency>;
+  findCurrencies: (
+    params: CurrencyQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+  ) => Promise<Array<Currency>>;
+  count: (query: CurrencyQuery) => Promise<number>;
+  currencyExists: (params: { currencyId: string }) => Promise<boolean>;
+};
 
 export const buildFindSelector = ({
   includeInactive = false,

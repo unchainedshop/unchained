@@ -1,1 +1,2 @@
-export { configureCurrenciesModule } from './module/configureCurrenciesModule.js';
+export * from './module/configureCurrenciesModule.js';
+export * from './types.js';

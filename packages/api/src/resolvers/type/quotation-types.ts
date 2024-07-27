@@ -3,7 +3,7 @@ import { Context } from '@unchainedshop/api';
 import { User } from '@unchainedshop/types/user.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { Country } from '@unchainedshop/core-countries';
-import { Currency } from '@unchainedshop/types/currencies.js';
+import { Currency } from '@unchainedshop/core-currencies';
 
 type HelperType<P, T> = (quotation: QuotationType, params: P, context: Context) => T;
 

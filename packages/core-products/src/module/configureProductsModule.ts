@@ -39,7 +39,7 @@ import {
   ProductPricingContext,
 } from '@unchainedshop/types/products.pricing.js';
 import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
-import { Currency } from '@unchainedshop/types/currencies.js';
+import { Currency } from '@unchainedshop/core-currencies';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { ProductMediaModule } from '@unchainedshop/types/products.media.js';
 import { ProductReviewsModule } from '@unchainedshop/types/products.reviews.js';

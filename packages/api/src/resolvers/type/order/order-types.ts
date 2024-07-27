@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { Context } from '@unchainedshop/api';
 import { Country } from '@unchainedshop/core-countries';
-import { Currency } from '@unchainedshop/types/currencies.js';
+import { Currency } from '@unchainedshop/core-currencies';
 import { DeliveryProvider } from '@unchainedshop/types/delivery.js';
 import { Enrollment } from '@unchainedshop/types/enrollments.js';
 import { Order as OrderType } from '@unchainedshop/types/orders.js';

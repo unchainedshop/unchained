@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
-import { CurrencyQuery } from '@unchainedshop/types/currencies.js';
+import { CurrencyQuery } from '@unchainedshop/core-currencies';
 import { Context } from '../../../types.js';
 
 export default async function currencies(

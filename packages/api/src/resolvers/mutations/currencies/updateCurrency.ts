@@ -1,5 +1,5 @@
 import { Context } from '../../../types.js';
-import { Currency } from '@unchainedshop/types/currencies.js';
+import { Currency } from '@unchainedshop/core-currencies';
 import { log } from '@unchainedshop/logger';
 import { CurrencyNotFoundError, InvalidIdError } from '../../../errors.js';
 
