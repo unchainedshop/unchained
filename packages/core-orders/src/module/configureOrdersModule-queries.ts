@@ -30,11 +30,11 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
 
 const normalizeOrderAggregateResult = (data = {}): OrderReport => {
   const statusToFieldMap = {
-    createdCount: 0,
-    orderedCount: 0,
-    rejectedCount: 0,
-    confirmedCount: 0,
-    fullFilledCount: 0,
+    newCount: 0,
+    orderCount: 0,
+    rejectCount: 0,
+    confirmCount: 0,
+    fulfillCount: 0,
   };
 
   Object.entries(data).forEach(([key, value]) => {
@@ -96,7 +96,7 @@ export const configureOrdersModuleQueries = ({
       const pipeline = [
         {
           $facet: {
-            orderedCount: [
+            orderCount: [
               {
                 $match: {
                   ordered: selector,
@@ -104,7 +104,7 @@ export const configureOrdersModuleQueries = ({
               },
               { $count: 'count' },
             ],
-            fullFilledCount: [
+            fulfillCount: [
               {
                 $match: {
                   fullfilled: selector,
@@ -112,7 +112,7 @@ export const configureOrdersModuleQueries = ({
               },
               { $count: 'count' },
             ],
-            rejectedCount: [
+            rejectCount: [
               {
                 $match: {
                   rejected: selector,
@@ -120,7 +120,7 @@ export const configureOrdersModuleQueries = ({
               },
               { $count: 'count' },
             ],
-            createdCount: [
+            newCount: [
               {
                 $match: {
                   created: selector,
@@ -128,7 +128,7 @@ export const configureOrdersModuleQueries = ({
               },
               { $count: 'count' },
             ],
-            confirmedCount: [
+            confirmCount: [
               {
                 $match: {
                   confirmed: selector,
@@ -140,11 +140,11 @@ export const configureOrdersModuleQueries = ({
         },
         {
           $project: {
-            orderedCount: { $arrayElemAt: ['$orderedCount.count', 0] },
-            fullFilledCount: { $arrayElemAt: ['$fullFilledCount.count', 0] },
-            rejectedCount: { $arrayElemAt: ['$rejectedCount.count', 0] },
-            createdCount: { $arrayElemAt: ['$createdCount.count', 0] },
-            confirmedCount: { $arrayElemAt: ['$confirmedCount.count', 0] },
+            orderCount: { $arrayElemAt: ['$orderCount.count', 0] },
+            fulfillCount: { $arrayElemAt: ['$fulfillCount.count', 0] },
+            rejectCount: { $arrayElemAt: ['$rejectCount.count', 0] },
+            newCount: { $arrayElemAt: ['$newCount.count', 0] },
+            confirmCount: { $arrayElemAt: ['$confirmCount.count', 0] },
           },
         },
       ];
