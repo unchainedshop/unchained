@@ -10,6 +10,15 @@ export enum WorkStatus {
   DELETED = 'DELETED',
 }
 
+export type WorkerReport = {
+  type: string;
+  createdCount: number;
+  errorCount: number;
+  successCount: number;
+  startedCount: number;
+  deletedCount: number;
+};
+
 export type Work = {
   _id?: string;
   priority: number;
@@ -102,6 +111,8 @@ export type WorkerModule = {
     worker: string;
     referenceDate: Date;
   }) => Promise<Array<Work>>;
+
+  getReport: (params?: { types?: string[]; from?: Date; to?: Date }) => Promise<WorkerReport[]>;
 };
 
 /*
