@@ -478,7 +478,7 @@ export default [
       """
       Returns aggregated report of all the events that occurred in the system
       """
-      eventStatistics(types: [String!], from: Timestamp, to: Timestamp): [EventStatistics]!
+      eventStatistics(types: [String!], from: Timestamp, to: Timestamp): [EventStatistics!]!
       """
       Returns aggregated report of all the orders that occurred in the system
       """
@@ -486,7 +486,7 @@ export default [
       """
       Returns aggregated report of all the worker jobs that occurred in the system
       """
-      workStatistics(types: [String!], from: Timestamp, to: Timestamp): [WorkStatistics]!
+      workStatistics(types: [String!], from: Timestamp, to: Timestamp): [WorkStatistics!]!
     }
   `,
 ];

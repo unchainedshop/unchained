@@ -83,11 +83,11 @@ export default [
     }
 
     type OrderStatistics {
-      createdCount: Int!
-      orderedCount: Int!
-      rejectedCount: Int!
-      confirmedCount: Int!
-      fullFilledCount: Int!
+      newCount: Int!
+      orderCount: Int!
+      rejectCount: Int!
+      confirmCount: Int!
+      fulfillCount: Int!
     }
   `,
 ];

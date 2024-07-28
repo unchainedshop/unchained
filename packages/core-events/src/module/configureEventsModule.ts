@@ -86,6 +86,9 @@ export const configureEventsModule = async ({
     getReport: async ({ from, to, types } = { from: null, to: null, types: null }) => {
       const pipeline = [];
       const matchConditions = [];
+      // build date filter based on provided values it can be a range if both to and from is supplied
+      // a upper or lowe limit if either from or to is provided
+      // or all if none is provided
       if (from || to) {
         const dateConditions = [];
         if (from) {
@@ -104,6 +107,7 @@ export const configureEventsModule = async ({
           matchConditions.push({ $and: dateConditions });
         }
       }
+      // build types filter if type is provided or ignore types if it is not provided
       if (types && Array.isArray(types) && types.length) {
         matchConditions.push({ type: { $in: types } });
       }
