@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
-import { LanguageQuery } from '@unchainedshop/types/languages.js';
+import { LanguageQuery } from '@unchainedshop/core-languages';
 import { Context } from '../../../types.js';
 
 export default async function languages(

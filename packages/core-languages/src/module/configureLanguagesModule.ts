@@ -1,11 +1,43 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { LanguagesModule, Language, LanguageQuery } from '@unchainedshop/types/languages.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/mongodb';
+import {
+  generateDbMutations,
+  generateDbFilterById,
+  buildSortOptions,
+  TimestampFields,
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { LanguagesCollection } from '../db/LanguagesCollection.js';
 import { LanguagesSchema } from '../db/LanguagesSchema.js';
+
+export type Language = {
+  _id?: string;
+  isoCode: string;
+  isActive?: boolean;
+} & TimestampFields;
+
+export type LanguageQuery = {
+  includeInactive?: boolean;
+  queryString?: string;
+};
+
+export interface LanguagesModule extends ModuleMutations<Language> {
+  findLanguage: (params: { languageId?: string; isoCode?: string }) => Promise<Language>;
+  findLanguages: (
+    params: LanguageQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<Language>>;
+  count: (query: LanguageQuery) => Promise<number>;
+  languageExists: (params: { languageId: string }) => Promise<boolean>;
+
+  isBase: (language: Language) => boolean;
+}
 
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 

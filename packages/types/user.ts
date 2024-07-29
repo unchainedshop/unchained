@@ -1,9 +1,9 @@
 import type { Db, Filter, FindOptions, UpdateFilter, FindOneAndUpdateOptions } from 'mongodb';
+import type { TimestampFields, Address, Contact } from '@unchainedshop/mongodb';
+import type { Language } from '@unchainedshop/core-languages';
 import { Locale, SortOption } from '@unchainedshop/utils';
 import { UnchainedCore } from './core.js';
 import { File } from '@unchainedshop/core-files';
-import { Language } from './languages.js';
-import type { TimestampFields, Address, Contact } from '@unchainedshop/mongodb';
 
 export interface PushSubscription {
   _id: string;

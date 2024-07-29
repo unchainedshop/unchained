@@ -1,5 +1,5 @@
 import { Context } from '../../../types.js';
-import { Language } from '@unchainedshop/types/languages.js';
+import { Language } from '@unchainedshop/core-languages';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, LanguageNotFoundError } from '../../../errors.js';
 

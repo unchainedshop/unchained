@@ -1,4 +1,4 @@
-import { Language as LanguageType } from '@unchainedshop/types/languages.js';
+import { Language as LanguageType } from '@unchainedshop/core-languages';
 import { Context } from '@unchainedshop/api';
 
 export interface LanguageHelperTypes {

@@ -1,5 +1,5 @@
 import { Context } from '../../../types.js';
-import { LanguageQuery } from '@unchainedshop/types/languages.js';
+import { LanguageQuery } from '@unchainedshop/core-languages';
 import { log } from '@unchainedshop/logger';
 
 export default async function languagesCount(
