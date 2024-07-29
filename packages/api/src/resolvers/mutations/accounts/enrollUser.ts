@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
 
-import { UserData } from '@unchainedshop/types/user.js';
+import { UserData } from '@unchainedshop/core-users';
 import {
   AuthOperationFailedError,
   EmailAlreadyExistsError,

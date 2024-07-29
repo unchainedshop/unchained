@@ -1,4 +1,4 @@
-import { User } from '@unchainedshop/types/user.js';
+import { User } from '../types.js';
 import { removeConfidentialServiceHashes } from './configureUsersModule.js';
 import user from '../../tests/mock/user-mock.js';
 

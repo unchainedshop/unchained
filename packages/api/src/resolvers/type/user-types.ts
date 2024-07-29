@@ -13,7 +13,7 @@ import {
   Web3Address,
   WebAuthnCredentials,
   PushSubscription,
-} from '@unchainedshop/types/user.js';
+} from '@unchainedshop/core-users';
 import { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { Roles, permissions } from '@unchainedshop/roles';
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';
@@ -190,7 +190,10 @@ export const User: UserHelperTypes = {
 
   language: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
-    return context.services.users.getUserLanguage(user, context);
+    const userLocale = context.modules.users.userLocale(user);
+    return context.modules.languages.findLanguage({
+      isoCode: userLocale.language,
+    });
   },
 
   allowedActions: async (user, params, context) => {

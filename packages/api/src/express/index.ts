@@ -11,7 +11,7 @@ import { mongodb } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { emit } from '@unchainedshop/events';
 import { API_EVENTS } from '../events.js';
-import { User } from '@unchainedshop/types/user.js';
+import { User } from '@unchainedshop/core-users';
 import { IncomingMessage } from 'http';
 
 const resolveUserRemoteAddress = (req: IncomingMessage) => {

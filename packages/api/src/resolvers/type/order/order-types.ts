@@ -10,7 +10,7 @@ import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
-import { User } from '@unchainedshop/types/user.js';
+import { User } from '@unchainedshop/core-users';
 
 export const Order = {
   async supportedDeliveryProviders(

@@ -1,5 +1,11 @@
-import { UpdateUserAvatarAfterUploadService } from '@unchainedshop/types/user.js';
+import { File } from '@unchainedshop/core-files';
 import { log, LogLevel } from '@unchainedshop/logger';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+
+export type UpdateUserAvatarAfterUploadService = (
+  params: { file: File },
+  context: UnchainedCore,
+) => Promise<void>;
 
 export const updateUserAvatarAfterUploadService: UpdateUserAvatarAfterUploadService = async (
   { file },

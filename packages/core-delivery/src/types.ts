@@ -1,12 +1,13 @@
 import type { Work } from '@unchainedshop/core-worker';
 import type { TimestampFields } from '@unchainedshop/mongodb';
+import type { User } from '@unchainedshop/core-users';
+
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { Order } from '@unchainedshop/types/orders.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { Product } from '@unchainedshop/types/products.js';
-import { User } from '@unchainedshop/types/user.js';
 import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 export enum DeliveryProviderType {

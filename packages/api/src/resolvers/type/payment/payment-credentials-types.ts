@@ -3,7 +3,7 @@ import {
   PaymentCredentials as PaymentCredentialsType,
   PaymentProvider,
 } from '@unchainedshop/core-payment';
-import { User } from '@unchainedshop/types/user.js';
+import { User } from '@unchainedshop/core-users';
 
 export type HelperType<P, T> = (credentials: PaymentCredentialsType, params: P, context: Context) => T;
 

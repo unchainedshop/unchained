@@ -1,4 +1,6 @@
 import type { FindOptions } from 'mongodb';
+import type { User } from '@unchainedshop/core-users';
+
 import { SortOption } from '@unchainedshop/utils';
 import { UnchainedCore } from './core.js';
 import { OrderDeliveriesModule } from './orders.deliveries.js';
@@ -7,7 +9,6 @@ import { OrderPaymentsModule } from './orders.payments.js';
 import { OrderPositionsModule } from './orders.positions.js';
 import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 import { Product } from './products.js';
-import { User } from './user.js';
 import type { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
 
 export enum OrderStatus {

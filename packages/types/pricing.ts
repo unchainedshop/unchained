@@ -1,3 +1,5 @@
+import type { User } from '@unchainedshop/core-users';
+
 import { UnchainedCore } from './core.js';
 import { Discount } from './discount.js';
 import { Order } from './orders.js';
@@ -5,7 +7,6 @@ import { OrderDelivery } from './orders.deliveries.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPayment } from './orders.payments.js';
 import { OrderPosition } from './orders.positions.js';
-import { User } from './user.js';
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 
 export interface BasePricingAdapterContext extends UnchainedCore {

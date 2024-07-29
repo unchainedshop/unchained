@@ -1,4 +1,6 @@
-import { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { User } from '@unchainedshop/core-users';
+
 import { Order } from './orders.js';
 import { OrderDelivery } from './orders.deliveries.js';
 import { OrderDiscount } from './orders.discounts.js';
@@ -9,7 +11,6 @@ import {
   IPricingSheet,
   PricingCalculation,
 } from './pricing.js';
-import { User } from './user.js';
 
 /*
  * Delivery pricing

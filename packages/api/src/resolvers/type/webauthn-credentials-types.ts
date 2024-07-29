@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { WebAuthnCredentials as WebAuthnCredentialsTypes } from '@unchainedshop/types/user.js';
+import { WebAuthnCredentials as WebAuthnCredentialsTypes } from '@unchainedshop/core-users';
 
 type HelperType<P, T> = (
   credentials: WebAuthnCredentialsTypes,

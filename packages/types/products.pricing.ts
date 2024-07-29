@@ -1,3 +1,5 @@
+import type { User } from '@unchainedshop/core-users';
+
 import { Order } from './orders.js';
 import { OrderDiscount } from './orders.discounts.js';
 import {
@@ -8,7 +10,6 @@ import {
   PricingCalculation,
 } from './pricing.js';
 import { Product, ProductConfiguration } from './products.js';
-import { User } from './user.js';
 import { OrderPosition } from './orders.positions.js';
 
 export enum ProductPricingRowCategory {

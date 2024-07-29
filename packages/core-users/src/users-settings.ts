@@ -1,6 +1,24 @@
-import { User, UserSettings, UserSettingsOptions } from '@unchainedshop/types/user.js';
+import { User } from './types.js';
 import { Schemas } from '@unchainedshop/utils';
 import { mongodb } from '@unchainedshop/mongodb';
+
+export interface UserSettingsOptions {
+  mergeUserCartsOnLogin?: boolean;
+  autoMessagingAfterUserCreation?: boolean;
+  validateEmail?: (email: string) => Promise<boolean>;
+  validateUsername?: (username: string) => Promise<boolean>;
+  validateNewUser?: (user: Partial<User>) => Promise<User>;
+  validatePassword?: (password: string) => Promise<boolean>;
+}
+export interface UserSettings {
+  mergeUserCartsOnLogin: boolean;
+  autoMessagingAfterUserCreation: boolean;
+  validateEmail: (email: string) => Promise<boolean>;
+  validateUsername: (username: string) => Promise<boolean>;
+  validateNewUser: (user: Partial<User>) => Promise<User>;
+  validatePassword: (password: string) => Promise<boolean>;
+  configureSettings: (options: UserSettingsOptions, db: mongodb.Db) => void;
+}
 
 export const userSettings: UserSettings = {
   autoMessagingAfterUserCreation: null,

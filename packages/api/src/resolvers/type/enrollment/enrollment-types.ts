@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/api';
 import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
 import { Enrollment as EnrollmentType, EnrollmentPlan } from '@unchainedshop/core-enrollments';
-import { User } from '@unchainedshop/types/user.js';
+import { User } from '@unchainedshop/core-users';
 
 type HelperType<P, T> = (enrollment: EnrollmentType, params: P, context: Context) => T;
 

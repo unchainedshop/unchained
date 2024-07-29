@@ -1,14 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
-import {
-  User,
-  UserQuery,
-  Email,
-  UserLastLogin,
-  UserProfile,
-  UserSettingsOptions,
-  UserData,
-} from '@unchainedshop/types/user.js';
+import { User, UserQuery, Email, UserLastLogin, UserProfile, UserData } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -21,12 +13,86 @@ import { FileDirector } from '@unchainedshop/file-upload';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { UsersCollection } from '../db/UsersCollection.js';
 import addMigrations from './addMigrations.js';
-import { userSettings } from '../users-settings.js';
-import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
+import { userSettings, UserSettingsOptions } from '../users-settings.js';
+import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
 import { Locale } from '@unchainedshop/utils';
 import type { Address, Contact } from '@unchainedshop/mongodb';
+
+export type UsersModule = {
+  // Submodules
+  webAuthn: UsersWebAuthnModule;
+
+  // Queries
+  count: (query: UserQuery) => Promise<number>;
+  findUserById: (userId: string) => Promise<User>;
+  findUserByToken: (hashedToken?: string) => Promise<User>;
+  findUserByResetToken: (token: string) => Promise<User>;
+  findUnverifiedEmailToken: (token: string) => Promise<{
+    userId: string;
+    address: string;
+    when: Date;
+  }>;
+  findUserByEmail(email: string): Promise<User>;
+  findUserByUsername(username: string): Promise<User>;
+  findUser: (
+    selector: UserQuery & { sort?: Array<SortOption> },
+    options?: mongodb.FindOptions,
+  ) => Promise<User>;
+  findUsers: (
+    query: UserQuery & {
+      sort?: Array<SortOption>;
+      limit?: number;
+      offset?: number;
+    },
+  ) => Promise<Array<User>>;
+  userExists: (query: { userId: string }) => Promise<boolean>;
+  // Transformations
+  primaryEmail: (user: User) => Email;
+  userLocale: (user: User) => Locale;
+
+  // Mutations
+  createUser: (
+    userData: UserData,
+    options: { skipMessaging?: boolean; skipPasswordEnrollment?: boolean },
+  ) => Promise<string>;
+  addEmail: (userId: string, email: string) => Promise<void>;
+  removeEmail: (userId: string, email: string) => Promise<void>;
+  sendVerificationEmail: (userId: string, email: string) => Promise<void>;
+  sendResetPasswordEmail: (userId: string, email: string, isEnrollment?: boolean) => Promise<void>;
+  verifyEmail: (userId: string, email: string) => Promise<void>;
+  setUsername: (userId: string, newUsername: string) => Promise<void>;
+  setPassword: (userId: string, newPassword?: string) => Promise<void>;
+  verifyPassword: (hashObject: Record<string, string>, password: string) => Promise<boolean>;
+  addRoles: (userId: string, roles: Array<string>) => Promise<number>;
+  updateAvatar: (_id: string, fileId: string) => Promise<User>;
+  updateGuest: (user: User, guest: boolean) => Promise<void>;
+  updateHeartbeat: (userId: string, doc: UserLastLogin) => Promise<User>;
+  updateLastBillingAddress: (_id: string, lastAddress: Address) => Promise<User>;
+  updateLastContact: (_id: string, lastContact: Contact) => Promise<User>;
+  updateProfile: (
+    _id: string,
+    { profile, meta }: { profile?: UserProfile; meta?: any },
+  ) => Promise<User>;
+  delete: (userId: string) => Promise<User>;
+  updateRoles: (_id: string, roles: Array<string>) => Promise<User>;
+  updateTags: (_id: string, tags: Array<string>) => Promise<User>;
+  updateUser: (
+    selector: mongodb.Filter<User>,
+    modifier: mongodb.UpdateFilter<User>,
+    options: mongodb.FindOneAndUpdateOptions,
+  ) => Promise<User>;
+  addPushSubscription: (
+    userId: string,
+    subscription: any,
+    options?: {
+      userAgent: string;
+      unsubscribeFromOtherUsers: boolean;
+    },
+  ) => Promise<void>;
+  removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
+};
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',

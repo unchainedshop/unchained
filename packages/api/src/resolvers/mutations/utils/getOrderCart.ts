@@ -1,5 +1,5 @@
 import { Context } from '../../../types.js';
-import { User } from '@unchainedshop/types/user.js';
+import { User } from '@unchainedshop/core-users';
 import { OrderNotFoundError } from '../../../errors.js';
 
 export const getOrderCart = async (params: { orderId?: string; user: User }, context: Context) => {

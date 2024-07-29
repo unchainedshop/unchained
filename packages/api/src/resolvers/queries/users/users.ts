@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
-import { UserQuery } from '@unchainedshop/types/user.js';
+import { UserQuery } from '@unchainedshop/core-users';
 import { Context } from '../../../types.js';
 
 export default async function users(

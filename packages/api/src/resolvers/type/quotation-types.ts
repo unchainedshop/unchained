@@ -1,6 +1,6 @@
 import { Quotation as QuotationType } from '@unchainedshop/types/quotations.js';
 import { Context } from '@unchainedshop/api';
-import { User } from '@unchainedshop/types/user.js';
+import { User } from '@unchainedshop/core-users';
 import { Product } from '@unchainedshop/types/products.js';
 import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';

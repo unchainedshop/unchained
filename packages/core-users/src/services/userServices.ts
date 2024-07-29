@@ -1,9 +1,15 @@
-import { getUserLanguageService } from './getUserLanguageService.js';
-import { updateUserAvatarAfterUploadService } from './updateUserAvatarAfterUploadService.js';
-import { migrateUserDataService } from './migrateUserDataService.js';
+import {
+  updateUserAvatarAfterUploadService,
+  UpdateUserAvatarAfterUploadService,
+} from './updateUserAvatarAfterUploadService.js';
+import { migrateUserDataService, MigrateUserDataService } from './migrateUserDataService.js';
 
-export const userServices = {
-  getUserLanguage: getUserLanguageService,
+export interface UserServices {
+  updateUserAvatarAfterUpload: UpdateUserAvatarAfterUploadService;
+  migrateUserData: MigrateUserDataService;
+}
+
+export const userServices: UserServices = {
   updateUserAvatarAfterUpload: updateUserAvatarAfterUploadService,
   migrateUserData: migrateUserDataService,
 };

@@ -1,3 +1,6 @@
+import type { User } from '@unchainedshop/core-users';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
+
 import { Order } from './orders.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPayment } from './orders.payments.js';
@@ -8,8 +11,6 @@ import {
   IPricingSheet,
   PricingCalculation,
 } from './pricing.js';
-import { User } from './user.js';
-import type { PaymentProvider } from '@unchainedshop/core-payment';
 
 /*
  * Payment pricing

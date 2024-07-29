@@ -1,3 +1,5 @@
+import type { User } from '@unchainedshop/core-users';
+
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   WarehousingContext,
@@ -12,7 +14,6 @@ import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema.js'
 import { WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 import { EstimatedDispatch, EstimatedStock, TokenSurrogate, WarehousingInterface } from '../types.js';
-import { User } from '@unchainedshop/types/user.js';
 import { WarehousingError } from '../warehousing-index.js';
 import { Order } from '@unchainedshop/types/orders.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';

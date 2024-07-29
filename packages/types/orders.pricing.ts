@@ -1,3 +1,5 @@
+import type { User } from '@unchainedshop/core-users';
+
 import { Order } from './orders.js';
 import { OrderDelivery } from './orders.deliveries.js';
 import { OrderDiscount } from './orders.discounts.js';
@@ -11,7 +13,6 @@ import {
   PricingCalculation,
   PricingDiscount,
 } from './pricing.js';
-import { User } from './user.js';
 
 /*
  * Order pricing

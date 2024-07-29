@@ -1,5 +1,11 @@
-import { MigrateUserDataService } from '@unchainedshop/types/user.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { userSettings } from '../users-settings.js';
+
+export type MigrateUserDataService = (
+  userIdBeforeLogin,
+  userId,
+  unchainedAPI: UnchainedCore,
+) => Promise<void>;
 
 export const migrateUserDataService: MigrateUserDataService = async (
   userIdBeforeLogin,

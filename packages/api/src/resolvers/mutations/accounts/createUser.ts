@@ -1,4 +1,4 @@
-import { UserData } from '@unchainedshop/types/user.js';
+import { UserData } from '@unchainedshop/core-users';
 import { Context } from '../../../types.js';
 import { log } from '@unchainedshop/logger';
 import {

@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { UserProfile } from '@unchainedshop/types/user.js';
+import { UserProfile } from '@unchainedshop/core-users';
 import { Context } from '../../../types.js';
 import { UserNotFoundError } from '../../../errors.js';
 

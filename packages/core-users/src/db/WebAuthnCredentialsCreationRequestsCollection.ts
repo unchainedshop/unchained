@@ -1,4 +1,4 @@
-import { WebAuthnCredentialsCreationRequest } from '@unchainedshop/types/user.js';
+import { WebAuthnCredentialsCreationRequest } from '../types.js';
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
 type Collection = WebAuthnCredentialsCreationRequest & { _id: number };

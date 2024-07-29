@@ -8,6 +8,24 @@ import {
 import { createLogger } from '@unchainedshop/logger';
 import { WebAuthnCredentialsCreationRequestsCollection } from '../db/WebAuthnCredentialsCreationRequestsCollection.js';
 
+export interface UsersWebAuthnModule {
+  findMDSMetadataForAAGUID: (aaguid: string) => Promise<any>;
+
+  createCredentialCreationOptions: (
+    origin: string,
+    username: string,
+    extensionOptions?: any,
+  ) => Promise<any>;
+  verifyCredentialCreation: (username: string, credentials: any) => Promise<any>;
+
+  createCredentialRequestOptions: (
+    origin: string,
+    username?: string,
+    extensionOptions?: any,
+  ) => Promise<any>;
+  verifyCredentialRequest: (userPublicKeys: any[], username: string, credentials: any) => Promise<any>;
+}
+
 const logger = createLogger('unchained:core-users');
 
 const { ROOT_URL, EMAIL_WEBSITE_NAME } = process.env;
@@ -48,7 +66,9 @@ export function buf2hex(buffer) {
     .join('');
 }
 
-export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<any>) => {
+export const configureUsersWebAuthnModule = async ({
+  db,
+}: ModuleInput<any>): Promise<UsersWebAuthnModule> => {
   const WebAuthnCredentialsCreationRequests = await WebAuthnCredentialsCreationRequestsCollection(db);
 
   const thisDomain = new URL(ROOT_URL).hostname;
