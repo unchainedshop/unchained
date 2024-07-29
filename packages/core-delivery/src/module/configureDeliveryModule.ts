@@ -19,7 +19,7 @@ import {
   IDeliveryPricingSheet,
 } from '@unchainedshop/types/delivery.pricing.js';
 import { DeliveryError } from '../delivery-index.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 
 export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   // Queries

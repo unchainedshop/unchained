@@ -1,7 +1,8 @@
+import type { Order } from '@unchainedshop/core-orders';
 import type { FindOptions } from 'mongodb';
+
 import { UnchainedCore } from './core.js';
 import { DiscountAdapterActions, DiscountContext } from './discount.js';
-import { Order } from './orders.js';
 import { OrderPrice } from './orders.pricing.js';
 import { IPricingSheet, PricingCalculation } from './pricing.js';
 import type { TimestampFields } from '@unchainedshop/mongodb';

@@ -18,7 +18,7 @@ import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
 import { paymentSettings } from '../payment-settings.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { PaymentProviderType } from '../payment-index.js';
 import {
   IPaymentPricingSheet,

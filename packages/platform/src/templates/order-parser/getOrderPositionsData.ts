@@ -1,6 +1,6 @@
 import { Locale } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import formatPrice from './formatPrice.js';
 
 type PriceFormatter = ({ amount, currency }: { amount: number; currency: string }) => string;

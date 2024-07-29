@@ -4,7 +4,7 @@ import type { User } from '@unchainedshop/core-users';
 
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { Product } from '@unchainedshop/types/products.js';

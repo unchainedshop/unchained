@@ -1,6 +1,7 @@
 import type { FindOptions } from 'mongodb';
+import type { Order } from '@unchainedshop/core-orders';
+
 import { UnchainedCore } from './core.js';
-import { Order } from './orders.js';
 import { OrderDelivery } from './orders.deliveries.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';

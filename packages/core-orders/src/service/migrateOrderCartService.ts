@@ -1,4 +1,15 @@
-import { MigrateOrderCartsService } from '@unchainedshop/types/orders.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { Order } from '../types.js';
+
+export type MigrateOrderCartsService = (
+  params: {
+    fromUserId: string;
+    toUserId: string;
+    shouldMerge: boolean;
+    countryContext: string;
+  },
+  unchainedAPI: UnchainedCore,
+) => Promise<Order>;
 
 export const migrateOrderCartsService: MigrateOrderCartsService = async (
   { fromUserId, toUserId, shouldMerge, countryContext },

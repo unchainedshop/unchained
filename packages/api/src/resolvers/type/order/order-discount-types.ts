@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderDiscount as OrderDiscountType } from '@unchainedshop/types/orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from '@unchainedshop/types/orders.pricing.js';
 import { OrderDiscountDirector } from '@unchainedshop/core-orders';

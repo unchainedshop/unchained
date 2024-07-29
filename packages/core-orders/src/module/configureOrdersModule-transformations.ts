@@ -1,10 +1,34 @@
-import { Order, OrderTransformations } from '@unchainedshop/types/orders.js';
+import { Order } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { DeliveryPricingRowCategory } from '@unchainedshop/types/delivery.pricing.js';
 import { PaymentPricingRowCategory } from '@unchainedshop/types/payments.pricing.js';
 import { ProductPricingRowCategory } from '@unchainedshop/types/products.pricing.js';
-import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
+import {
+  IOrderPricingSheet,
+  OrderPrice,
+  OrderPricingDiscount,
+  OrderPricingRowCategory,
+} from '@unchainedshop/types/orders.pricing.js';
 import { OrderPricingSheet } from '../director/OrderPricingSheet.js';
+import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+
+export interface OrderTransformations {
+  discounted: (
+    order: Order,
+    orderDiscount: OrderDiscount,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Array<OrderPricingDiscount>>;
+  discountTotal: (
+    order: Order,
+    orderDiscount: OrderDiscount,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPrice>;
+
+  isCart: (order: Order) => boolean;
+  cart: (order: { countryContext?: string; orderNumber?: string; userId: string }) => Promise<Order>;
+  pricingSheet: (order: Order) => IOrderPricingSheet;
+}
 
 export const configureOrderModuleTransformations = ({
   Orders,

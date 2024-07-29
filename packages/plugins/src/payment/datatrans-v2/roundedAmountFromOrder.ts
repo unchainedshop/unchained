@@ -1,5 +1,5 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 
 const roundedAmountFromOrder = (
   order: Order,

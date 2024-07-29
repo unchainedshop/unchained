@@ -1,4 +1,4 @@
-import { Order, OrdersModule } from '@unchainedshop/types/orders.js';
+import { Order, OrdersModule } from '@unchainedshop/core-orders';
 import * as pf from 'postfinancecheckout';
 
 const { PostFinanceCheckout } = pf;

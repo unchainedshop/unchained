@@ -1,5 +1,3 @@
-import { OrdersModule, OrdersSettingsOptions } from './orders.js';
-
 import type { AssortmentsModule, AssortmentsSettingsOptions } from '@unchainedshop/core-assortments';
 import type { BookmarksModule } from '@unchainedshop/core-bookmarks';
 import type { CountriesModule } from '@unchainedshop/core-countries';
@@ -11,7 +9,7 @@ import type { FilesModule, FilesSettingsOptions } from '@unchainedshop/core-file
 import type { FiltersModule, FiltersSettingsOptions } from '@unchainedshop/core-filters';
 import type { LanguagesModule } from '@unchainedshop/core-languages';
 import type { MessagingModule } from '@unchainedshop/core-messaging';
-
+import type { OrdersModule, OrdersSettingsOptions } from '@unchainedshop/core-orders';
 import type { PaymentModule, PaymentSettingsOptions } from '@unchainedshop/core-payment';
 import type { ProductsModule, ProductsSettingsOptions } from '@unchainedshop/core-products';
 import type { QuotationsModule, QuotationsSettingsOptions } from '@unchainedshop/core-quotations';

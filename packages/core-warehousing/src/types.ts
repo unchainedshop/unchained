@@ -2,7 +2,7 @@ import { IBaseAdapter, IBaseDirector, Locale } from '@unchainedshop/utils';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Product } from '@unchainedshop/types/products.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 

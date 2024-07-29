@@ -1,4 +1,4 @@
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';

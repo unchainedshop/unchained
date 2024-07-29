@@ -15,7 +15,7 @@ import { WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 import { EstimatedDispatch, EstimatedStock, TokenSurrogate, WarehousingInterface } from '../types.js';
 import { WarehousingError } from '../warehousing-index.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { Locale } from '@unchainedshop/utils';

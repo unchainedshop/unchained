@@ -14,7 +14,7 @@ Below is an example of a custom module that will be used to change currency of a
 ```typescript
 import { OrdersCollection } from '@unchainedshop/core-orders'
 import { generateDbFilterById } from '@unchainedshop/mongodb'
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 
 type CurrencyModule = {
   changeCartCurrency: (currency: string, cartId: string) => Promise<Order>

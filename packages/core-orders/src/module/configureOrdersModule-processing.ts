@@ -3,13 +3,38 @@ import { ProductTypes } from '@unchainedshop/core-products';
 import { emit, registerEvents } from '@unchainedshop/events';
 
 import type { Locker } from '@kontsedal/locco';
-import { Order, OrderStatus, OrderProcessing, OrdersModule } from '@unchainedshop/types/orders.js';
+import { Order, OrderStatus } from '../types.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 import { ordersSettings } from '../orders-settings.js';
+
+export type OrderContextParams<P> = (
+  order: Order,
+  params: P,
+  unchainedAPI: UnchainedCore,
+) => Promise<Order>;
+
+export type OrderTransactionContext = {
+  paymentContext?: any;
+  deliveryContext?: any;
+  comment?: string;
+  nextStatus?: OrderStatus;
+};
+
+export interface OrderProcessing {
+  checkout: (
+    orderId: string,
+    params: OrderTransactionContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Order>;
+  confirm: OrderContextParams<OrderTransactionContext>;
+  reject: OrderContextParams<OrderTransactionContext>;
+  processOrder: OrderContextParams<OrderTransactionContext>;
+  updateStatus: (orderId: string, params: { status: OrderStatus; info?: string }) => Promise<Order>;
+}
 
 const ORDER_PROCESSING_EVENTS: string[] = [
   'ORDER_CHECKOUT',
@@ -41,7 +66,7 @@ export const configureOrderModuleProcessing = ({
     return findNewOrderNumber(order, index + 1);
   };
 
-  const updateStatus: OrdersModule['updateStatus'] = async (orderId, { status, info }) => {
+  const updateStatus: OrderProcessing['updateStatus'] = async (orderId, { status, info }) => {
     const selector = generateDbFilterById(orderId);
     const order = await Orders.findOne(selector, {});
 

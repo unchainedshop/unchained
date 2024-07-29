@@ -1,4 +1,4 @@
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { IOrderPricingSheet } from '@unchainedshop/types/orders.pricing.js';
 import Stripe from 'stripe';

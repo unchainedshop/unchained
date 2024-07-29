@@ -1,5 +1,24 @@
-import { OrdersSettingsOptions } from '@unchainedshop/types/orders.js';
 import { generateRandomHash } from '@unchainedshop/utils';
+import { Order } from './types.js';
+import { Product } from '@unchainedshop/types/products.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+
+export interface OrderSettingsOrderPositionValidation {
+  order: Order;
+  product: Product;
+  quantityDiff?: number;
+  configuration?: Array<{ key: string; value: string }>;
+}
+
+export interface OrdersSettingsOptions {
+  ensureUserHasCart?: boolean;
+  orderNumberHashFn?: (order: Order, index: number) => string;
+  validateOrderPosition?: (
+    validationParams: OrderSettingsOrderPositionValidation,
+    context: UnchainedCore,
+  ) => Promise<void>;
+  lockOrderDuringCheckout?: boolean;
+}
 
 export const defaultValidateOrderPosition = async ({ product }, { modules }) => {
   if (!modules.products.isActive(product)) {

@@ -22,7 +22,7 @@ import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
 import { EnrollmentDirector } from '../enrollments-index.js';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { Product } from '@unchainedshop/types/products.js';
 

@@ -1,6 +1,6 @@
 import type { User } from '@unchainedshop/core-users';
+import type { Order } from '@unchainedshop/core-orders';
 
-import { Order } from './orders.js';
 import { OrderDelivery } from './orders.deliveries.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPayment } from './orders.payments.js';

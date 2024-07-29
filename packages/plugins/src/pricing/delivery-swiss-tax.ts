@@ -4,7 +4,7 @@ import {
   IDeliveryPricingAdapter,
 } from '@unchainedshop/types/delivery.pricing.js';
 
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { SwissTaxCategories } from './tax/ch.js';
 

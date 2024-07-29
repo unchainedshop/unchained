@@ -1,6 +1,18 @@
-import { NextUserCartService } from '@unchainedshop/types/orders.js';
+import { User } from '@unchainedshop/core-users';
 import { ordersSettings } from '../orders-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { Order } from '../types.js';
+
+export type NextUserCartService = (
+  params: {
+    user: User;
+    orderNumber?: string;
+    countryCode?: string;
+    forceCartCreation?: boolean;
+  },
+  unchainedAPI: UnchainedCore,
+) => Promise<Order | null>;
 
 export const nextUserCartService: NextUserCartService = async (
   { user, orderNumber, countryCode, forceCartCreation },

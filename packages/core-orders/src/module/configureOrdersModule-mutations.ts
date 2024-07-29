@@ -1,11 +1,49 @@
-import { ModuleMutations } from '@unchainedshop/types/core.js';
-import { Order, OrderStatus, OrderMutations } from '@unchainedshop/types/orders.js';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import { Order, OrderStatus } from '../types.js';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
+import {
+  Address,
+  Contact,
+  generateDbFilterById,
+  generateDbMutations,
+  mongodb,
+} from '@unchainedshop/mongodb';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { OrdersSchema } from '../db/OrdersSchema.js';
+
+export interface OrderMutations {
+  create: (doc: {
+    userId: string;
+    billingAddress?: Address;
+    contact?: Contact;
+    countryCode: string;
+    currency: string;
+    orderNumber?: string;
+    originEnrollmentId?: string;
+  }) => Promise<Order>;
+
+  delete: (orderId: string) => Promise<number>;
+
+  setCartOwner: (params: { orderId: string; userId: string }) => Promise<void>;
+  moveCartPositions: (params: { fromOrderId: string; toOrderId: string }) => Promise<void>;
+
+  setDeliveryProvider: (
+    orderId: string,
+    deliveryProviderId: string,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Order>;
+  setPaymentProvider: (
+    orderId: string,
+    paymentProviderId: string,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Order>;
+
+  updateBillingAddress: (orderId: string, billingAddress: Address) => Promise<Order>;
+  updateContact: (orderId: string, contact: Contact) => Promise<Order>;
+  updateContext: (orderId: string, context: any) => Promise<Order | null>;
+}
 
 const ORDER_EVENTS: string[] = [
   'ORDER_CREATE',

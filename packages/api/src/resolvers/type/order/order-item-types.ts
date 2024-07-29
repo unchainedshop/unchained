@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { Context } from '@unchainedshop/api';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/types/orders.positions.js';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
 import { Product } from '@unchainedshop/types/products.js';

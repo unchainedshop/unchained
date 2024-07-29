@@ -3,7 +3,7 @@ import { SortOption, Locale } from '@unchainedshop/utils';
 import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { File } from '@unchainedshop/core-files';
 import { Language } from '@unchainedshop/core-languages';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { PaymentCredentials } from '@unchainedshop/core-payment';
 import { Quotation } from '@unchainedshop/core-quotations';
 import {

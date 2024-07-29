@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { EnrollmentPeriod as EnrollmentPeriodType } from '@unchainedshop/core-enrollments';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 
 type HelperType<T> = (enrollmentPeriod: EnrollmentPeriodType, _: never, context: Context) => T;
 

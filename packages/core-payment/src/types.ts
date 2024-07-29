@@ -1,6 +1,6 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import type { TimestampFields } from '@unchainedshop/mongodb';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 

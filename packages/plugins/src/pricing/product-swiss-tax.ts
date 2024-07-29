@@ -4,7 +4,7 @@ import {
   ProductPricingRowCategory,
 } from '@unchainedshop/types/products.pricing.js';
 import { Product } from '@unchainedshop/types/products.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order } from '@unchainedshop/core-orders';
 import { SwissTaxCategories } from './tax/ch.js';
 
 export const getTaxRate = (context: { product: Product; order?: Order }) => {

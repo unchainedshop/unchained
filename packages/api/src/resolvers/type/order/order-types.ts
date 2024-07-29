@@ -4,7 +4,7 @@ import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Enrollment } from '@unchainedshop/core-enrollments';
-import { Order as OrderType } from '@unchainedshop/types/orders.js';
+import { Order as OrderType } from '@unchainedshop/core-orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';

@@ -1,5 +1,5 @@
 import { Context } from '../../../types.js';
-import { OrderStatus } from '@unchainedshop/types/orders.js';
+import { OrderStatus } from '@unchainedshop/core-orders';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.js';
 

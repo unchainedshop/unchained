@@ -1,8 +1,7 @@
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
-import { Order, OrdersModule, OrdersSettingsOptions } from '@unchainedshop/types/orders.js';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
-import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { OrderDeliveriesModule, OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderPayment, OrderPaymentsModule } from '@unchainedshop/types/orders.payments.js';
+import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
 import { generateDbFilterById } from '@unchainedshop/mongodb';
 import { createRequire } from 'node:module';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
@@ -13,15 +12,36 @@ import { OrderPositionsCollection } from '../db/OrderPositionsCollection.js';
 import { OrdersCollection } from '../db/OrdersCollection.js';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector.js';
 import { OrderPricingDirector } from '../director/OrderPricingDirector.js';
-import { ordersSettings } from '../orders-settings.js';
+import { ordersSettings, OrdersSettingsOptions } from '../orders-settings.js';
 import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule.js';
 import { configureOrderDiscountsModule } from './configureOrderDiscountsModule.js';
 import { configureOrderPaymentsModule } from './configureOrderPaymentsModule.js';
 import { configureOrderPositionsModule } from './configureOrderPositionsModule.js';
-import { configureOrderModuleMutations } from './configureOrdersModule-mutations.js';
-import { configureOrderModuleProcessing } from './configureOrdersModule-processing.js';
-import { configureOrdersModuleQueries } from './configureOrdersModule-queries.js';
-import { configureOrderModuleTransformations } from './configureOrdersModule-transformations.js';
+import { configureOrderModuleMutations, OrderMutations } from './configureOrdersModule-mutations.js';
+import { configureOrderModuleProcessing, OrderProcessing } from './configureOrdersModule-processing.js';
+import { configureOrdersModuleQueries, OrderQueries } from './configureOrdersModule-queries.js';
+import {
+  configureOrderModuleTransformations,
+  OrderTransformations,
+} from './configureOrdersModule-transformations.js';
+import { OrderDiscountsModule } from '@unchainedshop/types/orders.discounts.js';
+import { Order } from '../types.js';
+
+export type OrdersModule = OrderQueries &
+  OrderTransformations &
+  OrderProcessing &
+  OrderMutations & {
+    // Order context recalculations
+    initProviders: (order: Order, unchainedAPI: UnchainedCore) => Promise<Order>;
+    updateCalculation: (orderId: string, unchainedAPI: UnchainedCore) => Promise<Order>;
+    invalidateProviders: (unchainedAPI: UnchainedCore, maxAgeDays: number) => Promise<void>;
+
+    // Sub entities
+    deliveries: OrderDeliveriesModule;
+    discounts: OrderDiscountsModule;
+    positions: OrderPositionsModule;
+    payments: OrderPaymentsModule;
+  };
 
 const require = createRequire(import.meta.url);
 const { Locker, MongoAdapter } = require('@kontsedal/locco');
