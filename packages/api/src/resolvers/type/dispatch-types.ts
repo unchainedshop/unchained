@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Product } from '@unchainedshop/types/products.js';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
+import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 export const Dispatch = {
   _id: (params: {

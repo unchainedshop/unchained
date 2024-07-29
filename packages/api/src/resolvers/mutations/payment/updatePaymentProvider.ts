@@ -1,5 +1,5 @@
 import { Context } from '../../../types.js';
-import { PaymentProvider } from '@unchainedshop/types/payments.js';
+import { PaymentProvider } from '@unchainedshop/core-payment';
 import { log } from '@unchainedshop/logger';
 import { PaymentProviderNotFoundError, InvalidIdError } from '../../../errors.js';
 

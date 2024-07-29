@@ -7,7 +7,7 @@ import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { User } from '@unchainedshop/types/user.js';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
+import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 export enum DeliveryProviderType {
   SHIPPING = 'SHIPPING',

@@ -2,7 +2,7 @@ import {
   IPaymentActions,
   IPaymentAdapter,
   PaymentChargeActionResult,
-} from '@unchainedshop/types/payments.js';
+} from '@unchainedshop/core-payment';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 

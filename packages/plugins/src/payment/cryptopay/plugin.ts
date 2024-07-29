@@ -1,4 +1,4 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
+import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { ethers } from 'ethers';
 import { BIP32Factory } from 'bip32';

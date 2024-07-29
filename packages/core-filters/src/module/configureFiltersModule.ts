@@ -13,11 +13,18 @@ import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { FiltersCollection } from '../db/FiltersCollection.js';
 import { FiltersSchema } from '../db/FiltersSchema.js';
-import { configureFilterSearchModule, FilterSearchModule } from './configureFilterSearchModule.js';
+import {
+  configureFilterSearchModule,
+  FilterSearchModule,
+  SearchAssortments,
+  SearchProducts,
+} from './configureFilterSearchModule.js';
 import { configureFilterTextsModule, FilterTextsModule } from './configureFilterTextsModule.js';
 import createFilterValueParser from '../filter-value-parsers/index.js';
 import { filtersSettings, FiltersSettingsOptions } from '../filters-settings.js';
 import { FilterQuery, Filter } from '../types.js';
+
+export { SearchAssortments, SearchProducts };
 
 export type FiltersModule = {
   // Queries

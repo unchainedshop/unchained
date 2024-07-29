@@ -3,7 +3,7 @@ import {
   ProductContractConfiguration,
   ProductContractStandard,
 } from '@unchainedshop/types/products.js';
-import { WarehousingContext, WarehousingProvider } from '@unchainedshop/types/warehousing.js';
+import { WarehousingContext, WarehousingProvider } from '@unchainedshop/core-warehousing';
 import { Context } from '@unchainedshop/api';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { PlanProduct } from './product-plan-types.js';

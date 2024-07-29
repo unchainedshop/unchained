@@ -1,17 +1,102 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
 import {
   WarehousingContext,
-  WarehousingModule,
   WarehousingProvider,
   WarehousingProviderQuery,
   WarehousingProviderType,
-} from '@unchainedshop/types/warehousing.js';
+} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection.js';
 import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema.js';
 import { WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
+import { EstimatedDispatch, EstimatedStock, TokenSurrogate, WarehousingInterface } from '../types.js';
+import { User } from '@unchainedshop/types/user.js';
+import { WarehousingError } from '../warehousing-index.js';
+import { Order } from '@unchainedshop/types/orders.js';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { Product } from '@unchainedshop/types/products.js';
+import { Locale } from '@unchainedshop/utils';
+
+export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'delete'> & {
+  // Queries
+  findProvider: (
+    query: { warehousingProviderId: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<WarehousingProvider>;
+  findToken: (query: { tokenId: string }, options?: mongodb.FindOptions) => Promise<TokenSurrogate>;
+  findTokensForUser: (user: User, options?: mongodb.FindOptions) => Promise<Array<TokenSurrogate>>;
+  findTokens: (query: any, options?: mongodb.FindOptions) => Promise<Array<TokenSurrogate>>;
+  findProviders: (
+    query: WarehousingProviderQuery,
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<WarehousingProvider>>;
+  count: (query: WarehousingProviderQuery) => Promise<number>;
+  providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;
+
+  // Adapter
+
+  findSupported: (
+    warehousingContext: WarehousingContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Array<WarehousingProvider>>;
+  findInterface: (query: WarehousingProvider) => WarehousingInterface;
+  findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
+  configurationError: (
+    provider: WarehousingProvider,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<WarehousingError>;
+  isActive: (provider: WarehousingProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
+
+  estimatedDispatch: (
+    provider: WarehousingProvider,
+    context: WarehousingContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<EstimatedDispatch>;
+
+  estimatedStock: (
+    provider: WarehousingProvider,
+    context: WarehousingContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<EstimatedStock>;
+
+  updateTokenOwnership: (input: {
+    tokenId: string;
+    userId: string;
+    walletAddress: string;
+  }) => Promise<void>;
+
+  invalidateToken: (tokenId: string) => Promise<void>;
+
+  buildAccessKeyForToken: (tokenId: string) => Promise<string>;
+
+  tokenizeItems: (
+    order: Order,
+    params: {
+      items: Array<{
+        orderPosition: OrderPosition;
+        product: Product;
+      }>;
+    },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<void>;
+
+  tokenMetadata: (
+    chainTokenId: string,
+    params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Locale },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<any>;
+
+  isInvalidateable: (
+    chainTokenId: string,
+    params: { product: Product; token: TokenSurrogate; referenceDate: Date },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
+
+  // Mutations
+  delete: (providerId: string) => Promise<WarehousingProvider>;
+};
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',

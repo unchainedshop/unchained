@@ -1,5 +1,16 @@
-import { ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import { PaymentContext, PaymentModule, PaymentProvider } from '@unchainedshop/types/payments.js';
+import {
+  ModuleMutations,
+  ModuleMutationsWithReturnDoc,
+  UnchainedCore,
+} from '@unchainedshop/types/core.js';
+import {
+  PaymentChargeActionResult,
+  PaymentContext,
+  PaymentCredentials,
+  PaymentError,
+  PaymentInterface,
+  PaymentProvider,
+} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
@@ -7,6 +18,94 @@ import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
 import { paymentSettings } from '../payment-settings.js';
+import { Order } from '@unchainedshop/types/orders.js';
+import { PaymentProviderType } from '../payment-index.js';
+import {
+  IPaymentPricingSheet,
+  PaymentPricingCalculation,
+  PaymentPricingContext,
+} from '@unchainedshop/types/payments.pricing.js';
+
+export type PaymentProvidersModules = ModuleMutationsWithReturnDoc<PaymentProvider> & {
+  // Queries
+  count: (query: mongodb.Filter<PaymentProvider>) => Promise<number>;
+  findProvider: (
+    query: mongodb.Filter<PaymentProvider> & {
+      paymentProviderId: string;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<PaymentProvider>;
+  findProviders: (
+    query: mongodb.Filter<PaymentProvider>,
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<PaymentProvider>>;
+
+  providerExists: (query: { paymentProviderId: string }) => Promise<boolean>;
+
+  // Payment adapter
+  findSupported: (
+    query: { order: Order },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Array<PaymentProvider>>;
+  determineDefault: (
+    paymentProviders: Array<PaymentProvider>,
+    params: { order: Order; paymentCredentials?: Array<PaymentCredentials> },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<PaymentProvider>;
+
+  findInterface: (query: PaymentProvider) => PaymentInterface;
+  findInterfaces: (query: { type: PaymentProviderType }) => Array<PaymentInterface>;
+
+  pricingSheet: (params: {
+    calculation: Array<PaymentPricingCalculation>;
+    currency: string;
+  }) => IPaymentPricingSheet;
+
+  configurationError: (
+    paymentProvider: PaymentProvider,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<PaymentError>;
+
+  isActive: (paymentProvider: PaymentProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
+
+  isPayLaterAllowed: (paymentProvider: PaymentProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
+
+  calculate: (
+    pricingContext: PaymentPricingContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Array<PaymentPricingCalculation>>;
+
+  charge: (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<PaymentChargeActionResult | false>;
+  register: (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<any>;
+  sign: (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<string>;
+  validate: (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
+  cancel: (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
+  confirm: (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
+};
 
 const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_CREATE',
@@ -26,7 +125,7 @@ const asyncFilter = async (arr, predicate) => {
 
 export const configurePaymentProvidersModule = (
   PaymentProviders: mongodb.Collection<PaymentProvider>,
-): PaymentModule['paymentProviders'] => {
+): PaymentProvidersModules => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
 
   const mutations = generateDbMutations<PaymentProvider>(

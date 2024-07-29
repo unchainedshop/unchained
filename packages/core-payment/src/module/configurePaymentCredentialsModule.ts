@@ -1,12 +1,41 @@
-import {
-  PaymentCredentials as PaymentCredentialsType,
-  PaymentModule,
-} from '@unchainedshop/types/payments.js';
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
+import { PaymentCredentials as PaymentCredentialsType } from '../types.js';
+
+export type PaymentCredentialsModules = {
+  // Queries
+
+  credentialsExists: (query: { paymentCredentialsId: string }) => Promise<boolean>;
+
+  findPaymentCredential: (
+    query: {
+      paymentCredentialsId?: string;
+      userId?: string;
+      paymentProviderId?: string;
+      isPreferred?: boolean;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<PaymentCredentialsType>;
+
+  findPaymentCredentials: (
+    query: mongodb.Filter<PaymentCredentialsType>,
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<PaymentCredentialsType>>;
+
+  // Mutations
+  markPreferred: (query: { userId: string; paymentCredentialsId: string }) => Promise<void>;
+
+  upsertCredentials: (
+    doc: Pick<PaymentCredentialsType, 'userId' | 'paymentProviderId' | '_id' | 'token'> & {
+      [x: string]: any;
+    },
+  ) => Promise<string | null>;
+
+  removeCredentials: (paymentCredentialsId: string) => Promise<PaymentCredentialsType>;
+};
 
 export const configurePaymentCredentialsModule = (
   PaymentCredentials: mongodb.Collection<PaymentCredentialsType>,
-): PaymentModule['paymentCredentials'] => {
+): PaymentCredentialsModules => {
   const markPreferred = async ({ userId, paymentCredentialsId }) => {
     await PaymentCredentials.updateOne(
       {

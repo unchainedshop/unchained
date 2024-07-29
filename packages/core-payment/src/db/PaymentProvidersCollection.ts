@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { PaymentProvider } from '@unchainedshop/types/payments.js';
+import { PaymentProvider } from '@unchainedshop/core-payment';
 
 export const PaymentProvidersCollection = async (db: mongodb.Db) => {
   const PaymentProviders = db.collection<PaymentProvider>('payment-providers');

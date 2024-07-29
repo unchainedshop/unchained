@@ -1,10 +1,35 @@
-import { ModuleInput } from '@unchainedshop/types/core.js';
-import { PaymentModule, PaymentSettingsOptions } from '@unchainedshop/types/payments.js';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
 import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.js';
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.js';
-import { configurePaymentCredentialsModule } from './configurePaymentCredentialsModule.js';
-import { configurePaymentProvidersModule } from './configurePaymentProvidersModule.js';
-import { paymentSettings } from '../payment-settings.js';
+import {
+  configurePaymentCredentialsModule,
+  PaymentCredentialsModules,
+} from './configurePaymentCredentialsModule.js';
+import {
+  configurePaymentProvidersModule,
+  PaymentProvidersModules,
+} from './configurePaymentProvidersModule.js';
+import { paymentSettings, PaymentSettingsOptions } from '../payment-settings.js';
+import { PaymentContext, PaymentCredentials as PaymentCredentialsType } from '../types.js';
+export type PaymentModule = {
+  /*
+   * Payment Providers Module
+   */
+
+  registerCredentials: (
+    paymentProviderId: string,
+    paymentContext: PaymentContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<PaymentCredentialsType>;
+
+  paymentProviders: PaymentProvidersModules;
+
+  /*
+   * Payment Credentials Module
+   */
+
+  paymentCredentials: PaymentCredentialsModules;
+};
 
 export const configurePaymentModule = async ({
   db,

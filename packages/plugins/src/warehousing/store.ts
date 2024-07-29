@@ -3,7 +3,7 @@ import {
   WarehousingAdapter,
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
-import { IWarehousingAdapter } from '@unchainedshop/types/warehousing.js';
+import { IWarehousingAdapter } from '@unchainedshop/core-warehousing';
 
 const Store: IWarehousingAdapter = {
   ...WarehousingAdapter,

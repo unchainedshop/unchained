@@ -1,4 +1,4 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
+import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
 import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { mongodb } from '@unchainedshop/mongodb';

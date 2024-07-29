@@ -1,9 +1,34 @@
-import {
-  PaymentProvider,
-  PaymentSettings,
-  FilterProviders,
-  DetermineDefaultProvider,
-} from '@unchainedshop/types/payments.js';
+import { Order } from '@unchainedshop/types/orders.js';
+import { PaymentCredentials, PaymentProvider } from './types.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+
+export type FilterProviders = (
+  params: {
+    providers: Array<PaymentProvider>;
+    order: Order;
+  },
+  context: UnchainedCore,
+) => Promise<Array<PaymentProvider>>;
+
+export type DetermineDefaultProvider = (
+  params: {
+    providers: Array<PaymentProvider>;
+    order: Order;
+    paymentCredentials?: Array<PaymentCredentials>;
+  },
+  context: UnchainedCore,
+) => Promise<PaymentProvider>;
+export interface PaymentSettingsOptions {
+  sortProviders?: (a: PaymentProvider, b: PaymentProvider) => number;
+  filterSupportedProviders?: FilterProviders;
+  determineDefaultProvider?: DetermineDefaultProvider;
+}
+
+export interface PaymentSettings {
+  filterSupportedProviders: FilterProviders;
+  determineDefaultProvider: DetermineDefaultProvider;
+  configureSettings: (options?: PaymentSettingsOptions) => void;
+}
 
 const sortByCreationDate = (left: PaymentProvider, right: PaymentProvider) => {
   return new Date(left.created).getTime() - new Date(right.created).getTime();

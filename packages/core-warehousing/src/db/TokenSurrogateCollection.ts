@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
+import { TokenSurrogate } from '../types.js';
 
 export const TokenSurrogateCollection = async (db: mongodb.Db) => {
   const TokenSurrogates = db.collection<TokenSurrogate>('token_surrogates');

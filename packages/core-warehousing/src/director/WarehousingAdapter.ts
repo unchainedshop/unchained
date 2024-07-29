@@ -1,4 +1,4 @@
-import { IWarehousingAdapter } from '@unchainedshop/types/warehousing.js';
+import { IWarehousingAdapter } from '../types.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 
 import { WarehousingError } from './WarehousingError.js';

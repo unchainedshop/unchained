@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
+import { WarehousingProvider } from '../types.js';
 
 export const WarehousingProvidersCollection = async (db: mongodb.Db) => {
   const WarehousingProviders = db.collection<WarehousingProvider>('warehousing-providers');

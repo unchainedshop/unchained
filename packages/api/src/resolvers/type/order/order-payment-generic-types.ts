@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { OrderPayment, OrderPaymentDiscount } from '@unchainedshop/types/orders.payments.js';
-import { PaymentProvider } from '@unchainedshop/types/payments.js';
+import { PaymentProvider } from '@unchainedshop/core-payment';
 
 type HelperType<P, T> = (orderPayment: OrderPayment, params: P, context: Context) => T;
 

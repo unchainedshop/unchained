@@ -4,7 +4,7 @@ import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { File } from '@unchainedshop/core-files';
 import { Language } from '@unchainedshop/core-languages';
 import { Order } from '@unchainedshop/types/orders.js';
-import { PaymentCredentials } from '@unchainedshop/types/payments.js';
+import { PaymentCredentials } from '@unchainedshop/core-payment';
 import { Quotation } from '@unchainedshop/types/quotations.js';
 import {
   Email,
@@ -14,7 +14,7 @@ import {
   WebAuthnCredentials,
   PushSubscription,
 } from '@unchainedshop/types/user.js';
-import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
+import { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { Roles, permissions } from '@unchainedshop/roles';
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 import { checkAction, checkTypeResolver } from '../../acl.js';

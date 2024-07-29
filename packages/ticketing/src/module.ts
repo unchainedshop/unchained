@@ -3,7 +3,7 @@ import { buildDbIndexes } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '@unchainedshop/core-files/db/MediaObjectsCollection.js';
 import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing/db/TokenSurrogateCollection.js';
 import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
-import { TokenSurrogate } from '@unchainedshop/types/warehousing.js';
+import { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { File } from '@unchainedshop/core-files';
 
 import { RendererTypes, getRenderer } from './template-registry.js';

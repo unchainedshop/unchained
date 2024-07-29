@@ -8,7 +8,7 @@ import {
   IWarehousingAdapter,
   WarehousingContext,
   WarehousingError,
-} from '@unchainedshop/types/warehousing.js';
+} from '@unchainedshop/core-warehousing';
 import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/types/core.js';

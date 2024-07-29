@@ -1,4 +1,5 @@
-export { configureWarehousingModule } from './module/configureWarehousingModule.js';
+export * from './types.js';
+export * from './module/configureWarehousingModule.js';
 
 export { WarehousingDirector } from './director/WarehousingDirector.js';
 export { WarehousingAdapter } from './director/WarehousingAdapter.js';

@@ -1,5 +1,5 @@
 import { Context } from '../../../types.js';
-import { WarehousingProviderQuery } from '@unchainedshop/types/warehousing.js';
+import { WarehousingProviderQuery } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
 
 export default async function warehousingProvidersCount(

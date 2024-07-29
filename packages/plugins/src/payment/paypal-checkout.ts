@@ -1,4 +1,4 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
+import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentDirector, PaymentAdapter, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
 import checkoutNodeJssdk from '@paypal/checkout-server-sdk';

@@ -1,6 +1,6 @@
-export { configurePaymentModule } from './module/configurePaymentModule.js';
-
-export { paymentSettings } from './payment-settings.js';
+export * from './types.js';
+export * from './module/configurePaymentModule.js';
+export * from './payment-settings.js';
 
 export { PaymentDirector } from './director/PaymentDirector.js';
 export { PaymentAdapter } from './director/PaymentAdapter.js';

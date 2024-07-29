@@ -1,4 +1,4 @@
-import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
+import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentDirector, PaymentAdapter, PaymentProviderType } from '@unchainedshop/core-payment';
 
 const Invoice: IPaymentAdapter = {

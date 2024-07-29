@@ -1,12 +1,10 @@
-import type { FindOptions } from 'mongodb';
-import { ModuleMutations, UnchainedCore } from './core.js';
-import { Order } from './orders.js';
-import { OrderPosition } from './orders.positions.js';
-import { Product } from './products.js';
-import { User } from './user.js';
 import { IBaseAdapter, IBaseDirector, Locale } from '@unchainedshop/utils';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
+import { Product } from '@unchainedshop/types/products.js';
+import { Order } from '@unchainedshop/types/orders.js';
+import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',
@@ -115,91 +113,4 @@ export interface WarehousingInterface {
   _id: string;
   label: string;
   version: string;
-}
-
-export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'delete'> & {
-  // Queries
-  findProvider: (
-    query: { warehousingProviderId: string },
-    options?: FindOptions,
-  ) => Promise<WarehousingProvider>;
-  findToken: (query: { tokenId: string }, options?: FindOptions) => Promise<TokenSurrogate>;
-  findTokensForUser: (user: User, options?: FindOptions) => Promise<Array<TokenSurrogate>>;
-  findTokens: (query: any, options?: FindOptions) => Promise<Array<TokenSurrogate>>;
-  findProviders: (
-    query: WarehousingProviderQuery,
-    options?: FindOptions,
-  ) => Promise<Array<WarehousingProvider>>;
-  count: (query: WarehousingProviderQuery) => Promise<number>;
-  providerExists: (query: { warehousingProviderId: string }) => Promise<boolean>;
-
-  // Adapter
-
-  findSupported: (
-    warehousingContext: WarehousingContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<Array<WarehousingProvider>>;
-  findInterface: (query: WarehousingProvider) => WarehousingInterface;
-  findInterfaces: (query: WarehousingProviderQuery) => Array<WarehousingInterface>;
-  configurationError: (
-    provider: WarehousingProvider,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<WarehousingError>;
-  isActive: (provider: WarehousingProvider, unchainedAPI: UnchainedCore) => Promise<boolean>;
-
-  estimatedDispatch: (
-    provider: WarehousingProvider,
-    context: WarehousingContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<EstimatedDispatch>;
-
-  estimatedStock: (
-    provider: WarehousingProvider,
-    context: WarehousingContext,
-    unchainedAPI: UnchainedCore,
-  ) => Promise<EstimatedStock>;
-
-  updateTokenOwnership: (input: {
-    tokenId: string;
-    userId: string;
-    walletAddress: string;
-  }) => Promise<void>;
-
-  invalidateToken: (tokenId: string) => Promise<void>;
-
-  buildAccessKeyForToken: (tokenId: string) => Promise<string>;
-
-  tokenizeItems: (
-    order: Order,
-    params: {
-      items: Array<{
-        orderPosition: OrderPosition;
-        product: Product;
-      }>;
-    },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<void>;
-
-  tokenMetadata: (
-    chainTokenId: string,
-    params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Locale },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<any>;
-
-  isInvalidateable: (
-    chainTokenId: string,
-    params: { product: Product; token: TokenSurrogate; referenceDate: Date },
-    unchainedAPI: UnchainedCore,
-  ) => Promise<boolean>;
-
-  // Mutations
-  delete: (providerId: string) => Promise<WarehousingProvider>;
-};
-
-export type HelperType<P, T> = (provider: WarehousingProvider, params: P, context: UnchainedCore) => T;
-
-export interface WarehousingProviderHelperTypes {
-  configurationError: HelperType<never, Promise<WarehousingError>>;
-  interface: HelperType<never, WarehousingInterface>;
-  isActive: HelperType<never, Promise<boolean>>;
 }

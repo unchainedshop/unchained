@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { WarehousingProvider } from '@unchainedshop/types/warehousing.js';
+import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 import { WarehousingProviderNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateWarehousingProvider(
