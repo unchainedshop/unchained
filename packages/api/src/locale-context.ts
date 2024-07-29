@@ -5,7 +5,7 @@ import {
   resolveBestCurrency,
   systemLocale,
 } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import memoizee from 'memoizee';
 import { UnchainedHTTPServerContext, UnchainedLocaleContext } from './types.js';
 import { Locales } from '@unchainedshop/utils';

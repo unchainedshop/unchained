@@ -1,5 +1,5 @@
 import type { WorkData, WorkResult } from '../worker-index.js';
-import type { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import type { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 
 import os from 'os';
 import { createLogger } from '@unchainedshop/logger';

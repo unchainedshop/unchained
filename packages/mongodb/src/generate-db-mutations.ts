@@ -1,5 +1,5 @@
 import SimpleSchema from 'simpl-schema';
-import { ModuleCreateMutation, ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleCreateMutation, ModuleMutations } from '@unchainedshop/core';
 import { Collection, UpdateFilter } from 'mongodb';
 import { checkId } from './check-id.js';
 import { generateDbObjectId } from './generate-db-object-id.js';

@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { FilterType } from '../db/FilterType.js';
 import { intersectSet } from '../utils/intersectSet.js';
 import { FilterProductIds } from './search.js';

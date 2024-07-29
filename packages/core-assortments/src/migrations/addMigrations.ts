@@ -1,4 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
+import { Migration, MigrationRepository } from '@unchainedshop/core';
 import { mongodb } from '@unchainedshop/mongodb';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
 import { AssortmentsCollection } from '../db/AssortmentsCollection.js';

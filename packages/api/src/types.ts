@@ -1,7 +1,7 @@
 import type DataLoader from 'dataloader';
 
 import { Locale } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { User } from '@unchainedshop/core-users';
 import { Product, ProductText } from '@unchainedshop/types/products.js';
 import { ProductMediaText } from '@unchainedshop/types/products.media.js';

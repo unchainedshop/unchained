@@ -3,7 +3,7 @@ import type { mongodb } from '@unchainedshop/mongodb';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ModuleCreateMutation, ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleCreateMutation, ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { EventsSchema } from '../db/EventsSchema.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';

@@ -8,7 +8,7 @@ import {
   EnrollmentStatus,
 } from '@unchainedshop/core-enrollments';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 const generateOrder = async (
   enrollment: Enrollment,

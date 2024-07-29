@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { Filter, SearchQuery } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { Product } from '@unchainedshop/types/products.js';

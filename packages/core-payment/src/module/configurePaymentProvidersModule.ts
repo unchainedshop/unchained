@@ -2,7 +2,7 @@ import {
   ModuleMutations,
   ModuleMutationsWithReturnDoc,
   UnchainedCore,
-} from '@unchainedshop/types/core.js';
+} from '@unchainedshop/core';
 import {
   PaymentChargeActionResult,
   PaymentContext,

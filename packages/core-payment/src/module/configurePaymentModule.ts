@@ -1,4 +1,4 @@
-import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import { PaymentCredentialsCollection } from '../db/PaymentCredentialsCollection.js';
 import { PaymentProvidersCollection } from '../db/PaymentProvidersCollection.js';
 import {

@@ -1,4 +1,4 @@
-import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import express from 'express';
 
 // Delivery

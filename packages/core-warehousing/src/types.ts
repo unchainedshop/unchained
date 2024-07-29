@@ -4,7 +4,7 @@ import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Product } from '@unchainedshop/types/products.js';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export enum WarehousingProviderType {
   PHYSICAL = 'PHYSICAL',

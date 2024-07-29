@@ -1,4 +1,4 @@
-import { ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleMutations } from '@unchainedshop/core';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
 import {
   OrderDeliveriesModule,

@@ -1,5 +1,5 @@
 import { getFileAdapter } from '../utils/getFileAdapter.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { Readable } from 'stream';
 
 export type CreateDownloadStreamService = (

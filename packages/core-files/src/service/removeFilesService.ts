@@ -1,6 +1,6 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { getFileAdapter } from '../utils/getFileAdapter.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { File } from '../types.js';
 
 export type RemoveFilesService = (

@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { BulkImporter, UnchainedCore } from '@unchainedshop/types/core.js';
+import { BulkImporter, UnchainedCore } from '@unchainedshop/core';
 import * as AssortmentHandlers from './handlers/assortment/index.js';
 import * as FilterHandlers from './handlers/filter/index.js';
 import * as ProductHandlers from './handlers/product/index.js';

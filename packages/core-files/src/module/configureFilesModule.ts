@@ -1,4 +1,4 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import { File } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';

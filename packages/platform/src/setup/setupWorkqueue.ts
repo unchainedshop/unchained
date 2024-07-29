@@ -5,7 +5,7 @@ import {
   WorkerSchedule,
   WorkData,
 } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export interface SetupWorkqueueOptions {
   batchCount?: number;

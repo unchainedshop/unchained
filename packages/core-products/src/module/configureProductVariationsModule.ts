@@ -3,7 +3,7 @@ import {
   ProductVariationsModule,
   ProductVariationText,
 } from '@unchainedshop/types/products.variations.js';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,

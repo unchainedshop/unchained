@@ -1,6 +1,6 @@
 import type { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import type { TimestampFields, LogFields } from '@unchainedshop/mongodb';
-import type { UnchainedCore } from '@unchainedshop/types/core.js';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 export enum QuotationStatus {
   REQUESTED = 'REQUESTED',

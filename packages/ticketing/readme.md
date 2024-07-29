@@ -56,7 +56,7 @@ export default async (
 
 createAppleWalletPass.ts:
 ```ts
-import { UnchainedCore } from "@unchainedshop/types/core.js";
+import { UnchainedCore } from "@unchainedshop/core";
 import { Template, constants } from "@walletpass/pass-js";
 
 export default async (token, unchainedAPI: UnchainedCore) => {
@@ -71,7 +71,7 @@ export default async (token, unchainedAPI: UnchainedCore) => {
 
 createGoogleWalletPass.ts:
 ```ts
-import { UnchainedCore } from "@unchainedshop/types/core.js";
+import { UnchainedCore } from "@unchainedshop/core";
 import { google } from "googleapis";
 import jwt from "jsonwebtoken";
 

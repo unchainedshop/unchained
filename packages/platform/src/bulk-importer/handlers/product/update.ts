@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import upsertVariations from './upsertVariations.js';
 import upsertMedia from './upsertMedia.js';
 import transformSpecificationToProductStructure from './transformSpecificationToProductStructure.js';

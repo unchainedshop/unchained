@@ -1,5 +1,5 @@
 import { log, LogLevel } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { File, UploadFileData } from '@unchainedshop/core-files';
 import { Readable } from 'stream';
 import { IBaseAdapter } from '@unchainedshop/utils';

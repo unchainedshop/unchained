@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export default async function removeAssortment(payload, { logger }, unchainedAPI: UnchainedCore) {
   const { modules } = unchainedAPI;

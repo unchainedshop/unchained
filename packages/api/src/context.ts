@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import instantiateLoaders from './loaders/index.js';
 import { getLocaleContext } from './locale-context.js';
 import { UnchainedServerOptions } from './api-index.js';

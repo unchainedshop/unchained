@@ -1,6 +1,5 @@
 import type { Order } from '@unchainedshop/core-orders';
-
-import { UnchainedCore } from './core.js';
+import type { UnchainedCore } from '@unchainedshop/core';
 import { OrderDiscount } from './orders.discounts.js';
 import { IPricingSheet, PricingCalculation } from './pricing.js';
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';

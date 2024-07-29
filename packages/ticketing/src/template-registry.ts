@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { TokenSurrogate } from '@unchainedshop/core-warehousing';
 
 export type PDFRenderer = (

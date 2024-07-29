@@ -4,7 +4,7 @@ import {
   setCurrentContextResolver,
   getCurrentContextResolver,
 } from './context.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { AdminUiConfig } from './types.js';
 
 export * from './context.js';

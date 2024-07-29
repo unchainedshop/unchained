@@ -1,29 +1,92 @@
+import { BulkImporter, Migration, MigrationRepository, ModuleInput } from './types.js';
 import {
-  Migration,
-  MigrationRepository,
-  ModuleInput,
-  UnchainedCore,
-} from '@unchainedshop/types/core.js';
-import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
-import { bookmarkServices, configureBookmarksModule } from '@unchainedshop/core-bookmarks';
-import { configureCountriesModule } from '@unchainedshop/core-countries';
-import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
-import { configureDeliveryModule } from '@unchainedshop/core-delivery';
-import { configureEnrollmentsModule } from '@unchainedshop/core-enrollments';
-import { configureEventsModule } from '@unchainedshop/core-events';
-import { configureFilesModule, fileServices } from '@unchainedshop/core-files';
-import { configureFiltersModule } from '@unchainedshop/core-filters';
-import { configureLanguagesModule } from '@unchainedshop/core-languages';
-import { configureMessagingModule } from '@unchainedshop/core-messaging';
-import { configureOrdersModule, orderServices } from '@unchainedshop/core-orders';
-import { configurePaymentModule } from '@unchainedshop/core-payment';
-import { configureProductsModule, productServices } from '@unchainedshop/core-products';
-import { configureQuotationsModule } from '@unchainedshop/core-quotations';
-import { configureUsersModule, userServices } from '@unchainedshop/core-users';
-import { configureWarehousingModule } from '@unchainedshop/core-warehousing';
-import { configureWorkerModule } from '@unchainedshop/core-worker';
+  AssortmentsModule,
+  AssortmentsSettingsOptions,
+  configureAssortmentsModule,
+} from '@unchainedshop/core-assortments';
+import {
+  BookmarkServices,
+  bookmarkServices,
+  BookmarksModule,
+  configureBookmarksModule,
+} from '@unchainedshop/core-bookmarks';
+import { configureCountriesModule, CountriesModule } from '@unchainedshop/core-countries';
+import { configureCurrenciesModule, CurrenciesModule } from '@unchainedshop/core-currencies';
+import {
+  configureDeliveryModule,
+  DeliveryModule,
+  DeliverySettingsOptions,
+} from '@unchainedshop/core-delivery';
+import {
+  configureEnrollmentsModule,
+  EnrollmentsModule,
+  EnrollmentsSettingsOptions,
+} from '@unchainedshop/core-enrollments';
+import { configureEventsModule, EventsModule } from '@unchainedshop/core-events';
+import {
+  configureFilesModule,
+  FileServices,
+  fileServices,
+  FilesModule,
+  FilesSettingsOptions,
+} from '@unchainedshop/core-files';
+import {
+  configureFiltersModule,
+  FiltersModule,
+  FiltersSettingsOptions,
+} from '@unchainedshop/core-filters';
+import { configureLanguagesModule, LanguagesModule } from '@unchainedshop/core-languages';
+import { configureMessagingModule, MessagingModule } from '@unchainedshop/core-messaging';
+import {
+  configureOrdersModule,
+  OrderServices,
+  orderServices,
+  OrdersModule,
+  OrdersSettingsOptions,
+} from '@unchainedshop/core-orders';
+import {
+  configurePaymentModule,
+  PaymentModule,
+  PaymentSettingsOptions,
+} from '@unchainedshop/core-payment';
+import {
+  configureProductsModule,
+  ProductServices,
+  productServices,
+  ProductsModule,
+  ProductsSettingsOptions,
+} from '@unchainedshop/core-products';
+import {
+  configureQuotationsModule,
+  QuotationsModule,
+  QuotationsSettingsOptions,
+} from '@unchainedshop/core-quotations';
+import {
+  configureUsersModule,
+  UserServices,
+  userServices,
+  UserSettingsOptions,
+  UsersModule,
+} from '@unchainedshop/core-users';
+import { configureWarehousingModule, WarehousingModule } from '@unchainedshop/core-warehousing';
+import { configureWorkerModule, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
 import { mongodb } from '@unchainedshop/mongodb';
-import { ModuleOptions } from '@unchainedshop/types/modules.js';
+
+export * from './types.js';
+
+export interface ModuleOptions {
+  assortments?: AssortmentsSettingsOptions;
+  products?: ProductsSettingsOptions;
+  delivery?: DeliverySettingsOptions;
+  filters?: FiltersSettingsOptions;
+  enrollments?: EnrollmentsSettingsOptions;
+  orders?: OrdersSettingsOptions;
+  quotations?: QuotationsSettingsOptions;
+  files?: FilesSettingsOptions;
+  payment?: PaymentSettingsOptions;
+  worker?: WorkerSettingsOptions;
+  users?: UserSettingsOptions;
+}
 
 export interface UnchainedCoreOptions {
   db: mongodb.Db;
@@ -36,6 +99,42 @@ export interface UnchainedCoreOptions {
     }
   >;
   services: Record<string, any>;
+  options: ModuleOptions;
+}
+
+export interface Modules {
+  assortments: AssortmentsModule;
+  bookmarks: BookmarksModule;
+  countries: CountriesModule;
+  currencies: CurrenciesModule;
+  delivery: DeliveryModule;
+  enrollments: EnrollmentsModule;
+  events: EventsModule;
+  files: FilesModule;
+  filters: FiltersModule;
+  languages: LanguagesModule;
+  messaging: MessagingModule;
+  orders: OrdersModule;
+  payment: PaymentModule;
+  products: ProductsModule;
+  quotations: QuotationsModule;
+  users: UsersModule;
+  warehousing: WarehousingModule;
+  worker: WorkerModule;
+}
+
+export interface Services {
+  bookmarks: BookmarkServices;
+  files: FileServices;
+  orders: OrderServices;
+  products: ProductServices;
+  users: UserServices;
+}
+
+export interface UnchainedCore {
+  modules: Modules;
+  services: Services;
+  bulkImporter: BulkImporter;
   options: ModuleOptions;
 }
 

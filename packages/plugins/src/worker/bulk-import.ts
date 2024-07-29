@@ -2,7 +2,7 @@ import { WorkerDirector, WorkerAdapter } from '@unchainedshop/core-worker';
 import { createLogger, LogLevel } from '@unchainedshop/logger';
 import JSONStream from 'JSONStream';
 import { EventIterator } from 'event-iterator';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { IWorkerAdapter } from '@unchainedshop/core-worker';
 
 const logger = createLogger('unchained:platform:bulk-import');

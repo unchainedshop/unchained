@@ -1,6 +1,6 @@
 import { File } from '@unchainedshop/core-files';
 import { log, LogLevel } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export type UpdateUserAvatarAfterUploadService = (
   params: { file: File },

@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import upsertAsset from '../../upsertAsset.js';
 
 const upsertMediaObject = async (media, unchainedAPI: UnchainedCore) => {

@@ -1,4 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
+import { Migration, MigrationRepository } from '@unchainedshop/core';
 import { CountriesCollection } from '../db/CountriesCollection.js';
 import { Country } from '../countries-index.js';
 

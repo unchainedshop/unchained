@@ -1,7 +1,7 @@
 import later from '@breejs/later';
 import { log } from '@unchainedshop/logger';
 import { WorkerDirector } from '../director/WorkerDirector.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { Work } from '../types.js';
 
 export type WorkData = Pick<

@@ -11,7 +11,7 @@ import {
 } from '@unchainedshop/core-warehousing';
 import { systemLocale } from '@unchainedshop/utils';
 import { generateDbObjectId } from '@unchainedshop/mongodb';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { ProductTypes } from '@unchainedshop/core-products';
 
 const { MINTER_TOKEN_OFFSET = '0' } = process.env;

@@ -1,4 +1,4 @@
-import { ModuleInput, UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import { OrderDeliveriesModule, OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment, OrderPaymentsModule } from '@unchainedshop/types/orders.payments.js';
 import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';

@@ -1,5 +1,5 @@
 import type { WorkData, IWorkerAdapter, WorkResult } from '../worker-index.js';
-import type { UnchainedCore } from '@unchainedshop/types/core.js';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector, IBaseDirector } from '@unchainedshop/utils';

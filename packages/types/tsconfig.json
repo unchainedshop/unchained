@@ -2,10 +2,8 @@
   "extends": "../shared/base.tsconfig.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./lib",
+    "outDir": "./lib"
   },
   "exclude": ["./lib"],
-  "include": [
-    "*.ts"
-  ]
+  "include": ["*.ts", "../core/src/modules.ts"]
 }

@@ -1,6 +1,6 @@
 import { getFileAdapter } from '../utils/getFileAdapter.js';
 import { getFileFromFileData } from '../utils/getFileFromFileData.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { File } from '../types.js';
 
 export type UploadFileFromURLService = (

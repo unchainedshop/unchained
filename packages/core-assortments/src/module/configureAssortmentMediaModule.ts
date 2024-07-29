@@ -1,4 +1,4 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import type { Filter, FindOptions } from 'mongodb';
 import { Locale } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';

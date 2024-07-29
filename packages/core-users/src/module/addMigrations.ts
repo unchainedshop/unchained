@@ -1,4 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
+import { Migration, MigrationRepository } from '@unchainedshop/core';
 import { UsersCollection } from '../db/UsersCollection.js';
 
 const convertTagsToLowerCase = async (collection: Awaited<ReturnType<typeof UsersCollection>>) => {

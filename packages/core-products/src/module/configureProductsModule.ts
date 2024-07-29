@@ -1,4 +1,4 @@
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import {
   Product,
   ProductAssignment,

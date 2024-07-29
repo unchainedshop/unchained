@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
 import { Locale } from '@unchainedshop/utils';

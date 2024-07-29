@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { File } from '@unchainedshop/core-files';
 
 const upsertAsset = async (

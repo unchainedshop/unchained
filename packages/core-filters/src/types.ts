@@ -3,7 +3,7 @@ import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import type { Assortment } from '@unchainedshop/core-assortments';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 import { Product } from '@unchainedshop/types/products.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export enum FilterType {
   SWITCH = 'SWITCH',

@@ -1,5 +1,5 @@
 import { MessagingDirector } from '@unchainedshop/core-messaging';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
 import { Order, OrderStatus } from '@unchainedshop/core-orders';
 import { RawPayloadType } from '@unchainedshop/events/EventDirector.js';

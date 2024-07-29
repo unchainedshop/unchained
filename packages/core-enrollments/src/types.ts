@@ -2,7 +2,7 @@ import type { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import type { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
 import { Product, ProductPlan } from '@unchainedshop/types/products.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export enum EnrollmentStatus {
   INITIAL = 'INITIAL',

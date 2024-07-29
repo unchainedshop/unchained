@@ -3,7 +3,7 @@ import {
   ModuleMutations,
   ModuleMutationsWithReturnDoc,
   UnchainedCore,
-} from '@unchainedshop/types/core.js';
+} from '@unchainedshop/core';
 import { DeliveryContext, DeliveryInterface, DeliveryProvider, DeliveryProviderType } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';

@@ -3,7 +3,7 @@ import type { TimestampFields } from '@unchainedshop/mongodb';
 import type { User } from '@unchainedshop/core-users';
 
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPosition } from '@unchainedshop/types/orders.positions.js';

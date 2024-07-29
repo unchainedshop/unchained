@@ -1,4 +1,4 @@
-import { Migration, UnchainedCore, MigrationRepository } from '@unchainedshop/types/core.js';
+import { Migration, UnchainedCore, MigrationRepository } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
 import { generateDbFilterById } from '@unchainedshop/mongodb';
 import { createMigrationRunner } from './createMigrationRunner.js';

@@ -1,5 +1,5 @@
 import { SortDirection, SortOption, Locale } from '@unchainedshop/utils';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import {
   Enrollment,
   EnrollmentData,

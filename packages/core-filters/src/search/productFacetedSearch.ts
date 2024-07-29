@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { mongodb } from '@unchainedshop/mongodb';
 import { intersectSet } from '../utils/intersectSet.js';
 import { FilterProductIds, SearchConfiguration } from './search.js';

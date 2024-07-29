@@ -8,7 +8,7 @@ import {
   generateDbMutations,
   buildSortOptions,
 } from '@unchainedshop/mongodb';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { FiltersCollection } from '../db/FiltersCollection.js';

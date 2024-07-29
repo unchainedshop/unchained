@@ -1,7 +1,7 @@
 import { LogLevel, log } from '@unchainedshop/logger';
 import { IQuotationAdapter, IQuotationDirector, QuotationContext } from '../types.js';
 import { BaseDirector } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { QuotationError } from './QuotationError.js';
 
 const baseDirector = BaseDirector<IQuotationAdapter>('QuotationDirector', {

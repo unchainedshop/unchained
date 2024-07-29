@@ -1,5 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
+import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import { Quotation, QuotationItemConfiguration, QuotationProposal } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {

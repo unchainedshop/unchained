@@ -8,7 +8,7 @@ import MongoStore from 'connect-mongo';
 import { YogaServer } from 'graphql-yoga';
 import setupPassport from './passport/setup.js';
 import { mongodb } from '@unchainedshop/mongodb';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
 import { API_EVENTS } from '../events.js';
 import { User } from '@unchainedshop/core-users';

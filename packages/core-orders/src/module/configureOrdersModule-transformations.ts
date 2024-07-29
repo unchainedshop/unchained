@@ -11,7 +11,7 @@ import {
 } from '@unchainedshop/types/orders.pricing.js';
 import { OrderPricingSheet } from '../director/OrderPricingSheet.js';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export interface OrderTransformations {
   discounted: (

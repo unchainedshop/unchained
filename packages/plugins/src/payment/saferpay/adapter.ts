@@ -1,6 +1,6 @@
 import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentAdapter, PaymentDirector, PaymentError } from '@unchainedshop/core-payment';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { mongodb } from '@unchainedshop/mongodb';
 import { PaymentPageInitializeInput, SaferpayClient } from './api/index.js';
 import { buildSignature } from './buildSignature.js';

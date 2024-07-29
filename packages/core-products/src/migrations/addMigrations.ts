@@ -1,4 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
+import { Migration, MigrationRepository } from '@unchainedshop/core';
 import { mongodb } from '@unchainedshop/mongodb';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
 import { ProductsCollection } from '../db/ProductsCollection.js';

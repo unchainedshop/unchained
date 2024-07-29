@@ -2,7 +2,7 @@ import { startAPIServer, roles, UnchainedServerOptions } from '@unchainedshop/ap
 import { initCore, UnchainedCoreOptions } from '@unchainedshop/core';
 import { initDb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { WorkerDirector } from '@unchainedshop/core-worker';
 import { Db } from 'mongodb';

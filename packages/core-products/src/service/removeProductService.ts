@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 import { ProductStatus } from '../db/ProductStatus.js';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 
 export type RemoveProductService = (
   params: { productId: string },

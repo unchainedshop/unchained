@@ -1,4 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
+import { Migration, MigrationRepository } from '@unchainedshop/core';
 import { mongodb } from '@unchainedshop/mongodb';
 
 export const createMigrationRepository = (db: mongodb.Db): MigrationRepository<Migration> => {

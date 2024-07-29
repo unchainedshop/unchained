@@ -1,7 +1,7 @@
 import { User } from '@unchainedshop/core-users';
 import { ordersSettings } from '../orders-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '../types.js';
 
 export type NextUserCartService = (

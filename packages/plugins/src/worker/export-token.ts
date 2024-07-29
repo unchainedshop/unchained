@@ -5,7 +5,7 @@ import {
   Work,
   IWorkerAdapter,
 } from '@unchainedshop/core-worker';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { subscribe } from '@unchainedshop/events';
 
 export const ExportTokenWorker: IWorkerAdapter<void, void> = {

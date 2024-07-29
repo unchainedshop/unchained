@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
 import { systemLocale, Locale } from '@unchainedshop/utils';
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { ProductStatus } from '@unchainedshop/core-products';
 import { UnchainedLoaders } from '../types.js';
 

@@ -1,4 +1,4 @@
-import { ModuleMutations } from '@unchainedshop/types/core.js';
+import { ModuleMutations } from '@unchainedshop/core';
 import { getEmitHistoryAdapter, setEmitHistoryAdapter, EmitAdapter } from '@unchainedshop/events';
 import { Event } from '../db/EventsCollection.js';
 

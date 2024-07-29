@@ -1,4 +1,4 @@
-import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import { ProductVariation } from '@unchainedshop/types/products.variations.js';
 
 const upsert = async (productVariation: ProductVariation, unchainedAPI: UnchainedCore) => {
