@@ -1,8 +1,5 @@
 import { DeliveryPricingAdapter, DeliveryPricingDirector } from '@unchainedshop/core-delivery';
-import {
-  DeliveryPricingRowCategory,
-  IDeliveryPricingAdapter,
-} from '@unchainedshop/types/delivery.pricing.js';
+import { DeliveryPricingRowCategory, IDeliveryPricingAdapter } from '@unchainedshop/core-delivery';
 
 import { Order } from '@unchainedshop/core-orders';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';

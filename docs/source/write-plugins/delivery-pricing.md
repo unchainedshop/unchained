@@ -14,8 +14,8 @@ below is an example of delivery price for the above delivery adapter that will c
 import {
   DeliveryPricingAdapter,
   DeliveryPricingSheet,
+  IDeliveryPricingAdapter,
 } from '@unchainedshop/core-delivery';
-import type { IDeliveryPricingAdapter } from '@unchainedshop/types/delivery.pricing.js';
 import { Discount } from '@unchainedshop/types/discount.js';
 
 export const ShopDeliveryFreePrice: IDeliveryPricingAdapter = {

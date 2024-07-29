@@ -2,11 +2,11 @@ export * from './types.js';
 export * from './module/configureDeliveryModule.js';
 export * from './delivery-settings.js';
 
-export { DeliveryAdapter } from './director/DeliveryAdapter.js';
-export { DeliveryDirector } from './director/DeliveryDirector.js';
+export * from './director/DeliveryAdapter.js';
+export * from './director/DeliveryDirector.js';
+export * from './director/DeliveryPricingAdapter.js';
+export * from './director/DeliveryPricingDirector.js';
+export * from './director/DeliveryPricingSheet.js';
+
 export { DeliveryError } from './director/DeliveryError.js';
 export { DeliveryProviderType } from './director/DeliveryProviderType.js';
-
-export { DeliveryPricingAdapter } from './director/DeliveryPricingAdapter.js';
-export { DeliveryPricingDirector } from './director/DeliveryPricingDirector.js';
-export { DeliveryPricingSheet } from './director/DeliveryPricingSheet.js';

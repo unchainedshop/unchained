@@ -1,12 +1,35 @@
+import { BasePricingDirector } from '@unchainedshop/utils';
+import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
+import { DeliveryProvider } from '../types.js';
+import { Order } from '@unchainedshop/core-orders';
+import { User } from '@unchainedshop/core-users';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
+import { IPricingDirector } from '@unchainedshop/types/pricing.js';
 import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
-  DeliveryPricingContext,
   IDeliveryPricingAdapter,
-  IDeliveryPricingDirector,
-} from '@unchainedshop/types/delivery.pricing.js';
-import { BasePricingDirector } from '@unchainedshop/utils';
-import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
+  IDeliveryPricingSheet,
+} from './DeliveryPricingAdapter.js';
+
+export type DeliveryPricingContext =
+  | {
+      country?: string;
+      currency?: string;
+      provider: DeliveryProvider;
+      providerContext?: any;
+      order: Order;
+      user: User;
+    }
+  | { item: OrderDelivery };
+
+export type IDeliveryPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
+  DeliveryPricingContext,
+  DeliveryPricingCalculation,
+  DeliveryPricingAdapterContext,
+  IDeliveryPricingSheet,
+  IDeliveryPricingAdapter<DiscountConfiguration>
+>;
 
 const baseDirector = BasePricingDirector<
   DeliveryPricingContext,

@@ -12,14 +12,14 @@ import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection.j
 import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema.js';
 import { deliverySettings, DeliverySettingsOptions } from '../delivery-settings.js';
 import { DeliveryDirector } from '../director/DeliveryDirector.js';
-import { DeliveryPricingDirector } from '../director/DeliveryPricingDirector.js';
-import {
-  DeliveryPricingCalculation,
-  DeliveryPricingContext,
-  IDeliveryPricingSheet,
-} from '@unchainedshop/types/delivery.pricing.js';
+import { DeliveryPricingContext, DeliveryPricingDirector } from '../director/DeliveryPricingDirector.js';
+
 import { DeliveryError } from '../delivery-index.js';
 import { Order } from '@unchainedshop/core-orders';
+import {
+  DeliveryPricingCalculation,
+  IDeliveryPricingSheet,
+} from '../director/DeliveryPricingAdapter.js';
 
 export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
   // Queries

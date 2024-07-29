@@ -1,10 +1,13 @@
 import { BasePricingSheet } from '@unchainedshop/utils';
-import {
-  DeliveryPricingCalculation,
-  DeliveryPricingRowCategory,
-  IDeliveryPricingSheet,
-} from '@unchainedshop/types/delivery.pricing.js';
 import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing.js';
+import { DeliveryPricingCalculation, IDeliveryPricingSheet } from './DeliveryPricingAdapter.js';
+
+export enum DeliveryPricingRowCategory {
+  Delivery = 'DELIVERY',
+  Discount = 'DISCOUNT',
+  Tax = 'TAX',
+  Item = 'ITEM', // Propably unused
+}
 
 export const DeliveryPricingSheet = (
   params: PricingSheetParams<DeliveryPricingCalculation>,
