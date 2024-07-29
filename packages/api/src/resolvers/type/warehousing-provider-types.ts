@@ -1,15 +1,11 @@
-import { UnchainedCore } from '@unchainedshop/core';
 import {
   WarehousingError,
   WarehousingInterface,
   WarehousingProvider as WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
+import { Context } from '../../types.js';
 
-export type HelperType<P, T> = (
-  provider: WarehousingProviderType,
-  params: P,
-  context: UnchainedCore,
-) => T;
+export type HelperType<P, T> = (provider: WarehousingProviderType, params: P, context: Context) => T;
 
 export interface WarehousingProviderHelperTypes {
   configurationError: HelperType<never, Promise<WarehousingError>>;

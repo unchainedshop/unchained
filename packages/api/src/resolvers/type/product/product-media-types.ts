@@ -1,9 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { File } from '@unchainedshop/core-files';
-import {
-  ProductMedia as ProductMediaType,
-  ProductMediaText,
-} from '@unchainedshop/core-products';
+import { ProductMedia as ProductMediaType, ProductMediaText } from '@unchainedshop/core-products';
 
 export type HelperType<P, T> = (productMedia: ProductMediaType, params: P, context: Context) => T;
 

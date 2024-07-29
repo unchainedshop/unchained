@@ -1,8 +1,5 @@
 import type { Discount } from '@unchainedshop/types/discount.js';
-import {
-  IProductPricingAdapter,
-  ProductPricingRowCategory,
-} from '@unchainedshop/core-products';
+import { IProductPricingAdapter, ProductPricingRowCategory } from '@unchainedshop/core-products';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,

@@ -1,8 +1,5 @@
 import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
-import {
-  IProductPricingAdapter,
-  ProductPricingRowCategory,
-} from '@unchainedshop/core-products';
+import { IProductPricingAdapter, ProductPricingRowCategory } from '@unchainedshop/core-products';
 import { Product } from '@unchainedshop/core-products';
 import { Order } from '@unchainedshop/core-orders';
 import { SwissTaxCategories } from './tax/ch.js';
