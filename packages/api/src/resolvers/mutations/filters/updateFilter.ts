@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Filter } from '@unchainedshop/types/filters.js';
+import { Filter } from '@unchainedshop/core-filters';
 import { FilterNotFoundError, InvalidIdError } from '../../../errors.js';
 import { Context } from '../../../types.js';
 

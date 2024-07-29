@@ -1,4 +1,3 @@
-import { FiltersModule, FiltersSettingsOptions } from './filters.js';
 import { LanguagesModule } from './languages.js';
 import { OrdersModule, OrdersSettingsOptions } from './orders.js';
 import { PaymentModule, PaymentSettingsOptions } from './payments.js';
@@ -14,6 +13,7 @@ import type { DeliveryModule, DeliverySettingsOptions } from '@unchainedshop/cor
 import type { EnrollmentsModule, EnrollmentsSettingsOptions } from '@unchainedshop/core-enrollments';
 import type { EventsModule } from '@unchainedshop/core-events';
 import type { FilesModule, FilesSettingsOptions } from '@unchainedshop/core-files';
+import type { FiltersModule, FiltersSettingsOptions } from '@unchainedshop/core-filters';
 
 import type { ProductsModule, ProductsSettingsOptions } from '@unchainedshop/core-products';
 import type { WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';

@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { Filter, FilterInputText } from '@unchainedshop/types/filters.js';
+import { Filter, FilterInputText } from '@unchainedshop/core-filters';
 import { Context } from '../../../types.js';
 
 export default async function createFilter(

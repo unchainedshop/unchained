@@ -1,5 +1,5 @@
 import { UnchainedCore } from '@unchainedshop/types/core.js';
-import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
+import { FilterAdapterActions, SearchQuery } from '../types.js';
 
 const defaultSelector = ({ includeInactive }: SearchQuery, { modules }: UnchainedCore) => {
   const selector = !includeInactive

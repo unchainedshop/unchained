@@ -1,6 +1,6 @@
 import { log, LogLevel } from '@unchainedshop/logger';
 
-import { IFilterAdapter } from '@unchainedshop/types/filters.js';
+import { IFilterAdapter } from '../types.js';
 
 export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = {
   orderIndex: 0,

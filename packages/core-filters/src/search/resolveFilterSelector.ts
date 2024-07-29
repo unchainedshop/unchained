@@ -1,4 +1,4 @@
-import { Filter, FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
+import { Filter, FilterAdapterActions, SearchQuery } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
 
 const defaultSelector = (searchQuery: SearchQuery) => {

@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { SearchFilterQuery } from '@unchainedshop/types/filters.js';
+import { SearchFilterQuery } from '@unchainedshop/core-filters';
 import { QueryStringRequiredError } from '../../../errors.js';
 import { Context } from '../../../types.js';
 

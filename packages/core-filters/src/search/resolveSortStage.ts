@@ -1,4 +1,4 @@
-import { FilterAdapterActions, SearchQuery } from '@unchainedshop/types/filters.js';
+import { FilterAdapterActions, SearchQuery } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
 
 const ORDER_BY_INDEX = 'default';

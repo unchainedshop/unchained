@@ -1,8 +1,7 @@
-export { configureFiltersModule } from './module/configureFiltersModule.js';
-
+export * from './types.js';
 export { FilterType } from './db/FilterType.js';
 
-export { FilterAdapter } from './director/FilterAdapter.js';
-export { FilterDirector } from './director/FilterDirector.js';
-
-export { filtersSettings } from './filters-settings.js';
+export * from './module/configureFiltersModule.js';
+export * from './filters-settings.js';
+export * from './director/FilterAdapter.js';
+export * from './director/FilterDirector.js';

@@ -1,15 +1,37 @@
-import { FiltersModule, FilterText } from '@unchainedshop/types/filters.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { Locale } from '@unchainedshop/utils';
+import { FilterText } from '../types.js';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXT'];
+
+export type FilterTextsModule = {
+  // Queries
+  findTexts: (
+    query: mongodb.Filter<FilterText>,
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<FilterText>>;
+
+  findLocalizedText: (params: {
+    filterId: string;
+    filterOptionValue?: string;
+    locale?: string;
+  }) => Promise<FilterText>;
+
+  // Mutations
+  updateTexts: (
+    query: { filterId: string; filterOptionValue?: string },
+    texts: Array<Omit<FilterText, 'filterId' | 'filterOptionValue'>>,
+  ) => Promise<Array<FilterText>>;
+
+  deleteMany: (params: { filterId?: string; excludedFilterIds?: string[] }) => Promise<number>;
+};
 
 export const configureFilterTextsModule = ({
   FilterTexts,
 }: {
   FilterTexts: mongodb.Collection<FilterText>;
-}): FiltersModule['texts'] => {
+}): FilterTextsModule => {
   registerEvents(FILTER_TEXT_EVENTS);
 
   const upsertLocalizedText = async (

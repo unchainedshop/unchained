@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
-import { FilterQuery } from '@unchainedshop/types/filters.js';
+import { FilterQuery } from '@unchainedshop/core-filters';
 import { Context } from '../../../types.js';
 
 export default async function filters(

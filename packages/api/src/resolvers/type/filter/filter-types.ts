@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { Filter as FilterType, FilterOption, FilterText } from '@unchainedshop/types/filters.js';
+import { Filter as FilterType, FilterOption, FilterText } from '@unchainedshop/core-filters';
 
 type HelperType<P, T> = (filter: FilterType, params: P, context: Context) => T;
 

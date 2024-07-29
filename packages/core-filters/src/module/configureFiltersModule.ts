@@ -9,20 +9,76 @@ import {
   buildSortOptions,
 } from '@unchainedshop/mongodb';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import {
-  Filter,
-  FilterQuery,
-  FiltersModule,
-  FiltersSettingsOptions,
-} from '@unchainedshop/types/filters.js';
 import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { FiltersCollection } from '../db/FiltersCollection.js';
 import { FiltersSchema } from '../db/FiltersSchema.js';
-import { configureFilterSearchModule } from './configureFilterSearchModule.js';
-import { configureFilterTextsModule } from './configureFilterTextsModule.js';
+import { configureFilterSearchModule, FilterSearchModule } from './configureFilterSearchModule.js';
+import { configureFilterTextsModule, FilterTextsModule } from './configureFilterTextsModule.js';
 import createFilterValueParser from '../filter-value-parsers/index.js';
-import { filtersSettings } from '../filters-settings.js';
+import { filtersSettings, FiltersSettingsOptions } from '../filters-settings.js';
+import { FilterQuery, Filter } from '../types.js';
+
+export type FiltersModule = {
+  // Queries
+  count: (query: FilterQuery) => Promise<number>;
+
+  findFilter: (params: { filterId?: string; key?: string }) => Promise<Filter>;
+
+  findFilters: (
+    params: FilterQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+    options?: mongodb.FindOptions<Filter>,
+  ) => Promise<Array<Filter>>;
+
+  filterExists: (params: { filterId: string }) => Promise<boolean>;
+
+  invalidateCache: (query: mongodb.Filter<Filter>, unchainedAPI: UnchainedCore) => Promise<void>;
+
+  // Mutations
+  create: (
+    doc: Filter & { title: string; locale: string },
+    unchainedAPI: UnchainedCore,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<Filter>;
+
+  createFilterOption: (
+    filterId: string,
+    option: { value: string },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Filter>;
+
+  update: (
+    filterId: string,
+    doc: Filter,
+    unchainedAPI: UnchainedCore,
+    options?: { skipInvalidation?: boolean },
+  ) => Promise<string>;
+
+  delete: (filterId: string) => Promise<number>;
+
+  removeFilterOption: (
+    params: {
+      filterId: string;
+      filterOptionValue?: string;
+    },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<Filter>;
+
+  /*
+   * Search
+   */
+  search: FilterSearchModule;
+
+  /*
+   * Filter texts
+   */
+
+  texts: FilterTextsModule;
+};
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 

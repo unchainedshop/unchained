@@ -1,4 +1,4 @@
-import { SearchQuery } from '@unchainedshop/types/filters.js';
+import { SearchQuery } from '../types.js';
 import { parseQueryArray } from '../utils/parseQueryArray.js';
 import { CleanedSearchQuery } from './search.js';
 

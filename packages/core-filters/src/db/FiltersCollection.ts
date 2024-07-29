@@ -1,5 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { Filter, FilterText, FilterProductIdCacheRecord } from '@unchainedshop/types/filters.js';
+import { Filter, FilterText, FilterProductIdCacheRecord } from '../types.js';
 
 export const FiltersCollection = async (db: mongodb.Db) => {
   const Filters = db.collection<Filter>('filters');

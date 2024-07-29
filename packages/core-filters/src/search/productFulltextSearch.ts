@@ -1,6 +1,6 @@
-import { Filter, FilterAdapterActions } from '@unchainedshop/types/filters.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { Product } from '@unchainedshop/types/products.js';
+import { Filter, FilterAdapterActions } from '../types.js';
 
 export const productFulltextSearch = (
   params: {

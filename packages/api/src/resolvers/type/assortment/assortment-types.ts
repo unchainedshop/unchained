@@ -8,7 +8,7 @@ import {
   AssortmentText,
 } from '@unchainedshop/core-assortments';
 import { AssortmentMediaType } from '@unchainedshop/core-assortments';
-import { SearchFilterQuery, SearchProducts } from '@unchainedshop/types/filters.js';
+import { SearchFilterQuery, SearchProducts } from '@unchainedshop/core-filters';
 
 type HelperType<P, T> = (assortment: AssortmentType, params: P, context: Context) => T;
 

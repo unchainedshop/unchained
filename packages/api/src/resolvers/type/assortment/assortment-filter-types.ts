@@ -1,5 +1,5 @@
 import { Assortment, AssortmentFilter as AssortmentFilterType } from '@unchainedshop/core-assortments';
-import { Filter } from '@unchainedshop/types/filters.js';
+import { Filter } from '@unchainedshop/core-filters';
 import { Context } from '../../../types.js';
 
 type HelperType<T> = (assortmentFilter: AssortmentFilterType, _: never, context: Context) => T;

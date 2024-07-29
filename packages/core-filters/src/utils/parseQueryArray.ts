@@ -1,4 +1,4 @@
-import { SearchFilterQuery } from '@unchainedshop/types/filters.js';
+import { SearchFilterQuery } from '../types.js';
 
 // maps each key value pair into a single string
 export const parseQueryArray = (query: SearchFilterQuery): Record<string, Array<string>> =>

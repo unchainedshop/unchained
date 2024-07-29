@@ -1,4 +1,3 @@
-import { Filter, FiltersModule } from '@unchainedshop/types/filters.js';
 import { Product } from '@unchainedshop/types/products.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { FilterDirector } from '../director/FilterDirector.js';
@@ -16,6 +15,34 @@ import {
   SearchAssortmentConfiguration,
   SearchProductConfiguration,
 } from '../search/search.js';
+import { SearchQuery, Filter } from '../types.js';
+import { UnchainedCore } from '@unchainedshop/types/core.js';
+import { Assortment } from '@unchainedshop/core-assortments';
+
+export type SearchProducts = {
+  productsCount: () => Promise<number>;
+  filteredProductsCount: () => Promise<number>;
+  products: (params: { limit: number; offset: number }) => Promise<Array<Product>>;
+};
+
+export type SearchAssortments = {
+  assortmentsCount: () => Promise<number>;
+  assortments: (params: { limit: number; offset: number }) => Promise<Array<Assortment>>;
+};
+
+export type FilterSearchModule = {
+  searchProducts: (
+    searchQuery: SearchQuery,
+    params: { forceLiveCollection?: boolean },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<SearchProducts>;
+
+  searchAssortments: (
+    searchQuery: SearchQuery,
+    params: { forceLiveCollection?: boolean },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<SearchAssortments>;
+};
 
 export const configureFilterSearchModule = ({
   Filters,
@@ -23,7 +50,7 @@ export const configureFilterSearchModule = ({
 }: {
   Filters: mongodb.Collection<Filter>;
   filterProductIds: FilterProductIds;
-}): FiltersModule['search'] => {
+}): FilterSearchModule => {
   return {
     searchAssortments: async (searchQuery, { forceLiveCollection }, unchainedAPI) => {
       const { modules } = unchainedAPI;

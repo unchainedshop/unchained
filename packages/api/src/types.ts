@@ -5,7 +5,7 @@ import { UnchainedCore } from '@unchainedshop/types/core.js';
 import { User } from '@unchainedshop/types/user.js';
 import { Product, ProductText } from '@unchainedshop/types/products.js';
 import { ProductMediaText } from '@unchainedshop/types/products.media.js';
-import { Filter, FilterText } from '@unchainedshop/types/filters.js';
+import { Filter, FilterText } from '@unchainedshop/core-filters';
 import {
   Assortment,
   AssortmentLink,
