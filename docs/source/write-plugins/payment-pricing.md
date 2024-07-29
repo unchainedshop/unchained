@@ -17,7 +17,7 @@ import {
   PaymentPricingAdapterContext,
   IPaymentPricingSheet,
   PaymentPricingCalculation,
-} from '@unchainedshop/types/payments.pricing.js';
+} from '@unchainedshop/core-payment';
 
 import { LogOptions } from '@unchainedshop/types/logs.js';
 import { Discount } from '@unchainedshop/types/discount.js';

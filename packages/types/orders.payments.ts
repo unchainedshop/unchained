@@ -1,10 +1,10 @@
 import type { Order } from '@unchainedshop/core-orders';
 import type { UnchainedCore } from '@unchainedshop/core';
 import type { TimestampFields, LogFields, mongodb } from '@unchainedshop/mongodb';
+import type { IPaymentPricingSheet } from '@unchainedshop/core-payment';
 
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
-import { IPaymentPricingSheet } from './payments.pricing.js';
 
 export enum OrderPaymentStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status

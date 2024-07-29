@@ -1,12 +1,37 @@
 import {
   IPaymentPricingAdapter,
-  IPaymentPricingDirector,
+  IPaymentPricingSheet,
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
-  PaymentPricingContext,
-} from '@unchainedshop/types/payments.pricing.js';
+} from './PaymentPricingAdapter.js';
 import { BasePricingDirector } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
+import { User } from '@unchainedshop/core-users';
+import { Order } from '@unchainedshop/core-orders';
+import { PaymentProvider } from '../types.js';
+import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { IPricingDirector } from '@unchainedshop/types/pricing.js';
+
+export type PaymentPricingContext =
+  | {
+      country?: string;
+      currency?: string;
+      user: User;
+      order: Order;
+      provider: PaymentProvider;
+      providerContext?: any;
+    }
+  | {
+      item: OrderPayment;
+    };
+
+export type IPaymentPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
+  PaymentPricingContext,
+  PaymentPricingCalculation,
+  PaymentPricingAdapterContext,
+  IPaymentPricingSheet,
+  IPaymentPricingAdapter<DiscountConfiguration>
+>;
 
 const baseDirector = BasePricingDirector<
   PaymentPricingContext,

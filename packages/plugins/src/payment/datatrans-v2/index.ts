@@ -1,7 +1,7 @@
 import { IPaymentAdapter } from '@unchainedshop/core-payment';
 import { PaymentAdapter, PaymentError, PaymentDirector } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
-import { PaymentPricingRowCategory } from '@unchainedshop/types/payments.pricing.js';
+import { PaymentPricingRowCategory } from '@unchainedshop/core-payment';
 import createDatatransAPI from './api/index.js';
 import type {
   AuthorizeAuthenticatedResponseSuccess,

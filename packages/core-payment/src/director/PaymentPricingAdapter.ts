@@ -1,11 +1,57 @@
 import {
-  IPaymentPricingSheet,
-  PaymentPricingAdapterContext,
-  PaymentPricingCalculation,
-} from '@unchainedshop/types/payments.pricing.js';
-import { IPricingAdapter } from '@unchainedshop/types/pricing.js';
+  BasePricingAdapterContext,
+  IPricingAdapter,
+  IPricingSheet,
+  PricingCalculation,
+} from '@unchainedshop/types/pricing.js';
 import { BasePricingAdapter } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
+import { User } from '@unchainedshop/core-users';
+import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { Order } from '@unchainedshop/core-orders';
+import { PaymentProvider } from '../types.js';
+import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
+
+export interface PaymentPricingCalculation extends PricingCalculation {
+  discountId?: string;
+  isTaxable: boolean;
+  isNetPrice: boolean;
+  rate?: number;
+}
+export interface PaymentPricingAdapterContext extends BasePricingAdapterContext {
+  country?: string;
+  currency?: string;
+  user: User;
+  orderPayment: OrderPayment;
+  order: Order;
+  provider: PaymentProvider;
+  discounts: Array<OrderDiscount>;
+}
+
+export type IPaymentPricingSheet = IPricingSheet<PaymentPricingCalculation> & {
+  addFee: (params: { amount: number; isTaxable: boolean; isNetPrice: boolean; meta?: any }) => void;
+  addTax: (params: {
+    amount: number;
+    rate: number;
+    baseCategory?: string;
+    discountId?: string;
+    meta?: any;
+  }) => void;
+  addDiscount: (params: {
+    amount: number;
+    isTaxable: boolean;
+    isNetPrice: boolean;
+    discountId: string;
+    meta?: any;
+  }) => void;
+};
+
+export type IPaymentPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
+  PaymentPricingAdapterContext,
+  PaymentPricingCalculation,
+  IPaymentPricingSheet,
+  DiscountConfiguration
+>;
 
 const basePricingAdapter = BasePricingAdapter<PaymentPricingAdapterContext, PaymentPricingCalculation>();
 

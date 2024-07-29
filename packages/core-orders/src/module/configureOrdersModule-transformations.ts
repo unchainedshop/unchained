@@ -1,6 +1,6 @@
 import { Order } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
-import { PaymentPricingRowCategory } from '@unchainedshop/types/payments.pricing.js';
+import { PaymentPricingRowCategory } from '@unchainedshop/core-payment';
 import {
   IOrderPricingSheet,
   OrderPrice,

@@ -1,10 +1,13 @@
 import { BasePricingSheet } from '@unchainedshop/utils';
-import {
-  PaymentPricingCalculation,
-  PaymentPricingRowCategory,
-  IPaymentPricingSheet,
-} from '@unchainedshop/types/payments.pricing.js';
+import { PaymentPricingCalculation, IPaymentPricingSheet } from './PaymentPricingAdapter.js';
 import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing.js';
+
+export enum PaymentPricingRowCategory {
+  Item = 'ITEM',
+  Payment = 'PAYMENT',
+  Discount = 'DISCOUNT',
+  Tax = 'TAX',
+}
 
 export const PaymentPricingSheet = (
   params: PricingSheetParams<PaymentPricingCalculation>,

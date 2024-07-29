@@ -9,18 +9,17 @@ import {
 } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
-import { PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
+import { PaymentPricingContext, PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
 import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
 import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
 import { paymentSettings } from '../payment-settings.js';
 import { Order } from '@unchainedshop/core-orders';
-import { PaymentProviderType } from '../payment-index.js';
 import {
   IPaymentPricingSheet,
   PaymentPricingCalculation,
-  PaymentPricingContext,
-} from '@unchainedshop/types/payments.pricing.js';
+  PaymentProviderType,
+} from '../payment-index.js';
 
 export type PaymentProvidersModules = ModuleMutationsWithReturnDoc<PaymentProvider> & {
   // Queries
