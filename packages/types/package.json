@@ -36,7 +36,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
     "@accounts/types": "^0.33.2",
-    "@types/node": "^20.14.12",
+    "@types/node": "^20.14.13",
     "mongodb": "=6.7.0",
     "simpl-schema": "^3.4.6",
     "typedoc": "^0.26.5",

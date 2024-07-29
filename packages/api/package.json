@@ -64,7 +64,7 @@
     "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/node": "^20.14.12",
+    "@types/node": "^20.14.13",
     "@unchainedshop/types": "^3.0.0-alpha2",
     "connect-mongo": "^5.1.0",
     "express": "^4.19.2",

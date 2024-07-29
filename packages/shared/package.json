@@ -3,7 +3,7 @@
     "private": true,
     "version": "3.0.0-alpha2",
     "dependencies": {
-        "@types/node": "^20.14.12",
+        "@types/node": "^20.14.13",
         "typescript": "^5.5.4"
     }
 }

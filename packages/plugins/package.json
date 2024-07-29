@@ -85,7 +85,7 @@
   },
   "devDependencies": {
     "@redis/client": "^1.5.17",
-    "@types/node": "^20.14.12",
+    "@types/node": "^20.14.13",
     "@unchainedshop/api": "^3.0.0-alpha2",
     "@unchainedshop/core-delivery": "^3.0.0-alpha2",
     "@unchainedshop/core-enrollments": "^3.0.0-alpha2",
