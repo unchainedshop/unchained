@@ -1,3 +1,4 @@
+import type { mongodb, TimestampFields } from '@unchainedshop/mongodb';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
@@ -6,9 +7,6 @@ import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.js';
 import { CountriesSchema } from '../db/CountriesSchema.js';
 import addMigrations from '../migrations/addMigrations.js';
-
-import type { FindOptions } from 'mongodb';
-import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type Country = {
   _id?: string;
@@ -29,7 +27,7 @@ export type CountriesModule = ModuleMutations<Country> & {
       offset?: number;
       sort?: Array<SortOption>;
     },
-    options?: FindOptions,
+    options?: mongodb.FindOptions,
   ) => Promise<Array<Country>>;
   count: (query: CountryQuery) => Promise<number>;
   countryExists: (params: { countryId: string }) => Promise<boolean>;

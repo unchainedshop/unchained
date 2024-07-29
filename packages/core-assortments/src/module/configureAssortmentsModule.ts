@@ -33,8 +33,6 @@ import {
 } from './configureAssortmentTextsModule.js';
 import { configureAssortmentMediaModule } from './configureAssortmentMediaModule.js';
 import { makeAssortmentBreadcrumbsBuilder } from '../utils/breadcrumbs/makeAssortmentBreadcrumbsBuilder.js';
-
-import type { Filter, FindOptions } from 'mongodb';
 import { AssortmentMediaModule } from './configureAssortmentMediaModule.js';
 import {
   Assortment,
@@ -60,7 +58,7 @@ export type AssortmentsModule = {
       offset?: number;
       sort?: Array<SortOption>;
     },
-    options?: FindOptions,
+    options?: mongodb.FindOptions,
   ) => Promise<Array<Assortment>>;
 
   findProductIds: (params: {
@@ -118,10 +116,10 @@ export type AssortmentsModule = {
   search: {
     findFilteredAssortments: (params: {
       assortmentIds: Array<string>;
-      assortmentSelector: Filter<Assortment>;
+      assortmentSelector: mongodb.Filter<Assortment>;
       limit: number;
       offset: number;
-      sort: FindOptions['sort'];
+      sort: mongodb.FindOptions['sort'];
     }) => Promise<Array<Assortment>>;
   };
 

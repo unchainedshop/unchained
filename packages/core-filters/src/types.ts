@@ -1,7 +1,6 @@
-import type { FindOptions, Filter as MongoDBFilter } from 'mongodb';
-import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import type { Assortment } from '@unchainedshop/core-assortments';
-import type { TimestampFields } from '@unchainedshop/mongodb';
+import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
+import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { Product } from '@unchainedshop/types/products.js';
 import { UnchainedCore } from '@unchainedshop/core';
 
@@ -76,9 +75,9 @@ export interface FilterAdapterActions {
       assortmentIds: Array<string>;
     },
     options?: {
-      filterSelector: MongoDBFilter<Filter>;
-      assortmentSelector: MongoDBFilter<Assortment>;
-      sortStage: FindOptions['sort'];
+      filterSelector: mongodb.Filter<Filter>;
+      assortmentSelector: mongodb.Filter<Assortment>;
+      sortStage: mongodb.FindOptions['sort'];
     },
   ) => Promise<Array<string>>;
 
@@ -87,24 +86,24 @@ export interface FilterAdapterActions {
       productIds: Array<string>;
     },
     options?: {
-      filterSelector: MongoDBFilter<Filter>;
-      productSelector: MongoDBFilter<Product>;
-      sortStage: FindOptions['sort'];
+      filterSelector: mongodb.Filter<Filter>;
+      productSelector: mongodb.Filter<Product>;
+      sortStage: mongodb.FindOptions['sort'];
     },
   ) => Promise<Array<string>>;
 
   transformFilterSelector: (
-    query: MongoDBFilter<Filter>,
+    query: mongodb.Filter<Filter>,
     options?: any,
-  ) => Promise<MongoDBFilter<Filter>>;
+  ) => Promise<mongodb.Filter<Filter>>;
   transformProductSelector: (
-    query: MongoDBFilter<Product>,
+    query: mongodb.Filter<Product>,
     options?: { key?: string; value?: any },
-  ) => Promise<MongoDBFilter<Product>>;
+  ) => Promise<mongodb.Filter<Product>>;
   transformSortStage: (
-    sort: FindOptions['sort'],
+    sort: mongodb.FindOptions['sort'],
     options?: { key: string; value?: any },
-  ) => Promise<FindOptions['sort']>;
+  ) => Promise<mongodb.FindOptions['sort']>;
 }
 
 export type IFilterAdapter = IBaseAdapter & {

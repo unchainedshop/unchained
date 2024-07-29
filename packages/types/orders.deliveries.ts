@@ -1,11 +1,10 @@
-import type { FindOptions } from 'mongodb';
 import type { Order } from '@unchainedshop/core-orders';
 import type { UnchainedCore } from '@unchainedshop/core';
 
 import { IDeliveryPricingSheet } from './delivery.pricing.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
-import type { TimestampFields, LogFields } from '@unchainedshop/mongodb';
+import type { TimestampFields, LogFields, mongodb } from '@unchainedshop/mongodb';
 
 export enum OrderDeliveryStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -26,7 +25,10 @@ export type OrderDelivery = {
 
 export type OrderDeliveriesModule = {
   // Queries
-  findDelivery: (params: { orderDeliveryId: string }, options?: FindOptions) => Promise<OrderDelivery>;
+  findDelivery: (
+    params: { orderDeliveryId: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<OrderDelivery>;
 
   // Transformations
   discounts: (

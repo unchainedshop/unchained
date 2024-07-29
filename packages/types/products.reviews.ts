@@ -1,6 +1,5 @@
-import type { Filter } from 'mongodb';
-import { SortOption } from '@unchainedshop/utils';
-import type { TimestampFields } from '@unchainedshop/mongodb';
+import type { SortOption } from '@unchainedshop/utils';
+import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 
 export enum ProductReviewVoteType {
   UPVOTE = 'UPVOTE',
@@ -53,7 +52,7 @@ export type ProductReviewsModule = {
 
   delete: (productPreviewId: string) => Promise<number>;
 
-  deleteMany: (selector: Filter<ProductReview>) => Promise<number>;
+  deleteMany: (selector: mongodb.Filter<ProductReview>) => Promise<number>;
 
   update: (productReviewId: string, doc: ProductReview) => Promise<ProductReview>;
 

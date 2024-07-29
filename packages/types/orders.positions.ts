@@ -1,13 +1,12 @@
-import type { FindOptions } from 'mongodb';
 import type { Order } from '@unchainedshop/core-orders';
 import type { UnchainedCore } from '@unchainedshop/core';
+import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 
 import { OrderDelivery } from './orders.deliveries.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 import { Product } from './products.js';
 import { IProductPricingSheet, ProductPricingCalculation } from './products.pricing.js';
-import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export type OrderPosition = {
   _id?: string;
@@ -24,7 +23,10 @@ export type OrderPosition = {
 
 export type OrderPositionsModule = {
   // Queries
-  findOrderPosition: (params: { itemId: string }, options?: FindOptions) => Promise<OrderPosition>;
+  findOrderPosition: (
+    params: { itemId: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<OrderPosition>;
   findOrderPositions: (params: { orderId: string }) => Promise<Array<OrderPosition>>;
 
   // Transformations

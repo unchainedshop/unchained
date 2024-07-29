@@ -1,6 +1,5 @@
-import type { Filter } from 'mongodb';
+import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 import { OrderPrice } from './orders.pricing.js';
-import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export enum ProductContractStandard {
   ERC721 = 'ERC721',
@@ -132,7 +131,7 @@ export type ProductQuery = {
   queryString?: string;
   includeDrafts?: boolean;
   productIds?: Array<string>;
-  productSelector?: Filter<Product>;
+  productSelector?: mongodb.Filter<Product>;
   slugs?: Array<string>;
   tags?: Array<string>;
 };

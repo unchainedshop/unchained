@@ -1,5 +1,4 @@
-import type { Filter, FindOptions } from 'mongodb';
-import type { TimestampFields } from '@unchainedshop/mongodb';
+import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 
 export type ProductMedia = {
   _id?: string;
@@ -29,7 +28,7 @@ export type ProductMediaModule = {
       offset?: number;
       tags?: Array<string>;
     },
-    options?: FindOptions,
+    options?: mongodb.FindOptions,
   ) => Promise<Array<ProductMedia>>;
 
   // Mutations
@@ -53,8 +52,8 @@ export type ProductMediaModule = {
   texts: {
     // Queries
     findMediaTexts: (
-      query: Filter<ProductMediaText>,
-      options?: FindOptions,
+      query: mongodb.Filter<ProductMediaText>,
+      options?: mongodb.FindOptions,
     ) => Promise<Array<ProductMediaText>>;
 
     findLocalizedMediaText: (query: {

@@ -1,5 +1,4 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
-import type { Filter, FindOptions } from 'mongodb';
 import { Locale } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -39,7 +38,7 @@ export type AssortmentMediaModule = {
       offset?: number;
       tags?: Array<string>;
     },
-    options?: FindOptions,
+    options?: mongodb.FindOptions,
   ) => Promise<Array<AssortmentMediaType>>;
 
   // Mutations
@@ -64,8 +63,8 @@ export type AssortmentMediaModule = {
   texts: {
     // Queries
     findMediaTexts: (
-      query: Filter<AssortmentMediaText>,
-      options?: FindOptions,
+      query: mongodb.Filter<AssortmentMediaText>,
+      options?: mongodb.FindOptions,
     ) => Promise<Array<AssortmentMediaText>>;
 
     findLocalizedMediaText: (query: {

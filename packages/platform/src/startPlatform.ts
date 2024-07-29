@@ -1,11 +1,10 @@
 import { startAPIServer, roles, UnchainedServerOptions } from '@unchainedshop/api';
 import { initCore, UnchainedCoreOptions } from '@unchainedshop/core';
-import { initDb } from '@unchainedshop/mongodb';
+import { initDb, mongodb } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 import { UnchainedCore } from '@unchainedshop/core';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { WorkerDirector } from '@unchainedshop/core-worker';
-import { Db } from 'mongodb';
 import { BulkImportHandler, createBulkImporterFactory } from './bulk-importer/createBulkImporter.js';
 import { runMigrations } from './migrations/runMigrations.js';
 import { setupAccounts } from './setup/setupAccounts.js';
@@ -58,7 +57,7 @@ export const startPlatform = async ({
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
   graphqlHandler: any;
-  db: Db;
+  db: mongodb.Db;
 }> => {
   exitOnMissingEnvironmentVariables();
 

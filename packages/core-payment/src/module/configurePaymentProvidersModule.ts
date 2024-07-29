@@ -1,8 +1,4 @@
-import {
-  ModuleMutations,
-  ModuleMutationsWithReturnDoc,
-  UnchainedCore,
-} from '@unchainedshop/core';
+import { ModuleMutations, ModuleMutationsWithReturnDoc, UnchainedCore } from '@unchainedshop/core';
 import {
   PaymentChargeActionResult,
   PaymentContext,

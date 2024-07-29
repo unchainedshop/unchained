@@ -1,11 +1,10 @@
 import type { Order } from '@unchainedshop/core-orders';
-import type { FindOptions } from 'mongodb';
 import type { UnchainedCore } from '@unchainedshop/core';
+import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 
 import { DiscountAdapterActions, DiscountContext } from './discount.js';
 import { OrderPrice } from './orders.pricing.js';
 import { IPricingSheet, PricingCalculation } from './pricing.js';
-import type { TimestampFields } from '@unchainedshop/mongodb';
 
 export enum OrderDiscountTrigger {
   USER = 'USER',
@@ -25,7 +24,10 @@ export type OrderDiscount = {
 
 export type OrderDiscountsModule = {
   // Queries
-  findOrderDiscount: (params: { discountId: string }, options?: FindOptions) => Promise<OrderDiscount>;
+  findOrderDiscount: (
+    params: { discountId: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<OrderDiscount>;
   findOrderDiscounts: (params: { orderId: string }) => Promise<Array<OrderDiscount>>;
 
   // Transformations

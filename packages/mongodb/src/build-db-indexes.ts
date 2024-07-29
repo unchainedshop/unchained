@@ -1,4 +1,5 @@
 import type { Collection, Document, CreateIndexesOptions, IndexDirection } from 'mongodb';
+
 import { log, LogLevel } from '@unchainedshop/logger';
 
 export type Indexes<T extends Document> = Array<{
