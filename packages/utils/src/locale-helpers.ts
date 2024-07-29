@@ -1,5 +1,6 @@
 import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
+import { resolveAcceptLanguage } from 'resolve-accept-language';
 
 const { UNCHAINED_LANG = 'de', UNCHAINED_COUNTRY = 'CH', UNCHAINED_CURRENCY = 'CHF' } = process.env;
 
@@ -7,15 +8,11 @@ export const systemLocale = new Intl.Locale(`${UNCHAINED_LANG}-${UNCHAINED_COUNT
 
 export const resolveBestSupported = (
   acceptLanguage: string,
-  supportedLocales: Array<Intl.Locale>,
+  supportedLocales: Array<string>,
+  fallbackLocale: string,
 ): Intl.Locale => {
-  // TODO: Best supported!
-  // const acceptLocale = new Intl.Locale(acceptLanguage);
-  // const bestLocale = acceptLocale.best(supportedLocales);
-  // if (!bestLocale) return systemLocale;
-  // return bestLocale;
-
-  return supportedLocales[0];
+  const { match } = resolveAcceptLanguage(acceptLanguage, supportedLocales, fallbackLocale);
+  return new Intl.Locale(match);
 };
 
 export const resolveBestCountry = (

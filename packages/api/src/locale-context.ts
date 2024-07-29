@@ -27,14 +27,18 @@ export const resolveDefaultContext = memoizee(
 
     const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });
 
-    const supportedLocaleStrings = languages.reduce((accumulator, language) => {
+    const supportedLocaleStrings: Array<string> = languages.reduce((accumulator, language) => {
       const added = countries.map((country) => {
         return `${language.isoCode}-${country.isoCode}`;
       });
       return accumulator.concat(added);
     }, []);
 
-    const localeContext = resolveBestSupported(acceptLang, [...supportedLocaleStrings, systemLocale]);
+    const localeContext = resolveBestSupported(
+      acceptLang,
+      supportedLocaleStrings,
+      systemLocale.baseName,
+    );
     const countryContext = resolveBestCountry(localeContext.region, acceptCountry, countries);
 
     const countryObject = countries.find((country) => country.isoCode === countryContext);

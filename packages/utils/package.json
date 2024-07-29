@@ -32,6 +32,7 @@
   "dependencies": {
     "@unchainedshop/logger": "^3.0.0-alpha2",
     "hashids": "^2.3.0",
+    "resolve-accept-language": "^3.1.4",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
