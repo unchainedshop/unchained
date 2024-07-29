@@ -3,7 +3,7 @@ import {
   WarehousingAdapter,
   WarehousingProviderType,
 } from '@unchainedshop/core-warehousing';
-import { ProductContractStandard } from '@unchainedshop/types/products.js';
+import { ProductContractStandard } from '@unchainedshop/core-products';
 import {
   IWarehousingAdapter,
   WarehousingContext,

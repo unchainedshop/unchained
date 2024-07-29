@@ -1,4 +1,4 @@
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import { mongodb } from '@unchainedshop/mongodb';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { assortmentFulltextSearch } from '../search/assortmentFulltextSearch.js';

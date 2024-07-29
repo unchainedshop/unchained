@@ -2,7 +2,6 @@ import { Order } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { DeliveryPricingRowCategory } from '@unchainedshop/types/delivery.pricing.js';
 import { PaymentPricingRowCategory } from '@unchainedshop/types/payments.pricing.js';
-import { ProductPricingRowCategory } from '@unchainedshop/types/products.pricing.js';
 import {
   IOrderPricingSheet,
   OrderPrice,
@@ -12,6 +11,7 @@ import {
 import { OrderPricingSheet } from '../director/OrderPricingSheet.js';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
 import { UnchainedCore } from '@unchainedshop/core';
+import { ProductPricingRowCategory } from '@unchainedshop/core-products';
 
 export interface OrderTransformations {
   discounted: (

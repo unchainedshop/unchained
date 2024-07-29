@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../../types.js';
-import { ProductSupply } from '@unchainedshop/types/products.js';
+import { ProductSupply } from '@unchainedshop/core-products';
 import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.js';
 
 export default async function updateProductSupply(

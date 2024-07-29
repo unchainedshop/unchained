@@ -1,4 +1,4 @@
-import { ProductMedia } from '@unchainedshop/types/products.media.js';
+import { ProductMedia } from '@unchainedshop/core-products';
 import { UnchainedCore } from '@unchainedshop/core';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.js';
 import upsertAsset from '../../upsertAsset.js';

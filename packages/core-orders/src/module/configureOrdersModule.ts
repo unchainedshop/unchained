@@ -1,7 +1,6 @@
 import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import { OrderDeliveriesModule, OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderPayment, OrderPaymentsModule } from '@unchainedshop/types/orders.payments.js';
-import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
 import { generateDbFilterById } from '@unchainedshop/mongodb';
 import { createRequire } from 'node:module';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
@@ -16,7 +15,7 @@ import { ordersSettings, OrdersSettingsOptions } from '../orders-settings.js';
 import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule.js';
 import { configureOrderDiscountsModule } from './configureOrderDiscountsModule.js';
 import { configureOrderPaymentsModule } from './configureOrderPaymentsModule.js';
-import { configureOrderPositionsModule } from './configureOrderPositionsModule.js';
+import { configureOrderPositionsModule, OrderPositionsModule } from './configureOrderPositionsModule.js';
 import { configureOrderModuleMutations, OrderMutations } from './configureOrdersModule-mutations.js';
 import { configureOrderModuleProcessing, OrderProcessing } from './configureOrdersModule-processing.js';
 import { configureOrdersModuleQueries, OrderQueries } from './configureOrdersModule-queries.js';
@@ -25,7 +24,7 @@ import {
   OrderTransformations,
 } from './configureOrdersModule-transformations.js';
 import { OrderDiscountsModule } from '@unchainedshop/types/orders.discounts.js';
-import { Order } from '../types.js';
+import { Order, OrderPosition } from '../types.js';
 
 export type OrdersModule = OrderQueries &
   OrderTransformations &

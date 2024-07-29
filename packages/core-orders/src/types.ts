@@ -1,4 +1,6 @@
+import type { ProductPricingCalculation } from '@unchainedshop/core-products';
 import type { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
+import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -6,6 +8,19 @@ export enum OrderStatus {
   FULLFILLED = 'FULLFILLED',
   REJECTED = 'REJECTED',
 }
+
+export type OrderPosition = {
+  _id?: string;
+  calculation: Array<ProductPricingCalculation>;
+  configuration: Array<{ key: string; value: string }>;
+  context?: any;
+  orderId: string;
+  originalProductId?: string;
+  productId: string;
+  quantity: number;
+  quotationId?: string;
+  scheduling: Array<any>;
+} & TimestampFields;
 
 export type Order = {
   _id?: string;
@@ -33,4 +48,10 @@ export type OrderQuery = {
   queryString?: string;
   status?: string;
   userId?: string;
+};
+
+export type OrderPositionDiscount = Omit<OrderPrice, '_id'> & {
+  _id?: string;
+  discountId: string;
+  item: OrderPosition;
 };

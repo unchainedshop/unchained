@@ -10,7 +10,7 @@ import {
   generateDbMutations,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { OrderPosition } from '@unchainedshop/core-orders';
 import { OrdersSchema } from '../db/OrdersSchema.js';
 
 export interface OrderMutations {

@@ -1,7 +1,78 @@
-import { OrderPosition, OrderPositionsModule } from '@unchainedshop/types/orders.positions.js';
+import type { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
+import type { UnchainedCore } from '@unchainedshop/core';
+import { IProductPricingSheet, Product } from '@unchainedshop/core-products';
+
+import { Order, OrderPosition } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { ordersSettings } from '../orders-settings.js';
+import { OrderPricingDiscount } from '@unchainedshop/types/orders.pricing.js';
+import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
+
+export type OrderPositionsModule = {
+  // Queries
+  findOrderPosition: (
+    params: { itemId: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<OrderPosition>;
+  findOrderPositions: (params: { orderId: string }) => Promise<Array<OrderPosition>>;
+
+  // Transformations
+  discounts: (
+    orderPosition: OrderPosition,
+    params: { order: Order; orderDiscount: OrderDiscount },
+    unchainedAPI: UnchainedCore,
+  ) => Array<OrderPricingDiscount>;
+
+  pricingSheet: (
+    orderPosition: OrderPosition,
+    currency: string,
+    unchainedAPI: UnchainedCore,
+  ) => IProductPricingSheet;
+
+  delete: (orderPositionId: string) => Promise<OrderPosition>;
+
+  removePositions: ({ orderId }: { orderId: string }) => Promise<number>;
+  removeProductByIdFromAllOpenPositions: (productId: string) => Promise<Array<string>>;
+
+  updateProductItem: (
+    doc: {
+      context?: any;
+      configuration?: Array<{ key: string; value: string }>;
+      quantity?: number;
+    },
+    params: { order: Order; product: Product; orderPosition: OrderPosition },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPosition>;
+
+  updateScheduling: (
+    params: {
+      order: Order;
+      orderDelivery: OrderDelivery;
+      orderPosition: OrderPosition;
+    },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPosition>;
+
+  updateCalculation: (
+    orderPosition: OrderPosition,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPosition>;
+
+  addProductItem: (
+    doc: {
+      context?: any;
+      configuration?: Array<{ key: string; value: string }>;
+      orderId?: string;
+      originalProductId?: string;
+      productId?: string;
+      quantity: number;
+      quotationId?: string;
+    },
+    params: { order: Order; product: Product },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPosition>;
+};
 
 const ORDER_POSITION_EVENTS: string[] = [
   'ORDER_UPDATE_CART_ITEM',

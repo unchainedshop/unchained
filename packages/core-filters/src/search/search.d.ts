@@ -1,7 +1,7 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { Filter, SearchQuery } from '../types.js';
 import { mongodb } from '@unchainedshop/mongodb';
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import { Assortment } from '@unchainedshop/core-assortments';
 
 export type CleanedSearchQuery = Omit<SearchQuery, 'query'> & {

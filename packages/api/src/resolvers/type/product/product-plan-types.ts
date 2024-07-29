@@ -1,4 +1,4 @@
-import { ProductPrice, Product as ProductType } from '@unchainedshop/types/products.js';
+import { ProductPrice, Product as ProductType } from '@unchainedshop/core-products';
 import { Context } from '@unchainedshop/api';
 import { Product } from './product-types.js';
 

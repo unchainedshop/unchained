@@ -1,7 +1,7 @@
 import type { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import type { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
-import { Product, ProductPlan } from '@unchainedshop/types/products.js';
-import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { Product, ProductPlan } from '@unchainedshop/core-products';
+import { OrderPosition } from '@unchainedshop/core-orders';
 import { UnchainedCore } from '@unchainedshop/core';
 
 export enum EnrollmentStatus {

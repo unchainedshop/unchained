@@ -1,9 +1,5 @@
 import { BasePricingSheet } from '@unchainedshop/utils';
-import {
-  ProductPricingCalculation,
-  ProductPricingRowCategory,
-  IProductPricingSheet,
-} from '@unchainedshop/types/products.pricing.js';
+import { ProductPricingCalculation, ProductPricingRowCategory, IProductPricingSheet } from '../types.js';
 import { PricingSheetParams } from '@unchainedshop/types/pricing.js';
 
 export const ProductPricingSheet = (

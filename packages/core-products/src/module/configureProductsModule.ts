@@ -9,7 +9,7 @@ import {
   ProductPriceRange,
   ProductQuery,
   ProductText,
-} from '@unchainedshop/types/products.js';
+} from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findPreservingIds,
@@ -25,7 +25,7 @@ import { ProductsSchema, ProductTypes } from '../db/ProductsSchema.js';
 import { ProductStatus } from '../db/ProductStatus.js';
 import { ProductPricingSheet } from '../director/ProductPricingSheet.js';
 import { ProductPricingDirector } from '../products-index.js';
-import { configureProductMediaModule } from './configureProductMediaModule.js';
+import { configureProductMediaModule, ProductMediaModule } from './configureProductMediaModule.js';
 import { configureProductPricesModule } from './configureProductPrices.js';
 import { configureProductReviewsModule } from './configureProductReviewsModule.js';
 import { configureProductTextsModule } from './configureProductTextsModule.js';
@@ -37,11 +37,10 @@ import {
   ProductPriceRate,
   ProductPricingCalculation,
   ProductPricingContext,
-} from '@unchainedshop/types/products.pricing.js';
+} from '../types.js';
 import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 import { Currency } from '@unchainedshop/core-currencies';
-import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { ProductMediaModule } from '@unchainedshop/types/products.media.js';
+import { OrderPosition } from '@unchainedshop/core-orders';
 import { ProductReviewsModule } from '@unchainedshop/types/products.reviews.js';
 import { ProductVariationsModule } from '@unchainedshop/types/products.variations.js';
 

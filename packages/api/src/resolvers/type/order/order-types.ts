@@ -8,7 +8,7 @@ import { Order as OrderType } from '@unchainedshop/core-orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
 import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
 import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
-import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { OrderPosition } from '@unchainedshop/core-orders';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
 import { User } from '@unchainedshop/core-users';
 

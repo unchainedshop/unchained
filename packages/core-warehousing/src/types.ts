@@ -1,9 +1,9 @@
 import { IBaseAdapter, IBaseDirector, Locale } from '@unchainedshop/utils';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import { Order } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
+import { OrderPosition } from '@unchainedshop/core-orders';
 import { UnchainedCore } from '@unchainedshop/core';
 
 export enum WarehousingProviderType {

@@ -1,7 +1,7 @@
 import { Quotation as QuotationType } from '@unchainedshop/core-quotations';
 import { Context } from '@unchainedshop/api';
 import { User } from '@unchainedshop/core-users';
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
 

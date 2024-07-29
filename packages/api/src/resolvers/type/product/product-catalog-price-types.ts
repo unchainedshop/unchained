@@ -1,6 +1,6 @@
 import { Country } from '@unchainedshop/core-countries';
 import { Currency } from '@unchainedshop/core-currencies';
-import { ProductPrice } from '@unchainedshop/types/products.js';
+import { ProductPrice } from '@unchainedshop/core-products';
 import { Context } from '../../../types.js';
 
 export type ProductCatalogHelperType<P, T> = (

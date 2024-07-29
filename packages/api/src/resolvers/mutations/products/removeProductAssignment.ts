@@ -1,5 +1,5 @@
 import { Context } from '../../../types.js';
-import { ProductConfiguration } from '@unchainedshop/types/products.js';
+import { ProductConfiguration } from '@unchainedshop/core-products';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '../../../errors.js';

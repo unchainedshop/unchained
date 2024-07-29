@@ -6,8 +6,8 @@ import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
-import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { Product } from '@unchainedshop/types/products.js';
+import { OrderPosition } from '@unchainedshop/core-orders';
+import { Product } from '@unchainedshop/core-products';
 import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 export enum DeliveryProviderType {

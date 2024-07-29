@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../../types.js';
-import { ProductTokenization } from '@unchainedshop/types/products.js';
+import { ProductTokenization } from '@unchainedshop/core-products';
 import { ProductNotFoundError, InvalidIdError, ProductWrongStatusError } from '../../../errors.js';
 
 export default async function updateProductTokenization(

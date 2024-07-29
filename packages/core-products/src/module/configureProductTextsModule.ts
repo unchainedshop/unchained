@@ -1,4 +1,4 @@
-import { Product, ProductText } from '@unchainedshop/types/products.js';
+import { Product, ProductText } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import {

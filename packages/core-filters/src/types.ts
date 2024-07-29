@@ -1,7 +1,7 @@
 import type { Assortment } from '@unchainedshop/core-assortments';
 import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import { UnchainedCore } from '@unchainedshop/core';
 
 export enum FilterType {

@@ -1,6 +1,6 @@
 import { mongodb } from '@unchainedshop/mongodb';
 import { Filter, FilterAdapterActions, IFilterAdapter, IFilterDirector } from '../types.js';
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import { BaseDirector } from '@unchainedshop/utils';
 
 const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {

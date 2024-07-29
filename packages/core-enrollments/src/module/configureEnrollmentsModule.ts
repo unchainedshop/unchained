@@ -23,8 +23,8 @@ import { EnrollmentDirector } from '../enrollments-index.js';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 import { Order } from '@unchainedshop/core-orders';
-import { OrderPosition } from '@unchainedshop/types/orders.positions.js';
-import { Product } from '@unchainedshop/types/products.js';
+import { OrderPosition } from '@unchainedshop/core-orders';
+import { Product } from '@unchainedshop/core-products';
 
 // Queries
 

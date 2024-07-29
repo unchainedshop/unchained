@@ -1,4 +1,4 @@
-import { IProductPricingAdapter } from '@unchainedshop/types/products.pricing.js';
+import { IProductPricingAdapter } from '@unchainedshop/core-products';
 import { ProductPricingAdapter, ProductPricingDirector } from '@unchainedshop/core-products';
 
 interface PriceRoundSettings {

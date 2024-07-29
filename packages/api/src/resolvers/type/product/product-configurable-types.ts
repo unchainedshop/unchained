@@ -3,7 +3,7 @@ import {
   ProductAssignment,
   ProductConfiguration,
   ProductPriceRange,
-} from '@unchainedshop/types/products.js';
+} from '@unchainedshop/core-products';
 import { Context } from '@unchainedshop/api';
 import { ProductVariation } from '@unchainedshop/types/products.variations.js';
 import { Product } from './product-types.js';

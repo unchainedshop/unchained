@@ -1,7 +1,7 @@
-export { configureProductsModule, ProductsModule } from './module/configureProductsModule.js';
-
-export { productServices, ProductServices } from './service/productServices.js';
-export { productsSettings, ProductsSettings, ProductsSettingsOptions } from './products-settings.js';
+export * from './types.js';
+export * from './module/configureProductsModule.js';
+export * from './service/productServices.js';
+export * from './products-settings.js';
 
 export { ProductPricingAdapter } from './director/ProductPricingAdapter.js';
 export { ProductPricingDirector } from './director/ProductPricingDirector.js';

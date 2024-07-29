@@ -2,7 +2,7 @@
 import { IWorkerAdapter } from '@unchainedshop/core-worker';
 import { WorkerAdapter, WorkerDirector } from '@unchainedshop/core-worker';
 import later from '@breejs/later';
-import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
+import { ProductPriceRate } from '@unchainedshop/core-products';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 
 const getExchangeRates = async (base) => {

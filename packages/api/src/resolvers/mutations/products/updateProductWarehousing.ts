@@ -2,7 +2,7 @@ import { log } from '@unchainedshop/logger';
 import { ProductTypes } from '@unchainedshop/core-products';
 import { Context } from '../../../types.js';
 
-import { ProductWarehousing } from '@unchainedshop/types/products.js';
+import { ProductWarehousing } from '@unchainedshop/core-products';
 import { ProductNotFoundError, InvalidIdError, ProductWrongTypeError } from '../../../errors.js';
 
 export default async function updateProductWarehousing(

@@ -1,8 +1,4 @@
-import {
-  ProductMedia,
-  ProductMediaModule,
-  ProductMediaText,
-} from '@unchainedshop/types/products.media.js';
+import { ProductMedia, ProductMediaText } from '../types.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -16,6 +12,58 @@ import { FileDirector } from '@unchainedshop/file-upload';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
 import { ProductMediaSchema } from '../db/ProductMediaSchema.js';
 import { Locale } from '@unchainedshop/utils';
+
+export type ProductMediaModule = {
+  // Queries
+  findProductMedia: (params: { productMediaId: string }) => Promise<ProductMedia>;
+
+  findProductMedias: (
+    params: {
+      productId?: string;
+      limit?: number;
+      offset?: number;
+      tags?: Array<string>;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<ProductMedia>>;
+
+  // Mutations
+  create: (data: { productId: string; mediaId: string }) => Promise<ProductMedia>;
+
+  delete: (productMediaId: string) => Promise<number>;
+  deleteMediaFiles: (params: {
+    productId?: string;
+    excludedProductIds?: Array<string>;
+    excludedProductMediaIds?: Array<string>;
+  }) => Promise<number>;
+
+  update: (productMediaId: string, productMedia: ProductMedia) => Promise<ProductMedia>;
+  updateManualOrder: (params: {
+    sortKeys: Array<{
+      productMediaId: string;
+      sortKey: number;
+    }>;
+  }) => Promise<Array<ProductMedia>>;
+
+  texts: {
+    // Queries
+    findMediaTexts: (
+      query: mongodb.Filter<ProductMediaText>,
+      options?: mongodb.FindOptions,
+    ) => Promise<Array<ProductMediaText>>;
+
+    findLocalizedMediaText: (query: {
+      productMediaId: string;
+      locale: string;
+    }) => Promise<ProductMediaText>;
+
+    // Mutations
+    updateMediaTexts: (
+      productMediaId: string,
+      texts: Array<Omit<ProductMediaText, 'productMediaId'>>,
+    ) => Promise<Array<ProductMediaText>>;
+  };
+};
 
 const PRODUCT_MEDIA_EVENTS = [
   'PRODUCT_ADD_MEDIA',

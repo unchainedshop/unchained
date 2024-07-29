@@ -3,8 +3,8 @@ import { Context } from '@unchainedshop/api';
 
 import { UnchainedCore } from '@unchainedshop/core';
 import { OrderStatus } from '@unchainedshop/core-orders';
-import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
 import type { CryptopayModule } from './module/configureCryptopayModule.js';
+import { ProductPriceRate } from '@unchainedshop/core-products';
 
 const { CRYPTOPAY_SECRET, CRYPTOPAY_MAX_RATE_AGE = '360' } = process.env;
 

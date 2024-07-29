@@ -1,7 +1,7 @@
 import { FilterDirector, FilterAdapter } from '@unchainedshop/core-filters';
 import { IFilterAdapter } from '@unchainedshop/core-filters';
 import { mongodb } from '@unchainedshop/mongodb';
-import { ProductText } from '@unchainedshop/types/products.js';
+import { ProductText } from '@unchainedshop/core-products';
 import { AssortmentText } from '@unchainedshop/core-assortments';
 
 function escapeStringRegexp(string) {

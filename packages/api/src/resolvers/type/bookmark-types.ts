@@ -1,5 +1,5 @@
 import type { Bookmark as BookmarkType } from '@unchainedshop/core-bookmarks';
-import type { Product } from '@unchainedshop/types/products.js';
+import type { Product } from '@unchainedshop/core-products';
 import type { User } from '@unchainedshop/core-users';
 
 import { Context } from '@unchainedshop/api';

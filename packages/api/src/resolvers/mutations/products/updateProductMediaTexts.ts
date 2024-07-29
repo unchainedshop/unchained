@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { ProductMediaText } from '@unchainedshop/types/products.media.js';
+import { ProductMediaText } from '@unchainedshop/core-products';
 import { ProductMediaNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function updateProductMediaTexts(

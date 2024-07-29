@@ -1,4 +1,4 @@
-import { ProductBundleItem } from '@unchainedshop/types/products.js';
+import { ProductBundleItem } from '@unchainedshop/core-products';
 import { Product } from './product-types.js';
 
 export const BundleProduct = {

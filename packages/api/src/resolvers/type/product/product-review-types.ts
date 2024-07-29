@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import {
   ProductReview as ProductReviewType,
   ProductReviewVoteType,

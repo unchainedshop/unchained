@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import { WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 export const Stock = {

@@ -1,9 +1,9 @@
-import { ProductText, Product as ProductType } from '@unchainedshop/types/products.js';
+import { ProductText, Product as ProductType } from '@unchainedshop/core-products';
 import { ProductStatus, ProductTypes } from '@unchainedshop/core-products';
 import { objectInvert } from '@unchainedshop/utils';
 import { SortOption } from '@unchainedshop/utils';
 import { AssortmentPathLink } from '@unchainedshop/core-assortments';
-import { ProductMedia } from '@unchainedshop/types/products.media.js';
+import { ProductMedia } from '@unchainedshop/core-products';
 import { ProductReview } from '@unchainedshop/types/products.reviews.js';
 import { Context } from '../../../types.js';
 

@@ -3,8 +3,8 @@ import type DataLoader from 'dataloader';
 import { Locale } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
 import { User } from '@unchainedshop/core-users';
-import { Product, ProductText } from '@unchainedshop/types/products.js';
-import { ProductMediaText } from '@unchainedshop/types/products.media.js';
+import { Product, ProductText } from '@unchainedshop/core-products';
+import { ProductMediaText } from '@unchainedshop/core-products';
 import { Filter, FilterText } from '@unchainedshop/core-filters';
 import {
   Assortment,

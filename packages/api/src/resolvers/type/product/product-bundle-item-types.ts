@@ -1,4 +1,4 @@
-import { Product, ProductBundleItem as ProductBundleItemType } from '@unchainedshop/types/products.js';
+import { Product, ProductBundleItem as ProductBundleItemType } from '@unchainedshop/core-products';
 import { Context } from '../../../types.js';
 
 export interface ProductBundleItemHelperTypes {

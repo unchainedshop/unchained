@@ -2,7 +2,7 @@ import type { Discount } from '@unchainedshop/types/discount.js';
 import {
   IProductPricingAdapter,
   ProductPricingRowCategory,
-} from '@unchainedshop/types/products.pricing.js';
+} from '@unchainedshop/core-products';
 import {
   ProductPricingDirector,
   ProductPricingAdapter,

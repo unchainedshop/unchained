@@ -1,4 +1,4 @@
-import { ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
+import { ProductPriceRate } from '../types.js';
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
 export const ProductPriceRates = async (db: mongodb.Db) => {

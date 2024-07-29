@@ -1,6 +1,5 @@
 import crypto from 'crypto';
-import { Product, ProductConfiguration } from '@unchainedshop/types/products.js';
-import { IProductPricingSheet, ProductPriceRate } from '@unchainedshop/types/products.pricing.js';
+import { Product, ProductConfiguration, IProductPricingSheet, ProductPriceRate } from '../types.js';
 import { Currency } from '@unchainedshop/core-currencies';
 import { ProductPricingDirector } from '../director/ProductPricingDirector.js';
 import { getPriceLevels } from './utils/getPriceLevels.js';

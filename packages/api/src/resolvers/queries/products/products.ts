@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { SortOption } from '@unchainedshop/utils';
-import { ProductQuery } from '@unchainedshop/types/products.js';
+import { ProductQuery } from '@unchainedshop/core-products';
 import { Context } from '../../../types.js';
 
 export default async function products(

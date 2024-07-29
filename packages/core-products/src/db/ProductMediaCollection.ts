@@ -1,4 +1,4 @@
-import { ProductMedia, ProductMediaText } from '@unchainedshop/types/products.media.js';
+import { ProductMedia, ProductMediaText } from '../types.js';
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
 export const ProductMediaCollection = async (db: mongodb.Db) => {

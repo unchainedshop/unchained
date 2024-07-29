@@ -2,9 +2,9 @@ import crypto from 'crypto';
 import { Context } from '@unchainedshop/api';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Order } from '@unchainedshop/core-orders';
-import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/types/orders.positions.js';
+import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-orders';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
-import { Product } from '@unchainedshop/types/products.js';
+import { Product } from '@unchainedshop/core-products';
 import { Quotation } from '@unchainedshop/core-quotations';
 import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';
 

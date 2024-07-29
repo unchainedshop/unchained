@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { ProductCommerce } from '@unchainedshop/types/products.js';
+import { ProductCommerce } from '@unchainedshop/core-products';
 import { ProductNotFoundError, InvalidIdError } from '../../../errors.js';
 import { Context } from '../../../types.js';
 

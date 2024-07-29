@@ -1,10 +1,9 @@
 import type { User } from '@unchainedshop/core-users';
-import type { Order } from '@unchainedshop/core-orders';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
 
 import { OrderDelivery } from './orders.deliveries.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPayment } from './orders.payments.js';
-import { OrderPosition } from './orders.positions.js';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
