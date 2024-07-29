@@ -84,6 +84,67 @@ export interface ProductPlan {
   trialIntervalCount?: number;
 }
 
+export enum ProductReviewVoteType {
+  UPVOTE = 'UPVOTE',
+  DOWNVOTE = 'DOWNVOTE',
+  REPORT = 'REPORT',
+}
+
+export interface ProductVote {
+  meta?: any;
+  timestamp?: Date;
+  type: ProductReviewVoteType;
+  userId?: string;
+}
+
+export type ProductReview = {
+  _id?: string;
+  productId: string;
+  authorId: string;
+  rating: number;
+  title?: string;
+  review?: string;
+  meta?: any;
+  votes: Array<ProductVote>;
+} & TimestampFields;
+
+export type ProductReviewQuery = {
+  productId?: string;
+  authorId?: string;
+  queryString?: string;
+  created?: { end?: Date; start?: Date };
+  updated?: { end?: Date; start?: Date };
+};
+
+export enum ProductVariationType {
+  COLOR = 'COLOR',
+  TEXT = 'TEXT',
+}
+
+export type ProductVariation = {
+  _id?: string;
+  key?: string;
+  tags?: string[];
+  options: Array<string>;
+  productId: string;
+  type?: string;
+} & TimestampFields;
+
+export type ProductVariationText = {
+  _id?: string;
+  locale: string;
+  productVariationId: string;
+  productVariationOptionValue?: string;
+  subtitle?: string;
+  title?: string;
+} & TimestampFields;
+
+export type ProductVariationOption = {
+  _id: string;
+  texts: ProductVariationText;
+  value: string;
+};
+
 export interface ProductContractConfiguration {
   tokenId?: string;
   supply?: number;

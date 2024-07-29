@@ -1,5 +1,5 @@
-import { ProductVariation, ProductVariationText } from '@unchainedshop/types/products.variations.js';
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
+import { ProductVariation, ProductVariationText } from '../types.js';
 
 export const ProductVariationsCollection = async (db: mongodb.Db) => {
   const ProductVariations = db.collection<ProductVariation>('product_variations');

@@ -1,5 +1,5 @@
 import { UnchainedCore } from '@unchainedshop/core';
-import { ProductVariation } from '@unchainedshop/types/products.variations.js';
+import { ProductVariation } from '@unchainedshop/core-products';
 
 const upsert = async (productVariation: ProductVariation, unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;

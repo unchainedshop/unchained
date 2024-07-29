@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { Product, ProductConfiguration } from '@unchainedshop/core-products';
-import { ProductVariation } from '@unchainedshop/types/products.variations.js';
+import { ProductVariation } from '@unchainedshop/core-products';
 
 export type AssignmentVectorHelperType<T> = (
   data: { product: Product } & ProductConfiguration,

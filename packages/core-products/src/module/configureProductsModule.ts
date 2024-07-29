@@ -27,9 +27,12 @@ import { ProductPricingSheet } from '../director/ProductPricingSheet.js';
 import { ProductPricingDirector } from '../products-index.js';
 import { configureProductMediaModule, ProductMediaModule } from './configureProductMediaModule.js';
 import { configureProductPricesModule } from './configureProductPrices.js';
-import { configureProductReviewsModule } from './configureProductReviewsModule.js';
+import { configureProductReviewsModule, ProductReviewsModule } from './configureProductReviewsModule.js';
 import { configureProductTextsModule } from './configureProductTextsModule.js';
-import { configureProductVariationsModule } from './configureProductVariationsModule.js';
+import {
+  configureProductVariationsModule,
+  ProductVariationsModule,
+} from './configureProductVariationsModule.js';
 import { productsSettings, ProductsSettingsOptions } from '../products-settings.js';
 import addMigrations from '../migrations/addMigrations.js';
 import {
@@ -41,8 +44,6 @@ import {
 import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 import { Currency } from '@unchainedshop/core-currencies';
 import { OrderPosition } from '@unchainedshop/core-orders';
-import { ProductReviewsModule } from '@unchainedshop/types/products.reviews.js';
-import { ProductVariationsModule } from '@unchainedshop/types/products.variations.js';
 
 const PRODUCT_EVENTS = [
   'PRODUCT_CREATE',

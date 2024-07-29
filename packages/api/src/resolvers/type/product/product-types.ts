@@ -4,7 +4,7 @@ import { objectInvert } from '@unchainedshop/utils';
 import { SortOption } from '@unchainedshop/utils';
 import { AssortmentPathLink } from '@unchainedshop/core-assortments';
 import { ProductMedia } from '@unchainedshop/core-products';
-import { ProductReview } from '@unchainedshop/types/products.reviews.js';
+import { ProductReview } from '@unchainedshop/core-products';
 import { Context } from '../../../types.js';
 
 export const Product = {

@@ -1,8 +1,3 @@
-import {
-  ProductVariation,
-  ProductVariationsModule,
-  ProductVariationText,
-} from '@unchainedshop/types/products.variations.js';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -14,6 +9,68 @@ import {
 } from '@unchainedshop/mongodb';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
 import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
+import { ProductVariation, ProductVariationText } from '../types.js';
+
+export type ProductVariationsModule = {
+  // Queries
+  findProductVariationByKey: (query: { productId: string; key: string }) => Promise<ProductVariation>;
+  findProductVariation: (query: { productVariationId: string }) => Promise<ProductVariation>;
+
+  findProductVariations: (query: {
+    productId: string;
+    limit?: number;
+    offset?: number;
+    tags?: Array<string>;
+  }) => Promise<Array<ProductVariation>>;
+
+  // Transformations
+  option: (
+    productVariation: ProductVariation,
+    productVariationOptionValue: string,
+  ) => {
+    _id: string;
+    productVariationOption: string;
+  };
+
+  // Mutations
+  create: (doc: ProductVariation & { locale?: string; title?: string }) => Promise<ProductVariation>;
+
+  delete: (productVariationId: string) => Promise<number>;
+  deleteVariations: (params: {
+    productId?: string;
+    excludedProductIds?: Array<string>;
+  }) => Promise<number>;
+
+  update: (productMediaId: string, doc: ProductVariation) => Promise<ProductVariation>;
+
+  addVariationOption: (productVariationId: string, data: { value: string }) => Promise<ProductVariation>;
+
+  removeVariationOption: (
+    productVariationId: string,
+    productVariationOptionValue: string,
+  ) => Promise<void>;
+
+  texts: {
+    // Queries
+    findVariationTexts: (query: {
+      productVariationId: string;
+      productVariationOptionValue?: string;
+    }) => Promise<Array<ProductVariationText>>;
+
+    findLocalizedVariationText: (query: {
+      locale: string;
+      productVariationId: string;
+      productVariationOptionValue?: string;
+    }) => Promise<ProductVariationText>;
+
+    // Mutations
+    updateVariationTexts: (
+      productVariationId: string,
+      texts: Array<Omit<ProductVariationText, 'productVariationId' | 'productVariationOptionValue'>>,
+      productVariationOptionValue?: string,
+    ) => Promise<Array<ProductVariationText>>;
+  };
+};
 
 const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_CREATE_VARIATION',

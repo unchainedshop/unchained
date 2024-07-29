@@ -4,7 +4,7 @@ import {
   ProductReview as ProductReviewType,
   ProductReviewVoteType,
   ProductVote,
-} from '@unchainedshop/types/products.reviews.js';
+} from '@unchainedshop/core-products';
 import { User } from '@unchainedshop/core-users';
 
 type HelperType<P, T> = (product: ProductReviewType, params: P, context: Context) => T;

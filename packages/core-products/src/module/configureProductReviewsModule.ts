@@ -1,11 +1,5 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
-import {
-  ProductReview,
-  ProductReviewQuery,
-  ProductReviewsModule,
-  ProductReviewVoteType,
-  ProductVote,
-} from '@unchainedshop/types/products.reviews.js';
+import { ProductReview, ProductReviewQuery, ProductReviewVoteType, ProductVote } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -16,6 +10,50 @@ import {
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
 import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema.js';
+
+export type ProductReviewsModule = {
+  // Queries
+  findProductReview: (query: { productReviewId: string }) => Promise<ProductReview>;
+
+  findProductReviews: (
+    query: ProductReviewQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+  ) => Promise<Array<ProductReview>>;
+
+  count: (query: ProductReviewQuery) => Promise<number>;
+  reviewExists: (query: { productReviewId: string }) => Promise<boolean>;
+
+  // Mutations
+  create: (doc: ProductReview) => Promise<ProductReview>;
+
+  delete: (productPreviewId: string) => Promise<number>;
+
+  deleteMany: (selector: mongodb.Filter<ProductReview>) => Promise<number>;
+
+  update: (productReviewId: string, doc: ProductReview) => Promise<ProductReview>;
+
+  /*
+   * Product review votes
+   */
+
+  votes: {
+    // Queries
+    userIdsThatVoted: (
+      productReview: ProductReview,
+      query: { type: ProductReviewVoteType },
+    ) => Array<string>;
+
+    ownVotes: (productReview: ProductReview, query: { userId: string }) => Array<ProductVote>;
+
+    // Mutations
+    addVote: (productReview: ProductReview, doc: ProductVote) => Promise<ProductReview>;
+
+    removeVote: (productReviewId: string, doc: ProductVote) => Promise<ProductReview>;
+  };
+};
 
 const PRODUCT_REVIEW_EVENTS = [
   'PRODUCT_REVIEW_CREATE',

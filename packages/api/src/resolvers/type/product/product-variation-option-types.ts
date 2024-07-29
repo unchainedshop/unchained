@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { ProductVariationText } from '@unchainedshop/types/products.variations.js';
+import { ProductVariationText } from '@unchainedshop/core-products';
 
 export type OptionHelperType<P, T> = (
   option: { _id: string; productVariationOption: string },

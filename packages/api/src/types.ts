@@ -13,6 +13,8 @@ import {
 import { AssortmentMediaText } from '@unchainedshop/core-assortments';
 import { File } from '@unchainedshop/core-files';
 
+export type VariationInputText = { locale: string; title: string; subtitle?: string };
+
 export interface UnchainedUserContext {
   login: (user: User) => Promise<{ _id: string; tokenExpires: Date }>;
   logout: () => Promise<boolean>;

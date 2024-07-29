@@ -2,7 +2,7 @@ import { Context } from '@unchainedshop/api';
 import {
   ProductVariation as ProductVariationType,
   ProductVariationText,
-} from '@unchainedshop/types/products.variations.js';
+} from '@unchainedshop/core-products';
 
 export type HelperType<P, T> = (
   productVariation: ProductVariationType,

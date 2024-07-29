@@ -16,7 +16,7 @@ import {
 } from '@unchainedshop/core-users';
 import { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { Roles, permissions } from '@unchainedshop/roles';
-import { ProductReview } from '@unchainedshop/types/products.reviews.js';
+import { ProductReview } from '@unchainedshop/core-products';
 import { checkAction, checkTypeResolver } from '../../acl.js';
 import { actions } from '../../roles/index.js';
 import { Context } from '../../types.js';

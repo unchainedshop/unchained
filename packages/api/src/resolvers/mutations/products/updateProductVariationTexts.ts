@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { ProductVariationText } from '@unchainedshop/types/products.variations.js';
+import { ProductVariationText } from '@unchainedshop/core-products';
 import { ProductVariationNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function F(

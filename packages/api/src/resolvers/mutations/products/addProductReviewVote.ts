@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { ProductReviewVoteType } from '@unchainedshop/types/products.reviews.js';
+import { ProductReviewVoteType } from '@unchainedshop/core-products';
 import { ProductReviewNotFoundError, InvalidIdError } from '../../../errors.js';
 
 export default async function addProductReviewVote(

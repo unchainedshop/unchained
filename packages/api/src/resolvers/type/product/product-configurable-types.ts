@@ -5,7 +5,7 @@ import {
   ProductPriceRange,
 } from '@unchainedshop/core-products';
 import { Context } from '@unchainedshop/api';
-import { ProductVariation } from '@unchainedshop/types/products.variations.js';
+import { ProductVariation } from '@unchainedshop/core-products';
 import { Product } from './product-types.js';
 
 export const ConfigurableProduct = {
