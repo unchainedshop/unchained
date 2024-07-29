@@ -23,7 +23,7 @@ export const FilterOption: FilterOptionHelperTypes = {
     return loaders.filterTextLoader.load({
       filterId: obj._id,
       filterOptionValue: obj.filterOption,
-      locale: forceLocale || localeContext.normalized,
+      locale: forceLocale || localeContext.baseName,
     });
   },
 };

@@ -35,7 +35,6 @@
     "@unchainedshop/logger": "^3.0.0-alpha2",
     "@unchainedshop/mongodb": "^3.0.0-alpha2",
     "@unchainedshop/utils": "^3.0.0-alpha2",
-    "locale": "^0.1.0",
     "memoizee": "^0.4.17",
     "simpl-schema": "^3.4.6"
   },

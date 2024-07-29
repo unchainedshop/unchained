@@ -1,7 +1,7 @@
 import { IncomingMessage } from 'http';
 import path from 'path';
 import { createLogger } from '@unchainedshop/logger';
-import { systemLocale, Locale } from '@unchainedshop/utils';
+import { systemLocale } from '@unchainedshop/utils';
 import { Context } from '../types.js';
 
 const logger = createLogger('unchained:erc-metadata');
@@ -53,7 +53,7 @@ export default async function ercMetadataMiddleware(
       {
         token,
         product,
-        locale: new Locale(locale),
+        locale: new Intl.Locale(locale),
         referenceDate: new Date(),
       },
       context,

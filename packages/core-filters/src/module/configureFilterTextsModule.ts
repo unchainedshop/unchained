@@ -1,6 +1,5 @@
 import { emit, registerEvents } from '@unchainedshop/events';
 import { findLocalizedText, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
-import { Locale } from '@unchainedshop/utils';
 import { FilterText } from '../types.js';
 
 const FILTER_TEXT_EVENTS = ['FILTER_UPDATE_TEXT'];
@@ -86,7 +85,7 @@ export const configureFilterTextsModule = ({
     },
 
     findLocalizedText: async ({ filterId, filterOptionValue, locale }) => {
-      const parsedLocale = new Locale(locale);
+      const parsedLocale = new Intl.Locale(locale);
 
       const text = await findLocalizedText(
         FilterTexts,

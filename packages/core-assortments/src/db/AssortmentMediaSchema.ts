@@ -20,7 +20,7 @@ export const AssortmentMediaTextsSchema = new SimpleSchema(
       type: String,
       required: true,
     },
-    locale: String,
+    locale: Intl.Locale,
     title: String,
     subtitle: String,
     ...Schemas.timestampFields,

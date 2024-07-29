@@ -21,7 +21,7 @@ export const Filter: FilterHelperTypes = {
     return loaders.filterTextLoader.load({
       filterId: obj._id,
       filterOptionValue: null,
-      locale: forceLocale || localeContext.normalized,
+      locale: forceLocale || localeContext.baseName,
     });
   },
 };

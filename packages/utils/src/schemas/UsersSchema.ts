@@ -16,7 +16,7 @@ const ProfileSchema = new SimpleSchema(
 export const LastLoginSchema = new SimpleSchema(
   {
     timestamp: Date,
-    locale: String,
+    locale: Intl.Locale,
     countryCode: String,
     remoteAddress: String,
     remotePort: String,

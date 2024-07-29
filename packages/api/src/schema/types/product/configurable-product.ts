@@ -14,7 +14,7 @@ export default [
 
     type ProductVariationTexts @cacheControl(maxAge: 180) {
       _id: ID!
-      locale: String
+      locale: Locale
       title: String
       subtitle: String
     }

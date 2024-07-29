@@ -1,6 +1,4 @@
 import type DataLoader from 'dataloader';
-
-import { Locale } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
 import { User } from '@unchainedshop/core-users';
 import { Product, ProductText } from '@unchainedshop/core-products';
@@ -36,7 +34,7 @@ export interface AdminUiConfig {
 
 export interface UnchainedLocaleContext {
   countryContext: string;
-  localeContext: Locale;
+  localeContext: Intl.Locale;
   currencyContext: string;
   remoteAddress?: string;
   remotePort?: string;

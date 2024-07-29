@@ -1,5 +1,4 @@
 import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
-import { Locale } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
@@ -268,7 +267,7 @@ export const configureAssortmentMediaModule = async ({
       },
 
       findLocalizedMediaText: async ({ assortmentMediaId, locale }) => {
-        const parsedLocale = new Locale(locale);
+        const parsedLocale = new Intl.Locale(locale);
 
         const text = await findLocalizedText<AssortmentMediaText>(
           AssortmentMediaTexts,

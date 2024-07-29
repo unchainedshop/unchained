@@ -60,7 +60,7 @@ export default async function resetPassword(
     remoteAddress: context.remoteAddress,
     remotePort: context.remotePort,
     userAgent: context.userAgent,
-    locale: context.localeContext.normalized,
+    locale: context.localeContext.baseName,
     countryCode: context.countryContext,
   });
 

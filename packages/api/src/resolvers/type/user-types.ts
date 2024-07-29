@@ -1,5 +1,5 @@
 import type { Bookmark } from '@unchainedshop/core-bookmarks';
-import { SortOption, Locale } from '@unchainedshop/utils';
+import { SortOption } from '@unchainedshop/utils';
 import { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { File } from '@unchainedshop/core-files';
 import { Language } from '@unchainedshop/core-languages';
@@ -30,10 +30,10 @@ export interface UserHelperTypes {
   created: HelperType<any, Date>;
   updated: HelperType<any, Date>;
   deleted: HelperType<any, Date>;
-  avatar: HelperType<{ localeContext: Locale }, File>;
+  avatar: HelperType<{ localeContext: Intl.Locale }, File>;
   bookmarks: HelperType<any, Array<Bookmark>>;
   cart: HelperType<{ orderNumber?: string }, Order>;
-  country: HelperType<{ localeContext: Locale }, Country>;
+  country: HelperType<{ localeContext: Intl.Locale }, Country>;
   emails: HelperType<any, Array<string>>;
   enrollments: HelperType<
     {
@@ -47,12 +47,11 @@ export interface UserHelperTypes {
   >;
   isGuest: HelperType<any, boolean>;
   isInitialPassword: HelperType<any, boolean>;
-  language: HelperType<{ localeContext: Locale }, Language>;
+  language: HelperType<{ localeContext: Intl.Locale }, Language>;
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
   lastContact: HelperType<any, Contact>;
   lastLogin: HelperType<any, UserType['lastLogin']>;
   allowedActions: HelperType<any, Array<string>>;
-  // locale: HelperType<{ localeContext: Locale }, Locale>;
   name: HelperType<any, string>;
   orders: HelperType<
     {
@@ -176,7 +175,7 @@ export const User: UserHelperTypes = {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
     const userLocale = context.modules.users.userLocale(user);
     return context.modules.countries.findCountry({
-      isoCode: userLocale.country.toUpperCase(),
+      isoCode: userLocale.region?.toUpperCase(),
     });
   },
 

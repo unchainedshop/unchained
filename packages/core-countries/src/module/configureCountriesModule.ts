@@ -101,7 +101,7 @@ export const configureCountriesModule = async ({
     },
 
     isBase(country) {
-      return country.isoCode === systemLocale.country;
+      return country.isoCode === systemLocale.region;
     },
     create: async (doc: Country) => {
       await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });

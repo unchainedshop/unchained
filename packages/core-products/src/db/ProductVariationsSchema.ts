@@ -27,7 +27,7 @@ export const ProductVariationTextsSchema = new SimpleSchema(
       required: true,
     },
     productVariationOptionValue: String,
-    locale: String,
+    locale: Intl.Locale,
     title: String,
     subtitle: String,
     ...Schemas.timestampFields,

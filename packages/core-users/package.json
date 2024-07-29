@@ -38,7 +38,6 @@
     "@unchainedshop/utils": "^3.0.0-alpha2",
     "bcryptjs": "^2.4.3",
     "fido2-lib": "^3.5.3",
-    "locale": "^0.1.0",
     "simpl-schema": "^3.4.6",
     "uuid": "^10.0.0"
   },

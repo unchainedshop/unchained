@@ -23,7 +23,7 @@ export const AssortmentPathLink: AssortmentPathLinkHelperTypes = {
   assortmentTexts: async ({ assortmentId }, params, { loaders, localeContext }) => {
     const text = await loaders.assortmentTextLoader.load({
       assortmentId,
-      locale: params.forceLocale || localeContext.normalized,
+      locale: params.forceLocale || localeContext.baseName,
     });
     return text;
   },

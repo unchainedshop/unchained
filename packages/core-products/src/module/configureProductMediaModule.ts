@@ -11,7 +11,6 @@ import {
 import { FileDirector } from '@unchainedshop/file-upload';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
 import { ProductMediaSchema } from '../db/ProductMediaSchema.js';
-import { Locale } from '@unchainedshop/utils';
 
 export type ProductMediaModule = {
   // Queries
@@ -269,7 +268,7 @@ export const configureProductMediaModule = async ({
       },
 
       findLocalizedMediaText: async ({ productMediaId, locale }) => {
-        const parsedLocale = new Locale(locale);
+        const parsedLocale = new Intl.Locale(locale);
 
         const text = await findLocalizedText<ProductMediaText>(
           ProductMediaTexts,

@@ -24,7 +24,7 @@ export const setupCarts = async (unchainedAPI: UnchainedCore, options: SetupCart
         return unchainedAPI.services.orders.nextUserCart(
           {
             user,
-            countryCode: locale.country,
+            countryCode: locale.region,
           },
           unchainedAPI,
         );

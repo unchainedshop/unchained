@@ -17,7 +17,6 @@ import { userSettings, UserSettingsOptions } from '../users-settings.js';
 import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUsersWebAuthnModule.js';
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
-import { Locale } from '@unchainedshop/utils';
 import type { Address, Contact } from '@unchainedshop/mongodb';
 
 export type UsersModule = {
@@ -50,7 +49,7 @@ export type UsersModule = {
   userExists: (query: { userId: string }) => Promise<boolean>;
   // Transformations
   primaryEmail: (user: User) => Email;
-  userLocale: (user: User) => Locale;
+  userLocale: (user: User) => Intl.Locale;
 
   // Mutations
   createUser: (
@@ -299,9 +298,9 @@ export const configureUsersModule = async ({
       )?.[0];
     },
 
-    userLocale(user: User): Locale {
+    userLocale(user: User): Intl.Locale {
       if (!user?.lastLogin?.locale) return systemLocale;
-      return new Locale(user.lastLogin.locale);
+      return new Intl.Locale(user.lastLogin.locale);
     },
 
     // Mutations

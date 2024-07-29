@@ -22,7 +22,7 @@ export const ProductVariationOption: ProductVariationOptionHelperTypes = {
 
   texts: async (obj, { forceLocale }, { modules, localeContext }) => {
     return modules.products.variations.texts.findLocalizedVariationText({
-      locale: forceLocale || localeContext.normalized,
+      locale: forceLocale || localeContext.baseName,
       productVariationId: obj._id,
       productVariationOptionValue: obj.productVariationOption,
     });

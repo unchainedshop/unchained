@@ -17,7 +17,7 @@ export default async function heartbeat(
 
   const user = await modules.users.updateHeartbeat(userId, {
     countryCode: countryContext,
-    locale: localeContext.normalized,
+    locale: localeContext.baseName,
     remoteAddress,
     remotePort,
     userAgent,

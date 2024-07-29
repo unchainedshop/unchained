@@ -18,7 +18,6 @@ import { WarehousingError } from '../warehousing-index.js';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/core-orders';
 import { Product } from '@unchainedshop/core-products';
-import { Locale } from '@unchainedshop/utils';
 
 export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'delete'> & {
   // Queries
@@ -85,7 +84,7 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
 
   tokenMetadata: (
     chainTokenId: string,
-    params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Locale },
+    params: { product: Product; token: TokenSurrogate; referenceDate: Date; locale: Intl.Locale },
     unchainedAPI: UnchainedCore,
   ) => Promise<any>;
 

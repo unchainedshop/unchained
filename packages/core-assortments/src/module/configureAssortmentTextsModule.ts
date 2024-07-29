@@ -7,7 +7,6 @@ import {
 } from '@unchainedshop/mongodb';
 import { findUnusedSlug } from '@unchainedshop/utils';
 import { assortmentsSettings } from '../assortments-settings.js';
-import { Locale } from '@unchainedshop/utils';
 import { Assortment, AssortmentText } from '../types.js';
 const ASSORTMENT_TEXT_EVENTS = ['ASSORTMENT_UPDATE_TEXT'];
 
@@ -146,7 +145,7 @@ export const configureAssortmentTextsModule = ({
     },
 
     findLocalizedText: async ({ assortmentId, locale }) => {
-      const parsedLocale = new Locale(locale);
+      const parsedLocale = new Intl.Locale(locale);
 
       const text = await findLocalizedText<AssortmentText>(
         AssortmentTexts,

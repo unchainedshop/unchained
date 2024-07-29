@@ -14,7 +14,7 @@ export const AssortmentMedia: AssortmentMediaHelperTypes = {
     const { localeContext, loaders } = requestContext;
     return loaders.assortmentMediaTextLoader.load({
       assortmentMediaId: obj._id,
-      locale: forceLocale || localeContext.normalized,
+      locale: forceLocale || localeContext.baseName,
     });
   },
 

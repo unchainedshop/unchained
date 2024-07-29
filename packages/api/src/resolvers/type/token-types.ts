@@ -1,7 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { TokenStatus, TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { WorkStatus } from '@unchainedshop/core-worker';
-import { Locale } from '@unchainedshop/utils';
 import { checkAction } from '../../acl.js';
 import { actions } from '../../roles/index.js';
 
@@ -39,7 +38,7 @@ export const Token = {
       {
         token,
         product,
-        locale: new Locale(forceLocale),
+        locale: new Intl.Locale(forceLocale),
         referenceDate: new Date(),
       },
       context,

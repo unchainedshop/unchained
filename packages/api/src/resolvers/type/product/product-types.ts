@@ -126,7 +126,7 @@ export const Product = {
     const { localeContext, loaders } = requestContext;
     return loaders.productTextLoader.load({
       productId: product._id,
-      locale: forceLocale || localeContext.normalized,
+      locale: forceLocale || localeContext.baseName,
     });
   },
 };

@@ -25,7 +25,7 @@ export default [
 
     type ProductMediaTexts @cacheControl(maxAge: 180) {
       _id: ID!
-      locale: String
+      locale: Locale
       title: String
       subtitle: String
     }
@@ -40,7 +40,7 @@ export default [
 
     type ProductTexts @cacheControl(maxAge: 180) {
       _id: ID!
-      locale: String
+      locale: Locale
       slug: String
       title: String
       subtitle: String

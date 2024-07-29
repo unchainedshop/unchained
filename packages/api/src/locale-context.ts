@@ -8,7 +8,6 @@ import {
 import { UnchainedCore } from '@unchainedshop/core';
 import memoizee from 'memoizee';
 import { UnchainedHTTPServerContext, UnchainedLocaleContext } from './types.js';
-import { Locales } from '@unchainedshop/utils';
 
 const { NODE_ENV } = process.env;
 
@@ -35,15 +34,13 @@ export const resolveDefaultContext = memoizee(
       return accumulator.concat(added);
     }, []);
 
-    const supportedLocales = new Locales(supportedLocaleStrings, systemLocale.code);
-
-    const localeContext = resolveBestSupported(acceptLang, supportedLocales);
-    const countryContext = resolveBestCountry(localeContext.country, acceptCountry, countries);
+    const localeContext = resolveBestSupported(acceptLang, [...supportedLocaleStrings, systemLocale]);
+    const countryContext = resolveBestCountry(localeContext.region, acceptCountry, countries);
 
     const countryObject = countries.find((country) => country.isoCode === countryContext);
     const currencyContext = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
-    log(`Locale Context: Resolved ${localeContext.normalized} ${countryContext} ${currencyContext}`, {
+    log(`Locale Context: Resolved ${localeContext.baseName} ${countryContext} ${currencyContext}`, {
       level: LogLevel.Debug,
     });
 

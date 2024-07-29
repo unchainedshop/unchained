@@ -14,7 +14,7 @@ export const ProductMedia: ProductMediaHelperTypes = {
     const { localeContext, loaders } = requestContext;
     return loaders.productMediaTextLoader.load({
       productMediaId: obj._id,
-      locale: forceLocale || localeContext.normalized,
+      locale: forceLocale || localeContext.baseName,
     });
   },
 

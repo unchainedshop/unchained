@@ -312,7 +312,7 @@ export const configureOrderModuleProcessing = ({
         await services.orders.nextUserCart(
           {
             user,
-            countryCode: locale.country,
+            countryCode: locale.region,
           },
           unchainedAPI,
         );

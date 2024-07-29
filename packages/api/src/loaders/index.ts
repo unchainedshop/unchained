@@ -1,11 +1,11 @@
 import DataLoader from 'dataloader';
-import { systemLocale, Locale } from '@unchainedshop/utils';
+import { systemLocale } from '@unchainedshop/utils';
 import { UnchainedCore } from '@unchainedshop/core';
 import { ProductStatus } from '@unchainedshop/core-products';
 import { UnchainedLoaders } from '../types.js';
 
-function getLocaleStrings(localeObj) {
-  return [localeObj.normalized, localeObj.language, systemLocale.normalized, systemLocale.language];
+function getLocaleStrings(localeObj: Intl.Locale) {
+  return [localeObj.baseName, localeObj.language, systemLocale.baseName, systemLocale.language];
 }
 
 function findMatchingText(texts, localeStrings) {
@@ -17,7 +17,7 @@ function findMatchingText(texts, localeStrings) {
 
 function getFilteredQueries({ queries, texts, filterFn }) {
   return queries.map(({ locale, ...queryParams }) => {
-    const localeObj = new Locale(locale);
+    const localeObj = new Intl.Locale(locale);
 
     const filteredTexts = texts.filter(filterFn(queryParams));
     if (!filteredTexts.length) return null;

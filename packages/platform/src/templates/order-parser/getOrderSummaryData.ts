@@ -1,7 +1,6 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
-import { Locale } from '@unchainedshop/utils';
 import formatPrice from './formatPrice.js';
 import { formatAddress } from './formatAddress.js';
 
@@ -9,7 +8,7 @@ type PriceFormatter = ({ amount, currency }: { amount: number; currency: string 
 
 export const getOrderSummaryData = async (
   order: Order,
-  params: { locale?: Locale; useNetPrice?: boolean; format?: PriceFormatter },
+  params: { locale?: Intl.Locale; useNetPrice?: boolean; format?: PriceFormatter },
   context: UnchainedCore,
 ) => {
   const { modules } = context;

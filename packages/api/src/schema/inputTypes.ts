@@ -66,7 +66,7 @@ export default [
     }
 
     input ProductVariationTextInput {
-      locale: String!
+      locale: Locale!
       title: String
       subtitle: String
     }
@@ -88,7 +88,7 @@ export default [
     }
 
     input ProductTextInput {
-      locale: String!
+      locale: Locale!
       slug: String
       title: String
       subtitle: String
@@ -99,7 +99,7 @@ export default [
     }
 
     input ProductMediaTextInput {
-      locale: String!
+      locale: Locale!
       title: String
       subtitle: String
     }
@@ -166,7 +166,7 @@ export default [
     }
 
     input AssortmentTextInput {
-      locale: String!
+      locale: Locale!
       slug: String
       title: String
       subtitle: String
@@ -189,7 +189,7 @@ export default [
     }
 
     input AssortmentMediaTextInput {
-      locale: String!
+      locale: Locale!
       title: String
       subtitle: String
     }
@@ -211,7 +211,7 @@ export default [
     }
 
     input FilterTextInput {
-      locale: String!
+      locale: Locale!
       title: String
       subtitle: String
     }

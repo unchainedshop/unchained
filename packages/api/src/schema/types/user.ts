@@ -47,7 +47,7 @@ export default [
       remoteAddress: String
       remotePort: String
       userAgent: String
-      locale: String
+      locale: Locale
       countryCode: String
     }
 

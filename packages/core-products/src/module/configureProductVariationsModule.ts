@@ -14,7 +14,6 @@ import {
 } from '@unchainedshop/mongodb';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
 import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
-import { Locale } from '@unchainedshop/utils';
 
 const PRODUCT_VARIATION_EVENTS = [
   'PRODUCT_CREATE_VARIATION',
@@ -239,7 +238,7 @@ export const configureProductVariationsModule = async ({
         productVariationOptionValue,
         locale,
       }) => {
-        const parsedLocale = new Locale(locale);
+        const parsedLocale = new Intl.Locale(locale);
 
         const selector: mongodb.Filter<ProductVariationText> = { productVariationId };
         selector.productVariationOptionValue = productVariationOptionValue ?? { $eq: null };

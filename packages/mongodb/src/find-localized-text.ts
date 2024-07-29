@@ -3,7 +3,7 @@ import { systemLocale } from '@unchainedshop/utils';
 
 const extendSelectorWithLocale = (selector, locale) => {
   const localeSelector = {
-    locale: { $in: [locale.normalized, locale.language] },
+    locale: { $in: [locale.baseName, locale.language] },
   };
   return { ...localeSelector, ...selector };
 };
@@ -11,7 +11,7 @@ const extendSelectorWithLocale = (selector, locale) => {
 export const findLocalizedText = async <T extends Document>(
   collection: Collection<T>,
   selector: Filter<T>,
-  locale: typeof systemLocale,
+  locale: Intl.Locale,
 ): Promise<T> => {
   const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale), {
     sort: { updated: -1 },
@@ -20,7 +20,7 @@ export const findLocalizedText = async <T extends Document>(
     return exactTranslation as T;
   }
 
-  if (systemLocale.normalized !== locale.normalized) {
+  if (systemLocale.baseName !== locale.baseName) {
     const fallbackTranslation = await collection.findOne(
       extendSelectorWithLocale(selector, systemLocale),
       {

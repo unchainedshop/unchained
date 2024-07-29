@@ -21,7 +21,7 @@ export const FilterTextsSchema = new SimpleSchema(
   {
     filterId: { type: String, required: true },
     filterOptionValue: String,
-    locale: String,
+    locale: Intl.Locale,
     title: String,
     subtitle: String,
     ...Schemas.timestampFields,

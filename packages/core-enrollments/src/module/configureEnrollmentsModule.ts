@@ -1,4 +1,4 @@
-import { SortDirection, SortOption, Locale } from '@unchainedshop/utils';
+import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import {
   Enrollment,
@@ -267,7 +267,7 @@ export const configureEnrollmentsModule = async ({
 
   const sendStatusToCustomer = async (
     enrollment: Enrollment,
-    params: { locale?: Locale; reason?: string },
+    params: { locale?: Intl.Locale; reason?: string },
     unchainedAPI: UnchainedCore,
   ) => {
     const { modules } = unchainedAPI;

@@ -1,4 +1,4 @@
-import { IBaseAdapter, IBaseDirector, Locale } from '@unchainedshop/utils';
+import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Product } from '@unchainedshop/core-products';
@@ -58,7 +58,7 @@ export interface WarehousingContext {
   token?: TokenSurrogate;
   quantity?: number;
   referenceDate?: Date;
-  locale?: Locale;
+  locale?: Intl.Locale;
   order?: Order;
   warehousingProviderId?: string;
   orderPosition?: OrderPosition;

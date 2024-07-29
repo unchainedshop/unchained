@@ -9,7 +9,6 @@ import {
 } from '@unchainedshop/mongodb';
 import { productsSettings } from '../products-settings.js';
 import { ProductsModule } from '../products-index.js';
-import { Locale } from '@unchainedshop/utils';
 
 const PRODUCT_TEXT_EVENTS = ['PRODUCT_UPDATE_TEXT'];
 
@@ -124,7 +123,7 @@ export const configureProductTextsModule = ({
     },
 
     findLocalizedText: async ({ productId, locale }) => {
-      const parsedLocale = new Locale(locale);
+      const parsedLocale = new Intl.Locale(locale);
 
       const text = await findLocalizedText<ProductText>(ProductTexts, { productId }, parsedLocale);
 

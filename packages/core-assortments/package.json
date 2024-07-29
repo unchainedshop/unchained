@@ -35,12 +35,10 @@
     "@unchainedshop/file-upload": "^3.0.0-alpha2",
     "@unchainedshop/logger": "^3.0.0-alpha2",
     "@unchainedshop/utils": "^3.0.0-alpha2",
-    "locale": "^0.1.0",
     "ramda": "^0.30.1",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
-    "@types/locale": "^0.1.4",
     "@types/node": "^20.14.12",
     "@unchainedshop/types": "^3.0.0-alpha2",
     "cross-env": "^7.0.3",
