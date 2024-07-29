@@ -3,8 +3,8 @@ import { DeliveryPricingSheet } from './DeliveryPricingSheet.js';
 import { DeliveryProvider } from '../types.js';
 import { Order } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
-import { IPricingDirector } from '@unchainedshop/types/pricing.js';
+import { OrderDelivery } from '@unchainedshop/core-orders';
+import { IPricingDirector } from '@unchainedshop/utils';
 import {
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,

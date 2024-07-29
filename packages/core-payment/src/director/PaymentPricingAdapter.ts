@@ -3,14 +3,14 @@ import {
   IPricingAdapter,
   IPricingSheet,
   PricingCalculation,
-} from '@unchainedshop/types/pricing.js';
+} from '@unchainedshop/utils';
 import { BasePricingAdapter } from '@unchainedshop/utils';
 import { PaymentPricingSheet } from './PaymentPricingSheet.js';
 import { User } from '@unchainedshop/core-users';
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderPayment } from '@unchainedshop/core-orders';
 import { Order } from '@unchainedshop/core-orders';
 import { PaymentProvider } from '../types.js';
-import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
+import { OrderDiscount } from '@unchainedshop/core-orders';
 
 export interface PaymentPricingCalculation extends PricingCalculation {
   discountId?: string;

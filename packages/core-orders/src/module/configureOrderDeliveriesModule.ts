@@ -1,12 +1,60 @@
-import { ModuleMutations } from '@unchainedshop/core';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
-import {
-  OrderDeliveriesModule,
-  OrderDelivery,
-  OrderDeliveryStatus,
-} from '@unchainedshop/types/orders.deliveries.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema.js';
+import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
+import { IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
+import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
+
+export type OrderDeliveriesModule = {
+  // Queries
+  findDelivery: (
+    params: { orderDeliveryId: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<OrderDelivery>;
+
+  // Transformations
+  discounts: (
+    orderDelivery: OrderDelivery,
+    params: { order: Order; orderDiscount: OrderDiscount },
+    unchainedAPI: UnchainedCore,
+  ) => Array<OrderPricingDiscount>;
+  isBlockingOrderConfirmation: (
+    orderDelivery: OrderDelivery,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
+  isBlockingOrderFullfillment: (orderDelivery: OrderDelivery) => boolean;
+  normalizedStatus: (orderDelivery: OrderDelivery) => string;
+  pricingSheet: (
+    orderDelivery: OrderDelivery,
+    currency: string,
+    unchainedAPI: UnchainedCore,
+  ) => IDeliveryPricingSheet;
+
+  // Mutations
+  create: (doc: OrderDelivery) => Promise<OrderDelivery>;
+  delete: (orderDeliveryId: string) => Promise<number>;
+
+  markAsDelivered: (orderDelivery: OrderDelivery) => Promise<void>;
+
+  send: (
+    orderDelivery: OrderDelivery,
+    params: { order: Order; deliveryContext?: any },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderDelivery>;
+
+  updateContext: (orderDeliveryId: string, context: any) => Promise<OrderDelivery | null>;
+
+  updateStatus: (
+    orderDeliveryId: string,
+    params: { status: OrderDeliveryStatus; info?: string },
+  ) => Promise<OrderDelivery>;
+
+  updateCalculation: (
+    orderDelivery: OrderDelivery,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderDelivery>;
+};
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 

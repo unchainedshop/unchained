@@ -4,8 +4,8 @@ import { emit, registerEvents } from '@unchainedshop/events';
 
 import type { Locker } from '@kontsedal/locco';
 import { Order, OrderStatus } from '../types.js';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderDelivery } from '@unchainedshop/core-orders';
+import { OrderPayment } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/core-orders';
 import { UnchainedCore } from '@unchainedshop/core';
 

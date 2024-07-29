@@ -1,6 +1,6 @@
 import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
-import { OrderDeliveriesModule, OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
-import { OrderPayment, OrderPaymentsModule } from '@unchainedshop/types/orders.payments.js';
+import { OrderDelivery } from '@unchainedshop/core-orders';
+import { OrderPayment } from '@unchainedshop/core-orders';
 import { generateDbFilterById } from '@unchainedshop/mongodb';
 import { createRequire } from 'node:module';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.js';
@@ -12,9 +12,12 @@ import { OrdersCollection } from '../db/OrdersCollection.js';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector.js';
 import { OrderPricingDirector } from '../director/OrderPricingDirector.js';
 import { ordersSettings, OrdersSettingsOptions } from '../orders-settings.js';
-import { configureOrderDeliveriesModule } from './configureOrderDeliveriesModule.js';
-import { configureOrderDiscountsModule } from './configureOrderDiscountsModule.js';
-import { configureOrderPaymentsModule } from './configureOrderPaymentsModule.js';
+import {
+  configureOrderDeliveriesModule,
+  OrderDeliveriesModule,
+} from './configureOrderDeliveriesModule.js';
+import { configureOrderDiscountsModule, OrderDiscountsModule } from './configureOrderDiscountsModule.js';
+import { configureOrderPaymentsModule, OrderPaymentsModule } from './configureOrderPaymentsModule.js';
 import { configureOrderPositionsModule, OrderPositionsModule } from './configureOrderPositionsModule.js';
 import { configureOrderModuleMutations, OrderMutations } from './configureOrdersModule-mutations.js';
 import { configureOrderModuleProcessing, OrderProcessing } from './configureOrdersModule-processing.js';
@@ -23,7 +26,6 @@ import {
   configureOrderModuleTransformations,
   OrderTransformations,
 } from './configureOrdersModule-transformations.js';
-import { OrderDiscountsModule } from '@unchainedshop/types/orders.discounts.js';
 import { Order, OrderPosition } from '../types.js';
 
 export type OrdersModule = OrderQueries &

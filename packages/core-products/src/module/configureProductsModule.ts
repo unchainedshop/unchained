@@ -18,7 +18,7 @@ import {
   buildSortOptions,
   mongodb,
 } from '@unchainedshop/mongodb';
-import { SortDirection, SortOption } from '@unchainedshop/utils';
+import { SortDirection, SortOption, IDiscountAdapter } from '@unchainedshop/utils';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
 import { ProductsCollection } from '../db/ProductsCollection.js';
 import { ProductsSchema, ProductTypes } from '../db/ProductsSchema.js';
@@ -41,7 +41,6 @@ import {
   ProductPricingCalculation,
   ProductPricingContext,
 } from '../types.js';
-import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
 import { Currency } from '@unchainedshop/core-currencies';
 import { OrderPosition } from '@unchainedshop/core-orders';
 

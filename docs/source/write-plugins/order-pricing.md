@@ -11,17 +11,6 @@ below is an example or IPricingAdapter implementation that will add $50 to each 
 
 
 ```typescript
-import {
-  OrderPricingSheet,
-  IOrderPricingSheet,
-  OrderPricingAdapterContext,
-} from '@unchainedshop/types/order.js';
-
-import { LogOptions } from '@unchainedshop/types/logs.js';
-import { OrderPricingCalculation } from '@unchainedshop/types/orders.pricing.js';
-import { IPricingAdapter, IPricingAdapterActions } from '@unchainedshop/types/pricing.js';
-import { Discount } from '@unchainedshop/types/discount.js';
-
 export const ShopOrderPricingAdapter: IOrderPricingAdapter = {
   key: 'shop-order-service-pricing',
   label: 'Default service charge price',

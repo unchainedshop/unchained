@@ -1,8 +1,48 @@
-import {
-  PricingCalculation,
-  IBasePricingSheet,
-  PricingSheetParams,
-} from '@unchainedshop/types/pricing.js';
+export interface PricingCalculation {
+  category: string;
+  amount: number;
+  baseCategory?: string;
+  meta?: any;
+}
+export interface PricingDiscount {
+  discountId: string;
+  amount: number;
+  currency: string;
+}
+
+export interface IPricingSheet<Calculation extends PricingCalculation>
+  extends IBasePricingSheet<Calculation> {
+  discountPrices: (discountId?: string) => Array<PricingDiscount>;
+  addDiscount: (params: { amount: number; discountId: string; meta?: any }) => void;
+}
+
+export interface IBasePricingSheet<Calculation extends PricingCalculation> {
+  calculation: Array<Calculation>;
+  currency?: string;
+  quantity?: number;
+
+  getRawPricingSheet: () => Array<Calculation>;
+  filterBy: (filter?: Partial<Calculation>) => Array<Calculation>;
+  isValid: () => boolean;
+
+  gross: () => number;
+  net: () => number;
+  sum: (filter?: Partial<Calculation>) => number;
+  total: (params?: { category?: string; discountId?: string; useNetPrice?: boolean }) => {
+    amount: number;
+    currency: string;
+  };
+
+  taxSum: (filter?: Partial<Calculation>) => number;
+
+  resetCalculation: (sheetToInvert: IBasePricingSheet<Calculation>) => Array<Calculation>;
+}
+
+export interface PricingSheetParams<Calculation extends PricingCalculation> {
+  calculation?: Array<Calculation>;
+  currency?: string;
+  quantity?: number;
+}
 
 export const BasePricingSheet = <Calculation extends PricingCalculation>(
   params: PricingSheetParams<Calculation>,

@@ -1,6 +1,6 @@
 import { BasePricingSheet } from '@unchainedshop/utils';
 import { ProductPricingCalculation, ProductPricingRowCategory, IProductPricingSheet } from '../types.js';
-import { PricingSheetParams } from '@unchainedshop/types/pricing.js';
+import { PricingSheetParams } from '@unchainedshop/utils';
 
 export const ProductPricingSheet = (
   params: PricingSheetParams<ProductPricingCalculation>,

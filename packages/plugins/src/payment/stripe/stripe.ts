@@ -1,6 +1,6 @@
 import { Order } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
-import { IOrderPricingSheet } from '@unchainedshop/types/orders.pricing.js';
+import { OrderPayment } from '@unchainedshop/core-orders';
+import { IOrderPricingSheet } from '@unchainedshop/core-orders';
 import Stripe from 'stripe';
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;

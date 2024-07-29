@@ -5,11 +5,11 @@ import { Currency } from '@unchainedshop/core-currencies';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Enrollment } from '@unchainedshop/core-enrollments';
 import { Order as OrderType } from '@unchainedshop/core-orders';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
-import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderDelivery } from '@unchainedshop/core-orders';
+import { OrderDiscount } from '@unchainedshop/core-orders';
+import { OrderPayment } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
+import { OrderPrice } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
 
 export const Order = {

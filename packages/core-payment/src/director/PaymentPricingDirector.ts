@@ -9,8 +9,8 @@ import { PaymentPricingSheet } from './PaymentPricingSheet.js';
 import { User } from '@unchainedshop/core-users';
 import { Order } from '@unchainedshop/core-orders';
 import { PaymentProvider } from '../types.js';
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
-import { IPricingDirector } from '@unchainedshop/types/pricing.js';
+import { OrderPayment } from '@unchainedshop/core-orders';
+import { IPricingDirector } from '@unchainedshop/utils';
 
 export type PaymentPricingContext =
   | {

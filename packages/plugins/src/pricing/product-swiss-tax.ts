@@ -1,10 +1,12 @@
-import { ProductPricingDirector, ProductPricingAdapter } from '@unchainedshop/core-products';
+import {
+  ProductPricingDirector,
+  ProductPricingAdapter,
+  ProductPricingAdapterContext,
+} from '@unchainedshop/core-products';
 import { IProductPricingAdapter, ProductPricingRowCategory } from '@unchainedshop/core-products';
-import { Product } from '@unchainedshop/core-products';
-import { Order } from '@unchainedshop/core-orders';
 import { SwissTaxCategories } from './tax/ch.js';
 
-export const getTaxRate = (context: { product: Product; order?: Order }) => {
+export const getTaxRate = (context: ProductPricingAdapterContext) => {
   const { product, order } = context;
 
   const productSpecialTaxTag = product.tags?.find((tag) =>
@@ -18,7 +20,11 @@ export const getTaxRate = (context: { product: Product; order?: Order }) => {
   return taxCategory.rate(order?.ordered);
 };
 
-export const isDeliveryAddressInSwitzerland = async ({ order, country, modules }) => {
+export const isDeliveryAddressInSwitzerland = async ({
+  order,
+  country,
+  modules,
+}: ProductPricingAdapterContext) => {
   let countryCode = country?.toUpperCase().trim();
 
   if (order) {

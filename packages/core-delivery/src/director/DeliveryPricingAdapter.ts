@@ -5,12 +5,10 @@ import {
   IPricingAdapter,
   IPricingSheet,
   PricingCalculation,
-} from '@unchainedshop/types/pricing.js';
+} from '@unchainedshop/utils';
 import { DeliveryProvider } from '../types.js';
-import { Order } from '@unchainedshop/core-orders';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderDelivery, OrderDiscount, Order } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
-import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
 
 export interface DeliveryPricingCalculation extends PricingCalculation {
   discountId?: string;

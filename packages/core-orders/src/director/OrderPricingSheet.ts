@@ -1,10 +1,29 @@
-import { BasePricingSheet } from '@unchainedshop/utils';
 import {
-  OrderPricingCalculation,
-  OrderPricingRowCategory,
-  IOrderPricingSheet,
-} from '@unchainedshop/types/orders.pricing.js';
-import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing.js';
+  BasePricingSheet,
+  IPricingSheet,
+  IBasePricingSheet,
+  PricingCalculation,
+  PricingSheetParams,
+} from '@unchainedshop/utils';
+
+export interface OrderPricingCalculation extends PricingCalculation {
+  discountId?: string;
+}
+
+export enum OrderPricingRowCategory {
+  Items = 'ITEMS',
+  Discounts = 'DISCOUNTS',
+  Taxes = 'TAXES',
+  Delivery = 'DELIVERY',
+  Payment = 'PAYMENT',
+}
+
+export interface IOrderPricingSheet extends IPricingSheet<OrderPricingCalculation> {
+  addDelivery: (params: { amount: number; taxAmount: number; meta?: any }) => void;
+  addDiscount: (params: { amount: number; taxAmount: number; discountId: string; meta?: any }) => void;
+  addItems: (params: { amount: number; taxAmount: number; meta?: any }) => void;
+  addPayment: (params: { amount: number; taxAmount: number; meta?: any }) => void;
+}
 
 export const OrderPricingSheet = (
   params: PricingSheetParams<OrderPricingCalculation>,

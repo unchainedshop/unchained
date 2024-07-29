@@ -1,5 +1,5 @@
 import { OrderPricingAdapter, OrderPricingDirector } from '@unchainedshop/core-orders';
-import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
+import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/core-orders';
 
 interface PriceRoundSettings {
   defaultPrecision: number;

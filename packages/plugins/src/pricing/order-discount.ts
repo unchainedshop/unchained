@@ -1,4 +1,4 @@
-import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
+import { IOrderPricingAdapter, OrderPricingRowCategory } from '@unchainedshop/core-orders';
 import {
   OrderPricingDirector,
   OrderPricingAdapter,

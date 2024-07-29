@@ -1,6 +1,6 @@
 import { Context } from '@unchainedshop/api';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
-import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderDelivery, OrderDeliveryDiscount } from '@unchainedshop/core-orders';
 import type { Address } from '@unchainedshop/mongodb';
 
 type HelperType<T> = (orderDelivery: OrderDelivery, _: never, context: Context) => T;

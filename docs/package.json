@@ -2,17 +2,15 @@
   "scripts": {
     "predev": "gatsby clean",
     "dev": "gatsby develop",
-    "prebuild": "npm run clean && npm run api-docs && npm run type-docs",
+    "prebuild": "npm run clean && npm run api-docs",
     "build": "gatsby build",
     "start": "gatsby serve -H 0.0.0.0 -p 9000",
     "clean": "rm -Rf public static/api static/types",
-    "api-docs": "dociql config.yml && mv public static/api",
-    "type-docs": "cp -Rf ./node_modules/@unchainedshop/types/lib/docs/ ./static/types"
+    "api-docs": "dociql config.yml && mv public static/api"
   },
   "dependencies": {
     "@mdx-js/react": "^1.6.22",
     "@unchainedshop/gatsby-theme-apollo-docs": "^4.3.21",
-    "@unchainedshop/types": "^2.5.12",
     "cheerio": "1.0.0-rc.2",
     "coffeescript": "^2.7.0",
     "gatsby": "2.24.47",

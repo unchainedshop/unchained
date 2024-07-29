@@ -1,5 +1,5 @@
 import { Context } from '@unchainedshop/api';
-import { OrderPayment as OrderPaymentType } from '@unchainedshop/types/orders.payments.js';
+import { OrderPayment as OrderPaymentType } from '@unchainedshop/core-orders';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { objectInvert } from '@unchainedshop/utils';
 

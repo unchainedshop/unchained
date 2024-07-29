@@ -1,4 +1,4 @@
-import { OrderDelivery as OrderDeliveryType } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderDelivery as OrderDeliveryType } from '@unchainedshop/core-orders';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { objectInvert } from '@unchainedshop/utils';
 import { Context } from '@unchainedshop/api';

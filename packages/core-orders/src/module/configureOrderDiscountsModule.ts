@@ -1,10 +1,51 @@
 import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
-import { OrderDiscount, OrderDiscountsModule } from '@unchainedshop/types/orders.discounts.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema.js';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector.js';
+import { Order, OrderDiscount } from '../types.js';
+import {
+  IPricingSheet,
+  PricingCalculation,
+  DiscountAdapterActions,
+  DiscountContext,
+} from '@unchainedshop/utils';
+
+export type OrderDiscountsModule = {
+  // Queries
+  findOrderDiscount: (
+    params: { discountId: string },
+    options?: mongodb.FindOptions,
+  ) => Promise<OrderDiscount>;
+  findOrderDiscounts: (params: { orderId: string }) => Promise<Array<OrderDiscount>>;
+
+  // Transformations
+  interface: (
+    orderDiscount: OrderDiscount,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<DiscountAdapterActions<any>>;
+
+  isValid: (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => Promise<boolean>;
+
+  // Adapter
+  configurationForPricingAdapterKey: (
+    orderDiscount: OrderDiscount,
+    adapterKey: string,
+    calculationSheet: IPricingSheet<PricingCalculation>,
+    pricingContext: DiscountContext & UnchainedCore,
+  ) => Promise<any>;
+
+  // Mutations
+  createManualOrderDiscount: (
+    params: { code: string; order: Order },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderDiscount>;
+
+  create: (doc: OrderDiscount) => Promise<OrderDiscount>;
+  update: (orderDiscountId: string, doc: OrderDiscount) => Promise<OrderDiscount>;
+  delete: (orderDiscountId: string, unchainedAPI: UnchainedCore) => Promise<OrderDiscount>;
+};
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
   'ORDER_CREATE_DISCOUNT',

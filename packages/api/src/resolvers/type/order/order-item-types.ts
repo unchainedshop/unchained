@@ -3,7 +3,7 @@ import { Context } from '@unchainedshop/api';
 import { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-orders';
-import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
+import { OrderPrice } from '@unchainedshop/core-orders';
 import { Product } from '@unchainedshop/core-products';
 import { Quotation } from '@unchainedshop/core-quotations';
 import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';

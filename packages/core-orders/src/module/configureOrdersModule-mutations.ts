@@ -1,7 +1,7 @@
 import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import { Order, OrderStatus } from '../types.js';
-import { OrderDelivery } from '@unchainedshop/types/orders.deliveries.js';
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderDelivery } from '@unchainedshop/core-orders';
+import { OrderPayment } from '@unchainedshop/core-orders';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   Address,

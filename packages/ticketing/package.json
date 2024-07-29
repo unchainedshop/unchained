@@ -59,7 +59,6 @@
     "@unchainedshop/core-worker": "^3.0.0-alpha2",
     "@unchainedshop/events": "^3.0.0-alpha2",
     "@unchainedshop/logger": "^3.0.0-alpha2",
-    "@unchainedshop/mongodb": "^3.0.0-alpha2",
-    "@unchainedshop/types": "^3.0.0-alpha2"
+    "@unchainedshop/mongodb": "^3.0.0-alpha2"
   }
 }

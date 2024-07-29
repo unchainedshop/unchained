@@ -1,11 +1,31 @@
-import {
-  IOrderPricingSheet,
+import { BasePricingAdapter, IPricingAdapter, BasePricingAdapterContext } from '@unchainedshop/utils';
+import { IOrderPricingSheet, OrderPricingCalculation, OrderPricingSheet } from './OrderPricingSheet.js';
+import { Order, OrderDelivery, OrderDiscount, OrderPayment, OrderPosition } from '../types.js';
+import { User } from '@unchainedshop/core-users';
+
+export interface OrderPricingAdapterContext extends BasePricingAdapterContext {
+  currency?: string;
+  discounts: Array<OrderDiscount>;
+  order: Order;
+  orderDelivery: OrderDelivery;
+  orderPositions: Array<OrderPosition>;
+  orderPayment: OrderPayment;
+  user: User;
+}
+
+export interface OrderPricingContext {
+  order: Order;
+  orderDelivery: OrderDelivery;
+  orderPositions: Array<OrderPosition>;
+  orderPayment: OrderPayment;
+}
+
+export type IOrderPricingAdapter<DiscountConfiguration = unknown> = IPricingAdapter<
   OrderPricingAdapterContext,
   OrderPricingCalculation,
-} from '@unchainedshop/types/orders.pricing.js';
-import { IPricingAdapter } from '@unchainedshop/types/pricing.js';
-import { BasePricingAdapter } from '@unchainedshop/utils';
-import { OrderPricingSheet } from './OrderPricingSheet.js';
+  IOrderPricingSheet,
+  DiscountConfiguration
+>;
 
 const basePricingAdapter = BasePricingAdapter<OrderPricingAdapterContext, OrderPricingCalculation>();
 

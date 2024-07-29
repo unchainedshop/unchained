@@ -1,7 +1,7 @@
 import { IBaseAdapter, IBaseDirector } from '@unchainedshop/utils';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 import { Order } from '@unchainedshop/core-orders';
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderPayment } from '@unchainedshop/core-orders';
 import { UnchainedCore } from '@unchainedshop/core';
 
 export enum PaymentProviderType {

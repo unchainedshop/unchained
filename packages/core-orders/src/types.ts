@@ -1,6 +1,6 @@
 import type { ProductPricingCalculation } from '@unchainedshop/core-products';
 import type { TimestampFields, LogFields, Address, Contact } from '@unchainedshop/mongodb';
-import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
+import { OrderPrice } from './director/OrderPricingDirector.js';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -43,11 +43,74 @@ export type Order = {
 } & LogFields &
   TimestampFields;
 
+export enum OrderDiscountTrigger {
+  USER = 'USER',
+  SYSTEM = 'SYSTEM',
+}
+
+export type OrderDiscount = {
+  _id?: string;
+  orderId: string;
+  code?: string;
+  total?: OrderPrice;
+  trigger?: OrderDiscountTrigger;
+  discountKey?: string;
+  reservation?: any;
+  context?: any;
+} & TimestampFields;
+
 export type OrderQuery = {
   includeCarts?: boolean;
   queryString?: string;
   status?: string;
   userId?: string;
+};
+
+export enum OrderDeliveryStatus {
+  OPEN = 'OPEN', // Null value is mapped to OPEN status
+  DELIVERED = 'DELIVERED',
+  RETURNED = 'RETURNED',
+}
+
+export enum OrderPaymentStatus {
+  OPEN = 'OPEN', // Null value is mapped to OPEN status
+  PAID = 'PAID',
+  REFUNDED = 'REFUNDED',
+}
+
+export type OrderPayment = {
+  _id?: string;
+  orderId: string;
+  context?: any;
+  paid?: Date;
+  transactionId?: string;
+  paymentProviderId?: string;
+  status?: OrderPaymentStatus | null;
+  calculation?: Array<any>;
+} & LogFields &
+  TimestampFields;
+
+export type OrderPaymentDiscount = Omit<OrderPrice, '_id'> & {
+  _id?: string;
+  discountId: string;
+  item: OrderPayment;
+};
+
+export type OrderDelivery = {
+  _id?: string;
+  orderId: string;
+  deliveryProviderId: string;
+  delivered?: Date;
+  status: OrderDeliveryStatus | null;
+  context?: any;
+  calculation: Array<any>;
+} & LogFields &
+  TimestampFields;
+
+export type OrderDeliveryDiscount = Omit<OrderPrice, '_id'> & {
+  _id?: string;
+  discountId: string;
+  item: OrderDelivery;
 };
 
 export type OrderPositionDiscount = Omit<OrderPrice, '_id'> & {

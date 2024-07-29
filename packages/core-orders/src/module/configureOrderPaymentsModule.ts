@@ -1,12 +1,95 @@
-import { ModuleMutations } from '@unchainedshop/core';
-import {
-  OrderPayment,
-  OrderPaymentsModule,
-  OrderPaymentStatus,
-} from '@unchainedshop/types/orders.payments.js';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema.js';
+import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
+import { IPaymentPricingSheet } from '@unchainedshop/core-payment';
+import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
+
+export type OrderPaymentsModule = {
+  // Queries
+  findOrderPayment: (
+    params: {
+      orderPaymentId: string;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<OrderPayment>;
+
+  findOrderPaymentByContextData: (
+    params: {
+      context: any;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<OrderPayment>;
+
+  countOrderPaymentsByContextData: (
+    params: {
+      context: any;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<number>;
+
+  // Transformations
+  discounts: (
+    orderPayment: OrderPayment,
+    params: { order: Order; orderDiscount: OrderDiscount },
+    unchainedAPI: UnchainedCore,
+  ) => Array<OrderPricingDiscount>;
+  isBlockingOrderConfirmation: (
+    orderPayment: OrderPayment,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<boolean>;
+  isBlockingOrderFullfillment: (orderPayment: OrderPayment) => boolean;
+  normalizedStatus: (orderPayment: OrderPayment) => string;
+  pricingSheet: (
+    orderPayment: OrderPayment,
+    currency: string,
+    unchainedAPI: UnchainedCore,
+  ) => IPaymentPricingSheet;
+
+  // Mutations
+  create: (doc: OrderPayment) => Promise<OrderPayment>;
+
+  cancel: (
+    orderPayment: OrderPayment,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPayment>;
+
+  confirm: (
+    orderPayment: OrderPayment,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPayment>;
+
+  charge: (
+    orderPayment: OrderPayment,
+    paymentContext: {
+      transactionContext: any;
+      userId: string;
+    },
+    unchainedAPI: UnchainedCore,
+  ) => Promise<OrderPayment>;
+
+  logEvent: (orderPaymentId: string, event: any) => Promise<boolean>;
+
+  markAsPaid: (payment: OrderPayment, meta: any) => Promise<void>;
+
+  updateContext: (orderPaymentId: string, context: any) => Promise<OrderPayment | null>;
+
+  updateStatus: (
+    orderPaymentId: string,
+    params: { transactionId?: string; status: OrderPaymentStatus; info?: string },
+  ) => Promise<OrderPayment>;
+
+  updateCalculation: (orderPayment: OrderPayment, unchainedAPI: UnchainedCore) => Promise<OrderPayment>;
+};
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
 

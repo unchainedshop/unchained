@@ -100,7 +100,6 @@
     "@unchainedshop/events": "^3.0.0-alpha2",
     "@unchainedshop/file-upload": "^3.0.0-alpha2",
     "@unchainedshop/logger": "^3.0.0-alpha2",
-    "@unchainedshop/types": "^3.0.0-alpha2",
     "@unchainedshop/utils": "^3.0.0-alpha2",
     "bluebird": "^3.7.2",
     "event-iterator": "^2.0.0",

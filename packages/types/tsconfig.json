@@ -1,9 +1,0 @@
-{
-  "extends": "../shared/base.tsconfig.json",
-  "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "./lib"
-  },
-  "exclude": ["./lib"],
-  "include": ["*.ts", "../core/src/modules.ts"]
-}

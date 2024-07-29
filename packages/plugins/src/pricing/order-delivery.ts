@@ -1,4 +1,4 @@
-import { IOrderPricingAdapter } from '@unchainedshop/types/orders.pricing.js';
+import { IOrderPricingAdapter } from '@unchainedshop/core-orders';
 import { OrderPricingDirector, OrderPricingAdapter } from '@unchainedshop/core-orders';
 
 export const OrderDelivery: IOrderPricingAdapter = {

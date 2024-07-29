@@ -1,6 +1,6 @@
 import { BasePricingSheet } from '@unchainedshop/utils';
 import { PaymentPricingCalculation, IPaymentPricingSheet } from './PaymentPricingAdapter.js';
-import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/types/pricing.js';
+import { IBasePricingSheet, PricingSheetParams } from '@unchainedshop/utils';
 
 export enum PaymentPricingRowCategory {
   Item = 'ITEM',

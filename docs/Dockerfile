@@ -12,7 +12,7 @@ WORKDIR /usr/src/app
 COPY types /usr/src/app/types
 RUN cd types && NODE_ENV=development npm install && NODE_ENV=development npm run build && npm link
 COPY package* /usr/src/app/
-RUN NODE_ENV=development npm install && npm link @unchainedshop/types
+RUN NODE_ENV=development npm install
 
 # Build app
 COPY . /usr/src/app/

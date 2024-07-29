@@ -41,7 +41,6 @@
     "@unchainedshop/core-payment": "^3.0.0-alpha2",
     "@unchainedshop/platform": "^3.0.0-alpha2",
     "@unchainedshop/plugins": "^3.0.0-alpha2",
-    "@unchainedshop/types": "^3.0.0-alpha2",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.6",
     "cookie-parser": "^1.4.6",

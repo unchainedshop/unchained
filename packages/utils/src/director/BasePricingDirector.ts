@@ -1,15 +1,42 @@
-import { Discount } from '@unchainedshop/types/discount.js';
+import { log, LogLevel } from '@unchainedshop/logger';
+import { BaseDirector, IBaseDirector } from './BaseDirector.js';
+import { UnchainedCore } from '@unchainedshop/core';
 import {
   BasePricingAdapterContext,
   BasePricingContext,
-  IPricingDirector,
   IPricingAdapter,
-  IPricingSheet,
-  PricingCalculation,
   IPricingAdapterActions,
-} from '@unchainedshop/types/pricing.js';
-import { log, LogLevel } from '@unchainedshop/logger';
-import { BaseDirector } from './BaseDirector.js';
+} from './BasePricingAdapter.js';
+import { IPricingSheet, PricingCalculation } from './BasePricingSheet.js';
+export interface Discount<DiscountConfiguration> {
+  discountId: string;
+  configuration: DiscountConfiguration;
+}
+
+export type IPricingDirector<
+  PricingContext extends BasePricingContext,
+  Calculation extends PricingCalculation,
+  PricingAdapterContext extends BasePricingAdapterContext,
+  PricingAdapterSheet extends IPricingSheet<Calculation>,
+  Adapter extends IPricingAdapter<PricingAdapterContext, Calculation, PricingAdapterSheet>,
+> = IBaseDirector<Adapter> & {
+  buildPricingContext: (
+    context: PricingContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<PricingAdapterContext>;
+  actions: (
+    pricingContext: PricingContext,
+    unchainedAPI: UnchainedCore,
+    buildPricingContext?: (
+      pricingCtx: PricingContext,
+      unchainedAPI: UnchainedCore,
+    ) => Promise<PricingAdapterContext>,
+  ) => Promise<
+    IPricingAdapterActions<Calculation, PricingAdapterContext> & {
+      calculationSheet: () => PricingAdapterSheet;
+    }
+  >;
+};
 
 export const BasePricingDirector = <
   DirectorContext extends BasePricingContext,
@@ -61,10 +88,10 @@ export const BasePricingDirector = <
               context.discounts.map(async (discount) => ({
                 discountId: discount._id,
                 configuration: await context.modules.orders.discounts.configurationForPricingAdapterKey(
-                  discount,
+                  discount as any,
                   Adapter.key,
                   this.calculationSheet(),
-                  context,
+                  context as any,
                 ),
               })),
             );

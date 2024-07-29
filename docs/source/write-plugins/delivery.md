@@ -10,8 +10,6 @@ There can be multiple delivery adapter implementation for a shop and all of them
 Below we have sample delivery adapter 
 
 ```typescript
-import { IDeliveryAdapter, DeliveryAdapterActions, DeliveryConfiguration, DeliveryAdapterContext, DeliveryLocation } from "@unchainedshop/types/delivery";
-import { Context, DeliveryError } from "@unchainedshop/types/";
 import {
   DeliveryDirector,
   DeliveryProviderType,

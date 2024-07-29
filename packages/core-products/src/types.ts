@@ -1,16 +1,16 @@
 import { Order } from '@unchainedshop/core-orders';
 import { User } from '@unchainedshop/core-users';
 import type { TimestampFields, mongodb } from '@unchainedshop/mongodb';
-import { OrderDiscount } from '@unchainedshop/types/orders.discounts.js';
+import { OrderDiscount } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/core-orders';
-import type { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
+import type { OrderPrice } from '@unchainedshop/core-orders';
 import {
   BasePricingAdapterContext,
   IPricingAdapter,
   IPricingDirector,
   IPricingSheet,
   PricingCalculation,
-} from '@unchainedshop/types/pricing.js';
+} from '@unchainedshop/utils';
 
 export type ProductMedia = {
   _id?: string;
@@ -240,6 +240,7 @@ export interface ProductPricingAdapterContext extends BasePricingAdapterContext 
   product: Product;
   quantity: number;
   configuration: Array<ProductConfiguration>;
+  order?: Order;
 }
 
 export type ProductPricingContext =

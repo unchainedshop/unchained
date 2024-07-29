@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { OrderDeliveryStatus } from '@unchainedshop/types/orders.deliveries.js';
+import { OrderDeliveryStatus } from '@unchainedshop/core-orders';
 import {
   OrderNotFoundError,
   OrderWrongDeliveryStatusError,

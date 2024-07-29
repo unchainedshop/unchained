@@ -1,4 +1,4 @@
-import { OrderPayment } from '@unchainedshop/types/orders.payments.js';
+import { OrderPayment } from '@unchainedshop/core-orders';
 import { TransactionCancelInput, TransactionCancelResponse } from '../models/TransactionCancel.js';
 import { TransactionCaptureInput, TransactionCaptureResponse } from '../models/TransactionCapture.js';
 import { PaymentPageAssertInput, PaymentPageAssertResponse } from '../models/PaymentPageAssert.js';

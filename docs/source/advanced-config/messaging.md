@@ -18,10 +18,6 @@ Bellow is an example of a simple error notification email message configuration 
 ## Implement TemplateResolver
 
 ```typescript
-
-import { TemplateResolver } from "@unchainedshop/types/messaging";
-
-
 const ERROR_EMAIL_TEMPLATE = `
 {userName} encountered {error} in {resolverName}
 `

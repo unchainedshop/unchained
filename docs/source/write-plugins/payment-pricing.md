@@ -19,9 +19,6 @@ import {
   PaymentPricingCalculation,
 } from '@unchainedshop/core-payment';
 
-import { LogOptions } from '@unchainedshop/types/logs.js';
-import { Discount } from '@unchainedshop/types/discount.js';
-
 const TRANSACTION_FEE = 29;
 
 export const ShopCommission: IPaymentPricingAdapter = {

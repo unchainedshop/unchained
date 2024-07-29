@@ -42,7 +42,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.13",
-    "@unchainedshop/types": "^3.0.0-alpha2",
     "jest": "^29.7.0",
     "typescript": "^5.5.4"
   }

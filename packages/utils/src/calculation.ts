@@ -1,4 +1,4 @@
-import { IBasePricingSheet, PricingCalculation } from '@unchainedshop/types/pricing.js';
+import { IBasePricingSheet, PricingCalculation } from './director/BasePricingSheet.js';
 
 export const roundToNext = (value: number, precision: number) =>
   Math.ceil(value / precision) * precision;

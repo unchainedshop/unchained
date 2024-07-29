@@ -1,4 +1,4 @@
-import { IDiscountAdapter } from '@unchainedshop/types/discount.js';
+import { IDiscountAdapter } from '@unchainedshop/utils';
 import {
   OrderDiscountDirector,
   OrderDiscountAdapter,

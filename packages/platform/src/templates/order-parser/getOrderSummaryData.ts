@@ -1,6 +1,6 @@
 import { UnchainedCore } from '@unchainedshop/core';
 import { Order } from '@unchainedshop/core-orders';
-import { OrderPricingRowCategory } from '@unchainedshop/types/orders.pricing.js';
+import { OrderPricingRowCategory } from '@unchainedshop/core-orders';
 import formatPrice from './formatPrice.js';
 import { formatAddress } from './formatAddress.js';
 

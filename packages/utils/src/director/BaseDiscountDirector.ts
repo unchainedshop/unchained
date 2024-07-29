@@ -1,6 +1,19 @@
-import { IDiscountAdapter, IDiscountDirector } from '@unchainedshop/types/discount.js';
 import { log } from '@unchainedshop/logger';
-import { BaseDirector } from './BaseDirector.js';
+import { BaseDirector, IBaseDirector } from './BaseDirector.js';
+import { DiscountContext, IDiscountAdapter } from './BaseDiscountAdapter.js';
+import { UnchainedCore } from '@unchainedshop/core';
+
+export type IDiscountDirector<DiscountConfiguration> = IBaseDirector<
+  IDiscountAdapter<DiscountConfiguration>
+> & {
+  actions: (
+    discountContext: DiscountContext,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<{
+    resolveDiscountKeyFromStaticCode: (params: { code: string }) => Promise<string | null>;
+    findSystemDiscounts: () => Promise<Array<string>>;
+  }>;
+};
 
 export const BaseDiscountDirector = <DiscountConfigurationType>(
   directorName: string,
