@@ -1,5 +1,4 @@
 import { OrdersModule, OrdersSettingsOptions } from './orders.js';
-import { QuotationsModule, QuotationsSettingsOptions } from './quotations.js';
 
 import type { AssortmentsModule, AssortmentsSettingsOptions } from '@unchainedshop/core-assortments';
 import type { BookmarksModule } from '@unchainedshop/core-bookmarks';
@@ -15,10 +14,11 @@ import type { MessagingModule } from '@unchainedshop/core-messaging';
 
 import type { PaymentModule, PaymentSettingsOptions } from '@unchainedshop/core-payment';
 import type { ProductsModule, ProductsSettingsOptions } from '@unchainedshop/core-products';
-
+import type { QuotationsModule, QuotationsSettingsOptions } from '@unchainedshop/core-quotations';
 import type { UsersModule, UserSettingsOptions } from '@unchainedshop/core-users';
 import type { WarehousingModule } from '@unchainedshop/core-warehousing';
 import type { WorkerModule, WorkerSettingsOptions } from '@unchainedshop/core-worker';
+
 export interface Modules {
   assortments: AssortmentsModule;
   bookmarks: BookmarksModule;

@@ -14,7 +14,7 @@ Below is a sample manual quotation adapter implementation that will mark every q
 ```typescript
 import { log, LogLevel } from '@unchainedshop/logger';
 
-import { IQuotationAdapter } from '@unchainedshop/types/quotations.js';
+import { IQuotationAdapter } from '@unchainedshop/core-quotations';
 import { QuotationError } from '@unchainedshop/core-quotations';
 
 export const ManualOffering: IQuotationAdapter = {

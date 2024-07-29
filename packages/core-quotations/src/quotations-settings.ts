@@ -1,5 +1,9 @@
-import { QuotationsSettingsOptions } from '@unchainedshop/types/quotations.js';
 import { generateRandomHash } from '@unchainedshop/utils';
+import { Quotation } from './types.js';
+
+export interface QuotationsSettingsOptions {
+  quotationNumberHashFn?: (quotation: Quotation, index: number) => string;
+}
 
 export const quotationsSettings = {
   quotationNumberHashFn: null,

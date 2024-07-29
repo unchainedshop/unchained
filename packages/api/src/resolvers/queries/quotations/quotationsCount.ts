@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
-import { QuotationQuery } from '@unchainedshop/types/quotations.js';
+import { QuotationQuery } from '@unchainedshop/core-quotations';
 
 export default async function quotationsCount(
   root: never,

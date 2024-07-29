@@ -5,7 +5,7 @@ import { Order } from '@unchainedshop/types/orders.js';
 import { OrderPosition, OrderPositionDiscount } from '@unchainedshop/types/orders.positions.js';
 import { OrderPrice } from '@unchainedshop/types/orders.pricing.js';
 import { Product } from '@unchainedshop/types/products.js';
-import { Quotation } from '@unchainedshop/types/quotations.js';
+import { Quotation } from '@unchainedshop/core-quotations';
 import { TokenSurrogate, WarehousingProvider } from '@unchainedshop/core-warehousing';
 
 const getPricingSheet = async (orderPosition: OrderPosition, context: Context) => {

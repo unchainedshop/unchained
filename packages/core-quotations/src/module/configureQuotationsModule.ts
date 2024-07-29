@@ -1,11 +1,6 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/types/core.js';
-import {
-  Quotation,
-  QuotationQuery,
-  QuotationsModule,
-  QuotationsSettingsOptions,
-} from '@unchainedshop/types/quotations.js';
+import { Quotation, QuotationItemConfiguration, QuotationProposal } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -17,8 +12,79 @@ import { QuotationsCollection } from '../db/QuotationsCollection.js';
 import { QuotationsSchema } from '../db/QuotationsSchema.js';
 import { QuotationStatus } from '../db/QuotationStatus.js';
 import { QuotationDirector } from '../quotations-index.js';
-import { quotationsSettings } from '../quotations-settings.js';
+import { quotationsSettings, QuotationsSettingsOptions } from '../quotations-settings.js';
 import { resolveBestCurrency } from '@unchainedshop/utils';
+
+export type QuotationQuery = {
+  userId?: string;
+  queryString?: string;
+};
+export interface QuotationQueries {
+  findQuotation: (query: { quotationId: string }, options?: mongodb.FindOptions) => Promise<Quotation>;
+  findQuotations: (
+    query: QuotationQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: Array<SortOption>;
+    },
+    options?: mongodb.FindOptions,
+  ) => Promise<Array<Quotation>>;
+  count: (query: QuotationQuery) => Promise<number>;
+  openQuotationWithProduct: (param: { productId: string }) => Promise<Quotation | null>;
+}
+
+// Transformations
+
+export interface QuotationTransformations {
+  isExpired: (quotation: Quotation, params?: { referenceDate: Date }) => boolean;
+  isProposalValid: (quotation: Quotation) => boolean;
+  normalizedStatus: (quotation: Quotation) => string;
+}
+
+// Processing
+
+export type QuotationContextParams = (
+  quotation: Quotation,
+  params: { quotationContext?: any },
+  unchainedAPI: UnchainedCore,
+) => Promise<Quotation>;
+
+// Mutations
+export interface QuotationData {
+  configuration?: Array<{ key: string; value: string }>;
+  countryCode?: string;
+  productId: string;
+  userId: string;
+}
+export interface QuotationMutations {
+  create: (doc: QuotationData, unchainedAPI: UnchainedCore) => Promise<Quotation>;
+
+  updateContext: (quotationId: string, context: any) => Promise<Quotation | null>;
+
+  updateProposal: (quotationId: string, proposal: QuotationProposal) => Promise<Quotation>;
+
+  updateStatus: (
+    quotationId: string,
+    params: { status: QuotationStatus; info?: string },
+  ) => Promise<Quotation>;
+}
+
+export interface QuotationProcessing {
+  fullfillQuotation: (quotationId: string, info: any, unchainedAPI: UnchainedCore) => Promise<Quotation>;
+  proposeQuotation: QuotationContextParams;
+  rejectQuotation: QuotationContextParams;
+  verifyQuotation: QuotationContextParams;
+  transformItemConfiguration: (
+    quotation: Quotation,
+    configuration: QuotationItemConfiguration,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<QuotationItemConfiguration>;
+}
+
+export type QuotationsModule = QuotationQueries &
+  QuotationTransformations &
+  QuotationProcessing &
+  QuotationMutations;
 
 const QUOTATION_EVENTS: string[] = ['QUOTATION_REQUEST_CREATE', 'QUOTATION_REMOVE', 'QUOTATION_UPDATE'];
 

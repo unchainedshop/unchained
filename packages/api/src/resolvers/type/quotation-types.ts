@@ -1,4 +1,4 @@
-import { Quotation as QuotationType } from '@unchainedshop/types/quotations.js';
+import { Quotation as QuotationType } from '@unchainedshop/core-quotations';
 import { Context } from '@unchainedshop/api';
 import { User } from '@unchainedshop/core-users';
 import { Product } from '@unchainedshop/types/products.js';

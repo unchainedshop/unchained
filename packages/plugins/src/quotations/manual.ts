@@ -1,4 +1,4 @@
-import { IQuotationAdapter } from '@unchainedshop/types/quotations.js';
+import { IQuotationAdapter } from '@unchainedshop/core-quotations';
 import { QuotationDirector, QuotationAdapter } from '@unchainedshop/core-quotations';
 
 const ManualOffering: IQuotationAdapter = {

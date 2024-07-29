@@ -5,7 +5,7 @@ import { File } from '@unchainedshop/core-files';
 import { Language } from '@unchainedshop/core-languages';
 import { Order } from '@unchainedshop/types/orders.js';
 import { PaymentCredentials } from '@unchainedshop/core-payment';
-import { Quotation } from '@unchainedshop/types/quotations.js';
+import { Quotation } from '@unchainedshop/core-quotations';
 import {
   Email,
   User as UserType,
