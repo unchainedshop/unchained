@@ -40,5 +40,5 @@ export default async function addCartProduct(
     context,
   );
   await modules.orders.updateCalculation(order._id, context);
-  return orderPosition;
+  return modules.orders.positions.findOrderPosition({ itemId: orderPosition._id });
 }

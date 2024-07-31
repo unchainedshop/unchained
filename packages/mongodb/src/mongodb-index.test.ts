@@ -1,4 +1,4 @@
-import { SortDirection } from '@unchainedshop/types/api.js';
+import { SortDirection } from '@unchainedshop/utils';
 import {
   buildSortOptions,
   checkId,

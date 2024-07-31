@@ -11,7 +11,9 @@ export const resolveBestSupported = (
   supportedLocales: Array<string>,
   fallbackLocale: string,
 ): Intl.Locale => {
-  const { match } = resolveAcceptLanguage(acceptLanguage, supportedLocales, fallbackLocale);
+  const { match } = resolveAcceptLanguage(acceptLanguage || '', supportedLocales, fallbackLocale, {
+    returnMatchType: true,
+  });
   return new Intl.Locale(match);
 };
 

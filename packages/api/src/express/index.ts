@@ -2,7 +2,6 @@ import type e from 'express';
 import { getCurrentContextResolver } from '../context.js';
 import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
-import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { YogaServer } from 'graphql-yoga';
@@ -36,14 +35,13 @@ const {
 } = process.env;
 
 const addContext = async function middlewareWithContext(
-  req: e.Request & { cookies: any },
+  req: e.Request,
   res: e.Response,
   next: e.NextFunction,
 ) {
   try {
     const setHeader = (key, value) => res.setHeader(key, value);
     const getHeader = (key) => req.headers[key];
-    const cookies = req.cookies;
     const { remoteAddress, remotePort } = resolveUserRemoteAddress(req);
 
     const context = getCurrentContextResolver();
@@ -99,7 +97,6 @@ const addContext = async function middlewareWithContext(
     (req as any).unchainedContext = await context({
       setHeader,
       getHeader,
-      cookies,
       remoteAddress,
       remotePort,
       login,
@@ -124,8 +121,6 @@ export const connect = (
   const passport = setupPassport(unchainedAPI);
 
   expressApp.use(
-    cookieParser(),
-    passport.initialize(),
     session({
       secret: process.env.UNCHAINED_TOKEN_SECRET,
       store: MongoStore.create({
@@ -145,6 +140,7 @@ export const connect = (
         maxAge: 1000 * 60 * 60 * 24 * 7,
       },
     }),
+    passport.initialize(),
     passport.session(),
     passport.authenticate('access-token', { session: false }),
     addContext,

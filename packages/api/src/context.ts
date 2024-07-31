@@ -16,7 +16,6 @@ export const setCurrentContextResolver = (newContext: UnchainedContextResolver) 
 
 export type UnchainedContextResolver = (
   params: UnchainedHTTPServerContext & {
-    cookies?: Record<string, string>;
     remoteAddress?: string;
     remotePort?: number;
     user?: any;
@@ -50,8 +49,8 @@ export const createContextResolver =
     unchainedAPI: UnchainedCore,
     unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig'>,
   ): UnchainedContextResolver =>
-  async ({ getHeader, setHeader, cookies, remoteAddress, remotePort, user, userId, login, logout }) => {
-    const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader, cookies };
+  async ({ getHeader, setHeader, remoteAddress, remotePort, user, userId, login, logout }) => {
+    const abstractHttpServerContext = { remoteAddress, remotePort, getHeader, setHeader };
     const loaders = await instantiateLoaders(unchainedAPI);
     const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
     const userContext = { user, userId, login, logout };

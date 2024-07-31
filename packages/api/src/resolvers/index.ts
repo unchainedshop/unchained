@@ -1,4 +1,10 @@
-import { JSONResolver, TimestampResolver, DateTimeResolver, DateResolver } from 'graphql-scalars';
+import {
+  JSONResolver,
+  TimestampResolver,
+  DateTimeResolver,
+  DateResolver,
+  LocaleResolver,
+} from 'graphql-scalars';
 import Query from './queries/index.js';
 import Mutation from './mutations/index.js';
 import Types from './type/index.js';
@@ -13,4 +19,5 @@ export default {
   DateTime: DateTimeResolver,
   Date: DateResolver,
   Timestamp: TimestampResolver,
+  Locale: LocaleResolver,
 } as unknown as Record<string, any>;

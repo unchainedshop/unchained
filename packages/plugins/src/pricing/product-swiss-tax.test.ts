@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getTaxRate, isDeliveryAddressInSwitzerland } from './product-swiss-tax.js';
 
 describe("ProductSwissTax", () => {

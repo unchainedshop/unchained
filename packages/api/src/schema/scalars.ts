@@ -5,5 +5,6 @@ export default [
     scalar Date
     scalar Timestamp
     scalar LowerCaseString
+    scalar Locale
   `,
 ];

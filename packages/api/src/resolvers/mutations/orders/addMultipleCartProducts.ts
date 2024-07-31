@@ -44,29 +44,25 @@ export default async function addMultipleCartProducts(
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   // Reduce is used to wait for each product to be added before processing the next (sequential processing)
-  const updatedOrderPositions = await itemsWithProducts.reduce(
-    async (positionsPromise, { product, quantity, configuration }) => {
-      const positions = await positionsPromise;
-      if (quantity < 1)
-        throw new OrderQuantityTooLowError({
-          quantity,
-          productId: product._id,
-        });
+  await itemsWithProducts.reduce(async (positionsPromise, { product, quantity, configuration }) => {
+    const positions = await positionsPromise;
+    if (quantity < 1)
+      throw new OrderQuantityTooLowError({
+        quantity,
+        productId: product._id,
+      });
 
-      const position = await modules.orders.positions.addProductItem(
-        {
-          quantity,
-          configuration,
-        },
-        { order, product },
-        context,
-      );
-      positions.push(position);
-      return positions;
-    },
-    Promise.resolve([]),
-  );
+    const position = await modules.orders.positions.addProductItem(
+      {
+        quantity,
+        configuration,
+      },
+      { order, product },
+      context,
+    );
+    positions.push(position);
+    return positions;
+  }, Promise.resolve([]));
 
-  await modules.orders.updateCalculation(order._id, context);
-  return updatedOrderPositions;
+  return modules.orders.updateCalculation(order._id, context);
 }

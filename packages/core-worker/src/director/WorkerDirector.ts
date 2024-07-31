@@ -37,7 +37,7 @@ const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
 export const WorkerDirector: IWorkerDirector = {
   ...baseDirector,
 
-  getActivePluginTypes: ({ external } = { external: false }) => {
+  getActivePluginTypes: ({ external } = { external: null }) => {
     return WorkerDirector.getAdapters()
       .filter((adapter) => {
         if (external === null || external === undefined) return true;

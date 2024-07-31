@@ -192,13 +192,16 @@ describe("Cart: Product Items", () => {
           mutation addMultipleCartProducts($items: [OrderItemInput!]!) {
             addMultipleCartProducts(items: $items) {
               _id
-              quantity
-              product {
+              items {
                 _id
-              }
-              configuration {
-                key
-                value
+                quantity
+                product {
+                  _id
+                }
+                configuration {
+                  key
+                  value
+                }
               }
             }
           }
@@ -218,7 +221,7 @@ describe("Cart: Product Items", () => {
           ],
         },
       });
-      expect(addMultipleCartProducts.pop()).toMatchObject({
+      expect(addMultipleCartProducts.items.pop()).toMatchObject({
         quantity: 4,
         product: {
           _id: SimpleProduct._id,
