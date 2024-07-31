@@ -10,8 +10,8 @@ export const LoginMethodResponse = {
 
     return user;
   },
-  token({ token, tokenExpires }, _, { setLoginToken }: Context) {
-    setLoginToken(token, tokenExpires);
+  token({ token, tokenExpires }, _, { res, setLoginToken }: Context) {
+    setLoginToken(res, token, tokenExpires);
     return token;
   },
 };

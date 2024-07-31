@@ -14,6 +14,25 @@ const {
   NODE_ENV,
 } = process.env;
 
+function setLoginToken(res: OutgoingMessage, token: string | null, expires?: Date) {
+  const cookieName = UNCHAINED_COOKIE_NAME;
+  const domain = UNCHAINED_COOKIE_DOMAIN;
+  const path = UNCHAINED_COOKIE_PATH;
+
+  if (!domain) return;
+
+  const authCookie = cookie.serialize(cookieName, token || null, {
+    domain,
+    httpOnly: true,
+    path,
+    expires: token && expires ? expires : undefined,
+    maxAge: token ? undefined : -1,
+    sameSite: 'lax',
+    secure: NODE_ENV === 'production',
+  });
+  res.setHeader('Set-Cookie', authCookie);
+}
+
 export const getUserContext = async (
   req: IncomingMessage & { cookies?: any },
   res: OutgoingMessage,
@@ -21,24 +40,7 @@ export const getUserContext = async (
 ): Promise<UnchainedUserContext> => {
   // there is a possible current user connected!
   const cookieName = UNCHAINED_COOKIE_NAME;
-  const domain = UNCHAINED_COOKIE_DOMAIN;
-  const path = UNCHAINED_COOKIE_PATH;
-
   let loginToken = req.cookies?.[cookieName];
-
-  function setLoginToken(token: string, expires: Date) {
-    if (!domain) return;
-    const authCookie = cookie.serialize(cookieName, token || null, {
-      domain,
-      httpOnly: true,
-      path,
-      expires: token ? expires : undefined,
-      maxAge: token ? undefined : -1,
-      sameSite: 'lax',
-      secure: NODE_ENV === 'production',
-    });
-    res.setHeader('Set-Cookie', authCookie);
-  }
 
   if (req.headers.authorization) {
     const [type, token] = req.headers.authorization.split(' ');
@@ -80,6 +82,11 @@ export const getUserContext = async (
         };
       }
     }
+
+    // If there is no user with this token or the token is expires/invalid,
+    // we should remove that cookie from the client
+    setLoginToken(res, null);
+
     return { loginToken: loginToken as string, setLoginToken };
   }
 

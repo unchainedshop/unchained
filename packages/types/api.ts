@@ -15,7 +15,7 @@ export declare type Root = Record<string, unknown>;
 
 export interface UnchainedUserContext {
   loginToken?: string;
-  setLoginToken: (token: string, expires?: Date) => void;
+  setLoginToken: (res: OutgoingMessage, token: string | null, expires?: Date) => void;
   userId?: string;
   user?: User;
 }

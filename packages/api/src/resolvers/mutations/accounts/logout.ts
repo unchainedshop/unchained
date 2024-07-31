@@ -21,7 +21,7 @@ export default async function logout(root: Root, { token }: { token: string }, c
       ...loggedOut.error,
     });
   } else {
-    setLoginToken(null);
+    setLoginToken(context.res, null);
   }
 
   return { success: loggedOut.success };

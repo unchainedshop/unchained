@@ -20,7 +20,7 @@ export default async function logoutAllSessions(root: Root, _: any, context: Con
       ...loggedOut.error,
     });
   } else {
-    setLoginToken(null);
+    setLoginToken(context.res, null);
   }
 
   return { success: loggedOut.success };
