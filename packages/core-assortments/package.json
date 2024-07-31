@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-assortments",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "main": "lib/assortments-index.js",
   "exports": {
     ".": "./lib/assortments-index.js",
