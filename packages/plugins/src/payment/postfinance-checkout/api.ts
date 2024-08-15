@@ -87,7 +87,7 @@ export const voidTransaction = async (transactionId: string): Promise<boolean> =
   try {
     await transactionVoidService.voidOnline(SPACE_ID, parseInt(transactionId, 10));
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -107,7 +107,7 @@ export const refundTransaction = async (
   try {
     await refundService.refund(SPACE_ID, refund);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -117,7 +117,7 @@ export const confirmDeferredTransaction = async (transactionId: string): Promise
   try {
     await transactionCompletionService.completeOnline(SPACE_ID, parseInt(transactionId, 10));
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };

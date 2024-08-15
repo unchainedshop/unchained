@@ -13,7 +13,7 @@ export default async function sendEnrollmentEmail(
     return {
       success: true,
     };
-  } catch (e) {
+  } catch {
     return {
       success: false,
     };

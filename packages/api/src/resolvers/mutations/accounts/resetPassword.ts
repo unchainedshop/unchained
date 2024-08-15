@@ -52,7 +52,7 @@ export default async function resetPassword(
         if (updatedUser) {
           await modules.accounts.emit('VerifyEmailSuccess', updatedUser);
         }
-      } catch (e) {
+      } catch {
         /* */
       }
     }

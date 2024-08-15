@@ -16,7 +16,7 @@ const upsert = async (assortmentProduct: AssortmentProduct, unchainedAPI: Unchai
       skipInvalidation: true,
     });
     return newAssortmentProduct;
-  } catch (e) {
+  } catch {
     return modules.assortments.products.update(assortmentProduct._id, assortmentProduct, {
       skipInvalidation: true,
     });

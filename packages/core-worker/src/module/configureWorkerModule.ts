@@ -435,7 +435,7 @@ export const configureWorkerModule = async ({
           emit(WorkerEventTypes.ADDED, removePrivateFields(result.value));
         }
         return result.value;
-      } catch (e) {
+      } catch {
         /* TODO: 
         If the findOneAndUpdate call failed because of _id conflict with a DELETED work,
         we should permanently remove the conflicting deleted work 

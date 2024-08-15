@@ -6,7 +6,7 @@ const upsert = async (productVariation: ProductVariation, unchainedAPI: Unchaine
   try {
     const newVariation = await modules.products.variations.create(productVariation);
     return newVariation;
-  } catch (e) {
+  } catch {
     return modules.products.variations.update(productVariation._id, productVariation);
   }
 };

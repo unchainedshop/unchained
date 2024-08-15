@@ -19,7 +19,7 @@ Collection.prototype.findOrInsertOne = async function findOrInsertOne(doc, ...ar
   try {
     const { insertedId } = await this.insertOne(doc, ...args);
     return this.findOne({ _id: insertedId }, ...args);
-  } catch (e) {
+  } catch {
     return this.findOne({ _id: doc._id }, ...args);
   }
 };

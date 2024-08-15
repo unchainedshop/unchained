@@ -27,7 +27,7 @@ export const loadJSON = (filename) => {
     const absolutePath = path.resolve(path.dirname(base), filename);
     const data = JSON.parse(fs.readFileSync(absolutePath, 'utf-8'));
     return data;
-  } catch (e) {
+  } catch {
     return null;
   }
 };

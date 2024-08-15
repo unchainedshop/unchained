@@ -113,7 +113,7 @@ export type IPricingDirector<
     unchainedAPI: UnchainedCore,
     buildPricingContext?: (
       pricingCtx: PricingContext,
-      unchainedAPI: UnchainedCore,
+      _unchainedAPI: UnchainedCore,
     ) => Promise<PricingAdapterContext>,
   ) => Promise<
     IPricingAdapterActions<Calculation, PricingAdapterContext> & {

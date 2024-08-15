@@ -12,7 +12,7 @@ export default async function teardown(globalConfig) {
     try {
       await disconnect();
       await cleanup();
-    } catch (e) {
+    } catch {
       /* */
     }
   }

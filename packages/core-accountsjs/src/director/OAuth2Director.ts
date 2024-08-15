@@ -22,7 +22,7 @@ export const OAuth2Director: IOAuthDirector = {
       configurationError: () => {
         try {
           return adapter.configurationError();
-        } catch (error) {
+        } catch {
           throw new Error(OAuth2Error.ADAPTER_NOT_FOUND);
         }
       },

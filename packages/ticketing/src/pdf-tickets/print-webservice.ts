@@ -24,8 +24,8 @@ export async function printTicketsHandler(req: Request & { unchainedContext: Con
     const pdfStream = await render({ orderId, variant: variant as string }, req.unchainedContext);
     res.setHeader('Content-Type', 'application/pdf');
     pdfStream.pipe(res);
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     res.status(403);
     res.end();
   }

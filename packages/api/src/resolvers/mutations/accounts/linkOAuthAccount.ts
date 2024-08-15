@@ -45,7 +45,7 @@ export default async function linkOAuthAccount(
     );
 
     return true;
-  } catch (e) {
+  } catch {
     throw new AuthOperationFailedError({});
   }
 }

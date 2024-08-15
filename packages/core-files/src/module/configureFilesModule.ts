@@ -31,12 +31,12 @@ export const configureFilesModule = async ({
         // If the url is absolute, return
         const finalURL = new URL(transformedURLString);
         return finalURL.href;
-      } catch (e) {
+      } catch {
         try {
           // else try to fix by using ROOT_URL env
           const finalURL = new URL(transformedURLString, process.env.ROOT_URL);
           return finalURL.href;
-        } catch (e2) {
+        } catch {
           // else return the transformed string because it's not an URL
           return transformedURLString;
         }

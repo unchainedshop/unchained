@@ -10,7 +10,7 @@ export const permissions = async (userRoles: any, allRoles: any) => {
           const r = await f(null, null, null);
           if (r) return roleName;
           return null;
-        } catch (e) {
+        } catch {
           return null;
         }
       });

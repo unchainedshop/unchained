@@ -7,7 +7,7 @@ const upsertProductMedia = async (productMedia: ProductMedia, { modules }: Uncha
   try {
     const productMediaObj = await modules.products.media.create(productMedia);
     return productMediaObj;
-  } catch (e) {
+  } catch {
     const { _id, ...productMediaData } = productMedia;
     const productMediaId = _id;
     return modules.products.media.update(productMediaId, productMediaData);

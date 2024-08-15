@@ -20,11 +20,11 @@ export interface Migration {
   up: (params: { logger: any | Console; unchainedAPI: UnchainedCore }) => Promise<void>;
 }
 
-export interface MigrationRepository<Migration> {
+export interface MigrationRepository<_Migration extends Migration> {
   db: Db;
-  migrations: Map<number, Migration>;
-  register: (migration: Migration) => void;
-  allMigrations: () => Array<Migration>;
+  migrations: Map<number, _Migration>;
+  register: (migration: _Migration) => void;
+  allMigrations: () => Array<_Migration>;
 }
 
 /*

@@ -15,7 +15,7 @@ const upsert = async (assortmentLink: AssortmentLink, { modules }: UnchainedCore
       skipInvalidation: true,
     });
     return newAssortmentLink;
-  } catch (e) {
+  } catch {
     return modules.assortments.links.update(assortmentLink._id, assortmentLink, {
       skipInvalidation: true,
     });

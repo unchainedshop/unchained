@@ -20,5 +20,5 @@ Object.entries(process.env)
         const envVarName = key.substr(0, key.length - 5);
         process.env[envVarName] = value;
       }
-    } catch (e) {} // eslint-disable-line
+    } catch {} // eslint-disable-line
   });

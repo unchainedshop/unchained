@@ -61,7 +61,7 @@ const UpdateCoinbaseRates: IWorkerAdapter<any, any> = {
           ratesUpdated: rates.length,
         },
       };
-    } catch (e) {
+    } catch {
       return {
         success: false,
         error: {
