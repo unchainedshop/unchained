@@ -17,7 +17,7 @@ export default async function sendVerificationEmail(
     return {
       success: true,
     };
-  } catch (e) {
+  } catch {
     return {
       success: false,
     };

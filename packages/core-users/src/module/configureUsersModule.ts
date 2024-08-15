@@ -376,7 +376,7 @@ export const configureUsersModule = async ({
             await this.sendVerificationEmail(userId, email);
           }
         }
-      } catch (e) {
+      } catch {
         /* */
       }
 
