@@ -20,7 +20,7 @@ export default function shopInfo(
       try {
         const parsed = JSON.parse(process.env.EXTERNAL_LINKS);
         return parsed;
-      } catch (e) {
+      } catch {
         return [];
       }
     },

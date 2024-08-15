@@ -6,7 +6,7 @@ const upsertMediaObject = async (media, unchainedAPI: UnchainedCore) => {
   try {
     const assortmentMedia = await modules.assortments.media.create(media);
     return assortmentMedia;
-  } catch (e) {
+  } catch {
     const { _id, ...mediaData } = media;
     return modules.assortments.media.update(_id, mediaData);
   }

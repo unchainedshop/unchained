@@ -13,7 +13,7 @@ const upsert = async (assortmentFilter: AssortmentFilter, { modules }: Unchained
   try {
     const newAssortmentFilter = await modules.assortments.filters.create(assortmentFilter);
     return newAssortmentFilter;
-  } catch (e) {
+  } catch {
     return modules.assortments.filters.update(assortmentFilter._id, assortmentFilter);
   }
 };

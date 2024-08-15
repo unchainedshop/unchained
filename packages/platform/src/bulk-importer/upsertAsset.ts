@@ -36,7 +36,7 @@ const upsertAsset = async (
 
     if (!assetObject) throw new Error('Media not created');
     return assetObject;
-  } catch (e) {
+  } catch {
     return null;
   }
 };

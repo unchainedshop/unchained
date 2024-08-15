@@ -8,7 +8,7 @@ export const startDb = async () => {
 
   try {
     mkdirSync(`${process.cwd()}/.db`);
-  } catch (e) {
+  } catch {
     //
   }
   mongod = await MongoMemoryServer.create({

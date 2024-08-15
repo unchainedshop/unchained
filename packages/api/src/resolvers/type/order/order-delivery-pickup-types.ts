@@ -15,13 +15,8 @@ export interface OrderDeliveryPickupHelperTypes {
 
 export const OrderDeliveryPickUp: OrderDeliveryPickupHelperTypes = {
   activePickUpLocation: async (obj, _, context) => {
-    const { orderPickUpLocationId } = obj.context || {};
-    const provider = await context.modules.delivery.findProvider({
-      deliveryProviderId: obj.deliveryProviderId,
-    });
-    const director = await DeliveryDirector.actions(provider, { orderDelivery: obj }, context);
-
-    return director.pickUpLocationById(orderPickUpLocationId);
+    const { modules } = context;
+    return modules.orders.deliveries.activePickUpLocation(obj, context);
   },
 
   pickUpLocations: async (obj, _, context) => {

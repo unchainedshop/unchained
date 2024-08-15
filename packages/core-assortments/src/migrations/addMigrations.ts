@@ -51,8 +51,7 @@ export default function addMigrations(repository: MigrationRepository<Migration>
                 upsert: true,
               },
             );
-          } catch (e) {
-            // console.warn(e);
+          } catch {
             /* */
           }
         }),

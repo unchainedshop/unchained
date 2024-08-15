@@ -47,7 +47,7 @@ export const PaymentDirector: IPaymentDirector = {
         try {
           const error = adapter.configurationError();
           return error;
-        } catch (error) {
+        } catch {
           return PaymentError.ADAPTER_NOT_FOUND;
         }
       },

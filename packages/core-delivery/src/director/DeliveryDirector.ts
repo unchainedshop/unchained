@@ -18,7 +18,7 @@ export const DeliveryDirector: IDeliveryDirector = {
       configurationError: () => {
         try {
           return adapter.configurationError();
-        } catch (error) {
+        } catch {
           return DeliveryError.ADAPTER_NOT_FOUND;
         }
       },

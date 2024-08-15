@@ -369,7 +369,7 @@ export const configureProductPricesModule = ({
             await BulkOp.execute();
           }
           return true;
-        } catch (e) {
+        } catch {
           return false;
         }
       },

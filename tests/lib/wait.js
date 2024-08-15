@@ -15,7 +15,7 @@ export const intervalUntilTimeout = async (
           resolve(maybeTrueish);
         }
         // eslint-disable-next-line
-      } catch (e) {}
+      } catch {}
     }, interval);
     setTimeout(() => {
       clearInterval(intervalHandle);

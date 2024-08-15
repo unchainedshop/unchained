@@ -446,7 +446,7 @@ const Datatrans: IPaymentAdapter = {
             } else {
               settledTransaction = result as StatusResponseSuccess;
             }
-          } catch (e) {
+          } catch {
             await cancel({ transactionId, refno: settledTransaction.refno });
             logger.error(
               `Transaction declined / Transaction ID ${transactionId} authorization cancelled`,

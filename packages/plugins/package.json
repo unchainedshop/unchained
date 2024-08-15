@@ -85,7 +85,7 @@
   },
   "devDependencies": {
     "@redis/client": "^1.6.0",
-    "@types/node": "^20.14.13",
+    "@types/node": "^20.14.15",
     "@unchainedshop/api": "^3.0.0-alpha2",
     "@unchainedshop/core-delivery": "^3.0.0-alpha2",
     "@unchainedshop/core-enrollments": "^3.0.0-alpha2",
@@ -112,7 +112,7 @@
     "open": "^10.1.0",
     "postfinancecheckout": "^4.5.0",
     "request": "^2.88.2",
-    "ts-jest": "^29.2.3",
+    "ts-jest": "^29.2.4",
     "typescript": "^5.5.4",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

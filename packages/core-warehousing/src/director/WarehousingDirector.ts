@@ -47,7 +47,7 @@ export const WarehousingDirector: IWarehousingDirector = {
         try {
           const error = adapter.configurationError();
           return error;
-        } catch (error) {
+        } catch {
           return WarehousingError.ADAPTER_NOT_FOUND;
         }
       },

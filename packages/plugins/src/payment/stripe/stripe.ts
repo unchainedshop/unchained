@@ -35,7 +35,7 @@ export const upsertCustomer = async ({ userId, name, email }): Promise<string> =
     }
 
     return existingCustomer.id;
-  } catch (e) {
+  } catch {
     const customer = await stripe.customers.create({
       metadata: {
         userId,

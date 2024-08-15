@@ -4,6 +4,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema.js';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
 import { IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
+import { DeliveryDirector } from '@unchainedshop/core-delivery';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
 
 export type OrderDeliveriesModule = {
@@ -139,6 +140,22 @@ export const configureOrderDeliveriesModule = ({
 
       return !isAutoReleaseAllowed;
     },
+
+    activePickUpLocation: async (orderDelivery, unchainedAPI) => {
+      const { orderPickUpLocationId } = orderDelivery.context || {};
+
+      const provider = await unchainedAPI.modules.delivery.findProvider({
+        deliveryProviderId: orderDelivery.deliveryProviderId,
+      });
+      const director = await DeliveryDirector.actions(
+        provider,
+        { orderDelivery: orderDelivery },
+        unchainedAPI,
+      );
+
+      return director.pickUpLocationById(orderPickUpLocationId);
+    },
+
     isBlockingOrderFullfillment: (orderDelivery) => {
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
       return true;
