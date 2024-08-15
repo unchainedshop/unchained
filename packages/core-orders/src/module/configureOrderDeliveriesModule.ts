@@ -1,6 +1,5 @@
 import { ModuleMutations } from '@unchainedshop/types/core.js';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
-
 import { OrdersModule } from '@unchainedshop/types/orders.js';
 import {
   OrderDeliveriesModule,
@@ -10,6 +9,7 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log } from '@unchainedshop/logger';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema.js';
+import { DeliveryDirector } from '@unchainedshop/core-delivery';
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
 
@@ -98,6 +98,22 @@ export const configureOrderDeliveriesModule = ({
 
       return !isAutoReleaseAllowed;
     },
+
+    activePickUpLocation: async (orderDelivery, unchainedAPI) => {
+      const { orderPickUpLocationId } = orderDelivery.context || {};
+
+      const provider = await unchainedAPI.modules.delivery.findProvider({
+        deliveryProviderId: orderDelivery.deliveryProviderId,
+      });
+      const director = await DeliveryDirector.actions(
+        provider,
+        { orderDelivery: orderDelivery },
+        unchainedAPI,
+      );
+
+      return director.pickUpLocationById(orderPickUpLocationId);
+    },
+
     isBlockingOrderFullfillment: (orderDelivery) => {
       if (orderDelivery.status === OrderDeliveryStatus.DELIVERED) return false;
       return true;

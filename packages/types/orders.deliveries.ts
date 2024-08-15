@@ -5,6 +5,7 @@ import { IDeliveryPricingSheet } from './delivery.pricing.js';
 import { Order } from './orders.js';
 import { OrderDiscount } from './orders.discounts.js';
 import { OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
+import { DeliveryLocation } from './delivery.js';
 
 export enum OrderDeliveryStatus {
   OPEN = 'OPEN', // Null value is mapped to OPEN status
@@ -56,6 +57,11 @@ export type OrderDeliveriesModule = {
     params: { order: Order; deliveryContext?: any },
     unchainedAPI: UnchainedCore,
   ) => Promise<OrderDelivery>;
+
+  activePickUpLocation: (
+    orderDelivery: OrderDelivery,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<DeliveryLocation | null>;
 
   updateContext: (
     orderDeliveryId: string,
