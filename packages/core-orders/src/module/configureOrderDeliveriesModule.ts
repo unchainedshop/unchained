@@ -3,7 +3,7 @@ import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedsh
 import { emit, registerEvents } from '@unchainedshop/events';
 import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema.js';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
-import { IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
+import { DeliveryLocation, IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
 import { DeliveryDirector } from '@unchainedshop/core-delivery';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
 
@@ -37,6 +37,11 @@ export type OrderDeliveriesModule = {
   delete: (orderDeliveryId: string) => Promise<number>;
 
   markAsDelivered: (orderDelivery: OrderDelivery) => Promise<void>;
+
+  activePickUpLocation: (
+    orderDelivery: OrderDelivery,
+    unchainedAPI: UnchainedCore,
+  ) => Promise<DeliveryLocation | null>;
 
   send: (
     orderDelivery: OrderDelivery,
