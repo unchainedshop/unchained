@@ -1,6 +1,4 @@
 # Unchained Engine vNEXT
-- Add `Query.validateVerifyEmailToken` that can be used to verify if a token is valid for use when verifying email
-- Add `Query.validateResetPasswordToken` that can be used to verify if a token is valid for use on password reset request
 
 ## Removing the auth fat of unchained
 We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and keep up with the ever increasing complexity of auth mechanisms. At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver.
@@ -25,9 +23,11 @@ We will keep supporting the following auth-strategies out of the box that we con
 
 ## Patch
 
-# Unchained Engine v2.8
+# Unchained Engine v2.13
 
 ## Minor
+- Add `Query.validateVerifyEmailToken` that can be used to verify if a token is valid for use when verifying email
+- Add `Query.validateResetPasswordToken` that can be used to verify if a token is valid for use on password reset request
 - Re-Scheduling Bahvior of auto-scheduled work has been refined (https://github.com/unchainedshop/unchained/issues/565) and the GraphQL API now contains "Work.autoscheduled" in order for the Admin UI to display auto-scheduled work.
 - Add `Query.validateVerifyEmailToken` that can be used to verify if a token is valid for use when verifying email
 - Add `Query.validateResetPasswordToken` that can be used to verify if a token is valid for use on password reset request
