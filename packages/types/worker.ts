@@ -12,10 +12,10 @@ export enum WorkStatus {
 
 export type WorkerReport = {
   type: string;
-  createdCount: number;
+  newCount: number;
   errorCount: number;
   successCount: number;
-  startedCount: number;
+  startCount: number;
   deletedCount: number;
 };
 

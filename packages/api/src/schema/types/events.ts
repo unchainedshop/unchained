@@ -12,8 +12,8 @@ export default [
     }
 
     type EventStatistics {
-      event: EventType!
-      count: Int!
+      type: EventType!
+      emitCount: Int!
     }
   `,
 ];

@@ -118,8 +118,8 @@ const defaultSort: Array<{ key: string; value: SortDirection }> = [
 ];
 const normalizeWorkQueueAggregateResult = (data = []): WorkerReport[] => {
   const statusToFieldMap = {
-    NEW: 'createdCount',
-    ALLOCATED: 'startedCount',
+    NEW: 'newCount',
+    ALLOCATED: 'startCount',
     FAILED: 'errorCount',
     SUCCESS: 'successCount',
     DELETED: 'deletedCount',

@@ -83,6 +83,7 @@ export const configureEventsModule = async ({
       const count = await Events.countDocuments(buildFindSelector(query));
       return count;
     },
+
     getReport: async ({ from, to, types } = { from: null, to: null, types: null }) => {
       const pipeline = [];
       const matchConditions = [];
@@ -124,14 +125,14 @@ export const configureEventsModule = async ({
           {
             $group: {
               _id: '$type',
-              count: { $sum: 1 },
+              emitCount: { $sum: 1 },
             },
           },
           {
             $project: {
               _id: 0,
-              event: '$_id',
-              count: 1,
+              type: '$_id',
+              emitCount: 1,
             },
           },
         ],

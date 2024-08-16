@@ -65,8 +65,8 @@ export default [
 
     type WorkStatistics {
       type: WorkType!
-      createdCount: Int!
-      startedCount: Int!
+      newCount: Int!
+      startCount: Int!
       errorCount: Int!
       successCount: Int!
     }

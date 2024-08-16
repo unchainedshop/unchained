@@ -9,7 +9,6 @@ import { OrderPositionsModule } from './orders.positions.js';
 import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 import { Product } from './products.js';
 import { User } from './user.js';
-import { info } from 'console';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -20,7 +19,7 @@ export enum OrderStatus {
 
 export type OrderReport = {
   newCount: number;
-  orderCount: number;
+  checkoutCount: number;
   rejectCount: number;
   confirmCount: number;
   fulfillCount: number;

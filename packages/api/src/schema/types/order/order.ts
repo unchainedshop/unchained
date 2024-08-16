@@ -84,7 +84,7 @@ export default [
 
     type OrderStatistics {
       newCount: Int!
-      orderCount: Int!
+      checkoutCount: Int!
       rejectCount: Int!
       confirmCount: Int!
       fulfillCount: Int!

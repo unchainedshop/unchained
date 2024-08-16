@@ -11,8 +11,8 @@ export type Event = {
 } & TimestampFields;
 
 export type EventReport = {
-  count: number;
-  event: string;
+  emitCount: number;
+  type: string;
 };
 
 export type EventQuery = {

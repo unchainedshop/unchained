@@ -31,7 +31,7 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
 const normalizeOrderAggregateResult = (data = {}): OrderReport => {
   const statusToFieldMap = {
     newCount: 0,
-    orderCount: 0,
+    checkoutCount: 0,
     rejectCount: 0,
     confirmCount: 0,
     fulfillCount: 0,
@@ -80,7 +80,6 @@ export const configureOrdersModuleQueries = ({
     },
 
     getReport: async ({ from, to } = { from: null, to: null }) => {
-
       const selector: any = { $exists: true };
       if (from || to) {
         if (from) {
@@ -96,7 +95,7 @@ export const configureOrdersModuleQueries = ({
       const pipeline = [
         {
           $facet: {
-            orderCount: [
+            checkoutCount: [
               {
                 $match: {
                   ordered: selector,
@@ -140,7 +139,7 @@ export const configureOrdersModuleQueries = ({
         },
         {
           $project: {
-            orderCount: { $arrayElemAt: ['$orderCount.count', 0] },
+            checkoutCount: { $arrayElemAt: ['$checkoutCount.count', 0] },
             fulfillCount: { $arrayElemAt: ['$fulfillCount.count', 0] },
             rejectCount: { $arrayElemAt: ['$rejectCount.count', 0] },
             newCount: { $arrayElemAt: ['$newCount.count', 0] },
