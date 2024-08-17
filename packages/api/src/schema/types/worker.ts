@@ -69,6 +69,7 @@ export default [
       startCount: Int!
       errorCount: Int!
       successCount: Int!
+      deleteCount: Int!
     }
   `,
 ];

@@ -16,7 +16,7 @@ export type WorkerReport = {
   errorCount: number;
   successCount: number;
   startCount: number;
-  deletedCount: number;
+  deleteCount: number;
 };
 
 export type Work = {

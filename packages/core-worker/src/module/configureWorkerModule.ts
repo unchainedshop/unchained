@@ -122,13 +122,13 @@ const normalizeWorkQueueAggregateResult = (data = []): WorkerReport[] => {
     ALLOCATED: 'startCount',
     FAILED: 'errorCount',
     SUCCESS: 'successCount',
-    DELETED: 'deletedCount',
+    DELETED: 'deleteCount',
   };
 
   return data.map((item) => {
-    const workStatistics = {
+    const workStatistics: WorkerReport = {
       type: item.type,
-      ...Object.values(statusToFieldMap).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+      ...(Object.values(statusToFieldMap).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as any),
     };
 
     item.statuses.forEach(({ status, count }) => {
@@ -136,6 +136,10 @@ const normalizeWorkQueueAggregateResult = (data = []): WorkerReport[] => {
         workStatistics[statusToFieldMap[status]] = count;
       }
     });
+    const { errorCount, successCount, deleteCount } = workStatistics;
+
+    workStatistics.startCount += errorCount + successCount + deleteCount;
+    workStatistics.newCount += workStatistics.startCount;
 
     return workStatistics;
   }) as unknown as WorkerReport[];
