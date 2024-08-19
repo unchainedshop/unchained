@@ -193,8 +193,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return credentials.userId === userId;
   };
 
-  role.allow(actions.viewEvent, false);
-  role.allow(actions.viewEvents, false);
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);

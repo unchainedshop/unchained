@@ -62,5 +62,14 @@ export default [
       # If true, the work item was scheduled by the autoscheduling system
       autoscheduled: Boolean
     }
+
+    type WorkStatistics {
+      type: WorkType!
+      newCount: Int!
+      startCount: Int!
+      errorCount: Int!
+      successCount: Int!
+      deleteCount: Int!
+    }
   `,
 ];

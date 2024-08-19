@@ -8,6 +8,11 @@ import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { EventsSchema } from '../db/EventsSchema.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
 
+export type EventReport = {
+  emitCount: number;
+  type: string;
+};
+
 export type EventQuery = {
   types?: Array<string>;
   queryString?: string;
@@ -41,6 +46,7 @@ export interface EventsModule extends ModuleCreateMutation<Event> {
   type: (event: Event) => string;
 
   count: (query: EventQuery) => Promise<number>;
+  getReport: (params?: { from?: Date; to?: Date; types?: string[] }) => Promise<EventReport[]>;
 }
 
 export const configureEventsModule = async ({
@@ -80,6 +86,63 @@ export const configureEventsModule = async ({
     count: async (query) => {
       const count = await Events.countDocuments(buildFindSelector(query));
       return count;
+    },
+
+    getReport: async ({ from, to, types } = { from: null, to: null, types: null }) => {
+      const pipeline = [];
+      const matchConditions = [];
+      // build date filter based on provided values it can be a range if both to and from is supplied
+      // a upper or lowe limit if either from or to is provided
+      // or all if none is provided
+      if (from || to) {
+        const dateConditions = [];
+        if (from) {
+          const fromDate = new Date(from);
+          dateConditions.push({
+            $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
+          });
+        }
+        if (to) {
+          const toDate = new Date(to);
+          dateConditions.push({
+            $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
+          });
+        }
+        if (dateConditions.length > 0) {
+          matchConditions.push({ $and: dateConditions });
+        }
+      }
+      // build types filter if type is provided or ignore types if it is not provided
+      if (types && Array.isArray(types) && types.length) {
+        matchConditions.push({ type: { $in: types } });
+      }
+      if (matchConditions.length > 0) {
+        pipeline.push({
+          $match: {
+            $and: matchConditions,
+          },
+        });
+      }
+
+      pipeline.push(
+        ...[
+          {
+            $group: {
+              _id: '$type',
+              emitCount: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              type: '$_id',
+              emitCount: 1,
+            },
+          },
+        ],
+      );
+
+      return Events.aggregate(pipeline).toArray() as Promise<EventReport[]>;
     },
   };
 };
