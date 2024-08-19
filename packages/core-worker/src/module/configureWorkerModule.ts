@@ -1,6 +1,6 @@
 import os from 'os';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/types/core.js';
-import { Work, WorkerModule, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
+import { Work, WorkerModule, WorkerReport, WorkerSettingsOptions } from '@unchainedshop/types/worker.js';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
@@ -21,6 +21,29 @@ const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
 const logger = createLogger('unchained:core-worker');
 
+const WORK_STATUS_FILTER_MAP = {
+  [WorkStatus.DELETED]: { deleted: { $exists: true } },
+  [WorkStatus.NEW]: {
+    started: { $exists: false },
+    deleted: { $exists: false },
+  },
+  [WorkStatus.ALLOCATED]: {
+    started: { $exists: true },
+    finished: { $exists: false },
+    deleted: { $exists: false },
+  },
+  [WorkStatus.SUCCESS]: {
+    finished: { $exists: true },
+    success: true,
+    deleted: { $exists: false },
+  },
+  [WorkStatus.FAILED]: {
+    finished: { $exists: true },
+    success: false,
+    deleted: { $exists: false },
+  },
+};
+
 export const buildQuerySelector = ({
   created,
   scheduled,
@@ -37,30 +60,8 @@ export const buildQuerySelector = ({
   queryString?: string;
   types?: Array<string>;
 }) => {
-  const filterMap = {
-    [WorkStatus.DELETED]: { deleted: { $exists: true } },
-    [WorkStatus.NEW]: {
-      started: { $exists: false },
-      deleted: { $exists: false },
-    },
-    [WorkStatus.ALLOCATED]: {
-      started: { $exists: true },
-      finished: { $exists: false },
-      deleted: { $exists: false },
-    },
-    [WorkStatus.SUCCESS]: {
-      finished: { $exists: true },
-      success: true,
-      deleted: { $exists: false },
-    },
-    [WorkStatus.FAILED]: {
-      finished: { $exists: true },
-      success: false,
-      deleted: { $exists: false },
-    },
-  };
   const statusQuery = {
-    $or: Object.entries(filterMap).reduce(
+    $or: Object.entries(WORK_STATUS_FILTER_MAP).reduce(
       (acc, [key, filter]) => (status?.includes(key as WorkStatus) ? [...acc, filter] : acc),
       [],
     ),
@@ -91,13 +92,58 @@ export const buildQuerySelector = ({
   return { ...query, ...rest };
 };
 
+const convertFilterMapToPipelineBranches = () => {
+  return Object.entries(WORK_STATUS_FILTER_MAP).map(([status, conditions]) => {
+    const caseConditions = Object.entries(conditions).map(([field, condition]) => {
+      if (typeof condition === 'object' && '$exists' in condition) {
+        return condition.$exists
+          ? { $ne: [{ $type: `$${field}` }, 'missing'] }
+          : { $eq: [{ $type: `$${field}` }, 'missing'] };
+      }
+      return { $eq: [`$${field}`, condition] };
+    });
+
+    return {
+      case: caseConditions.length > 1 ? { $and: caseConditions } : caseConditions[0],
+      then: status,
+    };
+  });
+};
+
 const defaultSort: Array<{ key: string; value: SortDirection }> = [
   { key: 'started', value: SortDirection.DESC },
   { key: 'priority', value: SortDirection.DESC },
   { key: 'originalWorkId', value: SortDirection.ASC },
   { key: 'created', value: SortDirection.ASC },
 ];
+const normalizeWorkQueueAggregateResult = (data = []): WorkerReport[] => {
+  const statusToFieldMap = {
+    NEW: 'newCount',
+    ALLOCATED: 'startCount',
+    FAILED: 'errorCount',
+    SUCCESS: 'successCount',
+    DELETED: 'deleteCount',
+  };
 
+  return data.map((item) => {
+    const workStatistics: WorkerReport = {
+      type: item.type,
+      ...(Object.values(statusToFieldMap).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as any),
+    };
+
+    item.statuses.forEach(({ status, count }) => {
+      if (statusToFieldMap[status]) {
+        workStatistics[statusToFieldMap[status]] = count;
+      }
+    });
+    const { errorCount, successCount, deleteCount } = workStatistics;
+
+    workStatistics.startCount += errorCount + successCount + deleteCount;
+    workStatistics.newCount += workStatistics.startCount;
+
+    return workStatistics;
+  }) as unknown as WorkerReport[];
+};
 export const configureWorkerModule = async ({
   db,
   options,
@@ -492,6 +538,85 @@ export const configureWorkerModule = async ({
           }),
         ),
       );
+    },
+
+    getReport: async ({ types, from, to } = { types: null, from: null, to: null }) => {
+      const pipeline = [];
+      const matchConditions = [];
+      // build date filter based on provided values it can be a range if both to and from is supplied
+      // a upper or lowe limit if either from or to is provided
+      // or all if none is provided
+      if (from || to) {
+        const dateConditions = [];
+        if (from) {
+          const fromDate = new Date(from);
+          dateConditions.push({
+            $or: [{ created: { $gte: fromDate } }, { updated: { $gte: fromDate } }],
+          });
+        }
+        if (to) {
+          const toDate = new Date(to);
+          dateConditions.push({
+            $or: [{ created: { $lte: toDate } }, { updated: { $lte: toDate } }],
+          });
+        }
+        if (dateConditions.length > 0) {
+          matchConditions.push({ $and: dateConditions });
+        }
+      }
+      // build types filter if type is provided or ignore types if it is not provided
+      if (types && Array.isArray(types) && types.length) {
+        matchConditions.push({ type: { $in: types } });
+      }
+      if (matchConditions.length > 0) {
+        pipeline.push({
+          $match: {
+            $and: matchConditions,
+          },
+        });
+      }
+      pipeline.push(
+        {
+          $addFields: {
+            status: {
+              $switch: {
+                branches: convertFilterMapToPipelineBranches(),
+                default: 'UNKNOWN',
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              type: '$type',
+              status: '$status',
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $group: {
+            _id: '$_id.type',
+            statuses: {
+              $push: {
+                status: '$_id.status',
+                count: '$count',
+              },
+            },
+          },
+        },
+
+        {
+          $project: {
+            _id: 0,
+            type: '$_id',
+            statuses: 1,
+          },
+        },
+      );
+
+      return normalizeWorkQueueAggregateResult(await WorkQueue.aggregate(pipeline).toArray()) as any;
     },
   };
 };

@@ -10,5 +10,10 @@ export default [
       payload: JSON
       created: Timestamp!
     }
+
+    type EventStatistics {
+      type: EventType!
+      emitCount: Int!
+    }
   `,
 ];

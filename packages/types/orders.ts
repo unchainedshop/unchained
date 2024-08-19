@@ -9,7 +9,6 @@ import { OrderPositionsModule } from './orders.positions.js';
 import { IOrderPricingSheet, OrderPrice, OrderPricingDiscount } from './orders.pricing.js';
 import { Product } from './products.js';
 import { User } from './user.js';
-import { info } from 'console';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -17,6 +16,14 @@ export enum OrderStatus {
   FULLFILLED = 'FULLFILLED',
   REJECTED = 'REJECTED',
 }
+
+export type OrderReport = {
+  newCount: number;
+  checkoutCount: number;
+  rejectCount: number;
+  confirmCount: number;
+  fulfillCount: number;
+};
 
 export type Order = {
   _id?: string;
@@ -80,6 +87,7 @@ export interface OrderQueries {
   ) => Promise<Array<Order>>;
   count: (query: OrderQuery) => Promise<number>;
   orderExists: (params: { orderId: string }) => Promise<boolean>;
+  getReport: (params?: { from?: Date; to?: Date }) => Promise<OrderReport>;
 }
 export interface OrderTransformations {
   discounted: (
