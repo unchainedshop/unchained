@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
-    "graphql-yoga": "^5.6.3"
+    "graphql-yoga": "^5.7.0"
   },
   "optionalDependencies": {
     "connect-mongo": "~5",
@@ -64,7 +64,7 @@
     "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/node": "^22.3.0",
+    "@types/node": "^22.4.1",
     "connect-mongo": "^5.1.0",
     "express": "^4.19.2",
     "express-session": "^1.18.0",

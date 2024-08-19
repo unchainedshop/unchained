@@ -34,7 +34,7 @@
     "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@graphql-yoga/plugin-response-cache": "^3.8.3",
+    "@graphql-yoga/plugin-response-cache": "^3.9.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@unchainedshop/api": "^3.0.0-alpha2",
     "@unchainedshop/core-delivery": "^3.0.0-alpha2",
@@ -65,7 +65,7 @@
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@types/node": "^22.3.0",
+    "@types/node": "^22.4.1",
     "mongodb-memory-server": "^10.0.0",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",

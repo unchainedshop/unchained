@@ -80,7 +80,7 @@ export const WorkerDirector: IWorkerDirector = {
       workItemConfiguration,
     );
     log(
-      `WorkerDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${workItemConfiguration.schedule}`,
+      `WorkerDirector -> Configured ${adapter.type} ${adapter.key}@${adapter.version} (${adapter.label}) for Autorun at ${JSON.stringify(workItemConfiguration.schedule?.schedules)}`,
     );
   },
 

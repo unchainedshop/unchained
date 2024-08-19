@@ -50,7 +50,7 @@
     "@shelf/jest-mongodb": "^4.3.2",
     "@types/jest": "^29.5.12",
     "@types/lodash.clone": "^4.5.9",
-    "@types/node": "^22.3.0",
+    "@types/node": "^22.4.1",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^8.1.0",
     "cross-env": "^7.0.3",
