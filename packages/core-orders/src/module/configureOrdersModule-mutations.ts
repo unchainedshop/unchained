@@ -31,6 +31,7 @@ export interface OrderMutations {
   updateContact: (orderId: string, contact: Contact) => Promise<Order>;
   updateContext: (orderId: string, context: any) => Promise<Order>;
   updateCalculationSheet: (orderId: string, calculation) => Promise<Order>;
+  deleteUserOrders: (userId: string) => Promise<number>;
 }
 
 const ORDER_EVENTS: string[] = [
@@ -249,6 +250,10 @@ export const configureOrderModuleMutations = ({
         return result.value;
       }
       return null;
+    },
+    deleteUserOrders: async (userId) => {
+      const deletedUserOrdersResult = await Orders.deleteMany({ userId });
+      return deletedUserOrdersResult.deletedCount;
     },
   };
 };

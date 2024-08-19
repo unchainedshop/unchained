@@ -61,6 +61,7 @@ export type OrderPositionsModule = {
     params: { order: Order; product: Product },
     unchainedAPI,
   ) => Promise<OrderPosition>;
+  deleteUserOrderPositionsByOrderIds: (orderIds: string[]) => Promise<number>;
 };
 
 const ORDER_POSITION_EVENTS: string[] = [
@@ -348,6 +349,10 @@ export const configureOrderPositionsModule = ({
       await emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
 
       return upsertedOrderPosition;
+    },
+    deleteUserOrderPositionsByOrderIds: async (orderIds) => {
+      const deleteUserOrdersResult = await OrderPositions.deleteMany({ orderId: { $in: orderIds } });
+      return deleteUserOrdersResult.deletedCount;
     },
   };
 };
