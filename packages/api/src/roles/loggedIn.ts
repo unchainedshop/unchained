@@ -193,8 +193,6 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return credentials.userId === userId;
   };
 
-  role.allow(actions.viewEvent, false);
-  role.allow(actions.viewEvents, false);
   role.allow(actions.viewUser, isMyself);
   role.allow(actions.viewUserRoles, isMyself);
   role.allow(actions.viewUserOrders, isMyself);
@@ -229,7 +227,5 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
   role.allow(actions.stopImpersonation, () => true);
-  role.allow(actions.impersonate, () => false);
   role.allow(actions.confirmMediaUpload, () => true);
-  role.allow(actions.viewStatistics, () => false);
 };
