@@ -2,9 +2,9 @@ import { UnchainedCore } from '@unchainedshop/core';
 import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
-import { DeliveryLocation, IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
-import { DeliveryDirector } from '@unchainedshop/core-delivery';
+import { DeliveryDirector, DeliveryLocation, IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 
 export type OrderDeliveriesModule = {
   // Queries
@@ -59,6 +59,7 @@ export type OrderDeliveriesModule = {
     orderDelivery: OrderDelivery,
     unchainedAPI: UnchainedCore,
   ) => Promise<OrderDelivery>;
+  deleteUserOrderDeliveriesByOrderIds: (orderIds: string[]) => Promise<number>;
 };
 
 const ORDER_DELIVERY_EVENTS: string[] = ['ORDER_DELIVER', 'ORDER_UPDATE_DELIVERY'];
@@ -283,6 +284,10 @@ export const configureOrderDeliveriesModule = ({
           returnDocument: 'after',
         },
       );
+    },
+    deleteUserOrderDeliveriesByOrderIds: async (orderIds) => {
+      const deleteUserOrdersResult = await OrderDeliveries.deleteMany({ orderId: { $in: orderIds } });
+      return deleteUserOrdersResult.deletedCount;
     },
   };
 };

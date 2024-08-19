@@ -18,6 +18,39 @@ import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUs
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
 import type { Address, Contact } from '@unchainedshop/mongodb';
+import crypto from 'crypto';
+
+const isDate = (value) => {
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime());
+};
+
+function maskString(value) {
+  if (isDate(value)) return value;
+  return crypto
+    .createHash('sha256')
+    .update(JSON.stringify([value, new Date().getTime()]))
+    .digest('hex');
+}
+
+const maskUserPropertyValues = (user) => {
+  if (typeof user !== 'object' || user === null) {
+    return user;
+  }
+  if (Array.isArray(user)) {
+    return user.map((item) => maskUserPropertyValues(item));
+  }
+  const maskedUser = {};
+  Object.keys(user).forEach((key) => {
+    if (typeof user[key] === 'string' || isDate(user[key])) {
+      maskedUser[key] = maskString(user[key]);
+    } else {
+      maskedUser[key] = maskUserPropertyValues(user[key]);
+    }
+  });
+
+  return maskedUser;
+};
 
 export type UsersModule = {
   // Submodules
@@ -91,6 +124,10 @@ export type UsersModule = {
     },
   ) => Promise<void>;
   removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
+  deleteAccount: (params: { userId?: string }, context: UnchainedCore) => Promise<boolean>;
+  hashPassword(password: string): Promise<{
+    pbkdf2: string;
+  }>;
 };
 
 const USER_EVENTS = [
@@ -135,9 +172,7 @@ export const configureUsersModule = async ({
   db,
   options,
   migrationRepository,
-}: ModuleInput<UserSettingsOptions>) => {
-  userSettings.configureSettings(options || {}, db);
-
+}: ModuleInput<UserSettingsOptions>): Promise<UsersModule> => {
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
 
@@ -816,6 +851,17 @@ export const configureUsersModule = async ({
         } as mongodb.UpdateFilter<User>,
         {},
       );
+    },
+    deleteAccount: async ({ userId }, context) => {
+      if (!options?.enableRightToBeForgotten) throw Error('Right to be forgotten is disabled');
+      const { modules } = context;
+      const { _id, ...user } = await modules.users.findUserById(userId);
+      delete user?.services;
+
+      const maskedUserData = maskUserPropertyValues({ ...user, meta: null });
+      await modules.bookmarks.deleteByUserId(userId);
+      await modules.users.updateUser({ _id }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
+      return true;
     },
   };
 };
