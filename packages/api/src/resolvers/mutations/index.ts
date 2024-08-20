@@ -313,5 +313,5 @@ export default {
   signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCheckout,
   ),
-  deleteAccount,
+  deleteAccount: acl(actions.deleteAccount)(deleteAccount),
 };

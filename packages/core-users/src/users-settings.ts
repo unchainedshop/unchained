@@ -4,7 +4,6 @@ import { mongodb } from '@unchainedshop/mongodb';
 export interface UserSettingsOptions {
   mergeUserCartsOnLogin?: boolean;
   autoMessagingAfterUserCreation?: boolean;
-  enableRightToBeForgotten?: boolean;
   validateEmail?: (email: string) => Promise<boolean>;
   validateUsername?: (username: string) => Promise<boolean>;
   validateNewUser?: (user: Partial<User>) => Promise<User>;
@@ -13,7 +12,6 @@ export interface UserSettingsOptions {
 export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
-  enableRightToBeForgotten?: boolean;
   validateEmail: (email: string) => Promise<boolean>;
   validateUsername: (username: string) => Promise<boolean>;
   validateNewUser: (user: Partial<User>) => Promise<User>;
