@@ -853,7 +853,6 @@ export const configureUsersModule = async ({
       );
     },
     deleteAccount: async ({ userId }, context) => {
-      if (!options?.enableRightToBeForgotten) throw Error('Right to be forgotten is disabled');
       const { modules } = context;
       const { _id, ...user } = await modules.users.findUserById(userId);
       delete user?.services;

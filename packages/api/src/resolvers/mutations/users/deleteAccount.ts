@@ -2,9 +2,9 @@ import { log } from '@unchainedshop/logger';
 import { Context } from '../../../types.js';
 
 const deleteAccount = async (_, { userId }, context: Context) => {
-  const { modules, userAgent } = context;
+  const { modules, userAgent, userId: currentUserId } = context;
   log(`mutation deleteAccount ${userId} ${userAgent}`, { userId });
-  await modules.users.deleteAccount({ userId }, context);
+  await modules.users.deleteAccount({ userId: userId || currentUserId }, context);
   return true;
 };
 
