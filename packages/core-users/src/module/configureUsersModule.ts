@@ -165,6 +165,7 @@ export const configureUsersModule = async ({
   options,
   migrationRepository,
 }: ModuleInput<UserSettingsOptions>): Promise<UsersModule> => {
+  userSettings.configureSettings(options || {}, db);
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
 
