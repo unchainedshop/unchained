@@ -44,7 +44,6 @@ export type OrderDiscountsModule = {
   create: (doc: OrderDiscount) => Promise<OrderDiscount>;
   update: (orderDiscountId: string, doc: OrderDiscount) => Promise<OrderDiscount>;
   delete: (orderDiscountId: string, unchainedAPI: UnchainedCore) => Promise<OrderDiscount>;
-  deleteUserOrderDiscountsByOrderIds: (orderIds: string[]) => Promise<number>;
 };
 
 const ORDER_DISCOUNT_EVENTS: string[] = [
@@ -258,10 +257,6 @@ export const configureOrderDiscountsModule = ({
 
       await emit('ORDER_UPDATE_DISCOUNT', { discount });
       return discount;
-    },
-    deleteUserOrderDiscountsByOrderIds: async (orderIds) => {
-      const deleteUserOrdersResult = await OrderDiscounts.deleteMany({ orderId: { $in: orderIds } });
-      return deleteUserOrdersResult.deletedCount;
     },
   };
 };

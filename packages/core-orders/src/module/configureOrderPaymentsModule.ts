@@ -88,7 +88,6 @@ export type OrderPaymentsModule = {
   ) => Promise<OrderPayment>;
 
   updateCalculation: (orderPayment: OrderPayment, unchainedAPI: UnchainedCore) => Promise<OrderPayment>;
-  deleteUserOrderPaymentsByOrderIds: (orderIds: string[]) => Promise<number>;
 };
 
 const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
@@ -105,9 +104,9 @@ export const buildFindByContextDataSelector = (context: any): mongodb.Filter<Ord
     (currentSelector, key) =>
       context[key] !== undefined
         ? {
-            ...currentSelector,
-            [`context.${key}`]: context[key],
-          }
+          ...currentSelector,
+          [`context.${key}`]: context[key],
+        }
         : currentSelector,
     {},
   );
@@ -417,10 +416,6 @@ export const configureOrderPaymentsModule = ({
           returnDocument: 'after',
         },
       );
-    },
-    deleteUserOrderPaymentsByOrderIds: async (orderIds) => {
-      const deleteUserOrdersResult = await OrderPayments.deleteMany({ orderId: { $in: orderIds } });
-      return deleteUserOrdersResult.deletedCount;
     },
   };
 };
