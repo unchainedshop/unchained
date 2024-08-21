@@ -122,7 +122,7 @@ export type UsersModule = {
     },
   ) => Promise<void>;
   removePushSubscription: (userId: string, p256dh: string) => Promise<void>;
-  deleteAccount: (params: { userId?: string }, context: UnchainedCore) => Promise<boolean>;
+  deleteUser: (params: { userId?: string }, context: UnchainedCore) => Promise<boolean>;
   hashPassword(password: string): Promise<{
     pbkdf2: string;
   }>;
@@ -849,7 +849,7 @@ export const configureUsersModule = async ({
         {},
       );
     },
-    deleteAccount: async ({ userId }, context) => {
+    deleteUser: async ({ userId }, context) => {
       const { modules } = context;
       const { _id, ...user } = await modules.users.findUserById(userId);
       delete user?.services;

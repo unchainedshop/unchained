@@ -251,9 +251,5 @@ export const configureOrderModuleMutations = ({
       }
       return null;
     },
-    deleteUserOrders: async (userId) => {
-      const deletedUserOrdersResult = await Orders.deleteMany({ userId });
-      return deletedUserOrdersResult.deletedCount;
-    },
   };
 };

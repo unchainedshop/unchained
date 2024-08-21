@@ -271,9 +271,5 @@ export const configureOrderDeliveriesModule = ({
         },
       );
     },
-    deleteUserOrderDeliveriesByOrderIds: async (orderIds) => {
-      const deleteUserOrdersResult = await OrderDeliveries.deleteMany({ orderId: { $in: orderIds } });
-      return deleteUserOrdersResult.deletedCount;
-    },
   };
 };
