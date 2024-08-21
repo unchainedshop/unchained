@@ -151,6 +151,7 @@ import rejectOrder from './orders/rejectOrder.js';
 import removePushSubscription from './users/removePushSubscription.js';
 import addPushSubscription from './users/addPushSubscription.js';
 import deleteUser from './users/deleteUser.js';
+import deleteUserProductReviews from './products/deleteUserProductReviews.js';
 
 export default {
   logout: acl(actions.logout)(logout),
@@ -314,4 +315,5 @@ export default {
     signPaymentProviderForCheckout,
   ),
   deleteUser: acl(actions.deleteUser)(deleteUser),
+  deleteUserProductReviews,
 };
