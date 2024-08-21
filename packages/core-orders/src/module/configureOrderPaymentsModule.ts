@@ -96,9 +96,9 @@ export const buildFindByContextDataSelector = (context: any): mongodb.Filter<Ord
     (currentSelector, key) =>
       context[key] !== undefined
         ? {
-          ...currentSelector,
-          [`context.${key}`]: context[key],
-        }
+            ...currentSelector,
+            [`context.${key}`]: context[key],
+          }
         : currentSelector,
     {},
   );

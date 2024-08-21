@@ -174,6 +174,25 @@ export const configureUsersModule = async ({
 
   const webAuthn = await configureUsersWebAuthnModule({ db, options });
 
+  const findUserById = async (userId: string): Promise<User> => {
+    if (!userId) return null;
+    return Users.findOne(generateDbFilterById(userId), {});
+  };
+  const updateUser = async (
+    selector: mongodb.Filter<User>,
+    modifier: mongodb.UpdateFilter<User>,
+    updateOptions?: mongodb.FindOneAndUpdateOptions,
+  ): Promise<User> => {
+    const user = await Users.findOneAndUpdate(selector, modifier, {
+      ...updateOptions,
+      returnDocument: 'after',
+    });
+    await emit('USER_UPDATE', {
+      user: removeConfidentialServiceHashes(user),
+    });
+    return user;
+  };
+
   return {
     // Queries
     webAuthn,
@@ -181,12 +200,7 @@ export const configureUsersModule = async ({
       const userCount = await Users.countDocuments(buildFindSelector(query));
       return userCount;
     },
-
-    async findUserById(userId: string): Promise<User> {
-      if (!userId) return null;
-      return Users.findOne(generateDbFilterById(userId), {});
-    },
-
+    findUserById,
     async findUserByUsername(username: string): Promise<User> {
       if (!username) return null;
       return Users.findOne({ username }, {});
@@ -790,22 +804,7 @@ export const configureUsersModule = async ({
       });
       return user;
     },
-
-    updateUser: async (
-      selector: mongodb.Filter<User>,
-      modifier: mongodb.UpdateFilter<User>,
-      updateOptions?: mongodb.FindOneAndUpdateOptions,
-    ): Promise<User> => {
-      const user = await Users.findOneAndUpdate(selector, modifier, {
-        ...updateOptions,
-        returnDocument: 'after',
-      });
-      await emit('USER_UPDATE', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
-    },
-
+    updateUser,
     addPushSubscription: async (
       userId: string,
       subscription: any,
@@ -851,12 +850,11 @@ export const configureUsersModule = async ({
     },
     deleteUser: async ({ userId }, context) => {
       const { modules } = context;
-      const { _id, ...user } = await modules.users.findUserById(userId);
+      const { _id, ...user } = await findUserById(userId);
       delete user?.services;
-
       const maskedUserData = maskUserPropertyValues({ ...user, meta: null });
       await modules.bookmarks.deleteByUserId(userId);
-      await modules.users.updateUser({ _id }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
+      await updateUser({ _id }, { $set: { ...maskedUserData, deleted: new Date() } }, {});
       return true;
     },
   };
