@@ -194,9 +194,9 @@ export const configureProductReviewsModule = async ({
       const deletionResult = await ProductReviews.deleteMany(selector);
 
       await Promise.all(
-        productReviews.map(async (assortmentFilter) =>
+        productReviews.map(async (productReview) =>
           emit('PRODUCT_REMOVE_REVIEW', {
-            assortmentFilterId: assortmentFilter._id,
+            productReviewId: productReview._id,
           }),
         ),
       );

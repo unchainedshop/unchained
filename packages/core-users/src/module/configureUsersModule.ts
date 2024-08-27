@@ -18,7 +18,6 @@ import { configureUsersWebAuthnModule, UsersWebAuthnModule } from './configureUs
 import * as pbkdf2 from './pbkdf2.js';
 import * as sha256 from './sha256.js';
 import type { Address, Contact } from '@unchainedshop/mongodb';
-import crypto from 'crypto';
 
 const isDate = (value) => {
   const date = new Date(value);
@@ -27,10 +26,7 @@ const isDate = (value) => {
 
 function maskString(value) {
   if (isDate(value)) return value;
-  return crypto
-    .createHash('sha256')
-    .update(JSON.stringify([value, new Date().getTime()]))
-    .digest('hex');
+  return sha256.hash(JSON.stringify([value, new Date().getTime()]));
 }
 
 const maskUserPropertyValues = (user) => {

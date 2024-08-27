@@ -315,5 +315,5 @@ export default {
     signPaymentProviderForCheckout,
   ),
   deleteUser: acl(actions.deleteUser)(deleteUser),
-  deleteUserProductReviews,
+  deleteUserProductReviews: acl(actions.deleteUser)(deleteUserProductReviews),
 };
