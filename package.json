@@ -50,9 +50,9 @@
     "@shelf/jest-mongodb": "^4.3.2",
     "@types/jest": "^29.5.12",
     "@types/lodash.clone": "^4.5.9",
-    "@types/node": "^22.4.1",
-    "@typescript-eslint/eslint-plugin": "^8.1.0",
-    "@typescript-eslint/parser": "^8.1.0",
+    "@types/node": "^22.5.1",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "@typescript-eslint/parser": "^8.3.0",
     "cross-env": "^7.0.3",
     "dotenv-extended": "^2.9.0",
     "eslint": "^8.57.0",
@@ -66,7 +66,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.3.3",
     "stripe": "^15.12.0",
-    "ts-jest": "^29.2.4",
+    "ts-jest": "^29.2.5",
     "typescript": "^5.5.4",
     "workspaces-run": "^1.0.2"
   }

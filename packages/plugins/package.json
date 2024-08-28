@@ -80,12 +80,12 @@
     "postfinancecheckout": "^4.1.1",
     "stripe": "^15.12.0",
     "tiny-secp256k1": "^2.2.3",
-    "twilio": "^5.2.2",
+    "twilio": "^5.2.3",
     "web-push": "^3.6.3"
   },
   "devDependencies": {
     "@redis/client": "^1.6.0",
-    "@types/node": "^22.4.1",
+    "@types/node": "^22.5.1",
     "@unchainedshop/api": "^3.0.0-alpha2",
     "@unchainedshop/core-delivery": "^3.0.0-alpha2",
     "@unchainedshop/core-enrollments": "^3.0.0-alpha2",
@@ -112,7 +112,7 @@
     "open": "^10.1.0",
     "postfinancecheckout": "^4.5.0",
     "request": "^2.88.2",
-    "ts-jest": "^29.2.4",
+    "ts-jest": "^29.2.5",
     "typescript": "^5.5.4",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
