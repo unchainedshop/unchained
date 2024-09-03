@@ -6,6 +6,7 @@ import {
   OrderReport,
   OrderStatus,
 } from '@unchainedshop/types/orders.js';
+
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({ includeCarts, status, userId, queryString }: OrderQuery) => {
@@ -16,7 +17,11 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
   }
 
   if (status) {
-    selector.status = status as OrderStatus;
+    if (Array.isArray(status) && status?.length) {
+      selector.status = { $in: status };
+    } else if (typeof status === 'string') {
+      selector.status = status;
+    }
   } else if (!includeCarts) {
     selector.status = { $ne: null }; // TODO: Slow performance! IDXSCAN in common query!
   }
