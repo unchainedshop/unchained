@@ -71,7 +71,7 @@ export type OrderQuery = {
   includeCarts?: boolean;
   queryString?: string;
   userId?: string;
-  status?: OrderStatus | OrderStatus[];
+  status?: OrderStatus[];
 };
 
 export enum OrderDeliveryStatus {
