@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/utils",
-  "version": "2.14.0",
+  "version": "2.14.1",
   "main": "lib/utils-index.js",
   "exports": {
     ".": "./lib/utils-index.js",
