@@ -53,7 +53,7 @@ export type Order = {
 export type OrderQuery = {
   includeCarts?: boolean;
   queryString?: string;
-  status?: string;
+  status?: OrderStatus[];
   userId?: string;
 };
 

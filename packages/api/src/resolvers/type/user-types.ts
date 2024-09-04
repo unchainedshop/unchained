@@ -5,7 +5,7 @@ import { Country } from '@unchainedshop/types/countries.js';
 import { Enrollment, EnrollmentStatus } from '@unchainedshop/types/enrollments.js';
 import { File } from '@unchainedshop/types/files.js';
 import { Language } from '@unchainedshop/types/languages.js';
-import { Order } from '@unchainedshop/types/orders.js';
+import { Order, OrderStatus } from '@unchainedshop/types/orders.js';
 import { PaymentCredentials } from '@unchainedshop/types/payments.js';
 import { Quotation } from '@unchainedshop/types/quotations.js';
 import {
@@ -61,7 +61,7 @@ export interface UserHelperTypes {
       includeCarts: boolean;
       sort?: Array<SortOption>;
       queryString?: string;
-      status?: string;
+      status?: OrderStatus[];
       userId?: string;
       limit?: number;
       offset?: number;

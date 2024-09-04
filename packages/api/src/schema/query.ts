@@ -245,6 +245,7 @@ export default [
         offset: Int = 0
         includeCarts: Boolean = false
         queryString: String
+        status: [OrderStatus!]
         sort: [SortOptionInput!]
       ): [Order!]!
 
