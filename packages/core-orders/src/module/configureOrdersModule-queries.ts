@@ -4,7 +4,6 @@ import {
   OrderQueries,
   OrderQuery,
   OrderReport,
-  OrderStatus,
 } from '@unchainedshop/types/orders.js';
 
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
