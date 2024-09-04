@@ -1,3 +1,31 @@
+# Unchained Engine v2.14
+
+## Minor
+- API: Extend `Mutation.confirmOrder` and `Mutation.rejectOrder` with a comment field. Allows to provide arbitrary data like a rejection reason that you can use in messaging.
+- API: `Product.simulatedPrice` now accepts an optional configuration so you can also provide arbitrary configs to simulate prices
+- API: New Queries have been added to gather basic statistical data: `Query.eventStatistics`, `Query.orderStatistics`, `Query.workStatistics`.
+- API: Add `Mutation.invalidateToken` to manually mark a token as invalidated
+- API: Add `Query.tokens`, `TokenizedProduct.tokens` and `Order.tokens` to get all tokens or tokens related to entitites based on permission. 
+- API: Extend `Token` with new fields: `isInvalidateable`, `accessKey`, `invalidatedDate`, `expiryDate`.
+- API: `Query.orders` and `User.orders` now accept a parameter `status` to filter by order status
+- `setLoginToken` has been changed slightly and needs to have `res` supplied as first param
+- Add new events `TOKEN_OWNERSHIP_CHANGED` and `TOKEN_INVALIDATED`
+- The order deliveries module now exports `activePickUpLocation` to easily get the current pick up location
+- The locale-context has been refactored completely, allowing unchained to properly cache country and currency detection based on a combination of user/http-headers
+- Extend bulk import with a new option `updateShouldUpsertIfIDNotExists` that does what it says it does ^^
+- Remove `lru-cache` for texts because that is beeing done by Apollo Cache
+- Add new `ticketing` package that allows to extend an Unchained project with Event Ticketing
+
+## Patch
+- Unchained now clears an invalid cookie automatically by setting set-cookie with empty value
+- Fix `confirmed` & `rejected` Date beeing set when an order has been rejected, now we only set `rejected` in the rejection case :S. Although the bug seems critical, it only had effects on aggregations and custom code.
+- Fix `externalLinks` crashing
+- Fix a regression not calculation the split amount correctly for Datatrans
+- Fix Stripe descriptor and descriptor prefixes
+- Generally improve performance for queries and mutations across the whole API
+- Improve various Typescript annotations
+
+
 # Unchained Engine v2.8
 
 ## Minor
