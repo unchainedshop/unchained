@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-languages",
-  "version": "2.13.2",
+  "version": "2.14.0",
   "main": "lib/languages-index.js",
   "exports": {
     ".": "./lib/languages-index.js",
@@ -31,15 +31,15 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^2.13.2",
-    "@unchainedshop/utils": "^2.13.2",
+    "@unchainedshop/events": "^2.14.0",
+    "@unchainedshop/utils": "^2.14.0",
     "simpl-schema": "^3.4.6"
   },
   "devDependencies": {
-    "@types/node": "^20.14.15",
-    "@unchainedshop/types": "^2.13.2",
+    "@types/node": "^20.16.4",
+    "@unchainedshop/types": "^2.14.0",
     "jest": "^29.7.0",
-    "ts-jest": "^29.2.4",
+    "ts-jest": "^29.2.5",
     "typescript": "^5.5.4"
   }
 }
