@@ -41,13 +41,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^2.14.0",
-    "@unchainedshop/core-files": "^2.14.0",
-    "@unchainedshop/core-warehousing": "^2.14.0",
-    "@unchainedshop/core-worker": "^2.14.0",
-    "@unchainedshop/events": "^2.14.0",
-    "@unchainedshop/logger": "^2.14.0",
-    "@unchainedshop/mongodb": "^2.14.0"
+    "@unchainedshop/api": "^2.14.1",
+    "@unchainedshop/core-files": "^2.14.1",
+    "@unchainedshop/core-warehousing": "^2.14.1",
+    "@unchainedshop/core-worker": "^2.14.1",
+    "@unchainedshop/events": "^2.14.1",
+    "@unchainedshop/logger": "^2.14.1",
+    "@unchainedshop/mongodb": "^2.14.1"
   },
   "peerDependencies": {
     "@hyperlink/node-apn": "^5.1.4",
@@ -55,6 +55,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.16.4",
-    "@unchainedshop/types": "^2.14.0"
+    "@unchainedshop/types": "^2.14.1"
   }
 }
