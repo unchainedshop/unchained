@@ -131,7 +131,7 @@ export default [
       orders(
         limit: Int
         offset: Int
-        status: [OrderStatus!]!
+        status: [OrderStatus!]
         queryString: String
         sort: [SortOptionInput!]
         includeCarts: Boolean = false
