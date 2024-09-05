@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-currencies",
-  "version": "2.14.1",
+  "version": "2.14.2",
   "main": "lib/currencies-index.js",
   "exports": {
     ".": "./lib/currencies-index.js",

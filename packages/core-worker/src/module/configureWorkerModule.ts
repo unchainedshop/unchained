@@ -16,6 +16,7 @@ import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { WorkStatus } from '../director/WorkStatus.js';
+import addMigrations from './migrations/addMigrations.js';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
@@ -146,8 +147,11 @@ const normalizeWorkQueueAggregateResult = (data = []): WorkerReport[] => {
 };
 export const configureWorkerModule = async ({
   db,
+  migrationRepository,
   options,
 }: ModuleInput<WorkerSettingsOptions>): Promise<WorkerModule> => {
+  addMigrations(migrationRepository);
+
   registerEvents(Object.values(WorkerEventTypes));
 
   const WorkQueue = await WorkQueueCollection(db);
@@ -417,12 +421,13 @@ export const configureWorkerModule = async ({
 
     allocateWork,
 
-    ensureNoWork: async ({ type, priority = 0 }) => {
+    ensureNoWork: async ({ type, priority = 0, scheduleId }) => {
       const query = buildQuerySelector({
         type,
         status: [WorkStatus.NEW],
         priority,
         autoscheduled: true,
+        scheduleId,
       });
 
       await WorkQueue.updateMany(query, {
@@ -432,16 +437,25 @@ export const configureWorkerModule = async ({
       });
     },
 
-    ensureOneWork: async (
-      { type, input, priority = 0, scheduled, timeout, originalWorkId, retries = 20 },
-      workId,
-    ) => {
+    ensureOneWork: async ({
+      type,
+      input,
+      priority = 0,
+      scheduled,
+      timeout,
+      originalWorkId,
+      retries = 20,
+      scheduleId,
+    }) => {
+      const workId = `${scheduleId}:${scheduled.getTime()}`;
+
       const created = new Date();
       const query = buildQuerySelector({
         type,
         status: [WorkStatus.NEW],
         priority,
         autoscheduled: true,
+        scheduleId,
       });
       try {
         const result = await WorkQueue.findOneAndUpdate(
@@ -460,6 +474,7 @@ export const configureWorkerModule = async ({
             },
             $setOnInsert: {
               _id: workId,
+              scheduleId,
               scheduled,
               type,
               created,
@@ -474,6 +489,7 @@ export const configureWorkerModule = async ({
             upsert: true,
           },
         );
+
         if (!result.lastErrorObject.updatedExisting) {
           logger.info(`${type} auto-scheduled @ ${new Date(scheduled).toISOString()}`, {
             workId,

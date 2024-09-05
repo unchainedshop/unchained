@@ -5,8 +5,6 @@ import {
 } from '@unchainedshop/types/worker.js';
 import { log, LogLevel } from '@unchainedshop/logger';
 import { BaseDirector } from '@unchainedshop/utils';
-import { emit } from '@unchainedshop/events';
-import { WorkerEventTypes } from './WorkerEventTypes.js';
 
 export const DIRECTOR_MARKED_FAILED_ERROR = 'DIRECTOR_MARKED_FAILED';
 
@@ -86,7 +84,6 @@ export const WorkerDirector: IWorkerDirector = {
 
     try {
       const output = await adapter.doWork(input, unchainedAPI, workId);
-      emit(WorkerEventTypes.DONE, { input, workId, output });
       return output;
     } catch (error) {
       // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
@@ -94,13 +91,6 @@ export const WorkerDirector: IWorkerDirector = {
       log(`WorkerDirector -> Error doing work ${type}: ${error.message}`);
 
       const errorOutput = { error, success: false };
-
-      emit(WorkerEventTypes.DONE, {
-        output: errorOutput,
-        input,
-        workId,
-      });
-
       return errorOutput;
     }
   },

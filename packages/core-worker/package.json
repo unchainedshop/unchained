@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-worker",
-  "version": "2.14.1",
+  "version": "2.14.2",
   "main": "lib/worker-index.js",
   "exports": {
     ".": "./lib/worker-index.js",

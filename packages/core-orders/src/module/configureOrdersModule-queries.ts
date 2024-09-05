@@ -1,10 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/types/api.js';
-import {
-  Order,
-  OrderQueries,
-  OrderQuery,
-  OrderReport,
-} from '@unchainedshop/types/orders.js';
+import { Order, OrderQueries, OrderQuery, OrderReport } from '@unchainedshop/types/orders.js';
 
 import { generateDbFilterById, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
 

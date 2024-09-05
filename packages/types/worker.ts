@@ -35,6 +35,7 @@ export type Work = {
   timeout?: number;
   worker?: string;
   autoscheduled?: boolean;
+  scheduleId?: string;
 } & TimestampFields;
 
 /*
@@ -47,7 +48,7 @@ export interface WorkerSettingsOptions {
 
 export type WorkData = Pick<
   Partial<Work>,
-  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker'
+  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker' | 'scheduleId'
 > & { type: string };
 
 export interface WorkResult<Result> {
@@ -91,9 +92,9 @@ export type WorkerModule = {
 
   rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
 
-  ensureOneWork: (work: WorkData, workId: string) => Promise<Work>;
+  ensureOneWork: (work: WorkData) => Promise<Work>;
 
-  ensureNoWork: (work: { priority: number; type: string }) => Promise<void>;
+  ensureNoWork: (work: { priority: number; type: string; scheduleId: string }) => Promise<void>;
 
   finishWork: (
     _id: string,
@@ -124,11 +125,13 @@ export interface WorkerSchedule {
   exceptions: Array<Record<string, any>>;
 }
 
-export type WorkScheduleConfiguration = Pick<WorkData, 'timeout' | 'retries' | 'priority' | 'worker'> & {
+export type WorkScheduleConfiguration = Pick<
+  WorkData,
+  'timeout' | 'retries' | 'priority' | 'worker' | 'scheduleId'
+> & {
   type: string;
   input?: (workData: Omit<WorkData, 'input'>) => Promise<Record<string, any> | null>;
   schedule: WorkerSchedule;
-  scheduleId?: string;
 };
 export type IWorkerAdapter<Input, Output> = IBaseAdapter & {
   type: string;

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/file-upload",
-  "version": "2.14.1",
+  "version": "2.14.2",
   "main": "lib/file-upload-index.js",
   "exports": {
     ".": "./lib/file-upload-index.js",
