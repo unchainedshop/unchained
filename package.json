@@ -46,11 +46,11 @@
     "test:unit-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit --watch --config ./packages/unit-jest.config.js"
   },
   "devDependencies": {
-    "@apollo/client": "^3.11.6",
+    "@apollo/client": "^3.11.8",
     "@shelf/jest-mongodb": "^4.3.2",
     "@types/jest": "^29.5.12",
     "@types/lodash.clone": "^4.5.9",
-    "@types/node": "^20.16.4",
+    "@types/node": "^20.16.5",
     "@typescript-eslint/eslint-plugin": "^8.4.0",
     "@typescript-eslint/parser": "^8.4.0",
     "apollo-upload-client": "^18.0.1",
