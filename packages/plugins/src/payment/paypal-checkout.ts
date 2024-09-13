@@ -1,7 +1,13 @@
 import { IPaymentAdapter } from '@unchainedshop/types/payments.js';
 import { PaymentDirector, PaymentAdapter, PaymentError } from '@unchainedshop/core-payment';
 import { createLogger } from '@unchainedshop/logger';
-import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
+
+let checkoutNodeJssdk;
+try {
+  checkoutNodeJssdk = await import('@paypal/checkout-server-sdk');
+} catch {
+  /* */
+}
 
 const logger = createLogger('unchained:core-payment');
 
