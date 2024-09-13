@@ -44,8 +44,12 @@ export default [
       texts(forceLocale: String): ProductTexts
       catalogPrice(quantity: Int = 1, currency: String): Price
       leveledCatalogPrices(currency: String): [PriceLevel!]!
-      simulatedPrice(currency: String, useNetPrice: Boolean = false, quantity: Int = 1): Price
-        @cacheControl(scope: PRIVATE)
+      simulatedPrice(
+        currency: String
+        useNetPrice: Boolean = false
+        quantity: Int = 1
+        configuration: [ProductConfigurationParameterInput!]
+      ): Price @cacheControl(scope: PRIVATE)
       assortmentPaths(forceLocale: String): [ProductAssortmentPath!]!
       siblings(
         assortmentId: ID

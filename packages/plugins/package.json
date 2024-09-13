@@ -72,8 +72,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "optionalDependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "@redis/client": "^1.5.8",
     "bip32": "^4.0.0",
+    "bitcoinjs-lib": "^6.1.6",
     "ethers": "^6.13.2",
     "express": "^4.x",
     "open": "^10.0.0",

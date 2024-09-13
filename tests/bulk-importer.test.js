@@ -176,8 +176,8 @@ describe('Bulk Importer', () => {
                       _id: "product-a-meteor",
                       asset: {
                         _id: "meteor",
-                        fileName: "meteor-will-never-die.svg",
-                        url: "https://docs.meteor.com/images/logo-coralspace-left.svg",
+                        fileName: "meteor-blue.png",
+                        url: "https://docs.meteor.com/meteor-blue.png",
                       },
                       tags: ["small"],
                       meta: {},
@@ -371,6 +371,26 @@ describe('Bulk Importer', () => {
                 entity: 'ASSORTMENT',
                 operation: 'CREATE',
                 payload: {
+                  _id: 'Assortment B',
+                  specification: {
+                    isActive: true,
+                    isBase: false,
+                    isRoot: false,
+                    content: {
+                      de: {
+                        title: 'Groceries Child Category',
+                        slug: 'groceries',
+                        subtitle: 'Short description',
+                        description: 'Long description',
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                entity: 'ASSORTMENT',
+                operation: 'CREATE',
+                payload: {
                   _id: 'Assortment A',
                   specification: {
                     isActive: true,
@@ -416,8 +436,8 @@ describe('Bulk Importer', () => {
                       _id: null,
                       asset: {
                         _id: null,
-                        fileName: 'format-jpeg.jpg',
-                        url: 'https://www.story.one/media/images/poop-4108423_1920.width-1600.format-jpeg.jpg',
+                        fileName: 'logo-light.svg',
+                        url: 'https://sandbox-v2.unchained.shop/logo-light.svg',
                       },
                       tags: ['big'],
                       meta: {},
@@ -429,26 +449,6 @@ describe('Bulk Importer', () => {
                       },
                     },
                   ],
-                },
-              },
-              {
-                entity: 'ASSORTMENT',
-                operation: 'CREATE',
-                payload: {
-                  _id: 'Assortment B',
-                  specification: {
-                    isActive: true,
-                    isBase: false,
-                    isRoot: false,
-                    content: {
-                      de: {
-                        title: 'Groceries Child Category',
-                        slug: 'groceries',
-                        subtitle: 'Short description',
-                        description: 'Long description',
-                      },
-                    },
-                  },
                 },
               },
               {
@@ -471,8 +471,8 @@ describe('Bulk Importer', () => {
                       _id: 'assortment-a-meteor',
                       asset: {
                         _id: 'assortment-asset-update',
-                        fileName: 'meteor-will-never-die.svg',
-                        url: 'https://docs.meteor.com/images/logo-coralspace-left.svg',
+                        fileName: 'meteor-blue.png',
+                        url: 'https://docs.meteor.com/meteor-blue.png',
                       },
                       tags: ['small'],
                       meta: {},

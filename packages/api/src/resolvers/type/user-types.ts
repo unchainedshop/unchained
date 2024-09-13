@@ -58,7 +58,7 @@ export interface UserHelperTypes {
       includeCarts: boolean;
       sort?: Array<SortOption>;
       queryString?: string;
-      status?: string;
+      status?: OrderStatus[];
       userId?: string;
       limit?: number;
       offset?: number;

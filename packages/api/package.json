@@ -65,6 +65,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
+    "@types/locale": "^0.1.4",
+    "@types/node": "^20.16.5",
     "connect-mongo": "^5.1.0",
     "express": "^4.21.0",
     "express-session": "^1.18.0",

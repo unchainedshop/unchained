@@ -9,8 +9,8 @@ export const buildFindSelector = ({ includeCarts, status, userId, queryString }:
     selector.userId = userId;
   }
 
-  if (status) {
-    selector.status = status as OrderStatus;
+  if (Array.isArray(status) && status?.length) {
+    selector.status = { $in: status };
   } else if (!includeCarts) {
     selector.status = { $ne: null }; // TODO: Slow performance! IDXSCAN in common query!
   }

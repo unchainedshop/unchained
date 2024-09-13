@@ -74,6 +74,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
               await unchainedAPI.modules.worker.ensureNoWork({
                 type: workConfig.type,
                 priority: workConfig.priority || 0,
+                scheduleId,
               });
               return null;
             }
@@ -84,6 +85,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
             nextDate.setMilliseconds(0);
             const workData: WorkData = {
               type: workConfig.type,
+              scheduleId,
               scheduled: nextDate,
               timeout: workConfig.timeout,
               priority: workConfig.priority || 0,
@@ -95,8 +97,7 @@ export const BaseWorker: IWorker<WorkerParams> = {
               // when it explicitly returns a falsish input instead of a dictionary
               if (!workData.input) return null;
             }
-            const workId = `${scheduleId}:${workData.scheduled.getTime()}`;
-            return unchainedAPI.modules.worker.ensureOneWork(workData, workId);
+            return unchainedAPI.modules.worker.ensureOneWork(workData);
           }),
         );
       },

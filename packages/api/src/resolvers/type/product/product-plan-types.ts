@@ -1,4 +1,8 @@
-import { ProductPrice, Product as ProductType } from '@unchainedshop/core-products';
+import {
+  ProductConfiguration,
+  ProductPrice,
+  Product as ProductType,
+} from '@unchainedshop/core-products';
 import { Context } from '@unchainedshop/api';
 import { Product } from './product-types.js';
 
@@ -25,7 +29,13 @@ export const PlanProduct = {
       currency: forcedCurrencyCode,
       quantity,
       useNetPrice,
-    }: { quantity?: number; currency?: string; useNetPrice?: boolean },
+      configuration,
+    }: {
+      quantity?: number;
+      currency?: string;
+      useNetPrice?: boolean;
+      configuration?: Array<ProductConfiguration>;
+    },
     requestContext: Context,
   ): Promise<ProductPrice> {
     const { countryContext, modules } = requestContext;
@@ -33,7 +43,14 @@ export const PlanProduct = {
 
     return modules.products.prices.userPrice(
       obj,
-      { quantity, userId: requestContext.userId, currency, country: countryContext, useNetPrice },
+      {
+        quantity,
+        userId: requestContext.userId,
+        currency,
+        country: countryContext,
+        useNetPrice,
+        configuration,
+      },
       requestContext,
     );
   },
