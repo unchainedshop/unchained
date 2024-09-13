@@ -1,89 +1,44 @@
 import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import express from 'express';
 
+import baseModules from './presets/base-modules.js';
+import './presets/countries/ch.js';
+import cryptoModules from './presets/crypto-modules.js';
+
+import connectCryptoToExpress from './presets/crypto-express.js';
+import connectBaseToExpress from './presets/base-express.js';
+
 // Delivery
-import './delivery/post.js';
-import './delivery/pick-mup.js';
 import './delivery/send-message.js';
 import './delivery/stores.js';
 
 // Payment
-import './payment/invoice.js';
 import './payment/invoice-prepaid.js';
 import './payment/paypal-checkout.js';
 import { datatransHandler } from './payment/datatrans-v2/index.js';
-import { configureCryptopayModule, cryptopayHandler } from './payment/cryptopay/index.js';
 import { appleIAPHandler, configureAppleTransactionsModule } from './payment/apple-iap/index.js';
 import { stripeHandler } from './payment/stripe/index.js';
 import { postfinanceCheckoutHandler } from './payment/postfinance-checkout/index.js';
 import { configureSaferpayTransactionsModule, saferpayHandler } from './payment/saferpay/index.js';
 import { payrexxHandler } from './payment/payrexx/index.js';
 
-// Warehousing
-import './warehousing/store.js';
-import './warehousing/eth-minter.js';
-
-// Pricing
-import './pricing/free-payment.js';
-import './pricing/free-delivery.js';
-import './pricing/order-items.js';
-import './pricing/order-discount.js';
-import './pricing/order-delivery.js';
-import './pricing/order-payment.js';
-import './pricing/product-catalog-price.js';
-import './pricing/product-price-rateconversion.js';
-import './pricing/product-discount.js';
-import './pricing/product-swiss-tax.js';
-import './pricing/delivery-swiss-tax.js';
-
 // Filter & Search
 import './filters/strict-equal.js';
 import './filters/local-search.js';
 
-// Quotations
-import './quotations/manual.js';
-
-// Enrollments
-import './enrollments/licensed.js';
-
-// Event Queue
-import './events/node-event-emitter.js';
-
 // Workers
-import './worker/bulk-import.js';
-import './worker/zombie-killer.js';
-import './worker/message.js';
-import './worker/external.js';
-import './worker/http-request.js';
-import './worker/heartbeat.js';
-import './worker/email.js';
 import './worker/sms.js';
 import './worker/push-notification.js';
-import './worker/update-ecb-rates.js';
-import './worker/error-notifications.js';
-import './worker/update-coinbase-rates.js';
-import { configureExportToken } from './worker/export-token.js';
 import { configureGenerateOrderAutoscheduling } from './worker/enrollment-order-generator.js';
 
-// Asset Management
-import './files/gridfs/gridfs-adapter.js';
-import { gridfsHandler } from './files/gridfs/gridfs-webhook.js';
-import { configureGridFSFileUploadModule } from './files/gridfs/index.js';
-
 const {
-  CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay',
   STRIPE_WEBHOOK_PATH = '/payment/stripe',
   PAYREXX_WEBHOOK_PATH = '/payment/payrexx',
   PFCHECKOUT_WEBHOOK_PATH = '/payment/postfinance-checkout',
   DATATRANS_WEBHOOK_PATH = '/payment/datatrans/webhook',
   APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap',
-  // MINIO_PUT_SERVER_PATH = '/minio',
-  GRIDFS_PUT_SERVER_PATH = '/gridfs',
   SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook',
 } = process.env;
-
-// import './files/minio/minio-adapter';
-// import { minioHandler } from './files/minio/minio-webhook';
 
 export const defaultModules: Record<
   string,
@@ -91,17 +46,13 @@ export const defaultModules: Record<
     configure: (params: ModuleInput<any>) => any;
   }
 > = {
+  ...baseModules,
+  ...cryptoModules,
   appleTransactions: {
     configure: configureAppleTransactionsModule,
   },
   saferpayTransactions: {
     configure: configureSaferpayTransactionsModule,
-  },
-  gridfsFileUploads: {
-    configure: configureGridFSFileUploadModule,
-  },
-  cryptopay: {
-    configure: configureCryptopayModule,
   },
 };
 
@@ -109,8 +60,9 @@ export const connectDefaultPluginsToExpress4 = (
   app,
   { unchainedAPI }: { unchainedAPI: UnchainedCore },
 ) => {
-  app.use(GRIDFS_PUT_SERVER_PATH, gridfsHandler);
-  app.use(CRYPTOPAY_WEBHOOK_PATH, express.json(), cryptopayHandler);
+  connectBaseToExpress(app);
+  connectCryptoToExpress(app, unchainedAPI);
+
   app.use(STRIPE_WEBHOOK_PATH, express.raw({ type: 'application/json' }), stripeHandler);
   app.use(PFCHECKOUT_WEBHOOK_PATH, express.json(), postfinanceCheckoutHandler);
 
@@ -133,14 +85,5 @@ export const connectDefaultPluginsToExpress4 = (
   app.use(PAYREXX_WEBHOOK_PATH, express.json({ type: 'application/json' }), payrexxHandler);
   app.use(SAFERPAY_WEBHOOK_PATH, saferpayHandler);
 
-  // app.use(
-  //   MINIO_PUT_SERVER_PATH,
-  //   express.json({
-  //     strict: false,
-  //   }),
-  //   minioHandler
-  // );
-
-  configureExportToken(unchainedAPI);
   configureGenerateOrderAutoscheduling();
 };

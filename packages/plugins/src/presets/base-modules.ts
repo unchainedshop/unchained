@@ -36,6 +36,7 @@ import '../worker/external.js';
 import '../worker/http-request.js';
 import '../worker/heartbeat.js';
 import '../worker/email.js';
+import '../worker/error-notifications.js';
 
 // Asset Management
 import '../files/gridfs/gridfs-adapter.js';
