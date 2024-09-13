@@ -1,0 +1,48 @@
+{
+  "name": "@unchainedshop/minimal",
+  "description": "Kitchensink for Unchained Engine",
+  "private": true,
+  "version": "2.14.2",
+  "license": "EUPL-1.2",
+  "type": "module",
+  "homepage": "https://unchained.shop",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "contributors": [
+    "Vedran Rudelj <vedran@unchained.shop> (https://unchained.shop)",
+    "Pascal Kaufmann <pascal@unchained.shop> (https://unchained.shop)",
+    "Marco Wettstein <maw@panter.ch>",
+    "Simon Emanuel Schmid <simon@unchained.shop> (https://unchained.shop)",
+    "Mikael Araya Mengistu <mikaeln@unchained.shop> (https://unchained.shop)"
+  ],
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "lint": "prettier -w .",
+    "clean": "rm -rf lib",
+    "build": "npm run clean && tsc",
+    "start": "node lib/boot.js",
+    "dev:run": "node --experimental-fetch --no-warnings --loader ts-node/esm boot.ts",
+    "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
+  },
+  "dependencies": {
+    "@unchainedshop/platform": "^2.14.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.16.5",
+    "@unchainedshop/types": "^2.14.2",
+    "mongodb-memory-server": "^10.0.0",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
