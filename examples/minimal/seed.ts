@@ -1,4 +1,4 @@
-import { hashPassword } from '@unchainedshop/api';
+import { Context } from '@unchainedshop/api';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,18 +16,18 @@ const {
 const seedPassword =
   UNCHAINED_SEED_PASSWORD === 'generate' ? uuidv4().split('-').pop() : UNCHAINED_SEED_PASSWORD;
 
-export default async (unchainedAPI) => {
+export default async (unchainedAPI: Context) => {
   const { modules } = unchainedAPI;
   try {
     if ((await modules.users.count({ username: 'admin' })) > 0) {
       return;
     }
-    const adminId = await modules.accounts.createUser(
+    await modules.users.createUser(
       {
         email: 'admin@unchained.local',
         guest: false,
         initialPassword: seedPassword ? true : undefined,
-        password: seedPassword ? hashPassword(seedPassword) : undefined,
+        password: seedPassword ? seedPassword : undefined,
         roles: ['admin'],
         username: 'admin',
       },
@@ -36,13 +36,10 @@ export default async (unchainedAPI) => {
 
     const languages = await Promise.all(
       [UNCHAINED_LANG ? UNCHAINED_LANG.toLowerCase() : 'de'].map(async (code) => {
-        const languageId = await modules.languages.create(
-          {
-            isoCode: code,
-            isActive: true,
-          },
-          adminId,
-        );
+        const languageId = await modules.languages.create({
+          isoCode: code,
+          isActive: true,
+        });
         const language = await modules.languages.findLanguage({ languageId });
         return language.isoCode;
       }),
@@ -50,13 +47,10 @@ export default async (unchainedAPI) => {
 
     const currencies = await Promise.all(
       [UNCHAINED_CURRENCY ? UNCHAINED_CURRENCY.toUpperCase() : 'CHF'].map(async (code) => {
-        const currencyId = await modules.currencies.create(
-          {
-            isoCode: code,
-            isActive: true,
-          },
-          adminId,
-        );
+        const currencyId = await modules.currencies.create({
+          isoCode: code,
+          isActive: true,
+        });
         const currency = await modules.currencies.findCurrency({
           currencyId,
         });
@@ -66,47 +60,38 @@ export default async (unchainedAPI) => {
 
     const countries = await Promise.all(
       [UNCHAINED_COUNTRY ? UNCHAINED_COUNTRY.toUpperCase() : 'CH'].map(async (code, key) => {
-        const countryId = await modules.countries.create(
-          {
-            isoCode: code,
-            isActive: true,
-            defaultCurrencyCode: currencies[key],
-          },
-          adminId,
-        );
+        const countryId = await modules.countries.create({
+          isoCode: code,
+          isActive: true,
+          defaultCurrencyCode: currencies[key],
+        });
         const country = await modules.countries.findCountry({ countryId });
         return country.isoCode;
       }),
     );
 
-    const deliveryProvider = await modules.delivery.create(
-      {
-        adapterKey: 'shop.unchained.delivery.send-message',
-        type: DeliveryProviderType.SHIPPING,
-        configuration: [
-          {
-            key: 'from',
-            value: EMAIL_FROM || 'hello@unchained.local',
-          },
-          {
-            key: 'to',
-            value: UNCHAINED_MAIL_RECIPIENT || 'orders@unchained.local',
-          },
-        ],
-        created: new Date(),
-      },
-      adminId,
-    );
+    const deliveryProvider = await modules.delivery.create({
+      adapterKey: 'shop.unchained.delivery.send-message',
+      type: DeliveryProviderType.SHIPPING,
+      configuration: [
+        {
+          key: 'from',
+          value: EMAIL_FROM || 'hello@unchained.local',
+        },
+        {
+          key: 'to',
+          value: UNCHAINED_MAIL_RECIPIENT || 'orders@unchained.local',
+        },
+      ],
+      created: new Date(),
+    });
 
-    const paymentProvider = await modules.payment.paymentProviders.create(
-      {
-        adapterKey: 'shop.unchained.invoice',
-        type: PaymentProviderType.INVOICE,
-        configuration: [],
-        created: new Date(),
-      },
-      adminId,
-    );
+    const paymentProvider = await modules.payment.paymentProviders.create({
+      adapterKey: 'shop.unchained.invoice',
+      type: PaymentProviderType.INVOICE,
+      configuration: [],
+      created: new Date(),
+    });
 
     logger.log(`
       initialized database with

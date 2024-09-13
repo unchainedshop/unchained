@@ -98,7 +98,7 @@ export interface UnchainedCoreOptions {
       configure: (params: ModuleInput<any>) => any;
     }
   >;
-  services: Record<string, any>;
+  services?: Record<string, any>;
   options: ModuleOptions;
 }
 

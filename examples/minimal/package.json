@@ -29,16 +29,15 @@
     "lint": "prettier -w .",
     "clean": "rm -rf lib",
     "build": "npm run clean && tsc",
-    "start": "node lib/boot.js",
-    "dev:run": "node --experimental-fetch --no-warnings --loader ts-node/esm boot.ts",
-    "dev": "nodemon --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
+    "start": "node --env-file .env.defaults lib/boot.js",
+    "dev:run": "node --env-file .env.defaults --no-warnings --loader ts-node/esm boot.ts",
+    "dev": "nodemon --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@unchainedshop/platform": "^2.14.2"
+    "@unchainedshop/platform": "^3.0.0-alpha2"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
-    "@unchainedshop/types": "^2.14.2",
     "mongodb-memory-server": "^10.0.0",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",

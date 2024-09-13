@@ -19,10 +19,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "baseUrl": ".", // This must be specified if "paths" is.
-    "paths": {
-      "@unchainedshop/*": ["node_modules/@unchainedshop/types/index.d.ts"]
-    }
+    "baseUrl": "." // This must be specified if "paths" is.
   },
   "include": ["./*.ts"],
   "exclude": ["node_modules"]

@@ -1,8 +1,8 @@
 import { log } from '@unchainedshop/logger';
-import { Root, Context } from '@unchainedshop/types/api.js';
+import { Context } from '../../../types.js';
 
 export default async function orderStatistics(
-  root: Root,
+  root: never,
   params: { from?: Date; to?: Date },
   { modules, userId }: Context,
 ) {

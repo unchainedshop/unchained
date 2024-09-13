@@ -27,7 +27,13 @@ export type PlatformOptions = {
 
 const logger = createLogger('unchained');
 
-const REQUIRED_ENV_VARIABLES = ['EMAIL_WEBSITE_NAME', 'EMAIL_WEBSITE_URL', 'EMAIL_FROM'];
+const REQUIRED_ENV_VARIABLES = [
+  'EMAIL_WEBSITE_NAME',
+  'EMAIL_WEBSITE_URL',
+  'EMAIL_FROM',
+  'ROOT_URL',
+  'UNCHAINED_TOKEN_SECRET',
+];
 
 const { UNCHAINED_DISABLE_WORKER } = process.env;
 
