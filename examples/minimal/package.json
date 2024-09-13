@@ -34,7 +34,10 @@
     "dev": "nodemon --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
-    "@unchainedshop/platform": "^3.0.0-alpha2"
+    "@unchainedshop/platform": "^3.0.0-alpha2",
+    "@unchainedshop/plugins": "^3.0.0-alpha2",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
