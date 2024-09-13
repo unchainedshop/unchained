@@ -92,14 +92,14 @@ export interface UnchainedCoreOptions {
   db: mongodb.Db;
   migrationRepository: MigrationRepository<Migration>;
   bulkImporter: any;
-  modules: Record<
+  modules?: Record<
     string,
     {
       configure: (params: ModuleInput<any>) => any;
     }
   >;
   services?: Record<string, any>;
-  options: ModuleOptions;
+  options?: ModuleOptions;
 }
 
 export interface Modules {

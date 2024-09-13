@@ -11,6 +11,7 @@ We will keep supporting the following auth-strategies out of the box that we con
 - Access Tokens
 
 ## Major
+- Removed sugar connectPlatformToExpress4 to save dependencies when running in no-express env, use `import { connect } from '@unchainedshop/api/express/index.js'` now.
 - Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
 - LoginMethodResponse has a new breaking GraphQL type
 - Remove logoutAllSessions and remove support for loging out a specific session

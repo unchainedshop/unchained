@@ -62,7 +62,7 @@ Import the connect functions and the defaultModules:
 
 ```
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
-import { connectPlatformToExpress4 } from '@unchainedshop/platform';
+import { connect } from '@unchainedshop/api/express/index.js';
 ```
 
 Then pass defaultModules to the „modules“ prop of startPlatform:
@@ -78,7 +78,7 @@ const engine = await startPlatform({ … });
 
 await engine.apolloGraphQLServer.start(); // Counterintuitively, this has to be done before the platform is connected to express
   
-connectPlatformToExpress4(app, engine);
+connect(app, engine);
 connectDefaultPluginsToExpress4(app, engine);
 ```
 

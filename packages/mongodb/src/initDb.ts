@@ -26,9 +26,15 @@ export const stopDb = async () => {
 };
 
 const initDb = async (): Promise<Db> => {
+  let zstdEnabled = false;
+  try {
+    await import("@mongodb-js/zstd");
+    zstdEnabled = true;
+  } catch { }
+
   const url = process.env.MONGO_URL || (await startDb());
   const client = new MongoClient(url, {
-    compressors: 'zstd',
+    compressors: zstdEnabled ? 'zstd' : undefined,
   });
   await client.connect();
   const db = client.db();

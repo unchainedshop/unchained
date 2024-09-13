@@ -3,7 +3,8 @@ import express from 'express';
 import http from 'http';
 import { useExecutionCancellation } from 'graphql-yoga';
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache';
-import { startPlatform, connectPlatformToExpress4, setAccessToken } from '@unchainedshop/platform';
+import { startPlatform, setAccessToken } from '@unchainedshop/platform';
+import { connect } from '@unchainedshop/api/express/index.js';
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
 import { log } from '@unchainedshop/logger';
 import setupTicketing, { ticketingModules } from '@unchainedshop/ticketing';
@@ -56,7 +57,7 @@ const start = async () => {
   await seed(engine.unchainedAPI);
   await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
 
-  connectPlatformToExpress4(app, engine);
+  connect(app, engine);
   connectDefaultPluginsToExpress4(app, engine);
 
   // Unchained Ticketing Extension

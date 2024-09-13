@@ -5,6 +5,7 @@
 boot.js:
 ```js
 import { modules, setupTicketing } from "@unchainedshop/ticketing";
+import { connect } from '@unchainedshop/api/express/index.js';
 
 ...
   const app = express();
@@ -16,7 +17,7 @@ import { modules, setupTicketing } from "@unchainedshop/ticketing";
     options: {},
   });
 
-  connectPlatformToExpress4(app, engine, { corsOrigins: [] });
+  connect(app, engine, { corsOrigins: [] });
 
   // Unchained Ticketing Extension
   setupTicketing(app, engine.unchainedAPI as TicketingAPI, {
