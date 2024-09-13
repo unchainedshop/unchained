@@ -11,9 +11,7 @@ const start = async () => {
   const app = express();
   const httpServer = http.createServer(app);
 
-  const engine = await startPlatform({
-    modules: {},
-  });
+  const engine = await startPlatform({});
 
   await seed(engine.unchainedAPI);
   await setAccessToken(engine.unchainedAPI, 'admin', 'secret');
