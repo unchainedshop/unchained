@@ -69,8 +69,9 @@ export type OrderDiscount = {
 
 export type OrderQuery = {
   includeCarts?: boolean;
+  orderStatus?: OrderStatus[];
   queryString?: string;
-  status?: string;
+  status?: OrderStatus[];
   userId?: string;
 };
 

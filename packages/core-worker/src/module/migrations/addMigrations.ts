@@ -1,4 +1,4 @@
-import { Migration, MigrationRepository } from '@unchainedshop/types/core.js';
+import { Migration, MigrationRepository } from '@unchainedshop/core';
 import { WorkQueueCollection } from '../../db/WorkQueueCollection.js';
 
 export default function addMigrations(repository: MigrationRepository<Migration>) {

@@ -16,4 +16,5 @@ export type Work = {
   timeout?: number;
   worker?: string;
   autoscheduled?: boolean;
+  scheduleId?: string;
 } & TimestampFields;

@@ -1,3 +1,4 @@
+import { OrderStatus } from "../types.js"
 import {buildFindByIdSelector as buildFindByIdSelectorForDelivery} from "./configureOrderDeliveriesModule.js"
 import {buildFindByIdSelector as buildFindByIdSelectorForDiscount } from "./configureOrderDiscountsModule.js"
 import {buildFindByIdSelector as buildFindByIdSelectorForPayment, buildFindByContextDataSelector } from "./configureOrderPaymentsModule.js"
@@ -13,9 +14,13 @@ describe('OrderPosition', () => {
     });
 
     it('Return filter object when passed no argument includeCarts, queryString, status, userId and (status should take precedence over includeCarts', async () => {   
-      expect(buildFindSelectorForOrder({includeCarts: false, queryString: "hello world", status: 'CONFIRMED', userId: "admin-id"})).toEqual({
+      expect(buildFindSelectorForOrder({includeCarts: false, queryString: "hello world", status: [OrderStatus.CONFIRMED], userId: "admin-id"})).toEqual({
         userId: 'admin-id',
-        status: 'CONFIRMED',
+        "status": {
+          "$in": [
+           "CONFIRMED",
+         ],
+       },
         '$text': { '$search': 'hello world' }
       }
   )

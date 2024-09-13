@@ -145,7 +145,7 @@ export const connect = (
     passport.authenticate('access-token', { session: false }),
     addContext,
   );
-  expressApp.use(GRAPHQL_API_PATH, graphqlHandler);
+  expressApp.use(GRAPHQL_API_PATH, graphqlHandler.handle);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
 };

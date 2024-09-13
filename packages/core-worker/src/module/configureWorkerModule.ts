@@ -71,9 +71,9 @@ export type WorkerModule = {
 
   rescheduleWork: (work: Work, scheduled: Date, unchainedAPI: UnchainedCore) => Promise<Work>;
 
-  ensureOneWork: (work: WorkData, workId: string) => Promise<Work>;
+  ensureOneWork: (work: WorkData) => Promise<Work>;
 
-  ensureNoWork: (work: { priority: number; type: string }) => Promise<void>;
+  ensureNoWork: (work: { priority: number; type: string; scheduleId: string }) => Promise<void>;
 
   finishWork: (
     _id: string,

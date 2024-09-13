@@ -12,7 +12,10 @@ export interface WorkerSchedule {
   exceptions: Array<Record<string, any>>;
 }
 
-export type WorkScheduleConfiguration = Pick<WorkData, 'timeout' | 'retries' | 'priority' | 'worker'> & {
+export type WorkScheduleConfiguration = Pick<
+  WorkData,
+  'timeout' | 'retries' | 'priority' | 'worker' | 'scheduleId'
+> & {
   type: string;
   input?: (workData: Omit<WorkData, 'input'>) => Promise<Record<string, any> | null>;
   schedule: WorkerSchedule;

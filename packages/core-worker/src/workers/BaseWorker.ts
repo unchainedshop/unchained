@@ -6,7 +6,7 @@ import { Work } from '../types.js';
 
 export type WorkData = Pick<
   Partial<Work>,
-  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker'
+  'input' | 'originalWorkId' | 'priority' | 'retries' | 'timeout' | 'scheduled' | 'worker' | 'scheduleId'
 > & { type: string };
 
 export type IWorker<P extends { workerId?: string }> = {
