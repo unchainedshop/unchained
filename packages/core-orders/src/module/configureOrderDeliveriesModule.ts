@@ -75,7 +75,6 @@ export const configureOrderDeliveriesModule = ({
 
   const mutations = generateDbMutations<OrderDelivery>(OrderDeliveries, undefined, {
     permanentlyDeleteByDefault: true,
-    hasCreateOnly: false,
   }) as ModuleMutations<OrderDelivery>;
 
   const normalizedStatus: OrderDeliveriesModule['normalizedStatus'] = (orderDelivery) => {

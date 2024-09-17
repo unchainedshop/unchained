@@ -67,7 +67,6 @@ export const configureOrderModuleMutations = ({
 
   const mutations = generateDbMutations<Order>(Orders, undefined, {
     permanentlyDeleteByDefault: true,
-    hasCreateOnly: false,
   }) as ModuleMutations<Order>;
 
   return {

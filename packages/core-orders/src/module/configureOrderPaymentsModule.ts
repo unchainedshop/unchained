@@ -122,7 +122,6 @@ export const configureOrderPaymentsModule = ({
 
   const mutations = generateDbMutations<OrderPayment>(OrderPayments, undefined, {
     permanentlyDeleteByDefault: true,
-    hasCreateOnly: false,
   }) as ModuleMutations<OrderPayment>;
 
   const normalizedStatus: OrderPaymentsModule['normalizedStatus'] = (orderPayment) => {

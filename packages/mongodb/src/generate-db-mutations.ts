@@ -10,14 +10,12 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
   collection: Collection<T>,
   schema?: SimpleSchema,
   options?: {
-    hasCreateOnly?: boolean;
     permanentlyDeleteByDefault?: boolean;
   },
 ): ModuleMutations<T> | ModuleCreateMutation<T> => {
   if (!collection) throw new Error('Collection is missing');
 
-  const { hasCreateOnly, permanentlyDeleteByDefault } = options || {
-    hasCreateOnly: false,
+  const { permanentlyDeleteByDefault } = options || {
     permanentlyDeleteByDefault: false,
   };
 
@@ -39,56 +37,52 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
       return result.insertedId as string;
     },
 
-    update: hasCreateOnly
-      ? undefined
-      : async (_id, doc) => {
-          checkId(_id);
+    update: async (_id, doc) => {
+      checkId(_id);
 
-          let modifier: UpdateFilter<T>;
+      let modifier: UpdateFilter<T>;
 
-          if ((doc as UpdateFilter<T>)?.$set) {
-            const values: any = schema ? schema.clean(doc as any, { isModifier: true }) : doc;
-            modifier = {
-              ...values,
-              $set: {
-                ...(values.$set || {}),
-                updated: new Date(),
-              },
-            };
-          } else {
-            const values: any = schema ? schema.clean(doc as any) : doc;
-            modifier = {
-              $set: {
-                ...values,
-                updated: new Date(),
-              },
-            };
-          }
+      if ((doc as UpdateFilter<T>)?.$set) {
+        const values: any = schema ? schema.clean(doc as any, { isModifier: true }) : doc;
+        modifier = {
+          ...values,
+          $set: {
+            ...(values.$set || {}),
+            updated: new Date(),
+          },
+        };
+      } else {
+        const values: any = schema ? schema.clean(doc as any) : doc;
+        modifier = {
+          $set: {
+            ...values,
+            updated: new Date(),
+          },
+        };
+      }
 
-          schema?.validate(modifier, { modifier: true });
-          const filter = generateDbFilterById<T>(_id, { deleted: null });
-          await collection.updateOne(filter, modifier);
+      schema?.validate(modifier, { modifier: true });
+      const filter = generateDbFilterById<T>(_id, { deleted: null });
+      await collection.updateOne(filter, modifier);
 
-          return _id;
-        },
+      return _id;
+    },
 
-    deletePermanently: hasCreateOnly ? undefined : deletePermanently,
+    deletePermanently: deletePermanently,
 
-    delete: hasCreateOnly
-      ? undefined
-      : async (_id) => {
-          if (permanentlyDeleteByDefault) {
-            return deletePermanently(_id);
-          }
-          checkId(_id);
-          const filter = generateDbFilterById<T>(_id, { deleted: null });
-          const modifier = { $set: { deleted: new Date() } };
-          const values = schema
-            ? schema.clean(modifier, { isModifier: true })
-            : (modifier as UpdateFilter<T>);
-          const result = await collection.updateOne(filter, values);
+    delete: async (_id) => {
+      if (permanentlyDeleteByDefault) {
+        return deletePermanently(_id);
+      }
+      checkId(_id);
+      const filter = generateDbFilterById<T>(_id, { deleted: null });
+      const modifier = { $set: { deleted: new Date() } };
+      const values = schema
+        ? schema.clean(modifier, { isModifier: true })
+        : (modifier as UpdateFilter<T>);
+      const result = await collection.updateOne(filter, values);
 
-          return result.modifiedCount;
-        },
+      return result.modifiedCount;
+    },
   };
 };

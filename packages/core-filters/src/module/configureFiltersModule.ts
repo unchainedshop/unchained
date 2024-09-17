@@ -115,7 +115,6 @@ export const configureFiltersModule = async ({
 
   const mutations = generateDbMutations<Filter>(Filters, undefined, {
     permanentlyDeleteByDefault: true,
-    hasCreateOnly: false,
   }) as ModuleMutations<Filter>;
 
   const findProductIds = async (

@@ -1,9 +1,9 @@
 import type { mongodb } from '@unchainedshop/mongodb';
 
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
+import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ModuleCreateMutation, ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleCreateMutation, ModuleInput } from '@unchainedshop/core';
 import { EventsCollection, Event } from '../db/EventsCollection.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
 
@@ -53,14 +53,20 @@ export const configureEventsModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<EventsModule> => {
   const Events = await EventsCollection(db);
 
-  const mutations = generateDbMutations<Event>(Events, undefined, {
-    hasCreateOnly: true,
-  }) as ModuleMutations<Event>;
+  const create = async (doc) => {
+    const result = await Events.insertOne({
+      _id: generateDbObjectId(),
+      created: new Date(),
+      ...doc,
+    });
+    return result.insertedId as string;
+  };
 
-  configureEventHistoryAdapter(mutations);
+  configureEventHistoryAdapter(create);
 
   return {
-    ...mutations,
+    create,
+
     findEvent: async ({ eventId, ...rest }, options) => {
       const selector = eventId ? generateDbFilterById<Event>(eventId) : rest;
       return Events.findOne(selector, options);
