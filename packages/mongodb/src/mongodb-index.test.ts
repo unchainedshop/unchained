@@ -1,7 +1,6 @@
 import { SortDirection } from '@unchainedshop/utils';
 import {
   buildSortOptions,
-  checkId,
   generateDbObjectId,
 } from './mongodb-index.js';
 
@@ -18,35 +17,6 @@ describe('Mongo', () => {
     
   });
   
-  describe('checkId', () => {
-    it('with a string value', () => {
-      const value = '12345';
-      const error = { message: 'Invalid id' };
-    
-      expect(() => checkId(value, error)).not.toThrow();
-    });
-    
-    it('with a non-string value', () => {
-      const value: any = 12345;
-      const error = { message: 'Invalid id' };
-    
-      expect(() => checkId(value, error)).toThrow('Invalid id');
-    });
-    
-    it('with a different error object', () => {
-      const value:any = 12345;
-      const error = { message: 'Invalid id', path: 'name' };
-    
-      expect(() => checkId(value, error)).toThrow('Invalid id');
-    });
-    
-    it('without an error object', () => {
-      const value: any = 12345;
-    
-      expect(() => checkId(value)).toThrow();
-    });
-    
-  });
   describe('generateDbObjectId', () => {
   it('generateDbObjectId with default digits', () => {
     const result = generateDbObjectId();

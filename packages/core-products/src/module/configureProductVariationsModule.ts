@@ -1,9 +1,8 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   generateDbFilterById,
-  generateDbMutations,
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
@@ -85,10 +84,6 @@ export const configureProductVariationsModule = async ({
   registerEvents(PRODUCT_VARIATION_EVENTS);
 
   const { ProductVariations, ProductVariationTexts } = await ProductVariationsCollection(db);
-
-  const mutations = generateDbMutations<ProductVariation>(ProductVariations, undefined, {
-    permanentlyDeleteByDefault: true,
-  }) as ModuleMutations<ProductVariation>;
 
   const upsertLocalizedText = async (
     {
@@ -184,7 +179,9 @@ export const configureProductVariationsModule = async ({
 
     // Mutations
     create: async ({ type, ...doc }: ProductVariation & { title: string; locale: string }) => {
-      const productVariationId = await mutations.create({
+      const { insertedId: productVariationId } = await ProductVariations.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         type: ProductVariationType[type],
         ...doc,
       });

@@ -1,6 +1,6 @@
-import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
 import { IPaymentPricingSheet } from '@unchainedshop/core-payment';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
@@ -120,10 +120,6 @@ export const configureOrderPaymentsModule = ({
 }): OrderPaymentsModule => {
   registerEvents(ORDER_PAYMENT_EVENTS);
 
-  const mutations = generateDbMutations<OrderPayment>(OrderPayments, undefined, {
-    permanentlyDeleteByDefault: true,
-  }) as ModuleMutations<OrderPayment>;
-
   const normalizedStatus: OrderPaymentsModule['normalizedStatus'] = (orderPayment) => {
     return orderPayment.status === null
       ? OrderPaymentStatus.OPEN
@@ -230,7 +226,9 @@ export const configureOrderPaymentsModule = ({
     // Mutations
 
     create: async (doc) => {
-      const orderPaymentId = await mutations.create({
+      const { insertedId: orderPaymentId } = await OrderPayments.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         ...doc,
         status: null,
         context: doc.context || {},

@@ -256,11 +256,5 @@ export const configureDeliveryModule = async ({
       await emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
       return deliveryProvider;
     },
-
-    deletePermanently: async (_id) => {
-      const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id), {});
-      await mutations.deletePermanently(_id);
-      return deliveryProvider;
-    },
   };
 };

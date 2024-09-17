@@ -1,6 +1,6 @@
-import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector.js';
 import { Order, OrderDiscount } from '../types.js';
@@ -68,10 +68,6 @@ export const configureOrderDiscountsModule = ({
 }): OrderDiscountsModule => {
   registerEvents(ORDER_DISCOUNT_EVENTS);
 
-  const mutations = generateDbMutations<OrderDiscount>(OrderDiscounts, undefined, {
-    permanentlyDeleteByDefault: true,
-  }) as ModuleMutations<OrderDiscount>;
-
   const getAdapter = async (orderDiscount: OrderDiscount, unchainedAPI: UnchainedCore) => {
     const order = await unchainedAPI.modules.orders.findOrder({
       orderId: orderDiscount.orderId,
@@ -86,7 +82,12 @@ export const configureOrderDiscountsModule = ({
 
   const createDiscount: OrderDiscountsModule['create'] = async (doc) => {
     const normalizedTrigger = doc.trigger || OrderDiscountTrigger.USER;
-    const discountId = await mutations.create({ ...doc, trigger: normalizedTrigger });
+    const { insertedId: discountId } = await OrderDiscounts.insertOne({
+      _id: generateDbObjectId(),
+      created: new Date(),
+      ...doc,
+      trigger: normalizedTrigger,
+    });
     const discount = await OrderDiscounts.findOne(buildFindByIdSelector(discountId));
     return discount;
   };
@@ -106,12 +107,16 @@ export const configureOrderDiscountsModule = ({
   };
 
   const updateDiscount: OrderDiscountsModule['update'] = async (orderDiscountId, doc) => {
-    await mutations.update(orderDiscountId, {
-      $set: doc,
-    });
-
-    const selector = buildFindByIdSelector(orderDiscountId);
-    const discount = await OrderDiscounts.findOne(selector, {});
+    const discount = await OrderDiscounts.findOneAndUpdate(
+      generateDbFilterById(orderDiscountId),
+      {
+        $set: {
+          updated: new Date(),
+          ...doc,
+        },
+      },
+      { returnDocument: 'after' },
+    );
     await emit('ORDER_UPDATE_DISCOUNT', { discount });
     return discount;
   };
@@ -239,10 +244,17 @@ export const configureOrderDiscountsModule = ({
     delete: deleteDiscount,
 
     update: async (orderDiscountId, doc) => {
-      await mutations.update(orderDiscountId, doc);
+      const discount = await OrderDiscounts.findOneAndUpdate(
+        generateDbFilterById(orderDiscountId),
+        {
+          $set: {
+            updated: new Date(),
+            ...doc,
+          },
+        },
+        { returnDocument: 'after' },
+      );
 
-      const selector = buildFindByIdSelector(orderDiscountId);
-      const discount = await OrderDiscounts.findOne(selector, {});
       await emit('ORDER_UPDATE_DISCOUNT', { discount });
       return discount;
     },

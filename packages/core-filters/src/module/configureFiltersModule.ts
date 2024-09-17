@@ -5,10 +5,10 @@ import { SortDirection, SortOption } from '@unchainedshop/utils';
 import {
   mongodb,
   generateDbFilterById,
-  generateDbMutations,
   buildSortOptions,
+  generateDbObjectId,
 } from '@unchainedshop/mongodb';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { FiltersCollection } from '../db/FiltersCollection.js';
@@ -62,7 +62,7 @@ export type FiltersModule = {
     doc: Filter,
     unchainedAPI: UnchainedCore,
     options?: { skipInvalidation?: boolean },
-  ) => Promise<string>;
+  ) => Promise<Filter>;
 
   delete: (filterId: string) => Promise<number>;
 
@@ -112,10 +112,6 @@ export const configureFiltersModule = async ({
   await filtersSettings.configureSettings(filtersOptions, db);
 
   const { Filters, FilterTexts } = await FiltersCollection(db);
-
-  const mutations = generateDbMutations<Filter>(Filters, undefined, {
-    permanentlyDeleteByDefault: true,
-  }) as ModuleMutations<Filter>;
 
   const findProductIds = async (
     filter: Filter,
@@ -277,9 +273,10 @@ export const configureFiltersModule = async ({
 
     // Mutations
     create: async ({ type, isActive = false, ...filterData }, unchainedAPI, options) => {
-      const filterId = await mutations.create({
-        isActive,
+      const { insertedId: filterId } = await Filters.insertOne({
+        _id: generateDbObjectId(),
         created: new Date(),
+        isActive,
         type: FilterType[type],
         ...filterData,
       });
@@ -319,7 +316,7 @@ export const configureFiltersModule = async ({
 
     delete: async (filterId) => {
       await filterTexts.deleteMany({ filterId });
-      const deletedCount = await mutations.delete(filterId);
+      const { deletedCount } = await Filters.deleteOne({ _id: filterId });
       await emit('FILTER_REMOVE', { filterId });
       return deletedCount;
     },
@@ -347,18 +344,27 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
-    update: async (_id, doc, unchainedAPI, options) => {
-      const filterId = await mutations.update(_id, doc);
+    update: async (filterId, doc, unchainedAPI, options) => {
+      const filter = await Filters.findOneAndUpdate(
+        generateDbFilterById(filterId),
+        {
+          $set: {
+            updated: new Date(),
+            ...doc,
+          },
+        },
+        { returnDocument: 'after' },
+      );
 
-      if (filterId && !options?.skipInvalidation) {
-        const filter = await Filters.findOne(generateDbFilterById(filterId), {});
-        await invalidateProductIdCache(filter, unchainedAPI);
-        filterProductIds.clear();
+      if (filter) {
+        if (!options?.skipInvalidation) {
+          await invalidateProductIdCache(filter, unchainedAPI);
+          filterProductIds.clear();
+        }
+        await emit('FILTER_UPDATE', { filterId: filter._id, ...filter });
       }
 
-      await emit('FILTER_UPDATE', { filterId, ...doc });
-
-      return filterId;
+      return filter;
     },
 
     // Sub entities

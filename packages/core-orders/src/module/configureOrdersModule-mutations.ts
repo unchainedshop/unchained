@@ -1,4 +1,4 @@
-import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import { Order, OrderStatus } from '../types.js';
 import { OrderDelivery } from '@unchainedshop/core-orders';
 import { OrderPayment } from '@unchainedshop/core-orders';
@@ -7,7 +7,7 @@ import {
   Address,
   Contact,
   generateDbFilterById,
-  generateDbMutations,
+  generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
 import { OrderPosition } from '@unchainedshop/core-orders';
@@ -65,13 +65,10 @@ export const configureOrderModuleMutations = ({
 }): OrderMutations => {
   registerEvents(ORDER_EVENTS);
 
-  const mutations = generateDbMutations<Order>(Orders, undefined, {
-    permanentlyDeleteByDefault: true,
-  }) as ModuleMutations<Order>;
-
   return {
     create: async ({ userId, orderNumber, currency, countryCode, billingAddress, contact }) => {
-      const orderId = await mutations.create({
+      const { insertedId: orderId } = await Orders.insertOne({
+        _id: generateDbObjectId(),
         created: new Date(),
         status: null,
         billingAddress,
@@ -91,7 +88,7 @@ export const configureOrderModuleMutations = ({
     },
 
     delete: async (orderId) => {
-      const deletedCount = await mutations.delete(orderId);
+      const { deletedCount } = await Orders.deleteOne({ _id: orderId });
       await emit('ORDER_REMOVE', { orderId });
       return deletedCount;
     },

@@ -98,9 +98,5 @@ export const configureCurrenciesModule = async ({
       await emit('CURRENCY_REMOVE', { currencyId });
       return deletedCount;
     },
-
-    deletePermanently: async (_id) => {
-      return mutations.deletePermanently(_id);
-    },
   };
 };

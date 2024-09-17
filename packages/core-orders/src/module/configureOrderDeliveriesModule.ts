@@ -1,5 +1,5 @@
-import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
-import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
+import { UnchainedCore } from '@unchainedshop/core';
+import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
 import { DeliveryLocation, IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
@@ -72,10 +72,6 @@ export const configureOrderDeliveriesModule = ({
   OrderDeliveries: mongodb.Collection<OrderDelivery>;
 }): OrderDeliveriesModule => {
   registerEvents(ORDER_DELIVERY_EVENTS);
-
-  const mutations = generateDbMutations<OrderDelivery>(OrderDeliveries, undefined, {
-    permanentlyDeleteByDefault: true,
-  }) as ModuleMutations<OrderDelivery>;
 
   const normalizedStatus: OrderDeliveriesModule['normalizedStatus'] = (orderDelivery) => {
     return orderDelivery.status === null
@@ -176,7 +172,9 @@ export const configureOrderDeliveriesModule = ({
     // Mutations
 
     create: async (doc) => {
-      const orderDeliveryId = await mutations.create({
+      const { insertedId: orderDeliveryId } = await OrderDeliveries.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         ...doc,
         context: doc.context || {},
         status: null,
@@ -187,7 +185,7 @@ export const configureOrderDeliveriesModule = ({
     },
 
     delete: async (orderDeliveryId) => {
-      const deletedCount = await mutations.delete(orderDeliveryId);
+      const { deletedCount } = await OrderDeliveries.deleteOne({ _id: orderDeliveryId });
       return deletedCount;
     },
 

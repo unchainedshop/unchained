@@ -303,11 +303,5 @@ export const configurePaymentProvidersModule = (
       await emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
       return paymentProvider;
     },
-
-    deletePermanently: async (_id) => {
-      const deliveryProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
-      await mutations.deletePermanently(_id);
-      return deliveryProvider;
-    },
   };
 };

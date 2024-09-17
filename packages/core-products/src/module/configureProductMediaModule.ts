@@ -1,10 +1,9 @@
 import { ProductMedia, ProductMediaText } from '../types.js';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   generateDbFilterById,
-  generateDbMutations,
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
@@ -84,10 +83,6 @@ export const configureProductMediaModule = async ({
 
   const { ProductMedias, ProductMediaTexts } = await ProductMediaCollection(db);
 
-  const mutations = generateDbMutations<ProductMedia>(ProductMedias, undefined, {
-    permanentlyDeleteByDefault: true,
-  }) as ModuleMutations<ProductMedia>;
-
   const upsertLocalizedText = async (
     productMediaId: string,
     locale: string,
@@ -165,7 +160,9 @@ export const configureProductMediaModule = async ({
         sortKey = lastProductMedia.sortKey + 1;
       }
 
-      const productMediaId = await mutations.create({
+      const { insertedId: productMediaId } = await ProductMedias.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         tags: [],
         ...doc,
         sortKey,

@@ -1,7 +1,6 @@
 import SimpleSchema from 'simpl-schema';
 import { ModuleCreateMutation, ModuleMutations } from '@unchainedshop/core';
 import { Collection, UpdateFilter } from 'mongodb';
-import { checkId } from './check-id.js';
 import { generateDbObjectId } from './generate-db-object-id.js';
 import { generateDbFilterById } from './generate-db-filter-by-id.js';
 import type { TimestampFields } from './mongodb-index.js';
@@ -9,22 +8,8 @@ import type { TimestampFields } from './mongodb-index.js';
 export const generateDbMutations = <T extends TimestampFields & { _id?: string }>(
   collection: Collection<T>,
   schema?: SimpleSchema,
-  options?: {
-    permanentlyDeleteByDefault?: boolean;
-  },
 ): ModuleMutations<T> | ModuleCreateMutation<T> => {
   if (!collection) throw new Error('Collection is missing');
-
-  const { permanentlyDeleteByDefault } = options || {
-    permanentlyDeleteByDefault: false,
-  };
-
-  const deletePermanently = async (_id) => {
-    checkId(_id);
-    const filter = generateDbFilterById<T>(_id);
-    const result = await collection.deleteOne(filter);
-    return result.deletedCount;
-  };
 
   return {
     create: async (doc) => {
@@ -38,8 +23,6 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
     },
 
     update: async (_id, doc) => {
-      checkId(_id);
-
       let modifier: UpdateFilter<T>;
 
       if ((doc as UpdateFilter<T>)?.$set) {
@@ -68,13 +51,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
       return _id;
     },
 
-    deletePermanently: deletePermanently,
-
     delete: async (_id) => {
-      if (permanentlyDeleteByDefault) {
-        return deletePermanently(_id);
-      }
-      checkId(_id);
       const filter = generateDbFilterById<T>(_id, { deleted: null });
       const modifier = { $set: { deleted: new Date() } };
       const values = schema

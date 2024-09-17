@@ -35,12 +35,10 @@ export interface ModuleCreateMutation<T> {
 export interface ModuleMutations<T> extends ModuleCreateMutation<T> {
   update: (_id: string, doc: mongodb.UpdateFilter<T> | T) => Promise<string>;
   delete: (_id: string) => Promise<number>;
-  deletePermanently: (_id: string) => Promise<number>;
 }
 
 export interface ModuleMutationsWithReturnDoc<T> {
   create: (doc: T) => Promise<T>;
   update: (_id: string, doc: mongodb.UpdateFilter<T> | T) => Promise<T>;
   delete: (_id: string) => Promise<T>;
-  deletePermanently: (_id: string) => Promise<T>;
 }

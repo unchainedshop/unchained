@@ -115,6 +115,5 @@ export const configureLanguagesModule = async ({
       await emit('LANGUAGE_REMOVE', { languageId });
       return deletedCount;
     },
-    deletePermanently: mutations.deletePermanently,
   };
 };
