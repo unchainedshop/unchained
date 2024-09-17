@@ -1,27 +1,16 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { File } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection.js';
 import { filesSettings, FilesSettingsOptions } from '../files-settings.js';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
 
-export type FilesModule = ModuleMutations<File> & {
-  // Query
-  findFile: (params: { fileId?: string }, options?: mongodb.FindOptions) => Promise<File>;
-
-  getUrl: (file: File, params: Record<string, any>) => string | null;
-
-  findFiles: (selector: any, options?: mongodb.FindOptions) => Promise<Array<File>>;
-
-  deleteMany: (fileIds: Array<string>) => Promise<number>;
-};
-
 export const configureFilesModule = async ({
   db,
   options: filesOptions = {},
-}: ModuleInput<FilesSettingsOptions>): Promise<FilesModule> => {
+}: ModuleInput<FilesSettingsOptions>) => {
   registerEvents(FILE_EVENTS);
 
   // Settings
@@ -29,12 +18,8 @@ export const configureFilesModule = async ({
 
   const Files = await MediaObjectsCollection(db);
 
-  const mutations = generateDbMutations<File>(Files, undefined, {
-    permanentlyDeleteByDefault: true,
-  }) as ModuleMutations<File>;
-
   return {
-    getUrl: (file, params) => {
+    getUrl: (file: File, params: Record<string, any>): string | null => {
       if (!file?.url) return null;
       const transformedURLString = filesSettings.transformUrl(file.url, params);
       if (URL.canParse(transformedURLString)) {
@@ -47,34 +32,53 @@ export const configureFilesModule = async ({
       return transformedURLString;
     },
 
-    findFile: async ({ fileId }, options) => {
+    findFile: async (
+      { fileId }: { fileId?: string },
+      options?: mongodb.FindOptions<File>,
+    ): Promise<File> => {
       return Files.findOne(generateDbFilterById(fileId), options);
     },
 
-    findFiles: async (selector, options) => {
+    findFiles: async (
+      selector: mongodb.Filter<File>,
+      options?: mongodb.FindOptions<File>,
+    ): Promise<Array<File>> => {
       return Files.find(selector, options).toArray();
     },
 
-    deleteMany: async (fileIds) => {
+    deleteMany: async (fileIds: Array<string>): Promise<number> => {
       const deletionResult = await Files.deleteMany({ _id: { $in: fileIds } });
       return deletionResult.deletedCount;
     },
 
     create: async (doc: File) => {
-      const fileId = await mutations.create(doc);
+      const { insertedId: fileId } = await Files.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
+        ...doc,
+      });
       await emit('FILE_CREATE', { fileId });
       return fileId;
     },
-    update: async (_id: string, doc: File) => {
-      const fileId = await mutations.update(_id, { $set: doc });
+    update: async (fileId: string, doc: File) => {
+      await Files.updateOne(
+        { _id: fileId },
+        {
+          $set: {
+            updated: new Date(),
+            ...doc,
+          },
+        },
+      );
       await emit('FILE_UPDATE', { fileId });
       return fileId;
     },
     delete: async (fileId: string) => {
-      const deletedCount = await mutations.delete(fileId);
+      const { deletedCount } = await Files.deleteOne({ _id: fileId });
       await emit('FILE_REMOVE', { fileId });
       return deletedCount;
     },
-    deletePermanently: mutations.deletePermanently,
   };
 };
+
+export type FilesModule = Awaited<ReturnType<typeof configureFilesModule>>;
