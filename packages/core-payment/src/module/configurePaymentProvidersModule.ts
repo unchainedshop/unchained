@@ -1,4 +1,4 @@
-import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { UnchainedCore } from '@unchainedshop/core';
 import {
   PaymentChargeActionResult,
   PaymentContext,
@@ -8,7 +8,7 @@ import {
   PaymentProvider,
 } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { PaymentPricingContext, PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
 import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
@@ -124,10 +124,6 @@ export const configurePaymentProvidersModule = (
   PaymentProviders: mongodb.Collection<PaymentProvider>,
 ): PaymentProvidersModules => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
-
-  const mutations = generateDbMutations<PaymentProvider>(
-    PaymentProviders,
-  ) as ModuleMutations<PaymentProvider>;
 
   const getPaymentAdapter = async (
     paymentProviderId: string,
@@ -280,7 +276,9 @@ export const configurePaymentProvidersModule = (
       const Adapter = PaymentDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
-      const paymentProviderId = await mutations.create({
+      const { insertedId: paymentProviderId } = await PaymentProviders.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         configuration: Adapter.initialConfiguration,
         ...doc,
       });
@@ -294,15 +292,30 @@ export const configurePaymentProvidersModule = (
     },
 
     update: async (_id: string, doc: PaymentProvider) => {
-      await mutations.update(_id, doc);
-      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
+      const paymentProvider = await PaymentProviders.findOneAndUpdate(
+        generateDbFilterById(_id),
+        {
+          $set: {
+            updated: new Date(),
+            ...doc,
+          },
+        },
+        { returnDocument: 'after' },
+      );
       await emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
       return paymentProvider;
     },
 
     delete: async (_id) => {
-      await mutations.delete(_id);
-      const paymentProvider = await PaymentProviders.findOne(generateDbFilterById(_id), {});
+      const paymentProvider = await PaymentProviders.findOneAndUpdate(
+        generateDbFilterById(_id),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+        { returnDocument: 'after' },
+      );
       await emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
       return paymentProvider;
     },

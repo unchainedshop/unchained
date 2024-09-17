@@ -1,4 +1,4 @@
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import {
   Product,
   ProductAssignment,
@@ -14,9 +14,9 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findPreservingIds,
   generateDbFilterById,
-  generateDbMutations,
   buildSortOptions,
   mongodb,
+  generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption, IDiscountAdapter } from '@unchainedshop/utils';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
@@ -333,7 +333,6 @@ export const configureProductsModule = async ({
 
   const { Products, ProductTexts } = await ProductsCollection(db);
 
-  const mutations = generateDbMutations<Product>(Products) as ModuleMutations<Product>;
   addMigrations(migrationRepository);
 
   /*
@@ -571,7 +570,9 @@ export const configureProductsModule = async ({
         );
       }
 
-      const productId = await mutations.create({
+      const { insertedId: productId } = await Products.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         type: ProductTypes[type],
         status: InternalProductStatus.DRAFT,
         sequence: sequence ?? (await Products.countDocuments({})) + 10,
@@ -584,15 +585,22 @@ export const configureProductsModule = async ({
       return product;
     },
 
-    update: async (_id, doc) => {
+    update: async (productId, doc) => {
       const updateDoc = doc;
       if (doc.type) {
         updateDoc.type = ProductTypes[doc.type];
       }
 
-      const productId = await mutations.update(_id, updateDoc);
-
-      const product = await Products.findOne(generateDbFilterById(productId), {});
+      const product = await Products.findOneAndUpdate(
+        generateDbFilterById(productId),
+        {
+          $set: {
+            updated: new Date(),
+            ...updateDoc,
+          },
+        },
+        { returnDocument: 'after' },
+      );
 
       // Deprecation notice: remove "...updateDoc", product should be inside product field
       await emit('PRODUCT_UPDATE', { productId, ...updateDoc, product });

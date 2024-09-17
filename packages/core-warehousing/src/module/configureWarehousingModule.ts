@@ -1,6 +1,6 @@
 import type { User } from '@unchainedshop/core-users';
 
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import {
   WarehousingContext,
   WarehousingProvider,
@@ -8,7 +8,7 @@ import {
   WarehousingProviderType,
 } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection.js';
 import { WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
@@ -126,13 +126,8 @@ export const configureWarehousingModule = async ({
   const WarehousingProviders = await WarehousingProvidersCollection(db);
   const TokenSurrogates = await TokenSurrogateCollection(db);
 
-  const mutations = generateDbMutations<WarehousingProvider>(
-    WarehousingProviders,
-  ) as ModuleMutations<WarehousingProvider>;
-
   return {
     // Queries
-    ...mutations,
     count: async (query) => {
       const providerCount = await WarehousingProviders.countDocuments(buildFindSelector(query));
       return providerCount;
@@ -386,7 +381,9 @@ export const configureWarehousingModule = async ({
       const Adapter = WarehousingDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
-      const warehousingProviderId = await mutations.create({
+      const { insertedId: warehousingProviderId } = await WarehousingProviders.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         configuration: Adapter.initialConfiguration,
         ...doc,
       });
@@ -398,9 +395,17 @@ export const configureWarehousingModule = async ({
       return warehousingProviderId;
     },
 
-    update: async (_id: string, doc: WarehousingProvider) => {
-      const warehousingProviderId = await mutations.update(_id, doc);
-      const warehousingProvider = await WarehousingProviders.findOne(generateDbFilterById(_id), {});
+    update: async (warehousingProviderId: string, doc: WarehousingProvider) => {
+      const warehousingProvider = await WarehousingProviders.findOneAndUpdate(
+        generateDbFilterById(warehousingProviderId),
+        {
+          $set: {
+            updated: new Date(),
+            ...doc,
+          },
+        },
+        { returnDocument: 'after' },
+      );
 
       if (!warehousingProvider) return null;
 
@@ -409,10 +414,14 @@ export const configureWarehousingModule = async ({
     },
 
     delete: async (providerId) => {
-      await mutations.delete(providerId);
-      const warehousingProvider = await WarehousingProviders.findOne(
+      const warehousingProvider = await WarehousingProviders.findOneAndUpdate(
         generateDbFilterById(providerId),
-        {},
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+        { returnDocument: 'after' },
       );
 
       await emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });

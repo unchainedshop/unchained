@@ -1,5 +1,5 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import {
   Enrollment,
   EnrollmentData,
@@ -10,11 +10,11 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
-  generateDbMutations,
   buildSortOptions,
   mongodb,
   Address,
   Contact,
+  generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
 import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
@@ -147,8 +147,6 @@ export const configureEnrollmentsModule = async ({
   enrollmentsSettings.configureSettings(enrollmentOptions);
 
   const Enrollments = await EnrollmentsCollection(db);
-
-  const mutations = generateDbMutations<Enrollment>(Enrollments) as ModuleMutations<Enrollment>;
 
   const findNewEnrollmentNumber = async (enrollment: Enrollment, index = 0): Promise<string> => {
     const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
@@ -289,8 +287,16 @@ export const configureEnrollmentsModule = async ({
   };
 
   const updateEnrollmentField = (fieldKey: string) => async (enrollmentId: string, fieldValue: any) => {
-    await mutations.update(enrollmentId, { $set: { [fieldKey]: fieldValue } });
-    const enrollment = await Enrollments.findOne(generateDbFilterById(enrollmentId), {});
+    const enrollment = await Enrollments.findOneAndUpdate(
+      generateDbFilterById(enrollmentId),
+      {
+        $set: {
+          updated: new Date(),
+          [fieldKey]: fieldValue,
+        },
+      },
+      { returnDocument: 'after' },
+    );
     await emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
     return enrollment;
   };
@@ -420,7 +426,9 @@ export const configureEnrollmentsModule = async ({
       const currency =
         currencyCode || resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
-      const enrollmentId = await mutations.create({
+      const { insertedId: enrollmentId } = await Enrollments.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         ...enrollmentData,
         status: EnrollmentStatus.INITIAL,
         periods: [],
@@ -500,7 +508,14 @@ export const configureEnrollmentsModule = async ({
     },
 
     delete: async (enrollmentId) => {
-      const deletedCount = await mutations.delete(enrollmentId);
+      const { modifiedCount: deletedCount } = await Enrollments.updateOne(
+        generateDbFilterById(enrollmentId),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+      );
       await emit('ORDER_REMOVE', { enrollmentId });
       return deletedCount;
     },
@@ -528,14 +543,18 @@ export const configureEnrollmentsModule = async ({
     updatePayment: updateEnrollmentField('payment'),
 
     updatePlan: async (enrollmentId, plan, unchainedAPI) => {
-      await mutations.update(enrollmentId, {
-        productId: plan.productId,
-        quantity: plan.quantity,
-        configuration: plan.configuration,
-      });
-
-      const selector = generateDbFilterById(enrollmentId);
-      const enrollment = await Enrollments.findOne(selector, {});
+      const enrollment = await Enrollments.findOneAndUpdate(
+        generateDbFilterById(enrollmentId),
+        {
+          $set: {
+            updated: new Date(),
+            productId: plan.productId,
+            quantity: plan.quantity,
+            configuration: plan.configuration,
+          },
+        },
+        { returnDocument: 'after' },
+      );
 
       await emit('ENROLLMENT_UPDATE', { enrollment, field: 'plan' });
 

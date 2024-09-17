@@ -1,11 +1,11 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { ProductReview, ProductReviewQuery, ProductReviewVoteType, ProductVote } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
-  generateDbMutations,
   buildSortOptions,
   mongodb,
+  generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
@@ -114,8 +114,6 @@ export const configureProductReviewsModule = async ({
 
   const { ProductReviews } = await ProductReviewsCollection(db);
 
-  const mutations = generateDbMutations<ProductReview>(ProductReviews) as ModuleMutations<ProductReview>;
-
   const removeVote = async (selector: mongodb.Filter<ProductReview>, { userId, type }: ProductVote) => {
     await ProductReviews.updateOne(selector, {
       $pull: {
@@ -156,7 +154,11 @@ export const configureProductReviewsModule = async ({
 
     // Mutations
     create: async (doc) => {
-      const productReviewId = await mutations.create(doc);
+      const { insertedId: productReviewId } = await ProductReviews.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
+        ...doc,
+      });
 
       const productReview = await ProductReviews.findOne(generateDbFilterById(productReviewId), {});
 
@@ -168,7 +170,14 @@ export const configureProductReviewsModule = async ({
     },
 
     delete: async (productReviewId) => {
-      const deletedCount = await mutations.delete(productReviewId);
+      const { modifiedCount: deletedCount } = await ProductReviews.updateOne(
+        generateDbFilterById(productReviewId),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+      );
 
       await emit('PRODUCT_REMOVE_REVIEW', {
         productReviewId,
@@ -196,13 +205,14 @@ export const configureProductReviewsModule = async ({
     },
 
     update: async (productReviewId, doc) => {
-      await mutations.update(productReviewId, doc);
-
-      const productReview = await ProductReviews.findOne(
-        generateDbFilterById(productReviewId, {
-          deleted: null,
-        }),
-        {},
+      const productReview = await ProductReviews.findOneAndUpdate(
+        generateDbFilterById(productReviewId),
+        {
+          $set: {
+            updated: new Date(),
+            ...doc,
+          },
+        },
       );
 
       await emit('PRODUCT_UPDATE_REVIEW', { productReview });

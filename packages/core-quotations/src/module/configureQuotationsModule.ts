@@ -1,12 +1,12 @@
 import { SortDirection, SortOption } from '@unchainedshop/utils';
-import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import { Quotation, QuotationItemConfiguration, QuotationProposal } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
-  generateDbMutations,
   buildSortOptions,
   mongodb,
+  generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { QuotationsCollection } from '../db/QuotationsCollection.js';
 import { QuotationStatus } from '../db/QuotationStatus.js';
@@ -115,8 +115,6 @@ export const configureQuotationsModule = async ({
   quotationsSettings.configureSettings(quotationsOptions);
 
   const Quotations = await QuotationsCollection(db);
-
-  const mutations = generateDbMutations<Quotation>(Quotations) as ModuleMutations<Quotation>;
 
   const findNewQuotationNumber = async (quotation: Quotation, index = 0) => {
     const newHashID = quotationsSettings.quotationNumberHashFn(quotation, index);
@@ -258,14 +256,12 @@ export const configureQuotationsModule = async ({
 
   const updateQuotationFields =
     (fieldKeys: Array<string>) => async (quotationId: string, values: any) => {
-      const modifier = {
-        $set: fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
-      };
-
-      await mutations.update(quotationId, modifier);
-
-      const selector = generateDbFilterById(quotationId);
-      const quotation = await Quotations.findOne(selector, {});
+      const quotation = await Quotations.findOneAndUpdate(generateDbFilterById(quotationId), {
+        $set: {
+          updated: new Date(),
+          ...fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
+        },
+      });
 
       await emit('QUOTATION_UPDATE', { quotation, fields: fieldKeys });
 
@@ -384,7 +380,9 @@ export const configureQuotationsModule = async ({
       const currencies = await modules.currencies.findCurrencies({ includeInactive: false });
       const currency = resolveBestCurrency(countryObject.defaultCurrencyCode, currencies);
 
-      const quotationId = await mutations.create({
+      const { insertedId: quotationId } = await Quotations.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         ...quotationData,
         configuration: quotationData.configuration || [],
         countryCode,
