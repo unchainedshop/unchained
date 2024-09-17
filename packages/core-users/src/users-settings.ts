@@ -1,5 +1,4 @@
 import { User } from './types.js';
-import { Schemas } from '@unchainedshop/utils';
 import { mongodb } from '@unchainedshop/mongodb';
 
 export interface UserSettingsOptions {
@@ -61,17 +60,7 @@ export const userSettings: UserSettings = {
       return true;
     };
     const defaultValidateNewUser = async (user: User) => {
-      const customSchema = Schemas.User.omit(
-        '_id',
-        'created',
-        'roles',
-        'emails',
-        'services',
-        'username',
-        'initialPassword',
-      );
-      customSchema.validate(user);
-      return Schemas.User.clean(user) as User;
+      return user;
     };
 
     const defaultValidatePassword = async (password: string) => {

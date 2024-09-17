@@ -10,7 +10,6 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { WarehousingProvidersCollection } from '../db/WarehousingProvidersCollection.js';
-import { WarehousingProvidersSchema } from '../db/WarehousingProvidersSchema.js';
 import { WarehousingDirector } from '../director/WarehousingDirector.js';
 import { TokenSurrogateCollection } from '../db/TokenSurrogateCollection.js';
 import { EstimatedDispatch, EstimatedStock, TokenSurrogate, WarehousingInterface } from '../types.js';
@@ -127,7 +126,6 @@ export const configureWarehousingModule = async ({
 
   const mutations = generateDbMutations<WarehousingProvider>(
     WarehousingProviders,
-    WarehousingProvidersSchema,
   ) as ModuleMutations<WarehousingProvider>;
 
   return {

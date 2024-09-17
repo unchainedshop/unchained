@@ -21,10 +21,9 @@ import {
 import { SortDirection, SortOption, IDiscountAdapter } from '@unchainedshop/utils';
 import { ProductDiscountDirector } from '../director/ProductDiscountDirector.js';
 import { ProductsCollection } from '../db/ProductsCollection.js';
-import { ProductsSchema, ProductTypes } from '../db/ProductsSchema.js';
 import { ProductStatus } from '../db/ProductStatus.js';
 import { ProductPricingSheet } from '../director/ProductPricingSheet.js';
-import { ProductPricingDirector } from '../products-index.js';
+import { ProductPricingDirector, ProductTypes } from '../products-index.js';
 import { configureProductMediaModule, ProductMediaModule } from './configureProductMediaModule.js';
 import { configureProductPricesModule } from './configureProductPrices.js';
 import { configureProductReviewsModule, ProductReviewsModule } from './configureProductReviewsModule.js';
@@ -334,7 +333,7 @@ export const configureProductsModule = async ({
 
   const { Products, ProductTexts } = await ProductsCollection(db);
 
-  const mutations = generateDbMutations<Product>(Products, ProductsSchema) as ModuleMutations<Product>;
+  const mutations = generateDbMutations<Product>(Products) as ModuleMutations<Product>;
   addMigrations(migrationRepository);
 
   /*

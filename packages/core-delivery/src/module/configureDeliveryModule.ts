@@ -9,7 +9,6 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
 import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet.js';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection.js';
-import { DeliveryProvidersSchema } from '../db/DeliveryProvidersSchema.js';
 import { deliverySettings, DeliverySettingsOptions } from '../delivery-settings.js';
 import { DeliveryDirector } from '../director/DeliveryDirector.js';
 import { DeliveryPricingContext, DeliveryPricingDirector } from '../director/DeliveryPricingDirector.js';
@@ -104,7 +103,6 @@ export const configureDeliveryModule = async ({
 
   const mutations = generateDbMutations<DeliveryProvider>(
     DeliveryProviders,
-    DeliveryProvidersSchema,
   ) as ModuleMutations<DeliveryProvider>;
 
   const getDeliveryAdapter = async (

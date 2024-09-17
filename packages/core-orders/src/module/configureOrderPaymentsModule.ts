@@ -1,7 +1,6 @@
 import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
-import { OrderPaymentsSchema } from '../db/OrderPaymentsSchema.js';
 import { Order, OrderDiscount, OrderPayment, OrderPaymentStatus } from '../types.js';
 import { IPaymentPricingSheet } from '@unchainedshop/core-payment';
 import { OrderPricingDiscount } from '../director/OrderPricingDirector.js';
@@ -121,7 +120,7 @@ export const configureOrderPaymentsModule = ({
 }): OrderPaymentsModule => {
   registerEvents(ORDER_PAYMENT_EVENTS);
 
-  const mutations = generateDbMutations<OrderPayment>(OrderPayments, OrderPaymentsSchema, {
+  const mutations = generateDbMutations<OrderPayment>(OrderPayments, undefined, {
     permanentlyDeleteByDefault: true,
     hasCreateOnly: false,
   }) as ModuleMutations<OrderPayment>;

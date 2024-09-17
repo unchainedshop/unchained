@@ -9,7 +9,6 @@ import {
 } from '@unchainedshop/mongodb';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { AssortmentMediaCollection } from '../db/AssortmentMediaCollection.js';
-import { AssortmentMediaSchema } from '../db/AssortmentMediaSchema.js';
 import { AssortmentMediaText, AssortmentMediaType } from '../types.js';
 
 const ASSORTMENT_MEDIA_EVENTS = [
@@ -88,7 +87,6 @@ export const configureAssortmentMediaModule = async ({
 
   const mutations = generateDbMutations<AssortmentMediaType>(
     AssortmentMedia,
-    AssortmentMediaSchema,
   ) as ModuleMutations<AssortmentMediaType>;
 
   const upsertLocalizedText = async (

@@ -8,8 +8,7 @@ import {
   mongodb,
 } from '@unchainedshop/mongodb';
 import { ProductVariationsCollection } from '../db/ProductVariationsCollection.js';
-import { ProductVariationsSchema, ProductVariationType } from '../db/ProductVariationsSchema.js';
-import { ProductVariation, ProductVariationText } from '../types.js';
+import { ProductVariation, ProductVariationText, ProductVariationType } from '../types.js';
 
 export type ProductVariationsModule = {
   // Queries
@@ -87,7 +86,7 @@ export const configureProductVariationsModule = async ({
 
   const { ProductVariations, ProductVariationTexts } = await ProductVariationsCollection(db);
 
-  const mutations = generateDbMutations<ProductVariation>(ProductVariations, ProductVariationsSchema, {
+  const mutations = generateDbMutations<ProductVariation>(ProductVariations, undefined, {
     permanentlyDeleteByDefault: true,
     hasCreateOnly: false,
   }) as ModuleMutations<ProductVariation>;

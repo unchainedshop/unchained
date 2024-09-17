@@ -12,7 +12,6 @@ import {
 import { emit, registerEvents } from '@unchainedshop/events';
 import { buildObfuscatedFieldsFilter, SortDirection, SortOption } from '@unchainedshop/utils';
 import { WorkQueueCollection } from '../db/WorkQueueCollection.js';
-import { WorkQueueSchema } from '../db/WorkQueueSchema.js';
 import { DIRECTOR_MARKED_FAILED_ERROR, WorkerDirector } from '../director/WorkerDirector.js';
 import { WorkerEventTypes } from '../director/WorkerEventTypes.js';
 import { WorkStatus } from '../director/WorkStatus.js';
@@ -233,7 +232,7 @@ export const configureWorkerModule = async ({
 
   const removePrivateFields = buildObfuscatedFieldsFilter(options?.blacklistedVariables);
 
-  const mutations = generateDbMutations<Work>(WorkQueue, WorkQueueSchema) as ModuleMutations<Work>;
+  const mutations = generateDbMutations<Work>(WorkQueue) as ModuleMutations<Work>;
 
   const allocateWork: WorkerModule['allocateWork'] = async ({ types, worker = UNCHAINED_WORKER_ID }) => {
     // Find a work item that is scheduled for now and is not started.

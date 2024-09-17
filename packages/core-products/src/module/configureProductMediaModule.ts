@@ -10,7 +10,6 @@ import {
 } from '@unchainedshop/mongodb';
 import { FileDirector } from '@unchainedshop/file-upload';
 import { ProductMediaCollection } from '../db/ProductMediaCollection.js';
-import { ProductMediaSchema } from '../db/ProductMediaSchema.js';
 
 export type ProductMediaModule = {
   // Queries
@@ -85,7 +84,7 @@ export const configureProductMediaModule = async ({
 
   const { ProductMedias, ProductMediaTexts } = await ProductMediaCollection(db);
 
-  const mutations = generateDbMutations<ProductMedia>(ProductMedias, ProductMediaSchema, {
+  const mutations = generateDbMutations<ProductMedia>(ProductMedias, undefined, {
     permanentlyDeleteByDefault: true,
     hasCreateOnly: false,
   }) as ModuleMutations<ProductMedia>;

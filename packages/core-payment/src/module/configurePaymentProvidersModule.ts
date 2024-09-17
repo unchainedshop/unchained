@@ -11,7 +11,6 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { PaymentPricingContext, PaymentPricingDirector } from '../director/PaymentPricingDirector.js';
 import { PaymentPricingSheet } from '../director/PaymentPricingSheet.js';
-import { PaymentProvidersSchema } from '../db/PaymentProvidersSchema.js';
 import { PaymentDirector } from '../director/PaymentDirector.js';
 import { paymentSettings } from '../payment-settings.js';
 import { Order } from '@unchainedshop/core-orders';
@@ -125,7 +124,6 @@ export const configurePaymentProvidersModule = (
 
   const mutations = generateDbMutations<PaymentProvider>(
     PaymentProviders,
-    PaymentProvidersSchema,
   ) as ModuleMutations<PaymentProvider>;
 
   const getPaymentAdapter = async (

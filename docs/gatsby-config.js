@@ -56,7 +56,6 @@ module.exports = {
             'advanced-config/messaging',
             'advanced-config/events',
             'advanced-config/custom-modules',
-            'advanced-config/extending-schema',
             'advanced-config/extending-db',
             'advanced-config/bulk-import',
             'advanced-config/admin-ui',

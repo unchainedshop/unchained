@@ -2,7 +2,6 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { BookmarksCollection } from '../db/BookmarksCollection.js';
-import { BookmarkSchema } from '../db/BookmarksSchema.js';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 
 const BOOKMARK_EVENTS: string[] = ['BOOKMARK_CREATE', 'BOOKMARK_UPDATE', 'BOOKMARK_REMOVE'];
@@ -35,7 +34,7 @@ export const configureBookmarksModule = async ({
 
   const Bookmarks = await BookmarksCollection(db);
 
-  const mutations = generateDbMutations<Bookmark>(Bookmarks, BookmarkSchema, {
+  const mutations = generateDbMutations<Bookmark>(Bookmarks, undefined, {
     permanentlyDeleteByDefault: true,
   }) as ModuleMutations<Bookmark>;
 

@@ -59,9 +59,8 @@
     "@unchainedshop/utils": "^3.0.0-alpha2",
     "accounting": "0.4.1",
     "dataloader": "^2.2.2",
-    "graphql-scalars": "^1.23.0",
-    "lodash.isnumber": "3.0.3",
-    "memoizee": "^0.4.17"
+    "memoizee": "^0.4.17",
+    "graphql-scalars": "^1.23.0"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",

@@ -17,7 +17,6 @@ import {
   Contact,
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.js';
-import { EnrollmentsSchema } from '../db/EnrollmentsSchema.js';
 import { EnrollmentStatus } from '../db/EnrollmentStatus.js';
 import { EnrollmentDirector } from '../enrollments-index.js';
 import { enrollmentsSettings, EnrollmentsSettingsOptions } from '../enrollments-settings.js';
@@ -149,10 +148,7 @@ export const configureEnrollmentsModule = async ({
 
   const Enrollments = await EnrollmentsCollection(db);
 
-  const mutations = generateDbMutations<Enrollment>(
-    Enrollments,
-    EnrollmentsSchema,
-  ) as ModuleMutations<Enrollment>;
+  const mutations = generateDbMutations<Enrollment>(Enrollments) as ModuleMutations<Enrollment>;
 
   const findNewEnrollmentNumber = async (enrollment: Enrollment, index = 0): Promise<string> => {
     const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);

@@ -9,8 +9,12 @@ import {
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { ProductReviewsCollection } from '../db/ProductReviewsCollection.js';
-import { ProductReviewsSchema, ProductReviewVoteTypes } from '../db/ProductReviewsSchema.js';
 
+export const ProductReviewVoteTypes = {
+  UPVOTE: 'UPVOTE',
+  DOWNVOTE: 'DOWNVOTE',
+  REPORT: 'REPORT',
+};
 export type ProductReviewsModule = {
   // Queries
   findProductReview: (query: { productReviewId: string }) => Promise<ProductReview>;
@@ -110,10 +114,7 @@ export const configureProductReviewsModule = async ({
 
   const { ProductReviews } = await ProductReviewsCollection(db);
 
-  const mutations = generateDbMutations<ProductReview>(
-    ProductReviews,
-    ProductReviewsSchema,
-  ) as ModuleMutations<ProductReview>;
+  const mutations = generateDbMutations<ProductReview>(ProductReviews) as ModuleMutations<ProductReview>;
 
   const removeVote = async (selector: mongodb.Filter<ProductReview>, { userId, type }: ProductVote) => {
     await ProductReviews.updateOne(selector, {

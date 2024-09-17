@@ -5,7 +5,6 @@ import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@un
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.js';
-import { CountriesSchema } from '../db/CountriesSchema.js';
 import addMigrations from '../migrations/addMigrations.js';
 
 export type Country = {
@@ -57,7 +56,7 @@ export const configureCountriesModule = async ({
 
   const Countries = await CountriesCollection(db);
 
-  const mutations = generateDbMutations<Country>(Countries, CountriesSchema) as ModuleMutations<Country>;
+  const mutations = generateDbMutations<Country>(Countries) as ModuleMutations<Country>;
 
   return {
     count: async (query) => {

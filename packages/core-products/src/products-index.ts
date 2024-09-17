@@ -9,4 +9,11 @@ export { ProductDiscountConfiguration } from './director/ProductDiscountConfigur
 export { ProductPricingSheet } from './director/ProductPricingSheet.js';
 
 export { ProductStatus } from './db/ProductStatus.js';
-export { ProductTypes } from './db/ProductsSchema.js';
+
+export enum ProductTypes {
+  SimpleProduct = 'SIMPLE_PRODUCT',
+  ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
+  BundleProduct = 'BUNDLE_PRODUCT',
+  PlanProduct = 'PLAN_PRODUCT',
+  TokenizedProduct = 'TOKENIZED_PRODUCT',
+}

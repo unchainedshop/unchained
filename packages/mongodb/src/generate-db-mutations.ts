@@ -8,14 +8,13 @@ import type { TimestampFields } from './mongodb-index.js';
 
 export const generateDbMutations = <T extends TimestampFields & { _id?: string }>(
   collection: Collection<T>,
-  schema: SimpleSchema,
+  schema?: SimpleSchema,
   options?: {
     hasCreateOnly?: boolean;
     permanentlyDeleteByDefault?: boolean;
   },
 ): ModuleMutations<T> | ModuleCreateMutation<T> => {
   if (!collection) throw new Error('Collection is missing');
-  if (!schema) throw new Error('Schema is missing');
 
   const { hasCreateOnly, permanentlyDeleteByDefault } = options || {
     hasCreateOnly: false,
@@ -31,9 +30,9 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
 
   return {
     create: async (doc) => {
-      const values: any = schema.clean(doc);
+      const values: any = schema ? schema.clean(doc) : doc;
       values.created = new Date();
-      schema.validate(values);
+      schema?.validate(values);
       values._id = doc._id || generateDbObjectId();
 
       const result = await collection.insertOne(values);
@@ -48,7 +47,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
           let modifier: UpdateFilter<T>;
 
           if ((doc as UpdateFilter<T>)?.$set) {
-            const values: any = schema.clean(doc as any, { isModifier: true });
+            const values: any = schema ? schema.clean(doc as any, { isModifier: true }) : doc;
             modifier = {
               ...values,
               $set: {
@@ -57,7 +56,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
               },
             };
           } else {
-            const values: any = schema.clean(doc as any);
+            const values: any = schema ? schema.clean(doc as any) : doc;
             modifier = {
               $set: {
                 ...values,
@@ -66,7 +65,7 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
             };
           }
 
-          schema.validate(modifier, { modifier: true });
+          schema?.validate(modifier, { modifier: true });
           const filter = generateDbFilterById<T>(_id, { deleted: null });
           await collection.updateOne(filter, modifier);
 
@@ -84,7 +83,9 @@ export const generateDbMutations = <T extends TimestampFields & { _id?: string }
           checkId(_id);
           const filter = generateDbFilterById<T>(_id, { deleted: null });
           const modifier = { $set: { deleted: new Date() } };
-          const values = schema.clean(modifier, { isModifier: true });
+          const values = schema
+            ? schema.clean(modifier, { isModifier: true })
+            : (modifier as UpdateFilter<T>);
           const result = await collection.updateOne(filter, values);
 
           return result.modifiedCount;

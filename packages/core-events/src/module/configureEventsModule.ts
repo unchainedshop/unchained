@@ -5,7 +5,6 @@ import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { ModuleCreateMutation, ModuleInput, ModuleMutations } from '@unchainedshop/core';
 import { EventsCollection, Event } from '../db/EventsCollection.js';
-import { EventsSchema } from '../db/EventsSchema.js';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.js';
 
 export type EventReport = {
@@ -54,7 +53,7 @@ export const configureEventsModule = async ({
 }: ModuleInput<Record<string, never>>): Promise<EventsModule> => {
   const Events = await EventsCollection(db);
 
-  const mutations = generateDbMutations<Event>(Events, EventsSchema, {
+  const mutations = generateDbMutations<Event>(Events, undefined, {
     hasCreateOnly: true,
   }) as ModuleMutations<Event>;
 

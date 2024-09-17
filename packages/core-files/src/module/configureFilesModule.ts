@@ -3,7 +3,6 @@ import { File } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '../db/MediaObjectsCollection.js';
-import { MediaObjectsSchema } from '../db/MediaObjectsSchema.js';
 import { filesSettings, FilesSettingsOptions } from '../files-settings.js';
 
 const FILE_EVENTS: string[] = ['FILE_CREATE', 'FILE_UPDATE', 'FILE_REMOVE'];
@@ -30,7 +29,7 @@ export const configureFilesModule = async ({
 
   const Files = await MediaObjectsCollection(db);
 
-  const mutations = generateDbMutations<File>(Files, MediaObjectsSchema, {
+  const mutations = generateDbMutations<File>(Files, undefined, {
     permanentlyDeleteByDefault: true,
   }) as ModuleMutations<File>;
 

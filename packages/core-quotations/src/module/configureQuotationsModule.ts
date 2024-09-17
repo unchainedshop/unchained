@@ -9,7 +9,6 @@ import {
   mongodb,
 } from '@unchainedshop/mongodb';
 import { QuotationsCollection } from '../db/QuotationsCollection.js';
-import { QuotationsSchema } from '../db/QuotationsSchema.js';
 import { QuotationStatus } from '../db/QuotationStatus.js';
 import { QuotationDirector } from '../quotations-index.js';
 import { quotationsSettings, QuotationsSettingsOptions } from '../quotations-settings.js';
@@ -117,10 +116,7 @@ export const configureQuotationsModule = async ({
 
   const Quotations = await QuotationsCollection(db);
 
-  const mutations = generateDbMutations<Quotation>(
-    Quotations,
-    QuotationsSchema,
-  ) as ModuleMutations<Quotation>;
+  const mutations = generateDbMutations<Quotation>(Quotations) as ModuleMutations<Quotation>;
 
   const findNewQuotationNumber = async (quotation: Quotation, index = 0) => {
     const newHashID = quotationsSettings.quotationNumberHashFn(quotation, index);

@@ -1,7 +1,6 @@
 import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, generateDbMutations, mongodb } from '@unchainedshop/mongodb';
-import { OrderDiscountsSchema } from '../db/OrderDiscountsSchema.js';
 import { OrderDiscountTrigger } from '../db/OrderDiscountTrigger.js';
 import { OrderDiscountDirector } from '../director/OrderDiscountDirector.js';
 import { Order, OrderDiscount } from '../types.js';
@@ -69,7 +68,7 @@ export const configureOrderDiscountsModule = ({
 }): OrderDiscountsModule => {
   registerEvents(ORDER_DISCOUNT_EVENTS);
 
-  const mutations = generateDbMutations<OrderDiscount>(OrderDiscounts, OrderDiscountsSchema, {
+  const mutations = generateDbMutations<OrderDiscount>(OrderDiscounts, undefined, {
     permanentlyDeleteByDefault: true,
     hasCreateOnly: false,
   }) as ModuleMutations<OrderDiscount>;

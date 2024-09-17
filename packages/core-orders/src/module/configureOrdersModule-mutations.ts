@@ -11,7 +11,6 @@ import {
   mongodb,
 } from '@unchainedshop/mongodb';
 import { OrderPosition } from '@unchainedshop/core-orders';
-import { OrdersSchema } from '../db/OrdersSchema.js';
 
 export interface OrderMutations {
   create: (doc: {
@@ -66,7 +65,7 @@ export const configureOrderModuleMutations = ({
 }): OrderMutations => {
   registerEvents(ORDER_EVENTS);
 
-  const mutations = generateDbMutations<Order>(Orders, OrdersSchema, {
+  const mutations = generateDbMutations<Order>(Orders, undefined, {
     permanentlyDeleteByDefault: true,
     hasCreateOnly: false,
   }) as ModuleMutations<Order>;

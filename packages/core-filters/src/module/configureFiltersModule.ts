@@ -12,7 +12,6 @@ import { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core
 import { FilterType } from '../db/FilterType.js';
 import { FilterDirector } from '../director/FilterDirector.js';
 import { FiltersCollection } from '../db/FiltersCollection.js';
-import { FiltersSchema } from '../db/FiltersSchema.js';
 import {
   configureFilterSearchModule,
   FilterSearchModule,
@@ -114,7 +113,7 @@ export const configureFiltersModule = async ({
 
   const { Filters, FilterTexts } = await FiltersCollection(db);
 
-  const mutations = generateDbMutations<Filter>(Filters, FiltersSchema, {
+  const mutations = generateDbMutations<Filter>(Filters, undefined, {
     permanentlyDeleteByDefault: true,
     hasCreateOnly: false,
   }) as ModuleMutations<Filter>;

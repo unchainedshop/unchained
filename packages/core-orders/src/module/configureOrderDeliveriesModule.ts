@@ -1,7 +1,6 @@
 import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { OrderDeliveriesSchema } from '../db/OrderDeliveriesSchema.js';
 import { Order, OrderDelivery, OrderDeliveryStatus, OrderDiscount } from '../types.js';
 import { DeliveryLocation, IDeliveryPricingSheet } from '@unchainedshop/core-delivery';
 import { DeliveryDirector } from '@unchainedshop/core-delivery';
@@ -74,7 +73,7 @@ export const configureOrderDeliveriesModule = ({
 }): OrderDeliveriesModule => {
   registerEvents(ORDER_DELIVERY_EVENTS);
 
-  const mutations = generateDbMutations<OrderDelivery>(OrderDeliveries, OrderDeliveriesSchema, {
+  const mutations = generateDbMutations<OrderDelivery>(OrderDeliveries, undefined, {
     permanentlyDeleteByDefault: true,
     hasCreateOnly: false,
   }) as ModuleMutations<OrderDelivery>;

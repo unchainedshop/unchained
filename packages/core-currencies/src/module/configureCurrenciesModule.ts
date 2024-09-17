@@ -4,7 +4,6 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection.js';
-import { CurrenciesSchema } from '../db/CurrenciesSchema.js';
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 
@@ -42,10 +41,7 @@ export const configureCurrenciesModule = async ({
 
   const Currencies = await CurrenciesCollection(db);
 
-  const mutations = generateDbMutations<Currency>(
-    Currencies,
-    CurrenciesSchema,
-  ) as ModuleMutations<Currency>;
+  const mutations = generateDbMutations<Currency>(Currencies) as ModuleMutations<Currency>;
 
   return {
     findCurrency: async ({ currencyId, isoCode }) => {

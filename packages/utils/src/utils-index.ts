@@ -13,8 +13,6 @@ export { default as buildObfuscatedFieldsFilter } from './build-obfuscated-field
  * Schemas
  */
 
-export { Schemas } from './schemas/index.js';
-
 export enum SortDirection {
   ASC = 'ASC',
   DESC = 'DESC',

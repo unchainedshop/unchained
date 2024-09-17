@@ -10,7 +10,6 @@ import {
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { LanguagesCollection } from '../db/LanguagesCollection.js';
-import { LanguagesSchema } from '../db/LanguagesSchema.js';
 
 export type Language = {
   _id?: string;
@@ -57,10 +56,7 @@ export const configureLanguagesModule = async ({
 
   const Languages = await LanguagesCollection(db);
 
-  const mutations = generateDbMutations<Language>(
-    Languages,
-    LanguagesSchema,
-  ) as ModuleMutations<Language>;
+  const mutations = generateDbMutations<Language>(Languages) as ModuleMutations<Language>;
 
   return {
     findLanguage: async ({ languageId, isoCode }) => {

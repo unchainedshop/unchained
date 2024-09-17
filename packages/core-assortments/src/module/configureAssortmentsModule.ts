@@ -13,7 +13,6 @@ import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resol
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
 import addMigrations from '../migrations/addMigrations.js';
 import { AssortmentsCollection } from '../db/AssortmentsCollection.js';
-import { AssortmentsSchema } from '../db/AssortmentsSchema.js';
 import {
   AssortmentFiltersModule,
   configureAssortmentFiltersModule,
@@ -197,10 +196,7 @@ export const configureAssortmentsModule = async ({
   const { Assortments, AssortmentTexts, AssortmentProducts, AssortmentLinks, AssortmentFilters } =
     await AssortmentsCollection(db);
 
-  const mutations = generateDbMutations<Assortment>(
-    Assortments,
-    AssortmentsSchema,
-  ) as ModuleMutations<Assortment>;
+  const mutations = generateDbMutations<Assortment>(Assortments) as ModuleMutations<Assortment>;
 
   // Functions
   const findLinkedAssortments = async (assortment: Assortment): Promise<Array<AssortmentLink>> => {
