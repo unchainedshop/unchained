@@ -1,11 +1,11 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
-  generateDbMutations,
   generateDbFilterById,
   buildSortOptions,
   TimestampFields,
   mongodb,
+  generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
@@ -22,22 +22,6 @@ export type LanguageQuery = {
   queryString?: string;
 };
 
-export interface LanguagesModule extends ModuleMutations<Language> {
-  findLanguage: (params: { languageId?: string; isoCode?: string }) => Promise<Language>;
-  findLanguages: (
-    params: LanguageQuery & {
-      limit?: number;
-      offset?: number;
-      sort?: Array<SortOption>;
-    },
-    options?: mongodb.FindOptions,
-  ) => Promise<Array<Language>>;
-  count: (query: LanguageQuery) => Promise<number>;
-  languageExists: (params: { languageId: string }) => Promise<boolean>;
-
-  isBase: (language: Language) => boolean;
-}
-
 const LANGUAGE_EVENTS: string[] = ['LANGUAGE_CREATE', 'LANGUAGE_UPDATE', 'LANGUAGE_REMOVE'];
 
 export const buildFindSelector = ({ includeInactive = false, queryString }: LanguageQuery) => {
@@ -49,21 +33,35 @@ export const buildFindSelector = ({ includeInactive = false, queryString }: Lang
   return selector;
 };
 
-export const configureLanguagesModule = async ({
-  db,
-}: ModuleInput<Record<string, never>>): Promise<LanguagesModule> => {
+export const configureLanguagesModule = async ({ db }: ModuleInput<Record<string, never>>) => {
   registerEvents(LANGUAGE_EVENTS);
 
   const Languages = await LanguagesCollection(db);
 
-  const mutations = generateDbMutations<Language>(Languages) as ModuleMutations<Language>;
-
   return {
-    findLanguage: async ({ languageId, isoCode }) => {
+    findLanguage: async ({
+      languageId,
+      isoCode,
+    }: {
+      languageId?: string;
+      isoCode?: string;
+    }): Promise<Language> => {
       return Languages.findOne(languageId ? generateDbFilterById(languageId) : { isoCode }, {});
     },
 
-    findLanguages: async ({ limit, offset, sort, ...query }, options) => {
+    findLanguages: async (
+      {
+        limit,
+        offset,
+        sort,
+        ...query
+      }: LanguageQuery & {
+        limit?: number;
+        offset?: number;
+        sort?: Array<SortOption>;
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<Array<Language>> => {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
       return Languages.find(buildFindSelector(query), {
         skip: offset,
@@ -73,12 +71,12 @@ export const configureLanguagesModule = async ({
       }).toArray();
     },
 
-    count: async (query) => {
+    count: async (query: LanguageQuery): Promise<number> => {
       const count = await Languages.countDocuments(buildFindSelector(query));
       return count;
     },
 
-    languageExists: async ({ languageId }) => {
+    languageExists: async ({ languageId }: { languageId: string }): Promise<boolean> => {
       const languageCount = await Languages.countDocuments(
         generateDbFilterById(languageId, { deleted: null }),
         {
@@ -88,13 +86,15 @@ export const configureLanguagesModule = async ({
       return !!languageCount;
     },
 
-    isBase(language) {
+    isBase(language: Language): boolean {
       return language.isoCode === systemLocale.language;
     },
 
     create: async (doc: Language) => {
       await Languages.deleteOne({ isoCode: doc.isoCode.toLowerCase(), deleted: { $ne: null } });
-      const languageId = await mutations.create({
+      const { insertedId: languageId } = await Languages.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         ...doc,
         isoCode: doc.isoCode.toLowerCase(),
         isActive: true,
@@ -102,18 +102,32 @@ export const configureLanguagesModule = async ({
       await emit('LANGUAGE_CREATE', { languageId });
       return languageId;
     },
+
     update: async (languageId, doc) => {
-      await mutations.update(languageId, {
-        ...doc,
-        isoCode: doc.isoCode.toLowerCase(),
+      await Languages.updateOne(generateDbFilterById(languageId), {
+        $set: {
+          updated: new Date(),
+          ...doc,
+          isoCode: doc.isoCode.toLowerCase(),
+        },
       });
       await emit('LANGUAGE_UPDATE', { languageId });
       return languageId;
     },
+
     delete: async (languageId) => {
-      const deletedCount = await mutations.delete(languageId);
+      const { modifiedCount: deletedCount } = await Languages.updateOne(
+        generateDbFilterById(languageId),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+      );
       await emit('LANGUAGE_REMOVE', { languageId });
       return deletedCount;
     },
   };
 };
+
+export type LanguagesModule = Awaited<ReturnType<typeof configureLanguagesModule>>;

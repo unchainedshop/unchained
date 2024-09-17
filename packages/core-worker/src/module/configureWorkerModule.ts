@@ -1,13 +1,13 @@
 import type { WorkData, WorkResult } from '../worker-index.js';
-import type { ModuleInput, ModuleMutations, UnchainedCore } from '@unchainedshop/core';
+import type { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 
 import os from 'os';
 import { createLogger } from '@unchainedshop/logger';
 import {
   generateDbFilterById,
-  generateDbMutations,
   buildSortOptions,
   mongodb,
+  generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { buildObfuscatedFieldsFilter, SortDirection, SortOption } from '@unchainedshop/utils';
@@ -232,8 +232,6 @@ export const configureWorkerModule = async ({
 
   const removePrivateFields = buildObfuscatedFieldsFilter(options?.blacklistedVariables);
 
-  const mutations = generateDbMutations<Work>(WorkQueue) as ModuleMutations<Work>;
-
   const allocateWork: WorkerModule['allocateWork'] = async ({ types, worker = UNCHAINED_WORKER_ID }) => {
     // Find a work item that is scheduled for now and is not started.
     // Also:
@@ -277,18 +275,21 @@ export const configureWorkerModule = async ({
 
     if (!workBeforeUpdate) return null;
 
-    await mutations.update(workId, {
-      $set: {
-        finished,
-        success,
-        error,
-        result,
-        ...(!workBeforeUpdate.started ? { started } : {}),
-        worker,
+    const work = await WorkQueue.findOneAndUpdate(
+      generateDbFilterById(workId),
+      {
+        $set: {
+          updated: new Date(),
+          finished,
+          success,
+          error,
+          result,
+          ...(!workBeforeUpdate.started ? { started } : {}),
+          worker,
+        },
       },
-    });
-
-    const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
+      { returnDocument: 'after' },
+    );
 
     const duration = new Date(work.finished).getTime() - new Date(work.started).getTime();
     if (work.success) {
@@ -456,14 +457,15 @@ export const configureWorkerModule = async ({
       }
 
       const created = new Date();
-      const workId = await mutations.create({
+      const { insertedId: workId } = await WorkQueue.insertOne({
+        _id: generateDbObjectId(),
+        created,
         type,
         input,
         priority,
         scheduled: scheduled || created,
         originalWorkId,
         retries,
-        created,
         worker,
       });
 
@@ -478,13 +480,17 @@ export const configureWorkerModule = async ({
     },
 
     rescheduleWork: async (currentWork, scheduled) => {
-      await mutations.update(currentWork._id, {
-        $set: {
-          scheduled,
+      const work = await WorkQueue.findOneAndUpdate(
+        generateDbFilterById(currentWork._id),
+        {
+          $set: {
+            updated: new Date(),
+            scheduled,
+          },
         },
-      });
+        { returnDocument: 'after' },
+      );
 
-      const work = await WorkQueue.findOne(generateDbFilterById(currentWork._id), {});
       emit(WorkerEventTypes.RESCHEDULED, {
         work: removePrivateFields(work),
         oldScheduled: currentWork.scheduled,
@@ -594,9 +600,16 @@ export const configureWorkerModule = async ({
       );
       if (!workBeforeRemoval) return null;
 
-      await mutations.delete(workId);
+      const work = await WorkQueue.findOneAndUpdate(
+        generateDbFilterById(workId),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+        { returnDocument: 'after' },
+      );
 
-      const work = await WorkQueue.findOne(generateDbFilterById(workId), {});
       emit(WorkerEventTypes.DELETED, removePrivateFields(work));
 
       return work;
