@@ -1,7 +1,7 @@
 import type { mongodb, TimestampFields } from '@unchainedshop/mongodb';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbMutations, buildSortOptions } from '@unchainedshop/mongodb';
+import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { systemLocale } from '@unchainedshop/utils';
 import { CountriesCollection } from '../db/CountriesCollection.js';
@@ -18,7 +18,7 @@ export type CountryQuery = {
   includeInactive?: boolean;
   queryString?: string;
 };
-export type CountriesModule = ModuleMutations<Country> & {
+export type CountriesModule = {
   findCountry: (params: { countryId?: string; isoCode?: string }) => Promise<Country>;
   findCountries: (
     params: CountryQuery & {
@@ -34,6 +34,10 @@ export type CountriesModule = ModuleMutations<Country> & {
   flagEmoji: (country: Country) => string;
   isBase: (country: Country) => boolean;
   name: (country: Country, language: string) => string;
+
+  update: (_id: string, doc: Country) => Promise<string>;
+  delete: (_id: string) => Promise<number>;
+  create: (doc: Country) => Promise<string | null>;
 };
 
 const COUNTRY_EVENTS: string[] = ['COUNTRY_CREATE', 'COUNTRY_UPDATE', 'COUNTRY_REMOVE'];
@@ -55,8 +59,6 @@ export const configureCountriesModule = async ({
   addMigrations(migrationRepository);
 
   const Countries = await CountriesCollection(db);
-
-  const mutations = generateDbMutations<Country>(Countries) as ModuleMutations<Country>;
 
   return {
     count: async (query) => {
@@ -92,6 +94,7 @@ export const configureCountriesModule = async ({
     name(country, language) {
       return new Intl.DisplayNames([language], { type: 'region', fallback: 'code' }).of(country.isoCode);
     },
+
     flagEmoji(country) {
       const letterToLetterEmoji = (letter: string): string => {
         return String.fromCodePoint(letter.toLowerCase().charCodeAt(0) + 127365);
@@ -102,9 +105,12 @@ export const configureCountriesModule = async ({
     isBase(country) {
       return country.isoCode === systemLocale.region;
     },
-    create: async (doc: Country) => {
+
+    create: async (doc) => {
       await Countries.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
-      const countryId = await mutations.create({
+      const { insertedId: countryId } = await Countries.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         ...doc,
         isoCode: doc.isoCode.toUpperCase(),
         isActive: true,
@@ -112,13 +118,27 @@ export const configureCountriesModule = async ({
       await emit('COUNTRY_CREATE', { countryId });
       return countryId;
     },
-    update: async (_id: string, doc: Partial<Country>) => {
-      const countryId = await mutations.update(_id, { $set: doc });
+
+    update: async (countryId, doc) => {
+      await Countries.updateOne(generateDbFilterById(countryId), {
+        $set: {
+          updated: new Date(),
+          ...doc,
+        },
+      });
       await emit('COUNTRY_UPDATE', { countryId });
       return countryId;
     },
+
     delete: async (countryId) => {
-      const deletedCount = await mutations.delete(countryId);
+      const { modifiedCount: deletedCount } = await Countries.updateOne(
+        generateDbFilterById(countryId),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+      );
       await emit('COUNTRY_REMOVE', { countryId });
       return deletedCount;
     },

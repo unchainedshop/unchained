@@ -1,13 +1,13 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { Currency, CurrencyQuery } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbMutations, generateDbFilterById, buildSortOptions } from '@unchainedshop/mongodb';
+import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
 import { SortDirection, SortOption } from '@unchainedshop/utils';
 import { CurrenciesCollection } from '../db/CurrenciesCollection.js';
 
 const CURRENCY_EVENTS: string[] = ['CURRENCY_CREATE', 'CURRENCY_UPDATE', 'CURRENCY_REMOVE'];
 
-export type CurrenciesModule = ModuleMutations<Currency> & {
+export type CurrenciesModule = {
   findCurrency: (params: { currencyId?: string; isoCode?: string }) => Promise<Currency>;
   findCurrencies: (
     params: CurrencyQuery & {
@@ -18,6 +18,9 @@ export type CurrenciesModule = ModuleMutations<Currency> & {
   ) => Promise<Array<Currency>>;
   count: (query: CurrencyQuery) => Promise<number>;
   currencyExists: (params: { currencyId: string }) => Promise<boolean>;
+  update: (_id: string, doc: Currency) => Promise<string>;
+  delete: (_id: string) => Promise<number>;
+  create: (doc: Currency) => Promise<string | null>;
 };
 
 export const buildFindSelector = ({
@@ -40,8 +43,6 @@ export const configureCurrenciesModule = async ({
   registerEvents(CURRENCY_EVENTS);
 
   const Currencies = await CurrenciesCollection(db);
-
-  const mutations = generateDbMutations<Currency>(Currencies) as ModuleMutations<Currency>;
 
   return {
     findCurrency: async ({ currencyId, isoCode }) => {
@@ -75,7 +76,9 @@ export const configureCurrenciesModule = async ({
 
     create: async (doc: Currency) => {
       await Currencies.deleteOne({ isoCode: doc.isoCode.toUpperCase(), deleted: { $ne: null } });
-      const currencyId = await mutations.create({
+      const { insertedId: currencyId } = await Currencies.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         ...doc,
         isoCode: doc.isoCode.toUpperCase(),
         isActive: true,
@@ -84,17 +87,27 @@ export const configureCurrenciesModule = async ({
       return currencyId;
     },
 
-    update: async (_id: string, doc: Partial<Currency>) => {
-      const currencyId = await mutations.update(_id, {
-        ...doc,
-        isoCode: doc.isoCode.toUpperCase(),
+    update: async (currencyId: string, doc: Partial<Currency>) => {
+      await Currencies.updateOne(generateDbFilterById(currencyId), {
+        $set: {
+          updated: new Date(),
+          ...doc,
+          isoCode: doc.isoCode.toUpperCase(),
+        },
       });
       await emit('CURRENCY_UPDATE', { currencyId });
       return currencyId;
     },
 
     delete: async (currencyId) => {
-      const deletedCount = await mutations.delete(currencyId);
+      const { modifiedCount: deletedCount } = await Currencies.updateOne(
+        generateDbFilterById(currencyId),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+      );
       await emit('CURRENCY_REMOVE', { currencyId });
       return deletedCount;
     },

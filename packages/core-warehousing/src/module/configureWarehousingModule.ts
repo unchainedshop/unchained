@@ -18,7 +18,7 @@ import { Order } from '@unchainedshop/core-orders';
 import { OrderPosition } from '@unchainedshop/core-orders';
 import { Product } from '@unchainedshop/core-products';
 
-export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'delete'> & {
+export type WarehousingModule = {
   // Queries
   findProvider: (
     query: { warehousingProviderId: string },
@@ -95,6 +95,8 @@ export type WarehousingModule = Omit<ModuleMutations<WarehousingProvider>, 'dele
 
   // Mutations
   delete: (providerId: string) => Promise<WarehousingProvider>;
+  update: (_id: string, doc: WarehousingProvider) => Promise<string>;
+  create: (doc: WarehousingProvider) => Promise<string | null>;
 };
 
 const WAREHOUSING_PROVIDER_EVENTS: string[] = [

@@ -1,4 +1,4 @@
-import { ModuleMutations, ModuleMutationsWithReturnDoc, UnchainedCore } from '@unchainedshop/core';
+import { ModuleMutations, UnchainedCore } from '@unchainedshop/core';
 import {
   PaymentChargeActionResult,
   PaymentContext,
@@ -20,8 +20,11 @@ import {
   PaymentProviderType,
 } from '../payment-index.js';
 
-export type PaymentProvidersModules = ModuleMutationsWithReturnDoc<PaymentProvider> & {
+export type PaymentProvidersModules = {
   // Queries
+  create: (doc: PaymentProvider) => Promise<PaymentProvider>;
+  update: (_id: string, doc: PaymentProvider) => Promise<PaymentProvider>;
+  delete: (_id: string) => Promise<PaymentProvider>;
   count: (query: mongodb.Filter<PaymentProvider>) => Promise<number>;
   findProvider: (
     query: mongodb.Filter<PaymentProvider> & {

@@ -1,12 +1,7 @@
-import {
-  ModuleInput,
-  ModuleMutations,
-  ModuleMutationsWithReturnDoc,
-  UnchainedCore,
-} from '@unchainedshop/core';
+import { ModuleInput, UnchainedCore } from '@unchainedshop/core';
 import { DeliveryContext, DeliveryInterface, DeliveryProvider, DeliveryProviderType } from '../types.js';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { mongodb, generateDbFilterById, generateDbMutations } from '@unchainedshop/mongodb';
+import { mongodb, generateDbFilterById, generateDbObjectId } from '@unchainedshop/mongodb';
 import { DeliveryPricingSheet } from '../director/DeliveryPricingSheet.js';
 import { DeliveryProvidersCollection } from '../db/DeliveryProvidersCollection.js';
 import { deliverySettings, DeliverySettingsOptions } from '../delivery-settings.js';
@@ -20,9 +15,13 @@ import {
   IDeliveryPricingSheet,
 } from '../director/DeliveryPricingAdapter.js';
 
-export type DeliveryModule = ModuleMutationsWithReturnDoc<DeliveryProvider> & {
+export type DeliveryModule = {
   // Queries
   count: (query: mongodb.Filter<DeliveryProvider>) => Promise<number>;
+  create: (doc: DeliveryProvider) => Promise<DeliveryProvider>;
+  update: (_id: string, doc: DeliveryProvider) => Promise<DeliveryProvider>;
+  delete: (_id: string) => Promise<DeliveryProvider>;
+
   findProvider: (
     query: {
       deliveryProviderId: string;
@@ -100,10 +99,6 @@ export const configureDeliveryModule = async ({
   deliverySettings.configureSettings(deliveryOptions);
 
   const DeliveryProviders = await DeliveryProvidersCollection(db);
-
-  const mutations = generateDbMutations<DeliveryProvider>(
-    DeliveryProviders,
-  ) as ModuleMutations<DeliveryProvider>;
 
   const getDeliveryAdapter = async (
     deliveryProviderId: string,
@@ -231,7 +226,9 @@ export const configureDeliveryModule = async ({
       const Adapter = DeliveryDirector.getAdapter(doc.adapterKey);
       if (!Adapter) return null;
 
-      const deliveryProviderId = await mutations.create({
+      const { insertedId: deliveryProviderId } = await DeliveryProviders.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         configuration: Adapter.initialConfiguration,
         ...doc,
       });
@@ -244,15 +241,30 @@ export const configureDeliveryModule = async ({
     },
 
     update: async (_id: string, doc: DeliveryProvider) => {
-      await mutations.update(_id, doc);
-      const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id), {});
+      const deliveryProvider = await DeliveryProviders.findOneAndUpdate(
+        generateDbFilterById(_id),
+        {
+          $set: {
+            updated: new Date(),
+            ...doc,
+          },
+        },
+        { returnDocument: 'after' },
+      );
       await emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
       return deliveryProvider;
     },
 
     delete: async (_id) => {
-      await mutations.delete(_id);
-      const deliveryProvider = await DeliveryProviders.findOne(generateDbFilterById(_id), {});
+      const deliveryProvider = await DeliveryProviders.findOneAndUpdate(
+        generateDbFilterById(_id),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+        { returnDocument: 'after' },
+      );
       await emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
       return deliveryProvider;
     },

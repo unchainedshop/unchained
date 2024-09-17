@@ -1,13 +1,13 @@
 import { Tree, SortOption, SortDirection } from '@unchainedshop/utils';
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { log, LogLevel } from '@unchainedshop/logger';
 import {
-  generateDbMutations,
   generateDbFilterById,
   findPreservingIds,
   buildSortOptions,
   mongodb,
+  generateDbObjectId,
 } from '@unchainedshop/mongodb';
 import { resolveAssortmentProductFromDatabase } from '../utils/breadcrumbs/resolveAssortmentProductFromDatabase.js';
 import { resolveAssortmentLinkFromDatabase } from '../utils/breadcrumbs/resolveAssortmentLinkFromDatabase.js';
@@ -195,8 +195,6 @@ export const configureAssortmentsModule = async ({
   // Collections & Mutations
   const { Assortments, AssortmentTexts, AssortmentProducts, AssortmentLinks, AssortmentFilters } =
     await AssortmentsCollection(db);
-
-  const mutations = generateDbMutations<Assortment>(Assortments) as ModuleMutations<Assortment>;
 
   // Functions
   const findLinkedAssortments = async (assortment: Assortment): Promise<Array<AssortmentLink>> => {
@@ -442,8 +440,9 @@ export const configureAssortmentsModule = async ({
       ...rest
     }) => {
       if (_id) await Assortments.deleteOne({ _id, deleted: { $ne: null } });
-      const assortmentId = await mutations.create({
-        _id,
+      const { insertedId: assortmentId } = await Assortments.insertOne({
+        _id: _id || generateDbObjectId(),
+        created: new Date(),
         sequence: sequence || (await Assortments.countDocuments({})) + 10,
         isBase,
         isActive,
@@ -457,8 +456,13 @@ export const configureAssortmentsModule = async ({
       return assortment;
     },
 
-    update: async (_id, doc, options) => {
-      const assortmentId = await mutations.update(_id, doc);
+    update: async (assortmentId, doc, options) => {
+      await Assortments.updateOne(generateDbFilterById(assortmentId), {
+        $set: {
+          updated: new Date(),
+          ...doc,
+        },
+      });
       await emit('ASSORTMENT_UPDATE', { assortmentId });
 
       if (!options?.skipInvalidation) {
@@ -480,7 +484,14 @@ export const configureAssortmentsModule = async ({
       await assortmentTexts.deleteMany({ assortmentId });
       await assortmentMedia.deleteMediaFiles({ assortmentId });
 
-      const deletedCount = await mutations.delete(assortmentId);
+      const { modifiedCount: deletedCount } = await Assortments.updateOne(
+        generateDbFilterById(assortmentId),
+        {
+          $set: {
+            deleted: new Date(),
+          },
+        },
+      );
 
       if (deletedCount === 1 && !options?.skipInvalidation) {
         // Invalidate all assortments

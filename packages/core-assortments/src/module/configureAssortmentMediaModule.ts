@@ -1,9 +1,8 @@
-import { ModuleInput, ModuleMutations } from '@unchainedshop/core';
+import { ModuleInput } from '@unchainedshop/core';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   findLocalizedText,
   generateDbFilterById,
-  generateDbMutations,
   generateDbObjectId,
   mongodb,
 } from '@unchainedshop/mongodb';
@@ -39,10 +38,10 @@ export type AssortmentMediaModule = {
     options?: mongodb.FindOptions,
   ) => Promise<Array<AssortmentMediaType>>;
 
-  // Mutations
   create: (doc: { assortmentId: string; mediaId: string }) => Promise<AssortmentMediaType>;
 
   delete: (assortmentMediaId: string) => Promise<number>;
+
   deleteMediaFiles: (params: {
     assortmentId?: string;
     excludedAssortmentIds?: Array<string>;
@@ -59,7 +58,6 @@ export type AssortmentMediaModule = {
   }) => Promise<Array<AssortmentMediaType>>;
 
   texts: {
-    // Queries
     findMediaTexts: (
       query: mongodb.Filter<AssortmentMediaText>,
       options?: mongodb.FindOptions,
@@ -70,7 +68,6 @@ export type AssortmentMediaModule = {
       locale: string;
     }) => Promise<AssortmentMediaText>;
 
-    // Mutations
     updateMediaTexts: (
       assortmentMediaId: string,
       texts: Array<Omit<AssortmentMediaText, 'assortmentMediaId'>>,
@@ -84,10 +81,6 @@ export const configureAssortmentMediaModule = async ({
   registerEvents(ASSORTMENT_MEDIA_EVENTS);
 
   const { AssortmentMedia, AssortmentMediaTexts } = await AssortmentMediaCollection(db);
-
-  const mutations = generateDbMutations<AssortmentMediaType>(
-    AssortmentMedia,
-  ) as ModuleMutations<AssortmentMediaType>;
 
   const upsertLocalizedText = async (
     assortmentMediaId: string,
@@ -149,7 +142,6 @@ export const configureAssortmentMediaModule = async ({
       return mediaList.toArray();
     },
 
-    // Mutations
     create: async (doc: AssortmentMediaType) => {
       let { sortKey } = doc;
 
@@ -166,7 +158,9 @@ export const configureAssortmentMediaModule = async ({
         sortKey = lastAssortmentMedia.sortKey + 1;
       }
 
-      const assortmentMediaId = await mutations.create({
+      const { insertedId: assortmentMediaId } = await AssortmentMedia.insertOne({
+        _id: generateDbObjectId(),
+        created: new Date(),
         tags: [],
         ...doc,
         sortKey,
@@ -276,7 +270,6 @@ export const configureAssortmentMediaModule = async ({
         return text;
       },
 
-      // Mutations
       updateMediaTexts: async (assortmentMediaId, texts) => {
         const mediaTexts = await Promise.all(
           texts.map(async ({ locale, ...text }) => upsertLocalizedText(assortmentMediaId, locale, text)),
