@@ -92,8 +92,8 @@ export const configureBookmarksModule = async ({
         { _id: bookmarkId },
         {
           $set: {
-            ...doc,
             updated: new Date(),
+            ...doc,
           },
         },
       );

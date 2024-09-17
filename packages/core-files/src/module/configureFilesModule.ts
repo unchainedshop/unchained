@@ -60,6 +60,7 @@ export const configureFilesModule = async ({
       await emit('FILE_CREATE', { fileId });
       return fileId;
     },
+
     update: async (fileId: string, doc: File) => {
       await Files.updateOne(
         { _id: fileId },
@@ -73,6 +74,7 @@ export const configureFilesModule = async ({
       await emit('FILE_UPDATE', { fileId });
       return fileId;
     },
+
     delete: async (fileId: string) => {
       const { deletedCount } = await Files.deleteOne({ _id: fileId });
       await emit('FILE_REMOVE', { fileId });
