@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/ticketing",
-  "version": "3.0.0-alpha2",
+  "version": "3.0.0-alpha3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
@@ -41,24 +41,24 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^3.0.0-alpha2",
-    "@unchainedshop/core-files": "^3.0.0-alpha2",
-    "@unchainedshop/core-worker": "^3.0.0-alpha2",
-    "@unchainedshop/events": "^3.0.0-alpha2",
-    "@unchainedshop/logger": "^3.0.0-alpha2",
-    "@unchainedshop/mongodb": "^3.0.0-alpha2"
+    "@unchainedshop/api": "^3.0.0-alpha3",
+    "@unchainedshop/core-files": "^3.0.0-alpha3",
+    "@unchainedshop/core-worker": "^3.0.0-alpha3",
+    "@unchainedshop/events": "^3.0.0-alpha3",
+    "@unchainedshop/logger": "^3.0.0-alpha3",
+    "@unchainedshop/mongodb": "^3.0.0-alpha3"
   },
   "peerDependencies": {
     "@hyperlink/node-apn": "^5.1.4",
     "express": "^4.21.0"
   },
   "devDependencies": {
-    "@types/node": "^22.5.4",
-    "@unchainedshop/api": "^3.0.0-alpha2",
-    "@unchainedshop/core-files": "^3.0.0-alpha2",
-    "@unchainedshop/core-worker": "^3.0.0-alpha2",
-    "@unchainedshop/events": "^3.0.0-alpha2",
-    "@unchainedshop/logger": "^3.0.0-alpha2",
-    "@unchainedshop/mongodb": "^3.0.0-alpha2"
+    "@types/node": "^22.5.5",
+    "@unchainedshop/api": "^3.0.0-alpha3",
+    "@unchainedshop/core-files": "^3.0.0-alpha3",
+    "@unchainedshop/core-worker": "^3.0.0-alpha3",
+    "@unchainedshop/events": "^3.0.0-alpha3",
+    "@unchainedshop/logger": "^3.0.0-alpha3",
+    "@unchainedshop/mongodb": "^3.0.0-alpha3"
   }
 }

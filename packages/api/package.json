@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "version": "3.0.0-alpha2",
+  "version": "3.0.0-alpha3",
   "main": "lib/api-index.js",
   "exports": {
     ".": "./lib/api-index.js",
@@ -52,18 +52,18 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^7.0.3",
-    "@unchainedshop/core": "^3.0.0-alpha2",
-    "@unchainedshop/events": "^3.0.0-alpha2",
-    "@unchainedshop/logger": "^3.0.0-alpha2",
-    "@unchainedshop/roles": "^3.0.0-alpha2",
-    "@unchainedshop/utils": "^3.0.0-alpha2",
+    "@unchainedshop/core": "^3.0.0-alpha3",
+    "@unchainedshop/events": "^3.0.0-alpha3",
+    "@unchainedshop/logger": "^3.0.0-alpha3",
+    "@unchainedshop/roles": "^3.0.0-alpha3",
+    "@unchainedshop/utils": "^3.0.0-alpha3",
     "accounting": "0.4.1",
     "dataloader": "^2.2.2",
-    "memoizee": "^0.4.17",
-    "graphql-scalars": "^1.23.0"
+    "graphql-scalars": "^1.23.0",
+    "memoizee": "^0.4.17"
   },
   "devDependencies": {
-    "@types/node": "^22.5.4",
+    "@types/node": "^22.5.5",
     "connect-mongo": "^5.1.0",
     "express": "^4.21.0",
     "express-session": "^1.18.0",

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-users",
-  "version": "3.0.0-alpha2",
+  "version": "3.0.0-alpha3",
   "main": "lib/users-index.js",
   "exports": {
     ".": "./lib/users-index.js",
@@ -31,18 +31,17 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^3.0.0-alpha2",
-    "@unchainedshop/file-upload": "^3.0.0-alpha2",
-    "@unchainedshop/logger": "^3.0.0-alpha2",
-    "@unchainedshop/roles": "^3.0.0-alpha2",
-    "@unchainedshop/utils": "^3.0.0-alpha2",
+    "@unchainedshop/events": "^3.0.0-alpha3",
+    "@unchainedshop/file-upload": "^3.0.0-alpha3",
+    "@unchainedshop/logger": "^3.0.0-alpha3",
+    "@unchainedshop/roles": "^3.0.0-alpha3",
+    "@unchainedshop/utils": "^3.0.0-alpha3",
     "bcryptjs": "^2.4.3",
     "fido2-lib": "^3.5.3",
-    "simpl-schema": "^3.4.6",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.5.4",
+    "@types/node": "^22.5.5",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.6.2"

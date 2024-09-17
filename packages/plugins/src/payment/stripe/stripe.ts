@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
 const stripe = new Stripe(STRIPE_SECRET, {
-  apiVersion: '2024-04-10',
+  apiVersion: '2024-06-20',
 });
 
 const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;

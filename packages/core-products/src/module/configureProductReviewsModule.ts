@@ -213,6 +213,7 @@ export const configureProductReviewsModule = async ({
             ...doc,
           },
         },
+        { returnDocument: 'after' },
       );
 
       await emit('PRODUCT_UPDATE_REVIEW', { productReview });
