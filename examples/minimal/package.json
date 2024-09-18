@@ -34,10 +34,11 @@
     "dev": "nodemon --env-file .env.defaults --delay 2500ms --watch '../../packages' --watch '.' -i lib -e js,mjs,json,ts --exec \"npm run dev:run\""
   },
   "dependencies": {
+    "@fastify/cookie": "^10.0.0",
+    "@fastify/session": "^11.0.0",
     "@unchainedshop/platform": "^3.0.0-alpha3",
     "@unchainedshop/plugins": "^3.0.0-alpha3",
-    "express": "^4.21.0",
-    "express-session": "^1.18.0"
+    "fastify": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.5.5",

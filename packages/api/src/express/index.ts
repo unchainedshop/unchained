@@ -4,7 +4,7 @@ import createBulkImportMiddleware from './createBulkImportMiddleware.js';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.js';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import { YogaServer } from 'graphql-yoga';
+import { YogaServerInstance } from 'graphql-yoga';
 import setupPassport from './passport/setup.js';
 import { mongodb } from '@unchainedshop/mongodb';
 import { UnchainedCore } from '@unchainedshop/core';
@@ -116,7 +116,7 @@ export const connect = (
     graphqlHandler,
     db,
     unchainedAPI,
-  }: { graphqlHandler: YogaServer<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
+  }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
 ) => {
   const passport = setupPassport(unchainedAPI);
 
