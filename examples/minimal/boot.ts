@@ -5,11 +5,24 @@ import { connect } from '@unchainedshop/api/fastify/index.js';
 import { log } from '@unchainedshop/logger';
 import seed from './seed.js';
 import Fastify from 'fastify';
+import keycloak, { KeycloakOptions } from 'fastify-keycloak-adapter';
 
 const start = async () => {
   const fastify = Fastify({
     logger: true,
   });
+
+  const opts: KeycloakOptions = {
+    appOrigin: 'http://localhost:4010',
+    keycloakSubdomain: 'localhost:8080/realms/myrealm',
+    useHttps: false,
+    clientId: 'unchained-local',
+    clientSecret: 'wahzLhkrnSTkPWCwbsZapNDMNT3PhHSX',
+    disableCookiePlugin: true,
+    disableSessionPlugin: true,
+  };
+
+  fastify.register(keycloak as any, opts);
 
   const engine = await startPlatform({
     modules: baseModules,
