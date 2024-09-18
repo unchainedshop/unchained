@@ -38,7 +38,8 @@
     "@fastify/session": "^11.0.1",
     "@unchainedshop/platform": "^3.0.0-alpha4",
     "@unchainedshop/plugins": "^3.0.0-alpha4",
-    "fastify": "^5.1.0"
+    "fastify": "^5.0.0",
+    "fastify-keycloak-adapter": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
