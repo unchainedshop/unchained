@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@fastify/cookie": "^10.0.0",
+    "@fastify/oauth2": "^8.0.0",
     "@fastify/session": "^11.0.0",
     "@unchainedshop/platform": "^3.0.0-alpha3",
     "@unchainedshop/plugins": "^3.0.0-alpha3",

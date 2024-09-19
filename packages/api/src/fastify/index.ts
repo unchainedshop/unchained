@@ -86,7 +86,7 @@ export const connect = (
     unchainedAPI,
   }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
 ) => {
-  fastify.register(fastifyCookie);
+  // fastify.register(fastifyCookie);
   fastify.register(fastifySession, {
     secret: process.env.UNCHAINED_TOKEN_SECRET,
     cookieName: UNCHAINED_COOKIE_NAME,
