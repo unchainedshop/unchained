@@ -5,7 +5,7 @@ import { connect } from '@unchainedshop/api/lib/fastify/index.js';
 import { log } from '@unchainedshop/logger';
 import seed from './seed.js';
 import Fastify from 'fastify';
-import keycloak, { KeycloakOptions } from 'fastify-keycloak-adapter';
+import FastifyOAuth2 from '@fastify/oauth2';
 
 const start = async () => {
   const fastify = Fastify({
@@ -24,20 +24,67 @@ const start = async () => {
     });
   });
 
-  const opts: KeycloakOptions = {
-    appOrigin: 'http://localhost:4010',
-    keycloakSubdomain: 'localhost:8080/realms/myrealm',
-    useHttps: false,
-    clientId: 'unchained-local',
-    clientSecret: 'wahzLhkrnSTkPWCwbsZapNDMNT3PhHSX',
-    disableCookiePlugin: true,
-    disableSessionPlugin: true,
-  };
-
-  fastify.register(keycloak as any, opts);
-
   const engine = await startPlatform({
     modules: baseModules,
+  });
+
+  fastify.register(FastifyOAuth2, {
+    name: 'keycloak',
+    credentials: {
+      client: {
+        id: 'unchained-local',
+        secret: 'n7L0X7Wo7mLkSIfLKvvAqZpNpcOVncKd',
+      },
+    },
+    startRedirectPath: '/login',
+    scope: ['profile', 'email', 'openid', 'address'],
+    callbackUri: 'http://localhost:4010/callback',
+    discovery: { issuer: 'http://localhost:8080/realms/myrealm' },
+  });
+
+  fastify.get('/callback', async function (request, reply) {
+    const accessToken = await this.keycloak.getAccessTokenFromAuthorizationCodeFlow(request);
+    try {
+      const userinfo = await this.keycloak.userinfo(accessToken.token.access_token);
+      const { sub, email, resource_access, email_verified, name, given_name, family_name } = userinfo;
+      const roles = resource_access?.['unchained-local']?.roles || [];
+      const user = await engine.unchainedAPI.modules.users.findUserByUsername(`keycloak:${sub}`);
+
+      if (user) {
+        if (JSON.stringify(user.roles) !== JSON.stringify(roles)) {
+          await engine.unchainedAPI.modules.users.updateRoles(user._id, roles);
+        }
+        request.unchainedContext.login(user);
+        return reply.redirect('/');
+      }
+      // TODO: try to use the preferred_username as the username first
+      const newUserId = await engine.unchainedAPI.modules.users.createUser(
+        {
+          username: `keycloak:${sub}`,
+          password: null,
+          email: email_verified ? email : undefined,
+          profile: {
+            displayName: name,
+            address: {
+              firstName: given_name,
+              lastName: family_name,
+            },
+          },
+          roles,
+        },
+        { skipMessaging: true, skipPasswordEnrollment: true },
+      );
+      const newUser = await engine.unchainedAPI.modules.users.findUserById(newUserId);
+      request.unchainedContext.login(newUser);
+      return reply.redirect('/');
+    } catch (e) {
+      console.error(e);
+    }
+
+    // if later need to refresh the token this can be used
+    // const { token: newToken } = await this.getNewAccessTokenUsingRefreshToken(token)
+
+    return reply.send({ access_token: token.access_token });
   });
 
   await seed(engine.unchainedAPI);
