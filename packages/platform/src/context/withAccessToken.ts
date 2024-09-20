@@ -22,12 +22,16 @@ export default (fn: (context: Context) => any = contextIdentity): any => {
         });
 
         if (secret && user?.services.token?.secret) {
-          if (timingSafeEqual(Buffer.from(secret), Buffer.from(user?.services.token?.secret))) {
-            newContext.userId = user._id;
-            newContext.user = user;
-            logger.debug('Token login success');
-          } else {
-            logger.warn('Token login failed');
+          try {
+            if (timingSafeEqual(Buffer.from(secret), Buffer.from(user?.services.token?.secret))) {
+              newContext.userId = user._id;
+              newContext.user = user;
+              logger.debug('Token login success');
+            } else {
+              throw new Error('Access Token not valid');
+            }
+          } catch (e) {
+            logger.warn(`Token login failed: ${e.message}`);
           }
         }
       }
