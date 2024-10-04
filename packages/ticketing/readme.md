@@ -1,5 +1,25 @@
 # Unchained Ticketing Extension
 
+## Prepare Apple Certificate
+
+1. Add a new Pass Type ID on [developer.apple.com](https://developer.apple.com/account), then gernerate fresh production certificate. Download the Certificate and import it into your Keychain.
+
+2. Export with Keychain: Select the "Certificates" Tab, then the Pass Type ID, then select both the ID and the key, export in p12 format.
+
+3. Convert to PEM
+It's important you set a PEM passphrase as it is required for Unchained Ticketing
+```
+openssl pkcs12 -in Zertifikate.p12 -legacy -clcerts -out cert_and_key.pem
+```
+
+4. Configure the path and your Team ID by Env:
+
+```
+PASS_CERTIFICATE_PATH=./cert_and_key.pem
+PASS_CERTIFICATE_SECRET=YOUR_PEM_PASSPHRASE
+PASS_TEAM_ID=SSCB95CV6U
+```
+
 ## Setup Example
 
 boot.js:
