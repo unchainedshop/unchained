@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/core-users",
-  "version": "2.15.0",
+  "version": "2.15.1",
   "main": "lib/users-index.js",
   "exports": {
     ".": "./lib/users-index.js",
@@ -31,20 +31,20 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^2.15.0",
-    "@unchainedshop/file-upload": "^2.15.0",
-    "@unchainedshop/logger": "^2.15.0",
-    "@unchainedshop/roles": "^2.15.0",
-    "@unchainedshop/utils": "^2.15.0",
+    "@unchainedshop/events": "^2.15.1",
+    "@unchainedshop/file-upload": "^2.15.1",
+    "@unchainedshop/logger": "^2.15.1",
+    "@unchainedshop/roles": "^2.15.1",
+    "@unchainedshop/utils": "^2.15.1",
     "locale": "^0.1.0",
     "simpl-schema": "^3.4.6",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.7.4",
-    "@unchainedshop/types": "^2.15.0",
+    "@types/node": "^22.7.5",
+    "@unchainedshop/types": "^2.15.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }

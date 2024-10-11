@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "2.15.0",
+  "version": "2.15.1",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -51,15 +51,15 @@
     "@shelf/jest-mongodb": "^4.3.2",
     "@types/jest": "^29.5.13",
     "@types/lodash.clone": "^4.5.9",
-    "@types/node": "^22.7.4",
-    "@typescript-eslint/eslint-plugin": "^8.8.0",
-    "@typescript-eslint/parser": "^8.8.0",
+    "@types/node": "^22.7.5",
+    "@typescript-eslint/eslint-plugin": "^8.8.1",
+    "@typescript-eslint/parser": "^8.8.1",
     "apollo-upload-client": "^18.0.1",
     "cross-env": "^7.0.3",
     "dotenv-extended": "^2.9.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.2.1",
     "formdata-node": "^6.0.3",
     "graphql": "^16.9.0",
@@ -69,7 +69,7 @@
     "prettier": "^3.3.3",
     "stripe": "^15.12.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.6.2",
+    "typescript": "^5.6.3",
     "workspaces-run": "^1.0.2"
   }
 }
