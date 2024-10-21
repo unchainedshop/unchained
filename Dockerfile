@@ -31,6 +31,7 @@ ADD . /source/
 ADD env /source/.env
 
 RUN npm run build || :
+RUN npm run build || :
 RUN cd examples/kitchensink && npm install && npm run build || :
 
 CMD ["npm"]
