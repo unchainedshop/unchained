@@ -1,6 +1,0 @@
-.git
-.cache
-node_modules
-.eslintcache
-out
-public
