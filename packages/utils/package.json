@@ -32,11 +32,11 @@
   "dependencies": {
     "@unchainedshop/logger": "^3.0.0-alpha3",
     "hashids": "^2.3.0",
-    "resolve-accept-language": "^3.1.7"
+    "resolve-accept-language": "^3.1.8"
   },
   "devDependencies": {
-    "@types/node": "^22.5.5",
+    "@types/node": "^22.7.7",
     "jest": "^29.7.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }
