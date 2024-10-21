@@ -1,3 +1,3 @@
 describe('Plugins', () => {
-    it.todo("Plugins Tests")
+  it.todo('Plugins Tests');
 });

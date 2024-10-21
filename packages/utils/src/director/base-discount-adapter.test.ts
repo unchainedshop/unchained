@@ -1,14 +1,14 @@
-import { BaseDiscountAdapter } from "./BaseDiscountAdapter.js";
+import { BaseDiscountAdapter } from './BaseDiscountAdapter.js';
 
-describe("BaseDiscountAdapter instantiation", () => {
+describe('BaseDiscountAdapter instantiation', () => {
   const adapter = BaseDiscountAdapter;
-  const context = null
-  it("should initialize with default values", () => {
+  const context = null;
+  it('should initialize with default values', () => {
     expect(adapter.orderIndex).toEqual(0);
     expect(adapter.log).toEqual(expect.any(Function));
     expect(adapter.isManualAdditionAllowed('')).resolves.toEqual(false);
     expect(adapter.isManualRemovalAllowed()).resolves.toEqual(false);
-    
+
     expect(adapter.actions(context)).resolves.toEqual({
       isValidForSystemTriggering: expect.any(Function),
       reserve: expect.any(Function),
@@ -18,35 +18,36 @@ describe("BaseDiscountAdapter instantiation", () => {
     });
   });
 
-  describe('actions',  ()=> {
-    const actions =  adapter.actions(context)
-    
+  describe('actions', () => {
+    const actions = adapter.actions(context);
+
     it('isValidForSystemTriggering', async () => {
       const result = await adapter.actions(context);
-      
-      expect(await result.isValidForSystemTriggering()).toEqual(false)
-    })
+
+      expect(await result.isValidForSystemTriggering()).toEqual(false);
+    });
 
     it('reserve', async () => {
       const result = await adapter.actions(context);
-      expect(await result.reserve({code: ''})).toEqual({})
-    })
+      expect(await result.reserve({ code: '' })).toEqual({});
+    });
 
     it('release', async () => {
       const result = await adapter.actions(context);
-      expect(await result.release()).toEqual(null)
-    })
+      expect(await result.release()).toEqual(null);
+    });
 
     it('isValidForCodeTriggering', async () => {
       const result = await adapter.actions(context);
-      expect(await result.isValidForCodeTriggering({code: ''})).toEqual(false)
-    })
+      expect(await result.isValidForCodeTriggering({ code: '' })).toEqual(false);
+    });
 
     it('discountForPricingAdapterKey', async () => {
       const result = await adapter.actions(context);
-      const calculationSheet = {}
-      expect(await result.discountForPricingAdapterKey({calculationSheet, pricingAdapterKey: 'key'} as any)).toEqual(null)
-    })
-
-  })
+      const calculationSheet = {};
+      expect(
+        await result.discountForPricingAdapterKey({ calculationSheet, pricingAdapterKey: 'key' } as any),
+      ).toEqual(null);
+    });
+  });
 });

@@ -1,5 +1,5 @@
 describe('MessagingDirector', () => {
   it('Stub', () => {
-      expect(true).toBe(true)
-    });
+    expect(true).toBe(true);
+  });
 });

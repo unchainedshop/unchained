@@ -1,7 +1,5 @@
 describe('Bookmark', () => {
-
-  it('Check Bookmarks module', async () => {
-   expect(true).toBeTruthy()
+  it('Check Bookmarks module', () => {
+    expect(true).toBeTruthy();
   });
-
 });

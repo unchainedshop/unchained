@@ -1,4 +1,4 @@
-import _switch from "./switch.js";
+import _switch from './switch.js';
 
 describe('switch', () => {
   it('returns undefined if no value is provided', () => {
@@ -19,4 +19,3 @@ describe('switch', () => {
     expect(result).toEqual(['false']);
   });
 });
-

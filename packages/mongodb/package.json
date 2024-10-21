@@ -35,7 +35,7 @@
   },
   "peerDependencies": {
     "@mongodb-js/zstd": "^1.2.2",
-    "mongodb": "^6.9.0"
+    "mongodb": "^6.10.0"
   },
   "optionalDependencies": {
     "mongodb-memory-server": "^10.0.0"

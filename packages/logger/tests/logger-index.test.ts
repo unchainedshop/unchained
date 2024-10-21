@@ -1,5 +1,5 @@
 describe('Logger', () => {
-  it('Init', async () => {
-    expect(true).toBeTruthy()
+  it('Init', () => {
+    expect(true).toBeTruthy();
   });
 });

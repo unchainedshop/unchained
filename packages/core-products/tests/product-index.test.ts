@@ -1,7 +1,5 @@
 describe('Product', () => {
-
-  it('Product', async () => {
-   expect(true).toBeTruthy()
+  it('Product', () => {
+    expect(true).toBeTruthy();
   });
-
 });

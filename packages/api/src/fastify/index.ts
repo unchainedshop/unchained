@@ -24,8 +24,6 @@ const resolveUserRemoteAddress = (req: IncomingMessage) => {
 };
 
 const {
-  BULK_IMPORT_API_PATH = '/bulk-import',
-  ERC_METADATA_API_PATH = '/erc-metadata',
   GRAPHQL_API_PATH = '/graphql',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
@@ -50,11 +48,12 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
     };
     await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, { userId: user._id, ...tokenObject });
     /* eslint-disable-next-line */
-      (user as any)._inLoginMethodResponse = true;
+    (user as any)._inLoginMethodResponse = true;
     return { user, ...tokenObject };
   }
 
-  async function logout(sessionId?: string) { /* eslint-disable-line */
+  async function logout() {
+    /* eslint-disable-line */
     if (!req.session?.userId) return false;
     const tokenObject = {
       _id: (req as any).session.sessionId,
@@ -83,7 +82,6 @@ export const connect = (
   {
     graphqlHandler,
     db,
-    unchainedAPI,
   }: { graphqlHandler: YogaServerInstance<any, any>; db: mongodb.Db; unchainedAPI: UnchainedCore },
 ) => {
   fastify.register(fastifyCookie);
