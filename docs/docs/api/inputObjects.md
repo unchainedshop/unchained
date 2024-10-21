@@ -16,7 +16,7 @@ slug: inputObjects
 <tr>
 <td>
 firstName<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -25,7 +25,7 @@ firstName<br />
 <tr>
 <td>
 lastName<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -34,7 +34,7 @@ lastName<br />
 <tr>
 <td>
 company<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -43,7 +43,7 @@ company<br />
 <tr>
 <td>
 addressLine<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -52,7 +52,7 @@ addressLine<br />
 <tr>
 <td>
 addressLine2<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -61,7 +61,7 @@ addressLine2<br />
 <tr>
 <td>
 postalCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -70,7 +70,7 @@ postalCode<br />
 <tr>
 <td>
 regionCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -79,7 +79,7 @@ regionCode<br />
 <tr>
 <td>
 city<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -88,7 +88,7 @@ city<br />
 <tr>
 <td>
 countryCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -109,7 +109,7 @@ countryCode<br />
 <tr>
 <td>
 emailAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -118,7 +118,7 @@ emailAddress<br />
 <tr>
 <td>
 telNumber<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -139,7 +139,7 @@ telNumber<br />
 <tr>
 <td>
 isRoot<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -148,7 +148,7 @@ isRoot<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -157,7 +157,7 @@ tags<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -178,7 +178,7 @@ title<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -199,7 +199,7 @@ isoCode<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -208,7 +208,7 @@ isoCode<br />
 <tr>
 <td>
 contractAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -217,7 +217,7 @@ contractAddress<br />
 <tr>
 <td>
 decimals<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -238,7 +238,7 @@ decimals<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#deliveryprovidertype"><code>DeliveryProviderType!</code></a>
+<a href="/api/enums#deliveryprovidertype"><code>DeliveryProviderType!</code></a>
 </td>
 <td>
 
@@ -247,7 +247,7 @@ type<br />
 <tr>
 <td>
 adapterKey<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -268,7 +268,7 @@ adapterKey<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -277,7 +277,7 @@ key<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#filtertype"><code>FilterType!</code></a>
+<a href="/api/enums#filtertype"><code>FilterType!</code></a>
 </td>
 <td>
 
@@ -286,7 +286,7 @@ type<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -295,7 +295,7 @@ title<br />
 <tr>
 <td>
 options<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -316,7 +316,7 @@ options<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -325,7 +325,7 @@ value<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -346,7 +346,7 @@ title<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -367,7 +367,7 @@ isoCode<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#paymentprovidertype"><code>PaymentProviderType!</code></a>
+<a href="/api/enums#paymentprovidertype"><code>PaymentProviderType!</code></a>
 </td>
 <td>
 
@@ -376,7 +376,7 @@ type<br />
 <tr>
 <td>
 adapterKey<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -397,7 +397,7 @@ adapterKey<br />
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -406,7 +406,7 @@ productId<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -427,7 +427,7 @@ quantity<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -436,7 +436,7 @@ title<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -445,7 +445,7 @@ type<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -466,7 +466,7 @@ tags<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -475,7 +475,7 @@ key<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#productvariationtype"><code>ProductVariationType!</code></a>
+<a href="/api/enums#productvariationtype"><code>ProductVariationType!</code></a>
 </td>
 <td>
 
@@ -484,7 +484,7 @@ type<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -505,7 +505,7 @@ title<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -514,7 +514,7 @@ value<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -535,7 +535,7 @@ title<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#warehousingprovidertype"><code>WarehousingProviderType!</code></a>
+<a href="/api/enums#warehousingprovidertype"><code>WarehousingProviderType!</code></a>
 </td>
 <td>
 
@@ -544,7 +544,7 @@ type<br />
 <tr>
 <td>
 adapterKey<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -565,7 +565,7 @@ adapterKey<br />
 <tr>
 <td>
 start<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -574,7 +574,7 @@ start<br />
 <tr>
 <td>
 end<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -595,7 +595,7 @@ end<br />
 <tr>
 <td>
 deliveryProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -604,7 +604,7 @@ deliveryProviderId<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -625,7 +625,7 @@ meta<br />
 <tr>
 <td>
 paymentProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -634,7 +634,7 @@ paymentProviderId<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -655,7 +655,7 @@ meta<br />
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -664,7 +664,7 @@ productId<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -673,7 +673,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -694,7 +694,7 @@ configuration<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -703,7 +703,7 @@ key<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -724,7 +724,7 @@ value<br />
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -733,7 +733,7 @@ productId<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -742,7 +742,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -763,7 +763,7 @@ configuration<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -772,7 +772,7 @@ key<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -793,7 +793,7 @@ value<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -802,7 +802,7 @@ key<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -823,7 +823,7 @@ value<br />
 <tr>
 <td>
 rating<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -832,7 +832,7 @@ rating<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -841,7 +841,7 @@ title<br />
 <tr>
 <td>
 review<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -862,7 +862,7 @@ review<br />
 <tr>
 <td>
 assortmentFilterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -871,7 +871,7 @@ assortmentFilterId<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -892,7 +892,7 @@ sortKey<br />
 <tr>
 <td>
 assortmentLinkId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -901,7 +901,7 @@ assortmentLinkId<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -922,7 +922,7 @@ sortKey<br />
 <tr>
 <td>
 assortmentMediaId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -931,7 +931,7 @@ assortmentMediaId<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -952,7 +952,7 @@ sortKey<br />
 <tr>
 <td>
 assortmentProductId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -961,7 +961,7 @@ assortmentProductId<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -982,7 +982,7 @@ sortKey<br />
 <tr>
 <td>
 productMediaId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -991,7 +991,7 @@ productMediaId<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1012,7 +1012,7 @@ sortKey<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1021,7 +1021,7 @@ key<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/enums#sortdirection"><code>SortDirection!</code></a>
+<a href="/api/enums#sortdirection"><code>SortDirection!</code></a>
 </td>
 <td>
 
@@ -1042,7 +1042,7 @@ value<br />
 <tr>
 <td>
 isRoot<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1051,7 +1051,7 @@ isRoot<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -1060,7 +1060,7 @@ tags<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1069,7 +1069,7 @@ isActive<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1090,7 +1090,7 @@ sequence<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1099,7 +1099,7 @@ locale<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1108,7 +1108,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1129,7 +1129,7 @@ subtitle<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1138,7 +1138,7 @@ locale<br />
 <tr>
 <td>
 slug<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1147,7 +1147,7 @@ slug<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1156,7 +1156,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1165,7 +1165,7 @@ subtitle<br />
 <tr>
 <td>
 description<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1186,7 +1186,7 @@ description<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1195,7 +1195,7 @@ isoCode<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1204,7 +1204,7 @@ isActive<br />
 <tr>
 <td>
 defaultCurrencyCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1225,7 +1225,7 @@ defaultCurrencyCode<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1234,7 +1234,7 @@ isoCode<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1243,7 +1243,7 @@ isActive<br />
 <tr>
 <td>
 contractAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1252,7 +1252,7 @@ contractAddress<br />
 <tr>
 <td>
 decimals<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1273,7 +1273,7 @@ decimals<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1282,7 +1282,7 @@ isActive<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1303,7 +1303,7 @@ key<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1312,7 +1312,7 @@ locale<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1321,7 +1321,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1342,7 +1342,7 @@ subtitle<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1351,7 +1351,7 @@ isoCode<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1372,7 +1372,7 @@ isActive<br />
 <tr>
 <td>
 pricing<br />
-<a href="/../api/inputObjects#updateproductcommercepricinginput"><code>[UpdateProductCommercePricingInput!]!</code></a>
+<a href="/api/inputObjects#updateproductcommercepricinginput"><code>[UpdateProductCommercePricingInput!]!</code></a>
 </td>
 <td>
 
@@ -1393,7 +1393,7 @@ pricing<br />
 <tr>
 <td>
 amount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1402,7 +1402,7 @@ amount<br />
 <tr>
 <td>
 maxQuantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1411,7 +1411,7 @@ maxQuantity<br />
 <tr>
 <td>
 isTaxable<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1420,7 +1420,7 @@ isTaxable<br />
 <tr>
 <td>
 isNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1429,7 +1429,7 @@ isNetPrice<br />
 <tr>
 <td>
 currencyCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1438,7 +1438,7 @@ currencyCode<br />
 <tr>
 <td>
 countryCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1459,7 +1459,7 @@ countryCode<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -1468,7 +1468,7 @@ tags<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1477,7 +1477,7 @@ sequence<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1498,7 +1498,7 @@ meta<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1507,7 +1507,7 @@ locale<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1516,7 +1516,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1537,7 +1537,7 @@ subtitle<br />
 <tr>
 <td>
 usageCalculationType<br />
-<a href="/../api/enums#productplanusagecalculationtype"><code>ProductPlanUsageCalculationType!</code></a>
+<a href="/api/enums#productplanusagecalculationtype"><code>ProductPlanUsageCalculationType!</code></a>
 </td>
 <td>
 
@@ -1546,7 +1546,7 @@ usageCalculationType<br />
 <tr>
 <td>
 billingInterval<br />
-<a href="/../api/enums#productplanconfigurationinterval"><code>ProductPlanConfigurationInterval!</code></a>
+<a href="/api/enums#productplanconfigurationinterval"><code>ProductPlanConfigurationInterval!</code></a>
 </td>
 <td>
 
@@ -1555,7 +1555,7 @@ billingInterval<br />
 <tr>
 <td>
 billingIntervalCount<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1564,7 +1564,7 @@ billingIntervalCount<br />
 <tr>
 <td>
 trialInterval<br />
-<a href="/../api/enums#productplanconfigurationinterval"><code>ProductPlanConfigurationInterval</code></a>
+<a href="/api/enums#productplanconfigurationinterval"><code>ProductPlanConfigurationInterval</code></a>
 </td>
 <td>
 
@@ -1573,7 +1573,7 @@ trialInterval<br />
 <tr>
 <td>
 trialIntervalCount<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1594,7 +1594,7 @@ trialIntervalCount<br />
 <tr>
 <td>
 weightInGram<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1603,7 +1603,7 @@ weightInGram<br />
 <tr>
 <td>
 heightInMillimeters<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1612,7 +1612,7 @@ heightInMillimeters<br />
 <tr>
 <td>
 lengthInMillimeters<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1621,7 +1621,7 @@ lengthInMillimeters<br />
 <tr>
 <td>
 widthInMillimeters<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1642,7 +1642,7 @@ widthInMillimeters<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1651,7 +1651,7 @@ locale<br />
 <tr>
 <td>
 slug<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1660,7 +1660,7 @@ slug<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1669,7 +1669,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1678,7 +1678,7 @@ subtitle<br />
 <tr>
 <td>
 description<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1687,7 +1687,7 @@ description<br />
 <tr>
 <td>
 vendor<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1696,7 +1696,7 @@ vendor<br />
 <tr>
 <td>
 brand<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1705,7 +1705,7 @@ brand<br />
 <tr>
 <td>
 labels<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -1726,7 +1726,7 @@ labels<br />
 <tr>
 <td>
 contractAddress<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1735,7 +1735,7 @@ contractAddress<br />
 <tr>
 <td>
 contractStandard<br />
-<a href="/../api/enums#smartcontractstandard"><code>SmartContractStandard!</code></a>
+<a href="/api/enums#smartcontractstandard"><code>SmartContractStandard!</code></a>
 </td>
 <td>
 
@@ -1744,7 +1744,7 @@ contractStandard<br />
 <tr>
 <td>
 tokenId<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1753,7 +1753,7 @@ tokenId<br />
 <tr>
 <td>
 supply<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1762,7 +1762,7 @@ supply<br />
 <tr>
 <td>
 ercMetadataProperties<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1783,7 +1783,7 @@ ercMetadataProperties<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1792,7 +1792,7 @@ locale<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1801,7 +1801,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1822,7 +1822,7 @@ subtitle<br />
 <tr>
 <td>
 sku<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1831,7 +1831,7 @@ sku<br />
 <tr>
 <td>
 baseUnit<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1852,7 +1852,7 @@ baseUnit<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/scalars#json"><code>[JSON!]</code></a>
+<a href="/api/scalars#json"><code>[JSON!]</code></a>
 </td>
 <td>
 
@@ -1873,7 +1873,7 @@ configuration<br />
 <tr>
 <td>
 displayName<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1882,7 +1882,7 @@ displayName<br />
 <tr>
 <td>
 birthday<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -1891,7 +1891,7 @@ birthday<br />
 <tr>
 <td>
 phoneMobile<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1900,7 +1900,7 @@ phoneMobile<br />
 <tr>
 <td>
 gender<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1909,7 +1909,7 @@ gender<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/inputObjects#addressinput"><code>AddressInput</code></a>
+<a href="/api/inputObjects#addressinput"><code>AddressInput</code></a>
 </td>
 <td>
 

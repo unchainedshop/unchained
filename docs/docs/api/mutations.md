@@ -6,7 +6,7 @@ slug: mutations
 
 ## activateEnrollment
 
-**Type:** [Enrollment!](/../api/objects#enrollment)
+**Type:** [Enrollment!](/api/objects#enrollment)
 
 Activate a enrollment by changing the status to ACTIVE
 
@@ -18,7 +18,7 @@ Activate a enrollment by changing the status to ACTIVE
 <tr>
 <td>
 enrollmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -29,7 +29,7 @@ enrollmentId<br />
 
 ## addAssortmentFilter
 
-**Type:** [AssortmentFilter!](/../api/objects#assortmentfilter)
+**Type:** [AssortmentFilter!](/api/objects#assortmentfilter)
 
 Add a new filter to an assortment
 
@@ -41,7 +41,7 @@ Add a new filter to an assortment
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -50,7 +50,7 @@ assortmentId<br />
 <tr>
 <td>
 filterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -59,7 +59,7 @@ filterId<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -70,7 +70,7 @@ tags<br />
 
 ## addAssortmentLink
 
-**Type:** [AssortmentLink!](/../api/objects#assortmentlink)
+**Type:** [AssortmentLink!](/api/objects#assortmentlink)
 
 Add a new child assortment to an assortment
 
@@ -82,7 +82,7 @@ Add a new child assortment to an assortment
 <tr>
 <td>
 parentAssortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -91,7 +91,7 @@ parentAssortmentId<br />
 <tr>
 <td>
 childAssortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -100,7 +100,7 @@ childAssortmentId<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -111,7 +111,7 @@ tags<br />
 
 ## addAssortmentMedia
 
-**Type:** [AssortmentMedia!](/../api/objects#assortmentmedia)
+**Type:** [AssortmentMedia!](/api/objects#assortmentmedia)
 
 Add a new media to a assortment
 
@@ -123,7 +123,7 @@ Add a new media to a assortment
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -132,7 +132,7 @@ assortmentId<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/scalars#upload"><code>Upload!</code></a>
+<a href="/api/scalars#upload"><code>Upload!</code></a>
 </td>
 <td>
 
@@ -143,7 +143,7 @@ media<br />
 
 ## addAssortmentProduct
 
-**Type:** [AssortmentProduct!](/../api/objects#assortmentproduct)
+**Type:** [AssortmentProduct!](/api/objects#assortmentproduct)
 
 Add a new product to an assortment
 
@@ -155,7 +155,7 @@ Add a new product to an assortment
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -164,7 +164,7 @@ assortmentId<br />
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -173,7 +173,7 @@ productId<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -184,7 +184,7 @@ tags<br />
 
 ## addCartDiscount
 
-**Type:** [OrderDiscount!](/../api/objects#orderdiscount)
+**Type:** [OrderDiscount!](/api/objects#orderdiscount)
 
 Add a new discount to the cart, a new order gets generated with status = open (= order before checkout / cart) if necessary
 
@@ -196,7 +196,7 @@ Add a new discount to the cart, a new order gets generated with status = open (=
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -205,7 +205,7 @@ orderId<br />
 <tr>
 <td>
 code<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -216,7 +216,7 @@ code<br />
 
 ## addCartProduct
 
-**Type:** [OrderItem!](/../api/objects#orderitem)
+**Type:** [OrderItem!](/api/objects#orderitem)
 
 Add a new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
 
@@ -228,7 +228,7 @@ Add a new item to the cart. Order gets generated with status = open (= order bef
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -237,7 +237,7 @@ orderId<br />
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -246,7 +246,7 @@ productId<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -255,7 +255,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -266,7 +266,7 @@ configuration<br />
 
 ## addCartQuotation
 
-**Type:** [OrderItem!](/../api/objects#orderitem)
+**Type:** [OrderItem!](/api/objects#orderitem)
 
 Add a new quotation to the cart.
 
@@ -278,7 +278,7 @@ Add a new quotation to the cart.
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -287,7 +287,7 @@ orderId<br />
 <tr>
 <td>
 quotationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -296,7 +296,7 @@ quotationId<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -305,7 +305,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -316,7 +316,7 @@ configuration<br />
 
 ## addEmail
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Update E-Mail address of any user or logged in user if userId is not provided
 
@@ -328,7 +328,7 @@ Update E-Mail address of any user or logged in user if userId is not provided
 <tr>
 <td>
 email<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -337,7 +337,7 @@ email<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -348,7 +348,7 @@ userId<br />
 
 ## addMultipleCartProducts
 
-**Type:** [[OrderItem]!](/../api/objects#orderitem)
+**Type:** [[OrderItem]!](/api/objects#orderitem)
 
 Add multiple new item to the cart. Order gets generated with status = open (= order before checkout / cart) if necessary.
 
@@ -360,7 +360,7 @@ Add multiple new item to the cart. Order gets generated with status = open (= or
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -369,7 +369,7 @@ orderId<br />
 <tr>
 <td>
 items<br />
-<a href="/../api/inputObjects#orderiteminput"><code>[OrderItemInput!]!</code></a>
+<a href="/api/inputObjects#orderiteminput"><code>[OrderItemInput!]!</code></a>
 </td>
 <td>
 
@@ -380,7 +380,7 @@ items<br />
 
 ## addProductAssignment
 
-**Type:** [Product!](/../api/interfaces#product)
+**Type:** [Product!](/api/interfaces#product)
 
 Link a new product to a ConfigurableProduct by providing a configuration
 combination that uniquely identifies a row in the assignment matrix
@@ -393,7 +393,7 @@ combination that uniquely identifies a row in the assignment matrix
 <tr>
 <td>
 proxyId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -402,7 +402,7 @@ proxyId<br />
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -411,7 +411,7 @@ productId<br />
 <tr>
 <td>
 vectors<br />
-<a href="/../api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]!</code></a>
+<a href="/api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]!</code></a>
 </td>
 <td>
 
@@ -422,7 +422,7 @@ vectors<br />
 
 ## addProductMedia
 
-**Type:** [ProductMedia!](/../api/objects#productmedia)
+**Type:** [ProductMedia!](/api/objects#productmedia)
 
 Add a new media to a product's visualization
 
@@ -434,7 +434,7 @@ Add a new media to a product's visualization
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -443,7 +443,7 @@ productId<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/scalars#upload"><code>Upload!</code></a>
+<a href="/api/scalars#upload"><code>Upload!</code></a>
 </td>
 <td>
 
@@ -454,7 +454,7 @@ media<br />
 
 ## addProductReviewVote
 
-**Type:** [ProductReview!](/../api/objects#productreview)
+**Type:** [ProductReview!](/api/objects#productreview)
 
 Add a vote to a ProductReview.
 If there there is a previous vote from the user invoking this it will be removed and updated with the new vote
@@ -467,7 +467,7 @@ If there there is a previous vote from the user invoking this it will be removed
 <tr>
 <td>
 productReviewId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -476,7 +476,7 @@ productReviewId<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#productreviewvotetype"><code>ProductReviewVoteType!</code></a>
+<a href="/api/enums#productreviewvotetype"><code>ProductReviewVoteType!</code></a>
 </td>
 <td>
 
@@ -485,7 +485,7 @@ type<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -496,7 +496,7 @@ meta<br />
 
 ## addPushSubscription
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Store user W3C Push subscription object
 
@@ -508,7 +508,7 @@ Store user W3C Push subscription object
 <tr>
 <td>
 subscription<br />
-<a href="/../api/scalars#json"><code>JSON!</code></a>
+<a href="/api/scalars#json"><code>JSON!</code></a>
 </td>
 <td>
 
@@ -517,7 +517,7 @@ subscription<br />
 <tr>
 <td>
 unsubscribeFromOtherUsers<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -528,7 +528,7 @@ unsubscribeFromOtherUsers<br />
 
 ## addWeb3Address
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Web3
 
@@ -540,7 +540,7 @@ Web3
 <tr>
 <td>
 address<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -551,7 +551,7 @@ address<br />
 
 ## addWebAuthnCredentials
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Register WebAuthn Credentials for current user
 
@@ -563,7 +563,7 @@ Register WebAuthn Credentials for current user
 <tr>
 <td>
 credentials<br />
-<a href="/../api/scalars#json"><code>JSON!</code></a>
+<a href="/api/scalars#json"><code>JSON!</code></a>
 </td>
 <td>
 
@@ -574,7 +574,7 @@ credentials<br />
 
 ## addWork
 
-**Type:** [Work](/../api/objects#work)
+**Type:** [Work](/api/objects#work)
 
 Add work to the work queue. Each type has its own input shape. If you pinpoint the worker by setting it
 during creation, the work will be only run by the worker who identifies as that worker.
@@ -587,7 +587,7 @@ during creation, the work will be only run by the worker who identifies as that 
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#worktype"><code>WorkType!</code></a>
+<a href="/api/enums#worktype"><code>WorkType!</code></a>
 </td>
 <td>
 
@@ -596,7 +596,7 @@ type<br />
 <tr>
 <td>
 priority<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -605,7 +605,7 @@ priority<br />
 <tr>
 <td>
 input<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -614,7 +614,7 @@ input<br />
 <tr>
 <td>
 originalWorkId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -623,7 +623,7 @@ originalWorkId<br />
 <tr>
 <td>
 scheduled<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -632,7 +632,7 @@ scheduled<br />
 <tr>
 <td>
 retries<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -641,7 +641,7 @@ retries<br />
 <tr>
 <td>
 worker<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -652,7 +652,7 @@ worker<br />
 
 ## allocateWork
 
-**Type:** [Work](/../api/objects#work)
+**Type:** [Work](/api/objects#work)
 
 Get the next task from the worker queue. This will also mark the task as "started".
 Optional worker to identify the worker.
@@ -665,7 +665,7 @@ Optional worker to identify the worker.
 <tr>
 <td>
 types<br />
-<a href="/../api/enums#worktype"><code>[WorkType]</code></a>
+<a href="/api/enums#worktype"><code>[WorkType]</code></a>
 </td>
 <td>
 
@@ -674,7 +674,7 @@ types<br />
 <tr>
 <td>
 worker<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -685,7 +685,7 @@ worker<br />
 
 ## bookmark
 
-**Type:** [Bookmark!](/../api/objects#bookmark)
+**Type:** [Bookmark!](/api/objects#bookmark)
 
 Toggle Bookmark state on a product as currently logged in user,
 Does not work when multiple bookmarks with different explicit meta configurations exist.
@@ -699,7 +699,7 @@ In those cases please use createBookmark and removeBookmark
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -708,7 +708,7 @@ productId<br />
 <tr>
 <td>
 bookmarked<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -719,13 +719,13 @@ bookmarked<br />
 
 ## buildSecretTOTPAuthURL
 
-**Type:** [String!](/../api/scalars#string)
+**Type:** [String!](/api/scalars#string)
 
 In order to activate TOTP, generate a secret and return
 
 ## changePassword
 
-**Type:** [SuccessResponse](/../api/objects#successresponse)
+**Type:** [SuccessResponse](/api/objects#successresponse)
 
 Change the current user's password. Must be logged in.
 
@@ -737,7 +737,7 @@ Change the current user's password. Must be logged in.
 <tr>
 <td>
 oldPlainPassword<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -746,7 +746,7 @@ oldPlainPassword<br />
 <tr>
 <td>
 newPlainPassword<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -757,7 +757,7 @@ newPlainPassword<br />
 
 ## checkoutCart
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Process the checkout (automatically charge & deliver if possible), the cart will get
 transformed to an ordinary order if everything goes well.
@@ -770,7 +770,7 @@ transformed to an ordinary order if everything goes well.
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -779,7 +779,7 @@ orderId<br />
 <tr>
 <td>
 paymentContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -788,7 +788,7 @@ paymentContext<br />
 <tr>
 <td>
 deliveryContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -799,7 +799,7 @@ deliveryContext<br />
 
 ## confirmMediaUpload
 
-**Type:** [Media!](/../api/objects#media)
+**Type:** [Media!](/api/objects#media)
 
 
 
@@ -811,7 +811,7 @@ deliveryContext<br />
 <tr>
 <td>
 mediaUploadTicketId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -820,7 +820,7 @@ mediaUploadTicketId<br />
 <tr>
 <td>
 size<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -829,7 +829,7 @@ size<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -840,7 +840,7 @@ type<br />
 
 ## confirmOrder
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Manually confirm an order which is in progress
 
@@ -852,7 +852,7 @@ Manually confirm an order which is in progress
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -861,7 +861,7 @@ orderId<br />
 <tr>
 <td>
 paymentContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -870,7 +870,7 @@ paymentContext<br />
 <tr>
 <td>
 deliveryContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -879,7 +879,7 @@ deliveryContext<br />
 <tr>
 <td>
 comment<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -890,7 +890,7 @@ comment<br />
 
 ## createAssortment
 
-**Type:** [Assortment!](/../api/objects#assortment)
+**Type:** [Assortment!](/api/objects#assortment)
 
 Creates new assortment.
 
@@ -902,7 +902,7 @@ Creates new assortment.
 <tr>
 <td>
 assortment<br />
-<a href="/../api/inputObjects#createassortmentinput"><code>CreateAssortmentInput!</code></a>
+<a href="/api/inputObjects#createassortmentinput"><code>CreateAssortmentInput!</code></a>
 </td>
 <td>
 
@@ -913,7 +913,7 @@ assortment<br />
 
 ## createBookmark
 
-**Type:** [Bookmark!](/../api/objects#bookmark)
+**Type:** [Bookmark!](/api/objects#bookmark)
 
 Create a bookmark for a specific user
 
@@ -925,7 +925,7 @@ Create a bookmark for a specific user
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -934,7 +934,7 @@ productId<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -943,7 +943,7 @@ userId<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -954,7 +954,7 @@ meta<br />
 
 ## createCart
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Creates an alternative cart. If you use this feature, you should use explicit orderId's when using the
 cart mutations. Else it will work like a stack and the checkout will use the very first cart of the user.
@@ -967,7 +967,7 @@ cart mutations. Else it will work like a stack and the checkout will use the ver
 <tr>
 <td>
 orderNumber<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -978,7 +978,7 @@ orderNumber<br />
 
 ## createCountry
 
-**Type:** [Country!](/../api/objects#country)
+**Type:** [Country!](/api/objects#country)
 
 
 
@@ -990,7 +990,7 @@ orderNumber<br />
 <tr>
 <td>
 country<br />
-<a href="/../api/inputObjects#createcountryinput"><code>CreateCountryInput!</code></a>
+<a href="/api/inputObjects#createcountryinput"><code>CreateCountryInput!</code></a>
 </td>
 <td>
 
@@ -1001,7 +1001,7 @@ country<br />
 
 ## createCurrency
 
-**Type:** [Currency!](/../api/objects#currency)
+**Type:** [Currency!](/api/objects#currency)
 
 
 
@@ -1013,7 +1013,7 @@ country<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/inputObjects#createcurrencyinput"><code>CreateCurrencyInput!</code></a>
+<a href="/api/inputObjects#createcurrencyinput"><code>CreateCurrencyInput!</code></a>
 </td>
 <td>
 
@@ -1024,7 +1024,7 @@ currency<br />
 
 ## createDeliveryProvider
 
-**Type:** [DeliveryProvider!](/../api/objects#deliveryprovider)
+**Type:** [DeliveryProvider!](/api/objects#deliveryprovider)
 
 Creates new delivery provider
 
@@ -1036,7 +1036,7 @@ Creates new delivery provider
 <tr>
 <td>
 deliveryProvider<br />
-<a href="/../api/inputObjects#createdeliveryproviderinput"><code>CreateDeliveryProviderInput!</code></a>
+<a href="/api/inputObjects#createdeliveryproviderinput"><code>CreateDeliveryProviderInput!</code></a>
 </td>
 <td>
 
@@ -1047,7 +1047,7 @@ deliveryProvider<br />
 
 ## createEnrollment
 
-**Type:** [Enrollment!](/../api/objects#enrollment)
+**Type:** [Enrollment!](/api/objects#enrollment)
 
 Create a enrollment.
 
@@ -1059,7 +1059,7 @@ Create a enrollment.
 <tr>
 <td>
 plan<br />
-<a href="/../api/inputObjects#enrollmentplaninput"><code>EnrollmentPlanInput!</code></a>
+<a href="/api/inputObjects#enrollmentplaninput"><code>EnrollmentPlanInput!</code></a>
 </td>
 <td>
 
@@ -1068,7 +1068,7 @@ plan<br />
 <tr>
 <td>
 billingAddress<br />
-<a href="/../api/inputObjects#addressinput"><code>AddressInput</code></a>
+<a href="/api/inputObjects#addressinput"><code>AddressInput</code></a>
 </td>
 <td>
 
@@ -1077,7 +1077,7 @@ billingAddress<br />
 <tr>
 <td>
 contact<br />
-<a href="/../api/inputObjects#contactinput"><code>ContactInput</code></a>
+<a href="/api/inputObjects#contactinput"><code>ContactInput</code></a>
 </td>
 <td>
 
@@ -1086,7 +1086,7 @@ contact<br />
 <tr>
 <td>
 payment<br />
-<a href="/../api/inputObjects#enrollmentpaymentinput"><code>EnrollmentPaymentInput</code></a>
+<a href="/api/inputObjects#enrollmentpaymentinput"><code>EnrollmentPaymentInput</code></a>
 </td>
 <td>
 
@@ -1095,7 +1095,7 @@ payment<br />
 <tr>
 <td>
 delivery<br />
-<a href="/../api/inputObjects#enrollmentdeliveryinput"><code>EnrollmentDeliveryInput</code></a>
+<a href="/api/inputObjects#enrollmentdeliveryinput"><code>EnrollmentDeliveryInput</code></a>
 </td>
 <td>
 
@@ -1104,7 +1104,7 @@ delivery<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1115,7 +1115,7 @@ meta<br />
 
 ## createFilter
 
-**Type:** [Filter!](/../api/objects#filter)
+**Type:** [Filter!](/api/objects#filter)
 
 Creates new Filter along with the user who created it.
 
@@ -1127,7 +1127,7 @@ Creates new Filter along with the user who created it.
 <tr>
 <td>
 filter<br />
-<a href="/../api/inputObjects#createfilterinput"><code>CreateFilterInput!</code></a>
+<a href="/api/inputObjects#createfilterinput"><code>CreateFilterInput!</code></a>
 </td>
 <td>
 
@@ -1138,7 +1138,7 @@ filter<br />
 
 ## createFilterOption
 
-**Type:** [Filter!](/../api/objects#filter)
+**Type:** [Filter!](/api/objects#filter)
 
 Adds new option to filters
 
@@ -1150,7 +1150,7 @@ Adds new option to filters
 <tr>
 <td>
 filterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1159,7 +1159,7 @@ filterId<br />
 <tr>
 <td>
 option<br />
-<a href="/../api/inputObjects#createfilteroptioninput"><code>CreateFilterOptionInput!</code></a>
+<a href="/api/inputObjects#createfilteroptioninput"><code>CreateFilterOptionInput!</code></a>
 </td>
 <td>
 
@@ -1170,7 +1170,7 @@ option<br />
 
 ## createLanguage
 
-**Type:** [Language!](/../api/objects#language)
+**Type:** [Language!](/api/objects#language)
 
 Adds new language along with the user who created it
 
@@ -1182,7 +1182,7 @@ Adds new language along with the user who created it
 <tr>
 <td>
 language<br />
-<a href="/../api/inputObjects#createlanguageinput"><code>CreateLanguageInput!</code></a>
+<a href="/api/inputObjects#createlanguageinput"><code>CreateLanguageInput!</code></a>
 </td>
 <td>
 
@@ -1193,7 +1193,7 @@ language<br />
 
 ## createPaymentProvider
 
-**Type:** [PaymentProvider!](/../api/objects#paymentprovider)
+**Type:** [PaymentProvider!](/api/objects#paymentprovider)
 
 Adds new payment provider
 
@@ -1205,7 +1205,7 @@ Adds new payment provider
 <tr>
 <td>
 paymentProvider<br />
-<a href="/../api/inputObjects#createpaymentproviderinput"><code>CreatePaymentProviderInput!</code></a>
+<a href="/api/inputObjects#createpaymentproviderinput"><code>CreatePaymentProviderInput!</code></a>
 </td>
 <td>
 
@@ -1216,7 +1216,7 @@ paymentProvider<br />
 
 ## createProduct
 
-**Type:** [Product!](/../api/interfaces#product)
+**Type:** [Product!](/api/interfaces#product)
 
 Create a new product
 
@@ -1228,7 +1228,7 @@ Create a new product
 <tr>
 <td>
 product<br />
-<a href="/../api/inputObjects#createproductinput"><code>CreateProductInput!</code></a>
+<a href="/api/inputObjects#createproductinput"><code>CreateProductInput!</code></a>
 </td>
 <td>
 
@@ -1239,7 +1239,7 @@ product<br />
 
 ## createProductBundleItem
 
-**Type:** [Product!](/../api/interfaces#product)
+**Type:** [Product!](/api/interfaces#product)
 
 Adds one product as bundle for another products
 
@@ -1251,7 +1251,7 @@ Adds one product as bundle for another products
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1260,7 +1260,7 @@ productId<br />
 <tr>
 <td>
 item<br />
-<a href="/../api/inputObjects#createproductbundleiteminput"><code>CreateProductBundleItemInput!</code></a>
+<a href="/api/inputObjects#createproductbundleiteminput"><code>CreateProductBundleItemInput!</code></a>
 </td>
 <td>
 
@@ -1271,7 +1271,7 @@ item<br />
 
 ## createProductReview
 
-**Type:** [ProductReview!](/../api/objects#productreview)
+**Type:** [ProductReview!](/api/objects#productreview)
 
 Add a new ProductReview
 
@@ -1283,7 +1283,7 @@ Add a new ProductReview
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1292,7 +1292,7 @@ productId<br />
 <tr>
 <td>
 productReview<br />
-<a href="/../api/inputObjects#productreviewinput"><code>ProductReviewInput!</code></a>
+<a href="/api/inputObjects#productreviewinput"><code>ProductReviewInput!</code></a>
 </td>
 <td>
 
@@ -1303,7 +1303,7 @@ productReview<br />
 
 ## createProductVariation
 
-**Type:** [ProductVariation!](/../api/objects#productvariation)
+**Type:** [ProductVariation!](/api/objects#productvariation)
 
 Creates new product variation for a product.
 
@@ -1315,7 +1315,7 @@ Creates new product variation for a product.
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1324,7 +1324,7 @@ productId<br />
 <tr>
 <td>
 variation<br />
-<a href="/../api/inputObjects#createproductvariationinput"><code>CreateProductVariationInput!</code></a>
+<a href="/api/inputObjects#createproductvariationinput"><code>CreateProductVariationInput!</code></a>
 </td>
 <td>
 
@@ -1335,7 +1335,7 @@ variation<br />
 
 ## createProductVariationOption
 
-**Type:** [ProductVariation!](/../api/objects#productvariation)
+**Type:** [ProductVariation!](/api/objects#productvariation)
 
 Adds variation option to an existing product variations
 
@@ -1347,7 +1347,7 @@ Adds variation option to an existing product variations
 <tr>
 <td>
 productVariationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1356,7 +1356,7 @@ productVariationId<br />
 <tr>
 <td>
 option<br />
-<a href="/../api/inputObjects#createproductvariationoptioninput"><code>CreateProductVariationOptionInput!</code></a>
+<a href="/api/inputObjects#createproductvariationoptioninput"><code>CreateProductVariationOptionInput!</code></a>
 </td>
 <td>
 
@@ -1367,7 +1367,7 @@ option<br />
 
 ## createUser
 
-**Type:** [LoginMethodResponse](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse](/api/objects#loginmethodresponse)
 
 Create a new user.
 
@@ -1379,7 +1379,7 @@ Create a new user.
 <tr>
 <td>
 username<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1388,7 +1388,7 @@ username<br />
 <tr>
 <td>
 email<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1397,7 +1397,7 @@ email<br />
 <tr>
 <td>
 webAuthnPublicKeyCredentials<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1406,7 +1406,7 @@ webAuthnPublicKeyCredentials<br />
 <tr>
 <td>
 plainPassword<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1415,7 +1415,7 @@ plainPassword<br />
 <tr>
 <td>
 profile<br />
-<a href="/../api/inputObjects#userprofileinput"><code>UserProfileInput</code></a>
+<a href="/api/inputObjects#userprofileinput"><code>UserProfileInput</code></a>
 </td>
 <td>
 
@@ -1426,7 +1426,7 @@ profile<br />
 
 ## createWarehousingProvider
 
-**Type:** [WarehousingProvider!](/../api/objects#warehousingprovider)
+**Type:** [WarehousingProvider!](/api/objects#warehousingprovider)
 
 Creates new warehouse provider.
 
@@ -1438,7 +1438,7 @@ Creates new warehouse provider.
 <tr>
 <td>
 warehousingProvider<br />
-<a href="/../api/inputObjects#createwarehousingproviderinput"><code>CreateWarehousingProviderInput!</code></a>
+<a href="/api/inputObjects#createwarehousingproviderinput"><code>CreateWarehousingProviderInput!</code></a>
 </td>
 <td>
 
@@ -1449,7 +1449,7 @@ warehousingProvider<br />
 
 ## createWebAuthnCredentialCreationOptions
 
-**Type:** [JSON!](/../api/scalars#json)
+**Type:** [JSON!](/api/scalars#json)
 
 Create WebAuthn PublicKeyCredentialCreationOptions to use for Registering a new WebAuthn Device
 
@@ -1461,7 +1461,7 @@ Create WebAuthn PublicKeyCredentialCreationOptions to use for Registering a new 
 <tr>
 <td>
 username<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1470,7 +1470,7 @@ username<br />
 <tr>
 <td>
 extensionOptions<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1481,7 +1481,7 @@ extensionOptions<br />
 
 ## createWebAuthnCredentialRequestOptions
 
-**Type:** [JSON!](/../api/scalars#json)
+**Type:** [JSON!](/api/scalars#json)
 
 Create WebAuthn PublicKeyCredentialRequestrOptions to use for WebAuthn Login Flow
 
@@ -1493,7 +1493,7 @@ Create WebAuthn PublicKeyCredentialRequestrOptions to use for WebAuthn Login Flo
 <tr>
 <td>
 username<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1502,7 +1502,7 @@ username<br />
 <tr>
 <td>
 extensionOptions<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1513,7 +1513,7 @@ extensionOptions<br />
 
 ## deliverOrder
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Manually mark a undelivered order as delivered
 
@@ -1525,7 +1525,7 @@ Manually mark a undelivered order as delivered
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1536,7 +1536,7 @@ orderId<br />
 
 ## disableTOTP
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Disable the 2nd factor (TOTP)
 
@@ -1548,7 +1548,7 @@ Disable the 2nd factor (TOTP)
 <tr>
 <td>
 code<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1557,7 +1557,7 @@ code<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -1568,7 +1568,7 @@ userId<br />
 
 ## emptyCart
 
-**Type:** [Order](/../api/objects#order)
+**Type:** [Order](/api/objects#order)
 
 Remove all items of an open order (cart) if possible.
 if you want to remove single cart item use removeCartItem instead
@@ -1581,7 +1581,7 @@ if you want to remove single cart item use removeCartItem instead
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -1592,7 +1592,7 @@ orderId<br />
 
 ## enableTOTP
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 In order to activate 2nd factor (TOTP), generate a secret and return
 
@@ -1604,7 +1604,7 @@ In order to activate 2nd factor (TOTP), generate a secret and return
 <tr>
 <td>
 secretBase32<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1613,7 +1613,7 @@ secretBase32<br />
 <tr>
 <td>
 code<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1624,7 +1624,7 @@ code<br />
 
 ## enrollUser
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Enroll a new user, setting enroll to true will let the user choose his password (e-mail gets sent)
 
@@ -1636,7 +1636,7 @@ Enroll a new user, setting enroll to true will let the user choose his password 
 <tr>
 <td>
 profile<br />
-<a href="/../api/inputObjects#userprofileinput"><code>UserProfileInput!</code></a>
+<a href="/api/inputObjects#userprofileinput"><code>UserProfileInput!</code></a>
 </td>
 <td>
 
@@ -1645,7 +1645,7 @@ profile<br />
 <tr>
 <td>
 email<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1654,7 +1654,7 @@ email<br />
 <tr>
 <td>
 plainPassword<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1665,7 +1665,7 @@ plainPassword<br />
 
 ## exportToken
 
-**Type:** [Token!](/../api/objects#token)
+**Type:** [Token!](/api/objects#token)
 
 
 
@@ -1677,7 +1677,7 @@ plainPassword<br />
 <tr>
 <td>
 tokenId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1686,7 +1686,7 @@ tokenId<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1695,7 +1695,7 @@ quantity<br />
 <tr>
 <td>
 recipientWalletAddress<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1706,7 +1706,7 @@ recipientWalletAddress<br />
 
 ## finishWork
 
-**Type:** [Work!](/../api/objects#work)
+**Type:** [Work!](/api/objects#work)
 
 Register a work attempt manually.
 Note: Usually, work attempts are handled internally by the inbuilt cron
@@ -1720,7 +1720,7 @@ worker. This mutation is part of the interface for "outside" workers.
 <tr>
 <td>
 workId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1729,7 +1729,7 @@ workId<br />
 <tr>
 <td>
 result<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1738,7 +1738,7 @@ result<br />
 <tr>
 <td>
 error<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1747,7 +1747,7 @@ error<br />
 <tr>
 <td>
 success<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1756,7 +1756,7 @@ success<br />
 <tr>
 <td>
 worker<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1765,7 +1765,7 @@ worker<br />
 <tr>
 <td>
 started<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -1774,7 +1774,7 @@ started<br />
 <tr>
 <td>
 finished<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -1785,7 +1785,7 @@ finished<br />
 
 ## forgotPassword
 
-**Type:** [SuccessResponse](/../api/objects#successresponse)
+**Type:** [SuccessResponse](/api/objects#successresponse)
 
 Request a forgot password email.
 
@@ -1797,7 +1797,7 @@ Request a forgot password email.
 <tr>
 <td>
 email<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1808,7 +1808,7 @@ email<br />
 
 ## heartbeat
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Update hearbeat (updates user activity information such as last
 login and logged in user IP address, locale and country where they
@@ -1816,7 +1816,7 @@ accessed the system)
 
 ## impersonate
 
-**Type:** [LoginMethodResponse!](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse!](/api/objects#loginmethodresponse)
 
 Impersonate a user
 
@@ -1828,7 +1828,7 @@ Impersonate a user
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1839,7 +1839,7 @@ userId<br />
 
 ## invalidateToken
 
-**Type:** [Token!](/../api/objects#token)
+**Type:** [Token!](/api/objects#token)
 
 Tokenize
 
@@ -1851,7 +1851,7 @@ Tokenize
 <tr>
 <td>
 tokenId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1862,7 +1862,7 @@ tokenId<br />
 
 ## linkOAuthAccount
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 OAuth2
 
@@ -1874,7 +1874,7 @@ OAuth2
 <tr>
 <td>
 provider<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1883,7 +1883,7 @@ provider<br />
 <tr>
 <td>
 authorizationCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1892,7 +1892,7 @@ authorizationCode<br />
 <tr>
 <td>
 redirectUrl<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1903,13 +1903,13 @@ redirectUrl<br />
 
 ## loginAsGuest
 
-**Type:** [LoginMethodResponse](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse](/api/objects#loginmethodresponse)
 
 Login as Guest User (creates an anonymous user and returns logged in token)
 
 ## loginWithOAuth
 
-**Type:** [LoginMethodResponse](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse](/api/objects#loginmethodresponse)
 
 Log the user with OAuth2 service provider
 
@@ -1921,7 +1921,7 @@ Log the user with OAuth2 service provider
 <tr>
 <td>
 provider<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1930,7 +1930,7 @@ provider<br />
 <tr>
 <td>
 authorizationCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1939,7 +1939,7 @@ authorizationCode<br />
 <tr>
 <td>
 redirectUrl<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1950,7 +1950,7 @@ redirectUrl<br />
 
 ## loginWithPassword
 
-**Type:** [LoginMethodResponse](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse](/api/objects#loginmethodresponse)
 
 Log the user in with a password.
 
@@ -1962,7 +1962,7 @@ Log the user in with a password.
 <tr>
 <td>
 username<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1971,7 +1971,7 @@ username<br />
 <tr>
 <td>
 email<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1980,7 +1980,7 @@ email<br />
 <tr>
 <td>
 plainPassword<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1989,7 +1989,7 @@ plainPassword<br />
 <tr>
 <td>
 totpCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2000,7 +2000,7 @@ totpCode<br />
 
 ## loginWithWebAuthn
 
-**Type:** [LoginMethodResponse](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse](/api/objects#loginmethodresponse)
 
 Log the user in with a WebAuthn device
 
@@ -2012,7 +2012,7 @@ Log the user in with a WebAuthn device
 <tr>
 <td>
 webAuthnPublicKeyCredentials<br />
-<a href="/../api/scalars#json"><code>JSON!</code></a>
+<a href="/api/scalars#json"><code>JSON!</code></a>
 </td>
 <td>
 
@@ -2023,7 +2023,7 @@ webAuthnPublicKeyCredentials<br />
 
 ## logout
 
-**Type:** [SuccessResponse](/../api/objects#successresponse)
+**Type:** [SuccessResponse](/api/objects#successresponse)
 
 Log the user out.
 
@@ -2035,7 +2035,7 @@ Log the user out.
 <tr>
 <td>
 token<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2046,13 +2046,13 @@ token<br />
 
 ## logoutAllSessions
 
-**Type:** [SuccessResponse](/../api/objects#successresponse)
+**Type:** [SuccessResponse](/api/objects#successresponse)
 
 Log out all sessions related with user.
 
 ## makeQuotationProposal
 
-**Type:** [Quotation!](/../api/objects#quotation)
+**Type:** [Quotation!](/api/objects#quotation)
 
 Make a proposal as answer to the RFP by changing its status to PROCESSED
 
@@ -2064,7 +2064,7 @@ Make a proposal as answer to the RFP by changing its status to PROCESSED
 <tr>
 <td>
 quotationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2073,7 +2073,7 @@ quotationId<br />
 <tr>
 <td>
 quotationContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -2084,7 +2084,7 @@ quotationContext<br />
 
 ## markPaymentCredentialsPreferred
 
-**Type:** [PaymentCredentials](/../api/objects#paymentcredentials)
+**Type:** [PaymentCredentials](/api/objects#paymentcredentials)
 
 Make's the provided payment credential as the users preferred method of payment.
 
@@ -2096,7 +2096,7 @@ Make's the provided payment credential as the users preferred method of payment.
 <tr>
 <td>
 paymentCredentialsId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2107,7 +2107,7 @@ paymentCredentialsId<br />
 
 ## pageView
 
-**Type:** [String!](/../api/scalars#string)
+**Type:** [String!](/api/scalars#string)
 
 
 
@@ -2119,7 +2119,7 @@ paymentCredentialsId<br />
 <tr>
 <td>
 path<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2128,7 +2128,7 @@ path<br />
 <tr>
 <td>
 referrer<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2139,7 +2139,7 @@ referrer<br />
 
 ## payOrder
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Manually mark an unpaid/partially paid order as fully paid
 
@@ -2151,7 +2151,7 @@ Manually mark an unpaid/partially paid order as fully paid
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2162,7 +2162,7 @@ orderId<br />
 
 ## prepareAssortmentMediaUpload
 
-**Type:** [MediaUploadTicket!](/../api/objects#mediauploadticket)
+**Type:** [MediaUploadTicket!](/api/objects#mediauploadticket)
 
 
 
@@ -2174,7 +2174,7 @@ orderId<br />
 <tr>
 <td>
 mediaName<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2183,7 +2183,7 @@ mediaName<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2194,7 +2194,7 @@ assortmentId<br />
 
 ## prepareProductMediaUpload
 
-**Type:** [MediaUploadTicket!](/../api/objects#mediauploadticket)
+**Type:** [MediaUploadTicket!](/api/objects#mediauploadticket)
 
 
 
@@ -2206,7 +2206,7 @@ assortmentId<br />
 <tr>
 <td>
 mediaName<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2215,7 +2215,7 @@ mediaName<br />
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2226,7 +2226,7 @@ productId<br />
 
 ## prepareUserAvatarUpload
 
-**Type:** [MediaUploadTicket!](/../api/objects#mediauploadticket)
+**Type:** [MediaUploadTicket!](/api/objects#mediauploadticket)
 
 
 
@@ -2238,7 +2238,7 @@ productId<br />
 <tr>
 <td>
 mediaName<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2247,7 +2247,7 @@ mediaName<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -2258,7 +2258,7 @@ userId<br />
 
 ## processNextWork
 
-**Type:** [Work](/../api/objects#work)
+**Type:** [Work](/api/objects#work)
 
 This will pick up non-external work, execute, await result and finish
 it up on the target system. This function allows you to do work queue "ticks"
@@ -2273,7 +2273,7 @@ and can be helpful in serverless environments.
 <tr>
 <td>
 worker<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2284,7 +2284,7 @@ worker<br />
 
 ## publishProduct
 
-**Type:** [Product!](/../api/interfaces#product)
+**Type:** [Product!](/api/interfaces#product)
 
 Make the product visible on any shop listings (product queries)
 
@@ -2296,7 +2296,7 @@ Make the product visible on any shop listings (product queries)
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2307,7 +2307,7 @@ productId<br />
 
 ## registerPaymentCredentials
 
-**Type:** [PaymentCredentials](/../api/objects#paymentcredentials)
+**Type:** [PaymentCredentials](/api/objects#paymentcredentials)
 
 Register credentials for an existing payment provider allowing to store and use them
 for later payments (1-click checkout or enrollments)
@@ -2320,7 +2320,7 @@ for later payments (1-click checkout or enrollments)
 <tr>
 <td>
 transactionContext<br />
-<a href="/../api/scalars#json"><code>JSON!</code></a>
+<a href="/api/scalars#json"><code>JSON!</code></a>
 </td>
 <td>
 
@@ -2329,7 +2329,7 @@ transactionContext<br />
 <tr>
 <td>
 paymentProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2340,7 +2340,7 @@ paymentProviderId<br />
 
 ## rejectOrder
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Manually reject an order which is in progress
 
@@ -2352,7 +2352,7 @@ Manually reject an order which is in progress
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2361,7 +2361,7 @@ orderId<br />
 <tr>
 <td>
 paymentContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -2370,7 +2370,7 @@ paymentContext<br />
 <tr>
 <td>
 deliveryContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -2379,7 +2379,7 @@ deliveryContext<br />
 <tr>
 <td>
 comment<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2390,7 +2390,7 @@ comment<br />
 
 ## rejectQuotation
 
-**Type:** [Quotation!](/../api/objects#quotation)
+**Type:** [Quotation!](/api/objects#quotation)
 
 Reject an RFP, this is possible as long as a quotation is not fullfilled
 
@@ -2402,7 +2402,7 @@ Reject an RFP, this is possible as long as a quotation is not fullfilled
 <tr>
 <td>
 quotationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2411,7 +2411,7 @@ quotationId<br />
 <tr>
 <td>
 quotationContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -2422,7 +2422,7 @@ quotationContext<br />
 
 ## removeAssortment
 
-**Type:** [Assortment!](/../api/objects#assortment)
+**Type:** [Assortment!](/api/objects#assortment)
 
 Removes assortment with the provided ID
 
@@ -2434,7 +2434,7 @@ Removes assortment with the provided ID
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2445,7 +2445,7 @@ assortmentId<br />
 
 ## removeAssortmentFilter
 
-**Type:** [AssortmentFilter!](/../api/objects#assortmentfilter)
+**Type:** [AssortmentFilter!](/api/objects#assortmentfilter)
 
 Remove a product from an assortment
 
@@ -2457,7 +2457,7 @@ Remove a product from an assortment
 <tr>
 <td>
 assortmentFilterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2468,7 +2468,7 @@ assortmentFilterId<br />
 
 ## removeAssortmentLink
 
-**Type:** [AssortmentLink!](/../api/objects#assortmentlink)
+**Type:** [AssortmentLink!](/api/objects#assortmentlink)
 
 Remove a child/parent assortment link from it's parent
 
@@ -2480,7 +2480,7 @@ Remove a child/parent assortment link from it's parent
 <tr>
 <td>
 assortmentLinkId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2491,7 +2491,7 @@ assortmentLinkId<br />
 
 ## removeAssortmentMedia
 
-**Type:** [AssortmentMedia!](/../api/objects#assortmentmedia)
+**Type:** [AssortmentMedia!](/api/objects#assortmentmedia)
 
 Remove a media asset from a assortment
 
@@ -2503,7 +2503,7 @@ Remove a media asset from a assortment
 <tr>
 <td>
 assortmentMediaId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2514,7 +2514,7 @@ assortmentMediaId<br />
 
 ## removeAssortmentProduct
 
-**Type:** [AssortmentProduct!](/../api/objects#assortmentproduct)
+**Type:** [AssortmentProduct!](/api/objects#assortmentproduct)
 
 Remove a product from an assortment
 
@@ -2526,7 +2526,7 @@ Remove a product from an assortment
 <tr>
 <td>
 assortmentProductId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2537,7 +2537,7 @@ assortmentProductId<br />
 
 ## removeBookmark
 
-**Type:** [Bookmark!](/../api/objects#bookmark)
+**Type:** [Bookmark!](/api/objects#bookmark)
 
 Remove an existing bookmark by ID
 
@@ -2549,7 +2549,7 @@ Remove an existing bookmark by ID
 <tr>
 <td>
 bookmarkId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2560,7 +2560,7 @@ bookmarkId<br />
 
 ## removeBundleItem
 
-**Type:** [Product!](/../api/interfaces#product)
+**Type:** [Product!](/api/interfaces#product)
 
 Removes products bundle item found at the given 0 based index.
 
@@ -2572,7 +2572,7 @@ Removes products bundle item found at the given 0 based index.
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2581,7 +2581,7 @@ productId<br />
 <tr>
 <td>
 index<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -2592,7 +2592,7 @@ index<br />
 
 ## removeCartDiscount
 
-**Type:** [OrderDiscount!](/../api/objects#orderdiscount)
+**Type:** [OrderDiscount!](/api/objects#orderdiscount)
 
 Remove a discount from the cart
 
@@ -2604,7 +2604,7 @@ Remove a discount from the cart
 <tr>
 <td>
 discountId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2615,7 +2615,7 @@ discountId<br />
 
 ## removeCartItem
 
-**Type:** [OrderItem!](/../api/objects#orderitem)
+**Type:** [OrderItem!](/api/objects#orderitem)
 
 Remove an item from an open order
 
@@ -2627,7 +2627,7 @@ Remove an item from an open order
 <tr>
 <td>
 itemId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2638,7 +2638,7 @@ itemId<br />
 
 ## removeCountry
 
-**Type:** [Country!](/../api/objects#country)
+**Type:** [Country!](/api/objects#country)
 
 Deletes the specified country
 
@@ -2650,7 +2650,7 @@ Deletes the specified country
 <tr>
 <td>
 countryId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2661,7 +2661,7 @@ countryId<br />
 
 ## removeCurrency
 
-**Type:** [Currency!](/../api/objects#currency)
+**Type:** [Currency!](/api/objects#currency)
 
 Deletes the specified currency
 
@@ -2673,7 +2673,7 @@ Deletes the specified currency
 <tr>
 <td>
 currencyId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2684,7 +2684,7 @@ currencyId<br />
 
 ## removeDeliveryProvider
 
-**Type:** [DeliveryProvider!](/../api/objects#deliveryprovider)
+**Type:** [DeliveryProvider!](/api/objects#deliveryprovider)
 
 Deletes a delivery provider by setting the deleted field to current timestamp.
 Note the delivery provider still exists.
@@ -2697,7 +2697,7 @@ Note the delivery provider still exists.
 <tr>
 <td>
 deliveryProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2708,7 +2708,7 @@ deliveryProviderId<br />
 
 ## removeEmail
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Update E-Mail address of any user or logged in user if userId is not provided
 
@@ -2720,7 +2720,7 @@ Update E-Mail address of any user or logged in user if userId is not provided
 <tr>
 <td>
 email<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2729,7 +2729,7 @@ email<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -2740,7 +2740,7 @@ userId<br />
 
 ## removeFilter
 
-**Type:** [Filter!](/../api/objects#filter)
+**Type:** [Filter!](/api/objects#filter)
 
 Deletes the specified filter
 
@@ -2752,7 +2752,7 @@ Deletes the specified filter
 <tr>
 <td>
 filterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2763,7 +2763,7 @@ filterId<br />
 
 ## removeFilterOption
 
-**Type:** [Filter!](/../api/objects#filter)
+**Type:** [Filter!](/api/objects#filter)
 
 Removes the filter option from the specified filter.
 
@@ -2775,7 +2775,7 @@ Removes the filter option from the specified filter.
 <tr>
 <td>
 filterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2784,7 +2784,7 @@ filterId<br />
 <tr>
 <td>
 filterOptionValue<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2795,7 +2795,7 @@ filterOptionValue<br />
 
 ## removeLanguage
 
-**Type:** [Language!](/../api/objects#language)
+**Type:** [Language!](/api/objects#language)
 
 Deletes the specified languages
 
@@ -2807,7 +2807,7 @@ Deletes the specified languages
 <tr>
 <td>
 languageId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2818,7 +2818,7 @@ languageId<br />
 
 ## removeOrder
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Remove an order while it's still open
 
@@ -2830,7 +2830,7 @@ Remove an order while it's still open
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2841,7 +2841,7 @@ orderId<br />
 
 ## removePaymentCredentials
 
-**Type:** [PaymentCredentials](/../api/objects#paymentcredentials)
+**Type:** [PaymentCredentials](/api/objects#paymentcredentials)
 
 Deletes the specified payment credential.
 
@@ -2853,7 +2853,7 @@ Deletes the specified payment credential.
 <tr>
 <td>
 paymentCredentialsId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2864,7 +2864,7 @@ paymentCredentialsId<br />
 
 ## removePaymentProvider
 
-**Type:** [PaymentProvider!](/../api/objects#paymentprovider)
+**Type:** [PaymentProvider!](/api/objects#paymentprovider)
 
 Deletes the specified payment provider by setting the deleted filed to current timestamp.
 Note the payment provider is still available only it’s status is deleted
@@ -2877,7 +2877,7 @@ Note the payment provider is still available only it’s status is deleted
 <tr>
 <td>
 paymentProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2888,7 +2888,7 @@ paymentProviderId<br />
 
 ## removeProduct
 
-**Type:** [Product!](/../api/interfaces#product)
+**Type:** [Product!](/api/interfaces#product)
 
 Remove the product completely!
 
@@ -2900,7 +2900,7 @@ Remove the product completely!
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2911,7 +2911,7 @@ productId<br />
 
 ## removeProductAssignment
 
-**Type:** [Product!](/../api/interfaces#product)
+**Type:** [Product!](/api/interfaces#product)
 
 Unlinks a product from a ConfigurableProduct by providing a configuration
 combination that uniquely identifies a row in the assignment matrix
@@ -2924,7 +2924,7 @@ combination that uniquely identifies a row in the assignment matrix
 <tr>
 <td>
 proxyId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2933,7 +2933,7 @@ proxyId<br />
 <tr>
 <td>
 vectors<br />
-<a href="/../api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]!</code></a>
+<a href="/api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]!</code></a>
 </td>
 <td>
 
@@ -2944,7 +2944,7 @@ vectors<br />
 
 ## removeProductMedia
 
-**Type:** [ProductMedia!](/../api/objects#productmedia)
+**Type:** [ProductMedia!](/api/objects#productmedia)
 
 Remove a media asset from a product's visualization
 
@@ -2956,7 +2956,7 @@ Remove a media asset from a product's visualization
 <tr>
 <td>
 productMediaId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2967,7 +2967,7 @@ productMediaId<br />
 
 ## removeProductReview
 
-**Type:** [ProductReview!](/../api/objects#productreview)
+**Type:** [ProductReview!](/api/objects#productreview)
 
 Remove an existing ProductReview. The logic to allow/dissallow removal is controlled by product plugin logic
 
@@ -2979,7 +2979,7 @@ Remove an existing ProductReview. The logic to allow/dissallow removal is contro
 <tr>
 <td>
 productReviewId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2990,7 +2990,7 @@ productReviewId<br />
 
 ## removeProductReviewVote
 
-**Type:** [ProductReview!](/../api/objects#productreview)
+**Type:** [ProductReview!](/api/objects#productreview)
 
 Remove a vote from a ProductReview
 
@@ -3002,7 +3002,7 @@ Remove a vote from a ProductReview
 <tr>
 <td>
 productReviewId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3011,7 +3011,7 @@ productReviewId<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#productreviewvotetype"><code>ProductReviewVoteType</code></a>
+<a href="/api/enums#productreviewvotetype"><code>ProductReviewVoteType</code></a>
 </td>
 <td>
 
@@ -3022,7 +3022,7 @@ type<br />
 
 ## removeProductVariation
 
-**Type:** [ProductVariation!](/../api/objects#productvariation)
+**Type:** [ProductVariation!](/api/objects#productvariation)
 
 Removes product variation with the provided ID
 
@@ -3034,7 +3034,7 @@ Removes product variation with the provided ID
 <tr>
 <td>
 productVariationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3045,7 +3045,7 @@ productVariationId<br />
 
 ## removeProductVariationOption
 
-**Type:** [ProductVariation!](/../api/objects#productvariation)
+**Type:** [ProductVariation!](/api/objects#productvariation)
 
 Removes product option value for product variation with the provided variation option value
 
@@ -3057,7 +3057,7 @@ Removes product option value for product variation with the provided variation o
 <tr>
 <td>
 productVariationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3066,7 +3066,7 @@ productVariationId<br />
 <tr>
 <td>
 productVariationOptionValue<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3077,7 +3077,7 @@ productVariationOptionValue<br />
 
 ## removePushSubscription
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Remove user W3C push subscription object
 
@@ -3089,7 +3089,7 @@ Remove user W3C push subscription object
 <tr>
 <td>
 p256dh<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3100,7 +3100,7 @@ p256dh<br />
 
 ## removeUser
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Remove any user or logged in user if userId is not provided
 
@@ -3112,7 +3112,7 @@ Remove any user or logged in user if userId is not provided
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -3123,7 +3123,7 @@ userId<br />
 
 ## removeWarehousingProvider
 
-**Type:** [WarehousingProvider!](/../api/objects#warehousingprovider)
+**Type:** [WarehousingProvider!](/api/objects#warehousingprovider)
 
 Deletes the specified warehousing provider by setting the deleted filed to current timestamp.
 Note warehousing provider still exists in the system after successful
@@ -3137,7 +3137,7 @@ completing of this operation with status deleted.
 <tr>
 <td>
 warehousingProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3148,7 +3148,7 @@ warehousingProviderId<br />
 
 ## removeWeb3Address
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 
 
@@ -3160,7 +3160,7 @@ warehousingProviderId<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3171,7 +3171,7 @@ address<br />
 
 ## removeWebAuthnCredentials
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Remove WebAuthn Credentials for current user
 
@@ -3183,7 +3183,7 @@ Remove WebAuthn Credentials for current user
 <tr>
 <td>
 credentialsId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3194,7 +3194,7 @@ credentialsId<br />
 
 ## removeWork
 
-**Type:** [Work!](/../api/objects#work)
+**Type:** [Work!](/api/objects#work)
 
 Manually remove a work
 
@@ -3206,7 +3206,7 @@ Manually remove a work
 <tr>
 <td>
 workId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3217,7 +3217,7 @@ workId<br />
 
 ## reorderAssortmentFilters
 
-**Type:** [[AssortmentFilter!]!](/../api/objects#assortmentfilter)
+**Type:** [[AssortmentFilter!]!](/api/objects#assortmentfilter)
 
 Reorder the products in an assortment
 
@@ -3229,7 +3229,7 @@ Reorder the products in an assortment
 <tr>
 <td>
 sortKeys<br />
-<a href="/../api/inputObjects#reorderassortmentfilterinput"><code>[ReorderAssortmentFilterInput!]!</code></a>
+<a href="/api/inputObjects#reorderassortmentfilterinput"><code>[ReorderAssortmentFilterInput!]!</code></a>
 </td>
 <td>
 
@@ -3240,7 +3240,7 @@ sortKeys<br />
 
 ## reorderAssortmentLinks
 
-**Type:** [[AssortmentLink!]!](/../api/objects#assortmentlink)
+**Type:** [[AssortmentLink!]!](/api/objects#assortmentlink)
 
 Reorder the child assortment links in it's parent
 
@@ -3252,7 +3252,7 @@ Reorder the child assortment links in it's parent
 <tr>
 <td>
 sortKeys<br />
-<a href="/../api/inputObjects#reorderassortmentlinkinput"><code>[ReorderAssortmentLinkInput!]!</code></a>
+<a href="/api/inputObjects#reorderassortmentlinkinput"><code>[ReorderAssortmentLinkInput!]!</code></a>
 </td>
 <td>
 
@@ -3263,7 +3263,7 @@ sortKeys<br />
 
 ## reorderAssortmentMedia
 
-**Type:** [[AssortmentMedia!]!](/../api/objects#assortmentmedia)
+**Type:** [[AssortmentMedia!]!](/api/objects#assortmentmedia)
 
 Reorder a media asset (first is primary)
 
@@ -3275,7 +3275,7 @@ Reorder a media asset (first is primary)
 <tr>
 <td>
 sortKeys<br />
-<a href="/../api/inputObjects#reorderassortmentmediainput"><code>[ReorderAssortmentMediaInput!]!</code></a>
+<a href="/api/inputObjects#reorderassortmentmediainput"><code>[ReorderAssortmentMediaInput!]!</code></a>
 </td>
 <td>
 
@@ -3286,7 +3286,7 @@ sortKeys<br />
 
 ## reorderAssortmentProducts
 
-**Type:** [[AssortmentProduct!]!](/../api/objects#assortmentproduct)
+**Type:** [[AssortmentProduct!]!](/api/objects#assortmentproduct)
 
 Reorder the products in an assortment
 
@@ -3298,7 +3298,7 @@ Reorder the products in an assortment
 <tr>
 <td>
 sortKeys<br />
-<a href="/../api/inputObjects#reorderassortmentproductinput"><code>[ReorderAssortmentProductInput!]!</code></a>
+<a href="/api/inputObjects#reorderassortmentproductinput"><code>[ReorderAssortmentProductInput!]!</code></a>
 </td>
 <td>
 
@@ -3309,7 +3309,7 @@ sortKeys<br />
 
 ## reorderProductMedia
 
-**Type:** [[ProductMedia!]!](/../api/objects#productmedia)
+**Type:** [[ProductMedia!]!](/api/objects#productmedia)
 
 Reorder a media asset (first is primary)
 
@@ -3321,7 +3321,7 @@ Reorder a media asset (first is primary)
 <tr>
 <td>
 sortKeys<br />
-<a href="/../api/inputObjects#reorderproductmediainput"><code>[ReorderProductMediaInput!]!</code></a>
+<a href="/api/inputObjects#reorderproductmediainput"><code>[ReorderProductMediaInput!]!</code></a>
 </td>
 <td>
 
@@ -3332,7 +3332,7 @@ sortKeys<br />
 
 ## requestQuotation
 
-**Type:** [Quotation!](/../api/objects#quotation)
+**Type:** [Quotation!](/api/objects#quotation)
 
 Request for Proposal (RFP) for the specified product
 
@@ -3344,7 +3344,7 @@ Request for Proposal (RFP) for the specified product
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3353,7 +3353,7 @@ productId<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -3364,7 +3364,7 @@ configuration<br />
 
 ## resetPassword
 
-**Type:** [LoginMethodResponse](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse](/api/objects#loginmethodresponse)
 
 Reset the password for a user using a token received in email. Logs the user in afterwards.
 
@@ -3376,7 +3376,7 @@ Reset the password for a user using a token received in email. Logs the user in 
 <tr>
 <td>
 newPlainPassword<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3385,7 +3385,7 @@ newPlainPassword<br />
 <tr>
 <td>
 token<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3396,7 +3396,7 @@ token<br />
 
 ## sendEnrollmentEmail
 
-**Type:** [SuccessResponse](/../api/objects#successresponse)
+**Type:** [SuccessResponse](/api/objects#successresponse)
 
 Forcefully trigger an enrollment email for already added users by e-mail
 
@@ -3408,7 +3408,7 @@ Forcefully trigger an enrollment email for already added users by e-mail
 <tr>
 <td>
 email<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3419,7 +3419,7 @@ email<br />
 
 ## sendVerificationEmail
 
-**Type:** [SuccessResponse](/../api/objects#successresponse)
+**Type:** [SuccessResponse](/api/objects#successresponse)
 
 Send an email with a link the user can use verify their email address.
 
@@ -3431,7 +3431,7 @@ Send an email with a link the user can use verify their email address.
 <tr>
 <td>
 email<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3442,7 +3442,7 @@ email<br />
 
 ## setBaseAssortment
 
-**Type:** [Assortment!](/../api/objects#assortment)
+**Type:** [Assortment!](/api/objects#assortment)
 
 Makes the assortment provided as the base assortment and make
 any other existing base assortment regular assortments.
@@ -3455,7 +3455,7 @@ any other existing base assortment regular assortments.
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3466,7 +3466,7 @@ assortmentId<br />
 
 ## setOrderDeliveryProvider
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Change the delivery method/provider to an order. If the delivery provider
 doesn’t exists new delivery provider will be created with the provided ID.
@@ -3479,7 +3479,7 @@ doesn’t exists new delivery provider will be created with the provided ID.
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3488,7 +3488,7 @@ orderId<br />
 <tr>
 <td>
 deliveryProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3499,7 +3499,7 @@ deliveryProviderId<br />
 
 ## setOrderPaymentProvider
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Change the payment method/provider to an order. If the payment provider
 doesn’t exists new payment provider will be created with the provided ID.
@@ -3512,7 +3512,7 @@ doesn’t exists new payment provider will be created with the provided ID.
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3521,7 +3521,7 @@ orderId<br />
 <tr>
 <td>
 paymentProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3532,7 +3532,7 @@ paymentProviderId<br />
 
 ## setPassword
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Set a new password for a specific user
 
@@ -3544,7 +3544,7 @@ Set a new password for a specific user
 <tr>
 <td>
 newPlainPassword<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3553,7 +3553,7 @@ newPlainPassword<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3564,7 +3564,7 @@ userId<br />
 
 ## setRoles
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Set roles of a user
 
@@ -3576,7 +3576,7 @@ Set roles of a user
 <tr>
 <td>
 roles<br />
-<a href="/../api/scalars#string"><code>[String!]!</code></a>
+<a href="/api/scalars#string"><code>[String!]!</code></a>
 </td>
 <td>
 
@@ -3585,7 +3585,7 @@ roles<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3596,7 +3596,7 @@ userId<br />
 
 ## setUsername
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Set username for a specific user
 
@@ -3608,7 +3608,7 @@ Set username for a specific user
 <tr>
 <td>
 username<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3617,7 +3617,7 @@ username<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3628,7 +3628,7 @@ userId<br />
 
 ## setUserTags
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Set tags of user
 
@@ -3640,7 +3640,7 @@ Set tags of user
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString]!</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString]!</code></a>
 </td>
 <td>
 
@@ -3649,7 +3649,7 @@ tags<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3660,7 +3660,7 @@ userId<br />
 
 ## signPaymentProviderForCheckout
 
-**Type:** [String!](/../api/scalars#string)
+**Type:** [String!](/api/scalars#string)
 
 Sign a generic order payment
 
@@ -3672,7 +3672,7 @@ Sign a generic order payment
 <tr>
 <td>
 orderPaymentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -3681,7 +3681,7 @@ orderPaymentId<br />
 <tr>
 <td>
 transactionContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -3692,7 +3692,7 @@ transactionContext<br />
 
 ## signPaymentProviderForCredentialRegistration
 
-**Type:** [String](/../api/scalars#string)
+**Type:** [String](/api/scalars#string)
 
 Sign a generic payment provider for registration
 
@@ -3704,7 +3704,7 @@ Sign a generic payment provider for registration
 <tr>
 <td>
 paymentProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3713,7 +3713,7 @@ paymentProviderId<br />
 <tr>
 <td>
 transactionContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -3724,13 +3724,13 @@ transactionContext<br />
 
 ## stopImpersonation
 
-**Type:** [LoginMethodResponse!](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse!](/api/objects#loginmethodresponse)
 
 End customer impersonated user session and resume the impersonator session
 
 ## terminateEnrollment
 
-**Type:** [Enrollment!](/../api/objects#enrollment)
+**Type:** [Enrollment!](/api/objects#enrollment)
 
 Terminate an actively running enrollment by changing it's status to TERMINATED
 
@@ -3742,7 +3742,7 @@ Terminate an actively running enrollment by changing it's status to TERMINATED
 <tr>
 <td>
 enrollmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3753,7 +3753,7 @@ enrollmentId<br />
 
 ## unlinkOAuthAccount
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 
 
@@ -3765,7 +3765,7 @@ enrollmentId<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3774,7 +3774,7 @@ provider<br />
 <tr>
 <td>
 oAuthAccountId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3785,7 +3785,7 @@ oAuthAccountId<br />
 
 ## unpublishProduct
 
-**Type:** [Product!](/../api/interfaces#product)
+**Type:** [Product!](/api/interfaces#product)
 
 Hide the product visible from any shop listings (product queries)
 
@@ -3797,7 +3797,7 @@ Hide the product visible from any shop listings (product queries)
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3808,7 +3808,7 @@ productId<br />
 
 ## updateAssortment
 
-**Type:** [Assortment!](/../api/objects#assortment)
+**Type:** [Assortment!](/api/objects#assortment)
 
 Updates the provided assortment
 
@@ -3820,7 +3820,7 @@ Updates the provided assortment
 <tr>
 <td>
 assortment<br />
-<a href="/../api/inputObjects#updateassortmentinput"><code>UpdateAssortmentInput!</code></a>
+<a href="/api/inputObjects#updateassortmentinput"><code>UpdateAssortmentInput!</code></a>
 </td>
 <td>
 
@@ -3829,7 +3829,7 @@ assortment<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3840,7 +3840,7 @@ assortmentId<br />
 
 ## updateAssortmentMediaTexts
 
-**Type:** [[AssortmentMediaTexts!]!](/../api/objects#assortmentmediatexts)
+**Type:** [[AssortmentMediaTexts!]!](/api/objects#assortmentmediatexts)
 
 Modify localized texts part of a assortment media asset
 
@@ -3852,7 +3852,7 @@ Modify localized texts part of a assortment media asset
 <tr>
 <td>
 assortmentMediaId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3861,7 +3861,7 @@ assortmentMediaId<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/inputObjects#updateassortmentmediatextinput"><code>[UpdateAssortmentMediaTextInput!]!</code></a>
+<a href="/api/inputObjects#updateassortmentmediatextinput"><code>[UpdateAssortmentMediaTextInput!]!</code></a>
 </td>
 <td>
 
@@ -3872,7 +3872,7 @@ texts<br />
 
 ## updateAssortmentTexts
 
-**Type:** [[AssortmentTexts!]!](/../api/objects#assortmenttexts)
+**Type:** [[AssortmentTexts!]!](/api/objects#assortmenttexts)
 
 Modify localized texts part of an assortment
 
@@ -3884,7 +3884,7 @@ Modify localized texts part of an assortment
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3893,7 +3893,7 @@ assortmentId<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/inputObjects#updateassortmenttextinput"><code>[UpdateAssortmentTextInput!]!</code></a>
+<a href="/api/inputObjects#updateassortmenttextinput"><code>[UpdateAssortmentTextInput!]!</code></a>
 </td>
 <td>
 
@@ -3904,7 +3904,7 @@ texts<br />
 
 ## updateCart
 
-**Type:** [Order!](/../api/objects#order)
+**Type:** [Order!](/api/objects#order)
 
 Change billing address and order contact of an open order (cart). All of the parameters
 except order ID are optional and the update will ocure for parameters provided.
@@ -3919,7 +3919,7 @@ will be created with the provided ID.
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -3928,7 +3928,7 @@ orderId<br />
 <tr>
 <td>
 billingAddress<br />
-<a href="/../api/inputObjects#addressinput"><code>AddressInput</code></a>
+<a href="/api/inputObjects#addressinput"><code>AddressInput</code></a>
 </td>
 <td>
 
@@ -3937,7 +3937,7 @@ billingAddress<br />
 <tr>
 <td>
 contact<br />
-<a href="/../api/inputObjects#contactinput"><code>ContactInput</code></a>
+<a href="/api/inputObjects#contactinput"><code>ContactInput</code></a>
 </td>
 <td>
 
@@ -3946,7 +3946,7 @@ contact<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -3955,7 +3955,7 @@ meta<br />
 <tr>
 <td>
 paymentProviderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -3964,7 +3964,7 @@ paymentProviderId<br />
 <tr>
 <td>
 deliveryProviderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -3975,7 +3975,7 @@ deliveryProviderId<br />
 
 ## updateCartItem
 
-**Type:** [OrderItem!](/../api/objects#orderitem)
+**Type:** [OrderItem!](/api/objects#orderitem)
 
 Change the quantity or configuration of an item in an open order.align-baselineAll
 of the parameters are optional except item ID and for the parameters provided the
@@ -3989,7 +3989,7 @@ update will be performed accordingly.
 <tr>
 <td>
 itemId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3998,7 +3998,7 @@ itemId<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -4007,7 +4007,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -4018,7 +4018,7 @@ configuration<br />
 
 ## updateCountry
 
-**Type:** [Country!](/../api/objects#country)
+**Type:** [Country!](/api/objects#country)
 
 Updates provided country information
 
@@ -4030,7 +4030,7 @@ Updates provided country information
 <tr>
 <td>
 country<br />
-<a href="/../api/inputObjects#updatecountryinput"><code>UpdateCountryInput!</code></a>
+<a href="/api/inputObjects#updatecountryinput"><code>UpdateCountryInput!</code></a>
 </td>
 <td>
 
@@ -4039,7 +4039,7 @@ country<br />
 <tr>
 <td>
 countryId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4050,7 +4050,7 @@ countryId<br />
 
 ## updateCurrency
 
-**Type:** [Currency!](/../api/objects#currency)
+**Type:** [Currency!](/api/objects#currency)
 
 Updates the specified currency
 
@@ -4062,7 +4062,7 @@ Updates the specified currency
 <tr>
 <td>
 currency<br />
-<a href="/../api/inputObjects#updatecurrencyinput"><code>UpdateCurrencyInput!</code></a>
+<a href="/api/inputObjects#updatecurrencyinput"><code>UpdateCurrencyInput!</code></a>
 </td>
 <td>
 
@@ -4071,7 +4071,7 @@ currency<br />
 <tr>
 <td>
 currencyId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4082,7 +4082,7 @@ currencyId<br />
 
 ## updateDeliveryProvider
 
-**Type:** [DeliveryProvider!](/../api/objects#deliveryprovider)
+**Type:** [DeliveryProvider!](/api/objects#deliveryprovider)
 
 Updates the delivery provider specified
 
@@ -4094,7 +4094,7 @@ Updates the delivery provider specified
 <tr>
 <td>
 deliveryProvider<br />
-<a href="/../api/inputObjects#updateproviderinput"><code>UpdateProviderInput!</code></a>
+<a href="/api/inputObjects#updateproviderinput"><code>UpdateProviderInput!</code></a>
 </td>
 <td>
 
@@ -4103,7 +4103,7 @@ deliveryProvider<br />
 <tr>
 <td>
 deliveryProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4114,7 +4114,7 @@ deliveryProviderId<br />
 
 ## updateEnrollment
 
-**Type:** [Enrollment!](/../api/objects#enrollment)
+**Type:** [Enrollment!](/api/objects#enrollment)
 
 Update a enrollment
 
@@ -4126,7 +4126,7 @@ Update a enrollment
 <tr>
 <td>
 enrollmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -4135,7 +4135,7 @@ enrollmentId<br />
 <tr>
 <td>
 plan<br />
-<a href="/../api/inputObjects#enrollmentplaninput"><code>EnrollmentPlanInput</code></a>
+<a href="/api/inputObjects#enrollmentplaninput"><code>EnrollmentPlanInput</code></a>
 </td>
 <td>
 
@@ -4144,7 +4144,7 @@ plan<br />
 <tr>
 <td>
 billingAddress<br />
-<a href="/../api/inputObjects#addressinput"><code>AddressInput</code></a>
+<a href="/api/inputObjects#addressinput"><code>AddressInput</code></a>
 </td>
 <td>
 
@@ -4153,7 +4153,7 @@ billingAddress<br />
 <tr>
 <td>
 contact<br />
-<a href="/../api/inputObjects#contactinput"><code>ContactInput</code></a>
+<a href="/api/inputObjects#contactinput"><code>ContactInput</code></a>
 </td>
 <td>
 
@@ -4162,7 +4162,7 @@ contact<br />
 <tr>
 <td>
 payment<br />
-<a href="/../api/inputObjects#enrollmentpaymentinput"><code>EnrollmentPaymentInput</code></a>
+<a href="/api/inputObjects#enrollmentpaymentinput"><code>EnrollmentPaymentInput</code></a>
 </td>
 <td>
 
@@ -4171,7 +4171,7 @@ payment<br />
 <tr>
 <td>
 delivery<br />
-<a href="/../api/inputObjects#enrollmentdeliveryinput"><code>EnrollmentDeliveryInput</code></a>
+<a href="/api/inputObjects#enrollmentdeliveryinput"><code>EnrollmentDeliveryInput</code></a>
 </td>
 <td>
 
@@ -4180,7 +4180,7 @@ delivery<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4191,7 +4191,7 @@ meta<br />
 
 ## updateFilter
 
-**Type:** [Filter!](/../api/objects#filter)
+**Type:** [Filter!](/api/objects#filter)
 
 Updates the specified filter with the information passed.
 
@@ -4203,7 +4203,7 @@ Updates the specified filter with the information passed.
 <tr>
 <td>
 filter<br />
-<a href="/../api/inputObjects#updatefilterinput"><code>UpdateFilterInput!</code></a>
+<a href="/api/inputObjects#updatefilterinput"><code>UpdateFilterInput!</code></a>
 </td>
 <td>
 
@@ -4212,7 +4212,7 @@ filter<br />
 <tr>
 <td>
 filterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4223,7 +4223,7 @@ filterId<br />
 
 ## updateFilterTexts
 
-**Type:** [[FilterTexts!]!](/../api/objects#filtertexts)
+**Type:** [[FilterTexts!]!](/api/objects#filtertexts)
 
 Updates or created specified filter texts for filter with ID provided and locale and optionally filterOptionValue
 
@@ -4235,7 +4235,7 @@ Updates or created specified filter texts for filter with ID provided and locale
 <tr>
 <td>
 filterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4244,7 +4244,7 @@ filterId<br />
 <tr>
 <td>
 filterOptionValue<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -4253,7 +4253,7 @@ filterOptionValue<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/inputObjects#updatefiltertextinput"><code>[UpdateFilterTextInput!]!</code></a>
+<a href="/api/inputObjects#updatefiltertextinput"><code>[UpdateFilterTextInput!]!</code></a>
 </td>
 <td>
 
@@ -4264,7 +4264,7 @@ texts<br />
 
 ## updateLanguage
 
-**Type:** [Language!](/../api/objects#language)
+**Type:** [Language!](/api/objects#language)
 
 Updates the specified language.
 
@@ -4276,7 +4276,7 @@ Updates the specified language.
 <tr>
 <td>
 language<br />
-<a href="/../api/inputObjects#updatelanguageinput"><code>UpdateLanguageInput!</code></a>
+<a href="/api/inputObjects#updatelanguageinput"><code>UpdateLanguageInput!</code></a>
 </td>
 <td>
 
@@ -4285,7 +4285,7 @@ language<br />
 <tr>
 <td>
 languageId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4296,7 +4296,7 @@ languageId<br />
 
 ## updateOrderDeliveryPickUp
 
-**Type:** [OrderDeliveryPickUp!](/../api/objects#orderdeliverypickup)
+**Type:** [OrderDeliveryPickUp!](/api/objects#orderdeliverypickup)
 
 Update a Pick Up Delivery Provider's specific configuration
 
@@ -4308,7 +4308,7 @@ Update a Pick Up Delivery Provider's specific configuration
 <tr>
 <td>
 orderDeliveryId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4317,7 +4317,7 @@ orderDeliveryId<br />
 <tr>
 <td>
 orderPickUpLocationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4326,7 +4326,7 @@ orderPickUpLocationId<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4337,7 +4337,7 @@ meta<br />
 
 ## updateOrderDeliveryShipping
 
-**Type:** [OrderDeliveryShipping!](/../api/objects#orderdeliveryshipping)
+**Type:** [OrderDeliveryShipping!](/api/objects#orderdeliveryshipping)
 
 Update a Shipping Delivery Provider's specific configuration
 
@@ -4349,7 +4349,7 @@ Update a Shipping Delivery Provider's specific configuration
 <tr>
 <td>
 orderDeliveryId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4358,7 +4358,7 @@ orderDeliveryId<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/inputObjects#addressinput"><code>AddressInput</code></a>
+<a href="/api/inputObjects#addressinput"><code>AddressInput</code></a>
 </td>
 <td>
 
@@ -4367,7 +4367,7 @@ address<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4378,7 +4378,7 @@ meta<br />
 
 ## updateOrderPaymentCard
 
-**Type:** [OrderPaymentCard!](/../api/objects#orderpaymentcard)
+**Type:** [OrderPaymentCard!](/api/objects#orderpaymentcard)
 
 Update a Card Payment Provider's specific configuration
 
@@ -4390,7 +4390,7 @@ Update a Card Payment Provider's specific configuration
 <tr>
 <td>
 orderPaymentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4399,7 +4399,7 @@ orderPaymentId<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4410,7 +4410,7 @@ meta<br />
 
 ## updateOrderPaymentGeneric
 
-**Type:** [OrderPaymentGeneric!](/../api/objects#orderpaymentgeneric)
+**Type:** [OrderPaymentGeneric!](/api/objects#orderpaymentgeneric)
 
 Update a Generic Payment Provider's specific configuration
 
@@ -4422,7 +4422,7 @@ Update a Generic Payment Provider's specific configuration
 <tr>
 <td>
 orderPaymentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4431,7 +4431,7 @@ orderPaymentId<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4442,7 +4442,7 @@ meta<br />
 
 ## updateOrderPaymentInvoice
 
-**Type:** [OrderPaymentInvoice!](/../api/objects#orderpaymentinvoice)
+**Type:** [OrderPaymentInvoice!](/api/objects#orderpaymentinvoice)
 
 Update an Invoice Payment Provider's specific configuration
 
@@ -4454,7 +4454,7 @@ Update an Invoice Payment Provider's specific configuration
 <tr>
 <td>
 orderPaymentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4463,7 +4463,7 @@ orderPaymentId<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4474,7 +4474,7 @@ meta<br />
 
 ## updatePaymentProvider
 
-**Type:** [PaymentProvider!](/../api/objects#paymentprovider)
+**Type:** [PaymentProvider!](/api/objects#paymentprovider)
 
 Updates payment provider information with the provided ID
 
@@ -4486,7 +4486,7 @@ Updates payment provider information with the provided ID
 <tr>
 <td>
 paymentProvider<br />
-<a href="/../api/inputObjects#updateproviderinput"><code>UpdateProviderInput!</code></a>
+<a href="/api/inputObjects#updateproviderinput"><code>UpdateProviderInput!</code></a>
 </td>
 <td>
 
@@ -4495,7 +4495,7 @@ paymentProvider<br />
 <tr>
 <td>
 paymentProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4506,7 +4506,7 @@ paymentProviderId<br />
 
 ## updateProduct
 
-**Type:** [Product](/../api/interfaces#product)
+**Type:** [Product](/api/interfaces#product)
 
 Modify generic infos of a product (tags for ex.)
 
@@ -4518,7 +4518,7 @@ Modify generic infos of a product (tags for ex.)
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4527,7 +4527,7 @@ productId<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/inputObjects#updateproductinput"><code>UpdateProductInput!</code></a>
+<a href="/api/inputObjects#updateproductinput"><code>UpdateProductInput!</code></a>
 </td>
 <td>
 
@@ -4538,7 +4538,7 @@ product<br />
 
 ## updateProductCommerce
 
-**Type:** [Product](/../api/interfaces#product)
+**Type:** [Product](/api/interfaces#product)
 
 Modify commerce part of a product
 
@@ -4550,7 +4550,7 @@ Modify commerce part of a product
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4559,7 +4559,7 @@ productId<br />
 <tr>
 <td>
 commerce<br />
-<a href="/../api/inputObjects#updateproductcommerceinput"><code>UpdateProductCommerceInput!</code></a>
+<a href="/api/inputObjects#updateproductcommerceinput"><code>UpdateProductCommerceInput!</code></a>
 </td>
 <td>
 
@@ -4570,7 +4570,7 @@ commerce<br />
 
 ## updateProductMediaTexts
 
-**Type:** [[ProductMediaTexts!]!](/../api/objects#productmediatexts)
+**Type:** [[ProductMediaTexts!]!](/api/objects#productmediatexts)
 
 Modify localized texts part of a product's media asset
 
@@ -4582,7 +4582,7 @@ Modify localized texts part of a product's media asset
 <tr>
 <td>
 productMediaId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4591,7 +4591,7 @@ productMediaId<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/inputObjects#updateproductmediatextinput"><code>[UpdateProductMediaTextInput!]!</code></a>
+<a href="/api/inputObjects#updateproductmediatextinput"><code>[UpdateProductMediaTextInput!]!</code></a>
 </td>
 <td>
 
@@ -4602,7 +4602,7 @@ texts<br />
 
 ## updateProductPlan
 
-**Type:** [Product](/../api/interfaces#product)
+**Type:** [Product](/api/interfaces#product)
 
 Modify plan part of a product
 
@@ -4614,7 +4614,7 @@ Modify plan part of a product
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4623,7 +4623,7 @@ productId<br />
 <tr>
 <td>
 plan<br />
-<a href="/../api/inputObjects#updateproductplaninput"><code>UpdateProductPlanInput!</code></a>
+<a href="/api/inputObjects#updateproductplaninput"><code>UpdateProductPlanInput!</code></a>
 </td>
 <td>
 
@@ -4634,7 +4634,7 @@ plan<br />
 
 ## updateProductReview
 
-**Type:** [ProductReview!](/../api/objects#productreview)
+**Type:** [ProductReview!](/api/objects#productreview)
 
 Update an existing ProductReview. The logic to allow/dissallow editing is controlled by product plugin logic
 
@@ -4646,7 +4646,7 @@ Update an existing ProductReview. The logic to allow/dissallow editing is contro
 <tr>
 <td>
 productReviewId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4655,7 +4655,7 @@ productReviewId<br />
 <tr>
 <td>
 productReview<br />
-<a href="/../api/inputObjects#productreviewinput"><code>ProductReviewInput!</code></a>
+<a href="/api/inputObjects#productreviewinput"><code>ProductReviewInput!</code></a>
 </td>
 <td>
 
@@ -4666,7 +4666,7 @@ productReview<br />
 
 ## updateProductSupply
 
-**Type:** [Product](/../api/interfaces#product)
+**Type:** [Product](/api/interfaces#product)
 
 Modify delivery part of a product
 
@@ -4678,7 +4678,7 @@ Modify delivery part of a product
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4687,7 +4687,7 @@ productId<br />
 <tr>
 <td>
 supply<br />
-<a href="/../api/inputObjects#updateproductsupplyinput"><code>UpdateProductSupplyInput!</code></a>
+<a href="/api/inputObjects#updateproductsupplyinput"><code>UpdateProductSupplyInput!</code></a>
 </td>
 <td>
 
@@ -4698,7 +4698,7 @@ supply<br />
 
 ## updateProductTexts
 
-**Type:** [[ProductTexts!]!](/../api/objects#producttexts)
+**Type:** [[ProductTexts!]!](/api/objects#producttexts)
 
 Modify localized texts part of a product
 
@@ -4710,7 +4710,7 @@ Modify localized texts part of a product
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4719,7 +4719,7 @@ productId<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/inputObjects#updateproducttextinput"><code>[UpdateProductTextInput!]!</code></a>
+<a href="/api/inputObjects#updateproducttextinput"><code>[UpdateProductTextInput!]!</code></a>
 </td>
 <td>
 
@@ -4730,7 +4730,7 @@ texts<br />
 
 ## updateProductTokenization
 
-**Type:** [TokenizedProduct](/../api/objects#tokenizedproduct)
+**Type:** [TokenizedProduct](/api/objects#tokenizedproduct)
 
 Modify tokenization part of a product
 
@@ -4742,7 +4742,7 @@ Modify tokenization part of a product
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4751,7 +4751,7 @@ productId<br />
 <tr>
 <td>
 tokenization<br />
-<a href="/../api/inputObjects#updateproducttokenizationinput"><code>UpdateProductTokenizationInput!</code></a>
+<a href="/api/inputObjects#updateproducttokenizationinput"><code>UpdateProductTokenizationInput!</code></a>
 </td>
 <td>
 
@@ -4762,7 +4762,7 @@ tokenization<br />
 
 ## updateProductVariationTexts
 
-**Type:** [[ProductVariationTexts!]!](/../api/objects#productvariationtexts)
+**Type:** [[ProductVariationTexts!]!](/api/objects#productvariationtexts)
 
 Update product variation texts with the specified locales for product variations
 that match the provided variation ID and production option value
@@ -4775,7 +4775,7 @@ that match the provided variation ID and production option value
 <tr>
 <td>
 productVariationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4784,7 +4784,7 @@ productVariationId<br />
 <tr>
 <td>
 productVariationOptionValue<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -4793,7 +4793,7 @@ productVariationOptionValue<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/inputObjects#updateproductvariationtextinput"><code>[UpdateProductVariationTextInput!]!</code></a>
+<a href="/api/inputObjects#updateproductvariationtextinput"><code>[UpdateProductVariationTextInput!]!</code></a>
 </td>
 <td>
 
@@ -4804,7 +4804,7 @@ texts<br />
 
 ## updateProductWarehousing
 
-**Type:** [Product](/../api/interfaces#product)
+**Type:** [Product](/api/interfaces#product)
 
 Modify warehousing part of a product
 
@@ -4816,7 +4816,7 @@ Modify warehousing part of a product
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4825,7 +4825,7 @@ productId<br />
 <tr>
 <td>
 warehousing<br />
-<a href="/../api/inputObjects#updateproductwarehousinginput"><code>UpdateProductWarehousingInput!</code></a>
+<a href="/api/inputObjects#updateproductwarehousinginput"><code>UpdateProductWarehousingInput!</code></a>
 </td>
 <td>
 
@@ -4836,7 +4836,7 @@ warehousing<br />
 
 ## updateUserAvatar
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Update Avatar of any user or logged in user if userId is not provided
 
@@ -4848,7 +4848,7 @@ Update Avatar of any user or logged in user if userId is not provided
 <tr>
 <td>
 avatar<br />
-<a href="/../api/scalars#upload"><code>Upload!</code></a>
+<a href="/api/scalars#upload"><code>Upload!</code></a>
 </td>
 <td>
 
@@ -4857,7 +4857,7 @@ avatar<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -4868,7 +4868,7 @@ userId<br />
 
 ## updateUserProfile
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 Update Profile of any user or logged in user if userId is not provided
 
@@ -4880,7 +4880,7 @@ Update Profile of any user or logged in user if userId is not provided
 <tr>
 <td>
 profile<br />
-<a href="/../api/inputObjects#userprofileinput"><code>UserProfileInput</code></a>
+<a href="/api/inputObjects#userprofileinput"><code>UserProfileInput</code></a>
 </td>
 <td>
 
@@ -4889,7 +4889,7 @@ profile<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4898,7 +4898,7 @@ meta<br />
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -4909,7 +4909,7 @@ userId<br />
 
 ## updateWarehousingProvider
 
-**Type:** [WarehousingProvider!](/../api/objects#warehousingprovider)
+**Type:** [WarehousingProvider!](/api/objects#warehousingprovider)
 
 Updates warehousing provider information with the provided ID
 
@@ -4921,7 +4921,7 @@ Updates warehousing provider information with the provided ID
 <tr>
 <td>
 warehousingProvider<br />
-<a href="/../api/inputObjects#updateproviderinput"><code>UpdateProviderInput!</code></a>
+<a href="/api/inputObjects#updateproviderinput"><code>UpdateProviderInput!</code></a>
 </td>
 <td>
 
@@ -4930,7 +4930,7 @@ warehousingProvider<br />
 <tr>
 <td>
 warehousingProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4941,7 +4941,7 @@ warehousingProviderId<br />
 
 ## verifyEmail
 
-**Type:** [LoginMethodResponse](/../api/objects#loginmethodresponse)
+**Type:** [LoginMethodResponse](/api/objects#loginmethodresponse)
 
 Marks the user's email address as verified. Logs the user in afterwards.
 
@@ -4953,7 +4953,7 @@ Marks the user's email address as verified. Logs the user in afterwards.
 <tr>
 <td>
 token<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -4964,7 +4964,7 @@ token<br />
 
 ## verifyQuotation
 
-**Type:** [Quotation!](/../api/objects#quotation)
+**Type:** [Quotation!](/api/objects#quotation)
 
 Verify quotation request elligibility. and marks requested quotations as verified if it is
 
@@ -4976,7 +4976,7 @@ Verify quotation request elligibility. and marks requested quotations as verifie
 <tr>
 <td>
 quotationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4985,7 +4985,7 @@ quotationId<br />
 <tr>
 <td>
 quotationContext<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4996,7 +4996,7 @@ quotationContext<br />
 
 ## verifyWeb3Address
 
-**Type:** [User!](/../api/objects#user)
+**Type:** [User!](/api/objects#user)
 
 
 
@@ -5008,7 +5008,7 @@ quotationContext<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -5017,7 +5017,7 @@ address<br />
 <tr>
 <td>
 hash<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 

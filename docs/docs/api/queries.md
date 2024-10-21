@@ -6,13 +6,13 @@ slug: queries
 
 ## activeWorkTypes
 
-**Type:** [[WorkType!]!](/../api/enums#worktype)
+**Type:** [[WorkType!]!](/api/enums#worktype)
 
 Get List of currently registered worker plugins
 
 ## assortment
 
-**Type:** [Assortment](/../api/objects#assortment)
+**Type:** [Assortment](/api/objects#assortment)
 
 Get a specific assortment by ID
 
@@ -24,7 +24,7 @@ Get a specific assortment by ID
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -33,7 +33,7 @@ assortmentId<br />
 <tr>
 <td>
 slug<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -44,7 +44,7 @@ slug<br />
 
 ## assortments
 
-**Type:** [[Assortment!]!](/../api/objects#assortment)
+**Type:** [[Assortment!]!](/api/objects#assortment)
 
 Get all root assortments, by default sorted by sequence (ascending)
 
@@ -56,7 +56,7 @@ Get all root assortments, by default sorted by sequence (ascending)
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -65,7 +65,7 @@ queryString<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -74,7 +74,7 @@ tags<br />
 <tr>
 <td>
 slugs<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -83,7 +83,7 @@ slugs<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -92,7 +92,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -101,7 +101,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -110,7 +110,7 @@ includeInactive<br />
 <tr>
 <td>
 includeLeaves<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -119,7 +119,7 @@ includeLeaves<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -130,7 +130,7 @@ sort<br />
 
 ## assortmentsCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of assortments that match a given criteria or all if no criteria is given
 
@@ -142,7 +142,7 @@ Returns total number of assortments that match a given criteria or all if no cri
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -151,7 +151,7 @@ tags<br />
 <tr>
 <td>
 slugs<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -160,7 +160,7 @@ slugs<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -169,7 +169,7 @@ includeInactive<br />
 <tr>
 <td>
 includeLeaves<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -178,7 +178,7 @@ includeLeaves<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -189,7 +189,7 @@ queryString<br />
 
 ## countries
 
-**Type:** [[Country!]!](/../api/objects#country)
+**Type:** [[Country!]!](/api/objects#country)
 
 Get all countries, by default sorted by creation date (ascending)
 
@@ -201,7 +201,7 @@ Get all countries, by default sorted by creation date (ascending)
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -210,7 +210,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -219,7 +219,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -228,7 +228,7 @@ includeInactive<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -237,7 +237,7 @@ queryString<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -248,7 +248,7 @@ sort<br />
 
 ## countriesCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of countries
 
@@ -260,7 +260,7 @@ Returns total number of countries
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -269,7 +269,7 @@ includeInactive<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -280,7 +280,7 @@ queryString<br />
 
 ## country
 
-**Type:** [Country](/../api/objects#country)
+**Type:** [Country](/api/objects#country)
 
 Get a specific country by ID
 
@@ -292,7 +292,7 @@ Get a specific country by ID
 <tr>
 <td>
 countryId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -303,7 +303,7 @@ countryId<br />
 
 ## currencies
 
-**Type:** [[Currency!]!](/../api/objects#currency)
+**Type:** [[Currency!]!](/api/objects#currency)
 
 Get all currencies, by default sorted by creation date (ascending)
 
@@ -315,7 +315,7 @@ Get all currencies, by default sorted by creation date (ascending)
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -324,7 +324,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -333,7 +333,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -342,7 +342,7 @@ includeInactive<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -351,7 +351,7 @@ queryString<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -362,7 +362,7 @@ sort<br />
 
 ## currenciesCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of currencies
 
@@ -374,7 +374,7 @@ Returns total number of currencies
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -383,7 +383,7 @@ includeInactive<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -394,7 +394,7 @@ queryString<br />
 
 ## currency
 
-**Type:** [Currency](/../api/objects#currency)
+**Type:** [Currency](/api/objects#currency)
 
 Get a specific currency by ID
 
@@ -406,7 +406,7 @@ Get a specific currency by ID
 <tr>
 <td>
 currencyId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -417,7 +417,7 @@ currencyId<br />
 
 ## deliveryInterfaces
 
-**Type:** [[DeliveryInterface!]!](/../api/objects#deliveryinterface)
+**Type:** [[DeliveryInterface!]!](/api/objects#deliveryinterface)
 
 Get all delivery interfaces filtered by type
 
@@ -429,7 +429,7 @@ Get all delivery interfaces filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#deliveryprovidertype"><code>DeliveryProviderType!</code></a>
+<a href="/api/enums#deliveryprovidertype"><code>DeliveryProviderType!</code></a>
 </td>
 <td>
 
@@ -440,7 +440,7 @@ type<br />
 
 ## deliveryProvider
 
-**Type:** [DeliveryProvider](/../api/objects#deliveryprovider)
+**Type:** [DeliveryProvider](/api/objects#deliveryprovider)
 
 Get a specific delivery provider by ID
 
@@ -452,7 +452,7 @@ Get a specific delivery provider by ID
 <tr>
 <td>
 deliveryProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -463,7 +463,7 @@ deliveryProviderId<br />
 
 ## deliveryProviders
 
-**Type:** [[DeliveryProvider!]!](/../api/objects#deliveryprovider)
+**Type:** [[DeliveryProvider!]!](/api/objects#deliveryprovider)
 
 Get all delivery providers, optionally filtered by type
 
@@ -475,7 +475,7 @@ Get all delivery providers, optionally filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
+<a href="/api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
 </td>
 <td>
 
@@ -486,7 +486,7 @@ type<br />
 
 ## deliveryProvidersCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of delivery providers, optionally filtered by type
 
@@ -498,7 +498,7 @@ Returns total number of delivery providers, optionally filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
+<a href="/api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
 </td>
 <td>
 
@@ -509,7 +509,7 @@ type<br />
 
 ## enrollment
 
-**Type:** [Enrollment](/../api/objects#enrollment)
+**Type:** [Enrollment](/api/objects#enrollment)
 
 Get a specific quotation by ID
 
@@ -521,7 +521,7 @@ Get a specific quotation by ID
 <tr>
 <td>
 enrollmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -532,7 +532,7 @@ enrollmentId<br />
 
 ## enrollments
 
-**Type:** [[Enrollment!]!](/../api/objects#enrollment)
+**Type:** [[Enrollment!]!](/api/objects#enrollment)
 
 Get all enrollments, by default sorted by creation date (ascending)
 
@@ -544,7 +544,7 @@ Get all enrollments, by default sorted by creation date (ascending)
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -553,7 +553,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -562,7 +562,7 @@ offset<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -571,7 +571,7 @@ queryString<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -580,7 +580,7 @@ status<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -591,7 +591,7 @@ sort<br />
 
 ## enrollmentsCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of enrollments
 
@@ -603,7 +603,7 @@ Returns total number of enrollments
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -612,7 +612,7 @@ queryString<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -623,7 +623,7 @@ status<br />
 
 ## event
 
-**Type:** [Event](/../api/objects#event)
+**Type:** [Event](/api/objects#event)
 
 Get a specific work unit by ID
 
@@ -635,7 +635,7 @@ Get a specific work unit by ID
 <tr>
 <td>
 eventId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -646,7 +646,7 @@ eventId<br />
 
 ## events
 
-**Type:** [[Event!]!](/../api/objects#event)
+**Type:** [[Event!]!](/api/objects#event)
 
 Get all emitted events, by default sorted by creation date (desc)
 
@@ -658,7 +658,7 @@ Get all emitted events, by default sorted by creation date (desc)
 <tr>
 <td>
 types<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -667,7 +667,7 @@ types<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -676,7 +676,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -685,7 +685,7 @@ offset<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -694,7 +694,7 @@ queryString<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -703,7 +703,7 @@ created<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -714,7 +714,7 @@ sort<br />
 
 ## eventsCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Get total count of all emitted events
 
@@ -726,7 +726,7 @@ Get total count of all emitted events
 <tr>
 <td>
 types<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -735,7 +735,7 @@ types<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -744,7 +744,7 @@ queryString<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -755,7 +755,7 @@ created<br />
 
 ## eventStatistics
 
-**Type:** [[EventStatistics!]!](/../api/objects#eventstatistics)
+**Type:** [[EventStatistics!]!](/api/objects#eventstatistics)
 
 Returns aggregated report of all the events that occurred in the system
 
@@ -767,7 +767,7 @@ Returns aggregated report of all the events that occurred in the system
 <tr>
 <td>
 types<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -776,7 +776,7 @@ types<br />
 <tr>
 <td>
 from<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -785,7 +785,7 @@ from<br />
 <tr>
 <td>
 to<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -796,7 +796,7 @@ to<br />
 
 ## filter
 
-**Type:** [Filter](/../api/objects#filter)
+**Type:** [Filter](/api/objects#filter)
 
 Get a specific filter by ID
 
@@ -808,7 +808,7 @@ Get a specific filter by ID
 <tr>
 <td>
 filterId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -819,7 +819,7 @@ filterId<br />
 
 ## filters
 
-**Type:** [[Filter!]!](/../api/objects#filter)
+**Type:** [[Filter!]!](/api/objects#filter)
 
 Get all filters, by default sorted by creation date (ascending)
 
@@ -831,7 +831,7 @@ Get all filters, by default sorted by creation date (ascending)
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -840,7 +840,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -849,7 +849,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -858,7 +858,7 @@ includeInactive<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -867,7 +867,7 @@ queryString<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -878,7 +878,7 @@ sort<br />
 
 ## filtersCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of filters
 
@@ -890,7 +890,7 @@ Returns total number of filters
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -899,7 +899,7 @@ includeInactive<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -910,13 +910,13 @@ queryString<br />
 
 ## impersonator
 
-**Type:** [User](/../api/objects#user)
+**Type:** [User](/api/objects#user)
 
 User impersonating current user session using the  impersonate API
 
 ## language
 
-**Type:** [Language](/../api/objects#language)
+**Type:** [Language](/api/objects#language)
 
 Get a specific language
 
@@ -928,7 +928,7 @@ Get a specific language
 <tr>
 <td>
 languageId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -939,7 +939,7 @@ languageId<br />
 
 ## languages
 
-**Type:** [[Language]!](/../api/objects#language)
+**Type:** [[Language]!](/api/objects#language)
 
 Get all languages, by default sorted by creation date (ascending)
 
@@ -951,7 +951,7 @@ Get all languages, by default sorted by creation date (ascending)
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -960,7 +960,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -969,7 +969,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -978,7 +978,7 @@ includeInactive<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -987,7 +987,7 @@ queryString<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -998,7 +998,7 @@ sort<br />
 
 ## languagesCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number languages
 
@@ -1010,7 +1010,7 @@ Returns total number languages
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1019,7 +1019,7 @@ includeInactive<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1030,13 +1030,13 @@ queryString<br />
 
 ## me
 
-**Type:** [User](/../api/objects#user)
+**Type:** [User](/api/objects#user)
 
 Currently logged in user
 
 ## order
 
-**Type:** [Order](/../api/objects#order)
+**Type:** [Order](/api/objects#order)
 
 Get a specific single order
 
@@ -1048,7 +1048,7 @@ Get a specific single order
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1059,7 +1059,7 @@ orderId<br />
 
 ## orders
 
-**Type:** [[Order!]!](/../api/objects#order)
+**Type:** [[Order!]!](/api/objects#order)
 
 Get all orders, by default sorted by creation date (descending)
 
@@ -1071,7 +1071,7 @@ Get all orders, by default sorted by creation date (descending)
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1080,7 +1080,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1089,7 +1089,7 @@ offset<br />
 <tr>
 <td>
 includeCarts<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1098,7 +1098,7 @@ includeCarts<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1107,7 +1107,7 @@ queryString<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderstatus"><code>[OrderStatus!]</code></a>
+<a href="/api/enums#orderstatus"><code>[OrderStatus!]</code></a>
 </td>
 <td>
 
@@ -1116,7 +1116,7 @@ status<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -1127,7 +1127,7 @@ sort<br />
 
 ## ordersCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of orders
 
@@ -1139,7 +1139,7 @@ Returns total number of orders
 <tr>
 <td>
 includeCarts<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1148,7 +1148,7 @@ includeCarts<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1159,7 +1159,7 @@ queryString<br />
 
 ## orderStatistics
 
-**Type:** [OrderStatistics!](/../api/objects#orderstatistics)
+**Type:** [OrderStatistics!](/api/objects#orderstatistics)
 
 Returns aggregated report of all the orders that occurred in the system
 
@@ -1171,7 +1171,7 @@ Returns aggregated report of all the orders that occurred in the system
 <tr>
 <td>
 from<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -1180,7 +1180,7 @@ from<br />
 <tr>
 <td>
 to<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -1191,7 +1191,7 @@ to<br />
 
 ## paymentInterfaces
 
-**Type:** [[PaymentInterface!]!](/../api/objects#paymentinterface)
+**Type:** [[PaymentInterface!]!](/api/objects#paymentinterface)
 
 Get all payment interfaces filtered by type
 
@@ -1203,7 +1203,7 @@ Get all payment interfaces filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#paymentprovidertype"><code>PaymentProviderType!</code></a>
+<a href="/api/enums#paymentprovidertype"><code>PaymentProviderType!</code></a>
 </td>
 <td>
 
@@ -1214,7 +1214,7 @@ type<br />
 
 ## paymentProvider
 
-**Type:** [PaymentProvider](/../api/objects#paymentprovider)
+**Type:** [PaymentProvider](/api/objects#paymentprovider)
 
 Get a specific payment provider by ID
 
@@ -1226,7 +1226,7 @@ Get a specific payment provider by ID
 <tr>
 <td>
 paymentProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1237,7 +1237,7 @@ paymentProviderId<br />
 
 ## paymentProviders
 
-**Type:** [[PaymentProvider!]!](/../api/objects#paymentprovider)
+**Type:** [[PaymentProvider!]!](/api/objects#paymentprovider)
 
 Get all payment providers, optionally filtered by type
 
@@ -1249,7 +1249,7 @@ Get all payment providers, optionally filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#paymentprovidertype"><code>PaymentProviderType</code></a>
+<a href="/api/enums#paymentprovidertype"><code>PaymentProviderType</code></a>
 </td>
 <td>
 
@@ -1260,7 +1260,7 @@ type<br />
 
 ## paymentProvidersCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of payment providers, optionally filtered by type
 
@@ -1272,7 +1272,7 @@ Returns total number of payment providers, optionally filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#paymentprovidertype"><code>PaymentProviderType</code></a>
+<a href="/api/enums#paymentprovidertype"><code>PaymentProviderType</code></a>
 </td>
 <td>
 
@@ -1283,7 +1283,7 @@ type<br />
 
 ## product
 
-**Type:** [Product](/../api/interfaces#product)
+**Type:** [Product](/api/interfaces#product)
 
 Get a specific product by id or slug
 
@@ -1295,7 +1295,7 @@ Get a specific product by id or slug
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -1304,7 +1304,7 @@ productId<br />
 <tr>
 <td>
 slug<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1315,7 +1315,7 @@ slug<br />
 
 ## productCatalogPrices
 
-**Type:** [[ProductCatalogPrice!]!](/../api/objects#productcatalogprice)
+**Type:** [[ProductCatalogPrice!]!](/api/objects#productcatalogprice)
 
 List products specified prices
 
@@ -1327,7 +1327,7 @@ List products specified prices
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1338,7 +1338,7 @@ productId<br />
 
 ## productReview
 
-**Type:** [ProductReview!](/../api/objects#productreview)
+**Type:** [ProductReview!](/api/objects#productreview)
 
 Get a specific product review by ID
 
@@ -1350,7 +1350,7 @@ Get a specific product review by ID
 <tr>
 <td>
 productReviewId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1361,7 +1361,7 @@ productReviewId<br />
 
 ## productReviews
 
-**Type:** [[ProductReview!]!](/../api/objects#productreview)
+**Type:** [[ProductReview!]!](/api/objects#productreview)
 
 Get all product reviews, by default sorted by creation date (descending)
 
@@ -1373,7 +1373,7 @@ Get all product reviews, by default sorted by creation date (descending)
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1382,7 +1382,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1391,7 +1391,7 @@ offset<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -1400,7 +1400,7 @@ sort<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1411,7 +1411,7 @@ queryString<br />
 
 ## productReviewsCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of product reviews
 
@@ -1423,7 +1423,7 @@ Returns total number of product reviews
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1434,7 +1434,7 @@ queryString<br />
 
 ## products
 
-**Type:** [[Product!]!](/../api/interfaces#product)
+**Type:** [[Product!]!](/api/interfaces#product)
 
 Simple list of published products filtered either by tags or explicit slugs
 If a slug is provided, limit and offset don't have any effect on the result
@@ -1448,7 +1448,7 @@ By default sorted by sequence (ascending) and published (ascending) unless a que
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1457,7 +1457,7 @@ queryString<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -1466,7 +1466,7 @@ tags<br />
 <tr>
 <td>
 slugs<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -1475,7 +1475,7 @@ slugs<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1484,7 +1484,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1493,7 +1493,7 @@ offset<br />
 <tr>
 <td>
 includeDrafts<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1502,7 +1502,7 @@ includeDrafts<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -1513,7 +1513,7 @@ sort<br />
 
 ## productsCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Return total number of published products filtered either by tags or explicit slugs
 If a slug is provided
@@ -1526,7 +1526,7 @@ If a slug is provided
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -1535,7 +1535,7 @@ tags<br />
 <tr>
 <td>
 slugs<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -1544,7 +1544,7 @@ slugs<br />
 <tr>
 <td>
 includeDrafts<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1553,7 +1553,7 @@ includeDrafts<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1564,7 +1564,7 @@ queryString<br />
 
 ## quotation
 
-**Type:** [Quotation](/../api/objects#quotation)
+**Type:** [Quotation](/api/objects#quotation)
 
 Get a specific quotation by ID
 
@@ -1576,7 +1576,7 @@ Get a specific quotation by ID
 <tr>
 <td>
 quotationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1587,7 +1587,7 @@ quotationId<br />
 
 ## quotations
 
-**Type:** [[Quotation!]!](/../api/objects#quotation)
+**Type:** [[Quotation!]!](/api/objects#quotation)
 
 Get all quotations, by default sorted by creation date (ascending)
 
@@ -1599,7 +1599,7 @@ Get all quotations, by default sorted by creation date (ascending)
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1608,7 +1608,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1617,7 +1617,7 @@ offset<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1626,7 +1626,7 @@ queryString<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -1637,7 +1637,7 @@ sort<br />
 
 ## quotationsCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of quotations
 
@@ -1649,7 +1649,7 @@ Returns total number of quotations
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1660,7 +1660,7 @@ queryString<br />
 
 ## searchAssortments
 
-**Type:** [AssortmentSearchResult!](/../api/objects#assortmentsearchresult)
+**Type:** [AssortmentSearchResult!](/api/objects#assortmentsearchresult)
 
 Search assortments
 
@@ -1672,7 +1672,7 @@ Search assortments
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1681,7 +1681,7 @@ queryString<br />
 <tr>
 <td>
 assortmentIds<br />
-<a href="/../api/scalars#id"><code>[ID!]</code></a>
+<a href="/api/scalars#id"><code>[ID!]</code></a>
 </td>
 <td>
 
@@ -1690,7 +1690,7 @@ assortmentIds<br />
 <tr>
 <td>
 orderBy<br />
-<a href="/../api/enums#searchorderby"><code>SearchOrderBy</code></a>
+<a href="/api/enums#searchorderby"><code>SearchOrderBy</code></a>
 </td>
 <td>
 
@@ -1699,7 +1699,7 @@ orderBy<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1710,7 +1710,7 @@ includeInactive<br />
 
 ## searchProducts
 
-**Type:** [ProductSearchResult!](/../api/objects#productsearchresult)
+**Type:** [ProductSearchResult!](/api/objects#productsearchresult)
 
 Search products
 
@@ -1722,7 +1722,7 @@ Search products
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1731,7 +1731,7 @@ queryString<br />
 <tr>
 <td>
 filterQuery<br />
-<a href="/../api/inputObjects#filterqueryinput"><code>[FilterQueryInput!]</code></a>
+<a href="/api/inputObjects#filterqueryinput"><code>[FilterQueryInput!]</code></a>
 </td>
 <td>
 
@@ -1740,7 +1740,7 @@ filterQuery<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -1749,7 +1749,7 @@ assortmentId<br />
 <tr>
 <td>
 orderBy<br />
-<a href="/../api/enums#searchorderby"><code>SearchOrderBy</code></a>
+<a href="/api/enums#searchorderby"><code>SearchOrderBy</code></a>
 </td>
 <td>
 
@@ -1758,7 +1758,7 @@ orderBy<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1767,7 +1767,7 @@ includeInactive<br />
 <tr>
 <td>
 ignoreChildAssortments<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1778,13 +1778,13 @@ ignoreChildAssortments<br />
 
 ## shopInfo
 
-**Type:** [Shop!](/../api/objects#shop)
+**Type:** [Shop!](/api/objects#shop)
 
 Get shop-global data and the resolved country/language pair
 
 ## token
 
-**Type:** [Token](/../api/objects#token)
+**Type:** [Token](/api/objects#token)
 
 Get token
 
@@ -1796,7 +1796,7 @@ Get token
 <tr>
 <td>
 tokenId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1807,7 +1807,7 @@ tokenId<br />
 
 ## tokens
 
-**Type:** [[Token!]!](/../api/objects#token)
+**Type:** [[Token!]!](/api/objects#token)
 
 Get all tokens
 
@@ -1819,7 +1819,7 @@ Get all tokens
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1828,7 +1828,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1839,7 +1839,7 @@ offset<br />
 
 ## translatedAssortmentMediaTexts
 
-**Type:** [[AssortmentMediaTexts!]!](/../api/objects#assortmentmediatexts)
+**Type:** [[AssortmentMediaTexts!]!](/api/objects#assortmentmediatexts)
 
 Localization: Media title/subtitle of a media that is attached to a assortment
 
@@ -1851,7 +1851,7 @@ Localization: Media title/subtitle of a media that is attached to a assortment
 <tr>
 <td>
 assortmentMediaId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1862,7 +1862,7 @@ assortmentMediaId<br />
 
 ## translatedAssortmentTexts
 
-**Type:** [[AssortmentTexts!]!](/../api/objects#assortmenttexts)
+**Type:** [[AssortmentTexts!]!](/api/objects#assortmenttexts)
 
 Localization: Meta data for assortments
 
@@ -1874,7 +1874,7 @@ Localization: Meta data for assortments
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1885,7 +1885,7 @@ assortmentId<br />
 
 ## translatedFilterTexts
 
-**Type:** [[FilterTexts!]!](/../api/objects#filtertexts)
+**Type:** [[FilterTexts!]!](/api/objects#filtertexts)
 
 Localization: Filters and Filter Options
 
@@ -1897,7 +1897,7 @@ Localization: Filters and Filter Options
 <tr>
 <td>
 filterId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1906,7 +1906,7 @@ filterId<br />
 <tr>
 <td>
 filterOptionValue<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1917,7 +1917,7 @@ filterOptionValue<br />
 
 ## translatedProductMediaTexts
 
-**Type:** [[ProductMediaTexts!]!](/../api/objects#productmediatexts)
+**Type:** [[ProductMediaTexts!]!](/api/objects#productmediatexts)
 
 Localization: Media title/subtitle of a media that is attached to a product
 
@@ -1929,7 +1929,7 @@ Localization: Media title/subtitle of a media that is attached to a product
 <tr>
 <td>
 productMediaId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1940,7 +1940,7 @@ productMediaId<br />
 
 ## translatedProductTexts
 
-**Type:** [[ProductTexts!]!](/../api/objects#producttexts)
+**Type:** [[ProductTexts!]!](/api/objects#producttexts)
 
 Localization: Meta data for product
 
@@ -1952,7 +1952,7 @@ Localization: Meta data for product
 <tr>
 <td>
 productId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1963,7 +1963,7 @@ productId<br />
 
 ## translatedProductVariationTexts
 
-**Type:** [[ProductVariationTexts!]!](/../api/objects#productvariationtexts)
+**Type:** [[ProductVariationTexts!]!](/api/objects#productvariationtexts)
 
 Localization: Variations and Variation Options
 
@@ -1975,7 +1975,7 @@ Localization: Variations and Variation Options
 <tr>
 <td>
 productVariationId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1984,7 +1984,7 @@ productVariationId<br />
 <tr>
 <td>
 productVariationOptionValue<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1995,7 +1995,7 @@ productVariationOptionValue<br />
 
 ## user
 
-**Type:** [User](/../api/objects#user)
+**Type:** [User](/api/objects#user)
 
 Specific user data if userId provided, else returns currently logged in
 
@@ -2007,7 +2007,7 @@ Specific user data if userId provided, else returns currently logged in
 <tr>
 <td>
 userId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -2018,7 +2018,7 @@ userId<br />
 
 ## users
 
-**Type:** [[User!]!](/../api/objects#user)
+**Type:** [[User!]!](/api/objects#user)
 
 Get list of users, by default sorted by creation date (ascending) unless a queryString is set
 
@@ -2030,7 +2030,7 @@ Get list of users, by default sorted by creation date (ascending) unless a query
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -2039,7 +2039,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -2048,7 +2048,7 @@ offset<br />
 <tr>
 <td>
 includeGuests<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2057,7 +2057,7 @@ includeGuests<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2066,7 +2066,7 @@ queryString<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -2077,7 +2077,7 @@ sort<br />
 
 ## usersCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Get total number of users in the system that match query
 
@@ -2089,7 +2089,7 @@ Get total number of users in the system that match query
 <tr>
 <td>
 includeGuests<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2098,7 +2098,7 @@ includeGuests<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2109,7 +2109,7 @@ queryString<br />
 
 ## validateResetPasswordToken
 
-**Type:** [Boolean!](/../api/scalars#boolean)
+**Type:** [Boolean!](/api/scalars#boolean)
 
 Determines if a token is valid/active for reset password
 
@@ -2121,7 +2121,7 @@ Determines if a token is valid/active for reset password
 <tr>
 <td>
 token<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2132,7 +2132,7 @@ token<br />
 
 ## validateVerifyEmailToken
 
-**Type:** [Boolean!](/../api/scalars#boolean)
+**Type:** [Boolean!](/api/scalars#boolean)
 
 Determines if a token is valid/active for email verification
 
@@ -2144,7 +2144,7 @@ Determines if a token is valid/active for email verification
 <tr>
 <td>
 token<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2155,7 +2155,7 @@ token<br />
 
 ## warehousingInterfaces
 
-**Type:** [[WarehousingInterface!]!](/../api/objects#warehousinginterface)
+**Type:** [[WarehousingInterface!]!](/api/objects#warehousinginterface)
 
 Get all warehousing interfaces filtered by type
 
@@ -2167,7 +2167,7 @@ Get all warehousing interfaces filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#warehousingprovidertype"><code>WarehousingProviderType!</code></a>
+<a href="/api/enums#warehousingprovidertype"><code>WarehousingProviderType!</code></a>
 </td>
 <td>
 
@@ -2178,7 +2178,7 @@ type<br />
 
 ## warehousingProvider
 
-**Type:** [WarehousingProvider](/../api/objects#warehousingprovider)
+**Type:** [WarehousingProvider](/api/objects#warehousingprovider)
 
 Get a specific warehousing provider by ID
 
@@ -2190,7 +2190,7 @@ Get a specific warehousing provider by ID
 <tr>
 <td>
 warehousingProviderId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2201,7 +2201,7 @@ warehousingProviderId<br />
 
 ## warehousingProviders
 
-**Type:** [[WarehousingProvider!]!](/../api/objects#warehousingprovider)
+**Type:** [[WarehousingProvider!]!](/api/objects#warehousingprovider)
 
 Get all warehousing providers, optionally filtered by type
 
@@ -2213,7 +2213,7 @@ Get all warehousing providers, optionally filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#warehousingprovidertype"><code>WarehousingProviderType</code></a>
+<a href="/api/enums#warehousingprovidertype"><code>WarehousingProviderType</code></a>
 </td>
 <td>
 
@@ -2224,7 +2224,7 @@ type<br />
 
 ## warehousingProvidersCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Returns total number of delivery providers, optionally filtered by type
 
@@ -2236,7 +2236,7 @@ Returns total number of delivery providers, optionally filtered by type
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#warehousingprovidertype"><code>WarehousingProviderType</code></a>
+<a href="/api/enums#warehousingprovidertype"><code>WarehousingProviderType</code></a>
 </td>
 <td>
 
@@ -2247,7 +2247,7 @@ type<br />
 
 ## work
 
-**Type:** [Work](/../api/objects#work)
+**Type:** [Work](/api/objects#work)
 
 Get a specific work unit by ID
 
@@ -2259,7 +2259,7 @@ Get a specific work unit by ID
 <tr>
 <td>
 workId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2270,7 +2270,7 @@ workId<br />
 
 ## workQueue
 
-**Type:** [[Work!]!](/../api/objects#work)
+**Type:** [[Work!]!](/api/objects#work)
 
 Get all work from the queue, by default sorted by start date (desc), priority (desc), originalWorkId (asc) and created (asc)
 
@@ -2282,7 +2282,7 @@ Get all work from the queue, by default sorted by start date (desc), priority (d
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -2291,7 +2291,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -2300,7 +2300,7 @@ offset<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#workstatus"><code>[WorkStatus!]</code></a>
+<a href="/api/enums#workstatus"><code>[WorkStatus!]</code></a>
 </td>
 <td>
 
@@ -2309,7 +2309,7 @@ status<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/inputObjects#datefilterinput"><code>DateFilterInput</code></a>
+<a href="/api/inputObjects#datefilterinput"><code>DateFilterInput</code></a>
 </td>
 <td>
 
@@ -2318,7 +2318,7 @@ created<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2327,7 +2327,7 @@ queryString<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -2336,7 +2336,7 @@ sort<br />
 <tr>
 <td>
 types<br />
-<a href="/../api/enums#worktype"><code>[WorkType!]</code></a>
+<a href="/api/enums#worktype"><code>[WorkType!]</code></a>
 </td>
 <td>
 
@@ -2347,7 +2347,7 @@ types<br />
 
 ## workQueueCount
 
-**Type:** [Int!](/../api/scalars#int)
+**Type:** [Int!](/api/scalars#int)
 
 Return total number of workers filtered the provided arguments
 
@@ -2359,7 +2359,7 @@ Return total number of workers filtered the provided arguments
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#workstatus"><code>[WorkStatus!]</code></a>
+<a href="/api/enums#workstatus"><code>[WorkStatus!]</code></a>
 </td>
 <td>
 
@@ -2368,7 +2368,7 @@ status<br />
 <tr>
 <td>
 types<br />
-<a href="/../api/enums#worktype"><code>[WorkType!]</code></a>
+<a href="/api/enums#worktype"><code>[WorkType!]</code></a>
 </td>
 <td>
 
@@ -2377,7 +2377,7 @@ types<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/inputObjects#datefilterinput"><code>DateFilterInput</code></a>
+<a href="/api/inputObjects#datefilterinput"><code>DateFilterInput</code></a>
 </td>
 <td>
 
@@ -2386,7 +2386,7 @@ created<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2397,7 +2397,7 @@ queryString<br />
 
 ## workStatistics
 
-**Type:** [[WorkStatistics!]!](/../api/objects#workstatistics)
+**Type:** [[WorkStatistics!]!](/api/objects#workstatistics)
 
 Returns aggregated report of all the worker jobs that occurred in the system
 
@@ -2409,7 +2409,7 @@ Returns aggregated report of all the worker jobs that occurred in the system
 <tr>
 <td>
 types<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -2418,7 +2418,7 @@ types<br />
 <tr>
 <td>
 from<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -2427,7 +2427,7 @@ from<br />
 <tr>
 <td>
 to<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 

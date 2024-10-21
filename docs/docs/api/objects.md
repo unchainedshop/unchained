@@ -16,7 +16,7 @@ slug: objects
 <tr>
 <td>
 firstName<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -25,7 +25,7 @@ firstName<br />
 <tr>
 <td>
 lastName<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -34,7 +34,7 @@ lastName<br />
 <tr>
 <td>
 company<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -43,7 +43,7 @@ company<br />
 <tr>
 <td>
 addressLine<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -52,7 +52,7 @@ addressLine<br />
 <tr>
 <td>
 addressLine2<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -61,7 +61,7 @@ addressLine2<br />
 <tr>
 <td>
 postalCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -70,7 +70,7 @@ postalCode<br />
 <tr>
 <td>
 countryCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -79,7 +79,7 @@ countryCode<br />
 <tr>
 <td>
 regionCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -88,7 +88,7 @@ regionCode<br />
 <tr>
 <td>
 city<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -109,7 +109,7 @@ city<br />
 <tr>
 <td>
 customProperties<br />
-<a href="/../api/objects#adminuiconfigcustomentityinterface"><code>[AdminUiConfigCustomEntityInterface!]!</code></a>
+<a href="/api/objects#adminuiconfigcustomentityinterface"><code>[AdminUiConfigCustomEntityInterface!]!</code></a>
 </td>
 <td>
 
@@ -130,7 +130,7 @@ customProperties<br />
 <tr>
 <td>
 entityName<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -139,7 +139,7 @@ entityName<br />
 <tr>
 <td>
 inlineFragment<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -160,7 +160,7 @@ Assortment
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -169,7 +169,7 @@ _id<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -178,7 +178,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -187,7 +187,7 @@ updated<br />
 <tr>
 <td>
 deleted<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -196,7 +196,7 @@ deleted<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -205,7 +205,7 @@ isActive<br />
 <tr>
 <td>
 isBase<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -214,7 +214,7 @@ isBase<br />
 <tr>
 <td>
 isRoot<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -223,7 +223,7 @@ isRoot<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -232,7 +232,7 @@ sequence<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -241,7 +241,7 @@ tags<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/objects#assortmentmedia"><code>[AssortmentMedia!]!</code></a>
+<a href="/api/objects#assortmentmedia"><code>[AssortmentMedia!]!</code></a>
 </td>
 <td>
 
@@ -254,7 +254,7 @@ media<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -263,7 +263,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -272,7 +272,7 @@ offset<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -286,7 +286,7 @@ tags<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#assortmenttexts"><code>AssortmentTexts</code></a>
+<a href="/api/objects#assortmenttexts"><code>AssortmentTexts</code></a>
 </td>
 <td>
 
@@ -299,7 +299,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -313,7 +313,7 @@ forceLocale<br />
 <tr>
 <td>
 productAssignments<br />
-<a href="/../api/objects#assortmentproduct"><code>[AssortmentProduct!]</code></a>
+<a href="/api/objects#assortmentproduct"><code>[AssortmentProduct!]</code></a>
 </td>
 <td>
 
@@ -322,7 +322,7 @@ productAssignments<br />
 <tr>
 <td>
 filterAssignments<br />
-<a href="/../api/objects#assortmentfilter"><code>[AssortmentFilter!]</code></a>
+<a href="/api/objects#assortmentfilter"><code>[AssortmentFilter!]</code></a>
 </td>
 <td>
 
@@ -331,7 +331,7 @@ filterAssignments<br />
 <tr>
 <td>
 linkedAssortments<br />
-<a href="/../api/objects#assortmentlink"><code>[AssortmentLink!]</code></a>
+<a href="/api/objects#assortmentlink"><code>[AssortmentLink!]</code></a>
 </td>
 <td>
 
@@ -340,7 +340,7 @@ linkedAssortments<br />
 <tr>
 <td>
 assortmentPaths<br />
-<a href="/../api/objects#assortmentpath"><code>[AssortmentPath!]!</code></a>
+<a href="/api/objects#assortmentpath"><code>[AssortmentPath!]!</code></a>
 </td>
 <td>
 
@@ -349,7 +349,7 @@ assortmentPaths<br />
 <tr>
 <td>
 children<br />
-<a href="/../api/objects#assortment"><code>[Assortment!]</code></a>
+<a href="/api/objects#assortment"><code>[Assortment!]</code></a>
 </td>
 <td>
 
@@ -362,7 +362,7 @@ children<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -376,7 +376,7 @@ includeInactive<br />
 <tr>
 <td>
 childrenCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -389,7 +389,7 @@ childrenCount<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -403,7 +403,7 @@ includeInactive<br />
 <tr>
 <td>
 searchProducts<br />
-<a href="/../api/objects#productsearchresult"><code>ProductSearchResult!</code></a>
+<a href="/api/objects#productsearchresult"><code>ProductSearchResult!</code></a>
 </td>
 <td>
 
@@ -416,7 +416,7 @@ searchProducts<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -425,7 +425,7 @@ queryString<br />
 <tr>
 <td>
 filterQuery<br />
-<a href="/../api/inputObjects#filterqueryinput"><code>[FilterQueryInput!]</code></a>
+<a href="/api/inputObjects#filterqueryinput"><code>[FilterQueryInput!]</code></a>
 </td>
 <td>
 
@@ -434,7 +434,7 @@ filterQuery<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -443,7 +443,7 @@ includeInactive<br />
 <tr>
 <td>
 ignoreChildAssortments<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -452,7 +452,7 @@ ignoreChildAssortments<br />
 <tr>
 <td>
 orderBy<br />
-<a href="/../api/enums#searchorderby"><code>SearchOrderBy</code></a>
+<a href="/api/enums#searchorderby"><code>SearchOrderBy</code></a>
 </td>
 <td>
 
@@ -478,7 +478,7 @@ orderBy<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -487,7 +487,7 @@ _id<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -496,7 +496,7 @@ sortKey<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -505,7 +505,7 @@ tags<br />
 <tr>
 <td>
 assortment<br />
-<a href="/../api/objects#assortment"><code>Assortment!</code></a>
+<a href="/api/objects#assortment"><code>Assortment!</code></a>
 </td>
 <td>
 
@@ -514,7 +514,7 @@ assortment<br />
 <tr>
 <td>
 filter<br />
-<a href="/../api/objects#filter"><code>Filter!</code></a>
+<a href="/api/objects#filter"><code>Filter!</code></a>
 </td>
 <td>
 
@@ -535,7 +535,7 @@ filter<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -544,7 +544,7 @@ _id<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -553,7 +553,7 @@ sortKey<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -562,7 +562,7 @@ tags<br />
 <tr>
 <td>
 parent<br />
-<a href="/../api/objects#assortment"><code>Assortment!</code></a>
+<a href="/api/objects#assortment"><code>Assortment!</code></a>
 </td>
 <td>
 
@@ -571,7 +571,7 @@ parent<br />
 <tr>
 <td>
 child<br />
-<a href="/../api/objects#assortment"><code>Assortment!</code></a>
+<a href="/api/objects#assortment"><code>Assortment!</code></a>
 </td>
 <td>
 
@@ -592,7 +592,7 @@ child<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -601,7 +601,7 @@ _id<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -610,7 +610,7 @@ tags<br />
 <tr>
 <td>
 file<br />
-<a href="/../api/objects#media"><code>Media!</code></a>
+<a href="/api/objects#media"><code>Media!</code></a>
 </td>
 <td>
 
@@ -619,7 +619,7 @@ file<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -628,7 +628,7 @@ sortKey<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#assortmentmediatexts"><code>AssortmentMediaTexts</code></a>
+<a href="/api/objects#assortmentmediatexts"><code>AssortmentMediaTexts</code></a>
 </td>
 <td>
 
@@ -641,7 +641,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -667,7 +667,7 @@ forceLocale<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -676,7 +676,7 @@ _id<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -685,7 +685,7 @@ locale<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -694,7 +694,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -715,7 +715,7 @@ Directed assortment to product paths (breadcrumbs)
 <tr>
 <td>
 links<br />
-<a href="/../api/objects#assortmentpathlink"><code>[AssortmentPathLink!]!</code></a>
+<a href="/api/objects#assortmentpathlink"><code>[AssortmentPathLink!]!</code></a>
 </td>
 <td>
 
@@ -738,7 +738,7 @@ to short-circuit breadcrumb lookups
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -747,7 +747,7 @@ assortmentId<br />
 <tr>
 <td>
 assortmentTexts<br />
-<a href="/../api/objects#assortmenttexts"><code>AssortmentTexts!</code></a>
+<a href="/api/objects#assortmenttexts"><code>AssortmentTexts!</code></a>
 </td>
 <td>
 
@@ -760,7 +760,7 @@ assortmentTexts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -774,7 +774,7 @@ forceLocale<br />
 <tr>
 <td>
 link<br />
-<a href="/../api/objects#assortmentlink"><code>AssortmentLink</code></a>
+<a href="/api/objects#assortmentlink"><code>AssortmentLink</code></a>
 </td>
 <td>
 
@@ -795,7 +795,7 @@ link<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -804,7 +804,7 @@ _id<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -813,7 +813,7 @@ sortKey<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -822,7 +822,7 @@ tags<br />
 <tr>
 <td>
 assortment<br />
-<a href="/../api/objects#assortment"><code>Assortment!</code></a>
+<a href="/api/objects#assortment"><code>Assortment!</code></a>
 </td>
 <td>
 
@@ -831,7 +831,7 @@ assortment<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/interfaces#product"><code>Product!</code></a>
+<a href="/api/interfaces#product"><code>Product!</code></a>
 </td>
 <td>
 
@@ -852,7 +852,7 @@ product<br />
 <tr>
 <td>
 assortmentsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -861,7 +861,7 @@ assortmentsCount<br />
 <tr>
 <td>
 assortments<br />
-<a href="/../api/objects#assortment"><code>[Assortment!]!</code></a>
+<a href="/api/objects#assortment"><code>[Assortment!]!</code></a>
 </td>
 <td>
 
@@ -874,7 +874,7 @@ assortments<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -883,7 +883,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -909,7 +909,7 @@ offset<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -918,7 +918,7 @@ _id<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -927,7 +927,7 @@ locale<br />
 <tr>
 <td>
 slug<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -936,7 +936,7 @@ slug<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -945,7 +945,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -954,7 +954,7 @@ subtitle<br />
 <tr>
 <td>
 description<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -975,7 +975,7 @@ description<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -984,7 +984,7 @@ _id<br />
 <tr>
 <td>
 user<br />
-<a href="/../api/objects#user"><code>User!</code></a>
+<a href="/api/objects#user"><code>User!</code></a>
 </td>
 <td>
 
@@ -993,7 +993,7 @@ user<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/interfaces#product"><code>Product!</code></a>
+<a href="/api/interfaces#product"><code>Product!</code></a>
 </td>
 <td>
 
@@ -1002,7 +1002,7 @@ product<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -1017,7 +1017,7 @@ A Bundle product consists of multiple configured products
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [Product](/../api/interfaces#product)
+- [Product](/api/interfaces#product)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -1027,7 +1027,7 @@ A Bundle product consists of multiple configured products
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1036,7 +1036,7 @@ _id<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1045,7 +1045,7 @@ sequence<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#productstatus"><code>ProductStatus!</code></a>
+<a href="/api/enums#productstatus"><code>ProductStatus!</code></a>
 </td>
 <td>
 
@@ -1054,7 +1054,7 @@ status<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -1063,7 +1063,7 @@ tags<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -1072,7 +1072,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -1081,7 +1081,7 @@ updated<br />
 <tr>
 <td>
 published<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -1090,7 +1090,7 @@ published<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/objects#productmedia"><code>[ProductMedia!]!</code></a>
+<a href="/api/objects#productmedia"><code>[ProductMedia!]!</code></a>
 </td>
 <td>
 
@@ -1103,7 +1103,7 @@ media<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1112,7 +1112,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1121,7 +1121,7 @@ offset<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -1135,7 +1135,7 @@ tags<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#producttexts"><code>ProductTexts</code></a>
+<a href="/api/objects#producttexts"><code>ProductTexts</code></a>
 </td>
 <td>
 
@@ -1148,7 +1148,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1162,7 +1162,7 @@ forceLocale<br />
 <tr>
 <td>
 bundleItems<br />
-<a href="/../api/objects#productbundleitem"><code>[ProductBundleItem!]</code></a>
+<a href="/api/objects#productbundleitem"><code>[ProductBundleItem!]</code></a>
 </td>
 <td>
 
@@ -1171,7 +1171,7 @@ bundleItems<br />
 <tr>
 <td>
 reviews<br />
-<a href="/../api/objects#productreview"><code>[ProductReview!]!</code></a>
+<a href="/api/objects#productreview"><code>[ProductReview!]!</code></a>
 </td>
 <td>
 
@@ -1184,7 +1184,7 @@ reviews<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1193,7 +1193,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1202,7 +1202,7 @@ offset<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -1211,7 +1211,7 @@ sort<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1225,7 +1225,7 @@ queryString<br />
 <tr>
 <td>
 reviewsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1238,7 +1238,7 @@ reviewsCount<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1252,7 +1252,7 @@ queryString<br />
 <tr>
 <td>
 assortmentPaths<br />
-<a href="/../api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
+<a href="/api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
 </td>
 <td>
 
@@ -1261,7 +1261,7 @@ assortmentPaths<br />
 <tr>
 <td>
 siblings<br />
-<a href="/../api/interfaces#product"><code>[Product!]!</code></a>
+<a href="/api/interfaces#product"><code>[Product!]!</code></a>
 </td>
 <td>
 
@@ -1274,7 +1274,7 @@ siblings<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -1283,7 +1283,7 @@ assortmentId<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1292,7 +1292,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1301,7 +1301,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1327,7 +1327,7 @@ includeInactive<br />
 <tr>
 <td>
 name<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1336,7 +1336,7 @@ name<br />
 <tr>
 <td>
 hex<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1345,7 +1345,7 @@ hex<br />
 <tr>
 <td>
 red<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1354,7 +1354,7 @@ red<br />
 <tr>
 <td>
 green<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1363,7 +1363,7 @@ green<br />
 <tr>
 <td>
 blue<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1378,7 +1378,7 @@ Configurable Product (Proxy)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [Product](/../api/interfaces#product)
+- [Product](/api/interfaces#product)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -1388,7 +1388,7 @@ Configurable Product (Proxy)
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1397,7 +1397,7 @@ _id<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1406,7 +1406,7 @@ sequence<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#productstatus"><code>ProductStatus!</code></a>
+<a href="/api/enums#productstatus"><code>ProductStatus!</code></a>
 </td>
 <td>
 
@@ -1415,7 +1415,7 @@ status<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -1424,7 +1424,7 @@ tags<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -1433,7 +1433,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -1442,7 +1442,7 @@ updated<br />
 <tr>
 <td>
 published<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -1451,7 +1451,7 @@ published<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/objects#productmedia"><code>[ProductMedia!]!</code></a>
+<a href="/api/objects#productmedia"><code>[ProductMedia!]!</code></a>
 </td>
 <td>
 
@@ -1464,7 +1464,7 @@ media<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1473,7 +1473,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1482,7 +1482,7 @@ offset<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -1496,7 +1496,7 @@ tags<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#producttexts"><code>ProductTexts</code></a>
+<a href="/api/objects#producttexts"><code>ProductTexts</code></a>
 </td>
 <td>
 
@@ -1509,7 +1509,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1523,7 +1523,7 @@ forceLocale<br />
 <tr>
 <td>
 assortmentPaths<br />
-<a href="/../api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
+<a href="/api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
 </td>
 <td>
 
@@ -1532,7 +1532,7 @@ assortmentPaths<br />
 <tr>
 <td>
 siblings<br />
-<a href="/../api/interfaces#product"><code>[Product!]!</code></a>
+<a href="/api/interfaces#product"><code>[Product!]!</code></a>
 </td>
 <td>
 
@@ -1545,7 +1545,7 @@ siblings<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -1554,7 +1554,7 @@ assortmentId<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1563,7 +1563,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1572,7 +1572,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1586,7 +1586,7 @@ includeInactive<br />
 <tr>
 <td>
 reviews<br />
-<a href="/../api/objects#productreview"><code>[ProductReview!]!</code></a>
+<a href="/api/objects#productreview"><code>[ProductReview!]!</code></a>
 </td>
 <td>
 
@@ -1599,7 +1599,7 @@ reviews<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1608,7 +1608,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1617,7 +1617,7 @@ offset<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -1626,7 +1626,7 @@ sort<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1640,7 +1640,7 @@ queryString<br />
 <tr>
 <td>
 reviewsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1653,7 +1653,7 @@ reviewsCount<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1667,7 +1667,7 @@ queryString<br />
 <tr>
 <td>
 catalogPriceRange<br />
-<a href="/../api/objects#pricerange"><code>PriceRange</code></a>
+<a href="/api/objects#pricerange"><code>PriceRange</code></a>
 </td>
 <td>
 
@@ -1680,7 +1680,7 @@ catalogPriceRange<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1689,7 +1689,7 @@ quantity<br />
 <tr>
 <td>
 vectors<br />
-<a href="/../api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]</code></a>
+<a href="/api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]</code></a>
 </td>
 <td>
 
@@ -1698,7 +1698,7 @@ vectors<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1707,7 +1707,7 @@ includeInactive<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1721,7 +1721,7 @@ currency<br />
 <tr>
 <td>
 simulatedPriceRange<br />
-<a href="/../api/objects#pricerange"><code>PriceRange</code></a>
+<a href="/api/objects#pricerange"><code>PriceRange</code></a>
 </td>
 <td>
 
@@ -1734,7 +1734,7 @@ simulatedPriceRange<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -1743,7 +1743,7 @@ quantity<br />
 <tr>
 <td>
 vectors<br />
-<a href="/../api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]</code></a>
+<a href="/api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]</code></a>
 </td>
 <td>
 
@@ -1752,7 +1752,7 @@ vectors<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1761,7 +1761,7 @@ includeInactive<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1770,7 +1770,7 @@ currency<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1784,7 +1784,7 @@ useNetPrice<br />
 <tr>
 <td>
 products<br />
-<a href="/../api/interfaces#product"><code>[Product!]</code></a>
+<a href="/api/interfaces#product"><code>[Product!]</code></a>
 </td>
 <td>
 <p>Reduced list of possible products by key/value combinations</p>
@@ -1797,7 +1797,7 @@ products<br />
 <tr>
 <td>
 vectors<br />
-<a href="/../api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]</code></a>
+<a href="/api/inputObjects#productassignmentvectorinput"><code>[ProductAssignmentVectorInput!]</code></a>
 </td>
 <td>
 
@@ -1806,7 +1806,7 @@ vectors<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1820,7 +1820,7 @@ includeInactive<br />
 <tr>
 <td>
 variations<br />
-<a href="/../api/objects#productvariation"><code>[ProductVariation!]</code></a>
+<a href="/api/objects#productvariation"><code>[ProductVariation!]</code></a>
 </td>
 <td>
 <p>Product&#39;s variations (keys) and their options (values)</p>
@@ -1829,7 +1829,7 @@ variations<br />
 <tr>
 <td>
 assignments<br />
-<a href="/../api/objects#productvariationassignment"><code>[ProductVariationAssignment!]!</code></a>
+<a href="/api/objects#productvariationassignment"><code>[ProductVariationAssignment!]!</code></a>
 </td>
 <td>
 <p>Complete assignment matrix</p>
@@ -1842,7 +1842,7 @@ assignments<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1868,7 +1868,7 @@ includeInactive<br />
 <tr>
 <td>
 telNumber<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1877,7 +1877,7 @@ telNumber<br />
 <tr>
 <td>
 emailAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1898,7 +1898,7 @@ emailAddress<br />
 <tr>
 <td>
 tokenId<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -1907,7 +1907,7 @@ tokenId<br />
 <tr>
 <td>
 supply<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -1916,7 +1916,7 @@ supply<br />
 <tr>
 <td>
 ercMetadataProperties<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -1937,7 +1937,7 @@ ercMetadataProperties<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -1946,7 +1946,7 @@ _id<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 <p>ISO 3166-1 alpha-2 <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements</a></p>
@@ -1955,7 +1955,7 @@ isoCode<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1964,7 +1964,7 @@ isActive<br />
 <tr>
 <td>
 isBase<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -1973,7 +1973,7 @@ isBase<br />
 <tr>
 <td>
 defaultCurrency<br />
-<a href="/../api/objects#currency"><code>Currency</code></a>
+<a href="/api/objects#currency"><code>Currency</code></a>
 </td>
 <td>
 
@@ -1982,7 +1982,7 @@ defaultCurrency<br />
 <tr>
 <td>
 flagEmoji<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -1991,7 +1991,7 @@ flagEmoji<br />
 <tr>
 <td>
 name<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2004,7 +2004,7 @@ name<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2030,7 +2030,7 @@ forceLocale<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2039,7 +2039,7 @@ _id<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2048,7 +2048,7 @@ isoCode<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2057,7 +2057,7 @@ isActive<br />
 <tr>
 <td>
 contractAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2066,7 +2066,7 @@ contractAddress<br />
 <tr>
 <td>
 decimals<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -2087,7 +2087,7 @@ decimals<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2096,7 +2096,7 @@ _id<br />
 <tr>
 <td>
 label<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2105,7 +2105,7 @@ label<br />
 <tr>
 <td>
 version<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2126,7 +2126,7 @@ version<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2135,7 +2135,7 @@ _id<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2144,7 +2144,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2153,7 +2153,7 @@ updated<br />
 <tr>
 <td>
 deleted<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2162,7 +2162,7 @@ deleted<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
+<a href="/api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
 </td>
 <td>
 
@@ -2171,7 +2171,7 @@ type<br />
 <tr>
 <td>
 interface<br />
-<a href="/../api/objects#deliveryinterface"><code>DeliveryInterface</code></a>
+<a href="/api/objects#deliveryinterface"><code>DeliveryInterface</code></a>
 </td>
 <td>
 
@@ -2180,7 +2180,7 @@ interface<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -2189,7 +2189,7 @@ configuration<br />
 <tr>
 <td>
 configurationError<br />
-<a href="/../api/enums#deliveryprovidererror"><code>DeliveryProviderError</code></a>
+<a href="/api/enums#deliveryprovidererror"><code>DeliveryProviderError</code></a>
 </td>
 <td>
 
@@ -2198,7 +2198,7 @@ configurationError<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2207,7 +2207,7 @@ isActive<br />
 <tr>
 <td>
 simulatedPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -2220,7 +2220,7 @@ simulatedPrice<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2229,7 +2229,7 @@ currency<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2238,7 +2238,7 @@ useNetPrice<br />
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -2247,7 +2247,7 @@ orderId<br />
 <tr>
 <td>
 context<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -2273,7 +2273,7 @@ context<br />
 <tr>
 <td>
 weight<br />
-<a href="/../api/scalars#float"><code>Float</code></a>
+<a href="/api/scalars#float"><code>Float</code></a>
 </td>
 <td>
 
@@ -2286,7 +2286,7 @@ weight<br />
 <tr>
 <td>
 unit<br />
-<a href="/../api/enums#massunit"><code>MassUnit</code></a>
+<a href="/api/enums#massunit"><code>MassUnit</code></a>
 </td>
 <td>
 
@@ -2300,7 +2300,7 @@ unit<br />
 <tr>
 <td>
 length<br />
-<a href="/../api/scalars#float"><code>Float</code></a>
+<a href="/api/scalars#float"><code>Float</code></a>
 </td>
 <td>
 
@@ -2313,7 +2313,7 @@ length<br />
 <tr>
 <td>
 unit<br />
-<a href="/../api/enums#lengthunit"><code>LengthUnit</code></a>
+<a href="/api/enums#lengthunit"><code>LengthUnit</code></a>
 </td>
 <td>
 
@@ -2327,7 +2327,7 @@ unit<br />
 <tr>
 <td>
 width<br />
-<a href="/../api/scalars#float"><code>Float</code></a>
+<a href="/api/scalars#float"><code>Float</code></a>
 </td>
 <td>
 
@@ -2340,7 +2340,7 @@ width<br />
 <tr>
 <td>
 unit<br />
-<a href="/../api/enums#lengthunit"><code>LengthUnit</code></a>
+<a href="/api/enums#lengthunit"><code>LengthUnit</code></a>
 </td>
 <td>
 
@@ -2354,7 +2354,7 @@ unit<br />
 <tr>
 <td>
 height<br />
-<a href="/../api/scalars#float"><code>Float</code></a>
+<a href="/api/scalars#float"><code>Float</code></a>
 </td>
 <td>
 
@@ -2367,7 +2367,7 @@ height<br />
 <tr>
 <td>
 unit<br />
-<a href="/../api/enums#lengthunit"><code>LengthUnit</code></a>
+<a href="/api/enums#lengthunit"><code>LengthUnit</code></a>
 </td>
 <td>
 
@@ -2393,7 +2393,7 @@ unit<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2402,7 +2402,7 @@ _id<br />
 <tr>
 <td>
 label<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2411,7 +2411,7 @@ label<br />
 <tr>
 <td>
 version<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2420,7 +2420,7 @@ version<br />
 <tr>
 <td>
 isManualAdditionAllowed<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2429,7 +2429,7 @@ isManualAdditionAllowed<br />
 <tr>
 <td>
 isManualRemovalAllowed<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2450,7 +2450,7 @@ isManualRemovalAllowed<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2459,7 +2459,7 @@ _id<br />
 <tr>
 <td>
 deliveryProvider<br />
-<a href="/../api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
+<a href="/api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
 </td>
 <td>
 
@@ -2468,7 +2468,7 @@ deliveryProvider<br />
 <tr>
 <td>
 warehousingProvider<br />
-<a href="/../api/objects#warehousingprovider"><code>WarehousingProvider</code></a>
+<a href="/api/objects#warehousingprovider"><code>WarehousingProvider</code></a>
 </td>
 <td>
 
@@ -2477,7 +2477,7 @@ warehousingProvider<br />
 <tr>
 <td>
 shipping<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2486,7 +2486,7 @@ shipping<br />
 <tr>
 <td>
 earliestDelivery<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2507,7 +2507,7 @@ Enrollment
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2516,7 +2516,7 @@ _id<br />
 <tr>
 <td>
 billingAddress<br />
-<a href="/../api/objects#address"><code>Address</code></a>
+<a href="/api/objects#address"><code>Address</code></a>
 </td>
 <td>
 
@@ -2525,7 +2525,7 @@ billingAddress<br />
 <tr>
 <td>
 contact<br />
-<a href="/../api/objects#contact"><code>Contact</code></a>
+<a href="/api/objects#contact"><code>Contact</code></a>
 </td>
 <td>
 
@@ -2534,7 +2534,7 @@ contact<br />
 <tr>
 <td>
 country<br />
-<a href="/../api/objects#country"><code>Country</code></a>
+<a href="/api/objects#country"><code>Country</code></a>
 </td>
 <td>
 
@@ -2543,7 +2543,7 @@ country<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 
@@ -2552,7 +2552,7 @@ created<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/objects#currency"><code>Currency</code></a>
+<a href="/api/objects#currency"><code>Currency</code></a>
 </td>
 <td>
 
@@ -2561,7 +2561,7 @@ currency<br />
 <tr>
 <td>
 delivery<br />
-<a href="/../api/objects#enrollmentdelivery"><code>EnrollmentDelivery</code></a>
+<a href="/api/objects#enrollmentdelivery"><code>EnrollmentDelivery</code></a>
 </td>
 <td>
 
@@ -2570,7 +2570,7 @@ delivery<br />
 <tr>
 <td>
 enrollmentNumber<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2579,7 +2579,7 @@ enrollmentNumber<br />
 <tr>
 <td>
 expires<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2588,7 +2588,7 @@ expires<br />
 <tr>
 <td>
 isExpired<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2601,7 +2601,7 @@ isExpired<br />
 <tr>
 <td>
 referenceDate<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -2615,7 +2615,7 @@ referenceDate<br />
 <tr>
 <td>
 payment<br />
-<a href="/../api/objects#enrollmentpayment"><code>EnrollmentPayment</code></a>
+<a href="/api/objects#enrollmentpayment"><code>EnrollmentPayment</code></a>
 </td>
 <td>
 
@@ -2624,7 +2624,7 @@ payment<br />
 <tr>
 <td>
 periods<br />
-<a href="/../api/objects#enrollmentperiod"><code>[EnrollmentPeriod!]!</code></a>
+<a href="/api/objects#enrollmentperiod"><code>[EnrollmentPeriod!]!</code></a>
 </td>
 <td>
 
@@ -2633,7 +2633,7 @@ periods<br />
 <tr>
 <td>
 plan<br />
-<a href="/../api/objects#enrollmentplan"><code>EnrollmentPlan!</code></a>
+<a href="/api/objects#enrollmentplan"><code>EnrollmentPlan!</code></a>
 </td>
 <td>
 
@@ -2642,7 +2642,7 @@ plan<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#enrollmentstatus"><code>EnrollmentStatus!</code></a>
+<a href="/api/enums#enrollmentstatus"><code>EnrollmentStatus!</code></a>
 </td>
 <td>
 
@@ -2651,7 +2651,7 @@ status<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2660,7 +2660,7 @@ updated<br />
 <tr>
 <td>
 user<br />
-<a href="/../api/objects#user"><code>User!</code></a>
+<a href="/api/objects#user"><code>User!</code></a>
 </td>
 <td>
 
@@ -2681,7 +2681,7 @@ user<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
+<a href="/api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
 </td>
 <td>
 
@@ -2702,7 +2702,7 @@ provider<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#paymentprovider"><code>PaymentProvider</code></a>
+<a href="/api/objects#paymentprovider"><code>PaymentProvider</code></a>
 </td>
 <td>
 
@@ -2723,7 +2723,7 @@ provider<br />
 <tr>
 <td>
 start<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 
@@ -2732,7 +2732,7 @@ start<br />
 <tr>
 <td>
 end<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 
@@ -2741,7 +2741,7 @@ end<br />
 <tr>
 <td>
 isTrial<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -2750,7 +2750,7 @@ isTrial<br />
 <tr>
 <td>
 order<br />
-<a href="/../api/objects#order"><code>Order</code></a>
+<a href="/api/objects#order"><code>Order</code></a>
 </td>
 <td>
 
@@ -2771,7 +2771,7 @@ order<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/objects#planproduct"><code>PlanProduct!</code></a>
+<a href="/api/objects#planproduct"><code>PlanProduct!</code></a>
 </td>
 <td>
 
@@ -2780,7 +2780,7 @@ product<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -2789,7 +2789,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/objects#productconfigurationparameter"><code>[ProductConfigurationParameter!]</code></a>
+<a href="/api/objects#productconfigurationparameter"><code>[ProductConfigurationParameter!]</code></a>
 </td>
 <td>
 
@@ -2810,7 +2810,7 @@ configuration<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2819,7 +2819,7 @@ _id<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -2828,7 +2828,7 @@ type<br />
 <tr>
 <td>
 payload<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -2837,7 +2837,7 @@ payload<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp!</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp!</code></a>
 </td>
 <td>
 
@@ -2858,7 +2858,7 @@ created<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#eventtype"><code>EventType!</code></a>
+<a href="/api/enums#eventtype"><code>EventType!</code></a>
 </td>
 <td>
 
@@ -2867,7 +2867,7 @@ type<br />
 <tr>
 <td>
 emitCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -2888,7 +2888,7 @@ emitCount<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2897,7 +2897,7 @@ _id<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2906,7 +2906,7 @@ updated<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -2915,7 +2915,7 @@ created<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -2924,7 +2924,7 @@ isActive<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#filtertexts"><code>FilterTexts</code></a>
+<a href="/api/objects#filtertexts"><code>FilterTexts</code></a>
 </td>
 <td>
 
@@ -2937,7 +2937,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2951,7 +2951,7 @@ forceLocale<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#filtertype"><code>FilterType</code></a>
+<a href="/api/enums#filtertype"><code>FilterType</code></a>
 </td>
 <td>
 
@@ -2960,7 +2960,7 @@ type<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -2969,7 +2969,7 @@ key<br />
 <tr>
 <td>
 options<br />
-<a href="/../api/objects#filteroption"><code>[FilterOption!]</code></a>
+<a href="/api/objects#filteroption"><code>[FilterOption!]</code></a>
 </td>
 <td>
 
@@ -2990,7 +2990,7 @@ options<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -2999,7 +2999,7 @@ _id<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#filtertexts"><code>FilterTexts</code></a>
+<a href="/api/objects#filtertexts"><code>FilterTexts</code></a>
 </td>
 <td>
 
@@ -3012,7 +3012,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3026,7 +3026,7 @@ forceLocale<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3047,7 +3047,7 @@ value<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3056,7 +3056,7 @@ _id<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3065,7 +3065,7 @@ locale<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3074,7 +3074,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3095,7 +3095,7 @@ subtitle<br />
 <tr>
 <td>
 latitude<br />
-<a href="/../api/scalars#float"><code>Float!</code></a>
+<a href="/api/scalars#float"><code>Float!</code></a>
 </td>
 <td>
 
@@ -3104,7 +3104,7 @@ latitude<br />
 <tr>
 <td>
 longitude<br />
-<a href="/../api/scalars#float"><code>Float!</code></a>
+<a href="/api/scalars#float"><code>Float!</code></a>
 </td>
 <td>
 
@@ -3113,7 +3113,7 @@ longitude<br />
 <tr>
 <td>
 altitute<br />
-<a href="/../api/scalars#float"><code>Float</code></a>
+<a href="/api/scalars#float"><code>Float</code></a>
 </td>
 <td>
 
@@ -3134,7 +3134,7 @@ altitute<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3143,7 +3143,7 @@ _id<br />
 <tr>
 <td>
 isoCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 <p>ISO 639-1 alpha-2 <a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes</a></p>
@@ -3152,7 +3152,7 @@ isoCode<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -3161,7 +3161,7 @@ isActive<br />
 <tr>
 <td>
 isBase<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -3170,7 +3170,7 @@ isBase<br />
 <tr>
 <td>
 name<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3191,7 +3191,7 @@ name<br />
 <tr>
 <td>
 href<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3200,7 +3200,7 @@ href<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3209,7 +3209,7 @@ title<br />
 <tr>
 <td>
 target<br />
-<a href="/../api/enums#externallinktarget"><code>ExternalLinkTarget</code></a>
+<a href="/api/enums#externallinktarget"><code>ExternalLinkTarget</code></a>
 </td>
 <td>
 
@@ -3230,7 +3230,7 @@ target<br />
 <tr>
 <td>
 productsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -3239,7 +3239,7 @@ productsCount<br />
 <tr>
 <td>
 filteredProductsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -3248,7 +3248,7 @@ filteredProductsCount<br />
 <tr>
 <td>
 definition<br />
-<a href="/../api/objects#filter"><code>Filter!</code></a>
+<a href="/api/objects#filter"><code>Filter!</code></a>
 </td>
 <td>
 
@@ -3257,7 +3257,7 @@ definition<br />
 <tr>
 <td>
 isSelected<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -3266,7 +3266,7 @@ isSelected<br />
 <tr>
 <td>
 options<br />
-<a href="/../api/objects#loadedfilteroption"><code>[LoadedFilterOption!]</code></a>
+<a href="/api/objects#loadedfilteroption"><code>[LoadedFilterOption!]</code></a>
 </td>
 <td>
 
@@ -3287,7 +3287,7 @@ options<br />
 <tr>
 <td>
 filteredProductsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -3296,7 +3296,7 @@ filteredProductsCount<br />
 <tr>
 <td>
 definition<br />
-<a href="/../api/objects#filteroption"><code>FilterOption!</code></a>
+<a href="/api/objects#filteroption"><code>FilterOption!</code></a>
 </td>
 <td>
 
@@ -3305,7 +3305,7 @@ definition<br />
 <tr>
 <td>
 isSelected<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -3326,7 +3326,7 @@ Type returned when the user logs in
 <tr>
 <td>
 id<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 <p>Id of the user logged in user</p>
@@ -3335,7 +3335,7 @@ id<br />
 <tr>
 <td>
 token<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 <p>Token of the connection</p>
@@ -3344,7 +3344,7 @@ token<br />
 <tr>
 <td>
 tokenExpires<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 <p>Expiration date for the token</p>
@@ -3353,7 +3353,7 @@ tokenExpires<br />
 <tr>
 <td>
 user<br />
-<a href="/../api/objects#user"><code>User</code></a>
+<a href="/api/objects#user"><code>User</code></a>
 </td>
 <td>
 <p>The logged in user</p>
@@ -3374,7 +3374,7 @@ user<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3383,7 +3383,7 @@ _id<br />
 <tr>
 <td>
 name<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3392,7 +3392,7 @@ name<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3401,7 +3401,7 @@ type<br />
 <tr>
 <td>
 size<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -3410,7 +3410,7 @@ size<br />
 <tr>
 <td>
 url<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3423,7 +3423,7 @@ url<br />
 <tr>
 <td>
 version<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3432,7 +3432,7 @@ version<br />
 <tr>
 <td>
 baseUrl<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3458,7 +3458,7 @@ baseUrl<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3467,7 +3467,7 @@ _id<br />
 <tr>
 <td>
 putURL<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3476,7 +3476,7 @@ putURL<br />
 <tr>
 <td>
 expires<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 
@@ -3497,7 +3497,7 @@ expires<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3506,7 +3506,7 @@ _id<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#oauthprovider"><code>OAuthProvider!</code></a>
+<a href="/api/objects#oauthprovider"><code>OAuthProvider!</code></a>
 </td>
 <td>
 
@@ -3515,7 +3515,7 @@ provider<br />
 <tr>
 <td>
 authorizationCode<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3536,7 +3536,7 @@ authorizationCode<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3545,7 +3545,7 @@ _id<br />
 <tr>
 <td>
 clientId<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -3554,7 +3554,7 @@ clientId<br />
 <tr>
 <td>
 scopes<br />
-<a href="/../api/scalars#string"><code>[String!]!</code></a>
+<a href="/api/scalars#string"><code>[String!]!</code></a>
 </td>
 <td>
 
@@ -3575,7 +3575,7 @@ Just an order
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3584,7 +3584,7 @@ _id<br />
 <tr>
 <td>
 billingAddress<br />
-<a href="/../api/objects#address"><code>Address</code></a>
+<a href="/api/objects#address"><code>Address</code></a>
 </td>
 <td>
 
@@ -3593,7 +3593,7 @@ billingAddress<br />
 <tr>
 <td>
 confirmed<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -3602,7 +3602,7 @@ confirmed<br />
 <tr>
 <td>
 rejected<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -3611,7 +3611,7 @@ rejected<br />
 <tr>
 <td>
 contact<br />
-<a href="/../api/objects#contact"><code>Contact</code></a>
+<a href="/api/objects#contact"><code>Contact</code></a>
 </td>
 <td>
 
@@ -3620,7 +3620,7 @@ contact<br />
 <tr>
 <td>
 country<br />
-<a href="/../api/objects#country"><code>Country</code></a>
+<a href="/api/objects#country"><code>Country</code></a>
 </td>
 <td>
 
@@ -3629,7 +3629,7 @@ country<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -3638,7 +3638,7 @@ created<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/objects#currency"><code>Currency</code></a>
+<a href="/api/objects#currency"><code>Currency</code></a>
 </td>
 <td>
 
@@ -3647,7 +3647,7 @@ currency<br />
 <tr>
 <td>
 delivery<br />
-<a href="/../api/interfaces#orderdelivery"><code>OrderDelivery</code></a>
+<a href="/api/interfaces#orderdelivery"><code>OrderDelivery</code></a>
 </td>
 <td>
 
@@ -3656,7 +3656,7 @@ delivery<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderdiscount"><code>[OrderDiscount!]</code></a>
+<a href="/api/objects#orderdiscount"><code>[OrderDiscount!]</code></a>
 </td>
 <td>
 
@@ -3665,7 +3665,7 @@ discounts<br />
 <tr>
 <td>
 enrollment<br />
-<a href="/../api/objects#enrollment"><code>Enrollment</code></a>
+<a href="/api/objects#enrollment"><code>Enrollment</code></a>
 </td>
 <td>
 
@@ -3674,7 +3674,7 @@ enrollment<br />
 <tr>
 <td>
 fullfilled<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -3683,7 +3683,7 @@ fullfilled<br />
 <tr>
 <td>
 items<br />
-<a href="/../api/objects#orderitem"><code>[OrderItem!]</code></a>
+<a href="/api/objects#orderitem"><code>[OrderItem!]</code></a>
 </td>
 <td>
 
@@ -3692,7 +3692,7 @@ items<br />
 <tr>
 <td>
 ordered<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -3701,7 +3701,7 @@ ordered<br />
 <tr>
 <td>
 orderNumber<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -3710,7 +3710,7 @@ orderNumber<br />
 <tr>
 <td>
 payment<br />
-<a href="/../api/interfaces#orderpayment"><code>OrderPayment</code></a>
+<a href="/api/interfaces#orderpayment"><code>OrderPayment</code></a>
 </td>
 <td>
 
@@ -3719,7 +3719,7 @@ payment<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderstatus"><code>OrderStatus</code></a>
+<a href="/api/enums#orderstatus"><code>OrderStatus</code></a>
 </td>
 <td>
 
@@ -3728,7 +3728,7 @@ status<br />
 <tr>
 <td>
 supportedDeliveryProviders<br />
-<a href="/../api/objects#deliveryprovider"><code>[DeliveryProvider!]!</code></a>
+<a href="/api/objects#deliveryprovider"><code>[DeliveryProvider!]!</code></a>
 </td>
 <td>
 
@@ -3737,7 +3737,7 @@ supportedDeliveryProviders<br />
 <tr>
 <td>
 supportedPaymentProviders<br />
-<a href="/../api/objects#paymentprovider"><code>[PaymentProvider!]!</code></a>
+<a href="/api/objects#paymentprovider"><code>[PaymentProvider!]!</code></a>
 </td>
 <td>
 
@@ -3746,7 +3746,7 @@ supportedPaymentProviders<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -3759,7 +3759,7 @@ total<br />
 <tr>
 <td>
 category<br />
-<a href="/../api/enums#orderpricecategory"><code>OrderPriceCategory</code></a>
+<a href="/api/enums#orderpricecategory"><code>OrderPriceCategory</code></a>
 </td>
 <td>
 
@@ -3768,7 +3768,7 @@ category<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -3782,7 +3782,7 @@ useNetPrice<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -3791,7 +3791,7 @@ updated<br />
 <tr>
 <td>
 user<br />
-<a href="/../api/objects#user"><code>User</code></a>
+<a href="/api/objects#user"><code>User</code></a>
 </td>
 <td>
 
@@ -3806,7 +3806,7 @@ user<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderDiscountable](/../api/interfaces#orderdiscountable)
+- [OrderDiscountable](/api/interfaces#orderdiscountable)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -3816,7 +3816,7 @@ user<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3825,7 +3825,7 @@ _id<br />
 <tr>
 <td>
 orderDiscount<br />
-<a href="/../api/objects#orderdiscount"><code>OrderDiscount!</code></a>
+<a href="/api/objects#orderdiscount"><code>OrderDiscount!</code></a>
 </td>
 <td>
 
@@ -3834,7 +3834,7 @@ orderDiscount<br />
 <tr>
 <td>
 delivery<br />
-<a href="/../api/interfaces#orderdelivery"><code>OrderDelivery!</code></a>
+<a href="/api/interfaces#orderdelivery"><code>OrderDelivery!</code></a>
 </td>
 <td>
 
@@ -3843,7 +3843,7 @@ delivery<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -3858,7 +3858,7 @@ total<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderDelivery](/../api/interfaces#orderdelivery)
+- [OrderDelivery](/api/interfaces#orderdelivery)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -3868,7 +3868,7 @@ total<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3877,7 +3877,7 @@ _id<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
+<a href="/api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
 </td>
 <td>
 
@@ -3886,7 +3886,7 @@ provider<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderdeliverystatus"><code>OrderDeliveryStatus</code></a>
+<a href="/api/enums#orderdeliverystatus"><code>OrderDeliveryStatus</code></a>
 </td>
 <td>
 
@@ -3895,7 +3895,7 @@ status<br />
 <tr>
 <td>
 delivered<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -3904,7 +3904,7 @@ delivered<br />
 <tr>
 <td>
 fee<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -3913,7 +3913,7 @@ fee<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderdeliverydiscount"><code>[OrderDeliveryDiscount!]</code></a>
+<a href="/api/objects#orderdeliverydiscount"><code>[OrderDeliveryDiscount!]</code></a>
 </td>
 <td>
 
@@ -3922,7 +3922,7 @@ discounts<br />
 <tr>
 <td>
 pickUpLocations<br />
-<a href="/../api/objects#orderpickuplocation"><code>[OrderPickUpLocation!]!</code></a>
+<a href="/api/objects#orderpickuplocation"><code>[OrderPickUpLocation!]!</code></a>
 </td>
 <td>
 
@@ -3931,7 +3931,7 @@ pickUpLocations<br />
 <tr>
 <td>
 activePickUpLocation<br />
-<a href="/../api/objects#orderpickuplocation"><code>OrderPickUpLocation</code></a>
+<a href="/api/objects#orderpickuplocation"><code>OrderPickUpLocation</code></a>
 </td>
 <td>
 
@@ -3946,7 +3946,7 @@ activePickUpLocation<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderDelivery](/../api/interfaces#orderdelivery)
+- [OrderDelivery](/api/interfaces#orderdelivery)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -3956,7 +3956,7 @@ activePickUpLocation<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -3965,7 +3965,7 @@ _id<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
+<a href="/api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
 </td>
 <td>
 
@@ -3974,7 +3974,7 @@ provider<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderdeliverystatus"><code>OrderDeliveryStatus</code></a>
+<a href="/api/enums#orderdeliverystatus"><code>OrderDeliveryStatus</code></a>
 </td>
 <td>
 
@@ -3983,7 +3983,7 @@ status<br />
 <tr>
 <td>
 delivered<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -3992,7 +3992,7 @@ delivered<br />
 <tr>
 <td>
 fee<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -4001,7 +4001,7 @@ fee<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderdeliverydiscount"><code>[OrderDeliveryDiscount!]</code></a>
+<a href="/api/objects#orderdeliverydiscount"><code>[OrderDeliveryDiscount!]</code></a>
 </td>
 <td>
 
@@ -4010,7 +4010,7 @@ discounts<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/objects#address"><code>Address</code></a>
+<a href="/api/objects#address"><code>Address</code></a>
 </td>
 <td>
 
@@ -4031,7 +4031,7 @@ address<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4040,7 +4040,7 @@ _id<br />
 <tr>
 <td>
 trigger<br />
-<a href="/../api/enums#orderdiscounttrigger"><code>OrderDiscountTrigger!</code></a>
+<a href="/api/enums#orderdiscounttrigger"><code>OrderDiscountTrigger!</code></a>
 </td>
 <td>
 
@@ -4049,7 +4049,7 @@ trigger<br />
 <tr>
 <td>
 code<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -4058,7 +4058,7 @@ code<br />
 <tr>
 <td>
 order<br />
-<a href="/../api/objects#order"><code>Order!</code></a>
+<a href="/api/objects#order"><code>Order!</code></a>
 </td>
 <td>
 
@@ -4067,7 +4067,7 @@ order<br />
 <tr>
 <td>
 interface<br />
-<a href="/../api/objects#discountinterface"><code>DiscountInterface</code></a>
+<a href="/api/objects#discountinterface"><code>DiscountInterface</code></a>
 </td>
 <td>
 
@@ -4076,7 +4076,7 @@ interface<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -4089,7 +4089,7 @@ total<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -4103,7 +4103,7 @@ useNetPrice<br />
 <tr>
 <td>
 discounted<br />
-<a href="/../api/interfaces#orderdiscountable"><code>[OrderDiscountable!]</code></a>
+<a href="/api/interfaces#orderdiscountable"><code>[OrderDiscountable!]</code></a>
 </td>
 <td>
 
@@ -4118,7 +4118,7 @@ discounted<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderDiscountable](/../api/interfaces#orderdiscountable)
+- [OrderDiscountable](/api/interfaces#orderdiscountable)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -4128,7 +4128,7 @@ discounted<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4137,7 +4137,7 @@ _id<br />
 <tr>
 <td>
 orderDiscount<br />
-<a href="/../api/objects#orderdiscount"><code>OrderDiscount!</code></a>
+<a href="/api/objects#orderdiscount"><code>OrderDiscount!</code></a>
 </td>
 <td>
 
@@ -4146,7 +4146,7 @@ orderDiscount<br />
 <tr>
 <td>
 order<br />
-<a href="/../api/objects#order"><code>Order!</code></a>
+<a href="/api/objects#order"><code>Order!</code></a>
 </td>
 <td>
 
@@ -4155,7 +4155,7 @@ order<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -4176,7 +4176,7 @@ total<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4185,7 +4185,7 @@ _id<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/interfaces#product"><code>Product!</code></a>
+<a href="/api/interfaces#product"><code>Product!</code></a>
 </td>
 <td>
 
@@ -4194,7 +4194,7 @@ product<br />
 <tr>
 <td>
 order<br />
-<a href="/../api/objects#order"><code>Order!</code></a>
+<a href="/api/objects#order"><code>Order!</code></a>
 </td>
 <td>
 
@@ -4203,7 +4203,7 @@ order<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -4212,7 +4212,7 @@ quantity<br />
 <tr>
 <td>
 originalProduct<br />
-<a href="/../api/interfaces#product"><code>Product!</code></a>
+<a href="/api/interfaces#product"><code>Product!</code></a>
 </td>
 <td>
 
@@ -4221,7 +4221,7 @@ originalProduct<br />
 <tr>
 <td>
 quotation<br />
-<a href="/../api/objects#quotation"><code>Quotation</code></a>
+<a href="/api/objects#quotation"><code>Quotation</code></a>
 </td>
 <td>
 
@@ -4230,7 +4230,7 @@ quotation<br />
 <tr>
 <td>
 unitPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -4243,7 +4243,7 @@ unitPrice<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -4257,7 +4257,7 @@ useNetPrice<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -4270,7 +4270,7 @@ total<br />
 <tr>
 <td>
 category<br />
-<a href="/../api/enums#orderitempricecategory"><code>OrderItemPriceCategory</code></a>
+<a href="/api/enums#orderitempricecategory"><code>OrderItemPriceCategory</code></a>
 </td>
 <td>
 
@@ -4279,7 +4279,7 @@ category<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -4293,7 +4293,7 @@ useNetPrice<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderitemdiscount"><code>[OrderItemDiscount!]</code></a>
+<a href="/api/objects#orderitemdiscount"><code>[OrderItemDiscount!]</code></a>
 </td>
 <td>
 
@@ -4302,7 +4302,7 @@ discounts<br />
 <tr>
 <td>
 dispatches<br />
-<a href="/../api/objects#dispatch"><code>[Dispatch!]</code></a>
+<a href="/api/objects#dispatch"><code>[Dispatch!]</code></a>
 </td>
 <td>
 
@@ -4311,7 +4311,7 @@ dispatches<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/objects#productconfigurationparameter"><code>[ProductConfigurationParameter!]</code></a>
+<a href="/api/objects#productconfigurationparameter"><code>[ProductConfigurationParameter!]</code></a>
 </td>
 <td>
 
@@ -4320,7 +4320,7 @@ configuration<br />
 <tr>
 <td>
 tokens<br />
-<a href="/../api/objects#token"><code>[Token!]!</code></a>
+<a href="/api/objects#token"><code>[Token!]!</code></a>
 </td>
 <td>
 
@@ -4335,7 +4335,7 @@ tokens<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderDiscountable](/../api/interfaces#orderdiscountable)
+- [OrderDiscountable](/api/interfaces#orderdiscountable)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -4345,7 +4345,7 @@ tokens<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4354,7 +4354,7 @@ _id<br />
 <tr>
 <td>
 orderDiscount<br />
-<a href="/../api/objects#orderdiscount"><code>OrderDiscount!</code></a>
+<a href="/api/objects#orderdiscount"><code>OrderDiscount!</code></a>
 </td>
 <td>
 
@@ -4363,7 +4363,7 @@ orderDiscount<br />
 <tr>
 <td>
 item<br />
-<a href="/../api/objects#orderitem"><code>OrderItem!</code></a>
+<a href="/api/objects#orderitem"><code>OrderItem!</code></a>
 </td>
 <td>
 
@@ -4372,7 +4372,7 @@ item<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -4387,7 +4387,7 @@ total<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderPayment](/../api/interfaces#orderpayment)
+- [OrderPayment](/api/interfaces#orderpayment)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -4397,7 +4397,7 @@ total<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4406,7 +4406,7 @@ _id<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#paymentprovider"><code>PaymentProvider</code></a>
+<a href="/api/objects#paymentprovider"><code>PaymentProvider</code></a>
 </td>
 <td>
 
@@ -4415,7 +4415,7 @@ provider<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderpaymentstatus"><code>OrderPaymentStatus</code></a>
+<a href="/api/enums#orderpaymentstatus"><code>OrderPaymentStatus</code></a>
 </td>
 <td>
 
@@ -4424,7 +4424,7 @@ status<br />
 <tr>
 <td>
 paid<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -4433,7 +4433,7 @@ paid<br />
 <tr>
 <td>
 fee<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -4442,7 +4442,7 @@ fee<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderpaymentdiscount"><code>[OrderPaymentDiscount!]</code></a>
+<a href="/api/objects#orderpaymentdiscount"><code>[OrderPaymentDiscount!]</code></a>
 </td>
 <td>
 
@@ -4457,7 +4457,7 @@ discounts<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderDiscountable](/../api/interfaces#orderdiscountable)
+- [OrderDiscountable](/api/interfaces#orderdiscountable)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -4467,7 +4467,7 @@ discounts<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4476,7 +4476,7 @@ _id<br />
 <tr>
 <td>
 orderDiscount<br />
-<a href="/../api/objects#orderdiscount"><code>OrderDiscount!</code></a>
+<a href="/api/objects#orderdiscount"><code>OrderDiscount!</code></a>
 </td>
 <td>
 
@@ -4485,7 +4485,7 @@ orderDiscount<br />
 <tr>
 <td>
 payment<br />
-<a href="/../api/interfaces#orderpayment"><code>OrderPayment!</code></a>
+<a href="/api/interfaces#orderpayment"><code>OrderPayment!</code></a>
 </td>
 <td>
 
@@ -4494,7 +4494,7 @@ payment<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -4509,7 +4509,7 @@ total<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderPayment](/../api/interfaces#orderpayment)
+- [OrderPayment](/api/interfaces#orderpayment)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -4519,7 +4519,7 @@ total<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4528,7 +4528,7 @@ _id<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#paymentprovider"><code>PaymentProvider</code></a>
+<a href="/api/objects#paymentprovider"><code>PaymentProvider</code></a>
 </td>
 <td>
 
@@ -4537,7 +4537,7 @@ provider<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderpaymentstatus"><code>OrderPaymentStatus</code></a>
+<a href="/api/enums#orderpaymentstatus"><code>OrderPaymentStatus</code></a>
 </td>
 <td>
 
@@ -4546,7 +4546,7 @@ status<br />
 <tr>
 <td>
 fee<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -4555,7 +4555,7 @@ fee<br />
 <tr>
 <td>
 paid<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -4564,7 +4564,7 @@ paid<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderpaymentdiscount"><code>[OrderPaymentDiscount!]</code></a>
+<a href="/api/objects#orderpaymentdiscount"><code>[OrderPaymentDiscount!]</code></a>
 </td>
 <td>
 
@@ -4579,7 +4579,7 @@ discounts<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [OrderPayment](/../api/interfaces#orderpayment)
+- [OrderPayment](/api/interfaces#orderpayment)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -4589,7 +4589,7 @@ discounts<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4598,7 +4598,7 @@ _id<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#paymentprovider"><code>PaymentProvider</code></a>
+<a href="/api/objects#paymentprovider"><code>PaymentProvider</code></a>
 </td>
 <td>
 
@@ -4607,7 +4607,7 @@ provider<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderpaymentstatus"><code>OrderPaymentStatus</code></a>
+<a href="/api/enums#orderpaymentstatus"><code>OrderPaymentStatus</code></a>
 </td>
 <td>
 
@@ -4616,7 +4616,7 @@ status<br />
 <tr>
 <td>
 fee<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -4625,7 +4625,7 @@ fee<br />
 <tr>
 <td>
 paid<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -4634,7 +4634,7 @@ paid<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderpaymentdiscount"><code>[OrderPaymentDiscount!]</code></a>
+<a href="/api/objects#orderpaymentdiscount"><code>[OrderPaymentDiscount!]</code></a>
 </td>
 <td>
 
@@ -4655,7 +4655,7 @@ discounts<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4664,7 +4664,7 @@ _id<br />
 <tr>
 <td>
 order<br />
-<a href="/../api/objects#order"><code>Order!</code></a>
+<a href="/api/objects#order"><code>Order!</code></a>
 </td>
 <td>
 
@@ -4673,7 +4673,7 @@ order<br />
 <tr>
 <td>
 name<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -4682,7 +4682,7 @@ name<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/objects#address"><code>Address</code></a>
+<a href="/api/objects#address"><code>Address</code></a>
 </td>
 <td>
 
@@ -4691,7 +4691,7 @@ address<br />
 <tr>
 <td>
 geoPoint<br />
-<a href="/../api/objects#geoposition"><code>GeoPosition</code></a>
+<a href="/api/objects#geoposition"><code>GeoPosition</code></a>
 </td>
 <td>
 
@@ -4712,7 +4712,7 @@ geoPoint<br />
 <tr>
 <td>
 newCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -4721,7 +4721,7 @@ newCount<br />
 <tr>
 <td>
 checkoutCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -4730,7 +4730,7 @@ checkoutCount<br />
 <tr>
 <td>
 rejectCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -4739,7 +4739,7 @@ rejectCount<br />
 <tr>
 <td>
 confirmCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -4748,7 +4748,7 @@ confirmCount<br />
 <tr>
 <td>
 fulfillCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -4769,7 +4769,7 @@ fulfillCount<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4778,7 +4778,7 @@ _id<br />
 <tr>
 <td>
 user<br />
-<a href="/../api/objects#user"><code>User!</code></a>
+<a href="/api/objects#user"><code>User!</code></a>
 </td>
 <td>
 
@@ -4787,7 +4787,7 @@ user<br />
 <tr>
 <td>
 paymentProvider<br />
-<a href="/../api/objects#paymentprovider"><code>PaymentProvider!</code></a>
+<a href="/api/objects#paymentprovider"><code>PaymentProvider!</code></a>
 </td>
 <td>
 
@@ -4796,7 +4796,7 @@ paymentProvider<br />
 <tr>
 <td>
 token<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4805,7 +4805,7 @@ token<br />
 <tr>
 <td>
 meta<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4814,7 +4814,7 @@ meta<br />
 <tr>
 <td>
 isValid<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -4823,7 +4823,7 @@ isValid<br />
 <tr>
 <td>
 isPreferred<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -4844,7 +4844,7 @@ isPreferred<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4853,7 +4853,7 @@ _id<br />
 <tr>
 <td>
 label<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -4862,7 +4862,7 @@ label<br />
 <tr>
 <td>
 version<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -4883,7 +4883,7 @@ version<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -4892,7 +4892,7 @@ _id<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -4901,7 +4901,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -4910,7 +4910,7 @@ updated<br />
 <tr>
 <td>
 deleted<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -4919,7 +4919,7 @@ deleted<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#paymentprovidertype"><code>PaymentProviderType</code></a>
+<a href="/api/enums#paymentprovidertype"><code>PaymentProviderType</code></a>
 </td>
 <td>
 
@@ -4928,7 +4928,7 @@ type<br />
 <tr>
 <td>
 interface<br />
-<a href="/../api/objects#paymentinterface"><code>PaymentInterface</code></a>
+<a href="/api/objects#paymentinterface"><code>PaymentInterface</code></a>
 </td>
 <td>
 
@@ -4937,7 +4937,7 @@ interface<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -4946,7 +4946,7 @@ configuration<br />
 <tr>
 <td>
 configurationError<br />
-<a href="/../api/enums#paymentprovidererror"><code>PaymentProviderError</code></a>
+<a href="/api/enums#paymentprovidererror"><code>PaymentProviderError</code></a>
 </td>
 <td>
 
@@ -4955,7 +4955,7 @@ configurationError<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -4964,7 +4964,7 @@ isActive<br />
 <tr>
 <td>
 simulatedPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -4977,7 +4977,7 @@ simulatedPrice<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -4986,7 +4986,7 @@ currency<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -4995,7 +4995,7 @@ useNetPrice<br />
 <tr>
 <td>
 orderId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -5004,7 +5004,7 @@ orderId<br />
 <tr>
 <td>
 context<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -5024,7 +5024,7 @@ Plan (Virtual Product that somebody can enroll to)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [Product](/../api/interfaces#product)
+- [Product](/api/interfaces#product)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -5034,7 +5034,7 @@ Plan (Virtual Product that somebody can enroll to)
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -5043,7 +5043,7 @@ _id<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -5052,7 +5052,7 @@ sequence<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#productstatus"><code>ProductStatus!</code></a>
+<a href="/api/enums#productstatus"><code>ProductStatus!</code></a>
 </td>
 <td>
 
@@ -5061,7 +5061,7 @@ status<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -5070,7 +5070,7 @@ tags<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -5079,7 +5079,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -5088,7 +5088,7 @@ updated<br />
 <tr>
 <td>
 published<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -5097,7 +5097,7 @@ published<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/objects#productmedia"><code>[ProductMedia!]!</code></a>
+<a href="/api/objects#productmedia"><code>[ProductMedia!]!</code></a>
 </td>
 <td>
 
@@ -5110,7 +5110,7 @@ media<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5119,7 +5119,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5128,7 +5128,7 @@ offset<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -5142,7 +5142,7 @@ tags<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#producttexts"><code>ProductTexts</code></a>
+<a href="/api/objects#producttexts"><code>ProductTexts</code></a>
 </td>
 <td>
 
@@ -5155,7 +5155,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5169,7 +5169,7 @@ forceLocale<br />
 <tr>
 <td>
 catalogPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -5182,7 +5182,7 @@ catalogPrice<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5191,7 +5191,7 @@ quantity<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5205,7 +5205,7 @@ currency<br />
 <tr>
 <td>
 leveledCatalogPrices<br />
-<a href="/../api/objects#pricelevel"><code>[PriceLevel!]!</code></a>
+<a href="/api/objects#pricelevel"><code>[PriceLevel!]!</code></a>
 </td>
 <td>
 
@@ -5218,7 +5218,7 @@ leveledCatalogPrices<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5232,7 +5232,7 @@ currency<br />
 <tr>
 <td>
 simulatedPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -5245,7 +5245,7 @@ simulatedPrice<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5254,7 +5254,7 @@ currency<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -5263,7 +5263,7 @@ useNetPrice<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5272,7 +5272,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -5286,7 +5286,7 @@ configuration<br />
 <tr>
 <td>
 assortmentPaths<br />
-<a href="/../api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
+<a href="/api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
 </td>
 <td>
 
@@ -5299,7 +5299,7 @@ assortmentPaths<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5313,7 +5313,7 @@ forceLocale<br />
 <tr>
 <td>
 siblings<br />
-<a href="/../api/interfaces#product"><code>[Product!]!</code></a>
+<a href="/api/interfaces#product"><code>[Product!]!</code></a>
 </td>
 <td>
 
@@ -5326,7 +5326,7 @@ siblings<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -5335,7 +5335,7 @@ assortmentId<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5344,7 +5344,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5353,7 +5353,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -5367,7 +5367,7 @@ includeInactive<br />
 <tr>
 <td>
 salesUnit<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5376,7 +5376,7 @@ salesUnit<br />
 <tr>
 <td>
 salesQuantityPerUnit<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5385,7 +5385,7 @@ salesQuantityPerUnit<br />
 <tr>
 <td>
 defaultOrderQuantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5394,7 +5394,7 @@ defaultOrderQuantity<br />
 <tr>
 <td>
 reviews<br />
-<a href="/../api/objects#productreview"><code>[ProductReview!]!</code></a>
+<a href="/api/objects#productreview"><code>[ProductReview!]!</code></a>
 </td>
 <td>
 
@@ -5407,7 +5407,7 @@ reviews<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5416,7 +5416,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5425,7 +5425,7 @@ offset<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -5434,7 +5434,7 @@ sort<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5448,7 +5448,7 @@ queryString<br />
 <tr>
 <td>
 reviewsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -5461,7 +5461,7 @@ reviewsCount<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5475,7 +5475,7 @@ queryString<br />
 <tr>
 <td>
 plan<br />
-<a href="/../api/objects#productplanconfiguration"><code>ProductPlanConfiguration</code></a>
+<a href="/api/objects#productplanconfiguration"><code>ProductPlanConfiguration</code></a>
 </td>
 <td>
 
@@ -5496,7 +5496,7 @@ plan<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -5505,7 +5505,7 @@ _id<br />
 <tr>
 <td>
 isTaxable<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -5514,7 +5514,7 @@ isTaxable<br />
 <tr>
 <td>
 isNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -5523,7 +5523,7 @@ isNetPrice<br />
 <tr>
 <td>
 amount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -5532,7 +5532,7 @@ amount<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -5553,7 +5553,7 @@ currency<br />
 <tr>
 <td>
 minQuantity<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -5562,7 +5562,7 @@ minQuantity<br />
 <tr>
 <td>
 maxQuantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5571,7 +5571,7 @@ maxQuantity<br />
 <tr>
 <td>
 price<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -5592,7 +5592,7 @@ price<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -5601,7 +5601,7 @@ _id<br />
 <tr>
 <td>
 minPrice<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -5610,7 +5610,7 @@ minPrice<br />
 <tr>
 <td>
 maxPrice<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -5631,7 +5631,7 @@ Directed assortment to product paths (breadcrumbs)
 <tr>
 <td>
 assortmentProduct<br />
-<a href="/../api/objects#assortmentproduct"><code>AssortmentProduct!</code></a>
+<a href="/api/objects#assortmentproduct"><code>AssortmentProduct!</code></a>
 </td>
 <td>
 
@@ -5640,7 +5640,7 @@ assortmentProduct<br />
 <tr>
 <td>
 links<br />
-<a href="/../api/objects#assortmentpathlink"><code>[AssortmentPathLink!]!</code></a>
+<a href="/api/objects#assortmentpathlink"><code>[AssortmentPathLink!]!</code></a>
 </td>
 <td>
 
@@ -5661,7 +5661,7 @@ links<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/interfaces#product"><code>Product!</code></a>
+<a href="/api/interfaces#product"><code>Product!</code></a>
 </td>
 <td>
 
@@ -5670,7 +5670,7 @@ product<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -5679,7 +5679,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/objects#productconfigurationparameter"><code>[ProductConfigurationParameter!]</code></a>
+<a href="/api/objects#productconfigurationparameter"><code>[ProductConfigurationParameter!]</code></a>
 </td>
 <td>
 
@@ -5700,7 +5700,7 @@ configuration<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -5709,7 +5709,7 @@ _id<br />
 <tr>
 <td>
 isTaxable<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -5718,7 +5718,7 @@ isTaxable<br />
 <tr>
 <td>
 isNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -5727,7 +5727,7 @@ isNetPrice<br />
 <tr>
 <td>
 country<br />
-<a href="/../api/objects#country"><code>Country!</code></a>
+<a href="/api/objects#country"><code>Country!</code></a>
 </td>
 <td>
 
@@ -5736,7 +5736,7 @@ country<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/objects#currency"><code>Currency!</code></a>
+<a href="/api/objects#currency"><code>Currency!</code></a>
 </td>
 <td>
 
@@ -5745,7 +5745,7 @@ currency<br />
 <tr>
 <td>
 amount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -5754,7 +5754,7 @@ amount<br />
 <tr>
 <td>
 maxQuantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5775,7 +5775,7 @@ maxQuantity<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -5784,7 +5784,7 @@ key<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -5805,7 +5805,7 @@ value<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -5814,7 +5814,7 @@ _id<br />
 <tr>
 <td>
 interface<br />
-<a href="/../api/objects#discountinterface"><code>DiscountInterface</code></a>
+<a href="/api/objects#discountinterface"><code>DiscountInterface</code></a>
 </td>
 <td>
 
@@ -5823,7 +5823,7 @@ interface<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -5844,7 +5844,7 @@ total<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -5853,7 +5853,7 @@ _id<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -5862,7 +5862,7 @@ tags<br />
 <tr>
 <td>
 file<br />
-<a href="/../api/objects#media"><code>Media!</code></a>
+<a href="/api/objects#media"><code>Media!</code></a>
 </td>
 <td>
 
@@ -5871,7 +5871,7 @@ file<br />
 <tr>
 <td>
 sortKey<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -5880,7 +5880,7 @@ sortKey<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#productmediatexts"><code>ProductMediaTexts</code></a>
+<a href="/api/objects#productmediatexts"><code>ProductMediaTexts</code></a>
 </td>
 <td>
 
@@ -5893,7 +5893,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5919,7 +5919,7 @@ forceLocale<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -5928,7 +5928,7 @@ _id<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5937,7 +5937,7 @@ locale<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5946,7 +5946,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -5967,7 +5967,7 @@ subtitle<br />
 <tr>
 <td>
 usageCalculationType<br />
-<a href="/../api/enums#productplanusagecalculationtype"><code>ProductPlanUsageCalculationType!</code></a>
+<a href="/api/enums#productplanusagecalculationtype"><code>ProductPlanUsageCalculationType!</code></a>
 </td>
 <td>
 
@@ -5976,7 +5976,7 @@ usageCalculationType<br />
 <tr>
 <td>
 billingInterval<br />
-<a href="/../api/enums#productplanconfigurationinterval"><code>ProductPlanConfigurationInterval!</code></a>
+<a href="/api/enums#productplanconfigurationinterval"><code>ProductPlanConfigurationInterval!</code></a>
 </td>
 <td>
 
@@ -5985,7 +5985,7 @@ billingInterval<br />
 <tr>
 <td>
 billingIntervalCount<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -5994,7 +5994,7 @@ billingIntervalCount<br />
 <tr>
 <td>
 trialInterval<br />
-<a href="/../api/enums#productplanconfigurationinterval"><code>ProductPlanConfigurationInterval</code></a>
+<a href="/api/enums#productplanconfigurationinterval"><code>ProductPlanConfigurationInterval</code></a>
 </td>
 <td>
 
@@ -6003,7 +6003,7 @@ trialInterval<br />
 <tr>
 <td>
 trialIntervalCount<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -6024,7 +6024,7 @@ trialIntervalCount<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6033,7 +6033,7 @@ _id<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -6042,7 +6042,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -6051,7 +6051,7 @@ updated<br />
 <tr>
 <td>
 deleted<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -6060,7 +6060,7 @@ deleted<br />
 <tr>
 <td>
 author<br />
-<a href="/../api/objects#user"><code>User!</code></a>
+<a href="/api/objects#user"><code>User!</code></a>
 </td>
 <td>
 
@@ -6069,7 +6069,7 @@ author<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/interfaces#product"><code>Product!</code></a>
+<a href="/api/interfaces#product"><code>Product!</code></a>
 </td>
 <td>
 
@@ -6078,7 +6078,7 @@ product<br />
 <tr>
 <td>
 rating<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -6087,7 +6087,7 @@ rating<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6096,7 +6096,7 @@ title<br />
 <tr>
 <td>
 review<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6105,7 +6105,7 @@ review<br />
 <tr>
 <td>
 voteCount<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -6118,7 +6118,7 @@ voteCount<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#productreviewvotetype"><code>ProductReviewVoteType</code></a>
+<a href="/api/enums#productreviewvotetype"><code>ProductReviewVoteType</code></a>
 </td>
 <td>
 
@@ -6132,7 +6132,7 @@ type<br />
 <tr>
 <td>
 ownVotes<br />
-<a href="/../api/objects#productreviewvote"><code>[ProductReviewVote!]!</code></a>
+<a href="/api/objects#productreviewvote"><code>[ProductReviewVote!]!</code></a>
 </td>
 <td>
 
@@ -6153,7 +6153,7 @@ ownVotes<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6162,7 +6162,7 @@ _id<br />
 <tr>
 <td>
 timestamp<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp!</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp!</code></a>
 </td>
 <td>
 
@@ -6171,7 +6171,7 @@ timestamp<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#productreviewvotetype"><code>ProductReviewVoteType!</code></a>
+<a href="/api/enums#productreviewvotetype"><code>ProductReviewVoteType!</code></a>
 </td>
 <td>
 
@@ -6192,7 +6192,7 @@ Search result
 <tr>
 <td>
 productsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -6201,7 +6201,7 @@ productsCount<br />
 <tr>
 <td>
 filteredProductsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -6210,7 +6210,7 @@ filteredProductsCount<br />
 <tr>
 <td>
 filters<br />
-<a href="/../api/objects#loadedfilter"><code>[LoadedFilter!]!</code></a>
+<a href="/api/objects#loadedfilter"><code>[LoadedFilter!]!</code></a>
 </td>
 <td>
 
@@ -6219,7 +6219,7 @@ filters<br />
 <tr>
 <td>
 products<br />
-<a href="/../api/interfaces#product"><code>[Product!]!</code></a>
+<a href="/api/interfaces#product"><code>[Product!]!</code></a>
 </td>
 <td>
 
@@ -6232,7 +6232,7 @@ products<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -6241,7 +6241,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -6267,7 +6267,7 @@ offset<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6276,7 +6276,7 @@ _id<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6285,7 +6285,7 @@ locale<br />
 <tr>
 <td>
 slug<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6294,7 +6294,7 @@ slug<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6303,7 +6303,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6312,7 +6312,7 @@ subtitle<br />
 <tr>
 <td>
 description<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6321,7 +6321,7 @@ description<br />
 <tr>
 <td>
 vendor<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6330,7 +6330,7 @@ vendor<br />
 <tr>
 <td>
 brand<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6339,7 +6339,7 @@ brand<br />
 <tr>
 <td>
 labels<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -6360,7 +6360,7 @@ labels<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6369,7 +6369,7 @@ _id<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#productvariationtexts"><code>ProductVariationTexts</code></a>
+<a href="/api/objects#productvariationtexts"><code>ProductVariationTexts</code></a>
 </td>
 <td>
 
@@ -6382,7 +6382,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6396,7 +6396,7 @@ forceLocale<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#productvariationtype"><code>ProductVariationType</code></a>
+<a href="/api/enums#productvariationtype"><code>ProductVariationType</code></a>
 </td>
 <td>
 
@@ -6405,7 +6405,7 @@ type<br />
 <tr>
 <td>
 key<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6414,7 +6414,7 @@ key<br />
 <tr>
 <td>
 options<br />
-<a href="/../api/objects#productvariationoption"><code>[ProductVariationOption!]</code></a>
+<a href="/api/objects#productvariationoption"><code>[ProductVariationOption!]</code></a>
 </td>
 <td>
 
@@ -6435,7 +6435,7 @@ Key Value Combination to Product Assignment
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6444,7 +6444,7 @@ _id<br />
 <tr>
 <td>
 vectors<br />
-<a href="/../api/objects#productvariationassignmentvector"><code>[ProductVariationAssignmentVector!]</code></a>
+<a href="/api/objects#productvariationassignmentvector"><code>[ProductVariationAssignmentVector!]</code></a>
 </td>
 <td>
 <p>Query string key=val&amp;key=val ...</p>
@@ -6453,7 +6453,7 @@ vectors<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/interfaces#product"><code>Product</code></a>
+<a href="/api/interfaces#product"><code>Product</code></a>
 </td>
 <td>
 <p>Assigned Product</p>
@@ -6474,7 +6474,7 @@ Key Value Combination
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6483,7 +6483,7 @@ _id<br />
 <tr>
 <td>
 variation<br />
-<a href="/../api/objects#productvariation"><code>ProductVariation</code></a>
+<a href="/api/objects#productvariation"><code>ProductVariation</code></a>
 </td>
 <td>
 
@@ -6492,7 +6492,7 @@ variation<br />
 <tr>
 <td>
 option<br />
-<a href="/../api/objects#productvariationoption"><code>ProductVariationOption</code></a>
+<a href="/api/objects#productvariationoption"><code>ProductVariationOption</code></a>
 </td>
 <td>
 
@@ -6513,7 +6513,7 @@ option<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6522,7 +6522,7 @@ _id<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#productvariationtexts"><code>ProductVariationTexts</code></a>
+<a href="/api/objects#productvariationtexts"><code>ProductVariationTexts</code></a>
 </td>
 <td>
 
@@ -6535,7 +6535,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6549,7 +6549,7 @@ forceLocale<br />
 <tr>
 <td>
 value<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6570,7 +6570,7 @@ value<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6579,7 +6579,7 @@ _id<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6588,7 +6588,7 @@ locale<br />
 <tr>
 <td>
 title<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6597,7 +6597,7 @@ title<br />
 <tr>
 <td>
 subtitle<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6618,7 +6618,7 @@ subtitle<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6627,7 +6627,7 @@ _id<br />
 <tr>
 <td>
 userAgent<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6636,7 +6636,7 @@ userAgent<br />
 <tr>
 <td>
 expirationTime<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -6645,7 +6645,7 @@ expirationTime<br />
 <tr>
 <td>
 endpoint<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -6666,7 +6666,7 @@ Quotation
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6675,7 +6675,7 @@ _id<br />
 <tr>
 <td>
 user<br />
-<a href="/../api/objects#user"><code>User!</code></a>
+<a href="/api/objects#user"><code>User!</code></a>
 </td>
 <td>
 
@@ -6684,7 +6684,7 @@ user<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/interfaces#product"><code>Product!</code></a>
+<a href="/api/interfaces#product"><code>Product!</code></a>
 </td>
 <td>
 
@@ -6693,7 +6693,7 @@ product<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#quotationstatus"><code>QuotationStatus!</code></a>
+<a href="/api/enums#quotationstatus"><code>QuotationStatus!</code></a>
 </td>
 <td>
 
@@ -6702,7 +6702,7 @@ status<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 
@@ -6711,7 +6711,7 @@ created<br />
 <tr>
 <td>
 expires<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -6720,7 +6720,7 @@ expires<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -6729,7 +6729,7 @@ updated<br />
 <tr>
 <td>
 isExpired<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -6742,7 +6742,7 @@ isExpired<br />
 <tr>
 <td>
 referenceDate<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -6756,7 +6756,7 @@ referenceDate<br />
 <tr>
 <td>
 quotationNumber<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6765,7 +6765,7 @@ quotationNumber<br />
 <tr>
 <td>
 fullfilled<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -6774,7 +6774,7 @@ fullfilled<br />
 <tr>
 <td>
 rejected<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -6783,7 +6783,7 @@ rejected<br />
 <tr>
 <td>
 country<br />
-<a href="/../api/objects#country"><code>Country</code></a>
+<a href="/api/objects#country"><code>Country</code></a>
 </td>
 <td>
 
@@ -6792,7 +6792,7 @@ country<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/objects#currency"><code>Currency</code></a>
+<a href="/api/objects#currency"><code>Currency</code></a>
 </td>
 <td>
 
@@ -6801,7 +6801,7 @@ currency<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/objects#productconfigurationparameter"><code>[ProductConfigurationParameter!]</code></a>
+<a href="/api/objects#productconfigurationparameter"><code>[ProductConfigurationParameter!]</code></a>
 </td>
 <td>
 
@@ -6822,7 +6822,7 @@ Search result
 <tr>
 <td>
 productsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -6831,7 +6831,7 @@ productsCount<br />
 <tr>
 <td>
 filteredProductsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -6840,7 +6840,7 @@ filteredProductsCount<br />
 <tr>
 <td>
 filters<br />
-<a href="/../api/objects#loadedfilter"><code>[LoadedFilter!]!</code></a>
+<a href="/api/objects#loadedfilter"><code>[LoadedFilter!]!</code></a>
 </td>
 <td>
 
@@ -6849,7 +6849,7 @@ filters<br />
 <tr>
 <td>
 products<br />
-<a href="/../api/interfaces#product"><code>[Product!]!</code></a>
+<a href="/api/interfaces#product"><code>[Product!]!</code></a>
 </td>
 <td>
 
@@ -6862,7 +6862,7 @@ products<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -6871,7 +6871,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -6897,7 +6897,7 @@ offset<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -6906,7 +6906,7 @@ _id<br />
 <tr>
 <td>
 language<br />
-<a href="/../api/objects#language"><code>Language</code></a>
+<a href="/api/objects#language"><code>Language</code></a>
 </td>
 <td>
 
@@ -6915,7 +6915,7 @@ language<br />
 <tr>
 <td>
 country<br />
-<a href="/../api/objects#country"><code>Country</code></a>
+<a href="/api/objects#country"><code>Country</code></a>
 </td>
 <td>
 
@@ -6924,7 +6924,7 @@ country<br />
 <tr>
 <td>
 version<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6933,7 +6933,7 @@ version<br />
 <tr>
 <td>
 userRoles<br />
-<a href="/../api/scalars#string"><code>[String!]!</code></a>
+<a href="/api/scalars#string"><code>[String!]!</code></a>
 </td>
 <td>
 
@@ -6942,7 +6942,7 @@ userRoles<br />
 <tr>
 <td>
 externalLinks<br />
-<a href="/../api/objects#link"><code>[Link]!</code></a>
+<a href="/api/objects#link"><code>[Link]!</code></a>
 </td>
 <td>
 
@@ -6951,7 +6951,7 @@ externalLinks<br />
 <tr>
 <td>
 adminUiConfig<br />
-<a href="/../api/objects#adminuiconfig"><code>AdminUiConfig!</code></a>
+<a href="/api/objects#adminuiconfig"><code>AdminUiConfig!</code></a>
 </td>
 <td>
 
@@ -6960,7 +6960,7 @@ adminUiConfig<br />
 <tr>
 <td>
 oAuthProviders<br />
-<a href="/../api/objects#oauthprovider"><code>[OAuthProvider!]!</code></a>
+<a href="/api/objects#oauthprovider"><code>[OAuthProvider!]!</code></a>
 </td>
 <td>
 
@@ -6969,7 +6969,7 @@ oAuthProviders<br />
 <tr>
 <td>
 vapidPublicKey<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -6984,7 +6984,7 @@ Simple Product
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [Product](/../api/interfaces#product)
+- [Product](/api/interfaces#product)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -6994,7 +6994,7 @@ Simple Product
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -7003,7 +7003,7 @@ _id<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -7012,7 +7012,7 @@ sequence<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#productstatus"><code>ProductStatus!</code></a>
+<a href="/api/enums#productstatus"><code>ProductStatus!</code></a>
 </td>
 <td>
 
@@ -7021,7 +7021,7 @@ status<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -7030,7 +7030,7 @@ tags<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -7039,7 +7039,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -7048,7 +7048,7 @@ updated<br />
 <tr>
 <td>
 published<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -7057,7 +7057,7 @@ published<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/objects#productmedia"><code>[ProductMedia!]!</code></a>
+<a href="/api/objects#productmedia"><code>[ProductMedia!]!</code></a>
 </td>
 <td>
 
@@ -7070,7 +7070,7 @@ media<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7079,7 +7079,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7088,7 +7088,7 @@ offset<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -7102,7 +7102,7 @@ tags<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#producttexts"><code>ProductTexts</code></a>
+<a href="/api/objects#producttexts"><code>ProductTexts</code></a>
 </td>
 <td>
 
@@ -7115,7 +7115,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7129,7 +7129,7 @@ forceLocale<br />
 <tr>
 <td>
 catalogPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -7142,7 +7142,7 @@ catalogPrice<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7151,7 +7151,7 @@ quantity<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7165,7 +7165,7 @@ currency<br />
 <tr>
 <td>
 leveledCatalogPrices<br />
-<a href="/../api/objects#pricelevel"><code>[PriceLevel!]!</code></a>
+<a href="/api/objects#pricelevel"><code>[PriceLevel!]!</code></a>
 </td>
 <td>
 
@@ -7178,7 +7178,7 @@ leveledCatalogPrices<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7192,7 +7192,7 @@ currency<br />
 <tr>
 <td>
 simulatedPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -7205,7 +7205,7 @@ simulatedPrice<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7214,7 +7214,7 @@ currency<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -7223,7 +7223,7 @@ useNetPrice<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7232,7 +7232,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -7246,7 +7246,7 @@ configuration<br />
 <tr>
 <td>
 simulatedDispatches<br />
-<a href="/../api/objects#dispatch"><code>[Dispatch!]</code></a>
+<a href="/api/objects#dispatch"><code>[Dispatch!]</code></a>
 </td>
 <td>
 
@@ -7259,7 +7259,7 @@ simulatedDispatches<br />
 <tr>
 <td>
 deliveryProviderType<br />
-<a href="/../api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
+<a href="/api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
 </td>
 <td>
 
@@ -7268,7 +7268,7 @@ deliveryProviderType<br />
 <tr>
 <td>
 referenceDate<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -7277,7 +7277,7 @@ referenceDate<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7291,7 +7291,7 @@ quantity<br />
 <tr>
 <td>
 simulatedStocks<br />
-<a href="/../api/objects#stock"><code>[Stock!]</code></a>
+<a href="/api/objects#stock"><code>[Stock!]</code></a>
 </td>
 <td>
 
@@ -7304,7 +7304,7 @@ simulatedStocks<br />
 <tr>
 <td>
 deliveryProviderType<br />
-<a href="/../api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
+<a href="/api/enums#deliveryprovidertype"><code>DeliveryProviderType</code></a>
 </td>
 <td>
 
@@ -7313,7 +7313,7 @@ deliveryProviderType<br />
 <tr>
 <td>
 referenceDate<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -7327,7 +7327,7 @@ referenceDate<br />
 <tr>
 <td>
 assortmentPaths<br />
-<a href="/../api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
+<a href="/api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
 </td>
 <td>
 
@@ -7336,7 +7336,7 @@ assortmentPaths<br />
 <tr>
 <td>
 siblings<br />
-<a href="/../api/interfaces#product"><code>[Product!]!</code></a>
+<a href="/api/interfaces#product"><code>[Product!]!</code></a>
 </td>
 <td>
 
@@ -7349,7 +7349,7 @@ siblings<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -7358,7 +7358,7 @@ assortmentId<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7367,7 +7367,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7376,7 +7376,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -7390,7 +7390,7 @@ includeInactive<br />
 <tr>
 <td>
 dimensions<br />
-<a href="/../api/objects#dimensions"><code>Dimensions</code></a>
+<a href="/api/objects#dimensions"><code>Dimensions</code></a>
 </td>
 <td>
 
@@ -7399,7 +7399,7 @@ dimensions<br />
 <tr>
 <td>
 sku<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7408,7 +7408,7 @@ sku<br />
 <tr>
 <td>
 baseUnit<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7417,7 +7417,7 @@ baseUnit<br />
 <tr>
 <td>
 salesUnit<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7426,7 +7426,7 @@ salesUnit<br />
 <tr>
 <td>
 salesQuantityPerUnit<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7435,7 +7435,7 @@ salesQuantityPerUnit<br />
 <tr>
 <td>
 defaultOrderQuantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7444,7 +7444,7 @@ defaultOrderQuantity<br />
 <tr>
 <td>
 reviews<br />
-<a href="/../api/objects#productreview"><code>[ProductReview!]!</code></a>
+<a href="/api/objects#productreview"><code>[ProductReview!]!</code></a>
 </td>
 <td>
 
@@ -7457,7 +7457,7 @@ reviews<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7466,7 +7466,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7475,7 +7475,7 @@ offset<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -7484,7 +7484,7 @@ sort<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7498,7 +7498,7 @@ queryString<br />
 <tr>
 <td>
 reviewsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -7511,7 +7511,7 @@ reviewsCount<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7537,7 +7537,7 @@ queryString<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -7546,7 +7546,7 @@ _id<br />
 <tr>
 <td>
 deliveryProvider<br />
-<a href="/../api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
+<a href="/api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
 </td>
 <td>
 
@@ -7555,7 +7555,7 @@ deliveryProvider<br />
 <tr>
 <td>
 warehousingProvider<br />
-<a href="/../api/objects#warehousingprovider"><code>WarehousingProvider</code></a>
+<a href="/api/objects#warehousingprovider"><code>WarehousingProvider</code></a>
 </td>
 <td>
 
@@ -7564,7 +7564,7 @@ warehousingProvider<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7585,7 +7585,7 @@ quantity<br />
 <tr>
 <td>
 success<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -7606,7 +7606,7 @@ success<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -7615,7 +7615,7 @@ _id<br />
 <tr>
 <td>
 product<br />
-<a href="/../api/objects#tokenizedproduct"><code>TokenizedProduct!</code></a>
+<a href="/api/objects#tokenizedproduct"><code>TokenizedProduct!</code></a>
 </td>
 <td>
 
@@ -7624,7 +7624,7 @@ product<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#tokenexportstatus"><code>TokenExportStatus!</code></a>
+<a href="/api/enums#tokenexportstatus"><code>TokenExportStatus!</code></a>
 </td>
 <td>
 
@@ -7633,7 +7633,7 @@ status<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -7642,7 +7642,7 @@ quantity<br />
 <tr>
 <td>
 isInvalidateable<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -7651,7 +7651,7 @@ isInvalidateable<br />
 <tr>
 <td>
 accessKey<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 <p>Get an access key that you can pass along the HTTP Header &quot;x-token-accesskey&quot; to access the token anonymously.</p>
@@ -7660,7 +7660,7 @@ accessKey<br />
 <tr>
 <td>
 invalidatedDate<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -7669,7 +7669,7 @@ invalidatedDate<br />
 <tr>
 <td>
 user<br />
-<a href="/../api/objects#user"><code>User</code></a>
+<a href="/api/objects#user"><code>User</code></a>
 </td>
 <td>
 
@@ -7678,7 +7678,7 @@ user<br />
 <tr>
 <td>
 expiryDate<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -7687,7 +7687,7 @@ expiryDate<br />
 <tr>
 <td>
 contractAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7696,7 +7696,7 @@ contractAddress<br />
 <tr>
 <td>
 walletAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7705,7 +7705,7 @@ walletAddress<br />
 <tr>
 <td>
 chainId<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7714,7 +7714,7 @@ chainId<br />
 <tr>
 <td>
 chainTokenId<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7723,7 +7723,7 @@ chainTokenId<br />
 <tr>
 <td>
 ercMetadata<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -7736,7 +7736,7 @@ ercMetadata<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7756,7 +7756,7 @@ Tokenized Product (Blockchain materialized Product)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implements</strong></p>
 
-- [Product](/../api/interfaces#product)
+- [Product](/api/interfaces#product)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -7766,7 +7766,7 @@ Tokenized Product (Blockchain materialized Product)
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -7775,7 +7775,7 @@ _id<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -7784,7 +7784,7 @@ sequence<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#productstatus"><code>ProductStatus!</code></a>
+<a href="/api/enums#productstatus"><code>ProductStatus!</code></a>
 </td>
 <td>
 
@@ -7793,7 +7793,7 @@ status<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -7802,7 +7802,7 @@ tags<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -7811,7 +7811,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -7820,7 +7820,7 @@ updated<br />
 <tr>
 <td>
 published<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -7829,7 +7829,7 @@ published<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/objects#productmedia"><code>[ProductMedia!]!</code></a>
+<a href="/api/objects#productmedia"><code>[ProductMedia!]!</code></a>
 </td>
 <td>
 
@@ -7842,7 +7842,7 @@ media<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7851,7 +7851,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7860,7 +7860,7 @@ offset<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -7874,7 +7874,7 @@ tags<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#producttexts"><code>ProductTexts</code></a>
+<a href="/api/objects#producttexts"><code>ProductTexts</code></a>
 </td>
 <td>
 
@@ -7887,7 +7887,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7901,7 +7901,7 @@ forceLocale<br />
 <tr>
 <td>
 catalogPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -7914,7 +7914,7 @@ catalogPrice<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -7923,7 +7923,7 @@ quantity<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7937,7 +7937,7 @@ currency<br />
 <tr>
 <td>
 leveledCatalogPrices<br />
-<a href="/../api/objects#pricelevel"><code>[PriceLevel!]!</code></a>
+<a href="/api/objects#pricelevel"><code>[PriceLevel!]!</code></a>
 </td>
 <td>
 
@@ -7950,7 +7950,7 @@ leveledCatalogPrices<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7964,7 +7964,7 @@ currency<br />
 <tr>
 <td>
 simulatedPrice<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -7977,7 +7977,7 @@ simulatedPrice<br />
 <tr>
 <td>
 currency<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -7986,7 +7986,7 @@ currency<br />
 <tr>
 <td>
 useNetPrice<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -7995,7 +7995,7 @@ useNetPrice<br />
 <tr>
 <td>
 quantity<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8004,7 +8004,7 @@ quantity<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
+<a href="/api/inputObjects#productconfigurationparameterinput"><code>[ProductConfigurationParameterInput!]</code></a>
 </td>
 <td>
 
@@ -8018,7 +8018,7 @@ configuration<br />
 <tr>
 <td>
 simulatedStocks<br />
-<a href="/../api/objects#stock"><code>[Stock!]</code></a>
+<a href="/api/objects#stock"><code>[Stock!]</code></a>
 </td>
 <td>
 
@@ -8031,7 +8031,7 @@ simulatedStocks<br />
 <tr>
 <td>
 referenceDate<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp</code></a>
 </td>
 <td>
 
@@ -8045,7 +8045,7 @@ referenceDate<br />
 <tr>
 <td>
 assortmentPaths<br />
-<a href="/../api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
+<a href="/api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
 </td>
 <td>
 
@@ -8058,7 +8058,7 @@ assortmentPaths<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8072,7 +8072,7 @@ forceLocale<br />
 <tr>
 <td>
 siblings<br />
-<a href="/../api/interfaces#product"><code>[Product!]!</code></a>
+<a href="/api/interfaces#product"><code>[Product!]!</code></a>
 </td>
 <td>
 
@@ -8085,7 +8085,7 @@ siblings<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -8094,7 +8094,7 @@ assortmentId<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8103,7 +8103,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8112,7 +8112,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -8126,7 +8126,7 @@ includeInactive<br />
 <tr>
 <td>
 reviews<br />
-<a href="/../api/objects#productreview"><code>[ProductReview!]!</code></a>
+<a href="/api/objects#productreview"><code>[ProductReview!]!</code></a>
 </td>
 <td>
 
@@ -8139,7 +8139,7 @@ reviews<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8148,7 +8148,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8157,7 +8157,7 @@ offset<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -8166,7 +8166,7 @@ sort<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8180,7 +8180,7 @@ queryString<br />
 <tr>
 <td>
 reviewsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -8193,7 +8193,7 @@ reviewsCount<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8207,7 +8207,7 @@ queryString<br />
 <tr>
 <td>
 contractAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8216,7 +8216,7 @@ contractAddress<br />
 <tr>
 <td>
 contractStandard<br />
-<a href="/../api/enums#smartcontractstandard"><code>SmartContractStandard</code></a>
+<a href="/api/enums#smartcontractstandard"><code>SmartContractStandard</code></a>
 </td>
 <td>
 
@@ -8225,7 +8225,7 @@ contractStandard<br />
 <tr>
 <td>
 contractConfiguration<br />
-<a href="/../api/objects#contractconfiguration"><code>ContractConfiguration</code></a>
+<a href="/api/objects#contractconfiguration"><code>ContractConfiguration</code></a>
 </td>
 <td>
 
@@ -8234,7 +8234,7 @@ contractConfiguration<br />
 <tr>
 <td>
 tokens<br />
-<a href="/../api/objects#token"><code>[Token!]!</code></a>
+<a href="/api/objects#token"><code>[Token!]!</code></a>
 </td>
 <td>
 
@@ -8243,7 +8243,7 @@ tokens<br />
 <tr>
 <td>
 tokensCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -8264,7 +8264,7 @@ tokensCount<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -8273,7 +8273,7 @@ _id<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 
@@ -8282,7 +8282,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -8291,7 +8291,7 @@ updated<br />
 <tr>
 <td>
 deleted<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -8300,7 +8300,7 @@ deleted<br />
 <tr>
 <td>
 username<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8309,7 +8309,7 @@ username<br />
 <tr>
 <td>
 isGuest<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -8318,7 +8318,7 @@ isGuest<br />
 <tr>
 <td>
 isTwoFactorEnabled<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -8327,7 +8327,7 @@ isTwoFactorEnabled<br />
 <tr>
 <td>
 isInitialPassword<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -8336,7 +8336,7 @@ isInitialPassword<br />
 <tr>
 <td>
 webAuthnCredentials<br />
-<a href="/../api/objects#webauthncredentials"><code>[WebAuthnCredentials!]!</code></a>
+<a href="/api/objects#webauthncredentials"><code>[WebAuthnCredentials!]!</code></a>
 </td>
 <td>
 
@@ -8345,7 +8345,7 @@ webAuthnCredentials<br />
 <tr>
 <td>
 web3Addresses<br />
-<a href="/../api/objects#web3address"><code>[Web3Address!]!</code></a>
+<a href="/api/objects#web3address"><code>[Web3Address!]!</code></a>
 </td>
 <td>
 
@@ -8354,7 +8354,7 @@ web3Addresses<br />
 <tr>
 <td>
 pushSubscriptions<br />
-<a href="/../api/objects#pushsubscription"><code>[PushSubscription!]!</code></a>
+<a href="/api/objects#pushsubscription"><code>[PushSubscription!]!</code></a>
 </td>
 <td>
 
@@ -8363,7 +8363,7 @@ pushSubscriptions<br />
 <tr>
 <td>
 name<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -8372,7 +8372,7 @@ name<br />
 <tr>
 <td>
 avatar<br />
-<a href="/../api/objects#media"><code>Media</code></a>
+<a href="/api/objects#media"><code>Media</code></a>
 </td>
 <td>
 
@@ -8381,7 +8381,7 @@ avatar<br />
 <tr>
 <td>
 profile<br />
-<a href="/../api/objects#userprofile"><code>UserProfile</code></a>
+<a href="/api/objects#userprofile"><code>UserProfile</code></a>
 </td>
 <td>
 
@@ -8390,7 +8390,7 @@ profile<br />
 <tr>
 <td>
 language<br />
-<a href="/../api/objects#language"><code>Language</code></a>
+<a href="/api/objects#language"><code>Language</code></a>
 </td>
 <td>
 
@@ -8399,7 +8399,7 @@ language<br />
 <tr>
 <td>
 country<br />
-<a href="/../api/objects#country"><code>Country</code></a>
+<a href="/api/objects#country"><code>Country</code></a>
 </td>
 <td>
 
@@ -8408,7 +8408,7 @@ country<br />
 <tr>
 <td>
 lastBillingAddress<br />
-<a href="/../api/objects#address"><code>Address</code></a>
+<a href="/api/objects#address"><code>Address</code></a>
 </td>
 <td>
 
@@ -8417,7 +8417,7 @@ lastBillingAddress<br />
 <tr>
 <td>
 lastContact<br />
-<a href="/../api/objects#contact"><code>Contact</code></a>
+<a href="/api/objects#contact"><code>Contact</code></a>
 </td>
 <td>
 
@@ -8426,7 +8426,7 @@ lastContact<br />
 <tr>
 <td>
 lastLogin<br />
-<a href="/../api/objects#userlogintracker"><code>UserLoginTracker</code></a>
+<a href="/api/objects#userlogintracker"><code>UserLoginTracker</code></a>
 </td>
 <td>
 
@@ -8435,7 +8435,7 @@ lastLogin<br />
 <tr>
 <td>
 primaryEmail<br />
-<a href="/../api/objects#useremail"><code>UserEmail</code></a>
+<a href="/api/objects#useremail"><code>UserEmail</code></a>
 </td>
 <td>
 
@@ -8444,7 +8444,7 @@ primaryEmail<br />
 <tr>
 <td>
 emails<br />
-<a href="/../api/objects#useremail"><code>[UserEmail!]</code></a>
+<a href="/api/objects#useremail"><code>[UserEmail!]</code></a>
 </td>
 <td>
 
@@ -8453,7 +8453,7 @@ emails<br />
 <tr>
 <td>
 roles<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -8462,7 +8462,7 @@ roles<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -8471,7 +8471,7 @@ tags<br />
 <tr>
 <td>
 cart<br />
-<a href="/../api/objects#order"><code>Order</code></a>
+<a href="/api/objects#order"><code>Order</code></a>
 </td>
 <td>
 
@@ -8484,7 +8484,7 @@ cart<br />
 <tr>
 <td>
 orderNumber<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8498,7 +8498,7 @@ orderNumber<br />
 <tr>
 <td>
 orders<br />
-<a href="/../api/objects#order"><code>[Order!]!</code></a>
+<a href="/api/objects#order"><code>[Order!]!</code></a>
 </td>
 <td>
 
@@ -8511,7 +8511,7 @@ orders<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8520,7 +8520,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8529,7 +8529,7 @@ offset<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderstatus"><code>[OrderStatus!]</code></a>
+<a href="/api/enums#orderstatus"><code>[OrderStatus!]</code></a>
 </td>
 <td>
 
@@ -8538,7 +8538,7 @@ status<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8547,7 +8547,7 @@ queryString<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -8556,7 +8556,7 @@ sort<br />
 <tr>
 <td>
 includeCarts<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -8570,7 +8570,7 @@ includeCarts<br />
 <tr>
 <td>
 quotations<br />
-<a href="/../api/objects#quotation"><code>[Quotation!]!</code></a>
+<a href="/api/objects#quotation"><code>[Quotation!]!</code></a>
 </td>
 <td>
 
@@ -8583,7 +8583,7 @@ quotations<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -8592,7 +8592,7 @@ sort<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8601,7 +8601,7 @@ queryString<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8610,7 +8610,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8624,7 +8624,7 @@ offset<br />
 <tr>
 <td>
 bookmarks<br />
-<a href="/../api/objects#bookmark"><code>[Bookmark!]!</code></a>
+<a href="/api/objects#bookmark"><code>[Bookmark!]!</code></a>
 </td>
 <td>
 
@@ -8633,7 +8633,7 @@ bookmarks<br />
 <tr>
 <td>
 paymentCredentials<br />
-<a href="/../api/objects#paymentcredentials"><code>[PaymentCredentials!]!</code></a>
+<a href="/api/objects#paymentcredentials"><code>[PaymentCredentials!]!</code></a>
 </td>
 <td>
 
@@ -8642,7 +8642,7 @@ paymentCredentials<br />
 <tr>
 <td>
 enrollments<br />
-<a href="/../api/objects#enrollment"><code>[Enrollment!]!</code></a>
+<a href="/api/objects#enrollment"><code>[Enrollment!]!</code></a>
 </td>
 <td>
 
@@ -8655,7 +8655,7 @@ enrollments<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8664,7 +8664,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8673,7 +8673,7 @@ offset<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8682,7 +8682,7 @@ queryString<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -8691,7 +8691,7 @@ status<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -8705,7 +8705,7 @@ sort<br />
 <tr>
 <td>
 allowedActions<br />
-<a href="/../api/enums#roleaction"><code>[RoleAction!]!</code></a>
+<a href="/api/enums#roleaction"><code>[RoleAction!]!</code></a>
 </td>
 <td>
 
@@ -8714,7 +8714,7 @@ allowedActions<br />
 <tr>
 <td>
 tokens<br />
-<a href="/../api/objects#token"><code>[Token!]!</code></a>
+<a href="/api/objects#token"><code>[Token!]!</code></a>
 </td>
 <td>
 
@@ -8723,7 +8723,7 @@ tokens<br />
 <tr>
 <td>
 oAuthAccounts<br />
-<a href="/../api/objects#oauthaccount"><code>[OAuthAccount!]!</code></a>
+<a href="/api/objects#oauthaccount"><code>[OAuthAccount!]!</code></a>
 </td>
 <td>
 
@@ -8732,7 +8732,7 @@ oAuthAccounts<br />
 <tr>
 <td>
 reviews<br />
-<a href="/../api/objects#productreview"><code>[ProductReview!]!</code></a>
+<a href="/api/objects#productreview"><code>[ProductReview!]!</code></a>
 </td>
 <td>
 
@@ -8745,7 +8745,7 @@ reviews<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8754,7 +8754,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -8763,7 +8763,7 @@ offset<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -8777,7 +8777,7 @@ sort<br />
 <tr>
 <td>
 reviewsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -8798,7 +8798,7 @@ reviewsCount<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -8807,7 +8807,7 @@ address<br />
 <tr>
 <td>
 verified<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -8828,7 +8828,7 @@ verified<br />
 <tr>
 <td>
 timestamp<br />
-<a href="/../api/scalars#timestamp"><code>Timestamp!</code></a>
+<a href="/api/scalars#timestamp"><code>Timestamp!</code></a>
 </td>
 <td>
 
@@ -8837,7 +8837,7 @@ timestamp<br />
 <tr>
 <td>
 remoteAddress<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8846,7 +8846,7 @@ remoteAddress<br />
 <tr>
 <td>
 remotePort<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8855,7 +8855,7 @@ remotePort<br />
 <tr>
 <td>
 userAgent<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8864,7 +8864,7 @@ userAgent<br />
 <tr>
 <td>
 locale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8873,7 +8873,7 @@ locale<br />
 <tr>
 <td>
 countryCode<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8894,7 +8894,7 @@ countryCode<br />
 <tr>
 <td>
 displayName<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8903,7 +8903,7 @@ displayName<br />
 <tr>
 <td>
 phoneMobile<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8912,7 +8912,7 @@ phoneMobile<br />
 <tr>
 <td>
 gender<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8921,7 +8921,7 @@ gender<br />
 <tr>
 <td>
 birthday<br />
-<a href="/../api/scalars#date"><code>Date</code></a>
+<a href="/api/scalars#date"><code>Date</code></a>
 </td>
 <td>
 
@@ -8930,7 +8930,7 @@ birthday<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/objects#address"><code>Address</code></a>
+<a href="/api/objects#address"><code>Address</code></a>
 </td>
 <td>
 
@@ -8951,7 +8951,7 @@ address<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -8960,7 +8960,7 @@ _id<br />
 <tr>
 <td>
 label<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8969,7 +8969,7 @@ label<br />
 <tr>
 <td>
 version<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -8990,7 +8990,7 @@ version<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -8999,7 +8999,7 @@ _id<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -9008,7 +9008,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -9017,7 +9017,7 @@ updated<br />
 <tr>
 <td>
 deleted<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -9026,7 +9026,7 @@ deleted<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#warehousingprovidertype"><code>WarehousingProviderType</code></a>
+<a href="/api/enums#warehousingprovidertype"><code>WarehousingProviderType</code></a>
 </td>
 <td>
 
@@ -9035,7 +9035,7 @@ type<br />
 <tr>
 <td>
 interface<br />
-<a href="/../api/objects#warehousinginterface"><code>WarehousingInterface</code></a>
+<a href="/api/objects#warehousinginterface"><code>WarehousingInterface</code></a>
 </td>
 <td>
 
@@ -9044,7 +9044,7 @@ interface<br />
 <tr>
 <td>
 configuration<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -9053,7 +9053,7 @@ configuration<br />
 <tr>
 <td>
 configurationError<br />
-<a href="/../api/enums#warehousingprovidererror"><code>WarehousingProviderError</code></a>
+<a href="/api/enums#warehousingprovidererror"><code>WarehousingProviderError</code></a>
 </td>
 <td>
 
@@ -9062,7 +9062,7 @@ configurationError<br />
 <tr>
 <td>
 isActive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -9083,7 +9083,7 @@ isActive<br />
 <tr>
 <td>
 address<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -9092,7 +9092,7 @@ address<br />
 <tr>
 <td>
 nonce<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -9101,7 +9101,7 @@ nonce<br />
 <tr>
 <td>
 verified<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -9122,7 +9122,7 @@ verified<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -9131,7 +9131,7 @@ _id<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 
@@ -9140,7 +9140,7 @@ created<br />
 <tr>
 <td>
 aaguid<br />
-<a href="/../api/scalars#string"><code>String!</code></a>
+<a href="/api/scalars#string"><code>String!</code></a>
 </td>
 <td>
 
@@ -9149,7 +9149,7 @@ aaguid<br />
 <tr>
 <td>
 counter<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -9158,7 +9158,7 @@ counter<br />
 <tr>
 <td>
 mdsMetadata<br />
-<a href="/../api/objects#webauthnmdsv3metadata"><code>WebAuthnMDSv3Metadata</code></a>
+<a href="/api/objects#webauthnmdsv3metadata"><code>WebAuthnMDSv3Metadata</code></a>
 </td>
 <td>
 
@@ -9179,7 +9179,7 @@ mdsMetadata<br />
 <tr>
 <td>
 legalHeader<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -9188,7 +9188,7 @@ legalHeader<br />
 <tr>
 <td>
 description<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -9197,7 +9197,7 @@ description<br />
 <tr>
 <td>
 authenticatorVersion<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -9206,7 +9206,7 @@ authenticatorVersion<br />
 <tr>
 <td>
 protocolFamily<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -9215,7 +9215,7 @@ protocolFamily<br />
 <tr>
 <td>
 schema<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -9224,7 +9224,7 @@ schema<br />
 <tr>
 <td>
 upv<br />
-<a href="/../api/scalars#json"><code>[JSON!]</code></a>
+<a href="/api/scalars#json"><code>[JSON!]</code></a>
 </td>
 <td>
 
@@ -9233,7 +9233,7 @@ upv<br />
 <tr>
 <td>
 authenticationAlgorithms<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -9242,7 +9242,7 @@ authenticationAlgorithms<br />
 <tr>
 <td>
 publicKeyAlgAndEncodings<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -9251,7 +9251,7 @@ publicKeyAlgAndEncodings<br />
 <tr>
 <td>
 attestationTypes<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -9260,7 +9260,7 @@ attestationTypes<br />
 <tr>
 <td>
 userVerificationDetails<br />
-<a href="/../api/scalars#json"><code>[JSON!]</code></a>
+<a href="/api/scalars#json"><code>[JSON!]</code></a>
 </td>
 <td>
 
@@ -9269,7 +9269,7 @@ userVerificationDetails<br />
 <tr>
 <td>
 keyProtection<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -9278,7 +9278,7 @@ keyProtection<br />
 <tr>
 <td>
 matcherProtection<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -9287,7 +9287,7 @@ matcherProtection<br />
 <tr>
 <td>
 cryptoStrength<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -9296,7 +9296,7 @@ cryptoStrength<br />
 <tr>
 <td>
 attachmentHint<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -9305,7 +9305,7 @@ attachmentHint<br />
 <tr>
 <td>
 tcDisplay<br />
-<a href="/../api/scalars#json"><code>[JSON!]</code></a>
+<a href="/api/scalars#json"><code>[JSON!]</code></a>
 </td>
 <td>
 
@@ -9314,7 +9314,7 @@ tcDisplay<br />
 <tr>
 <td>
 attestationRootCertificates<br />
-<a href="/../api/scalars#string"><code>[String!]</code></a>
+<a href="/api/scalars#string"><code>[String!]</code></a>
 </td>
 <td>
 
@@ -9323,7 +9323,7 @@ attestationRootCertificates<br />
 <tr>
 <td>
 icon<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -9332,7 +9332,7 @@ icon<br />
 <tr>
 <td>
 authenticatorGetInfo<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -9353,7 +9353,7 @@ authenticatorGetInfo<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -9362,7 +9362,7 @@ _id<br />
 <tr>
 <td>
 started<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -9371,7 +9371,7 @@ started<br />
 <tr>
 <td>
 finished<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -9380,7 +9380,7 @@ finished<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime!</code></a>
+<a href="/api/scalars#datetime"><code>DateTime!</code></a>
 </td>
 <td>
 
@@ -9389,7 +9389,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -9398,7 +9398,7 @@ updated<br />
 <tr>
 <td>
 deleted<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -9407,7 +9407,7 @@ deleted<br />
 <tr>
 <td>
 priority<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -9416,7 +9416,7 @@ priority<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#worktype"><code>WorkType!</code></a>
+<a href="/api/enums#worktype"><code>WorkType!</code></a>
 </td>
 <td>
 
@@ -9425,7 +9425,7 @@ type<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#workstatus"><code>WorkStatus!</code></a>
+<a href="/api/enums#workstatus"><code>WorkStatus!</code></a>
 </td>
 <td>
 
@@ -9434,7 +9434,7 @@ status<br />
 <tr>
 <td>
 worker<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -9443,7 +9443,7 @@ worker<br />
 <tr>
 <td>
 input<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -9452,7 +9452,7 @@ input<br />
 <tr>
 <td>
 result<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -9461,7 +9461,7 @@ result<br />
 <tr>
 <td>
 error<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -9470,7 +9470,7 @@ error<br />
 <tr>
 <td>
 success<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -9479,7 +9479,7 @@ success<br />
 <tr>
 <td>
 scheduled<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -9488,7 +9488,7 @@ scheduled<br />
 <tr>
 <td>
 original<br />
-<a href="/../api/objects#work"><code>Work</code></a>
+<a href="/api/objects#work"><code>Work</code></a>
 </td>
 <td>
 
@@ -9497,7 +9497,7 @@ original<br />
 <tr>
 <td>
 retries<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -9506,7 +9506,7 @@ retries<br />
 <tr>
 <td>
 timeout<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -9515,7 +9515,7 @@ timeout<br />
 <tr>
 <td>
 autoscheduled<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
@@ -9536,7 +9536,7 @@ autoscheduled<br />
 <tr>
 <td>
 result<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -9545,7 +9545,7 @@ result<br />
 <tr>
 <td>
 error<br />
-<a href="/../api/scalars#json"><code>JSON</code></a>
+<a href="/api/scalars#json"><code>JSON</code></a>
 </td>
 <td>
 
@@ -9554,7 +9554,7 @@ error<br />
 <tr>
 <td>
 success<br />
-<a href="/../api/scalars#boolean"><code>Boolean!</code></a>
+<a href="/api/scalars#boolean"><code>Boolean!</code></a>
 </td>
 <td>
 
@@ -9575,7 +9575,7 @@ success<br />
 <tr>
 <td>
 type<br />
-<a href="/../api/enums#worktype"><code>WorkType!</code></a>
+<a href="/api/enums#worktype"><code>WorkType!</code></a>
 </td>
 <td>
 
@@ -9584,7 +9584,7 @@ type<br />
 <tr>
 <td>
 newCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -9593,7 +9593,7 @@ newCount<br />
 <tr>
 <td>
 startCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -9602,7 +9602,7 @@ startCount<br />
 <tr>
 <td>
 errorCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -9611,7 +9611,7 @@ errorCount<br />
 <tr>
 <td>
 successCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -9620,7 +9620,7 @@ successCount<br />
 <tr>
 <td>
 deleteCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 

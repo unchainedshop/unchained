@@ -8,9 +8,9 @@ import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: ' Unchained',
-  tagline: 'Dinosaurs are cool',
-  favicon: 'img/favicon.ico',
+  title: ' Unchained Engine',
+  tagline: 'Headless Code-First E-Commerce SDK for Node.js',
+  favicon: 'img/favicon-32x32.png',
 
   // Set the production url of your site here
   url: 'https://docs.unchained.shop',
@@ -44,8 +44,7 @@ const config = {
           routeBasePath: '/', // Serve the docs at the site's root
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/unchainedshop/unchained/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/unchainedshop/unchained/tree/main/docs',
         },
         blog: false,
         theme: {
@@ -76,7 +75,7 @@ const config = {
       'docusaurus-graphql-plugin',
       {
         // can be a path, a glob or an URL
-        routeBasePath: '../api',
+        routeBasePath: '/api',
         // sidebar: {
         //   label: 'GraphQL API Schema',
         //   position: 11,
@@ -112,12 +111,6 @@ const config = {
             href: 'https://github.com/unchainedshop/unchained',
             label: 'GitHub',
             position: 'right',
-          },
-          {
-            to: '/api', // adjust the location depending on your baseURL (see configuration)
-            label: 'GraphQL API', // change the label with yours
-            position: 'left',
-            id: 'schema',
           },
         ],
       },

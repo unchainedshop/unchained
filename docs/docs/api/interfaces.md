@@ -10,8 +10,8 @@ slug: interfaces
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implemented by</strong></p>
 
-- [OrderDeliveryPickUp](/../api/objects#orderdeliverypickup)
-- [OrderDeliveryShipping](/../api/objects#orderdeliveryshipping)
+- [OrderDeliveryPickUp](/api/objects#orderdeliverypickup)
+- [OrderDeliveryShipping](/api/objects#orderdeliveryshipping)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -21,7 +21,7 @@ slug: interfaces
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -30,7 +30,7 @@ _id<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
+<a href="/api/objects#deliveryprovider"><code>DeliveryProvider</code></a>
 </td>
 <td>
 
@@ -39,7 +39,7 @@ provider<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderdeliverystatus"><code>OrderDeliveryStatus</code></a>
+<a href="/api/enums#orderdeliverystatus"><code>OrderDeliveryStatus</code></a>
 </td>
 <td>
 
@@ -48,7 +48,7 @@ status<br />
 <tr>
 <td>
 delivered<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -57,7 +57,7 @@ delivered<br />
 <tr>
 <td>
 fee<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -66,7 +66,7 @@ fee<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderdeliverydiscount"><code>[OrderDeliveryDiscount!]</code></a>
+<a href="/api/objects#orderdeliverydiscount"><code>[OrderDeliveryDiscount!]</code></a>
 </td>
 <td>
 
@@ -81,10 +81,10 @@ discounts<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implemented by</strong></p>
 
-- [OrderGlobalDiscount](/../api/objects#orderglobaldiscount)
-- [OrderPaymentDiscount](/../api/objects#orderpaymentdiscount)
-- [OrderDeliveryDiscount](/../api/objects#orderdeliverydiscount)
-- [OrderItemDiscount](/../api/objects#orderitemdiscount)
+- [OrderGlobalDiscount](/api/objects#orderglobaldiscount)
+- [OrderPaymentDiscount](/api/objects#orderpaymentdiscount)
+- [OrderDeliveryDiscount](/api/objects#orderdeliverydiscount)
+- [OrderItemDiscount](/api/objects#orderitemdiscount)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -94,7 +94,7 @@ discounts<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -103,7 +103,7 @@ _id<br />
 <tr>
 <td>
 orderDiscount<br />
-<a href="/../api/objects#orderdiscount"><code>OrderDiscount!</code></a>
+<a href="/api/objects#orderdiscount"><code>OrderDiscount!</code></a>
 </td>
 <td>
 
@@ -112,7 +112,7 @@ orderDiscount<br />
 <tr>
 <td>
 total<br />
-<a href="/../api/objects#price"><code>Price!</code></a>
+<a href="/api/objects#price"><code>Price!</code></a>
 </td>
 <td>
 
@@ -127,9 +127,9 @@ total<br />
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implemented by</strong></p>
 
-- [OrderPaymentInvoice](/../api/objects#orderpaymentinvoice)
-- [OrderPaymentCard](/../api/objects#orderpaymentcard)
-- [OrderPaymentGeneric](/../api/objects#orderpaymentgeneric)
+- [OrderPaymentInvoice](/api/objects#orderpaymentinvoice)
+- [OrderPaymentCard](/api/objects#orderpaymentcard)
+- [OrderPaymentGeneric](/api/objects#orderpaymentgeneric)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -139,7 +139,7 @@ total<br />
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -148,7 +148,7 @@ _id<br />
 <tr>
 <td>
 provider<br />
-<a href="/../api/objects#paymentprovider"><code>PaymentProvider</code></a>
+<a href="/api/objects#paymentprovider"><code>PaymentProvider</code></a>
 </td>
 <td>
 
@@ -157,7 +157,7 @@ provider<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#orderpaymentstatus"><code>OrderPaymentStatus</code></a>
+<a href="/api/enums#orderpaymentstatus"><code>OrderPaymentStatus</code></a>
 </td>
 <td>
 
@@ -166,7 +166,7 @@ status<br />
 <tr>
 <td>
 fee<br />
-<a href="/../api/objects#price"><code>Price</code></a>
+<a href="/api/objects#price"><code>Price</code></a>
 </td>
 <td>
 
@@ -175,7 +175,7 @@ fee<br />
 <tr>
 <td>
 paid<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -184,7 +184,7 @@ paid<br />
 <tr>
 <td>
 discounts<br />
-<a href="/../api/objects#orderpaymentdiscount"><code>[OrderPaymentDiscount!]</code></a>
+<a href="/api/objects#orderpaymentdiscount"><code>[OrderPaymentDiscount!]</code></a>
 </td>
 <td>
 
@@ -199,11 +199,11 @@ Abstract Product
 
 <p style={{ marginBottom: "0.4em" }}><strong>Implemented by</strong></p>
 
-- [ConfigurableProduct](/../api/objects#configurableproduct)
-- [SimpleProduct](/../api/objects#simpleproduct)
-- [BundleProduct](/../api/objects#bundleproduct)
-- [PlanProduct](/../api/objects#planproduct)
-- [TokenizedProduct](/../api/objects#tokenizedproduct)
+- [ConfigurableProduct](/api/objects#configurableproduct)
+- [SimpleProduct](/api/objects#simpleproduct)
+- [BundleProduct](/api/objects#bundleproduct)
+- [PlanProduct](/api/objects#planproduct)
+- [TokenizedProduct](/api/objects#tokenizedproduct)
 
 <p style={{ marginBottom: "0.4em" }}><strong>Fields</strong></p>
 
@@ -213,7 +213,7 @@ Abstract Product
 <tr>
 <td>
 _id<br />
-<a href="/../api/scalars#id"><code>ID!</code></a>
+<a href="/api/scalars#id"><code>ID!</code></a>
 </td>
 <td>
 
@@ -222,7 +222,7 @@ _id<br />
 <tr>
 <td>
 sequence<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -231,7 +231,7 @@ sequence<br />
 <tr>
 <td>
 status<br />
-<a href="/../api/enums#productstatus"><code>ProductStatus!</code></a>
+<a href="/api/enums#productstatus"><code>ProductStatus!</code></a>
 </td>
 <td>
 
@@ -240,7 +240,7 @@ status<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -249,7 +249,7 @@ tags<br />
 <tr>
 <td>
 created<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -258,7 +258,7 @@ created<br />
 <tr>
 <td>
 updated<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -267,7 +267,7 @@ updated<br />
 <tr>
 <td>
 published<br />
-<a href="/../api/scalars#datetime"><code>DateTime</code></a>
+<a href="/api/scalars#datetime"><code>DateTime</code></a>
 </td>
 <td>
 
@@ -276,7 +276,7 @@ published<br />
 <tr>
 <td>
 texts<br />
-<a href="/../api/objects#producttexts"><code>ProductTexts</code></a>
+<a href="/api/objects#producttexts"><code>ProductTexts</code></a>
 </td>
 <td>
 
@@ -289,7 +289,7 @@ texts<br />
 <tr>
 <td>
 forceLocale<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -303,7 +303,7 @@ forceLocale<br />
 <tr>
 <td>
 media<br />
-<a href="/../api/objects#productmedia"><code>[ProductMedia!]!</code></a>
+<a href="/api/objects#productmedia"><code>[ProductMedia!]!</code></a>
 </td>
 <td>
 
@@ -316,7 +316,7 @@ media<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -325,7 +325,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -334,7 +334,7 @@ offset<br />
 <tr>
 <td>
 tags<br />
-<a href="/../api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
+<a href="/api/scalars#lowercasestring"><code>[LowerCaseString!]</code></a>
 </td>
 <td>
 
@@ -348,7 +348,7 @@ tags<br />
 <tr>
 <td>
 reviews<br />
-<a href="/../api/objects#productreview"><code>[ProductReview!]!</code></a>
+<a href="/api/objects#productreview"><code>[ProductReview!]!</code></a>
 </td>
 <td>
 
@@ -361,7 +361,7 @@ reviews<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -370,7 +370,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -379,7 +379,7 @@ offset<br />
 <tr>
 <td>
 sort<br />
-<a href="/../api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
+<a href="/api/inputObjects#sortoptioninput"><code>[SortOptionInput!]</code></a>
 </td>
 <td>
 
@@ -388,7 +388,7 @@ sort<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -402,7 +402,7 @@ queryString<br />
 <tr>
 <td>
 reviewsCount<br />
-<a href="/../api/scalars#int"><code>Int!</code></a>
+<a href="/api/scalars#int"><code>Int!</code></a>
 </td>
 <td>
 
@@ -415,7 +415,7 @@ reviewsCount<br />
 <tr>
 <td>
 queryString<br />
-<a href="/../api/scalars#string"><code>String</code></a>
+<a href="/api/scalars#string"><code>String</code></a>
 </td>
 <td>
 
@@ -429,7 +429,7 @@ queryString<br />
 <tr>
 <td>
 assortmentPaths<br />
-<a href="/../api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
+<a href="/api/objects#productassortmentpath"><code>[ProductAssortmentPath!]!</code></a>
 </td>
 <td>
 
@@ -438,7 +438,7 @@ assortmentPaths<br />
 <tr>
 <td>
 siblings<br />
-<a href="/../api/interfaces#product"><code>[Product!]!</code></a>
+<a href="/api/interfaces#product"><code>[Product!]!</code></a>
 </td>
 <td>
 
@@ -451,7 +451,7 @@ siblings<br />
 <tr>
 <td>
 assortmentId<br />
-<a href="/../api/scalars#id"><code>ID</code></a>
+<a href="/api/scalars#id"><code>ID</code></a>
 </td>
 <td>
 
@@ -460,7 +460,7 @@ assortmentId<br />
 <tr>
 <td>
 limit<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -469,7 +469,7 @@ limit<br />
 <tr>
 <td>
 offset<br />
-<a href="/../api/scalars#int"><code>Int</code></a>
+<a href="/api/scalars#int"><code>Int</code></a>
 </td>
 <td>
 
@@ -478,7 +478,7 @@ offset<br />
 <tr>
 <td>
 includeInactive<br />
-<a href="/../api/scalars#boolean"><code>Boolean</code></a>
+<a href="/api/scalars#boolean"><code>Boolean</code></a>
 </td>
 <td>
 
