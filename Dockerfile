@@ -23,12 +23,11 @@ ADD examples/kitchensink/package* /source/examples/kitchensink/
 ADD examples/minimal/package* /source/examples/minimal/
 ADD jest-mongodb-config.cjs /source/jest-mongodb-config.cjs
 
-ENV MONGOMS_VERSION 7.0.14
-ENV MONGOMS_SYSTEM_BINARY /usr/bin/mongod
+ENV MONGOMS_VERSION=7.0.14
+ENV MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
 RUN NODE_ENV=development npm install -ws --include-workspace-root
 
 ADD . /source/
-ADD env /source/.env
 
 RUN npm run build || :
 RUN npm run build || :
