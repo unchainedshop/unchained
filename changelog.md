@@ -265,7 +265,7 @@ app in ESM mode.
   `/payment/stripe, /payment/apple-iap, /payment/cryptopay, /payment/postfinance-checkout, /pricing/cryptopay`
 - Boilerplate has been removed because it was very outdated. A new create-unchained-app version which
   supports the kitchensink will follow suit.
-- Controlpanel has been removed because Admin UI is not on-par and can be used by anyone through the new Sandbox App https://sandbox-v2.unchained.shop
+- Controlpanel has been removed because Admin UI is not on-par and can be used by anyone through the new Sandbox App https://sandbox-v3.unchained.shop
 
 ## Minor
 - [api] Add sort params to Query.orders, Query.quotations, User.orders, User.enrollments, User.quotations

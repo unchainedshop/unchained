@@ -13,7 +13,7 @@ Usage and Configuration Options for the Cryptopay Plugin
 This tutorial helps you:
 
 - Configure and run unchained engine.
-- Access the engine through the [Admin UI sandbox](https://sandbox-v2.unchained.shop/log-in)
+- Access the engine through the [Admin UI sandbox](https://sandbox-v3.unchained.shop/log-in)
 - Open the graphQL playground of your local Unchained Engine
 
 .
@@ -69,7 +69,7 @@ Open [localhost:4010](http://localhost:4010) to check if your unchained engine i
 ![diagram](../assets/engin_intro.png)
 
 ## Open Admin UI sandbox
-On the initial landing page there are various options you can choose including [Use sandbox Admin UI](https://sandbox-v2.unchained.shop/log-in). Click on that button to mange you local engine instance using the admin ui sandbox, it will redirect you to a login page, use the below credentials to login into the engine and make sure to change the credentials as soon as possible
+On the initial landing page there are various options you can choose including [Use sandbox Admin UI](https://sandbox-v3.unchained.shop/log-in). Click on that button to mange you local engine instance using the admin ui sandbox, it will redirect you to a login page, use the below credentials to login into the engine and make sure to change the credentials as soon as possible
 
 **Username**: _admin@unchained.local_<br />
 **Password**: _password_

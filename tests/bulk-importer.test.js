@@ -437,7 +437,7 @@ describe('Bulk Importer', () => {
                       asset: {
                         _id: null,
                         fileName: 'logo-light.svg',
-                        url: 'https://sandbox-v2.unchained.shop/logo-light.svg',
+                        url: 'https://sandbox-v3.unchained.shop/logo-light.svg',
                       },
                       tags: ['big'],
                       meta: {},

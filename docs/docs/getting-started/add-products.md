@@ -42,7 +42,7 @@ This tutorial helps you to ...
 
 ## Step 1: Access Admin UI
 
-In order to add content to your store, you need to log into the store's admin UI [sandbox](https://sandbox-v2.unchained.shop/). By default the sandbox is pointed to your `localhost:4010` port but in case you change the local engine endpoint to something else you can simply change the **ENDPOINT** URL
+In order to add content to your store, you need to log into the store's admin UI [sandbox](https://sandbox-v3.unchained.shop/). By default the sandbox is pointed to your `localhost:4010` port but in case you change the local engine endpoint to something else you can simply change the **ENDPOINT** URL
 
 Navigate to the login window of your admin UI
 
