@@ -4,7 +4,7 @@
 // There are various equivalent ways to declare your Docusaurus config.
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
-import {themes as prismThemes} from 'prism-react-renderer';
+import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -56,27 +56,35 @@ const config = {
   ],
   plugins: [
     [
-      require.resolve("@easyops-cn/docusaurus-search-local"),
-      ({
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
         hashed: true,
-        docsRouteBasePath: "/"
-      }),
+        docsRouteBasePath: '/',
+      },
     ],
-     [
-      
-        "@graphql-markdown/docusaurus",
-        /** @type {import('@graphql-markdown/types').ConfigOptions} */
-        {
-          // ... other options
-          loaders: {
-            GraphQLFileLoader: "@graphql-tools/graphql-file-loader"
-          }
+    [
+      '@graphql-markdown/docusaurus',
+      /** @type {import('@graphql-markdown/types').ConfigOptions} */
+      {
+        // ... other options
+        loaders: {
+          GraphQLFileLoader: '@graphql-tools/graphql-file-loader',
         },
-      ],
+      },
     ],
-   
- 
-
+    [
+      'docusaurus-graphql-plugin',
+      {
+        // can be a path, a glob or an URL
+        routeBasePath: '../api',
+        // sidebar: {
+        //   label: 'GraphQL API Schema',
+        //   position: 11,
+        // },
+        schema: 'http://localhost:4010/graphql',
+      },
+    ],
+  ],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -85,7 +93,7 @@ const config = {
       image: 'img/docusaurus-social-card.jpg',
       colorMode: {
         disableSwitch: true,
-        defaultMode: 'light'
+        defaultMode: 'light',
       },
       navbar: {
         title: 'Unchained Engine',
@@ -104,15 +112,15 @@ const config = {
             href: 'https://github.com/unchainedshop/unchained',
             label: 'GitHub',
             position: 'right',
-          },         
-          // {
-          //   to: "/swapi/homepage", // adjust the location depending on your baseURL (see configuration)
-          //   label: "GraphQL API", // change the label with yours
-          //   position: "left",
-          //   id: 'schema',
-          // },
-          ],    
-        },
+          },
+          {
+            to: '/api', // adjust the location depending on your baseURL (see configuration)
+            label: 'GraphQL API', // change the label with yours
+            position: 'left',
+            id: 'schema',
+          },
+        ],
+      },
       footer: {
         style: 'light',
         links: [
@@ -122,7 +130,7 @@ const config = {
               {
                 label: 'Blog',
                 // to: '/blog',
-                href:'https://unchained.shop/de/blog'
+                href: 'https://unchained.shop/de/blog',
               },
               {
                 label: 'GitHub',
@@ -139,6 +147,5 @@ const config = {
       },
     }),
 };
-
 
 export default config;
