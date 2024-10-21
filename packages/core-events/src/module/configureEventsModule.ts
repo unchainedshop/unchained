@@ -62,7 +62,7 @@ export const configureEventsModule = async ({
     return result.insertedId as string;
   };
 
-  configureEventHistoryAdapter(create);
+  await configureEventHistoryAdapter(create);
 
   return {
     create,
