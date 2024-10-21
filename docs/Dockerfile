@@ -23,7 +23,7 @@ COPY --from=bundler /source /webapp
 RUN NODE_ENV=production npm ci --omit=dev
 
 ARG GIT_COMMIT="n/a"
-RUN echo "${GIT_COMMIT}" > /webapp/version.txt
+RUN echo "${GIT_COMMIT}" > /webapp/static/version
 
 ENV PORT 3000
 ENV NODE_ENV production

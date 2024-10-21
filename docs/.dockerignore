@@ -1,0 +1,7 @@
+.docusaurus
+build
+node_modules
+.git
+.cache
+.eslintcache
+out
