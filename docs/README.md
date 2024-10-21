@@ -1,29 +1,41 @@
-# Documentation
+# Website
 
-This is the documentation **source** for this repository.
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
-The **deployed** version of the documentation for this repository is available at:
+### Installation
 
-* https://docs.unchained.shop
+```
+$ yarn
+```
 
-## Documentation for the documentation
+### Local Development
 
-This `README.md` is intentionally short since the [documentation for the documentation](https://docs-docs.netlify.com/docs/docs/) provides details for the documentation framework _itself_. Additional information should generally be added to that documentation rather than here in this `README.md`, in order to provide a centralized resource that benefits all documentation deployments.
+```
+$ yarn start
+```
 
-## Running locally
+This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
-For more information, consult the documentation for the documentation, referenced above.
+### Build
 
-In general though:
+```
+$ yarn build
+```
 
-* `npm install` in this directory
-* `npm start` in this directory
-* Open a browser to the link provided in the console.
+This command generates static content into the `build` directory and can be served using any static contents hosting service.
 
-> **Important note:** Changes to the markdown source does not result in an automatic "hot reload" in the browser; it is necessary to reload the page manually in the browser to see it re-rendered. Additionally, changes to `_config.yml` require stopping the server and restarting with `npm start` again.
+### Deployment
 
-## Deploy previews
+Using SSH:
 
-Documentation repositories should be setup with a "deploy preview" feature which automatically provides "preview" links in the _status checks_ section of pull-requests.
+```
+$ USE_SSH=true yarn deploy
+```
 
-In the event that it's not possible to run the documentation locally, pushing changes to the branch for a pull-request can be a suitable alternative that ensures changes to the documentation are properly rendered.
+Not using SSH:
+
+```
+$ GIT_USER=<Your GitHub username> yarn deploy
+```
+
+If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
