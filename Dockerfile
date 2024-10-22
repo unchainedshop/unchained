@@ -26,6 +26,7 @@ ADD jest-mongodb-config.cjs /source/jest-mongodb-config.cjs
 ENV MONGOMS_VERSION=7.0.14
 ENV MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
 RUN NODE_ENV=development npm install -ws --include-workspace-root
+ENV NODE_NO_WARNINGS=1
 
 ADD . /source/
 
