@@ -30,6 +30,8 @@ RUN NODE_ENV=development npm install -ws --include-workspace-root
 
 ADD . /source/
 
+# Without the double build, unit tests fail?
+RUN npm run build || :
 RUN npm run build || :
 RUN cd examples/kitchensink && npm install && npm run build || :
 
