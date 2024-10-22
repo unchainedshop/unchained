@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment, AssortmentFilters } from './seeds/assortments.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
@@ -21,9 +17,7 @@ describe('AssortmentFilter', () => {
         data: { reorderAssortmentFilters },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentFilters(
-            $sortkeys: [ReorderAssortmentFilterInput!]!
-          ) {
+          mutation ReorderAssortmentFilters($sortkeys: [ReorderAssortmentFilterInput!]!) {
             reorderAssortmentFilters(sortKeys: $sortkeys) {
               _id
               sortKey
@@ -47,15 +41,13 @@ describe('AssortmentFilter', () => {
         },
       });
 
-      expect(reorderAssortmentFilters[0]).toEqual(
-        {
-          _id: AssortmentFilters[0]._id,
-          sortKey: 11,
-          tags: AssortmentFilters[0].tags,
-          assortment: { _id: AssortmentFilters[0].assortmentId },
-          filter: { _id: AssortmentFilters[0].filterId }
-        }
-      );
+      expect(reorderAssortmentFilters[0]).toEqual({
+        _id: AssortmentFilters[0]._id,
+        sortKey: 11,
+        tags: AssortmentFilters[0].tags,
+        assortment: { _id: AssortmentFilters[0].assortmentId },
+        filter: { _id: AssortmentFilters[0].filterId },
+      });
     });
 
     it('skip when passed invalid assortment filter ID', async () => {
@@ -63,9 +55,7 @@ describe('AssortmentFilter', () => {
         data: { reorderAssortmentFilters },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentFilters(
-            $sortkeys: [ReorderAssortmentFilterInput!]!
-          ) {
+          mutation ReorderAssortmentFilters($sortkeys: [ReorderAssortmentFilterInput!]!) {
             reorderAssortmentFilters(sortKeys: $sortkeys) {
               _id
             }
@@ -91,9 +81,7 @@ describe('AssortmentFilter', () => {
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentFilters(
-            $sortkeys: [ReorderAssortmentFilterInput!]!
-          ) {
+          mutation ReorderAssortmentFilters($sortkeys: [ReorderAssortmentFilterInput!]!) {
             reorderAssortmentFilters(sortKeys: $sortkeys) {
               _id
             }
@@ -119,16 +107,8 @@ describe('AssortmentFilter', () => {
         data: { addAssortmentFilter },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentFilter(
-            $assortmentId: ID!
-            $filterId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentFilter(
-              assortmentId: $assortmentId
-              filterId: $filterId
-              tags: $tags
-            ) {
+          mutation AddAssortmentFilter($assortmentId: ID!, $filterId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId, tags: $tags) {
               _id
               sortKey
               tags
@@ -151,23 +131,15 @@ describe('AssortmentFilter', () => {
       expect(addAssortmentFilter).toMatchObject({
         tags: ['assortment-filter-1'],
         assortment: { _id: SimpleAssortment[0]._id },
-        filter: { _id: MultiChoiceFilter._id }
+        filter: { _id: MultiChoiceFilter._id },
       });
     });
 
     it('return error when passed assortment ID that do not exists', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentFilter(
-            $assortmentId: ID!
-            $filterId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentFilter(
-              assortmentId: $assortmentId
-              filterId: $filterId
-              tags: $tags
-            ) {
+          mutation AddAssortmentFilter($assortmentId: ID!, $filterId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId, tags: $tags) {
               _id
             }
           }
@@ -186,16 +158,8 @@ describe('AssortmentFilter', () => {
     it('return error when passed filter ID that do not exist', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentFilter(
-            $assortmentId: ID!
-            $filterId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentFilter(
-              assortmentId: $assortmentId
-              filterId: $filterId
-              tags: $tags
-            ) {
+          mutation AddAssortmentFilter($assortmentId: ID!, $filterId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId, tags: $tags) {
               _id
             }
           }
@@ -213,16 +177,8 @@ describe('AssortmentFilter', () => {
     it('return error when passed invalid filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentFilter(
-            $assortmentId: ID!
-            $filterId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentFilter(
-              assortmentId: $assortmentId
-              filterId: $filterId
-              tags: $tags
-            ) {
+          mutation AddAssortmentFilter($assortmentId: ID!, $filterId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId, tags: $tags) {
               _id
             }
           }
@@ -240,16 +196,8 @@ describe('AssortmentFilter', () => {
     it('return error when passed invalid assortment ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentFilter(
-            $assortmentId: ID!
-            $filterId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentFilter(
-              assortmentId: $assortmentId
-              filterId: $filterId
-              tags: $tags
-            ) {
+          mutation AddAssortmentFilter($assortmentId: ID!, $filterId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId, tags: $tags) {
               _id
             }
           }
@@ -272,16 +220,8 @@ describe('AssortmentFilter', () => {
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentFilter(
-            $assortmentId: ID!
-            $filterId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentFilter(
-              assortmentId: $assortmentId
-              filterId: $filterId
-              tags: $tags
-            ) {
+          mutation AddAssortmentFilter($assortmentId: ID!, $filterId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentFilter(assortmentId: $assortmentId, filterId: $filterId, tags: $tags) {
               _id
             }
           }
@@ -337,9 +277,7 @@ describe('AssortmentFilter', () => {
         },
       });
       expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual(
-        'AssortmentFilterNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentFilterNotFoundError');
     });
 
     it('return not found error when passed non existing assortmentFilterId', async () => {
@@ -357,9 +295,7 @@ describe('AssortmentFilter', () => {
       });
 
       expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual(
-        'AssortmentFilterNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentFilterNotFoundError');
     });
 
     it('return error when passed non existing assortmentFilterId', async () => {

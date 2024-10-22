@@ -24,10 +24,7 @@ describe('cart checkout', () => {
             $productId: ID!
             $configuration: [ProductConfigurationParameterInput!]
           ) {
-            requestQuotation(
-              productId: $productId
-              configuration: $configuration
-            ) {
+            requestQuotation(productId: $productId, configuration: $configuration) {
               _id
               user {
                 _id
@@ -96,10 +93,7 @@ describe('cart checkout', () => {
             $productId: ID!
             $configuration: [ProductConfigurationParameterInput!]
           ) {
-            requestQuotation(
-              productId: $productId
-              configuration: $configuration
-            ) {
+            requestQuotation(productId: $productId, configuration: $configuration) {
               _id
             }
           }
@@ -123,10 +117,7 @@ describe('cart checkout', () => {
             $productId: ID!
             $configuration: [ProductConfigurationParameterInput!]
           ) {
-            requestQuotation(
-              productId: $productId
-              configuration: $configuration
-            ) {
+            requestQuotation(productId: $productId, configuration: $configuration) {
               _id
             }
           }
@@ -149,10 +140,7 @@ describe('cart checkout', () => {
       const { data: { verifyQuotation } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation verifyQuotation($quotationId: ID!, $quotationContext: JSON) {
-            verifyQuotation(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+            verifyQuotation(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
               status
               created
@@ -181,10 +169,7 @@ describe('cart checkout', () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation verifyQuotation($quotationId: ID!, $quotationContext: JSON) {
-            verifyQuotation(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+            verifyQuotation(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
             }
           }
@@ -201,10 +186,7 @@ describe('cart checkout', () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation verifyQuotation($quotationId: ID!, $quotationContext: JSON) {
-            verifyQuotation(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+            verifyQuotation(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
             }
           }
@@ -223,10 +205,7 @@ describe('cart checkout', () => {
       const { data: { rejectQuotation } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
-            rejectQuotation(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+            rejectQuotation(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
               status
               created
@@ -255,10 +234,7 @@ describe('cart checkout', () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
-            rejectQuotation(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+            rejectQuotation(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
             }
           }
@@ -275,10 +251,7 @@ describe('cart checkout', () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation rejectQuotation($quotationId: ID!, $quotationContext: JSON) {
-            rejectQuotation(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+            rejectQuotation(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
             }
           }
@@ -296,14 +269,8 @@ describe('cart checkout', () => {
     it('answer the quotation as admin', async () => {
       const { data: { makeQuotationProposal } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
-          mutation makeQuotationProposal(
-            $quotationId: ID!
-            $quotationContext: JSON
-          ) {
-            makeQuotationProposal(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+          mutation makeQuotationProposal($quotationId: ID!, $quotationContext: JSON) {
+            makeQuotationProposal(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
               status
               created
@@ -331,14 +298,8 @@ describe('cart checkout', () => {
     it('return not found error when passed non existing quotationId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
-          mutation makeQuotationProposal(
-            $quotationId: ID!
-            $quotationContext: JSON
-          ) {
-            makeQuotationProposal(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+          mutation makeQuotationProposal($quotationId: ID!, $quotationContext: JSON) {
+            makeQuotationProposal(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
             }
           }
@@ -354,14 +315,8 @@ describe('cart checkout', () => {
     it('return error when passed invalid quotationId', async () => {
       const { errors } = await adminGraphqlFetch({
         query: /* GraphQL */ `
-          mutation makeQuotationProposal(
-            $quotationId: ID!
-            $quotationContext: JSON
-          ) {
-            makeQuotationProposal(
-              quotationId: $quotationId
-              quotationContext: $quotationContext
-            ) {
+          mutation makeQuotationProposal($quotationId: ID!, $quotationContext: JSON) {
+            makeQuotationProposal(quotationId: $quotationId, quotationContext: $quotationContext) {
               _id
             }
           }

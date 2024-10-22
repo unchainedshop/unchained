@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;
@@ -37,9 +33,8 @@ describe('DeliveryInterfaces', () => {
         },
         {
           _id: 'shop.unchained.stores',
-        }
-      ]
-      );
+        },
+      ]);
     });
   });
 
@@ -58,7 +53,7 @@ describe('DeliveryInterfaces', () => {
           type: 'PICKUP',
         },
       });
-      expect(errors[0].extensions.code).toEqual("NoPermissionError");
+      expect(errors[0].extensions.code).toEqual('NoPermissionError');
     });
   });
 });

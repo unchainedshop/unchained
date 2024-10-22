@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { Admin, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { ConfigurableProduct } from './seeds/products.js';
 import { SimpleBookmarks } from './seeds/bookmark.js';
@@ -22,7 +18,6 @@ describe('Bookmark', () => {
   describe('For admin user ', () => {
     it('return array of all current user bookmarks should ', async () => {
       const {
-        error,
         data: {
           user: { bookmarks },
         },
@@ -128,8 +123,8 @@ describe('Bookmark', () => {
         },
         product: {
           _id: 'simpleproduct',
-        }
-      })
+        },
+      });
 
       const {
         data: {
@@ -272,8 +267,8 @@ describe('Bookmark', () => {
     });
   });
 
-  describe("For normal user ", () => {
-    it("return array of all current user bookmarks should ", async () => {
+  describe('For normal user ', () => {
+    it('return array of all current user bookmarks should ', async () => {
       const {
         data: {
           user: { bookmarks },
@@ -293,7 +288,7 @@ describe('Bookmark', () => {
       expect(bookmarks.length).toEqual(2);
     });
 
-    it("remove bookmark a product when provided valid product ID and false second argument", async () => {
+    it('remove bookmark a product when provided valid product ID and false second argument', async () => {
       const {
         data: { bookmark }, // eslint-disable-line
       } = await graphqlNormalUserFetch({
@@ -305,7 +300,7 @@ describe('Bookmark', () => {
           }
         `,
         variables: {
-          productId: "simpleproduct",
+          productId: 'simpleproduct',
           bookmarked: false,
         },
       });
@@ -329,7 +324,7 @@ describe('Bookmark', () => {
       expect(bookmarks.length).toEqual(1);
     });
 
-    it("bookmark a product when provided valid product ID", async () => {
+    it('bookmark a product when provided valid product ID', async () => {
       const {
         data: { bookmark },
       } = await graphqlNormalUserFetch({
@@ -350,7 +345,7 @@ describe('Bookmark', () => {
       expect(bookmark.product._id).toBe(ConfigurableProduct._id);
     });
 
-    it("remove bookmark when provided valid bookmark ID", async () => {
+    it('remove bookmark when provided valid bookmark ID', async () => {
       const {
         data: { removeBookmark }, // eslint-disable-line
       } = await graphqlNormalUserFetch({

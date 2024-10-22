@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetch;

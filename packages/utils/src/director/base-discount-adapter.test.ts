@@ -2,14 +2,13 @@ import { BaseDiscountAdapter } from './BaseDiscountAdapter.js';
 
 describe('BaseDiscountAdapter instantiation', () => {
   const adapter = BaseDiscountAdapter;
-  const context = null;
-  it('should initialize with default values', () => {
+  const context = null as any;
+  it('should initialize with default values', async () => {
     expect(adapter.orderIndex).toEqual(0);
     expect(adapter.log).toEqual(expect.any(Function));
-    expect(adapter.isManualAdditionAllowed('')).resolves.toEqual(false);
-    expect(adapter.isManualRemovalAllowed()).resolves.toEqual(false);
-
-    expect(adapter.actions(context)).resolves.toEqual({
+    expect(await adapter.isManualAdditionAllowed('')).toEqual(false);
+    expect(await adapter.isManualRemovalAllowed()).toEqual(false);
+    expect(await adapter.actions(context)).toEqual({
       isValidForSystemTriggering: expect.any(Function),
       reserve: expect.any(Function),
       release: expect.any(Function),
@@ -19,11 +18,8 @@ describe('BaseDiscountAdapter instantiation', () => {
   });
 
   describe('actions', () => {
-    const actions = adapter.actions(context);
-
     it('isValidForSystemTriggering', async () => {
       const result = await adapter.actions(context);
-
       expect(await result.isValidForSystemTriggering()).toEqual(false);
     });
 

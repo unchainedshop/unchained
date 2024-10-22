@@ -67,7 +67,7 @@ describe('public queries', () => {
       amount: 10000,
       currency: {
         isoCode: 'CHF',
-      }
+      },
     });
   });
 
@@ -111,7 +111,7 @@ describe('public queries', () => {
       {
         locale: 'fr',
         slug: 'slug-fr',
-      }
+      },
     ]);
   });
 
@@ -136,7 +136,7 @@ describe('public queries', () => {
       {
         locale: 'fr',
         title: 'product-media-title-fr',
-      }
+      },
     ]);
   });
 });

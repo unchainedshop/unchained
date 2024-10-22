@@ -69,16 +69,8 @@ describe('Cart: Quotations', () => {
     it('return quantity low error when provided quantity that is less than 1', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation addCartQuotation(
-            $orderId: ID
-            $quotationId: ID!
-            $quantity: Int
-          ) {
-            addCartQuotation(
-              orderId: $orderId
-              quotationId: $quotationId
-              quantity: $quantity
-            ) {
+          mutation addCartQuotation($orderId: ID, $quotationId: ID!, $quantity: Int) {
+            addCartQuotation(orderId: $orderId, quotationId: $quotationId, quantity: $quantity) {
               _id
             }
           }

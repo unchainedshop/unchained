@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct } from './seeds/products.js';
 
@@ -22,10 +18,7 @@ describe('ProductsWarehousing', () => {
             $productId: ID!
             $warehousing: UpdateProductWarehousingInput!
           ) {
-            updateProductWarehousing(
-              productId: $productId
-              warehousing: $warehousing
-            ) {
+            updateProductWarehousing(productId: $productId, warehousing: $warehousing) {
               _id
               sequence
               status
@@ -83,10 +76,7 @@ describe('ProductsWarehousing', () => {
             $productId: ID!
             $warehousing: UpdateProductWarehousingInput!
           ) {
-            updateProductWarehousing(
-              productId: $productId
-              warehousing: $warehousing
-            ) {
+            updateProductWarehousing(productId: $productId, warehousing: $warehousing) {
               _id
             }
           }
@@ -114,10 +104,7 @@ describe('ProductsWarehousing', () => {
             $productId: ID!
             $warehousing: UpdateProductWarehousingInput!
           ) {
-            updateProductWarehousing(
-              productId: $productId
-              warehousing: $warehousing
-            ) {
+            updateProductWarehousing(productId: $productId, warehousing: $warehousing) {
               _id
             }
           }
@@ -141,10 +128,7 @@ describe('ProductsWarehousing', () => {
             $productId: ID!
             $warehousing: UpdateProductWarehousingInput!
           ) {
-            updateProductWarehousing(
-              productId: $productId
-              warehousing: $warehousing
-            ) {
+            updateProductWarehousing(productId: $productId, warehousing: $warehousing) {
               _id
             }
           }
@@ -171,10 +155,7 @@ describe('ProductsWarehousing', () => {
             $productId: ID!
             $warehousing: UpdateProductWarehousingInput!
           ) {
-            updateProductWarehousing(
-              productId: $productId
-              warehousing: $warehousing
-            ) {
+            updateProductWarehousing(productId: $productId, warehousing: $warehousing) {
               _id
             }
           }

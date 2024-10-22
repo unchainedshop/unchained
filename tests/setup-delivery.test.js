@@ -11,35 +11,32 @@ describe('setup delivery providers', () => {
 
   describe('Mutation.createDeliveryProvider', () => {
     it('create a shipping delivery provider', async () => {
-      const { data: { createDeliveryProvider, errors } = {} } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation createDeliveryProvider(
-              $deliveryProvider: CreateDeliveryProviderInput!
-            ) {
-              createDeliveryProvider(deliveryProvider: $deliveryProvider) {
+      const { data: { createDeliveryProvider, errors } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation createDeliveryProvider($deliveryProvider: CreateDeliveryProviderInput!) {
+            createDeliveryProvider(deliveryProvider: $deliveryProvider) {
+              _id
+              created
+              updated
+              deleted
+              type
+              interface {
                 _id
-                created
-                updated
-                deleted
-                type
-                interface {
-                  _id
-                  version
-                  label
-                }
-                configuration
-                configurationError
+                version
+                label
               }
+              configuration
+              configurationError
             }
-          `,
-          variables: {
-            deliveryProvider: {
-              type: 'SHIPPING',
-              adapterKey: 'shop.unchained.post',
-            },
+          }
+        `,
+        variables: {
+          deliveryProvider: {
+            type: 'SHIPPING',
+            adapterKey: 'shop.unchained.post',
           },
-        });
+        },
+      });
       expect(errors).toEqual(undefined);
       expect(createDeliveryProvider).toMatchObject({
         configurationError: null,
@@ -134,9 +131,7 @@ describe('setup delivery providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'DeliverProviderNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('DeliverProviderNotFoundError');
     });
 
     it('return error when passed invalid deliveryProviderId', async () => {
@@ -207,9 +202,7 @@ describe('setup delivery providers', () => {
           deliveryProviderId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'DeliverProviderNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('DeliverProviderNotFoundError');
     });
 
     it('return error when passed invalid deliveryProviderId', async () => {

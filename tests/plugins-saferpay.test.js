@@ -12,21 +12,20 @@ const simulatePayment = async (paymentPageUrl) => {
     redirect: 'follow',
     follow: 10,
   });
-  const response = await fetch(redirect.url, {
+  await fetch(redirect.url, {
     method: 'POST',
     duplex: 'half',
     body: new URLSearchParams({
-      selectionId: '1510' // Twint, no user input required
+      selectionId: '1510', // Twint, no user input required
     }),
   });
-  await new Promise(r => setTimeout(r, 10000)); // Need to wait a few seconds after request
-}
+  await new Promise((r) => setTimeout(r, 10000)); // Need to wait a few seconds after request
+};
 
 if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
   const terminalId = '17766514';
 
   describe('Plugins: Worldline Saferpay Payments', () => {
-
     beforeAll(async () => {
       [db] = await setupDatabase();
       graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
@@ -87,31 +86,28 @@ if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
         const {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
-        // const res = await graphqlFetch({
+          // const res = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'saferpay-payment',
             transactionContext: {},
           },
         });
 
-        const { location, transactionId } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { location, transactionId } = JSON.parse(signPaymentProviderForCheckout);
 
         expect(
-          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`)
-          ).toBeTruthy();
+          location.startsWith(
+            `https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`,
+          ),
+        ).toBeTruthy();
         expect(transactionId).toBeTruthy();
 
         const result = await fetch(location);
@@ -120,58 +116,50 @@ if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
     });
 
     describe('Payment Flow (Worldline Saferpay) should', () => {
-
       it('starts a new transaction with no payment', async () => {
         const {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'saferpay-payment',
             transactionContext: {},
           },
         });
 
-
-        const { location, transactionId } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { location, transactionId } = JSON.parse(signPaymentProviderForCheckout);
 
         expect(
-          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`)
+          location.startsWith(
+            `https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`,
+          ),
         ).toBeTruthy();
 
         await graphqlFetch({
           query: /* GraphQL */ `
-          mutation checkoutCart(
-            $orderId: ID!
-            $paymentContext: JSON
-          ) {
-            checkoutCart(orderId: $orderId, paymentContext: $paymentContext) { 
+            mutation checkoutCart($orderId: ID!, $paymentContext: JSON) {
+              checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
                 _id
+              }
             }
-          }
-        `,
+          `,
           variables: {
             orderId: 'saferpay-order',
             paymentContext: {
-              transactionId: transactionId
-            }
+              transactionId: transactionId,
+            },
           },
         });
 
-        const orderPayment = await db.collection("order_payments").findOne({ _id: "saferpay-payment" });
-        expect(orderPayment.status).not.toBe("PAID");
+        const orderPayment = await db.collection('order_payments').findOne({ _id: 'saferpay-payment' });
+        expect(orderPayment.status).not.toBe('PAID');
       }, 10000);
 
       it('starts a new transaction with payment', async () => {
@@ -179,59 +167,49 @@ if (SAFERPAY_CUSTOMER_ID && SAFERPAY_PW) {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'saferpay-payment2',
             transactionContext: {},
           },
         });
 
-
-        const { location, transactionId } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { location, transactionId } = JSON.parse(signPaymentProviderForCheckout);
 
         expect(
-          location.startsWith(`https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`)
+          location.startsWith(
+            `https://test.saferpay.com/vt2/api/PaymentPage/${SAFERPAY_CUSTOMER_ID}/${terminalId}/`,
+          ),
         ).toBeTruthy();
 
         await simulatePayment(location);
 
-        const {
-          data, errors,
-        } = await graphqlFetch({
+        await graphqlFetch({
           query: /* GraphQL */ `
-          mutation checkoutCart(
-            $orderId: ID!
-            $paymentContext: JSON
-          ) {
-            checkoutCart(orderId: $orderId, paymentContext: $paymentContext) { 
+            mutation checkoutCart($orderId: ID!, $paymentContext: JSON) {
+              checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
                 _id
+              }
             }
-          }
-        `,
+          `,
           variables: {
             orderId: 'saferpay-order2',
             paymentContext: {
-              transactionId
-            }
+              transactionId,
+            },
           },
         });
 
-        const orderPayment = await db.collection("order_payments").findOne({ _id: "saferpay-payment2" });
-        expect(orderPayment.status).toBe("PAID");
+        const orderPayment = await db.collection('order_payments').findOne({ _id: 'saferpay-payment2' });
+        expect(orderPayment.status).toBe('PAID');
       }, 20000);
     });
-
   });
 } else {
   describe.skip('Plugins: Worldline Saferpay Payments', () => {

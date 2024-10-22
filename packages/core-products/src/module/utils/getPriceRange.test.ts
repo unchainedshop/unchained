@@ -1,5 +1,5 @@
 import { getPriceRange } from './getPriceRange.js';
-import product  from '../../mock/product.js'
+import product from '../../mock/product.js';
 import { getPriceLevels } from './getPriceLevels.js';
 
 describe('Price Range', () => {

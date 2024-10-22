@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
   GenericPaymentCredential,
@@ -194,9 +190,7 @@ describe('PaymentProviders', () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-            removePaymentCredentials(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            removePaymentCredentials(paymentCredentialsId: $paymentCredentialsId) {
               _id
             }
           }
@@ -215,9 +209,7 @@ describe('PaymentProviders', () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-            removePaymentCredentials(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            removePaymentCredentials(paymentCredentialsId: $paymentCredentialsId) {
               _id
             }
           }
@@ -233,34 +225,29 @@ describe('PaymentProviders', () => {
 
   describe('Mutation.removePaymentCredentials for admin user should', () => {
     it('mark payment provider specified by ID as invalid', async () => {
-      const { data: { removePaymentCredentials } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-              removePaymentCredentials(
-                paymentCredentialsId: $paymentCredentialsId
-              ) {
+      const { data: { removePaymentCredentials } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation removePaymentCredentials($paymentCredentialsId: ID!) {
+            removePaymentCredentials(paymentCredentialsId: $paymentCredentialsId) {
+              _id
+              token
+              isValid
+              isPreferred
+              paymentProvider {
                 _id
-                token
-                isValid
-                isPreferred
-                paymentProvider {
-                  _id
-                }
               }
             }
-          `,
-          variables: {
-            paymentCredentialsId: SimplePaymentCredential._id,
-          },
-        });
+          }
+        `,
+        variables: {
+          paymentCredentialsId: SimplePaymentCredential._id,
+        },
+      });
 
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-            removePaymentCredentials(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            removePaymentCredentials(paymentCredentialsId: $paymentCredentialsId) {
               _id
             }
           }
@@ -270,18 +257,14 @@ describe('PaymentProviders', () => {
         },
       });
       expect(removePaymentCredentials._id).not.toBe(null);
-      expect(errors[0]?.extensions?.code).toEqual(
-        'PaymentCredentialsNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('PaymentCredentialsNotFoundError');
     });
 
     it('return PaymentCredentialNotFoundError when passed non existing payment credential ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-            removePaymentCredentials(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            removePaymentCredentials(paymentCredentialsId: $paymentCredentialsId) {
               _id
             }
           }
@@ -290,18 +273,14 @@ describe('PaymentProviders', () => {
           paymentCredentialsId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'PaymentCredentialsNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('PaymentCredentialsNotFoundError');
     });
 
     it('return InvalidIdError when passed invalid payment credential ID', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation removePaymentCredentials($paymentCredentialsId: ID!) {
-            removePaymentCredentials(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            removePaymentCredentials(paymentCredentialsId: $paymentCredentialsId) {
               _id
               token
               isValid
@@ -322,29 +301,24 @@ describe('PaymentProviders', () => {
 
   describe('Mutation.markPaymentCredentialsPreferred for admin user should', () => {
     it('mark payment credential specified by ID as preferred', async () => {
-      const { data: { markPaymentCredentialsPreferred } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            mutation markPaymentCredentialsPreferred(
-              $paymentCredentialsId: ID!
-            ) {
-              markPaymentCredentialsPreferred(
-                paymentCredentialsId: $paymentCredentialsId
-              ) {
+      const { data: { markPaymentCredentialsPreferred } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
+            markPaymentCredentialsPreferred(paymentCredentialsId: $paymentCredentialsId) {
+              _id
+              token
+              isValid
+              paymentProvider {
                 _id
-                token
-                isValid
-                paymentProvider {
-                  _id
-                }
-                isPreferred
               }
+              isPreferred
             }
-          `,
-          variables: {
-            paymentCredentialsId: PrePaidPaymentCredential._id,
-          },
-        });
+          }
+        `,
+        variables: {
+          paymentCredentialsId: PrePaidPaymentCredential._id,
+        },
+      });
       expect(markPaymentCredentialsPreferred).toMatchObject({
         _id: PrePaidPaymentCredential._id,
         isPreferred: true,
@@ -355,9 +329,7 @@ describe('PaymentProviders', () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
-            markPaymentCredentialsPreferred(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            markPaymentCredentialsPreferred(paymentCredentialsId: $paymentCredentialsId) {
               _id
             }
           }
@@ -366,18 +338,14 @@ describe('PaymentProviders', () => {
           paymentCredentialsId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'PaymentCredentialsNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('PaymentCredentialsNotFoundError');
     });
 
     it('not throw NoPermissionError when attempting to update other users payment credential', async () => {
       const { errors = [] } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
-            markPaymentCredentialsPreferred(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            markPaymentCredentialsPreferred(paymentCredentialsId: $paymentCredentialsId) {
               _id
               isPreferred
             }
@@ -394,9 +362,7 @@ describe('PaymentProviders', () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
-            markPaymentCredentialsPreferred(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            markPaymentCredentialsPreferred(paymentCredentialsId: $paymentCredentialsId) {
               _id
             }
           }
@@ -411,24 +377,19 @@ describe('PaymentProviders', () => {
 
   describe('Mutation.markPaymentCredentialsPreferred for normal user should', () => {
     it('mark payment credential specified by ID as preferred', async () => {
-      const { data: { markPaymentCredentialsPreferred } = {} } =
-        await graphqlFetchAsNormalUser({
-          query: /* GraphQL */ `
-            mutation markPaymentCredentialsPreferred(
-              $paymentCredentialsId: ID!
-            ) {
-              markPaymentCredentialsPreferred(
-                paymentCredentialsId: $paymentCredentialsId
-              ) {
-                _id
-                isPreferred
-              }
+      const { data: { markPaymentCredentialsPreferred } = {} } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
+            markPaymentCredentialsPreferred(paymentCredentialsId: $paymentCredentialsId) {
+              _id
+              isPreferred
             }
-          `,
-          variables: {
-            paymentCredentialsId: GenericPaymentCredential._id,
-          },
-        });
+          }
+        `,
+        variables: {
+          paymentCredentialsId: GenericPaymentCredential._id,
+        },
+      });
 
       expect(markPaymentCredentialsPreferred).toMatchObject({
         _id: GenericPaymentCredential._id,
@@ -440,9 +401,7 @@ describe('PaymentProviders', () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
           mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
-            markPaymentCredentialsPreferred(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            markPaymentCredentialsPreferred(paymentCredentialsId: $paymentCredentialsId) {
               _id
               isPreferred
             }
@@ -461,9 +420,7 @@ describe('PaymentProviders', () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           mutation markPaymentCredentialsPreferred($paymentCredentialsId: ID!) {
-            markPaymentCredentialsPreferred(
-              paymentCredentialsId: $paymentCredentialsId
-            ) {
+            markPaymentCredentialsPreferred(paymentCredentialsId: $paymentCredentialsId) {
               _id
             }
           }

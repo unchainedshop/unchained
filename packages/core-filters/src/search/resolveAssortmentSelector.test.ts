@@ -1,12 +1,9 @@
-import { defaultSelector, resolveAssortmentSelector } from "./resolveAssortmentSelector.js";
-
-
-
+import { defaultSelector, resolveAssortmentSelector } from './resolveAssortmentSelector.js';
 
 describe('defaultSelector', () => {
   it('returns an object with isActive key set to true if no query is provided', () => {
     const result = defaultSelector();
-    expect(result).toEqual({isActive: true});
+    expect(result).toEqual({ isActive: true });
   });
 
   it('returns an object with the isActive property set to true if the includeInactive property is not provided or is false', () => {
@@ -26,7 +23,7 @@ describe('defaultSelector', () => {
 describe('resolveAssortmentSelector', () => {
   it('returns an object with isActive key set to true if no query is provided', () => {
     const result = resolveAssortmentSelector();
-    expect(result).toEqual({isActive: true});
+    expect(result).toEqual({ isActive: true });
   });
 
   it('returns an object with the isActive property set to true if the includeInactive property is not provided or is false', () => {
@@ -42,4 +39,3 @@ describe('resolveAssortmentSelector', () => {
     expect(result).toEqual({});
   });
 });
-

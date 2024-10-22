@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment } from './seeds/assortments.js';
 
@@ -43,7 +39,7 @@ describe('TranslatedAssortmentsText', () => {
           description: 'text-de',
           locale: 'de',
           subtitle: 'subsimple assortment de',
-          slug: 'slug-de'
+          slug: 'slug-de',
         },
         {
           _id: 'french',
@@ -51,8 +47,8 @@ describe('TranslatedAssortmentsText', () => {
           description: 'text-fr-1',
           locale: 'fr',
           subtitle: 'subtitle-fr',
-          slug: 'slug-fr'
-        }
+          slug: 'slug-fr',
+        },
       ]);
     });
 

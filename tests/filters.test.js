@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
 
@@ -24,16 +20,8 @@ describe('Filters', () => {
         data: { filters },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Filters(
-            $limit: Int = 10
-            $offset: Int = 0
-            $includeInactive: Boolean = false
-          ) {
-            filters(
-              limit: $limit
-              offset: $offset
-              includeInactive: $includeInactive
-            ) {
+          query Filters($limit: Int = 10, $offset: Int = 0, $includeInactive: Boolean = false) {
+            filters(limit: $limit, offset: $offset, includeInactive: $includeInactive) {
               _id
               updated
               created
@@ -70,14 +58,8 @@ describe('Filters', () => {
         data: { filters },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Filters(
-            $queryString: String
-      
-          ) {
-            filters(
-                queryString: $queryString
-                includeInactive: true
-            ) {
+          query Filters($queryString: String) {
+            filters(queryString: $queryString, includeInactive: true) {
               _id
               updated
               created
@@ -105,7 +87,7 @@ describe('Filters', () => {
           }
         `,
         variables: {
-          queryString: 'highlight'
+          queryString: 'highlight',
         },
       });
 
@@ -123,14 +105,13 @@ describe('Filters', () => {
             {
               _id: 'multichoice-filter:highlight',
               texts: null,
-              value: 'highlight'
+              value: 'highlight',
             },
             { _id: 'multichoice-filter:tag-1', texts: null, value: 'tag-1' },
-            { _id: 'multichoice-filter:tag-2', texts: null, value: 'tag-2' }
-          ]
-        }
-      ])
-
+            { _id: 'multichoice-filter:tag-2', texts: null, value: 'tag-2' },
+          ],
+        },
+      ]);
     });
 
     it('Return empty array when search is not found', async () => {
@@ -138,24 +119,17 @@ describe('Filters', () => {
         data: { filters },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Filters(
-            $queryString: String
-      
-          ) {
-            filters(
-      queryString: $queryString
-      includeInactive: true
-            ) {
+          query Filters($queryString: String) {
+            filters(queryString: $queryString, includeInactive: true) {
               _id
-        
             }
           }
         `,
         variables: {
-          queryString: 'non_existing'
+          queryString: 'non_existing',
         },
       });
-      
+
       expect(filters.length).toEqual(0);
     });
 
@@ -164,16 +138,8 @@ describe('Filters', () => {
         data: { filters },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query Filters(
-            $limit: Int = 10
-            $offset: Int = 0
-            $includeInactive: Boolean = false
-          ) {
-            filters(
-              limit: $limit
-              offset: $offset
-              includeInactive: $includeInactive
-            ) {
+          query Filters($limit: Int = 10, $offset: Int = 0, $includeInactive: Boolean = false) {
+            filters(limit: $limit, offset: $offset, includeInactive: $includeInactive) {
               _id
               isActive
             }
@@ -188,8 +154,8 @@ describe('Filters', () => {
         {
           _id: expect.anything(),
           isActive: false,
-        }
-      ])
+        },
+      ]);
     });
   });
 
@@ -330,16 +296,8 @@ describe('Filters', () => {
         data: { filters },
       } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          query Filters(
-            $limit: Int = 10
-            $offset: Int = 0
-            $includeInactive: Boolean = false
-          ) {
-            filters(
-              limit: $limit
-              offset: $offset
-              includeInactive: $includeInactive
-            ) {
+          query Filters($limit: Int = 10, $offset: Int = 0, $includeInactive: Boolean = false) {
+            filters(limit: $limit, offset: $offset, includeInactive: $includeInactive) {
               _id
             }
           }
@@ -534,11 +492,11 @@ describe('Filters', () => {
         `,
         variables: {
           filter: {
-            key: 'warehousing.baseUnit',            
+            key: 'warehousing.baseUnit',
             type: 'SINGLE_CHOICE',
             options: ['ST'],
           },
-          texts: [{title: 'Mengeneinheit Filter', locale: "de"}]
+          texts: [{ title: 'Mengeneinheit Filter', locale: 'de' }],
         },
       });
 
@@ -559,10 +517,7 @@ describe('Filters', () => {
 
       const { data: { searchProducts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          query searchProducts(
-            $queryString: String
-            $filterQuery: [FilterQueryInput!]
-          ) {
+          query searchProducts($queryString: String, $filterQuery: [FilterQueryInput!]) {
             searchProducts(
               queryString: $queryString
               filterQuery: $filterQuery

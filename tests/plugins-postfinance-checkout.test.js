@@ -11,11 +11,10 @@ const { PFCHECKOUT_SPACE_ID, PFCHECKOUT_USER_ID, PFCHECKOUT_SECRET } = process.e
 
 const escapeRegExp = (string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+};
 
 if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
   describe('Plugins: Postfinance Checkout Payments', () => {
-
     beforeAll(async () => {
       [db] = await setupDatabase();
       graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
@@ -79,25 +78,20 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'pfcheckout-payment',
             transactionContext: {},
           },
         });
 
-        const { transactionId, location } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { transactionId, location } = JSON.parse(signPaymentProviderForCheckout);
 
         const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
@@ -111,25 +105,20 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'pfcheckout-payment',
             transactionContext: { integrationMode: 'PaymentPage' },
           },
         });
 
-        const { transactionId, location } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { transactionId, location } = JSON.parse(signPaymentProviderForCheckout);
 
         const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
@@ -143,10 +132,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-            mutation signPaymentProviderForCheckout(
-              $transactionContext: JSON
-              $orderPaymentId: ID!
-            ) {
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
               signPaymentProviderForCheckout(
                 transactionContext: $transactionContext
                 orderPaymentId: $orderPaymentId
@@ -159,9 +145,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           },
         });
 
-        const { transactionId, location } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { transactionId, location } = JSON.parse(signPaymentProviderForCheckout);
 
         const url = `https://checkout.postfinance.ch/assets/payment/lightbox-checkout-handler.js?spaceId=${PFCHECKOUT_SPACE_ID}&transactionId=${transactionId}&securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
@@ -175,25 +159,20 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-              mutation signPaymentProviderForCheckout(
-                $transactionContext: JSON
-                $orderPaymentId: ID!
-              ) {
-                signPaymentProviderForCheckout(
-                  transactionContext: $transactionContext
-                  orderPaymentId: $orderPaymentId
-                )
-              }
-            `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'pfcheckout-payment',
             transactionContext: { integrationMode: 'iFrame' },
           },
         });
 
-        const { transactionId, location } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { transactionId, location } = JSON.parse(signPaymentProviderForCheckout);
 
         const url = `https://checkout.postfinance.ch/assets/payment/iframe-checkout-handler.js?spaceId=${PFCHECKOUT_SPACE_ID}&transactionId=${transactionId}&securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
@@ -201,73 +180,68 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         const result = await fetch(location);
         expect(result.status).toBe(200);
       }, 10000);
-
     });
 
     describe('Payment Flow with Webhook Call (PostFinance Checkout) should', () => {
       const mockedOrderModule = {
         payments: {
-          findOrderPayment: ({ orderPaymentId }) => { return orderPaymentId === 'pfcheckout-payment' ? { orderId: 'pfcheckout-order' } : {} },
+          findOrderPayment: ({ orderPaymentId }) => {
+            return orderPaymentId === 'pfcheckout-payment' ? { orderId: 'pfcheckout-order' } : {};
+          },
           markAsPaid: import.meta.jest.fn(),
         },
-        findOrder: ({ orderId }) => { return orderId === 'pfcheckout-order' ? { orderId, currency: SimpleOrder.currency } : {} },
+        findOrder: ({ orderId }) => {
+          return orderId === 'pfcheckout-order' ? { orderId, currency: SimpleOrder.currency } : {};
+        },
         pricingSheet: ({ orderId }) => {
           if (orderId === 'pfcheckout-order') {
             return {
               total: () => ({
-                amount: 32145
-              })
-            }
+                amount: 32145,
+              }),
+            };
           }
-          return {}
-        }
-      }
+          return {};
+        },
+      };
 
       it('starts a new transaction with webhook call and no payment', async () => {
         const {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'pfcheckout-payment',
             transactionContext: {},
           },
         });
 
-        const { transactionId, location } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { transactionId, location } = JSON.parse(signPaymentProviderForCheckout);
 
         const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
 
         // Simulate WebHook call
-        const result = await fetch(
-          'http://localhost:4010/payment/postfinance-checkout',
-          {
-            method: 'POST',
-            duplex: 'half',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ...SuccTranscationHookPayload,
-              entityId: transactionId,
-              spaceId: PFCHECKOUT_SPACE_ID,
-            }),
+        const result = await fetch('http://localhost:4010/payment/postfinance-checkout', {
+          method: 'POST',
+          duplex: 'half',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
           },
-        );
+          body: JSON.stringify({
+            ...SuccTranscationHookPayload,
+            entityId: transactionId,
+            spaceId: PFCHECKOUT_SPACE_ID,
+          }),
+        });
         expect(result.status).toBe(200);
         expect(await result.text()).toBe(`Order not marked as paid`);
         expect(mockedOrderModule.payments.markAsPaid.mock.calls.length).toBe(0);
@@ -278,25 +252,20 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'pfcheckout-payment',
             transactionContext: {},
           },
         });
 
-        const { transactionId, location } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { transactionId, location } = JSON.parse(signPaymentProviderForCheckout);
 
         const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
@@ -304,7 +273,7 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         const transactionRes = {
           ...SuccTransactionApiResponse,
           metaData: { orderPaymentId: 'pfcheckout-payment' },
-        }
+        };
 
         // Call function that is called by webhook with modified transaction to mock response
         const hookRes = await orderIsPaid(transactionRes, mockedOrderModule);
@@ -316,25 +285,20 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'pfcheckout-payment',
             transactionContext: {},
           },
         });
 
-        const { transactionId, location } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { transactionId, location } = JSON.parse(signPaymentProviderForCheckout);
 
         const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
@@ -342,16 +306,14 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
         const transactionRes = {
           ...SuccTransactionApiResponse,
           metaData: { orderPaymentId: 'pfcheckout-payment' },
-          authorizationAmount: 200.00,
-          completedAmount: 200.00,
-        }
+          authorizationAmount: 200.0,
+          completedAmount: 200.0,
+        };
 
         // Call function that is called by webhook with modified transaction to mock response
         const hookRes = await orderIsPaid(transactionRes, mockedOrderModule);
         expect(hookRes).toBe(false);
       }, 10000);
-
-
     });
 
     describe('Payment Flow with lost WebHook call (PostFinance Checkout) should', () => {
@@ -360,51 +322,43 @@ if (PFCHECKOUT_SPACE_ID && PFCHECKOUT_USER_ID && PFCHECKOUT_SECRET) {
           data: { signPaymentProviderForCheckout },
         } = await graphqlFetch({
           query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
-            signPaymentProviderForCheckout(
-              transactionContext: $transactionContext
-              orderPaymentId: $orderPaymentId
-            )
-          }
-        `,
+            mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
+              signPaymentProviderForCheckout(
+                transactionContext: $transactionContext
+                orderPaymentId: $orderPaymentId
+              )
+            }
+          `,
           variables: {
             orderPaymentId: 'pfcheckout-payment',
             transactionContext: {},
           },
         });
 
-        const { transactionId, location } = JSON.parse(
-          signPaymentProviderForCheckout,
-        );
+        const { transactionId, location } = JSON.parse(signPaymentProviderForCheckout);
 
         const url = `https://checkout.postfinance.ch/s/${PFCHECKOUT_SPACE_ID}/payment/transaction/pay/${transactionId}?securityToken=`;
         expect(location).toMatch(new RegExp(`^${escapeRegExp(url)}?`));
 
-        const {
-          data: { checkoutCart },
-        } = await graphqlFetch({
+        await graphqlFetch({
           query: /* GraphQL */ `
-          mutation checkoutCart(
-            $orderId: ID!
-          ) {
-            checkoutCart( orderId: $orderId ) {
+            mutation checkoutCart($orderId: ID!) {
+              checkoutCart(orderId: $orderId) {
                 _id
+              }
             }
-          }
-        `,
+          `,
           variables: {
             orderId: 'pfcheckout-order',
           },
         });
-        const orderPayment = await db.collection("order_payments").findOne({ _id: "pfcheckout-payment" });
-        expect(orderPayment.status).not.toBe("PAID");
+        const orderPayment = await db
+          .collection('order_payments')
+          .findOne({ _id: 'pfcheckout-payment' });
+        expect(orderPayment.status).not.toBe('PAID');
       }, 10000);
 
       // Succesful case not tested here, charge calls same function (orderIsPaid) as webhook call
-
     });
   });
 } else {

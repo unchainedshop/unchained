@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
 
@@ -20,11 +16,7 @@ describe('FilterOption', () => {
         data: { createFilterOption },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateFilterOption(
-            $filterId: ID!
-            $option: String!
-            $texts: [FilterTextInput!]
-          ) {
+          mutation CreateFilterOption($filterId: ID!, $option: String!, $texts: [FilterTextInput!]) {
             createFilterOption(filterId: $filterId, option: $option, texts: $texts) {
               _id
               updated
@@ -51,31 +43,27 @@ describe('FilterOption', () => {
         variables: {
           filterId: MultiChoiceFilter._id,
           option: 'test-filter-option',
-          texts: [{
-            title: 'test-filter-option-title',
-            locale: 'de'
-          }]                              
+          texts: [
+            {
+              title: 'test-filter-option-title',
+              locale: 'de',
+            },
+          ],
         },
       });
-      expect(
-        createFilterOption.options[createFilterOption.options.length - 1],
-      ).toMatchObject({
+      expect(createFilterOption.options[createFilterOption.options.length - 1]).toMatchObject({
         _id: 'multichoice-filter:test-filter-option',
         value: 'test-filter-option',
         texts: {
           title: 'test-filter-option-title',
-        }
+        },
       });
     });
 
     it('return not found error when passed non existing filterId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateFilterOption(
-            $filterId: ID!
-            $option: String!
-            $texts: [FilterTextInput!]
-          ) {
+          mutation CreateFilterOption($filterId: ID!, $option: String!, $texts: [FilterTextInput!]) {
             createFilterOption(filterId: $filterId, option: $option, texts: $texts) {
               _id
             }
@@ -84,10 +72,12 @@ describe('FilterOption', () => {
         variables: {
           filterId: 'invalid-id',
           option: 'test-filter-option',
-          texts: [{
-            title: 'test-filter-option-title',
-            locale: "de"
-          }]                    
+          texts: [
+            {
+              title: 'test-filter-option-title',
+              locale: 'de',
+            },
+          ],
         },
       });
       expect(errors[0].extensions?.code).toEqual('FilterNotFoundError');
@@ -96,11 +86,7 @@ describe('FilterOption', () => {
     it('return error when passed invalid filterId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateFilterOption(
-            $filterId: ID!
-            $option: String!
-            $texts: [FilterTextInput!]
-          ) {
+          mutation CreateFilterOption($filterId: ID!, $option: String!, $texts: [FilterTextInput!]) {
             createFilterOption(filterId: $filterId, option: $option, texts: $texts) {
               _id
             }
@@ -109,11 +95,7 @@ describe('FilterOption', () => {
         variables: {
           filterId: '',
           option: 'test-filter-option',
-          texts: [
-{title: 'test-filter-option-title', 
-  locale: "de"
-}
-          ]                      
+          texts: [{ title: 'test-filter-option-title', locale: 'de' }],
         },
       });
       expect(errors[0].extensions?.code).toEqual('InvalidIdError');
@@ -125,11 +107,7 @@ describe('FilterOption', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation CreateFilterOption(
-            $filterId: ID!
-            $option: String!
-            $texts: [FilterTextInput!]
-          ) {
+          mutation CreateFilterOption($filterId: ID!, $option: String!, $texts: [FilterTextInput!]) {
             createFilterOption(filterId: $filterId, option: $option, texts: $texts) {
               _id
             }
@@ -138,10 +116,12 @@ describe('FilterOption', () => {
         variables: {
           filterId: MultiChoiceFilter._id,
           option: 'test-filter-option',
-            texts: [{
+          texts: [
+            {
               title: 'test-filter-option-title',
-              locale: "de"
-            }]                      
+              locale: 'de',
+            },
+          ],
         },
       });
       expect(errors[0].extensions?.code).toEqual('NoPermissionError');
@@ -154,14 +134,8 @@ describe('FilterOption', () => {
         data: { removeFilterOption },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation RemoveFilterOption(
-            $filterId: ID!
-            $filterOptionValue: String!
-          ) {
-            removeFilterOption(
-              filterId: $filterId
-              filterOptionValue: $filterOptionValue
-            ) {
+          mutation RemoveFilterOption($filterId: ID!, $filterOptionValue: String!) {
+            removeFilterOption(filterId: $filterId, filterOptionValue: $filterOptionValue) {
               _id
               updated
               created
@@ -187,20 +161,16 @@ describe('FilterOption', () => {
         },
       });
       expect(removeFilterOption.options.length).toEqual(3);
-      expect(removeFilterOption.options.filter(o => o.value === 'test-filter-option').length).toEqual(0);
+      expect(removeFilterOption.options.filter((o) => o.value === 'test-filter-option').length).toEqual(
+        0,
+      );
     });
 
     it('return not found error when passed non existing filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation RemoveFilterOption(
-            $filterId: ID!
-            $filterOptionValue: String!
-          ) {
-            removeFilterOption(
-              filterId: $filterId
-              filterOptionValue: $filterOptionValue
-            ) {
+          mutation RemoveFilterOption($filterId: ID!, $filterOptionValue: String!) {
+            removeFilterOption(filterId: $filterId, filterOptionValue: $filterOptionValue) {
               _id
             }
           }
@@ -216,14 +186,8 @@ describe('FilterOption', () => {
     it('return error when passed invalid filter ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation RemoveFilterOption(
-            $filterId: ID!
-            $filterOptionValue: String!
-          ) {
-            removeFilterOption(
-              filterId: $filterId
-              filterOptionValue: $filterOptionValue
-            ) {
+          mutation RemoveFilterOption($filterId: ID!, $filterOptionValue: String!) {
+            removeFilterOption(filterId: $filterId, filterOptionValue: $filterOptionValue) {
               _id
             }
           }
@@ -242,14 +206,8 @@ describe('FilterOption', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation RemoveFilterOption(
-            $filterId: ID!
-            $filterOptionValue: String!
-          ) {
-            removeFilterOption(
-              filterId: $filterId
-              filterOptionValue: $filterOptionValue
-            ) {
+          mutation RemoveFilterOption($filterId: ID!, $filterOptionValue: String!) {
+            removeFilterOption(filterId: $filterId, filterOptionValue: $filterOptionValue) {
               _id
             }
           }

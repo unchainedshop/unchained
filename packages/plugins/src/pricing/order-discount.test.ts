@@ -1,7 +1,7 @@
-import { OrderDiscount } from "./order-discount.js";
+import { OrderDiscount } from './order-discount.js';
 
-describe("OrderDelivery ", () => {
+describe('OrderDelivery ', () => {
   it('isActivatedFor', () => {
     expect(OrderDiscount.isActivatedFor({} as any)).toBeTruthy();
   });
-})
+});

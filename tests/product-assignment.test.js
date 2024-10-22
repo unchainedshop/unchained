@@ -1,14 +1,6 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import {
-  SimpleProduct,
-  ConfigurableProduct,
-  PlanProduct,
-} from './seeds/products.js';
+import { SimpleProduct, ConfigurableProduct, PlanProduct } from './seeds/products.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsNormalUser;
@@ -23,80 +15,74 @@ describe('ProductAssignment', () => {
 
   describe('mutation.addProductAssignment for admin user should', () => {
     it('assign proxy to a product when passed valid proxy, product ID and CONFIGURABLE_PRODUCT type', async () => {
-      const { data: { addProductAssignment } = {} } = await graphqlFetchAsAdmin(
-        {
-          query: /* GraphQL */ `
-            mutation AddProductAssignment(
-              $proxyId: ID!
-              $productId: ID!
-              $vectors: [ProductAssignmentVectorInput!]!
-            ) {
-              addProductAssignment(
-                proxyId: $proxyId
-                productId: $productId
-                vectors: $vectors
-              ) {
+      const { data: { addProductAssignment } = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation AddProductAssignment(
+            $proxyId: ID!
+            $productId: ID!
+            $vectors: [ProductAssignmentVectorInput!]!
+          ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+              published
+              texts {
                 _id
-                sequence
-                status
-                tags
-                created
-                updated
-                published
-                texts {
+              }
+              media {
+                _id
+              }
+              reviews {
+                _id
+              }
+              siblings {
+                _id
+              }
+              ... on ConfigurableProduct {
+                products {
                   _id
                 }
-                media {
-                  _id
-                }
-                reviews {
-                  _id
-                }
-                siblings {
-                  _id
-                }
-                ... on ConfigurableProduct {
-                  products {
-                    _id
-                  }
-                  assortmentPaths {
-                    links {
-                      link {
+                assortmentPaths {
+                  links {
+                    link {
+                      _id
+                      parent {
                         _id
-                        parent {
+                        productAssignments {
                           _id
-                          productAssignments {
+                          product {
                             _id
-                            product {
-                              _id
-                            }
                           }
                         }
                       }
                     }
                   }
-                  variations {
-                    _id
-                    key
-                    texts {
-                      title
-                    }
+                }
+                variations {
+                  _id
+                  key
+                  texts {
+                    title
                   }
                 }
               }
             }
-          `,
-          variables: {
-            productId: SimpleProduct._id,
-            proxyId: ConfigurableProduct._id,
-            vectors: [
-              { key: 'key-1', value: 'value-1' },
-              { key: 'key-2', value: 'value-2' },
-              { key: 'key-3', value: 'value-3' },
-            ],
-          },
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          proxyId: ConfigurableProduct._id,
+          vectors: [
+            { key: 'key-1', value: 'value-1' },
+            { key: 'key-2', value: 'value-2' },
+            { key: 'key-3', value: 'value-3' },
+          ],
         },
-      );
+      });
 
       expect(addProductAssignment.products?.[0]).toMatchObject({
         _id: SimpleProduct._id,
@@ -111,11 +97,7 @@ describe('ProductAssignment', () => {
             $productId: ID!
             $vectors: [ProductAssignmentVectorInput!]!
           ) {
-            addProductAssignment(
-              proxyId: $proxyId
-              productId: $productId
-              vectors: $vectors
-            ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
               _id
             }
           }
@@ -146,11 +128,7 @@ describe('ProductAssignment', () => {
             $productId: ID!
             $vectors: [ProductAssignmentVectorInput!]!
           ) {
-            addProductAssignment(
-              proxyId: $proxyId
-              productId: $productId
-              vectors: $vectors
-            ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
               _id
             }
           }
@@ -179,11 +157,7 @@ describe('ProductAssignment', () => {
             $productId: ID!
             $vectors: [ProductAssignmentVectorInput!]!
           ) {
-            addProductAssignment(
-              proxyId: $proxyId
-              productId: $productId
-              vectors: $vectors
-            ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
               _id
             }
           }
@@ -211,11 +185,7 @@ describe('ProductAssignment', () => {
             $productId: ID!
             $vectors: [ProductAssignmentVectorInput!]!
           ) {
-            addProductAssignment(
-              proxyId: $proxyId
-              productId: $productId
-              vectors: $vectors
-            ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
               _id
             }
           }
@@ -244,11 +214,7 @@ describe('ProductAssignment', () => {
             $productId: ID!
             $vectors: [ProductAssignmentVectorInput!]!
           ) {
-            addProductAssignment(
-              proxyId: $proxyId
-              productId: $productId
-              vectors: $vectors
-            ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
               _id
             }
           }
@@ -278,11 +244,7 @@ describe('ProductAssignment', () => {
             $productId: ID!
             $vectors: [ProductAssignmentVectorInput!]!
           ) {
-            addProductAssignment(
-              proxyId: $proxyId
-              productId: $productId
-              vectors: $vectors
-            ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
               _id
             }
           }
@@ -313,11 +275,7 @@ describe('ProductAssignment', () => {
             $productId: ID!
             $vectors: [ProductAssignmentVectorInput!]!
           ) {
-            addProductAssignment(
-              proxyId: $proxyId
-              productId: $productId
-              vectors: $vectors
-            ) {
+            addProductAssignment(proxyId: $proxyId, productId: $productId, vectors: $vectors) {
               _id
             }
           }
@@ -341,58 +299,51 @@ describe('ProductAssignment', () => {
 
   describe('mutation.removeProductAssignment for admin user should', () => {
     it('Update proxy to a product when passed valid proxy  ID of CONFIGURABLE_PRODUCT type', async () => {
-      const { data: { removeProductAssignment } = {} } =
-        await graphqlFetchAsAdmin({
-          query: /* GraphQL */ `
-            mutation RemoveProductAssignment(
-              $proxyId: ID!
-              $vectors: [ProductAssignmentVectorInput!]!
-            ) {
-              removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
+      const { data: { removeProductAssignment } = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
+            removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
+              _id
+              sequence
+              status
+              tags
+              created
+              updated
+              published
+              texts {
                 _id
-                sequence
-                status
-                tags
-                created
-                updated
-                published
-                texts {
-                  _id
-                }
-                media {
-                  _id
-                }
-                reviews {
-                  _id
-                }
-                assortmentPaths {
-                  links {
-                    link {
-                      _id
-                    }
+              }
+              media {
+                _id
+              }
+              reviews {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  link {
+                    _id
                   }
                 }
-                siblings {
-                  _id
-                }
+              }
+              siblings {
+                _id
               }
             }
-          `,
-          variables: {
-            proxyId: ConfigurableProduct._id,
-            vectors: [{ key: 'key-3', value: 'value-3' }],
-          },
-        });
+          }
+        `,
+        variables: {
+          proxyId: ConfigurableProduct._id,
+          vectors: [{ key: 'key-3', value: 'value-3' }],
+        },
+      });
       expect(removeProductAssignment._id).toBe(ConfigurableProduct._id);
     });
 
     it('return error when passed non CONFIGURABLE_PRODUCT type id', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation RemoveProductAssignment(
-            $proxyId: ID!
-            $vectors: [ProductAssignmentVectorInput!]!
-          ) {
+          mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
             removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
               _id
             }
@@ -414,10 +365,7 @@ describe('ProductAssignment', () => {
     it('return not found error when passed non existing proxy  ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation RemoveProductAssignment(
-            $proxyId: ID!
-            $vectors: [ProductAssignmentVectorInput!]!
-          ) {
+          mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
             removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
               _id
             }
@@ -437,10 +385,7 @@ describe('ProductAssignment', () => {
     it('return error when passed invalid valid proxy  ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation RemoveProductAssignment(
-            $proxyId: ID!
-            $vectors: [ProductAssignmentVectorInput!]!
-          ) {
+          mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
             removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
               _id
             }
@@ -461,10 +406,7 @@ describe('ProductAssignment', () => {
     it('return error', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
-          mutation RemoveProductAssignment(
-            $proxyId: ID!
-            $vectors: [ProductAssignmentVectorInput!]!
-          ) {
+          mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
             removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
               _id
             }
@@ -486,10 +428,7 @@ describe('ProductAssignment', () => {
     it('return error', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation RemoveProductAssignment(
-            $proxyId: ID!
-            $vectors: [ProductAssignmentVectorInput!]!
-          ) {
+          mutation RemoveProductAssignment($proxyId: ID!, $vectors: [ProductAssignmentVectorInput!]!) {
             removeProductAssignment(proxyId: $proxyId, vectors: $vectors) {
               _id
             }

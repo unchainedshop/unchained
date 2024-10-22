@@ -1,16 +1,8 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { SimpleDeliveryProvider } from './seeds/deliveries.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { PlanProduct } from './seeds/products.js';
-import {
-  ActiveEnrollment,
-  InitialEnrollment,
-  TerminatedEnrollment,
-} from './seeds/enrollments.js';
+import { ActiveEnrollment, InitialEnrollment, TerminatedEnrollment } from './seeds/enrollments.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsAdminUser;
@@ -47,11 +39,7 @@ describe('Enrollments', () => {
             $contact: ContactInput
             $meta: JSON
           ) {
-            addCartProduct(
-              productId: $productId
-              quantity: $quantity
-              orderId: $orderId
-            ) {
+            addCartProduct(productId: $productId, quantity: $quantity, orderId: $orderId) {
               _id
               quantity
             }
@@ -111,71 +99,69 @@ describe('Enrollments', () => {
 
   describe('Mutation.createEnrollment', () => {
     it('create a new enrollment manually will not activate automatically because of missing order', async () => {
-      const { data: { createEnrollment } = {} } = await graphqlFetchAsAdminUser(
-        {
-          query: /* GraphQL */ `
-            mutation createEnrollment($plan: EnrollmentPlanInput!) {
-              createEnrollment(plan: $plan) {
-                _id
-                status
-                enrollmentNumber
-                updated
-                expires
-                plan {
-                  product {
-                    _id
-                  }
-                  quantity
-                  configuration {
-                    key
-                    value
-                  }
+      const { data: { createEnrollment } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation createEnrollment($plan: EnrollmentPlanInput!) {
+            createEnrollment(plan: $plan) {
+              _id
+              status
+              enrollmentNumber
+              updated
+              expires
+              plan {
+                product {
+                  _id
                 }
-                payment {
-                  provider {
-                    _id
-                  }
-                }
-                delivery {
-                  provider {
-                    _id
-                  }
-                }
-                billingAddress {
-                  firstName
-                }
-                contact {
-                  emailAddress
-                }
-                status
-                created
-                expires
-
-                isExpired
-                enrollmentNumber
-                country {
-                  isoCode
-                }
-                currency {
-                  isoCode
-                }
-                periods {
-                  order {
-                    _id
-                  }
-                  start
-                  end
+                quantity
+                configuration {
+                  key
+                  value
                 }
               }
+              payment {
+                provider {
+                  _id
+                }
+              }
+              delivery {
+                provider {
+                  _id
+                }
+              }
+              billingAddress {
+                firstName
+              }
+              contact {
+                emailAddress
+              }
+              status
+              created
+              expires
+
+              isExpired
+              enrollmentNumber
+              country {
+                isoCode
+              }
+              currency {
+                isoCode
+              }
+              periods {
+                order {
+                  _id
+                }
+                start
+                end
+              }
             }
-          `,
-          variables: {
-            plan: {
-              productId: PlanProduct._id,
-            },
+          }
+        `,
+        variables: {
+          plan: {
+            productId: PlanProduct._id,
           },
         },
-      );
+      });
       expect(createEnrollment).toMatchObject({
         status: 'INITIAL',
         plan: {
@@ -680,11 +666,7 @@ describe('Enrollments', () => {
           enrollmentId: 'initialenrollment-wrong-plan',
         },
       });
-      expect(
-        errors[0]?.message.includes(
-          'Unexpected error.',
-        ),
-      ).toBe(true);
+      expect(errors[0]?.message.includes('Unexpected error.')).toBe(true);
     });
   });
 
@@ -796,7 +778,7 @@ describe('Enrollments', () => {
           }
         `,
         variables: {
-          queryString: 'initial'
+          queryString: 'initial',
         },
       });
       expect(enrollments.length).toEqual(2);

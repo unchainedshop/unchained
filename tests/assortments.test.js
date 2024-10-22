@@ -1,10 +1,6 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { SimpleAssortment, GermanAssortmentText } from './seeds/assortments.js';
+import { SimpleAssortment } from './seeds/assortments.js';
 
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
@@ -18,8 +14,8 @@ describe('Assortments', () => {
     graphqlFetchAsAnonymousUser = await createAnonymousGraphqlFetch();
   });
 
-  describe("Query.assortments for admin user should", () => {
-    it("Return the only active assortments when no argument passed", async () => {
+  describe('Query.assortments for admin user should', () => {
+    it('Return the only active assortments when no argument passed', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -35,7 +31,7 @@ describe('Assortments', () => {
       expect(assortments.length).toEqual(4);
     });
 
-    it("Return active assortments and include leaves", async () => {
+    it('Return active assortments and include leaves', async () => {
       const result = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortments(
@@ -116,7 +112,7 @@ describe('Assortments', () => {
       expect(result.data.assortments.length).toEqual(5);
     });
 
-    it("Return all assortments and without leaves", async () => {
+    it('Return all assortments and without leaves', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -146,7 +142,7 @@ describe('Assortments', () => {
       expect(assortments.length).toEqual(8);
     });
 
-    it("Return all assortments and include leaves", async () => {
+    it('Return all assortments and include leaves', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
@@ -176,13 +172,17 @@ describe('Assortments', () => {
       expect(assortments.length).toEqual(10);
     });
 
-    it("Search assortments by slug", async () => {
+    it('Search assortments by slug', async () => {
       const {
         data: { assortments },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query Assortments($queryString: String, $includeLeaves: Boolean, $includeInactive: Boolean) {
-            assortments(queryString: $queryString, includeLeaves: $includeLeaves, includeInactive: $includeInactive) {
+            assortments(
+              queryString: $queryString
+              includeLeaves: $includeLeaves
+              includeInactive: $includeInactive
+            ) {
               _id
             }
           }
@@ -190,10 +190,10 @@ describe('Assortments', () => {
         variables: {
           queryString: 'search-purpose',
           includeLeaves: true,
-          includeInactive: true
+          includeInactive: true,
         },
       });
-      
+
       expect(assortments.length).toEqual(2);
     });
   });
@@ -219,14 +219,8 @@ describe('Assortments', () => {
         data: { assortmentsCount },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query AssortmentsCount(
-            $includeInactives: Boolean
-            $includeLeaves: Boolean
-          ) {
-            assortmentsCount(
-              includeInactive: $includeInactives
-              includeLeaves: $includeLeaves
-            )
+          query AssortmentsCount($includeInactives: Boolean, $includeLeaves: Boolean) {
+            assortmentsCount(includeInactive: $includeInactives, includeLeaves: $includeLeaves)
           }
         `,
         variables: {
@@ -241,14 +235,8 @@ describe('Assortments', () => {
         data: { assortmentsCount },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query AssortmentsCount(
-            $includeInactive: Boolean
-            $includeLeaves: Boolean
-          ) {
-            assortmentsCount(
-              includeInactive: $includeInactive
-              includeLeaves: $includeLeaves
-            )
+          query AssortmentsCount($includeInactive: Boolean, $includeLeaves: Boolean) {
+            assortmentsCount(includeInactive: $includeInactive, includeLeaves: $includeLeaves)
           }
         `,
         variables: {
@@ -265,14 +253,8 @@ describe('Assortments', () => {
         data: { assortmentsCount },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query AssortmentsCount(
-            $includeInactive: Boolean
-            $includeLeaves: Boolean
-          ) {
-            assortmentsCount(
-              includeInactive: $includeInactive
-              includeLeaves: $includeLeaves
-            )
+          query AssortmentsCount($includeInactive: Boolean, $includeLeaves: Boolean) {
+            assortmentsCount(includeInactive: $includeInactive, includeLeaves: $includeLeaves)
           }
         `,
         variables: {
@@ -467,17 +449,14 @@ describe('Assortments', () => {
     });
   });
 
-  describe("Query.searchAssortments for admin user should", () => {
-    it("Return assortments successfuly", async () => {
+  describe('Query.searchAssortments for admin user should', () => {
+    it('Return assortments successfuly', async () => {
       const {
         data: { searchAssortments },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query searchAssortments($queryString: String) {
-            searchAssortments(
-              queryString: $queryString
-              includeInactive: true
-            ) {
+            searchAssortments(queryString: $queryString, includeInactive: true) {
               assortmentsCount
               assortments {
                 _id
@@ -492,15 +471,15 @@ describe('Assortments', () => {
           }
         `,
         variables: {
-          queryString: "simple-assortment",
+          queryString: 'simple-assortment',
         },
       });
 
       expect(searchAssortments.assortmentsCount).toEqual(1);
       expect(searchAssortments.assortments[0].texts).toMatchObject({
-        _id: "german",
-        title: "simple assortment de",
-        description: "text-de",
+        _id: 'german',
+        title: 'simple assortment de',
+        description: 'text-de',
       });
     });
   });
@@ -515,9 +494,7 @@ describe('Assortments', () => {
       } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
           query searchAssortments($queryString: String) {
-            searchAssortments(
-              queryString: $queryString
-            ) {
+            searchAssortments(queryString: $queryString) {
               assortmentsCount
               assortments {
                 _id
@@ -564,7 +541,10 @@ describe('Assortments', () => {
         data: { createAssortment },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateAssortment($assortment: CreateAssortmentInput!, $texts: [AssortmentTextInput!]) {
+          mutation CreateAssortment(
+            $assortment: CreateAssortmentInput!
+            $texts: [AssortmentTextInput!]
+          ) {
             createAssortment(assortment: $assortment, texts: $texts) {
               _id
               created
@@ -617,15 +597,11 @@ describe('Assortments', () => {
           assortment: {
             isRoot: true,
             tags: ['test-assrtment-1', 'test-assortment-2'],
-            
           },
-          texts: [{title: 'test assortment', locale: "de"}]
+          texts: [{ title: 'test assortment', locale: 'de' }],
         },
       });
-      expect(createAssortment.tags).toEqual([
-        'test-assrtment-1',
-        'test-assortment-2',
-      ]);
+      expect(createAssortment.tags).toEqual(['test-assrtment-1', 'test-assortment-2']);
       expect(createAssortment.isRoot).toBe(true);
       expect(createAssortment.texts.title).toBe('test assortment');
     });
@@ -636,7 +612,10 @@ describe('Assortments', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation CreateAssortment($assortment: CreateAssortmentInput!, $texts: [AssortmentTextInput!]) {
+          mutation CreateAssortment(
+            $assortment: CreateAssortmentInput!
+            $texts: [AssortmentTextInput!]
+          ) {
             createAssortment(assortment: $assortment, texts: $texts) {
               _id
             }
@@ -645,9 +624,9 @@ describe('Assortments', () => {
         variables: {
           assortment: {
             isRoot: true,
-            tags: ['test-assrtment-1', 'test-assortment-2'],            
+            tags: ['test-assrtment-1', 'test-assortment-2'],
           },
-          texts: [{title: 'test assortment', locale: "de"}]
+          texts: [{ title: 'test assortment', locale: 'de' }],
         },
       });
 
@@ -661,14 +640,8 @@ describe('Assortments', () => {
         data: { updateAssortment },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateAssortment(
-            $assortment: UpdateAssortmentInput!
-            $assortmentId: ID!
-          ) {
-            updateAssortment(
-              assortment: $assortment
-              assortmentId: $assortmentId
-            ) {
+          mutation UpdateAssortment($assortment: UpdateAssortmentInput!, $assortmentId: ID!) {
+            updateAssortment(assortment: $assortment, assortmentId: $assortmentId) {
               _id
               created
               updated
@@ -724,10 +697,7 @@ describe('Assortments', () => {
           },
         },
       });
-      expect(updateAssortment.tags).toEqual([
-        'test-assrtment-1',
-        'test-assortment-2',
-      ]);
+      expect(updateAssortment.tags).toEqual(['test-assrtment-1', 'test-assortment-2']);
       expect(updateAssortment.isRoot).toBe(false);
       expect(updateAssortment.isActive).toBe(true);
     });
@@ -735,14 +705,8 @@ describe('Assortments', () => {
     it('return not found error when passed none existing assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateAssortment(
-            $assortment: UpdateAssortmentInput!
-            $assortmentId: ID!
-          ) {
-            updateAssortment(
-              assortment: $assortment
-              assortmentId: $assortmentId
-            ) {
+          mutation UpdateAssortment($assortment: UpdateAssortmentInput!, $assortmentId: ID!) {
+            updateAssortment(assortment: $assortment, assortmentId: $assortmentId) {
               _id
             }
           }
@@ -762,14 +726,8 @@ describe('Assortments', () => {
     it('return error when passed invalid assortment Id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateAssortment(
-            $assortment: UpdateAssortmentInput!
-            $assortmentId: ID!
-          ) {
-            updateAssortment(
-              assortment: $assortment
-              assortmentId: $assortmentId
-            ) {
+          mutation UpdateAssortment($assortment: UpdateAssortmentInput!, $assortmentId: ID!) {
+            updateAssortment(assortment: $assortment, assortmentId: $assortmentId) {
               _id
             }
           }
@@ -792,14 +750,8 @@ describe('Assortments', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation UpdateAssortment(
-            $assortment: UpdateAssortmentInput!
-            $assortmentId: ID!
-          ) {
-            updateAssortment(
-              assortment: $assortment
-              assortmentId: $assortmentId
-            ) {
+          mutation UpdateAssortment($assortment: UpdateAssortmentInput!, $assortmentId: ID!) {
+            updateAssortment(assortment: $assortment, assortmentId: $assortmentId) {
               _id
             }
           }

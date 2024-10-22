@@ -1,15 +1,6 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
-import {
-  SimpleProduct,
-  ProductVariations,
-  ConfigurableProduct,
-  PlanProduct,
-} from './seeds/products.js';
+import { SimpleProduct, ProductVariations, ConfigurableProduct, PlanProduct } from './seeds/products.js';
 
 let graphqlFetch;
 
@@ -21,65 +12,63 @@ describe('ProductsVariation', () => {
 
   describe('query.translatedProductVariationTexts for admin user should', () => {
     it('return list of product variation texts when provided valid ID', async () => {
-      const { data: { translatedProductVariationTexts } = {} } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            query TranslatedProductVariationTexts(
-              $productVariationId: ID!
-              $productVariationOptionValue: String
+      const { data: { translatedProductVariationTexts } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query TranslatedProductVariationTexts(
+            $productVariationId: ID!
+            $productVariationOptionValue: String
+          ) {
+            translatedProductVariationTexts(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
             ) {
-              translatedProductVariationTexts(
-                productVariationId: $productVariationId
-                productVariationOptionValue: $productVariationOptionValue
-              ) {
-                _id
-                locale
-                title
-                subtitle
-              }
+              _id
+              locale
+              title
+              subtitle
             }
-          `,
-          variables: {
-            productVariationId: ProductVariations[0]._id,
-          },
-        });
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[0]._id,
+        },
+      });
       expect(translatedProductVariationTexts.length).toEqual(2);
       expect(translatedProductVariationTexts).toMatchObject([
         {
           _id: 'product-color-variation-1-en-text',
           locale: 'en',
           title: 'product color variation title',
-          subtitle: null
+          subtitle: null,
         },
         {
           _id: 'product-color-variation-1-de-text',
           locale: 'de',
           title: 'product color variation title de',
-          subtitle: null
-        }
+          subtitle: null,
+        },
       ]);
     });
 
     it('return empty array when no match is found', async () => {
-      const { data: { translatedProductVariationTexts } = {} } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            query TranslatedProductVariationTexts(
-              $productVariationId: ID!
-              $productVariationOptionValue: String
+      const { data: { translatedProductVariationTexts } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query TranslatedProductVariationTexts(
+            $productVariationId: ID!
+            $productVariationOptionValue: String
+          ) {
+            translatedProductVariationTexts(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
             ) {
-              translatedProductVariationTexts(
-                productVariationId: $productVariationId
-                productVariationOptionValue: $productVariationOptionValue
-              ) {
-                _id
-              }
+              _id
             }
-          `,
-          variables: {
-            productVariationId: 'invalid-product-id',
-          },
-        });
+          }
+        `,
+        variables: {
+          productVariationId: 'invalid-product-id',
+        },
+      });
       expect(translatedProductVariationTexts.length).toEqual(0);
     });
   });
@@ -87,56 +76,54 @@ describe('ProductsVariation', () => {
   describe('query.translatedProductVariationTexts for anonymous user should', () => {
     it('return valid result', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
-      const { data: { translatedProductVariationTexts } = {} } =
-        await graphqlAnonymousFetch({
-          query: /* GraphQL */ `
-            query TranslatedProductVariationTexts(
-              $productVariationId: ID!
-              $productVariationOptionValue: String
+      const { data: { translatedProductVariationTexts } = {} } = await graphqlAnonymousFetch({
+        query: /* GraphQL */ `
+          query TranslatedProductVariationTexts(
+            $productVariationId: ID!
+            $productVariationOptionValue: String
+          ) {
+            translatedProductVariationTexts(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
             ) {
-              translatedProductVariationTexts(
-                productVariationId: $productVariationId
-                productVariationOptionValue: $productVariationOptionValue
-              ) {
-                _id
-                locale
-                title
-                subtitle
-              }
+              _id
+              locale
+              title
+              subtitle
             }
-          `,
-          variables: {
-            productVariationId: ProductVariations[1]._id,
-          },
-        });
-      expect(translatedProductVariationTexts).toMatchObject([{
-        _id: 'product-text-variation-2-en-text',
-        locale: 'en',
-        subtitle: null,
-        title: 'product text variation title',
-      }, {
-        _id: 'product-text-variation-2-de-text',
-        locale: 'de',
-        subtitle: null,
-        title: 'product text variation title de',
-      }]);
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[1]._id,
+        },
+      });
+      expect(translatedProductVariationTexts).toMatchObject([
+        {
+          _id: 'product-text-variation-2-en-text',
+          locale: 'en',
+          subtitle: null,
+          title: 'product text variation title',
+        },
+        {
+          _id: 'product-text-variation-2-de-text',
+          locale: 'de',
+          subtitle: null,
+          title: 'product text variation title de',
+        },
+      ]);
     });
   });
 
   describe('mutation.createProductVariation for admin user should', () => {
     it('create product variation successfully when passed CONFIGURABLE_PRODUCT product type', async () => {
-      const { data: { createProductVariation } = {}, errors } = await graphqlFetch({
+      const { data: { createProductVariation } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation CreateProductVariation(
             $productId: ID!
             $variation: CreateProductVariationInput!
             $texts: [ProductVariationTextInput!]
           ) {
-            createProductVariation(
-              productId: $productId
-              variation: $variation
-              texts: $texts
-            ) {
+            createProductVariation(productId: $productId, variation: $variation, texts: $texts) {
               _id
               texts {
                 _id
@@ -161,9 +148,8 @@ describe('ProductsVariation', () => {
           variation: {
             key: 'key-1',
             type: 'COLOR',
-            
           },
-          texts: [{title: 'product variation title', locale: "de"}]
+          texts: [{ title: 'product variation title', locale: 'de' }],
         },
       });
 
@@ -184,11 +170,7 @@ describe('ProductsVariation', () => {
             $variation: CreateProductVariationInput!
             $texts: [ProductVariationTextInput!]
           ) {
-            createProductVariation(
-              productId: $productId
-              variation: $variation
-              texts: $texts
-            ) {
+            createProductVariation(productId: $productId, variation: $variation, texts: $texts) {
               _id
             }
           }
@@ -197,9 +179,9 @@ describe('ProductsVariation', () => {
           productId: PlanProduct._id,
           variation: {
             key: 'key-1',
-            type: 'COLOR',            
+            type: 'COLOR',
           },
-          texts: [{title: 'product variation title', locale: "de"}]
+          texts: [{ title: 'product variation title', locale: 'de' }],
         },
       });
 
@@ -218,11 +200,7 @@ describe('ProductsVariation', () => {
             $variation: CreateProductVariationInput!
             $texts: [ProductVariationTextInput!]
           ) {
-            createProductVariation(
-              productId: $productId
-              variation: $variation
-              texts: $texts
-            ) {
+            createProductVariation(productId: $productId, variation: $variation, texts: $texts) {
               _id
             }
           }
@@ -231,9 +209,9 @@ describe('ProductsVariation', () => {
           productId: 'invalid-product-id',
           variation: {
             key: 'key-1',
-            type: 'COLOR',            
+            type: 'COLOR',
           },
-          texts: [{title: 'product variation title', locale: "de"}]
+          texts: [{ title: 'product variation title', locale: 'de' }],
         },
       });
       expect(errors[0]?.extensions.code).toEqual('ProductNotFoundError');
@@ -247,11 +225,7 @@ describe('ProductsVariation', () => {
             $variation: CreateProductVariationInput!
             $texts: [ProductVariationTextInput!]
           ) {
-            createProductVariation(
-              productId: $productId
-              variation: $variation
-              texts: $texts
-            ) {
+            createProductVariation(productId: $productId, variation: $variation, texts: $texts) {
               _id
             }
           }
@@ -260,9 +234,9 @@ describe('ProductsVariation', () => {
           productId: '',
           variation: {
             key: 'key-1',
-            type: 'COLOR',            
+            type: 'COLOR',
           },
-          texts: [{title: 'product variation title', locale: "de"}]
+          texts: [{ title: 'product variation title', locale: 'de' }],
         },
       });
       expect(errors[0]?.extensions.code).toEqual('InvalidIdError');
@@ -279,11 +253,7 @@ describe('ProductsVariation', () => {
             $variation: CreateProductVariationInput!
             $texts: [ProductVariationTextInput!]
           ) {
-            createProductVariation(
-              productId: $productId
-              variation: $variation
-              texts: $texts
-            ) {
+            createProductVariation(productId: $productId, variation: $variation, texts: $texts) {
               _id
             }
           }
@@ -292,9 +262,9 @@ describe('ProductsVariation', () => {
           productId: SimpleProduct._id,
           variation: {
             key: 'key-1',
-            type: 'COLOR',            
+            type: 'COLOR',
           },
-          texts: [{title: 'product variation title', locale: "de"}]
+          texts: [{ title: 'product variation title', locale: 'de' }],
         },
       });
       expect(errors[0].extensions?.code).toEqual('NoPermissionError');
@@ -303,49 +273,50 @@ describe('ProductsVariation', () => {
 
   describe('mutation.createProductVariationOption for admin user should', () => {
     it('create product variation option successfully', async () => {
-      const { data: { createProductVariationOption } = {} } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation CreateProductVariationOption(
-              $productVariationId: ID!
-              $option: String!
-              $texts: [ProductVariationTextInput!]
+      const { data: { createProductVariationOption } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation CreateProductVariationOption(
+            $productVariationId: ID!
+            $option: String!
+            $texts: [ProductVariationTextInput!]
+          ) {
+            createProductVariationOption(
+              productVariationId: $productVariationId
+              option: $option
+              texts: $texts
             ) {
-              createProductVariationOption(
-                productVariationId: $productVariationId
-                option: $option
-                texts: $texts
-              ) {
+              _id
+              texts {
                 _id
+              }
+              type
+              key
+              options {
+                _id
+                value
                 texts {
-                  _id
-                }
-                type
-                key
-                options {
-                  _id
-                  value
-                  texts {
-                    title
-                  }
+                  title
                 }
               }
             }
-          `,
-          variables: {
-            productVariationId: ProductVariations[0]._id,
-            option: 'key-1',
-            texts: [{title: 'product variation option title', locale: "de"}]                            
-          },
-        });
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[0]._id,
+          option: 'key-1',
+          texts: [{ title: 'product variation option title', locale: 'de' }],
+        },
+      });
       expect(createProductVariationOption._id).toBe(ProductVariations[0]._id);
-      expect(createProductVariationOption.options[createProductVariationOption.options.length - 1]).toMatchObject({
+      expect(
+        createProductVariationOption.options[createProductVariationOption.options.length - 1],
+      ).toMatchObject({
         _id: 'product-color-variation-1:key-1',
         value: 'key-1',
         texts: {
           title: 'product variation option title',
-        }
-      })
+        },
+      });
     });
 
     it('return error when passed invalid product variation ID', async () => {
@@ -354,7 +325,7 @@ describe('ProductsVariation', () => {
           mutation CreateProductVariationOption(
             $productVariationId: ID!
             $option: String!
-              $texts: [ProductVariationTextInput!]
+            $texts: [ProductVariationTextInput!]
           ) {
             createProductVariationOption(
               productVariationId: $productVariationId
@@ -368,12 +339,10 @@ describe('ProductsVariation', () => {
         variables: {
           productVariationId: 'invalid-product-variation',
           option: 'key-1',
-          texts: [{title: 'product variation option title', locale: "de"}]
+          texts: [{ title: 'product variation option title', locale: 'de' }],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'ProductVariationNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('ProductVariationNotFoundError');
     });
   });
 
@@ -399,7 +368,7 @@ describe('ProductsVariation', () => {
         variables: {
           productVariationId: ProductVariations[0]._id,
           option: 'key-1',
-          texts: [{title: 'product variation option title', locale: "de"}]
+          texts: [{ title: 'product variation option title', locale: 'de' }],
         },
       });
 
@@ -409,38 +378,36 @@ describe('ProductsVariation', () => {
 
   describe('mutation.updateProductVariationTexts for admin user should', () => {
     it('update product variation option texts successfuly', async () => {
-      const { data: { updateProductVariationTexts } = {} } = await graphqlFetch(
-        {
-          query: /* GraphQL */ `
-            mutation UpdateProductVariationTexts(
-              $productVariationId: ID!
-              $productVariationOptionValue: String
-              $texts: [ProductVariationTextInput!]!
+      const { data: { updateProductVariationTexts } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateProductVariationTexts(
+            $productVariationId: ID!
+            $productVariationOptionValue: String
+            $texts: [ProductVariationTextInput!]!
+          ) {
+            updateProductVariationTexts(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
+              texts: $texts
             ) {
-              updateProductVariationTexts(
-                productVariationId: $productVariationId
-                productVariationOptionValue: $productVariationOptionValue
-                texts: $texts
-              ) {
-                _id
-                locale
-                title
-                subtitle
-              }
+              _id
+              locale
+              title
+              subtitle
             }
-          `,
-          variables: {
-            productVariationId: ProductVariations[1]._id,
-            productVariationOptionValue: 'variation-option-1-value',
-            texts: [
-              {
-                locale: 'en',
-                title: 'variation option 2 title',
-              },
-            ],
-          },
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[1]._id,
+          productVariationOptionValue: 'variation-option-1-value',
+          texts: [
+            {
+              locale: 'en',
+              title: 'variation option 2 title',
+            },
+          ],
         },
-      );
+      });
 
       expect(updateProductVariationTexts[0]._id).not.toBe(null);
       expect(updateProductVariationTexts[0]).toMatchObject({
@@ -477,9 +444,7 @@ describe('ProductsVariation', () => {
           ],
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'ProductVariationNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('ProductVariationNotFoundError');
     });
 
     it('return error when passed invalid productvariationId', async () => {
@@ -554,46 +519,48 @@ describe('ProductsVariation', () => {
 
   describe('mutation.removeProductVariationOption for admin user should', () => {
     it('remove product variation option successfuly', async () => {
-      const { data: { removeProductVariationOption } = {} } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation RemoveProductVariationOption(
-              $productVariationId: ID!
-              $productVariationOptionValue: String!
+      const { data: { removeProductVariationOption } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveProductVariationOption(
+            $productVariationId: ID!
+            $productVariationOptionValue: String!
+          ) {
+            removeProductVariationOption(
+              productVariationId: $productVariationId
+              productVariationOptionValue: $productVariationOptionValue
             ) {
-              removeProductVariationOption(
-                productVariationId: $productVariationId
-                productVariationOptionValue: $productVariationOptionValue
-              ) {
+              _id
+              texts {
+                _id
+                locale
+                title
+                subtitle
+              }
+              type
+              key
+              options {
                 _id
                 texts {
-                  _id
-                  locale
                   title
-                  subtitle
-                }
-                type
-                key
-                options {
                   _id
-                  texts {
-                    title
-                    _id
-                    subtitle
-                    locale
-                  }
-                  value
+                  subtitle
+                  locale
                 }
+                value
               }
             }
-          `,
-          variables: {
-            productVariationId: ProductVariations[1]._id,
-            productVariationOptionValue: 'variation-option-1-value',
-          },
-        });
+          }
+        `,
+        variables: {
+          productVariationId: ProductVariations[1]._id,
+          productVariationOptionValue: 'variation-option-1-value',
+        },
+      });
       expect(removeProductVariationOption.options.length).toEqual(2);
-      expect(removeProductVariationOption.options.filter(o => o.value === 'variation-option-1-value').length).toEqual(0);
+      expect(
+        removeProductVariationOption.options.filter((o) => o.value === 'variation-option-1-value')
+          .length,
+      ).toEqual(0);
     });
 
     it('return error when passed invalid product variation ID', async () => {
@@ -639,9 +606,7 @@ describe('ProductsVariation', () => {
           productVariationOptionValue: 'variation-option-2-value',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'ProductVariationNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('ProductVariationNotFoundError');
     });
   });
 
@@ -726,9 +691,7 @@ describe('ProductsVariation', () => {
           productVariationId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'ProductVariationNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('ProductVariationNotFoundError');
     });
 
     it('return error when passed invalid productVariationId', async () => {

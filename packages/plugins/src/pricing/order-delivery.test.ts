@@ -1,9 +1,7 @@
-import { OrderDelivery } from "./order-delivery.js";
+import { OrderDelivery } from './order-delivery.js';
 
-
-describe("OrderDelivery ", () => {
-
+describe('OrderDelivery ', () => {
   it('isActivatedFor', () => {
     expect(OrderDelivery.isActivatedFor({} as any)).toBeTruthy();
   });
-})
+});

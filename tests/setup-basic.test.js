@@ -1,21 +1,21 @@
-import { setupDatabase, createLoggedInGraphqlFetch } from "./helpers.js";
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 
 let db;
 let graphqlFetch;
 
-describe("basic setup of internationalization and localization context", () => {
+describe('basic setup of internationalization and localization context', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch();
   });
 
-  describe("currencies", () => {
+  describe('currencies', () => {
     let Currencies;
     beforeAll(() => {
-      Currencies = db.collection("currencies");
+      Currencies = db.collection('currencies');
     });
 
-    it("add a currency", async () => {
+    it('add a currency', async () => {
       const {
         data: { createCurrency },
         errors,
@@ -32,21 +32,18 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(errors).toEqual(undefined);
       expect(createCurrency).toMatchObject({
-        isoCode: "BTC",
+        isoCode: 'BTC',
         isActive: true,
       });
-      await Currencies.deleteOne({ isoCode: "BTC" });
+      await Currencies.deleteOne({ isoCode: 'BTC' });
     });
 
-    it("update a currency", async () => {
+    it('update a currency', async () => {
       const currency = await Currencies.findOne();
 
       const { data: { updateCurrency } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateCurrency(
-            $currencyId: ID!
-            $currency: UpdateCurrencyInput!
-          ) {
+          mutation updateCurrency($currencyId: ID!, $currency: UpdateCurrencyInput!) {
             updateCurrency(currencyId: $currencyId, currency: $currency) {
               _id
               isoCode
@@ -57,66 +54,60 @@ describe("basic setup of internationalization and localization context", () => {
         variables: {
           currencyId: currency._id,
           currency: {
-            isoCode: "chf",
+            isoCode: 'chf',
             isActive: true,
           },
         },
       });
       expect(errors).toEqual(undefined);
       expect(updateCurrency).toMatchObject({
-        isoCode: "CHF",
+        isoCode: 'CHF',
         isActive: true,
       });
     });
 
-    it("return not found error when passed non existing currencyId", async () => {
+    it('return not found error when passed non existing currencyId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateCurrency(
-            $currencyId: ID!
-            $currency: UpdateCurrencyInput!
-          ) {
+          mutation updateCurrency($currencyId: ID!, $currency: UpdateCurrencyInput!) {
             updateCurrency(currencyId: $currencyId, currency: $currency) {
               _id
             }
           }
         `,
         variables: {
-          currencyId: "non-existing-id",
+          currencyId: 'non-existing-id',
           currency: {
-            isoCode: "chf",
+            isoCode: 'chf',
             isActive: true,
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual("CurrencyNotFoundError");
+      expect(errors[0]?.extensions?.code).toEqual('CurrencyNotFoundError');
     });
 
-    it("return error when passed invalid currencyId", async () => {
+    it('return error when passed invalid currencyId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateCurrency(
-            $currencyId: ID!
-            $currency: UpdateCurrencyInput!
-          ) {
+          mutation updateCurrency($currencyId: ID!, $currency: UpdateCurrencyInput!) {
             updateCurrency(currencyId: $currencyId, currency: $currency) {
               _id
             }
           }
         `,
         variables: {
-          currencyId: "",
+          currencyId: '',
           currency: {
-            isoCode: "chf",
+            isoCode: 'chf',
             isActive: true,
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
-    it("remove a currency", async () => {
-      await Currencies.insertOne({ _id: "ltc", isoCode: "LTC" });
+    it('remove a currency', async () => {
+      await Currencies.insertOne({ _id: 'ltc', isoCode: 'LTC' });
       const { data: { removeCurrency } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -129,18 +120,14 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(errors).toEqual(undefined);
       expect(removeCurrency).toMatchObject({
-        isoCode: "LTC",
+        isoCode: 'LTC',
       });
-      expect(
-        await Currencies.countDocuments({ _id: "ltc", deleted: null })
-      ).toEqual(0);
-      expect(
-        await Currencies.countDocuments({ _id: "ltc" })
-      ).toEqual(1);
-      await Currencies.deleteOne({ _id: "ltc" });
+      expect(await Currencies.countDocuments({ _id: 'ltc', deleted: null })).toEqual(0);
+      expect(await Currencies.countDocuments({ _id: 'ltc' })).toEqual(1);
+      await Currencies.deleteOne({ _id: 'ltc' });
     });
 
-    it("return not found error when passed non existing currencyId", async () => {
+    it('return not found error when passed non existing currencyId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -151,10 +138,10 @@ describe("basic setup of internationalization and localization context", () => {
           }
         `,
       });
-      expect(errors[0]?.extensions?.code).toEqual("CurrencyNotFoundError");
+      expect(errors[0]?.extensions?.code).toEqual('CurrencyNotFoundError');
     });
 
-    it("return error when passed invalid currencyId", async () => {
+    it('return error when passed invalid currencyId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -165,18 +152,18 @@ describe("basic setup of internationalization and localization context", () => {
           }
         `,
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
-    it("query active currencies", async () => {
+    it('query active currencies', async () => {
       await Currencies.insertOne({
-        _id: "ltc",
-        isoCode: "LTC",
+        _id: 'ltc',
+        isoCode: 'LTC',
         isActive: true,
       });
       await Currencies.insertOne({
-        _id: "btc",
-        isoCode: "BTC",
+        _id: 'btc',
+        isoCode: 'BTC',
         isActive: false,
       });
 
@@ -193,22 +180,22 @@ describe("basic setup of internationalization and localization context", () => {
       expect(errors).toEqual(undefined);
       expect(currencies).toEqual([
         {
-          isoCode: "CHF",
+          isoCode: 'CHF',
           isActive: true,
         },
         {
-          isoCode: "LTC",
+          isoCode: 'LTC',
           isActive: true,
         },
       ]);
-      await Currencies.deleteOne({ _id: "ltc" });
-      await Currencies.deleteOne({ _id: "btc" });
+      await Currencies.deleteOne({ _id: 'ltc' });
+      await Currencies.deleteOne({ _id: 'btc' });
     });
 
-    it("query inactive single currency", async () => {
+    it('query inactive single currency', async () => {
       await Currencies.insertOne({
-        _id: "sigt", // hahaha is that signatum?!
-        isoCode: "SIGT",
+        _id: 'sigt', // hahaha is that signatum?!
+        isoCode: 'SIGT',
         isActive: false,
       });
 
@@ -223,12 +210,12 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(errors).toEqual(undefined);
       expect(currency).toMatchObject({
-        isoCode: "SIGT",
+        isoCode: 'SIGT',
       });
-      await Currencies.deleteOne({ _id: "sigt" });
+      await Currencies.deleteOne({ _id: 'sigt' });
     });
 
-    it("query.currency return error when passed invalid ID", async () => {
+    it('query.currency return error when passed invalid ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -238,17 +225,17 @@ describe("basic setup of internationalization and localization context", () => {
           }
         `,
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
-  describe("countries", () => {
+  describe('countries', () => {
     let Countries;
     beforeAll(() => {
-      Countries = db.collection("countries");
+      Countries = db.collection('countries');
     });
 
-    it("add a country", async () => {
+    it('add a country', async () => {
       const {
         data: { createCountry },
       } = await graphqlFetch({
@@ -269,25 +256,22 @@ describe("basic setup of internationalization and localization context", () => {
         `,
       });
       expect(createCountry).toMatchObject({
-        isoCode: "NL",
+        isoCode: 'NL',
         isActive: true,
-        flagEmoji: "🇳🇱",
-        name: "Netherlands",
+        flagEmoji: '🇳🇱',
+        name: 'Netherlands',
       });
-      await Countries.deleteOne({ isoCode: "NL" });
+      await Countries.deleteOne({ isoCode: 'NL' });
     });
 
-    it("update a country", async () => {
-      const Currencies = db.collection("currencies");
+    it('update a country', async () => {
+      const Currencies = db.collection('currencies');
       const country = await Countries.findOne();
       const currency = await Currencies.findOne();
 
       const { data: { updateCountry } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateCountry(
-            $countryId: ID!
-            $country: UpdateCountryInput!
-          ) {
+          mutation updateCountry($countryId: ID!, $country: UpdateCountryInput!) {
             updateCountry(countryId: $countryId, country: $country) {
               _id
               isoCode
@@ -302,7 +286,7 @@ describe("basic setup of internationalization and localization context", () => {
         variables: {
           countryId: country._id,
           country: {
-            isoCode: "CH",
+            isoCode: 'CH',
             isActive: true,
             defaultCurrencyId: currency._id,
           },
@@ -310,68 +294,62 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(errors).toEqual(undefined);
       expect(updateCountry).toMatchObject({
-        isoCode: "CH",
+        isoCode: 'CH',
         isActive: true,
         defaultCurrency: { _id: currency._id, isoCode: currency.isoCode },
       });
     });
 
-    it("return error when passed invalid countryId", async () => {
-      const Currencies = db.collection("currencies");
+    it('return error when passed invalid countryId', async () => {
+      const Currencies = db.collection('currencies');
       const currency = await Currencies.findOne();
 
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateCountry(
-            $countryId: ID!
-            $country: UpdateCountryInput!
-          ) {
+          mutation updateCountry($countryId: ID!, $country: UpdateCountryInput!) {
             updateCountry(countryId: $countryId, country: $country) {
               _id
             }
           }
         `,
         variables: {
-          countryId: "",
+          countryId: '',
           country: {
-            isoCode: "CH",
+            isoCode: 'CH',
             isActive: true,
             defaultCurrencyId: currency._id,
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
-    it("return not found error when passed non existing countryId", async () => {
-      const Currencies = db.collection("currencies");
+    it('return not found error when passed non existing countryId', async () => {
+      const Currencies = db.collection('currencies');
       const currency = await Currencies.findOne();
 
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateCountry(
-            $countryId: ID!
-            $country: UpdateCountryInput!
-          ) {
+          mutation updateCountry($countryId: ID!, $country: UpdateCountryInput!) {
             updateCountry(countryId: $countryId, country: $country) {
               _id
             }
           }
         `,
         variables: {
-          countryId: "non-existing",
+          countryId: 'non-existing',
           country: {
-            isoCode: "CH",
+            isoCode: 'CH',
             isActive: true,
             defaultCurrencyId: currency._id,
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual("CountryNotFoundError");
+      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
     });
 
-    it("remove a country", async () => {
-      await Countries.insertOne({ _id: "us", isoCode: "US" });
+    it('remove a country', async () => {
+      await Countries.insertOne({ _id: 'us', isoCode: 'US' });
       const { data: { removeCountry } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -384,18 +362,14 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(errors).toEqual(undefined);
       expect(removeCountry).toMatchObject({
-        isoCode: "US",
+        isoCode: 'US',
       });
-      expect(
-        await Countries.countDocuments({ _id: "us", deleted: null })
-      ).toEqual(0);
-      expect(
-        await Countries.countDocuments({ _id: "us" })
-      ).toEqual(1);
-      await Countries.deleteOne({ _id: "us" });
+      expect(await Countries.countDocuments({ _id: 'us', deleted: null })).toEqual(0);
+      expect(await Countries.countDocuments({ _id: 'us' })).toEqual(1);
+      await Countries.deleteOne({ _id: 'us' });
     });
 
-    it("return not found error when passed non existing country ID", async () => {
+    it('return not found error when passed non existing country ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -405,10 +379,10 @@ describe("basic setup of internationalization and localization context", () => {
           }
         `,
       });
-      expect(errors[0]?.extensions?.code).toEqual("CountryNotFoundError");
+      expect(errors[0]?.extensions?.code).toEqual('CountryNotFoundError');
     });
 
-    it("return error when passed invalid country ID", async () => {
+    it('return error when passed invalid country ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -418,18 +392,18 @@ describe("basic setup of internationalization and localization context", () => {
           }
         `,
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
-    it("query active countries", async () => {
+    it('query active countries', async () => {
       await Countries.insertOne({
-        _id: "uk",
-        isoCode: "UK",
+        _id: 'uk',
+        isoCode: 'UK',
         isActive: true,
       });
       await Countries.insertOne({
-        _id: "it",
-        isoCode: "IT",
+        _id: 'it',
+        isoCode: 'IT',
         isActive: false,
       });
 
@@ -445,20 +419,20 @@ describe("basic setup of internationalization and localization context", () => {
       expect(errors).toEqual(undefined);
       expect(countries).toEqual([
         {
-          isoCode: "CH",
+          isoCode: 'CH',
         },
         {
-          isoCode: "UK",
+          isoCode: 'UK',
         },
       ]);
-      await Countries.deleteOne({ _id: "it" });
-      await Countries.deleteOne({ _id: "uk" });
+      await Countries.deleteOne({ _id: 'it' });
+      await Countries.deleteOne({ _id: 'uk' });
     });
 
-    it("query.country inactive single country", async () => {
+    it('query.country inactive single country', async () => {
       await Countries.insertOne({
-        _id: "de",
-        isoCode: "DE",
+        _id: 'de',
+        isoCode: 'DE',
         isActive: false,
       });
 
@@ -473,12 +447,12 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(errors).toEqual(undefined);
       expect(country).toMatchObject({
-        isoCode: "DE",
+        isoCode: 'DE',
       });
-      await Countries.deleteOne({ _id: "de" });
+      await Countries.deleteOne({ _id: 'de' });
     });
 
-    it("query.country return error when passed invalid ID", async () => {
+    it('query.country return error when passed invalid ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -488,17 +462,17 @@ describe("basic setup of internationalization and localization context", () => {
           }
         `,
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
-  describe("languages", () => {
+  describe('languages', () => {
     let Languages;
     beforeAll(() => {
-      Languages = db.collection("languages");
+      Languages = db.collection('languages');
     });
 
-    it("add a language", async () => {
+    it('add a language', async () => {
       const { data: { createLanguage } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -513,23 +487,20 @@ describe("basic setup of internationalization and localization context", () => {
         `,
       });
       expect(createLanguage).toMatchObject({
-        isoCode: "fr",
+        isoCode: 'fr',
         isActive: true,
         isBase: false,
-        name: "fr",
+        name: 'fr',
       });
-      await Languages.deleteOne({ isoCode: "fr" });
+      await Languages.deleteOne({ isoCode: 'fr' });
     });
 
-    it("update a language", async () => {
+    it('update a language', async () => {
       const language = await Languages.findOne();
 
       const { data: { updateLanguage } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateLanguage(
-            $languageId: ID!
-            $language: UpdateLanguageInput!
-          ) {
+          mutation updateLanguage($languageId: ID!, $language: UpdateLanguageInput!) {
             updateLanguage(languageId: $languageId, language: $language) {
               _id
               isoCode
@@ -540,66 +511,60 @@ describe("basic setup of internationalization and localization context", () => {
         variables: {
           languageId: language._id,
           language: {
-            isoCode: "de",
+            isoCode: 'de',
             isActive: true,
           },
         },
       });
       expect(errors).toEqual(undefined);
       expect(updateLanguage).toMatchObject({
-        isoCode: "de",
+        isoCode: 'de',
         isActive: true,
       });
     });
 
-    it("return not found error when passed non existing languageId", async () => {
+    it('return not found error when passed non existing languageId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateLanguage(
-            $languageId: ID!
-            $language: UpdateLanguageInput!
-          ) {
+          mutation updateLanguage($languageId: ID!, $language: UpdateLanguageInput!) {
             updateLanguage(languageId: $languageId, language: $language) {
               _id
             }
           }
         `,
         variables: {
-          languageId: "non-existing-id",
+          languageId: 'non-existing-id',
           language: {
-            isoCode: "de",
+            isoCode: 'de',
             isActive: true,
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual("LanguageNotFoundError");
+      expect(errors[0]?.extensions?.code).toEqual('LanguageNotFoundError');
     });
 
-    it("return error when passed invalid languageId", async () => {
+    it('return error when passed invalid languageId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateLanguage(
-            $languageId: ID!
-            $language: UpdateLanguageInput!
-          ) {
+          mutation updateLanguage($languageId: ID!, $language: UpdateLanguageInput!) {
             updateLanguage(languageId: $languageId, language: $language) {
               _id
             }
           }
         `,
         variables: {
-          languageId: "",
+          languageId: '',
           language: {
-            isoCode: "de",
+            isoCode: 'de',
             isActive: true,
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
-    it("remove a language", async () => {
-      await Languages.insertOne({ _id: "en", isoCode: "US" });
+    it('remove a language', async () => {
+      await Languages.insertOne({ _id: 'en', isoCode: 'US' });
       const { data: { removeLanguage } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -612,18 +577,14 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(errors).toEqual(undefined);
       expect(removeLanguage).toMatchObject({
-        isoCode: "US",
+        isoCode: 'US',
       });
-      expect(
-        await Languages.countDocuments({ _id: "en", deleted: null })
-      ).toEqual(0);
-      expect(
-        await Languages.countDocuments({ _id: "en" })
-      ).toEqual(1);
-      await Languages.deleteOne({ _id: "en" });
+      expect(await Languages.countDocuments({ _id: 'en', deleted: null })).toEqual(0);
+      expect(await Languages.countDocuments({ _id: 'en' })).toEqual(1);
+      await Languages.deleteOne({ _id: 'en' });
     });
 
-    it("return not found error when passed non existing languageId", async () => {
+    it('return not found error when passed non existing languageId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -634,10 +595,10 @@ describe("basic setup of internationalization and localization context", () => {
           }
         `,
       });
-      expect(errors[0]?.extensions?.code).toEqual("LanguageNotFoundError");
+      expect(errors[0]?.extensions?.code).toEqual('LanguageNotFoundError');
     });
 
-    it("return error when passed invalid languageId", async () => {
+    it('return error when passed invalid languageId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
@@ -648,18 +609,18 @@ describe("basic setup of internationalization and localization context", () => {
           }
         `,
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
 
-    it("query active languages", async () => {
+    it('query active languages', async () => {
       await Languages.insertOne({
-        _id: "es",
-        isoCode: "es",
+        _id: 'es',
+        isoCode: 'es',
         isActive: true,
       });
       await Languages.insertOne({
-        _id: "ru",
-        isoCode: "ru",
+        _id: 'ru',
+        isoCode: 'ru',
         isActive: false,
       });
 
@@ -675,20 +636,20 @@ describe("basic setup of internationalization and localization context", () => {
       expect(errors).toEqual(undefined);
       expect(languages).toEqual([
         {
-          isoCode: "de",
+          isoCode: 'de',
         },
         {
-          isoCode: "es",
+          isoCode: 'es',
         },
       ]);
-      await Languages.deleteOne({ _id: "es" });
-      await Languages.deleteOne({ _id: "ru" });
+      await Languages.deleteOne({ _id: 'es' });
+      await Languages.deleteOne({ _id: 'ru' });
     });
 
-    it("query inactive single language", async () => {
+    it('query inactive single language', async () => {
       await Languages.insertOne({
-        _id: "pl",
-        isoCode: "pl",
+        _id: 'pl',
+        isoCode: 'pl',
         isActive: false,
       });
 
@@ -703,12 +664,12 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(errors).toEqual(undefined);
       expect(language).toMatchObject({
-        isoCode: "pl",
+        isoCode: 'pl',
       });
-      await Languages.deleteOne({ _id: "pl" });
+      await Languages.deleteOne({ _id: 'pl' });
     });
 
-    it("query.language return error when passed invalid languageId", async () => {
+    it('query.language return error when passed invalid languageId', async () => {
       const { data: { language } = {}, errors } = await graphqlFetch({
         query: /* GraphQL */ `
           query {
@@ -719,12 +680,12 @@ describe("basic setup of internationalization and localization context", () => {
         `,
       });
       expect(language).toEqual(null);
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
-  describe("resolved locale context", () => {
-    it("user defaults", async () => {
+  describe('resolved locale context', () => {
+    it('user defaults', async () => {
       const {
         data: { me },
       } = await graphqlFetch({
@@ -743,15 +704,15 @@ describe("basic setup of internationalization and localization context", () => {
       });
       expect(me).toMatchObject({
         language: {
-          isoCode: "de",
+          isoCode: 'de',
         },
         country: {
-          isoCode: "CH",
+          isoCode: 'CH',
         },
       });
     });
 
-    it("global shop context", async () => {
+    it('global shop context', async () => {
       const {
         data: { shopInfo },
       } = await graphqlFetch({
@@ -775,17 +736,17 @@ describe("basic setup of internationalization and localization context", () => {
         `,
       });
       expect(shopInfo).toMatchObject({
-        _id: "root",
+        _id: 'root',
         language: {
-          isoCode: "de",
+          isoCode: 'de',
         },
         country: {
-          isoCode: "CH",
+          isoCode: 'CH',
           defaultCurrency: {
-            isoCode: "CHF",
+            isoCode: 'CHF',
           },
         },
-        userRoles: ["admin"],
+        userRoles: ['admin'],
       });
     });
   });

@@ -1,9 +1,5 @@
 import wait from './lib/wait.js';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { AllocatedWork, NewWork } from './seeds/work.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 
@@ -53,13 +49,9 @@ describe('Worker Module', () => {
         `,
       });
 
-      expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(
-        1,
-      );
+      expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(1);
 
-      const work = workQueue.find(
-        (w) => w._id === addWorkResult.data.addWork._id,
-      );
+      const work = workQueue.find((w) => w._id === addWorkResult.data.addWork._id);
 
       expect(work.status).toBe('SUCCESS');
     });
@@ -97,9 +89,7 @@ describe('Worker Module', () => {
           created: { start: new Date(0), end: null },
         },
       });
-      expect(workQueue.filter(({ type }) => type === 'EXTERNAL')).toHaveLength(
-        3,
-      );
+      expect(workQueue.filter(({ type }) => type === 'EXTERNAL')).toHaveLength(3);
     });
 
     it('Return search result in work queue', async () => {
@@ -116,9 +106,7 @@ describe('Worker Module', () => {
           queryString: 'external',
         },
       });
-      expect(workQueue).toHaveLength(
-        3,
-      );
+      expect(workQueue).toHaveLength(3);
     });
 
     it('Get work synchroniously. Only one gets it.', async () => {
@@ -139,25 +127,18 @@ describe('Worker Module', () => {
           },
         });
 
-      const results = await Promise.all([
-        makeAllocatePromise(),
-        makeAllocatePromise(),
-      ]);
+      const results = await Promise.all([makeAllocatePromise(), makeAllocatePromise()]);
 
       // There should only be one result with allocated work
       expect(
         results.filter(
           (r) =>
-            r.data.allocateWork &&
-            r.data.allocateWork.type === 'EXTERNAL' &&
-            r.data.allocateWork._id,
+            r.data.allocateWork && r.data.allocateWork.type === 'EXTERNAL' && r.data.allocateWork._id,
         ),
       ).toHaveLength(1);
 
       // Hoist workId for later use
-      workId = results.find(
-        (r) => r.data.allocateWork && r.data.allocateWork._id,
-      ).data.allocateWork._id;
+      workId = results.find((r) => r.data.allocateWork && r.data.allocateWork._id).data.allocateWork._id;
     });
 
     it('No more work in the queue', async () => {
@@ -172,19 +153,13 @@ describe('Worker Module', () => {
         `,
       });
 
-      expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(
-        0,
-      );
+      expect(workQueue.filter(({ type }) => type === 'HEARTBEAT')).toHaveLength(0);
     });
 
     it('Finish successful work.', async () => {
       const { data: { finishWork } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation finishWork(
-            $workId: ID!
-            $success: Boolean
-            $worker: String
-          ) {
+          mutation finishWork($workId: ID!, $success: Boolean, $worker: String) {
             finishWork(workId: $workId, success: $success, worker: $worker) {
               _id
               status
@@ -204,11 +179,7 @@ describe('Worker Module', () => {
     it('return error when passed invalid workId', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation finishWork(
-            $workId: ID!
-            $success: Boolean
-            $worker: String
-          ) {
+          mutation finishWork($workId: ID!, $success: Boolean, $worker: String) {
             finishWork(workId: $workId, success: $success, worker: $worker) {
               _id
             }
@@ -227,11 +198,7 @@ describe('Worker Module', () => {
     it('return not found error when non existing workId', async () => {
       const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation finishWork(
-            $workId: ID!
-            $success: Boolean
-            $worker: String
-          ) {
+          mutation finishWork($workId: ID!, $success: Boolean, $worker: String) {
             finishWork(workId: $workId, success: $success, worker: $worker) {
               _id
             }
@@ -286,18 +253,8 @@ describe('Worker Module', () => {
 
       const finishWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation finishWork(
-            $workId: ID!
-            $success: Boolean
-            $result: JSON
-            $worker: String
-          ) {
-            finishWork(
-              workId: $workId
-              success: $success
-              result: $result
-              worker: $worker
-            ) {
+          mutation finishWork($workId: ID!, $success: Boolean, $result: JSON, $worker: String) {
+            finishWork(workId: $workId, success: $success, result: $result, worker: $worker) {
               _id
               status
               result
@@ -308,7 +265,7 @@ describe('Worker Module', () => {
           workId: addWorkResult.data.addWork._id,
           success: true,
           result: {},
-          worker: "TEST-GRAPHQL"
+          worker: 'TEST-GRAPHQL',
         },
       });
 
@@ -322,11 +279,7 @@ describe('Worker Module', () => {
 
       const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation addWork(
-            $type: WorkType!
-            $input: JSON
-            $scheduled: Timestamp
-          ) {
+          mutation addWork($type: WorkType!, $input: JSON, $scheduled: Timestamp) {
             addWork(type: $type, input: $input, scheduled: $scheduled) {
               _id
               status
@@ -347,27 +300,31 @@ describe('Worker Module', () => {
       // Test if work is done eventually
       await wait(3000);
 
-      const { data: { workQueue } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            query {
-              workQueue: workQueue(status: [NEW, SUCCESS]) {
-                _id
-                status
-                started
-                type
-                worker
-              },
+      const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            workQueue: workQueue(status: [NEW, SUCCESS]) {
+              _id
+              status
+              started
+              type
+              worker
             }
-          `,
-        });
+          }
+        `,
+      });
 
       expect(
-        workQueue.filter(({ type, status }) => type === 'HEARTBEAT' && status === "NEW"),
+        workQueue.filter(({ type, status }) => type === 'HEARTBEAT' && status === 'NEW'),
       ).toHaveLength(0);
 
       expect(
-        workQueue.filter(({ type, status, started }) => type === 'HEARTBEAT' && status === "SUCCESS" && new Date(started).getTime() >= scheduled.getTime() ),
+        workQueue.filter(
+          ({ type, status, started }) =>
+            type === 'HEARTBEAT' &&
+            status === 'SUCCESS' &&
+            new Date(started).getTime() >= scheduled.getTime(),
+        ),
       ).toHaveLength(1);
     });
 
@@ -397,27 +354,26 @@ describe('Worker Module', () => {
       await wait(3000);
 
       // Expect copy & reschedule
-      const { data: { workQueue: workQueue } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            query {
-              workQueue(status: [NEW,ALLOCATED,FAILED]) {
+      const { data: { workQueue: workQueue } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            workQueue(status: [NEW, ALLOCATED, FAILED]) {
+              _id
+              status
+              type
+              worker
+              original {
                 _id
-                status
-                type
-                worker
-                original {
-                  _id
-                }
-                retries
               }
+              retries
             }
-          `,
-        });
+          }
+        `,
+      });
 
       expect(
         workQueue.filter(({ type, _id, original, retries }) => {
-          if (type !== "HEARTBEAT") return false;
+          if (type !== 'HEARTBEAT') return false;
           if (retries === 2 && _id === addWorkResult.data.addWork._id) return true;
           if (retries === 1 && original._id === addWorkResult.data.addWork._id) return true;
         }),
@@ -518,7 +474,6 @@ describe('Worker Module', () => {
         `,
         variables: {
           status: ['SUCCESS'],
-
         },
       });
       expect(workQueue.filter((e) => e.status !== 'SUCCESS').length).toEqual(0);
@@ -542,10 +497,7 @@ describe('Worker Module', () => {
           types: ['EXTERNAL'],
         },
       });
-      expect(
-        workQueue.filter((w) => w.type !== 'EXTERNAL' || w.status !== 'SUCCESS')
-          .length,
-      ).toEqual(0);
+      expect(workQueue.filter((w) => w.type !== 'EXTERNAL' || w.status !== 'SUCCESS').length).toEqual(0);
     });
   });
 
@@ -680,11 +632,7 @@ describe('Worker Module', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
-          mutation finishWork(
-            $workId: ID!
-            $success: Boolean
-            $worker: String
-          ) {
+          mutation finishWork($workId: ID!, $success: Boolean, $worker: String) {
             finishWork(workId: $workId, success: $success, worker: $worker) {
               _id
               status
@@ -706,11 +654,7 @@ describe('Worker Module', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
-          mutation finishWork(
-            $workId: ID!
-            $success: Boolean
-            $worker: String
-          ) {
+          mutation finishWork($workId: ID!, $success: Boolean, $worker: String) {
             finishWork(workId: $workId, success: $success, worker: $worker) {
               _id
               status

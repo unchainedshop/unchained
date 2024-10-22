@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 
@@ -48,8 +44,8 @@ describe('WarehousingProviders', () => {
           type: SimpleWarehousingProvider.type,
           configuration: [],
           configurationError: null,
-          isActive: true
-        }
+          isActive: true,
+        },
       ]);
     });
 

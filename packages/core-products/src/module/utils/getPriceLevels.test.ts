@@ -1,6 +1,5 @@
-import { getPriceLevels } from "./getPriceLevels.js";
-import product  from '../../mock/product.js'
-
+import { getPriceLevels } from './getPriceLevels.js';
+import product from '../../mock/product.js';
 
 describe('Price level', () => {
   it('Should return empty array when country code is not specified', () => {

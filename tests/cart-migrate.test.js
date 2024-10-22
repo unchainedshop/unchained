@@ -1,24 +1,19 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from "./helpers.js";
-import { SimpleProduct } from "./seeds/products.js";
-import { GUEST_TOKEN } from "./seeds/users.js";
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
+import { SimpleProduct } from './seeds/products.js';
+import { GUEST_TOKEN } from './seeds/users.js';
 
 let db;
 let anonymousGraphqlFetch;
-let guestToken;
 let loggedInGraphqlFetch;
 let orderId;
 
-describe("Guest user cart migration", () => {
+describe('Guest user cart migration', () => {
   beforeAll(async () => {
     [db] = await setupDatabase();
     anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
   });
 
-  it("login as guest", async () => {
+  it('login as guest', async () => {
     const result = await anonymousGraphqlFetch({
       query: /* GraphQL */ `
         mutation {
@@ -28,11 +23,10 @@ describe("Guest user cart migration", () => {
         }
       `,
     });
-    guestToken = result.data.loginAsGuest.token;
     expect(result.data.loginAsGuest).toMatchObject({});
   });
 
-  it("add a product to the cart", async () => {
+  it('add a product to the cart', async () => {
     loggedInGraphqlFetch = await createLoggedInGraphqlFetch(GUEST_TOKEN);
     const result = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
@@ -41,11 +35,7 @@ describe("Guest user cart migration", () => {
           $quantity: Int
           $configuration: [ProductConfigurationParameterInput!]
         ) {
-          addCartProduct(
-            productId: $productId
-            quantity: $quantity
-            configuration: $configuration
-          ) {
+          addCartProduct(productId: $productId, quantity: $quantity, configuration: $configuration) {
             _id
             quantity
             total {
@@ -73,14 +63,14 @@ describe("Guest user cart migration", () => {
       variables: {
         productId: SimpleProduct._id,
         quantity: 2,
-        configuration: [{ key: "length", value: "5" }],
+        configuration: [{ key: 'length', value: '5' }],
       },
     });
     orderId = result.data.addCartProduct.order._id;
     expect(result.data.addCartProduct).toMatchObject({
       quantity: 2,
       total: {
-        currency: "CHF",
+        currency: 'CHF',
         amount: 20000,
       },
       taxes: {
@@ -92,13 +82,13 @@ describe("Guest user cart migration", () => {
       order: {},
       configuration: [
         {
-          key: "length",
+          key: 'length',
         },
       ],
     });
   });
 
-  it("check if cart contains product after normal login", async () => {
+  it('check if cart contains product after normal login', async () => {
     const { data: { loginWithPassword } = {} } = await loggedInGraphqlFetch({
       query: /* GraphQL */ `
         mutation {
@@ -112,7 +102,7 @@ describe("Guest user cart migration", () => {
         }
       `,
     });
-    const adminOrder = await db.collection("orders").findOne({
+    const adminOrder = await db.collection('orders').findOne({
       userId: loginWithPassword.user._id,
       _id: orderId,
     });

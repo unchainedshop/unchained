@@ -1,4 +1,11 @@
-import { applyRate, resolveRatioAndTaxDivisorForPricingSheet, roundToNext, resolveAmountAndTax, applyDiscountToMultipleShares, calculateAmountToSplit } from "./calculation";
+import {
+  applyRate,
+  resolveRatioAndTaxDivisorForPricingSheet,
+  roundToNext,
+  resolveAmountAndTax,
+  applyDiscountToMultipleShares,
+  calculateAmountToSplit,
+} from './calculation';
 
 describe('roundToNext', () => {
   it('rounds to the next multiple of precision correctly when the value is positive', () => {
@@ -20,10 +27,9 @@ describe('roundToNext', () => {
   it('returns the same value when the precision is 1', () => {
     expect(roundToNext(5, 1)).toBe(5);
   });
-
 });
 
-describe("resolveRatioAndTaxDivisorForPricingSheet", () => {
+describe('resolveRatioAndTaxDivisorForPricingSheet', () => {
   it('total is 0 and pricing is provided', () => {
     const pricing: any = {
       taxSum: () => 10,
@@ -63,11 +69,9 @@ describe("resolveRatioAndTaxDivisorForPricingSheet", () => {
     const result = resolveRatioAndTaxDivisorForPricingSheet(pricing, 20);
     expect(result).toEqual({ ratio: 1, taxDivisor: 1 });
   });
+});
 
-})
-
-
-describe("resolveAmountAndTax", () => {
+describe('resolveAmountAndTax', () => {
   it('ratio is 0 and taxDivisor is 0', () => {
     const result = resolveAmountAndTax({ ratio: 0, taxDivisor: 0 }, 100);
     expect(result).toEqual([0, 0]);
@@ -83,7 +87,6 @@ describe("resolveAmountAndTax", () => {
     expect(result).toEqual([0, 0]);
   });
 
-
   it('ratio and taxDivisor are not 0', () => {
     const result = resolveAmountAndTax({ ratio: 0.5, taxDivisor: 2 }, 100);
     expect(result).toEqual([50, 25]);
@@ -93,9 +96,9 @@ describe("resolveAmountAndTax", () => {
     const result = resolveAmountAndTax({ ratio: Number.NaN, taxDivisor: Number.NaN }, 100);
     expect(result).toEqual([0, 0]);
   });
-})
+});
 
-describe("resolveAmountAndTax", () => {
+describe('resolveAmountAndTax', () => {
   it('shares are empty', () => {
     const result = applyDiscountToMultipleShares([], 100);
     expect(result).toEqual([0, 0]);
@@ -115,12 +118,12 @@ describe("resolveAmountAndTax", () => {
     const result = applyDiscountToMultipleShares(shares, 100);
     expect(result).toEqual([70, 31.666666666666664]);
   });
-})
+});
 
 describe('applyRate', () => {
   it('applies the rate correctly when a rate is provided', () => {
     const configuration = {
-      rate: 0.1
+      rate: 0.1,
     };
     const amount = 100;
     expect(applyRate(configuration, amount)).toBe(10);
@@ -128,7 +131,7 @@ describe('applyRate', () => {
 
   it('applies the fixed rate correctly when a fixed rate is provided', () => {
     const configuration = {
-      fixedRate: 50
+      fixedRate: 50,
     };
     const amount = 100;
     expect(applyRate(configuration, amount)).toBe(50);
@@ -136,7 +139,7 @@ describe('applyRate', () => {
 
   it('applies the fixed rate correctly when a fixed rate is provided and the amount is less than fixed rate', () => {
     const configuration = {
-      fixedRate: 150
+      fixedRate: 150,
     };
     const amount = 100;
     expect(applyRate(configuration, amount)).toBe(100);
@@ -144,57 +147,38 @@ describe('applyRate', () => {
 
   it('applies the rate correctly when rate is less than or equal to 0', () => {
     const configuration = {
-      rate: -0.1
+      rate: -0.1,
     };
     const amount = 100;
     expect(applyRate(configuration, amount)).toBe(-10);
   });
   it('applies the rate correctly when only rate is provided and amount is negative', () => {
     const configuration = {
-      rate: 0.1
+      rate: 0.1,
     };
     const amount = -100;
     expect(applyRate(configuration, amount)).toBe(-10);
   });
 
-
   it('applies the rate correctly when only rate is provided and amount is negative', () => {
     const configuration = {
-      rate: 0.1
+      rate: 0.1,
     };
     const amount = -100;
     expect(applyRate(configuration, amount)).toBe(-10);
   });
 
-
   it('applies the rate correctly when only rate is provided and amount is negative', () => {
     const configuration = {
-      rate: 0.1
+      rate: 0.1,
     };
     const amount = -100;
     expect(applyRate(configuration, amount)).toBe(-10);
   });
 
-
-
   it('applies the rate correctly when only rate is provided and amount is negative', () => {
     const configuration = {
-      rate: 0.1
-    };
-    const amount = -100;
-    expect(applyRate(configuration, amount)).toBe(-10);
-  });
-
-
-  it('returns 0 when rate and fixed rate are not provided', () => {
-    const configuration = {};
-    const amount = 100;
-    expect(applyRate(configuration, amount)).toBe(0);
-  });
-
-  it('applies the rate correctly when only rate is provided and amount is negative', () => {
-    const configuration = {
-      rate: 0.1
+      rate: 0.1,
     };
     const amount = -100;
     expect(applyRate(configuration, amount)).toBe(-10);
@@ -206,9 +190,20 @@ describe('applyRate', () => {
     expect(applyRate(configuration, amount)).toBe(0);
   });
 
+  it('applies the rate correctly when only rate is provided and amount is negative', () => {
+    const configuration = {
+      rate: 0.1,
+    };
+    const amount = -100;
+    expect(applyRate(configuration, amount)).toBe(-10);
+  });
 
+  it('returns 0 when rate and fixed rate are not provided', () => {
+    const configuration = {};
+    const amount = 100;
+    expect(applyRate(configuration, amount)).toBe(0);
+  });
 });
-
 
 describe('calculateAmountToSplit', () => {
   it('calculates the correct amount to split when using a rate', () => {
@@ -235,7 +230,6 @@ describe('calculateAmountToSplit', () => {
     expect(calculateAmountToSplit(configuration, amount)).toBe(0);
   });
 
-
   it('returns 0 when amount is negative', () => {
     const configuration = {
       rate: 0.1,
@@ -251,6 +245,4 @@ describe('calculateAmountToSplit', () => {
     const amount = 1000;
     expect(calculateAmountToSplit(configuration, amount)).toBe(0);
   });
-
-
 });

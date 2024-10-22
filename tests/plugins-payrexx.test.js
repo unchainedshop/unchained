@@ -1,9 +1,9 @@
 import { createLoggedInGraphqlFetch, setupDatabase } from './helpers.js';
-import { USER_TOKEN, User } from './seeds/users.js';
+import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 
-import webhookReserved from "./seeds/payrexx_webhook_reserved.js";
+import webhookReserved from './seeds/payrexx_webhook_reserved.js';
 
 let db;
 let graphqlFetch;
@@ -11,10 +11,6 @@ let graphqlFetch;
 const payrexxInstance = 'unchained-test';
 
 describe('Plugins: Payrexx Payments', () => {
-  const merchantId = '1100004624';
-  const amount = '20000';
-  const currency = 'CHF';
-
   beforeAll(async () => {
     [db] = await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
@@ -71,7 +67,6 @@ describe('Plugins: Payrexx Payments', () => {
     });
   });
 
-
   describe('mutation.signPaymentProviderForCheckout (Datatrans) should', () => {
     it('starts a new transaction and checks if it is valid', async () => {
       import.meta.jest.setTimeout(10000);
@@ -79,10 +74,7 @@ describe('Plugins: Payrexx Payments', () => {
         data: { signPaymentProviderForCheckout },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
+          mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
             signPaymentProviderForCheckout(
               transactionContext: $transactionContext
               orderPaymentId: $orderPaymentId
@@ -95,10 +87,8 @@ describe('Plugins: Payrexx Payments', () => {
         },
       });
 
-      const { status, data } = JSON.parse(
-        signPaymentProviderForCheckout,
-      );
-      
+      const { status, data } = JSON.parse(signPaymentProviderForCheckout);
+
       expect(status).toBe('success');
 
       const [{ link, hash }] = data;
@@ -106,7 +96,7 @@ describe('Plugins: Payrexx Payments', () => {
       expect(link).toBe(url);
 
       const result = await fetch(url);
-      expect(result.status).toBe(200)
+      expect(result.status).toBe(200);
     });
   });
 
@@ -114,24 +104,21 @@ describe('Plugins: Payrexx Payments', () => {
     it('should ignore a transaction with status "waiting"', async () => {
       const webhookBody = {
         transaction: {
-          status: 'waiting'
-        }
-      };
-      const result = await fetch(
-        'http://localhost:4010/payment/payrexx',
-        {
-          method: 'POST',
-          duplex: 'half',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(webhookBody),
+          status: 'waiting',
         },
-      );
+      };
+      const result = await fetch('http://localhost:4010/payment/payrexx', {
+        method: 'POST',
+        duplex: 'half',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookBody),
+      });
       expect(result.status).toBe(200);
-      expect(await result.text()).toContain('ignored')
+      expect(await result.text()).toContain('ignored');
     });
-    
+
     it('should checkout the order when the transaction has status "reserved"', async () => {
       const webhookBody = {
         ...webhookReserved,
@@ -141,22 +128,18 @@ describe('Plugins: Payrexx Payments', () => {
           invoice: {
             ...webhookReserved.transaction.invoice,
             paymentRequestId: 1000001,
-          }
-        }
-      };
-      const result = await fetch(
-        'http://localhost:4010/payment/payrexx',
-        {
-          method: 'POST',
-          duplex: 'half',
-          headers: {
-            'Content-Type': 'application/json',
           },
-          body: JSON.stringify(webhookBody),
         },
-      );
+      };
+      const result = await fetch('http://localhost:4010/payment/payrexx', {
+        method: 'POST',
+        duplex: 'half',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookBody),
+      });
       expect(result.status).toBe(200);
     });
   });
-
 });

@@ -4,22 +4,18 @@ import {
   createAnonymousGraphqlFetch,
   putFile,
 } from './helpers.js';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
 import { JpegProductMedia, SimpleProduct } from './seeds/products.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let graphqlFetch;
 
-const productMediaFile2 = fs.createReadStream(
-  path.resolve(__dirname, `./assets/zurich.jpg`)
-);
-const productMediaFile3 = fs.createReadStream(
-  path.resolve(__dirname, `./assets/contract.pdf`)
-);
+const productMediaFile2 = fs.createReadStream(path.resolve(dirname, `./assets/zurich.jpg`));
+const productMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets/contract.pdf`));
 
 describe('ProductsVariation', () => {
   beforeAll(async () => {
@@ -33,14 +29,8 @@ describe('ProductsVariation', () => {
         data: { prepareProductMediaUpload },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation prepareProductMediaUpload(
-            $mediaName: String!
-            $productId: ID!
-          ) {
-            prepareProductMediaUpload(
-              mediaName: $mediaName
-              productId: $productId
-            ) {
+          mutation prepareProductMediaUpload($mediaName: String!, $productId: ID!) {
+            prepareProductMediaUpload(mediaName: $mediaName, productId: $productId) {
               _id
               putURL
               expires
@@ -60,14 +50,8 @@ describe('ProductsVariation', () => {
         data: { prepareProductMediaUpload },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation prepareProductMediaUpload(
-            $mediaName: String!
-            $productId: ID!
-          ) {
-            prepareProductMediaUpload(
-              mediaName: $mediaName
-              productId: $productId
-            ) {
+          mutation prepareProductMediaUpload($mediaName: String!, $productId: ID!) {
+            prepareProductMediaUpload(mediaName: $mediaName, productId: $productId) {
               _id
               putURL
               expires
@@ -93,14 +77,8 @@ describe('ProductsVariation', () => {
       } = await graphqlFetch(
         {
           query: /* GraphQL */ `
-            mutation prepareProductMediaUpload(
-              $mediaName: String!
-              $productId: ID!
-            ) {
-              prepareProductMediaUpload(
-                mediaName: $mediaName
-                productId: $productId
-              ) {
+            mutation prepareProductMediaUpload($mediaName: String!, $productId: ID!) {
+              prepareProductMediaUpload(mediaName: $mediaName, productId: $productId) {
                 _id
                 putURL
                 expires
@@ -117,23 +95,15 @@ describe('ProductsVariation', () => {
 
       await putFile(productMediaFile3, {
         url: prepareProductMediaUpload.putURL,
-        type: "image/jpg",
+        type: 'image/jpg',
       });
 
       const {
         data: { confirmMediaUpload },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation confirmMediaUpload(
-            $mediaUploadTicketId: ID!
-            $size: Int!
-            $type: String!
-          ) {
-            confirmMediaUpload(
-              mediaUploadTicketId: $mediaUploadTicketId
-              size: $size
-              type: $type
-            ) {
+          mutation confirmMediaUpload($mediaUploadTicketId: ID!, $size: Int!, $type: String!) {
+            confirmMediaUpload(mediaUploadTicketId: $mediaUploadTicketId, size: $size, type: $type) {
               _id
               name
               type
@@ -160,9 +130,7 @@ describe('ProductsVariation', () => {
     it('update product media sortkey successfuly when provided valid media ID', async () => {
       const { data: { reorderProductMedia } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderProductmedia(
-            $sortKeys: [ReorderProductMediaInput!]!
-          ) {
+          mutation ReorderProductmedia($sortKeys: [ReorderProductMediaInput!]!) {
             reorderProductMedia(sortKeys: $sortKeys) {
               _id
               tags
@@ -194,9 +162,7 @@ describe('ProductsVariation', () => {
         data: { reorderProductMedia },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderProductmedia(
-            $sortKeys: [ReorderProductMediaInput!]!
-          ) {
+          mutation ReorderProductmedia($sortKeys: [ReorderProductMediaInput!]!) {
             reorderProductMedia(sortKeys: $sortKeys) {
               _id
               tags
@@ -229,9 +195,7 @@ describe('ProductsVariation', () => {
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation ReorderProductmedia(
-            $sortKeys: [ReorderProductMediaInput!]!
-          ) {
+          mutation ReorderProductmedia($sortKeys: [ReorderProductMediaInput!]!) {
             reorderProductMedia(sortKeys: $sortKeys) {
               _id
             }
@@ -255,14 +219,8 @@ describe('ProductsVariation', () => {
     it('update product media text successfuly when provided valid media ID', async () => {
       const { data: { updateProductMediaTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateproductMediaTexts(
-            $productMediaId: ID!
-            $texts: [ProductMediaTextInput!]!
-          ) {
-            updateProductMediaTexts(
-              productMediaId: $productMediaId
-              texts: $texts
-            ) {
+          mutation UpdateproductMediaTexts($productMediaId: ID!, $texts: [ProductMediaTextInput!]!) {
+            updateProductMediaTexts(productMediaId: $productMediaId, texts: $texts) {
               _id
               locale
               title
@@ -291,14 +249,8 @@ describe('ProductsVariation', () => {
     it('return not found error when passed non existing media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateproductMediaTexts(
-            $productMediaId: ID!
-            $texts: [ProductMediaTextInput!]!
-          ) {
-            updateProductMediaTexts(
-              productMediaId: $productMediaId
-              texts: $texts
-            ) {
+          mutation UpdateproductMediaTexts($productMediaId: ID!, $texts: [ProductMediaTextInput!]!) {
+            updateProductMediaTexts(productMediaId: $productMediaId, texts: $texts) {
               _id
             }
           }
@@ -318,14 +270,8 @@ describe('ProductsVariation', () => {
     it('return error when passed invalid media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateproductMediaTexts(
-            $productMediaId: ID!
-            $texts: [ProductMediaTextInput!]!
-          ) {
-            updateProductMediaTexts(
-              productMediaId: $productMediaId
-              texts: $texts
-            ) {
+          mutation UpdateproductMediaTexts($productMediaId: ID!, $texts: [ProductMediaTextInput!]!) {
+            updateProductMediaTexts(productMediaId: $productMediaId, texts: $texts) {
               _id
             }
           }
@@ -349,14 +295,8 @@ describe('ProductsVariation', () => {
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation UpdateproductMediaTexts(
-            $productMediaId: ID!
-            $texts: [ProductMediaTextInput!]!
-          ) {
-            updateProductMediaTexts(
-              productMediaId: $productMediaId
-              texts: $texts
-            ) {
+          mutation UpdateproductMediaTexts($productMediaId: ID!, $texts: [ProductMediaTextInput!]!) {
+            updateProductMediaTexts(productMediaId: $productMediaId, texts: $texts) {
               _id
               locale
               title

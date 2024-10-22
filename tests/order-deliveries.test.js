@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { SendMailDeliveryProvider } from './seeds/deliveries.js';
 import { SimpleOrder, SimpleDelivery, PickupDelivery } from './seeds/orders.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
@@ -21,33 +17,26 @@ describe('Order: Deliveries', () => {
 
   describe('Mutation.setOrderDeliveryProvider for admin user', () => {
     it('set order delivery provider', async () => {
-      const { data: { setOrderDeliveryProvider } = {} } =
-        await graphqlFetchAsAdmin({
-          query: /* GraphQL */ `
-            mutation setOrderDeliveryProvider(
-              $orderId: ID!
-              $deliveryProviderId: ID!
-            ) {
-              setOrderDeliveryProvider(
-                orderId: $orderId
-                deliveryProviderId: $deliveryProviderId
-              ) {
+      const { data: { setOrderDeliveryProvider } = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
+            setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
+              _id
+              status
+              delivery {
                 _id
-                status
-                delivery {
+                provider {
                   _id
-                  provider {
-                    _id
-                  }
                 }
               }
             }
-          `,
-          variables: {
-            orderId: SimpleOrder._id,
-            deliveryProviderId: SendMailDeliveryProvider._id,
-          },
-        });
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+          deliveryProviderId: SendMailDeliveryProvider._id,
+        },
+      });
 
       expect(setOrderDeliveryProvider).toMatchObject({
         _id: SimpleOrder._id,
@@ -62,14 +51,8 @@ describe('Order: Deliveries', () => {
     it('return not found error when passed non existing orderId', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation setOrderDeliveryProvider(
-            $orderId: ID!
-            $deliveryProviderId: ID!
-          ) {
-            setOrderDeliveryProvider(
-              orderId: $orderId
-              deliveryProviderId: $deliveryProviderId
-            ) {
+          mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
+            setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
               _id
             }
           }
@@ -85,14 +68,8 @@ describe('Order: Deliveries', () => {
     it('return error when passed invalid orderId', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation setOrderDeliveryProvider(
-            $orderId: ID!
-            $deliveryProviderId: ID!
-          ) {
-            setOrderDeliveryProvider(
-              orderId: $orderId
-              deliveryProviderId: $deliveryProviderId
-            ) {
+          mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
+            setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
               _id
             }
           }
@@ -108,14 +85,8 @@ describe('Order: Deliveries', () => {
     it('return error when passed invalid deliveryProviderId', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation setOrderDeliveryProvider(
-            $orderId: ID!
-            $deliveryProviderId: ID!
-          ) {
-            setOrderDeliveryProvider(
-              orderId: $orderId
-              deliveryProviderId: $deliveryProviderId
-            ) {
+          mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
+            setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
               _id
             }
           }
@@ -131,31 +102,24 @@ describe('Order: Deliveries', () => {
 
   describe('Mutation.setOrderDeliveryProvider for logged in user should', () => {
     it('set order delivery provider', async () => {
-      const { data: { setOrderDeliveryProvider } = {} } =
-        await graphqlFetchAsNormalUser({
-          query: /* GraphQL */ `
-            mutation setOrderDeliveryProvider(
-              $orderId: ID!
-              $deliveryProviderId: ID!
-            ) {
-              setOrderDeliveryProvider(
-                orderId: $orderId
-                deliveryProviderId: $deliveryProviderId
-              ) {
-                _id
-                delivery {
-                  provider {
-                    _id
-                  }
+      const { data: { setOrderDeliveryProvider } = {} } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
+            setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
+              _id
+              delivery {
+                provider {
+                  _id
                 }
               }
             }
-          `,
-          variables: {
-            orderId: SimpleOrder._id,
-            deliveryProviderId: SendMailDeliveryProvider._id,
-          },
-        });
+          }
+        `,
+        variables: {
+          orderId: SimpleOrder._id,
+          deliveryProviderId: SendMailDeliveryProvider._id,
+        },
+      });
       expect(setOrderDeliveryProvider).toMatchObject({
         _id: SimpleOrder._id,
         delivery: {
@@ -171,14 +135,8 @@ describe('Order: Deliveries', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
-          mutation setOrderDeliveryProvider(
-            $orderId: ID!
-            $deliveryProviderId: ID!
-          ) {
-            setOrderDeliveryProvider(
-              orderId: $orderId
-              deliveryProviderId: $deliveryProviderId
-            ) {
+          mutation setOrderDeliveryProvider($orderId: ID!, $deliveryProviderId: ID!) {
+            setOrderDeliveryProvider(orderId: $orderId, deliveryProviderId: $deliveryProviderId) {
               _id
             }
           }
@@ -196,53 +154,52 @@ describe('Order: Deliveries', () => {
 
   describe('Mutation.updateOrderDeliveryShipping for admin user should', () => {
     it('update order delivery shipping successfuly when order delivery provider type is SHIPPING', async () => {
-      const { data: { updateOrderDeliveryShipping } = {} } =
-        await graphqlFetchAsAdmin({
-          query: /* GraphQL */ `
-            mutation updateOrderDeliveryShipping(
-              $orderDeliveryId: ID!
-              $address: AddressInput
-              $meta: JSON
+      const { data: { updateOrderDeliveryShipping } = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation updateOrderDeliveryShipping(
+            $orderDeliveryId: ID!
+            $address: AddressInput
+            $meta: JSON
+          ) {
+            updateOrderDeliveryShipping(
+              orderDeliveryId: $orderDeliveryId
+              address: $address
+              meta: $meta
             ) {
-              updateOrderDeliveryShipping(
-                orderDeliveryId: $orderDeliveryId
-                address: $address
-                meta: $meta
-              ) {
+              _id
+              provider {
                 _id
-                provider {
-                  _id
-                  type
-                }
-                fee {
-                  _id
-                  amount
-                }
-                address {
-                  firstName
-                  lastName
-                  company
-                  addressLine
-                  addressLine2
-                  postalCode
-                  countryCode
-                  regionCode
-                  city
-                }
+                type
+              }
+              fee {
+                _id
+                amount
+              }
+              address {
+                firstName
+                lastName
+                company
+                addressLine
+                addressLine2
+                postalCode
+                countryCode
+                regionCode
+                city
               }
             }
-          `,
-          variables: {
-            orderDeliveryId: SimpleDelivery._id,
-            address: {
-              firstName: 'Will',
-              lastName: 'Turner',
-            },
-            meta: {
-              john: 'wayne',
-            },
+          }
+        `,
+        variables: {
+          orderDeliveryId: SimpleDelivery._id,
+          address: {
+            firstName: 'Will',
+            lastName: 'Turner',
           },
-        });
+          meta: {
+            john: 'wayne',
+          },
+        },
+      });
       expect(updateOrderDeliveryShipping).toMatchObject({
         _id: SimpleDelivery._id,
         provider: {
@@ -360,44 +317,43 @@ describe('Order: Deliveries', () => {
 
   describe('Mutation.updateOrderDeliveryShipping for logged in user should', () => {
     it('update order delivery shipping successfuly when order delivery provider type is SHIPPING', async () => {
-      const { data: { updateOrderDeliveryShipping } = {} } =
-        await graphqlFetchAsNormalUser({
-          query: /* GraphQL */ `
-            mutation updateOrderDeliveryShipping(
-              $orderDeliveryId: ID!
-              $address: AddressInput
-              $meta: JSON
+      const { data: { updateOrderDeliveryShipping } = {} } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation updateOrderDeliveryShipping(
+            $orderDeliveryId: ID!
+            $address: AddressInput
+            $meta: JSON
+          ) {
+            updateOrderDeliveryShipping(
+              orderDeliveryId: $orderDeliveryId
+              address: $address
+              meta: $meta
             ) {
-              updateOrderDeliveryShipping(
-                orderDeliveryId: $orderDeliveryId
-                address: $address
-                meta: $meta
-              ) {
-                _id
-                address {
-                  firstName
-                  lastName
-                }
+              _id
+              address {
+                firstName
+                lastName
               }
             }
-          `,
-          variables: {
-            orderDeliveryId: SimpleDelivery._id,
-            address: {
-              firstName: 'Will',
-              lastName: 'Turner',
-            },
-            meta: {
-              john: 'wayne',
-            },
+          }
+        `,
+        variables: {
+          orderDeliveryId: SimpleDelivery._id,
+          address: {
+            firstName: 'Will',
+            lastName: 'Turner',
           },
-        });
+          meta: {
+            john: 'wayne',
+          },
+        },
+      });
       expect(updateOrderDeliveryShipping).toMatchObject({
         _id: SimpleDelivery._id,
         address: {
           firstName: 'Will',
           lastName: 'Turner',
-        }
+        },
       });
     });
   });
@@ -439,44 +395,43 @@ describe('Order: Deliveries', () => {
 
   describe('Mutation.updateOrderDeliveryPickUp for admin user', () => {
     it('update order delivery pickup successfuly when order delivery provider type is PICKUP', async () => {
-      const { data: { updateOrderDeliveryPickUp } = {} } =
-        await graphqlFetchAsAdmin({
-          query: /* GraphQL */ `
-            mutation updateOrderDeliveryPickUp(
-              $orderDeliveryId: ID!
-              $orderPickUpLocationId: ID!
-              $meta: JSON
+      const { data: { updateOrderDeliveryPickUp } = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation updateOrderDeliveryPickUp(
+            $orderDeliveryId: ID!
+            $orderPickUpLocationId: ID!
+            $meta: JSON
+          ) {
+            updateOrderDeliveryPickUp(
+              orderDeliveryId: $orderDeliveryId
+              orderPickUpLocationId: $orderPickUpLocationId
+              meta: $meta
             ) {
-              updateOrderDeliveryPickUp(
-                orderDeliveryId: $orderDeliveryId
-                orderPickUpLocationId: $orderPickUpLocationId
-                meta: $meta
-              ) {
+              _id
+              provider {
                 _id
-                provider {
-                  _id
-                  type
-                }
-                activePickUpLocation {
-                  _id
-                  name
-                  geoPoint {
-                    latitude
-                    longitude
-                    altitute
-                  }
+                type
+              }
+              activePickUpLocation {
+                _id
+                name
+                geoPoint {
+                  latitude
+                  longitude
+                  altitute
                 }
               }
             }
-          `,
-          variables: {
-            orderDeliveryId: PickupDelivery._id,
-            orderPickUpLocationId: 'zurich',
-            meta: {
-              john: 'wayne',
-            },
+          }
+        `,
+        variables: {
+          orderDeliveryId: PickupDelivery._id,
+          orderPickUpLocationId: 'zurich',
+          meta: {
+            john: 'wayne',
           },
-        });
+        },
+      });
       expect(updateOrderDeliveryPickUp).toMatchObject({
         _id: PickupDelivery._id,
         provider: {
@@ -586,41 +541,40 @@ describe('Order: Deliveries', () => {
 
   describe('Mutation.updateOrderDeliveryPickUp for logged in user should', () => {
     it('update order delivery pickup successfuly when order delivery provider type is PICKUP', async () => {
-      const { data: { updateOrderDeliveryPickUp } = {} } =
-        await graphqlFetchAsNormalUser({
-          query: /* GraphQL */ `
-            mutation updateOrderDeliveryPickUp(
-              $orderDeliveryId: ID!
-              $orderPickUpLocationId: ID!
-              $meta: JSON
+      const { data: { updateOrderDeliveryPickUp } = {} } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation updateOrderDeliveryPickUp(
+            $orderDeliveryId: ID!
+            $orderPickUpLocationId: ID!
+            $meta: JSON
+          ) {
+            updateOrderDeliveryPickUp(
+              orderDeliveryId: $orderDeliveryId
+              orderPickUpLocationId: $orderPickUpLocationId
+              meta: $meta
             ) {
-              updateOrderDeliveryPickUp(
-                orderDeliveryId: $orderDeliveryId
-                orderPickUpLocationId: $orderPickUpLocationId
-                meta: $meta
-              ) {
+              _id
+              activePickUpLocation {
                 _id
-                activePickUpLocation {
-                  _id
-                  name
-                }
+                name
               }
             }
-          `,
-          variables: {
-            orderDeliveryId: PickupDelivery._id,
-            orderPickUpLocationId: 'zurich',
-            meta: {
-              john: 'wayne',
-            },
+          }
+        `,
+        variables: {
+          orderDeliveryId: PickupDelivery._id,
+          orderPickUpLocationId: 'zurich',
+          meta: {
+            john: 'wayne',
           },
-        });
+        },
+      });
       expect(updateOrderDeliveryPickUp).toMatchObject({
         _id: PickupDelivery._id,
         activePickUpLocation: {
           _id: 'zurich',
           name: 'Zurich',
-        }
+        },
       });
     });
   });

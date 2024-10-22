@@ -1,4 +1,4 @@
-import range from "./range.js";
+import range from './range.js';
 
 describe('range', () => {
   it('returns an empty array if no range is provided', () => {

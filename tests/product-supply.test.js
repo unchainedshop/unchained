@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct } from './seeds/products.js';
 
@@ -19,10 +15,7 @@ describe('ProductsSupply', () => {
     it('Update product supply successfuly when passed SIMPLE_PRODUCT type', async () => {
       const { data: { updateProductSupply } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateProductSupply(
-            $productId: ID!
-            $supply: UpdateProductSupplyInput!
-          ) {
+          mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
             updateProductSupply(productId: $productId, supply: $supply) {
               _id
               sequence
@@ -66,7 +59,7 @@ describe('ProductsSupply', () => {
       });
 
       expect(updateProductSupply._id).toEqual(SimpleProduct._id);
-      const updatedProduct = await (db.collection('products')).findOne({ _id: SimpleProduct._id });
+      const updatedProduct = await db.collection('products').findOne({ _id: SimpleProduct._id });
       expect(updatedProduct.supply).toEqual({
         weightInGram: 100,
         heightInMillimeters: 200,
@@ -78,10 +71,7 @@ describe('ProductsSupply', () => {
     it('return error when passed non SIMPLE_PRODUCT type', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateProductSupply(
-            $productId: ID!
-            $supply: UpdateProductSupplyInput!
-          ) {
+          mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
             updateProductSupply(productId: $productId, supply: $supply) {
               _id
             }
@@ -108,10 +98,7 @@ describe('ProductsSupply', () => {
     it('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateProductSupply(
-            $productId: ID!
-            $supply: UpdateProductSupplyInput!
-          ) {
+          mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
             updateProductSupply(productId: $productId, supply: $supply) {
               _id
             }
@@ -134,10 +121,7 @@ describe('ProductsSupply', () => {
     it('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateProductSupply(
-            $productId: ID!
-            $supply: UpdateProductSupplyInput!
-          ) {
+          mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
             updateProductSupply(productId: $productId, supply: $supply) {
               _id
             }
@@ -163,10 +147,7 @@ describe('ProductsSupply', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation UpdateProductSupply(
-            $productId: ID!
-            $supply: UpdateProductSupplyInput!
-          ) {
+          mutation UpdateProductSupply($productId: ID!, $supply: UpdateProductSupplyInput!) {
             updateProductSupply(productId: $productId, supply: $supply) {
               _id
             }

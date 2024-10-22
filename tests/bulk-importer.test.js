@@ -16,12 +16,7 @@ describe('Bulk Importer', () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {
-            addWork(
-              type: BULK_IMPORT
-              input: $input
-              retries: 0
-              priority: 10
-            ) {
+            addWork(type: BULK_IMPORT, input: $input, retries: 0, priority: 10) {
               _id
             }
           }
@@ -30,30 +25,30 @@ describe('Bulk Importer', () => {
           input: {
             events: [
               {
-                entity: "PRODUCT",
-                operation: "CREATE",
+                entity: 'PRODUCT',
+                operation: 'CREATE',
                 payload: {
-                  _id: "A",
+                  _id: 'A',
                   specification: {
-                    tags: ["nice"],
-                    type: "SimpleProduct",
-                    published: "2020-01-01T00:00Z",
+                    tags: ['nice'],
+                    type: 'SimpleProduct',
+                    published: '2020-01-01T00:00Z',
                     commerce: {
-                      salesUnit: "ST",
-                      salesQuantityPerUnit: "1",
-                      defaultOrderQuantity: "6",
+                      salesUnit: 'ST',
+                      salesQuantityPerUnit: '1',
+                      defaultOrderQuantity: '6',
                       pricing: [
                         {
                           isTaxable: true,
                           isNetPrice: true,
-                          countryCode: "CH",
-                          currencyCode: "CHF",
+                          countryCode: 'CH',
+                          currencyCode: 'CHF',
                           amount: 10000,
                         },
                       ],
                     },
                     warehousing: {
-                      baseUnit: "ST",
+                      baseUnit: 'ST',
                       dimensions: {
                         weightInGram: 0,
                         heightInMillimeters: 0,
@@ -64,26 +59,26 @@ describe('Bulk Importer', () => {
                     variationResolvers: [
                       {
                         vector: {
-                          color: "red",
+                          color: 'red',
                         },
-                        productId: "B",
+                        productId: 'B',
                       },
                     ],
                     plan: {
-                      billingInterval: "DAYS",
+                      billingInterval: 'DAYS',
                       billingIntervalCount: 1,
-                      usageCalculationType: "METERED",
-                      trialInterval: "DAYS",
+                      usageCalculationType: 'METERED',
+                      trialInterval: 'DAYS',
                       trialIntervalCount: 1,
                     },
                     bundleItems: [
                       {
-                        productId: "c",
+                        productId: 'c',
                         quantity: 1,
                         configuration: [
                           {
-                            key: "greeting",
-                            value: "For my Darling",
+                            key: 'greeting',
+                            value: 'For my Darling',
                           },
                         ],
                       },
@@ -91,53 +86,53 @@ describe('Bulk Importer', () => {
                     meta: {},
                     content: {
                       de: {
-                        vendor: "Herstellername",
-                        brand: "Marke",
-                        title: "Produktname",
-                        slug: "produktname",
-                        subtitle: "Short description",
-                        description: "Long description",
-                        labels: ["Neu"],
+                        vendor: 'Herstellername',
+                        brand: 'Marke',
+                        title: 'Produktname',
+                        slug: 'produktname',
+                        subtitle: 'Short description',
+                        description: 'Long description',
+                        labels: ['Neu'],
                       },
                     },
                   },
                   media: [
                     {
-                      _id: "product-a-format",
+                      _id: 'product-a-format',
                       asset: {
-                        _id: "format-v1",
-                        fileName: "test-image.png",
-                        url: "https://dummyimage.com/600x400/000/fff&text=Create+Product",
+                        _id: 'format-v1',
+                        fileName: 'test-image.png',
+                        url: 'https://dummyimage.com/600x400/000/fff&text=Create+Product',
                       },
-                      tags: ["big"],
+                      tags: ['big'],
                       meta: {},
                       content: {
                         de: {
-                          title: "Produktname",
-                          subtitle: "Short description",
+                          title: 'Produktname',
+                          subtitle: 'Short description',
                         },
                       },
                     },
                   ],
                   variations: [
                     {
-                      key: "color",
-                      type: "COLOR",
+                      key: 'color',
+                      type: 'COLOR',
                       options: [
                         {
-                          value: "ff0000",
+                          value: 'ff0000',
                           content: {
                             de: {
-                              title: "Rot",
-                              subtitle: "",
+                              title: 'Rot',
+                              subtitle: '',
                             },
                           },
                         },
                       ],
                       content: {
                         de: {
-                          title: "Farbe",
-                          subtitle: "Farbvariante",
+                          title: 'Farbe',
+                          subtitle: 'Farbvariante',
                         },
                       },
                     },
@@ -145,45 +140,45 @@ describe('Bulk Importer', () => {
                 },
               },
               {
-                entity: "PRODUCT",
-                operation: "UPDATE",
+                entity: 'PRODUCT',
+                operation: 'UPDATE',
                 payload: {
-                  _id: "A",
+                  _id: 'A',
                   specification: {
-                    tags: ["awesome"],
+                    tags: ['awesome'],
                     meta: {
                       something: 1,
                     },
                   },
                   media: [
                     {
-                      _id: "product-a-format",
+                      _id: 'product-a-format',
                       asset: {
-                        _id: "format-v1",
-                        fileName: "test-image-updated.png",
-                        url: "https://dummyimage.com/300x300/e2e2e2/040&text=Update+Product",
+                        _id: 'format-v1',
+                        fileName: 'test-image-updated.png',
+                        url: 'https://dummyimage.com/300x300/e2e2e2/040&text=Update+Product',
                       },
-                      tags: ["big"],
+                      tags: ['big'],
                       meta: {},
                       content: {
                         de: {
-                          title: "Produktname",
-                          subtitle: "Short description",
+                          title: 'Produktname',
+                          subtitle: 'Short description',
                         },
                       },
                     },
                     {
-                      _id: "product-a-meteor",
+                      _id: 'product-a-meteor',
                       asset: {
-                        _id: "meteor",
-                        fileName: "meteor-blue.png",
-                        url: "https://docs.meteor.com/meteor-blue.png",
+                        _id: 'meteor',
+                        fileName: 'meteor-blue.png',
+                        url: 'https://docs.meteor.com/meteor-blue.png',
                       },
-                      tags: ["small"],
+                      tags: ['small'],
                       meta: {},
                       content: {
                         de: {
-                          title: "Will Meteor die?",
+                          title: 'Will Meteor die?',
                         },
                       },
                     },
@@ -191,10 +186,10 @@ describe('Bulk Importer', () => {
                 },
               },
               {
-                entity: "PRODUCT",
-                operation: "REMOVE",
+                entity: 'PRODUCT',
+                operation: 'REMOVE',
                 payload: {
-                  _id: "A",
+                  _id: 'A',
                 },
               },
               {
@@ -257,12 +252,7 @@ describe('Bulk Importer', () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {
-            addWork(
-              type: BULK_IMPORT
-              input: $input
-              retries: 0
-              priority: 10
-            ) {
+            addWork(type: BULK_IMPORT, input: $input, retries: 0, priority: 10) {
               _id
             }
           }
@@ -354,12 +344,7 @@ describe('Bulk Importer', () => {
       const { data: { addWork } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addWork($input: JSON) {
-            addWork(
-              type: BULK_IMPORT
-              input: $input
-              retries: 0
-              priority: 10
-            ) {
+            addWork(type: BULK_IMPORT, input: $input, retries: 0, priority: 10) {
               _id
             }
           }
@@ -501,29 +486,23 @@ describe('Bulk Importer', () => {
         return assortment?.tags.includes('base');
       }, 3000);
 
-      const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(
-        async () => {
-          const assortmentMedia = await AssortmentMedia.findOne({
-            _id: 'assortment-a-meteor',
-          });
-          return assortmentMedia?.tags.includes('small');
-        },
-        3000,
-      );
+      const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(async () => {
+        const assortmentMedia = await AssortmentMedia.findOne({
+          _id: 'assortment-a-meteor',
+        });
+        return assortmentMedia?.tags.includes('small');
+      }, 3000);
       expect(updatedAssortmentMediaHasSmallTag).toBe(true);
       expect(assortmentHasBaseTag).toBe(true);
 
       const AssortmentProducts = db.collection('assortment_products');
 
-      const productLinkHasBeenReplaced = await intervalUntilTimeout(
-        async () => {
-          const productLinksCount = await AssortmentProducts.countDocuments({
-            assortmentId: 'Assortment A',
-          });
-          return productLinksCount === 1;
-        },
-        3000,
-      );
+      const productLinkHasBeenReplaced = await intervalUntilTimeout(async () => {
+        const productLinksCount = await AssortmentProducts.countDocuments({
+          assortmentId: 'Assortment A',
+        });
+        return productLinksCount === 1;
+      }, 3000);
 
       expect(productLinkHasBeenReplaced).toBe(true);
     }, 10000);

@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 
@@ -16,71 +12,64 @@ describe('ProductsCommerce', () => {
 
   describe('mutation.updateProductCommerce for admin user should ', () => {
     it('Update product pricing successfuly', async () => {
-      const { data: { updateProductCommerce } = {}, errors } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation UpdateProductCommerce(
-              $productId: ID!
-              $commerce: UpdateProductCommerceInput!
-            ) {
-              updateProductCommerce(
-                productId: $productId
-                commerce: $commerce
-              ) {
+      const { data: { updateProductCommerce } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation UpdateProductCommerce($productId: ID!, $commerce: UpdateProductCommerceInput!) {
+            updateProductCommerce(productId: $productId, commerce: $commerce) {
+              _id
+              sequence
+              status
+              tags
+              updated
+              created
+              published
+              texts {
                 _id
-                sequence
-                status
-                tags
-                updated
-                created
-                published
-                texts {
-                  _id
-                }
-                media {
-                  _id
-                }
-                reviews {
-                  _id
-                }
-                assortmentPaths {
-                  links {
-                    link {
-                      _id
-                    }
-                    assortmentId
+              }
+              media {
+                _id
+              }
+              reviews {
+                _id
+              }
+              assortmentPaths {
+                links {
+                  link {
+                    _id
                   }
+                  assortmentId
                 }
-                siblings {
-                  _id
-                }
-                ... on SimpleProduct {
-                  catalogPrice {
-                    amount
-                    isTaxable
-                    isNetPrice
-                    currency
-                  }
+              }
+              siblings {
+                _id
+              }
+              ... on SimpleProduct {
+                catalogPrice {
+                  amount
+                  isTaxable
+                  isNetPrice
+                  currency
                 }
               }
             }
-          `,
-          variables: {
-            productId: SimpleProduct._id,
-            commerce: {
-              pricing: [
-                {
-                  amount: 100,
-                  maxQuantity: 50,
-                  isTaxable: true,
-                  isNetPrice: false,
-                  currencyCode: 'CHF',
-                  countryCode: 'CH',
-                },
-              ],
-            },
+          }
+        `,
+        variables: {
+          productId: SimpleProduct._id,
+          commerce: {
+            pricing: [
+              {
+                amount: 100,
+                maxQuantity: 50,
+                isTaxable: true,
+                isNetPrice: false,
+                currencyCode: 'CHF',
+                countryCode: 'CH',
+              },
+            ],
           },
-        });
+        },
+      });
 
       expect(updateProductCommerce).toMatchObject({
         _id: SimpleProduct._id,
@@ -89,17 +78,14 @@ describe('ProductsCommerce', () => {
           isTaxable: true,
           isNetPrice: false,
           currency: 'CHF',
-        }
+        },
       });
     });
 
     it('return not found error when attempting to update non existing product', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateProductCommerce(
-            $productId: ID!
-            $commerce: UpdateProductCommerceInput!
-          ) {
+          mutation UpdateProductCommerce($productId: ID!, $commerce: UpdateProductCommerceInput!) {
             updateProductCommerce(productId: $productId, commerce: $commerce) {
               _id
             }
@@ -128,10 +114,7 @@ describe('ProductsCommerce', () => {
     it('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateProductCommerce(
-            $productId: ID!
-            $commerce: UpdateProductCommerceInput!
-          ) {
+          mutation UpdateProductCommerce($productId: ID!, $commerce: UpdateProductCommerceInput!) {
             updateProductCommerce(productId: $productId, commerce: $commerce) {
               _id
             }
@@ -163,10 +146,7 @@ describe('ProductsCommerce', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation UpdateProductCommerce(
-            $productId: ID!
-            $commerce: UpdateProductCommerceInput!
-          ) {
+          mutation UpdateProductCommerce($productId: ID!, $commerce: UpdateProductCommerceInput!) {
             updateProductCommerce(productId: $productId, commerce: $commerce) {
               _id
             }

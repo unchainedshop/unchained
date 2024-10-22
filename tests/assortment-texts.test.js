@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment } from './seeds/assortments.js';
 
@@ -27,10 +23,7 @@ describe('AssortmentTexts', () => {
         data: { updateAssortmentTexts },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateAssortmentTexts(
-            $assortmentId: ID!
-            $texts: [AssortmentTextInput!]!
-          ) {
+          mutation UpdateAssortmentTexts($assortmentId: ID!, $texts: [AssortmentTextInput!]!) {
             updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
               _id
               locale
@@ -54,10 +47,7 @@ describe('AssortmentTexts', () => {
     it('return not found error when passed a non-existing ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateAssortmentTexts(
-            $assortmentId: ID!
-            $texts: [AssortmentTextInput!]!
-          ) {
+          mutation UpdateAssortmentTexts($assortmentId: ID!, $texts: [AssortmentTextInput!]!) {
             updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
               _id
             }
@@ -83,10 +73,7 @@ describe('AssortmentTexts', () => {
     it('return error when passed invalid ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateAssortmentTexts(
-            $assortmentId: ID!
-            $texts: [AssortmentTextInput!]!
-          ) {
+          mutation UpdateAssortmentTexts($assortmentId: ID!, $texts: [AssortmentTextInput!]!) {
             updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
               _id
             }
@@ -115,10 +102,7 @@ describe('AssortmentTexts', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation UpdateAssortmentTexts(
-            $assortmentId: ID!
-            $texts: [AssortmentTextInput!]!
-          ) {
+          mutation UpdateAssortmentTexts($assortmentId: ID!, $texts: [AssortmentTextInput!]!) {
             updateAssortmentTexts(assortmentId: $assortmentId, texts: $texts) {
               _id
             }

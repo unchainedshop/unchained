@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { SimpleProduct, SimpleProductReview } from './seeds/products.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
@@ -22,14 +18,8 @@ describe('Products: Reviews', () => {
     it('create a new product review', async () => {
       const { data: { createProductReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation createProductReview(
-            $productId: ID!
-            $productReview: ProductReviewInput!
-          ) {
-            createProductReview(
-              productId: $productId
-              productReview: $productReview
-            ) {
+          mutation createProductReview($productId: ID!, $productReview: ProductReviewInput!) {
+            createProductReview(productId: $productId, productReview: $productReview) {
               _id
               created
               updated
@@ -82,14 +72,8 @@ describe('Products: Reviews', () => {
     it('return not found error when passed non existing productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation createProductReview(
-            $productId: ID!
-            $productReview: ProductReviewInput!
-          ) {
-            createProductReview(
-              productId: $productId
-              productReview: $productReview
-            ) {
+          mutation createProductReview($productId: ID!, $productReview: ProductReviewInput!) {
+            createProductReview(productId: $productId, productReview: $productReview) {
               _id
             }
           }
@@ -109,14 +93,8 @@ describe('Products: Reviews', () => {
     it('return error when passed invalid productId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation createProductReview(
-            $productId: ID!
-            $productReview: ProductReviewInput!
-          ) {
-            createProductReview(
-              productId: $productId
-              productReview: $productReview
-            ) {
+          mutation createProductReview($productId: ID!, $productReview: ProductReviewInput!) {
+            createProductReview(productId: $productId, productReview: $productReview) {
               _id
             }
           }
@@ -137,14 +115,8 @@ describe('Products: Reviews', () => {
     it('update a product review', async () => {
       const { data: { updateProductReview } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateProductReview(
-            $productReviewId: ID!
-            $productReview: ProductReviewInput!
-          ) {
-            updateProductReview(
-              productReviewId: $productReviewId
-              productReview: $productReview
-            ) {
+          mutation updateProductReview($productReviewId: ID!, $productReview: ProductReviewInput!) {
+            updateProductReview(productReviewId: $productReviewId, productReview: $productReview) {
               _id
               created
               updated
@@ -196,14 +168,8 @@ describe('Products: Reviews', () => {
     it('return not found error when passed non existing productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateProductReview(
-            $productReviewId: ID!
-            $productReview: ProductReviewInput!
-          ) {
-            updateProductReview(
-              productReviewId: $productReviewId
-              productReview: $productReview
-            ) {
+          mutation updateProductReview($productReviewId: ID!, $productReview: ProductReviewInput!) {
+            updateProductReview(productReviewId: $productReviewId, productReview: $productReview) {
               _id
             }
           }
@@ -222,14 +188,8 @@ describe('Products: Reviews', () => {
     it('return error when passed invalid productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation updateProductReview(
-            $productReviewId: ID!
-            $productReview: ProductReviewInput!
-          ) {
-            updateProductReview(
-              productReviewId: $productReviewId
-              productReview: $productReview
-            ) {
+          mutation updateProductReview($productReviewId: ID!, $productReview: ProductReviewInput!) {
+            updateProductReview(productReviewId: $productReviewId, productReview: $productReview) {
               _id
             }
           }
@@ -254,11 +214,7 @@ describe('Products: Reviews', () => {
             $type: ProductReviewVoteType!
             $meta: JSON
           ) {
-            addProductReviewVote(
-              productReviewId: $productReviewId
-              type: $type
-              meta: $meta
-            ) {
+            addProductReviewVote(productReviewId: $productReviewId, type: $type, meta: $meta) {
               _id
               upvotes: voteCount(type: UPVOTE)
               downvotes: voteCount(type: DOWNVOTE)
@@ -292,11 +248,7 @@ describe('Products: Reviews', () => {
             $type: ProductReviewVoteType!
             $meta: JSON
           ) {
-            addProductReviewVote(
-              productReviewId: $productReviewId
-              type: $type
-              meta: $meta
-            ) {
+            addProductReviewVote(productReviewId: $productReviewId, type: $type, meta: $meta) {
               _id
               upvotes: voteCount(type: UPVOTE)
               downvotes: voteCount(type: DOWNVOTE)
@@ -331,11 +283,7 @@ describe('Products: Reviews', () => {
             $type: ProductReviewVoteType!
             $meta: JSON
           ) {
-            addProductReviewVote(
-              productReviewId: $productReviewId
-              type: $type
-              meta: $meta
-            ) {
+            addProductReviewVote(productReviewId: $productReviewId, type: $type, meta: $meta) {
               _id
             }
           }
@@ -357,11 +305,7 @@ describe('Products: Reviews', () => {
             $type: ProductReviewVoteType!
             $meta: JSON
           ) {
-            addProductReviewVote(
-              productReviewId: $productReviewId
-              type: $type
-              meta: $meta
-            ) {
+            addProductReviewVote(productReviewId: $productReviewId, type: $type, meta: $meta) {
               _id
             }
           }
@@ -379,14 +323,8 @@ describe('Products: Reviews', () => {
     it('remove the downvote from the review', async () => {
       const { data: { removeProductReviewVote } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation removeProductReviewVote(
-            $productReviewId: ID!
-            $type: ProductReviewVoteType!
-          ) {
-            removeProductReviewVote(
-              productReviewId: $productReviewId
-              type: $type
-            ) {
+          mutation removeProductReviewVote($productReviewId: ID!, $type: ProductReviewVoteType!) {
+            removeProductReviewVote(productReviewId: $productReviewId, type: $type) {
               _id
               upvotes: voteCount(type: UPVOTE)
               downvotes: voteCount(type: DOWNVOTE)
@@ -411,14 +349,8 @@ describe('Products: Reviews', () => {
     it('return not found error when passed non existing productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation removeProductReviewVote(
-            $productReviewId: ID!
-            $type: ProductReviewVoteType!
-          ) {
-            removeProductReviewVote(
-              productReviewId: $productReviewId
-              type: $type
-            ) {
+          mutation removeProductReviewVote($productReviewId: ID!, $type: ProductReviewVoteType!) {
+            removeProductReviewVote(productReviewId: $productReviewId, type: $type) {
               _id
             }
           }
@@ -434,14 +366,8 @@ describe('Products: Reviews', () => {
     it('return error when passed invalid productReviewId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation removeProductReviewVote(
-            $productReviewId: ID!
-            $type: ProductReviewVoteType!
-          ) {
-            removeProductReviewVote(
-              productReviewId: $productReviewId
-              type: $type
-            ) {
+          mutation removeProductReviewVote($productReviewId: ID!, $type: ProductReviewVoteType!) {
+            removeProductReviewVote(productReviewId: $productReviewId, type: $type) {
               _id
             }
           }

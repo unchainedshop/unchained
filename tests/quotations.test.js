@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { ProcessingQuotation, ProposedQuotation } from './seeds/quotations.js';
 import { SimpleProduct } from './seeds/products.js';
@@ -22,11 +18,10 @@ describe('TranslatedFilterTexts', () => {
       import.meta.jest.setTimeout(10000);
       const {
         data: { quotations },
-        errors
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query Quotations($limit: Int = 10, $offset: Int = 0) {
-            quotations(limit: $limit, offset: $offset, sort: [{key: "created", value: ASC}]) {
+            quotations(limit: $limit, offset: $offset, sort: [{ key: "created", value: ASC }]) {
               _id
               user {
                 _id
@@ -59,7 +54,7 @@ describe('TranslatedFilterTexts', () => {
         `,
         variables: {},
       });
-      
+
       expect(quotations.length).toEqual(2);
       expect(quotations).toMatchObject([
         {
@@ -84,12 +79,12 @@ describe('TranslatedFilterTexts', () => {
           query Quotations($queryString: String) {
             quotations(queryString: $queryString) {
               _id
-              quotationNumber            
+              quotationNumber
             }
           }
         `,
         variables: {
-          queryString: 'K271P03'
+          queryString: 'K271P03',
         },
       });
       expect(quotations.length).toEqual(1);
@@ -100,8 +95,6 @@ describe('TranslatedFilterTexts', () => {
         },
       ]);
     });
-
-
   });
 
   describe('Query.quotations for anonymous user should', () => {

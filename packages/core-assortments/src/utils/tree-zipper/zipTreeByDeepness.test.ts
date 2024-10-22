@@ -1,6 +1,10 @@
 import { Tree } from '@unchainedshop/utils';
-import { concatItemsByLevels, divideTreeByLevels, fillToSameLengthArray, fillUp } from './zipTreeByDeepness.js';
-
+import {
+  concatItemsByLevels,
+  divideTreeByLevels,
+  fillToSameLengthArray,
+  fillUp,
+} from './zipTreeByDeepness.js';
 
 describe('divideTreeByLevels', () => {
   it('should return the expected result', () => {
@@ -49,9 +53,7 @@ describe('fillToSameLengthArray', () => {
   });
 });
 
-
-
-describe("concatItemsByLevels", () => {
+describe('concatItemsByLevels', () => {
   it('should concatenate the array and create array with length 2', () => {
     const levelArray = [
       { level: 1, items: ['a', 'b'] },
@@ -61,6 +63,4 @@ describe("concatItemsByLevels", () => {
     const result = concatItemsByLevels(levelArray);
     expect(result.length).toBe(2);
   });
-  
-
-})
+});

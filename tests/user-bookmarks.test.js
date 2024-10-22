@@ -39,7 +39,7 @@ describe('User Bookmarks', () => {
         },
         product: {
           _id: UnpublishedProduct._id,
-        }
+        },
       });
     });
 
@@ -241,7 +241,7 @@ describe('User Bookmarks', () => {
       expect(bookmarks).toMatchObject([
         { product: { _id: SimpleProduct._id } },
         { product: { _id: PlanProduct._id } },
-      ])
+      ]);
     });
   });
 });

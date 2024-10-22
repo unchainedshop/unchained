@@ -1,6 +1,5 @@
-import { isFunction, permissions, has } from "./roles-index.js";
-import { Role, Roles } from "./roles.js";
-
+import { isFunction, permissions, has } from './roles-index.js';
+import { Role, Roles } from './roles.js';
 
 describe('Role', () => {
   beforeEach(() => {
@@ -10,13 +9,11 @@ describe('Role', () => {
   });
   describe('constructor', () => {
     it('should create a new role with the given name', () => {
-      
-      
       expect(new Role('admin').name).toBe('admin');
     });
 
     it('should throw an error if a role with the same name already exists', () => {
-      new Role('admin')
+      new Role('admin');
       expect(() => new Role('admin')).toThrowError('"admin" role is already defined');
     });
   });
@@ -37,9 +34,7 @@ describe('Role', () => {
     it('should convert a non-function value to a function that returns that value', () => {
       const role = new Role('admin');
       role.helper('checkPermission', true);
-      expect(role.helpers.checkPermission).toEqual([
-        expect.any(Function),
-      ]);
+      expect(role.helpers.checkPermission).toEqual([expect.any(Function)]);
       expect(role.helpers.checkPermission[0]()).toBe(true);
     });
   });
@@ -65,13 +60,10 @@ describe('Role', () => {
     it('should convert a non-function value to a function that returns that value', () => {
       const role = new Role('admin');
       role.allow('createUser', true);
-      expect(role.allowRules.createUser).toEqual([
-        expect.any(Function),
-      ]);
+      expect(role.allowRules.createUser).toEqual([expect.any(Function)]);
       expect(role.allowRules.createUser[0]()).toBe(true);
     });
   });
-
 
   describe('Role utilities', () => {
     const testRole = new Role('test_role');
@@ -80,19 +72,14 @@ describe('Role', () => {
     it('should register an action rule', () => {
       const allowFn = () => true;
       testRole.allow(actionName, allowFn);
-      expect(testRole.allowRules[actionName]).toEqual(
-        expect.arrayContaining([allowFn])
-      );
+      expect(testRole.allowRules[actionName]).toEqual(expect.arrayContaining([allowFn]));
     });
 
     it('should register a helper', () => {
       const helperFn = () => true;
       testRole.helper('test_helper', helperFn);
-      expect(testRole.helpers.test_helper).toEqual(
-        expect.arrayContaining([helperFn])
-      );
+      expect(testRole.helpers.test_helper).toEqual(expect.arrayContaining([helperFn]));
     });
-
   });
   describe('Role Helper Registration', () => {
     it('should add a helper', () => {
@@ -102,18 +89,14 @@ describe('Role', () => {
 
     it('should add a helper attaching it to adminRole', () => {
       Roles.registerHelper('test_admin_helper');
-      expect(Roles.helpers).toEqual(
-        expect.arrayContaining(['test_admin_helper'])
-      );
-    }); 
+      expect(Roles.helpers).toEqual(expect.arrayContaining(['test_admin_helper']));
+    });
 
     it('should skip adding helper if it already exists', () => {
       Roles.registerHelper('test_helper');
       Roles.registerHelper('test_admin_helper');
 
-      expect(Roles.helpers).toEqual(
-        expect.arrayContaining(['test_helper', 'test_admin_helper'])
-      );
+      expect(Roles.helpers).toEqual(expect.arrayContaining(['test_helper', 'test_admin_helper']));
     });
   });
 
@@ -146,7 +129,11 @@ describe('Role', () => {
 
   describe('isFunction', () => {
     test('it should return true give a function', () => {
-      expect(isFunction(() => {})).toBe(true);
+      expect(
+        isFunction(() => {
+          /**/
+        }),
+      ).toBe(true);
     });
 
     test('it should return false given an improper function', () => {
@@ -185,10 +172,7 @@ describe('permissions', () => {
       admin: {
         name: 'admin',
         allowRules: {
-          createUser: [
-            async () => true,
-            async () => false,
-          ],
+          createUser: [async () => true, async () => false],
         },
       },
     };
@@ -202,10 +186,7 @@ describe('permissions', () => {
       admin: {
         name: 'admin',
         allowRules: {
-          createUser: [
-            async () => true,
-            async () => false,
-          ],
+          createUser: [async () => true, async () => false],
         },
       },
     };
@@ -219,19 +200,13 @@ describe('permissions', () => {
       admin: {
         name: 'admin',
         allowRules: {
-          createUser: [
-            async () => true,
-            async () => false,
-          ],
+          createUser: [async () => true, async () => false],
         },
       },
       user: {
         name: 'user',
         allowRules: {
-          viewUser: [
-            async () => true,
-            async () => false,
-          ],
+          viewUser: [async () => true, async () => false],
         },
       },
     };
@@ -245,23 +220,14 @@ describe('permissions', () => {
       admin: {
         name: 'admin',
         allowRules: {
-          createUser: [
-            async () => true,
-            async () => true,
-          ],
-          viewUser: [
-            async () => true,
-            async () => false,
-          ],
+          createUser: [async () => true, async () => true],
+          viewUser: [async () => true, async () => false],
         },
       },
       user: {
         name: 'user',
         allowRules: {
-          viewUser: [
-            async () => true,
-            async () => true,
-          ],
+          viewUser: [async () => true, async () => true],
         },
       },
     };
@@ -270,63 +236,61 @@ describe('permissions', () => {
   });
 });
 
-  describe('registerAction', () => {
-    it('should add a new action to the list of actions if it does not already exist', () => {
-      const action = 'createUser';
-      Roles.registerAction(action);
-      expect(Roles.actions).toContain(action);
-    });
-
-    it('should not add the same action multiple times', () => {
-      const action = 'createUser';
-      Roles.registerAction(action);
-      Roles.registerAction(action);
-      expect(Roles.actions).toEqual([action]);
-    });
+describe('registerAction', () => {
+  it('should add a new action to the list of actions if it does not already exist', () => {
+    const action = 'createUser';
+    Roles.registerAction(action);
+    expect(Roles.actions).toContain(action);
   });
 
-  describe('registerHelper', () => {
-    it('should add a new helper to the list of helpers if it does not already exist', () => {
-      const helper = 'checkAdmin';
-      Roles.registerHelper(helper);
-      expect(Roles.helpers).toContain(helper);
-    });
+  it('should not add the same action multiple times', () => {
+    const action = 'createUser';
+    Roles.registerAction(action);
+    Roles.registerAction(action);
+    expect(Roles.actions).toEqual([action]);
+  });
+});
 
-    it('should not add the same helper multiple times', () => {
-      const helper = 'checkAdmin';
-      Roles.registerHelper(helper);
-      Roles.registerHelper(helper);
-      expect(Roles.helpers).toEqual([helper]);
-    });
+describe('registerHelper', () => {
+  it('should add a new helper to the list of helpers if it does not already exist', () => {
+    const helper = 'checkAdmin';
+    Roles.registerHelper(helper);
+    expect(Roles.helpers).toContain(helper);
   });
 
-  describe('getUserRoles', () => {
-    it('should return the correct roles for a logged-in user', () => {
-      const userId = 'user1';
-      const roles = ['admin'];
-      const includeSpecial = true;
-      const expected = ['admin', '__all__', '__loggedIn__'];
-      const result = Roles.getUserRoles(userId, roles, includeSpecial);
-      expect(result).toEqual(expected);
-    });
+  it('should not add the same helper multiple times', () => {
+    const helper = 'checkAdmin';
+    Roles.registerHelper(helper);
+    Roles.registerHelper(helper);
+    expect(Roles.helpers).toEqual([helper]);
+  });
+});
 
-    it('should return the correct roles for a logged-out user', () => {
-      const userId = null;
-      const roles = ['admin'];
-      const includeSpecial = true;
-      const expected = ['admin', '__all__', '__notLoggedIn__'];
-      const result = Roles.getUserRoles(userId as any, roles, includeSpecial);
-      expect(result).toEqual(expected);
-    });
+describe('getUserRoles', () => {
+  it('should return the correct roles for a logged-in user', () => {
+    const userId = 'user1';
+    const roles = ['admin'];
+    const includeSpecial = true;
+    const expected = ['admin', '__all__', '__loggedIn__'];
+    const result = Roles.getUserRoles(userId, roles, includeSpecial);
+    expect(result).toEqual(expected);
+  });
 
-    it('should return the correct roles when includeSpecial is false', () => {
-      const userId = 'user1';
-      const roles = ['admin'];
-      const includeSpecial = false;
-      const expected = ['admin'];
-      const result = Roles.getUserRoles(userId, roles, includeSpecial);
-      expect(result).toEqual(expected);
-    });
-  
-  
+  it('should return the correct roles for a logged-out user', () => {
+    const userId = null;
+    const roles = ['admin'];
+    const includeSpecial = true;
+    const expected = ['admin', '__all__', '__notLoggedIn__'];
+    const result = Roles.getUserRoles(userId as any, roles, includeSpecial);
+    expect(result).toEqual(expected);
+  });
+
+  it('should return the correct roles when includeSpecial is false', () => {
+    const userId = 'user1';
+    const roles = ['admin'];
+    const includeSpecial = false;
+    const expected = ['admin'];
+    const result = Roles.getUserRoles(userId, roles, includeSpecial);
+    expect(result).toEqual(expected);
+  });
 });

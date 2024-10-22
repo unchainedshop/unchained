@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
   PlanProduct,
@@ -53,11 +49,11 @@ describe('Products', () => {
           }
         `,
         variables: {
-          product: {            
+          product: {
             type: 'SimpleProduct',
             tags: ['simple'],
           },
-          texts: [{title: 'Simple Product', locale: "de"}]
+          texts: [{ title: 'Simple Product', locale: 'de' }],
         },
       });
       expect(createProduct).toMatchObject({
@@ -238,10 +234,7 @@ describe('Products', () => {
     it('update successfuly when passed valid product ID ', async () => {
       const { data: { updateProduct } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation UpdateProduct(
-            $productId: ID!
-            $product: UpdateProductInput!
-          ) {
+          mutation UpdateProduct($productId: ID!, $product: UpdateProductInput!) {
             updateProduct(productId: $productId, product: $product) {
               _id
               sequence
@@ -271,10 +264,7 @@ describe('Products', () => {
     it('return not found error when passed non-existing product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation UpdateProduct(
-            $productId: ID!
-            $product: UpdateProductInput!
-          ) {
+          mutation UpdateProduct($productId: ID!, $product: UpdateProductInput!) {
             updateProduct(productId: $productId, product: $product) {
               _id
             }
@@ -297,10 +287,7 @@ describe('Products', () => {
     it('return error when passed invalid product id', async () => {
       const { errors = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation UpdateProduct(
-            $productId: ID!
-            $product: UpdateProductInput!
-          ) {
+          mutation UpdateProduct($productId: ID!, $product: UpdateProductInput!) {
             updateProduct(productId: $productId, product: $product) {
               _id
             }
@@ -399,10 +386,7 @@ describe('Products', () => {
     it('update product plan successfuly when passed PLAN_PRODUCT type', async () => {
       const { data: { updateProductPlan } = {} } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation updateProductPlan(
-            $productId: ID!
-            $plan: UpdateProductPlanInput!
-          ) {
+          mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
             updateProductPlan(productId: $productId, plan: $plan) {
               _id
               sequence
@@ -467,10 +451,7 @@ describe('Products', () => {
     it('return error when passed non PLAN_PRODUCT type', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation updateProductPlan(
-            $productId: ID!
-            $plan: UpdateProductPlanInput!
-          ) {
+          mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
             updateProductPlan(productId: $productId, plan: $plan) {
               _id
             }
@@ -498,10 +479,7 @@ describe('Products', () => {
     it('return ProductNotFoundError when passed product ID that does not exist', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation updateProductPlan(
-            $productId: ID!
-            $plan: UpdateProductPlanInput!
-          ) {
+          mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
             updateProductPlan(productId: $productId, plan: $plan) {
               _id
             }
@@ -525,10 +503,7 @@ describe('Products', () => {
     it('return InvalidIdError when passed invalid product ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          mutation updateProductPlan(
-            $productId: ID!
-            $plan: UpdateProductPlanInput!
-          ) {
+          mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
             updateProductPlan(productId: $productId, plan: $plan) {
               _id
             }
@@ -554,10 +529,7 @@ describe('Products', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
-          mutation updateProductPlan(
-            $productId: ID!
-            $plan: UpdateProductPlanInput!
-          ) {
+          mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
             updateProductPlan(productId: $productId, plan: $plan) {
               _id
               ... on PlanProduct {
@@ -591,10 +563,7 @@ describe('Products', () => {
     it('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
-          mutation updateProductPlan(
-            $productId: ID!
-            $plan: UpdateProductPlanInput!
-          ) {
+          mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
             updateProductPlan(productId: $productId, plan: $plan) {
               _id
             }
@@ -1127,13 +1096,12 @@ describe('Products', () => {
         `,
         variables: {
           queryString: 'search-purpose',
-          includeDrafts: true
+          includeDrafts: true,
         },
       });
 
       expect(products.length).toEqual(2);
     });
-
 
     it('Search an product using product sku', async () => {
       const {
@@ -1162,10 +1130,8 @@ describe('Products', () => {
         `,
         variables: {
           queryString: 'SKU-test',
-
         },
       });
-
 
       expect(products.length).toEqual(4);
     });
@@ -1262,7 +1228,7 @@ describe('Products', () => {
       });
 
       expect(products.length).toEqual(10);
-      expect(products.filter(p => p.status === "DRAFT").length).not.toBe(0);
+      expect(products.filter((p) => p.status === 'DRAFT').length).not.toBe(0);
     });
   });
 
@@ -1272,16 +1238,8 @@ describe('Products', () => {
         data: { productsCount },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query productsCount(
-            $tags: [LowerCaseString!]
-            $slugs: [String!]
-            $includeDrafts: Boolean
-          ) {
-            productsCount(
-              tags: $tags
-              slugs: $slugs
-              includeDrafts: $includeDrafts
-            )
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
           }
         `,
         variables: {},
@@ -1295,16 +1253,8 @@ describe('Products', () => {
         data: { productsCount },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query productsCount(
-            $tags: [LowerCaseString!]
-            $slugs: [String!]
-            $includeDrafts: Boolean
-          ) {
-            productsCount(
-              tags: $tags
-              slugs: $slugs
-              includeDrafts: $includeDrafts
-            )
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
           }
         `,
         variables: {
@@ -1320,16 +1270,8 @@ describe('Products', () => {
         data: { productsCount },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query productsCount(
-            $tags: [LowerCaseString!]
-            $slugs: [String!]
-            $includeDrafts: Boolean
-          ) {
-            productsCount(
-              tags: $tags
-              slugs: $slugs
-              includeDrafts: $includeDrafts
-            )
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
           }
         `,
         variables: {
@@ -1345,16 +1287,8 @@ describe('Products', () => {
         data: { productsCount },
       } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
-          query productsCount(
-            $tags: [LowerCaseString!]
-            $slugs: [String!]
-            $includeDrafts: Boolean
-          ) {
-            productsCount(
-              tags: $tags
-              slugs: $slugs
-              includeDrafts: $includeDrafts
-            )
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
           }
         `,
         variables: {
@@ -1372,16 +1306,8 @@ describe('Products', () => {
         data: { productsCount },
       } = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
-          query productsCount(
-            $tags: [LowerCaseString!]
-            $slugs: [String!]
-            $includeDrafts: Boolean
-          ) {
-            productsCount(
-              tags: $tags
-              slugs: $slugs
-              includeDrafts: $includeDrafts
-            )
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
           }
         `,
         variables: {},
@@ -1396,16 +1322,8 @@ describe('Products', () => {
         data: { productsCount },
       } = await graphqlFetchAsNormalUser({
         query: /* GraphQL */ `
-          query productsCount(
-            $tags: [LowerCaseString!]
-            $slugs: [String!]
-            $includeDrafts: Boolean
-          ) {
-            productsCount(
-              tags: $tags
-              slugs: $slugs
-              includeDrafts: $includeDrafts
-            )
+          query productsCount($tags: [LowerCaseString!], $slugs: [String!], $includeDrafts: Boolean) {
+            productsCount(tags: $tags, slugs: $slugs, includeDrafts: $includeDrafts)
           }
         `,
         variables: {},
@@ -2004,8 +1922,8 @@ describe('Products', () => {
     });
   });
 
-  describe("query.products.catalogPriceRange should", () => {
-    it("return minimum and maximum catalog price range of a configurable product", async () => {
+  describe('query.products.catalogPriceRange should', () => {
+    it('return minimum and maximum catalog price range of a configurable product', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -2046,18 +1964,18 @@ describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 500000,
-          currency: "CHF",
+          currency: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 30000000,
-          currency: "CHF",
+          currency: 'CHF',
         },
       });
     });
 
-    it("return minimum and maximum catalog price range of a configurable product based on quantity argument", async () => {
+    it('return minimum and maximum catalog price range of a configurable product based on quantity argument', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -2097,18 +2015,18 @@ describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 400000,
-          currency: "CHF",
+          currency: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 75000000,
-          currency: "CHF",
+          currency: 'CHF',
         },
       });
     });
 
-    it("return minimum and maximum catalog price range of a configurable product based on vector argument", async () => {
+    it('return minimum and maximum catalog price range of a configurable product based on vector argument', async () => {
       const {
         data: { product = {} },
       } = await graphqlFetchAsAdmin({
@@ -2148,13 +2066,13 @@ describe('Products', () => {
           isTaxable: true,
           isNetPrice: false,
           amount: 1500000,
-          currency: "CHF",
+          currency: 'CHF',
         },
         maxPrice: {
           isTaxable: true,
           isNetPrice: false,
           amount: 10000000,
-          currency: "CHF",
+          currency: 'CHF',
         },
       });
     });

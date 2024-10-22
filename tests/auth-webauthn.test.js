@@ -1,20 +1,14 @@
-import { setupDatabase, createAnonymousGraphqlFetch, createLoggedInGraphqlFetch } from './helpers.js';
-import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+import { setupDatabase, createAnonymousGraphqlFetch } from './helpers.js';
 
-let db;
-let graphqlFetch;
 let anonymousGraphqlFetch;
 
 describe('WebAuthn Flows', () => {
   beforeAll(async () => {
-    [db] = await setupDatabase();
+    await setupDatabase();
     anonymousGraphqlFetch = await createAnonymousGraphqlFetch();
-    graphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
   });
-  
-  describe('Mutation.createWebAuthnCredentialCreationOptions', () => {
-    let webAuthnChallenge;
 
+  describe('Mutation.createWebAuthnCredentialCreationOptions', () => {
     it('create a webauthn credential', async () => {
       const { data: { createWebAuthnCredentialCreationOptions } = {} } = await anonymousGraphqlFetch({
         query: /* GraphQL */ `
@@ -23,7 +17,6 @@ describe('WebAuthn Flows', () => {
           }
         `,
       });
-      webAuthnChallenge = createWebAuthnCredentialCreationOptions.challenge;
       expect(createWebAuthnCredentialCreationOptions).toMatchObject({
         requestId: expect.any(Number),
         rp: {},
@@ -37,8 +30,6 @@ describe('WebAuthn Flows', () => {
   });
 
   describe('Mutation.createWebAuthnCredentialRequestOptions', () => {
-    let webAuthnChallenge;
-
     it('create a webauthn credential', async () => {
       const { data: { createWebAuthnCredentialRequestOptions } = {} } = await anonymousGraphqlFetch({
         query: /* GraphQL */ `
@@ -47,7 +38,6 @@ describe('WebAuthn Flows', () => {
           }
         `,
       });
-      webAuthnChallenge = createWebAuthnCredentialRequestOptions.challenge;
       expect(createWebAuthnCredentialRequestOptions).toMatchObject({
         requestId: expect.any(Number),
         challenge: expect.any(String),

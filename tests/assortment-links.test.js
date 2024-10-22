@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment, AssortmentLinks } from './seeds/assortments.js';
 
@@ -20,9 +16,7 @@ describe('AssortmentLink', () => {
         data: { reorderAssortmentLinks },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentLinks(
-            $sortKeys: [ReorderAssortmentLinkInput!]!
-          ) {
+          mutation ReorderAssortmentLinks($sortKeys: [ReorderAssortmentLinkInput!]!) {
             reorderAssortmentLinks(sortKeys: $sortKeys) {
               _id
               sortKey
@@ -54,9 +48,7 @@ describe('AssortmentLink', () => {
         data: { reorderAssortmentLinks },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentLinks(
-            $sortKeys: [ReorderAssortmentLinkInput!]!
-          ) {
+          mutation ReorderAssortmentLinks($sortKeys: [ReorderAssortmentLinkInput!]!) {
             reorderAssortmentLinks(sortKeys: $sortKeys) {
               _id
             }
@@ -78,7 +70,7 @@ describe('AssortmentLink', () => {
 
       expect(reorderAssortmentLinks.length).toEqual(1);
       expect(reorderAssortmentLinks[0]).toEqual({
-        _id: AssortmentLinks[0]._id
+        _id: AssortmentLinks[0]._id,
       });
     });
   });
@@ -88,9 +80,7 @@ describe('AssortmentLink', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentLinks(
-            $sortKeys: [ReorderAssortmentLinkInput!]!
-          ) {
+          mutation ReorderAssortmentLinks($sortKeys: [ReorderAssortmentLinkInput!]!) {
             reorderAssortmentLinks(sortKeys: $sortKeys) {
               _id
             }
@@ -147,8 +137,8 @@ describe('AssortmentLink', () => {
       });
 
       expect(addAssortmentLink).toMatchObject({
-        parent: {_id: SimpleAssortment[0]._id},
-        child: {_id: SimpleAssortment[3]._id},
+        parent: { _id: SimpleAssortment[0]._id },
+        child: { _id: SimpleAssortment[3]._id },
         tags: ['assortment-link-test'],
       });
     });
@@ -333,9 +323,7 @@ describe('AssortmentLink', () => {
         },
       });
       expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual(
-        'AssortmentLinkNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentLinkNotFoundError');
     });
 
     it('return not found error when passed non existing assortmentLinkId', async () => {
@@ -352,9 +340,7 @@ describe('AssortmentLink', () => {
         },
       });
       expect(errors.length).toEqual(1);
-      expect(errors[0]?.extensions?.code).toEqual(
-        'AssortmentLinkNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentLinkNotFoundError');
     });
 
     it('return error when passed invalid assortmentLinkId', async () => {

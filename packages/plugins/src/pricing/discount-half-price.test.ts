@@ -13,10 +13,10 @@ describe('HalfPrice', () => {
     const context = {
       modules: {
         users: {
-          findUserById: import.meta.jest.fn(() => Promise.resolve({ tags: ['half-price'] }))
-        }
+          findUserById: import.meta.jest.fn(() => Promise.resolve({ tags: ['half-price'] })),
+        },
       },
-      order: { userId: 'user-id' }
+      order: { userId: 'user-id' },
     };
     const actions = await HalfPrice.actions({ context } as any);
     expect(await actions.isValidForSystemTriggering()).toBeTruthy();
@@ -27,14 +27,22 @@ describe('HalfPrice', () => {
   it('discountForPricingAdapterKey', async () => {
     const context = {};
     const actions = await HalfPrice.actions({ context } as any);
-    expect(actions.discountForPricingAdapterKey({ pricingAdapterKey: 'shop.unchained.pricing.product-discount' } as any)).toEqual({ rate: 0.5 });
-    expect(actions.discountForPricingAdapterKey({ pricingAdapterKey: 'shop.unchained.pricing.other-discount' } as any)).toBeNull();
+    expect(
+      actions.discountForPricingAdapterKey({
+        pricingAdapterKey: 'shop.unchained.pricing.product-discount',
+      } as any),
+    ).toEqual({ rate: 0.5 });
+    expect(
+      actions.discountForPricingAdapterKey({
+        pricingAdapterKey: 'shop.unchained.pricing.other-discount',
+      } as any),
+    ).toBeNull();
   });
 
   it('isValidForCodeTriggering', async () => {
     const context = {};
     const actions = await HalfPrice.actions({ context } as any);
-    
-    expect(await actions.isValidForCodeTriggering({code: ''})).toBeFalsy();
+
+    expect(await actions.isValidForCodeTriggering({ code: '' })).toBeFalsy();
   });
 });

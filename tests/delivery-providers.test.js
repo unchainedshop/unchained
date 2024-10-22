@@ -1,10 +1,10 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { PickupDeliveryProvider, SendMailDeliveryProvider, SimpleDeliveryProvider } from './seeds/deliveries.js';
+import {
+  PickupDeliveryProvider,
+  SendMailDeliveryProvider,
+  SimpleDeliveryProvider,
+} from './seeds/deliveries.js';
 
 let graphqlFetch;
 let graphqlFetchAsAnonymousUser;
@@ -68,7 +68,7 @@ describe('DeliveryProviders', () => {
           type: 'PICKUP',
         },
       ]);
-      expect(deliveryProviders.every(d => typeof d.isActive === 'boolean')).toBe(true);
+      expect(deliveryProviders.every((d) => typeof d.isActive === 'boolean')).toBe(true);
     });
 
     it('return list of deliveryProviders based on the given type', async () => {

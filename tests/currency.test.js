@@ -1,7 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { BaseCurrency } from './seeds/locale-data.js';
 
@@ -16,9 +13,7 @@ describe('Currency', () => {
   describe('For admin user ', () => {
     it('Return currency search result', async () => {
       const {
-        data: {
-          currencies
-        },
+        data: { currencies },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query Currencies($queryString: String) {
@@ -29,7 +24,7 @@ describe('Currency', () => {
           }
         `,
         variables: {
-          queryString: 'CHF'
+          queryString: 'CHF',
         },
       });
       expect(currencies.length).toEqual(1);
@@ -43,9 +38,7 @@ describe('Currency', () => {
 
     it('Return empty array when no matching search result found', async () => {
       const {
-        data: {
-          currencies
-        },
+        data: { currencies },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query Currencies($queryString: String) {
@@ -56,12 +49,10 @@ describe('Currency', () => {
           }
         `,
         variables: {
-          queryString: 'wrong'
+          queryString: 'wrong',
         },
       });
       expect(currencies.length).toEqual(0);
     });
-
-   
   });
 });

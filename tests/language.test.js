@@ -1,7 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { BaseLanguage } from './seeds/locale-data.js';
 
@@ -16,9 +13,7 @@ describe('Language', () => {
   describe('For admin user ', () => {
     it('Return language search result', async () => {
       const {
-        data: {
-          languages
-        },
+        data: { languages },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query Languages($queryString: String) {
@@ -29,7 +24,7 @@ describe('Language', () => {
           }
         `,
         variables: {
-          queryString: 'de'
+          queryString: 'de',
         },
       });
       expect(languages.length).toEqual(1);
@@ -43,9 +38,7 @@ describe('Language', () => {
 
     it('Return empty array when no matching search result found', async () => {
       const {
-        data: {
-          languages
-        },
+        data: { languages },
       } = await graphqlFetch({
         query: /* GraphQL */ `
           query Languages($queryString: String) {
@@ -56,12 +49,10 @@ describe('Language', () => {
           }
         `,
         variables: {
-          queryString: 'wrong'
+          queryString: 'wrong',
         },
       });
       expect(languages.length).toEqual(0);
     });
-
-   
   });
 });

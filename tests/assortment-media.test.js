@@ -3,49 +3,37 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   putFile,
-} from "./helpers.js";
-import { ADMIN_TOKEN, USER_TOKEN } from "./seeds/users.js";
-import { PngAssortmentMedia, SimpleAssortment } from "./seeds/assortments.js";
+} from './helpers.js';
+import { ADMIN_TOKEN } from './seeds/users.js';
+import { PngAssortmentMedia, SimpleAssortment } from './seeds/assortments.js';
 import fs from 'fs';
 import crypto from 'crypto';
 import path from 'path';
 
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let graphqlFetch;
-let userGraphqlFetch;
 
-const assortmentMediaFile2 = fs.createReadStream(
-  path.resolve(__dirname, `./assets/zurich.jpg`)
-);
+const assortmentMediaFile2 = fs.createReadStream(path.resolve(dirname, `./assets/zurich.jpg`));
 
-const assortmentMediaFile3 = fs.createReadStream(
-  path.resolve(__dirname, `./assets/contract.pdf`)
-);
+const assortmentMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets/contract.pdf`));
 
-describe("AssortmentMedia", () => {
+describe('AssortmentMedia', () => {
   beforeAll(async () => {
     await setupDatabase();
     graphqlFetch = await createLoggedInGraphqlFetch(ADMIN_TOKEN);
-    userGraphqlFetch = await createLoggedInGraphqlFetch(USER_TOKEN);
   });
 
-  describe("Mutation.prepareAssortmentMediaUpload for admin user should", () => {
-    it("return a sign PUT url for media upload", async () => {
+  describe('Mutation.prepareAssortmentMediaUpload for admin user should', () => {
+    it('return a sign PUT url for media upload', async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation prepareAssortmentMediaUpload(
-            $mediaName: String!
-            $assortmentId: ID!
-          ) {
-            prepareAssortmentMediaUpload(
-              mediaName: $mediaName
-              assortmentId: $assortmentId
-            ) {
+          mutation prepareAssortmentMediaUpload($mediaName: String!, $assortmentId: ID!) {
+            prepareAssortmentMediaUpload(mediaName: $mediaName, assortmentId: $assortmentId) {
               _id
               putURL
               expires
@@ -53,26 +41,20 @@ describe("AssortmentMedia", () => {
           }
         `,
         variables: {
-          mediaName: "test-media",
+          mediaName: 'test-media',
           assortmentId: SimpleAssortment[0]._id,
         },
       });
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
     }, 20000);
 
-    it("upload file via PUT successfully", async () => {
+    it('upload file via PUT successfully', async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation prepareAssortmentMediaUpload(
-            $mediaName: String!
-            $assortmentId: ID!
-          ) {
-            prepareAssortmentMediaUpload(
-              mediaName: $mediaName
-              assortmentId: $assortmentId
-            ) {
+          mutation prepareAssortmentMediaUpload($mediaName: String!, $assortmentId: ID!) {
+            prepareAssortmentMediaUpload(mediaName: $mediaName, assortmentId: $assortmentId) {
               _id
               putURL
               expires
@@ -80,18 +62,15 @@ describe("AssortmentMedia", () => {
           }
         `,
         variables: {
-          mediaName: "test-media",
+          mediaName: 'test-media',
           assortmentId: SimpleAssortment[0]._id,
         },
       });
 
       expect(prepareAssortmentMediaUpload.putURL).not.toBe(null);
-      await putFile(
-        assortmentMediaFile2,
-        {
-          url: prepareAssortmentMediaUpload.putURL,
-        }
-      );
+      await putFile(assortmentMediaFile2, {
+        url: prepareAssortmentMediaUpload.putURL,
+      });
 
       const {
         data: { assortment },
@@ -117,22 +96,18 @@ describe("AssortmentMedia", () => {
       const hash = crypto.createHash('sha256');
       const download = await (await fetch(assortment.media[1].file.url)).text();
       hash.update(download);
-      expect(hash.digest('hex')).toBe('5d3291cf26f878a23363c581ab4c124f65022d86089d3b532326b5705689743c')
+      expect(hash.digest('hex')).toBe(
+        '5d3291cf26f878a23363c581ab4c124f65022d86089d3b532326b5705689743c',
+      );
     }, 20000);
 
-    it("link uploaded media file with assortment media successfully", async () => {
+    it('link uploaded media file with assortment media successfully', async () => {
       const {
         data: { prepareAssortmentMediaUpload },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation prepareAssortmentMediaUpload(
-            $mediaName: String!
-            $assortmentId: ID!
-          ) {
-            prepareAssortmentMediaUpload(
-              mediaName: $mediaName
-              assortmentId: $assortmentId
-            ) {
+          mutation prepareAssortmentMediaUpload($mediaName: String!, $assortmentId: ID!) {
+            prepareAssortmentMediaUpload(mediaName: $mediaName, assortmentId: $assortmentId) {
               _id
               putURL
               expires
@@ -140,33 +115,22 @@ describe("AssortmentMedia", () => {
           }
         `,
         variables: {
-          mediaName: "test-media",
+          mediaName: 'test-media',
           assortmentId: SimpleAssortment[0]._id,
         },
       });
 
-      await putFile(
-        assortmentMediaFile3,
-        {
-          url: prepareAssortmentMediaUpload.putURL,
-          type: "image/jpg",
-        }
-      );
+      await putFile(assortmentMediaFile3, {
+        url: prepareAssortmentMediaUpload.putURL,
+        type: 'image/jpg',
+      });
 
       const {
         data: { confirmMediaUpload },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation confirmMediaUpload(
-            $mediaUploadTicketId: ID!
-            $size: Int!
-            $type: String!
-          ) {
-            confirmMediaUpload(
-              mediaUploadTicketId: $mediaUploadTicketId
-              size: $size
-              type: $type
-            ) {
+          mutation confirmMediaUpload($mediaUploadTicketId: ID!, $size: Int!, $type: String!) {
+            confirmMediaUpload(mediaUploadTicketId: $mediaUploadTicketId, size: $size, type: $type) {
               _id
               name
               type
@@ -177,26 +141,24 @@ describe("AssortmentMedia", () => {
         variables: {
           mediaUploadTicketId: prepareAssortmentMediaUpload._id,
           size: 8615,
-          type: "image/jpg",
+          type: 'image/jpg',
         },
       });
 
       expect(confirmMediaUpload).toMatchObject({
         _id: prepareAssortmentMediaUpload._id,
-        name: "test-media",
-        type: "image/jpg",
+        name: 'test-media',
+        type: 'image/jpg',
         size: 8615,
       });
     }, 20000);
   });
 
-  describe("mutation.reorderAssortmentMedia for admin user should", () => {
-    it("update assortment media sortkey successfuly when provided valid media ID", async () => {
+  describe('mutation.reorderAssortmentMedia for admin user should', () => {
+    it('update assortment media sortkey successfuly when provided valid media ID', async () => {
       const { data: { reorderAssortmentMedia } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentmedia(
-            $sortKeys: [ReorderAssortmentMediaInput!]!
-          ) {
+          mutation ReorderAssortmentmedia($sortKeys: [ReorderAssortmentMediaInput!]!) {
             reorderAssortmentMedia(sortKeys: $sortKeys) {
               _id
               tags
@@ -223,14 +185,12 @@ describe("AssortmentMedia", () => {
       expect(reorderAssortmentMedia[0].sortKey).toEqual(11);
     });
 
-    it("skiped any passed sort key passed with in-valid media ID", async () => {
+    it('skiped any passed sort key passed with in-valid media ID', async () => {
       const {
         data: { reorderAssortmentMedia },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentmedia(
-            $sortKeys: [ReorderAssortmentMediaInput!]!
-          ) {
+          mutation ReorderAssortmentmedia($sortKeys: [ReorderAssortmentMediaInput!]!) {
             reorderAssortmentMedia(sortKeys: $sortKeys) {
               _id
               tags
@@ -247,7 +207,7 @@ describe("AssortmentMedia", () => {
         variables: {
           sortKeys: [
             {
-              assortmentMediaId: "invalid-media-id",
+              assortmentMediaId: 'invalid-media-id',
               sortKey: 10,
             },
           ],
@@ -257,15 +217,13 @@ describe("AssortmentMedia", () => {
     });
   });
 
-  describe("mutation.reorderAssortmentMedia for anonymous user should", () => {
-    it("return error", async () => {
+  describe('mutation.reorderAssortmentMedia for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentmedia(
-            $sortKeys: [ReorderAssortmentMediaInput!]!
-          ) {
+          mutation ReorderAssortmentmedia($sortKeys: [ReorderAssortmentMediaInput!]!) {
             reorderAssortmentMedia(sortKeys: $sortKeys) {
               _id
             }
@@ -285,18 +243,15 @@ describe("AssortmentMedia", () => {
     });
   });
 
-  describe("mutation.updateAssortmentMediaTexts for admin user should", () => {
-    it("update assortment media text successfuly when provided valid media ID", async () => {
+  describe('mutation.updateAssortmentMediaTexts for admin user should', () => {
+    it('update assortment media text successfuly when provided valid media ID', async () => {
       const { data: { updateAssortmentMediaTexts } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
             $assortmentMediaId: ID!
             $texts: [AssortmentMediaTextInput!]!
           ) {
-            updateAssortmentMediaTexts(
-              assortmentMediaId: $assortmentMediaId
-              texts: $texts
-            ) {
+            updateAssortmentMediaTexts(assortmentMediaId: $assortmentMediaId, texts: $texts) {
               _id
               locale
               title
@@ -307,80 +262,72 @@ describe("AssortmentMedia", () => {
         variables: {
           assortmentMediaId: PngAssortmentMedia._id,
           texts: {
-            locale: "en",
-            title: "english title",
-            subtitle: "english title subtitle",
+            locale: 'en',
+            title: 'english title',
+            subtitle: 'english title subtitle',
           },
         },
       });
 
       expect(updateAssortmentMediaTexts[0]._id).not.toBe(null);
       expect(updateAssortmentMediaTexts[0]).toMatchObject({
-        locale: "en",
-        title: "english title",
-        subtitle: "english title subtitle",
+        locale: 'en',
+        title: 'english title',
+        subtitle: 'english title subtitle',
       });
     });
 
-    it("return not found error when passed non existing media ID", async () => {
+    it('return not found error when passed non existing media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
             $assortmentMediaId: ID!
             $texts: [AssortmentMediaTextInput!]!
           ) {
-            updateAssortmentMediaTexts(
-              assortmentMediaId: $assortmentMediaId
-              texts: $texts
-            ) {
+            updateAssortmentMediaTexts(assortmentMediaId: $assortmentMediaId, texts: $texts) {
               _id
             }
           }
         `,
         variables: {
-          assortmentMediaId: "invalid-media-id",
+          assortmentMediaId: 'invalid-media-id',
           texts: {
-            locale: "en",
-            title: "english title",
-            subtitle: "english title subtitle",
+            locale: 'en',
+            title: 'english title',
+            subtitle: 'english title subtitle',
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        "AssortmentMediaNotFoundError"
-      );
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentMediaNotFoundError');
     });
 
-    it("return error when passed invalid media ID", async () => {
+    it('return error when passed invalid media ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation UpdateassortmentMediaTexts(
             $assortmentMediaId: ID!
             $texts: [AssortmentMediaTextInput!]!
           ) {
-            updateAssortmentMediaTexts(
-              assortmentMediaId: $assortmentMediaId
-              texts: $texts
-            ) {
+            updateAssortmentMediaTexts(assortmentMediaId: $assortmentMediaId, texts: $texts) {
               _id
             }
           }
         `,
         variables: {
-          assortmentMediaId: "",
+          assortmentMediaId: '',
           texts: {
-            locale: "en",
-            title: "english title",
-            subtitle: "english title subtitle",
+            locale: 'en',
+            title: 'english title',
+            subtitle: 'english title subtitle',
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
-  describe("mutation.updateAssortmentMediaTexts for anonymous user should", () => {
-    it("return error", async () => {
+  describe('mutation.updateAssortmentMediaTexts for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({
@@ -389,10 +336,7 @@ describe("AssortmentMedia", () => {
             $assortmentMediaId: ID!
             $texts: [AssortmentMediaTextInput!]!
           ) {
-            updateAssortmentMediaTexts(
-              assortmentMediaId: $assortmentMediaId
-              texts: $texts
-            ) {
+            updateAssortmentMediaTexts(assortmentMediaId: $assortmentMediaId, texts: $texts) {
               _id
               locale
               title
@@ -403,9 +347,9 @@ describe("AssortmentMedia", () => {
         variables: {
           assortmentMediaId: PngAssortmentMedia._id,
           texts: {
-            locale: "en",
-            title: "english title",
-            subtitle: "english title subtitle",
+            locale: 'en',
+            title: 'english title',
+            subtitle: 'english title subtitle',
           },
         },
       });
@@ -414,8 +358,8 @@ describe("AssortmentMedia", () => {
     });
   });
 
-  describe("mutation.removeAssortmentMedia for admin user should", () => {
-    it("remove assortment media successfuly when provided valid media ID", async () => {
+  describe('mutation.removeAssortmentMedia for admin user should', () => {
+    it('remove assortment media successfuly when provided valid media ID', async () => {
       // eslint-disable-next-line no-unused-vars
 
       await graphqlFetch({
@@ -459,12 +403,10 @@ describe("AssortmentMedia", () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual(
-        "AssortmentMediaNotFoundError"
-      );
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentMediaNotFoundError');
     }, 99999);
 
-    it("return not found error when passed non existing assortmentMediaId", async () => {
+    it('return not found error when passed non existing assortmentMediaId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
@@ -474,16 +416,14 @@ describe("AssortmentMedia", () => {
           }
         `,
         variables: {
-          assortmentMediaId: "non-existing-id",
+          assortmentMediaId: 'non-existing-id',
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual(
-        "AssortmentMediaNotFoundError"
-      );
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentMediaNotFoundError');
     });
 
-    it("return error when passed invalid assortmentMediaId", async () => {
+    it('return error when passed invalid assortmentMediaId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation RemoveAssortmentMedia($assortmentMediaId: ID!) {
@@ -493,16 +433,16 @@ describe("AssortmentMedia", () => {
           }
         `,
         variables: {
-          assortmentMediaId: "",
+          assortmentMediaId: '',
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual("InvalidIdError");
+      expect(errors[0]?.extensions?.code).toEqual('InvalidIdError');
     });
   });
 
-  describe("mutation.removeAssortmentMedia for anonymous user should", () => {
-    it("return error", async () => {
+  describe('mutation.removeAssortmentMedia for anonymous user should', () => {
+    it('return error', async () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
 
       const { errors } = await graphqlAnonymousFetch({

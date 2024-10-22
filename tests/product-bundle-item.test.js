@@ -1,14 +1,6 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
-import {
-  PlanProduct,
-  SimpleProduct,
-  SimpleProductBundle,
-} from './seeds/products.js';
+import { PlanProduct, SimpleProduct, SimpleProductBundle } from './seeds/products.js';
 
 let graphqlFetch;
 
@@ -22,10 +14,7 @@ describe('ProductBundleItem', () => {
     it('create product bundle item successfuly when passed BUNDLE_PRODUCT type', async () => {
       const { data: { createProductBundleItem } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateProductBundleItem(
-            $productId: ID!
-            $item: CreateProductBundleItemInput!
-          ) {
+          mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
             createProductBundleItem(productId: $productId, item: $item) {
               _id
               sequence
@@ -88,10 +77,7 @@ describe('ProductBundleItem', () => {
     it('return error when passed non BUNDLE_PRODUCT type', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateProductBundleItem(
-            $productId: ID!
-            $item: CreateProductBundleItemInput!
-          ) {
+          mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
             createProductBundleItem(productId: $productId, item: $item) {
               _id
             }
@@ -115,10 +101,7 @@ describe('ProductBundleItem', () => {
     it('return not found error when passed non existing product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateProductBundleItem(
-            $productId: ID!
-            $item: CreateProductBundleItemInput!
-          ) {
+          mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
             createProductBundleItem(productId: $productId, item: $item) {
               _id
             }
@@ -138,10 +121,7 @@ describe('ProductBundleItem', () => {
     it('return error when passed invalid product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateProductBundleItem(
-            $productId: ID!
-            $item: CreateProductBundleItemInput!
-          ) {
+          mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
             createProductBundleItem(productId: $productId, item: $item) {
               _id
             }
@@ -161,10 +141,7 @@ describe('ProductBundleItem', () => {
     it('return not found error when passed non existing bundle product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateProductBundleItem(
-            $productId: ID!
-            $item: CreateProductBundleItemInput!
-          ) {
+          mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
             createProductBundleItem(productId: $productId, item: $item) {
               _id
             }
@@ -184,10 +161,7 @@ describe('ProductBundleItem', () => {
     it('return error when passed invalid bundle product ID', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation CreateProductBundleItem(
-            $productId: ID!
-            $item: CreateProductBundleItemInput!
-          ) {
+          mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
             createProductBundleItem(productId: $productId, item: $item) {
               _id
             }
@@ -210,10 +184,7 @@ describe('ProductBundleItem', () => {
       const graphQlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphQlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation CreateProductBundleItem(
-            $productId: ID!
-            $item: CreateProductBundleItemInput!
-          ) {
+          mutation CreateProductBundleItem($productId: ID!, $item: CreateProductBundleItemInput!) {
             createProductBundleItem(productId: $productId, item: $item) {
               _id
             }

@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
 
@@ -20,14 +16,8 @@ describe('TranslatedFilterTexts', () => {
         data: { translatedFilterTexts },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query TranslatedFilterTexts(
-            $filterId: ID!
-            $filterOptionValue: String
-          ) {
-            translatedFilterTexts(
-              filterId: $filterId
-              filterOptionValue: $filterOptionValue
-            ) {
+          query TranslatedFilterTexts($filterId: ID!, $filterOptionValue: String) {
+            translatedFilterTexts(filterId: $filterId, filterOptionValue: $filterOptionValue) {
               _id
               locale
               title
@@ -42,7 +32,7 @@ describe('TranslatedFilterTexts', () => {
       expect(translatedFilterTexts.length).toEqual(2);
       expect(translatedFilterTexts).toMatchObject([
         { _id: 'german', locale: 'de', title: 'Special', subtitle: null },
-        { _id: 'french', locale: 'fr', title: null, subtitle: null }
+        { _id: 'french', locale: 'fr', title: null, subtitle: null },
       ]);
     });
 
@@ -51,14 +41,8 @@ describe('TranslatedFilterTexts', () => {
         data: { translatedFilterTexts },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          query TranslatedFilterTexts(
-            $filterId: ID!
-            $filterOptionValue: String
-          ) {
-            translatedFilterTexts(
-              filterId: $filterId
-              filterOptionValue: $filterOptionValue
-            ) {
+          query TranslatedFilterTexts($filterId: ID!, $filterOptionValue: String) {
+            translatedFilterTexts(filterId: $filterId, filterOptionValue: $filterOptionValue) {
               _id
             }
           }
@@ -77,14 +61,8 @@ describe('TranslatedFilterTexts', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          query TranslatedFilterTexts(
-            $filterId: ID!
-            $filterOptionValue: String
-          ) {
-            translatedFilterTexts(
-              filterId: $filterId
-              filterOptionValue: $filterOptionValue
-            ) {
+          query TranslatedFilterTexts($filterId: ID!, $filterOptionValue: String) {
+            translatedFilterTexts(filterId: $filterId, filterOptionValue: $filterOptionValue) {
               _id
             }
           }

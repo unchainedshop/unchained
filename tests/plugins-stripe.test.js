@@ -21,7 +21,7 @@ if (STRIPE_SECRET) {
         _id: 'stripe-payment-provider',
         adapterKey: 'shop.unchained.payment.stripe',
         type: 'GENERIC',
-        configuration: [{ key: "descriptorPrefix", value: "Book Shop" }]
+        configuration: [{ key: 'descriptorPrefix', value: 'Book Shop' }],
       });
 
       // Add a demo order ready to checkout
@@ -70,76 +70,66 @@ if (STRIPE_SECRET) {
     describe('Mutation.signPaymentProviderForCredentialRegistration (Stripe)', () => {
       let idAndSecret;
       it('Request a new client secret for the purpose of registration', async () => {
-        const { data: { signPaymentProviderForCredentialRegistration } = {}, ...rest } =
-          await graphqlFetch({
-            query: /* GraphQL */ `
-              mutation signPaymentProviderForCredentialRegistration(
-                $paymentProviderId: ID!
-                $transactionContext: JSON
-              ) {
-                signPaymentProviderForCredentialRegistration(
-                  paymentProviderId: $paymentProviderId, transactionContext: $transactionContext
-                )
-              }
-            `,
-            variables: {
-              paymentProviderId: 'stripe-payment-provider',
-              transactionContext: {
-                payment_method: "pm_card_visa",
-                payment_method_types: ["card"]
-              }
+        const { data: { signPaymentProviderForCredentialRegistration } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation signPaymentProviderForCredentialRegistration(
+              $paymentProviderId: ID!
+              $transactionContext: JSON
+            ) {
+              signPaymentProviderForCredentialRegistration(
+                paymentProviderId: $paymentProviderId
+                transactionContext: $transactionContext
+              )
+            }
+          `,
+          variables: {
+            paymentProviderId: 'stripe-payment-provider',
+            transactionContext: {
+              payment_method: 'pm_card_visa',
+              payment_method_types: ['card'],
             },
-          });
+          },
+        });
 
         expect(signPaymentProviderForCredentialRegistration).not.toBe('');
         expect(signPaymentProviderForCredentialRegistration).not.toBe(null);
-        expect(signPaymentProviderForCredentialRegistration).not.toBe(
-          undefined,
-        );
-        idAndSecret =
-          signPaymentProviderForCredentialRegistration.split('_secret_');
+        expect(signPaymentProviderForCredentialRegistration).not.toBe(undefined);
+        idAndSecret = signPaymentProviderForCredentialRegistration.split('_secret_');
       }, 10000);
       it('Confirm the setup intent', async () => {
         const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
-        
-        const confirmedIntent = await stripe.setupIntents.confirm(
-          idAndSecret[0],
-          {
-            return_url: 'http://localhost:4010',
-            use_stripe_sdk: true,
-            payment_method: 'pm_card_visa',
-          },
-        );
+
+        const confirmedIntent = await stripe.setupIntents.confirm(idAndSecret[0], {
+          return_url: 'http://localhost:4010',
+          use_stripe_sdk: true,
+          payment_method: 'pm_card_visa',
+        });
 
         expect(confirmedIntent).toMatchObject({
           status: 'succeeded',
         });
 
-        const { data: { registerPaymentCredentials } = {} } =
-          await graphqlFetch({
-            query: /* GraphQL */ `
-              mutation register(
-                $paymentProviderId: ID!
-                $transactionContext: JSON!
+        const { data: { registerPaymentCredentials } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation register($paymentProviderId: ID!, $transactionContext: JSON!) {
+              registerPaymentCredentials(
+                paymentProviderId: $paymentProviderId
+                transactionContext: $transactionContext
               ) {
-                registerPaymentCredentials(
-                  paymentProviderId: $paymentProviderId
-                  transactionContext: $transactionContext
-                ) {
-                  _id
-                  token
-                  isValid
-                  isPreferred
-                }
+                _id
+                token
+                isValid
+                isPreferred
               }
-            `,
-            variables: {
-              paymentProviderId: confirmedIntent.metadata.paymentProviderId,
-              transactionContext: {
-                setupIntentId: confirmedIntent.id,
-              },
+            }
+          `,
+          variables: {
+            paymentProviderId: confirmedIntent.metadata.paymentProviderId,
+            transactionContext: {
+              setupIntentId: confirmedIntent.id,
             },
-          });
+          },
+        });
         expect(registerPaymentCredentials).toMatchObject({
           isValid: true,
           isPreferred: true,
@@ -182,40 +172,35 @@ if (STRIPE_SECRET) {
           user: { _id: 'user' },
         });
 
-        const { data, error } =
-          await graphqlFetch({
-            query: /* GraphQL */ `
-              mutation addAndCheckout(
-                $productId: ID!
-                $paymentContext: JSON
-                $paymentProviderId: ID
-              ) {
-                addCartProduct(productId: $productId) {
-                  _id
-                }
-                updateCart(paymentProviderId: $paymentProviderId) {
-                  _id
-                  status
-                  payment {
-                    provider {
-                      _id
-                    }
+        const { data } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation addAndCheckout($productId: ID!, $paymentContext: JSON, $paymentProviderId: ID) {
+              addCartProduct(productId: $productId) {
+                _id
+              }
+              updateCart(paymentProviderId: $paymentProviderId) {
+                _id
+                status
+                payment {
+                  provider {
+                    _id
                   }
                 }
-                checkoutCart(paymentContext: $paymentContext) {
-                  _id
-                  status
-                }
               }
-            `,
-            variables: {
-              productId: 'simpleproduct',
-              paymentProviderId: 'stripe-payment-provider',
-              paymentContext: {
-                paymentCredentials: credentials,
-              },
+              checkoutCart(paymentContext: $paymentContext) {
+                _id
+                status
+              }
+            }
+          `,
+          variables: {
+            productId: 'simpleproduct',
+            paymentProviderId: 'stripe-payment-provider',
+            paymentContext: {
+              paymentCredentials: credentials,
             },
-          });
+          },
+        });
 
         const { addCartProduct, updateCart, checkoutCart } = data;
 
@@ -240,7 +225,10 @@ if (STRIPE_SECRET) {
         const { data: { signPaymentProviderForCheckout } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
             mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
-              signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId, transactionContext: $transactionContext)
+              signPaymentProviderForCheckout(
+                orderPaymentId: $orderPaymentId
+                transactionContext: $transactionContext
+              )
             }
           `,
           variables: {
@@ -257,14 +245,11 @@ if (STRIPE_SECRET) {
       it('Confirm the payment and checkout the order', async () => {
         const stripe = Stripe(STRIPE_SECRET);
 
-        const confirmedIntent = await stripe.paymentIntents.confirm(
-          idAndSecret[0],
-          {
-            return_url: 'http://localhost:4010',
-            use_stripe_sdk: true,
-            payment_method: 'pm_card_visa',
-          },
-        );
+        const confirmedIntent = await stripe.paymentIntents.confirm(idAndSecret[0], {
+          return_url: 'http://localhost:4010',
+          use_stripe_sdk: true,
+          payment_method: 'pm_card_visa',
+        });
 
         expect(confirmedIntent).toMatchObject({
           status: 'succeeded',

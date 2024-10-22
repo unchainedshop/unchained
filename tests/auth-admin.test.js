@@ -1,15 +1,6 @@
-import { readFileSync } from 'fs';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { Admin, ADMIN_TOKEN, User, USER_TOKEN } from './seeds/users';
 import { intervalUntilTimeout } from './lib/wait';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let db;
 let graphqlFetchAsAdminUser;
@@ -347,41 +338,37 @@ describe('Auth for admin users', () => {
           lastName: 'K',
         },
       };
-      const { data: { updateUserProfile } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            mutation updateUserProfile(
-              $profile: UserProfileInput!
-              $userId: ID
-            ) {
-              updateUserProfile(profile: $profile, userId: $userId) {
-                _id
-                name
-                profile {
-                  birthday
-                  displayName
-                  phoneMobile
-                  gender
-                  birthday
-                  address {
-                    firstName
-                    lastName
-                  }
+      const { data: { updateUserProfile } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateUserProfile($profile: UserProfileInput!, $userId: ID) {
+            updateUserProfile(profile: $profile, userId: $userId) {
+              _id
+              name
+              profile {
+                birthday
+                displayName
+                phoneMobile
+                gender
+                birthday
+                address {
+                  firstName
+                  lastName
                 }
               }
             }
-          `,
-          variables: {
-            userId: User._id,
-            profile,
-          },
-        });
+          }
+        `,
+        variables: {
+          userId: User._id,
+          profile,
+        },
+      });
       expect(updateUserProfile).toMatchObject({
         _id: User._id,
         name: profile.displayName,
         profile: {
           ...profile,
-          birthday: "2037-01-02",
+          birthday: '2037-01-02',
         },
       });
     });
@@ -396,11 +383,7 @@ describe('Auth for admin users', () => {
       const password = null;
       const { data: { enrollUser } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation enrollUser(
-            $email: String!
-            $password: String
-            $profile: UserProfileInput!
-          ) {
+          mutation enrollUser($email: String!, $password: String, $profile: UserProfileInput!) {
             enrollUser(email: $email, password: $password, profile: $profile) {
               _id
               isInitialPassword
@@ -427,8 +410,11 @@ describe('Auth for admin users', () => {
       });
 
       const work = await intervalUntilTimeout(async () => {
-        const work = await (db.collection('work_queue')).find({ type: "EMAIL", "input.to": email, retries: 20 }).toArray();
-        if (work?.length) return work;
+        const w2 = await db
+          .collection('work_queue')
+          .find({ type: 'EMAIL', 'input.to': email, retries: 20 })
+          .toArray();
+        if (w2?.length) return w2;
         return false;
       }, 5000);
 
@@ -439,27 +425,29 @@ describe('Auth for admin users', () => {
     it('should fire off the enrollment email', async () => {
       const email = 'admin3@unchained.local';
 
-      const { data: { sendEnrollmentEmail } = {} } =
-        await graphqlFetchAsAdminUser({
-          query: /* GraphQL */ `
-            mutation sendEnrollmentEmail($email: String!) {
-              sendEnrollmentEmail(email: $email) {
-                success
-              }
+      const { data: { sendEnrollmentEmail } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation sendEnrollmentEmail($email: String!) {
+            sendEnrollmentEmail(email: $email) {
+              success
             }
-          `,
-          variables: {
-            email,
-          },
-        });
+          }
+        `,
+        variables: {
+          email,
+        },
+      });
 
       expect(sendEnrollmentEmail).toMatchObject({
         success: true,
       });
 
       const work = await intervalUntilTimeout(async () => {
-        const work = await (db.collection('work_queue')).find({ type: "EMAIL", "input.to": email, retries: 20 }).toArray();
-        if (work?.length) return work;
+        const w2 = await db
+          .collection('work_queue')
+          .find({ type: 'EMAIL', 'input.to': email, retries: 20 })
+          .toArray();
+        if (w2?.length) return w2;
         return false;
       }, 5000);
       // length of two means only the enrollment got triggered
@@ -474,16 +462,8 @@ describe('Auth for admin users', () => {
       const password = 'admin4-more-chars';
       const { data: { enrollUser } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation enrollUser(
-            $email: String!
-            $password: String
-            $profile: UserProfileInput!
-          ) {
-            enrollUser(
-              email: $email
-              password: $password
-              profile: $profile
-            ) {
+          mutation enrollUser($email: String!, $password: String, $profile: UserProfileInput!) {
+            enrollUser(email: $email, password: $password, profile: $profile) {
               _id
               isInitialPassword
               primaryEmail {
@@ -618,10 +598,7 @@ describe('Auth for admin users', () => {
 
   describe('Mutation.setUsername for admin user should', () => {
     it('update guest username successuly for the specified user ID', async () => {
-      const {
-        data,
-        ...rest
-      } = await graphqlFetchAsAdminUser({
+      const { data } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation setUsername($username: String!, $userId: ID!) {
             setUsername(username: $username, userId: $userId) {

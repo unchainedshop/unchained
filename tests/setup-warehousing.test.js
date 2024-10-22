@@ -15,12 +15,8 @@ describe('setup warehousing providers', () => {
         data: { createWarehousingProvider, errors },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation createWarehousingProvider(
-            $warehousingProvider: CreateWarehousingProviderInput!
-          ) {
-            createWarehousingProvider(
-              warehousingProvider: $warehousingProvider
-            ) {
+          mutation createWarehousingProvider($warehousingProvider: CreateWarehousingProviderInput!) {
+            createWarehousingProvider(warehousingProvider: $warehousingProvider) {
               _id
               created
               updated
@@ -136,9 +132,7 @@ describe('setup warehousing providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'WarehousingProviderNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('WarehousingProviderNotFoundError');
     });
 
     it('return error when passed invalid warehousingProviderid', async () => {
@@ -179,9 +173,7 @@ describe('setup warehousing providers', () => {
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeWarehousingProvider($warehousingProviderId: ID!) {
-            removeWarehousingProvider(
-              warehousingProviderId: $warehousingProviderId
-            ) {
+            removeWarehousingProvider(warehousingProviderId: $warehousingProviderId) {
               _id
               deleted
             }
@@ -202,9 +194,7 @@ describe('setup warehousing providers', () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeWarehousingProvider($warehousingProviderId: ID!) {
-            removeWarehousingProvider(
-              warehousingProviderId: $warehousingProviderId
-            ) {
+            removeWarehousingProvider(warehousingProviderId: $warehousingProviderId) {
               _id
               deleted
             }
@@ -214,18 +204,14 @@ describe('setup warehousing providers', () => {
           warehousingProviderId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'WarehousingProviderNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('WarehousingProviderNotFoundError');
     });
 
     it('return error when passed invalid warehouseProviderId', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation removeWarehousingProvider($warehousingProviderId: ID!) {
-            removeWarehousingProvider(
-              warehousingProviderId: $warehousingProviderId
-            ) {
+            removeWarehousingProvider(warehousingProviderId: $warehousingProviderId) {
               _id
               deleted
             }

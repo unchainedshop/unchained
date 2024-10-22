@@ -69,25 +69,18 @@ describe('Plugins: Datatrans Payments', () => {
 
   describe('Mutation.signPaymentProviderForCredentialRegistration (Datatrans)', () => {
     it('starts a new transaction and checks if it is valid', async () => {
-      const { data: { signPaymentProviderForCredentialRegistration } = {} } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation signPaymentProviderForCredentialRegistration(
-              $paymentProviderId: ID!
-            ) {
-              signPaymentProviderForCredentialRegistration(
-                paymentProviderId: $paymentProviderId
-              )
-            }
-          `,
-          variables: {
-            paymentProviderId: 'd4d4d4d4d4',
-          },
-        });
+      const { data: { signPaymentProviderForCredentialRegistration } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation signPaymentProviderForCredentialRegistration($paymentProviderId: ID!) {
+            signPaymentProviderForCredentialRegistration(paymentProviderId: $paymentProviderId)
+          }
+        `,
+        variables: {
+          paymentProviderId: 'd4d4d4d4d4',
+        },
+      });
 
-      const { location, transactionId } = JSON.parse(
-        signPaymentProviderForCredentialRegistration,
-      );
+      const { location, transactionId } = JSON.parse(signPaymentProviderForCredentialRegistration);
 
       const url = `https://pay.sandbox.datatrans.com/v1/start/${transactionId}`;
       expect(location).toBe(url);
@@ -106,10 +99,7 @@ describe('Plugins: Datatrans Payments', () => {
         data: { signPaymentProviderForCheckout },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation signPaymentProviderForCheckout(
-            $transactionContext: JSON
-            $orderPaymentId: ID!
-          ) {
+          mutation signPaymentProviderForCheckout($transactionContext: JSON, $orderPaymentId: ID!) {
             signPaymentProviderForCheckout(
               transactionContext: $transactionContext
               orderPaymentId: $orderPaymentId
@@ -122,9 +112,7 @@ describe('Plugins: Datatrans Payments', () => {
         },
       });
 
-      const { location, transactionId } = JSON.parse(
-        signPaymentProviderForCheckout,
-      );
+      const { location, transactionId } = JSON.parse(signPaymentProviderForCheckout);
 
       const url = `https://pay.sandbox.datatrans.com/v1/start/${transactionId}`;
       expect(location).toBe(url);
@@ -141,21 +129,17 @@ describe('Plugins: Datatrans Payments', () => {
       const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
-      const sign =
-        '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
-      const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
-      const result = await fetch(
-        'http://localhost:4010/payment/datatrans/webhook',
-        {
-          method: 'POST',
-          duplex: 'half',
-          headers: {
-            'Content-Type': 'application/json',
-            'datatrans-signature': `t=12424123412,s0=${sign}`,
-          },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+      const sign = '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
+      const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
+      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+        method: 'POST',
+        duplex: 'half',
+        headers: {
+          'Content-Type': 'application/json',
+          'datatrans-signature': `t=12424123412,s0=${sign}`,
         },
-      );
+        body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+      });
       expect(result.status).toBe(200);
 
       const paymentCredential = await db
@@ -168,45 +152,37 @@ describe('Plugins: Datatrans Payments', () => {
       const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
-      const sign =
-        '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
-      const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
-      const result = await fetch(
-        'http://localhost:4010/payment/datatrans/webhook',
-        {
-          method: 'POST',
-          duplex: 'half',
-          headers: {
-            'Content-Type': 'application/json',
-            'datatrans-signature': `t=12424123412,s0=${sign}WRONG`,
-          },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+      const sign = '9172ee1619aa404f4904e9b2993ba7cc1783d6880aa170cd9c0531232ee5de64';
+      const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
+      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+        method: 'POST',
+        duplex: 'half',
+        headers: {
+          'Content-Type': 'application/json',
+          'datatrans-signature': `t=12424123412,s0=${sign}WRONG`,
         },
-      );
+        body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+      });
 
       expect(result.status).toBe(403);
     });
-    
+
     it('mocks ingress accepted payment webhook call with diff amount', async () => {
       const orderPaymentId = '1111112222';
       const transactionId = 'payment_authorized_low_amount';
       const userId = User._id;
-      const sign =
-        '28f99091d4fc5859dabfff335eb07e06e00b0ca53775816d329ba88c17b1a36e';
-      const refno = Buffer.from(orderPaymentId, "hex").toString("base64");
+      const sign = '28f99091d4fc5859dabfff335eb07e06e00b0ca53775816d329ba88c17b1a36e';
+      const refno = Buffer.from(orderPaymentId, 'hex').toString('base64');
 
-      const result = await fetch(
-        'http://localhost:4010/payment/datatrans/webhook',
-        {
-          method: 'POST',
-          duplex: 'half',
-          headers: {
-            'Content-Type': 'application/json',
-            'datatrans-signature': `t=12424123412,s0=${sign}`,
-          },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
+      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+        method: 'POST',
+        duplex: 'half',
+        headers: {
+          'Content-Type': 'application/json',
+          'datatrans-signature': `t=12424123412,s0=${sign}`,
         },
-      );
+        body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
+      });
 
       expect(result.status).toBe(500);
     });
@@ -214,32 +190,24 @@ describe('Plugins: Datatrans Payments', () => {
       const orderPaymentId = '1111112222';
       const transactionId = 'payment_authorized';
       const userId = User._id;
-      const sign =
-        'a146037afae54a78b61865b9c2bb38a60c687692833a1388a03176574cb2a004';
-      const refno = Buffer.from(orderPaymentId, "hex").toString("base64");
-      const result = await fetch(
-        'http://localhost:4010/payment/datatrans/webhook',
-        {
-          method: 'POST',
-          duplex: 'half',
-          headers: {
-            'Content-Type': 'application/json',
-            'datatrans-signature': `t=12424123412,s0=${sign}`,
-          },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
+      const sign = 'a146037afae54a78b61865b9c2bb38a60c687692833a1388a03176574cb2a004';
+      const refno = Buffer.from(orderPaymentId, 'hex').toString('base64');
+      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+        method: 'POST',
+        duplex: 'half',
+        headers: {
+          'Content-Type': 'application/json',
+          'datatrans-signature': `t=12424123412,s0=${sign}`,
         },
-      );
+        body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency": "${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055", "amount": ${amount}}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"payment"}`,
+      });
 
       expect(result.status).toBe(200);
 
-      const order = await db
-        .collection('orders')
-        .findOne({ _id: 'datatrans-order' });
+      const order = await db.collection('orders').findOne({ _id: 'datatrans-order' });
       expect(order.status).toBe('CONFIRMED');
 
-      const orderPayment = await db
-        .collection('order_payments')
-        .findOne({ _id: orderPaymentId });
+      const orderPayment = await db.collection('order_payments').findOne({ _id: orderPaymentId });
       expect(orderPayment.status).toBe('PAID');
     });
   });
@@ -249,22 +217,18 @@ describe('Plugins: Datatrans Payments', () => {
       const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
-      const sign =
-        '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
-      const refno = Buffer.from(paymentProviderId, "hex").toString("base64");
+      const sign = '5118c93025fdb16a110cdde3aa7669422da320cfe9478e35b531f45c4619d4db';
+      const refno = Buffer.from(paymentProviderId, 'hex').toString('base64');
 
-      const result = await fetch(
-        'http://localhost:4010/payment/datatrans/webhook',
-        {
-          method: 'POST',
-          duplex: 'half',
-          headers: {
-            'Content-Type': 'application/json',
-            'datatrans-signature': `t=12424123412,s0=${sign}`,
-          },
-          body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+      const result = await fetch('http://localhost:4010/payment/datatrans/webhook', {
+        method: 'POST',
+        duplex: 'half',
+        headers: {
+          'Content-Type': 'application/json',
+          'datatrans-signature': `t=12424123412,s0=${sign}`,
         },
-      );
+        body: `{"card":{"3D":{"authenticationResponse":"D"},"alias":"70119122433810042","expiryMonth":"12","expiryYear":"21","info":{"brand":"VISA CREDIT","country":"GB","issuer":"DATATRANS","type":"credit","usage":"consumer"},"masked":"424242xxxxxx4242"},"currency":"${currency}","detail":{"authorize":{"acquirerAuthorizationCode":"100055"}},"history":[{"action":"init","date":"2021-09-03T08:00:32Z","ip":"212.232.234.26","source":"api","success":true},{"action":"authorize","date":"2021-09-03T08:00:55Z","ip":"212.232.234.26","source":"redirect","success":true}],"language":"de","paymentMethod":"VIS","refno":"${refno}","refno2":"${userId}","status":"authorized","transactionId":"${transactionId}","type":"card_check"}`,
+      });
       expect(result.status).toBe(200);
       const { data: { me } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
@@ -306,33 +270,32 @@ describe('Plugins: Datatrans Payments', () => {
 
       const credentials = me?.paymentCredentials?.[0];
 
-      const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
-              emptyCart {
-                _id
-              }
-              addCartProduct(productId: $productId) {
-                _id
-              }
-              updateCart(paymentProviderId: "d4d4d4d4d4") {
-                _id
-                status
-              }
-              checkoutCart(paymentContext: $paymentContext) {
-                _id
-                status
-              }
+      const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
+            emptyCart {
+              _id
             }
-          `,
-          variables: {
-            productId: 'simpleproduct',
-            paymentContext: {
-              paymentCredentials: credentials,
-            },
+            addCartProduct(productId: $productId) {
+              _id
+            }
+            updateCart(paymentProviderId: "d4d4d4d4d4") {
+              _id
+              status
+            }
+            checkoutCart(paymentContext: $paymentContext) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+          paymentContext: {
+            paymentCredentials: credentials,
           },
-        });
+        },
+      });
       expect(addCartProduct).toMatchObject(expect.anything());
       expect(updateCart).toMatchObject({
         status: 'OPEN',
@@ -342,27 +305,26 @@ describe('Plugins: Datatrans Payments', () => {
       });
     });
     it('checkout with preferred alias', async () => {
-      const { data: { addCartProduct, updateCart, checkoutCart } = {} } =
-        await graphqlFetch({
-          query: /* GraphQL */ `
-            mutation addAndCheckout($productId: ID!) {
-              addCartProduct(productId: $productId) {
-                _id
-              }
-              updateCart(paymentProviderId: "d4d4d4d4d4") {
-                _id
-                status
-              }
-              checkoutCart {
-                _id
-                status
-              }
+      const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addAndCheckout($productId: ID!) {
+            addCartProduct(productId: $productId) {
+              _id
             }
-          `,
-          variables: {
-            productId: 'simpleproduct',
-          },
-        });
+            updateCart(paymentProviderId: "d4d4d4d4d4") {
+              _id
+              status
+            }
+            checkoutCart {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          productId: 'simpleproduct',
+        },
+      });
       expect(addCartProduct).toMatchObject(expect.anything());
       expect(updateCart).toMatchObject({
         status: 'OPEN',

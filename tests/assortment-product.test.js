@@ -1,8 +1,4 @@
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  createAnonymousGraphqlFetch,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, createAnonymousGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleAssortment, AssortmentProduct } from './seeds/assortments.js';
 import { SimpleProduct } from './seeds/products.js';
@@ -21,9 +17,7 @@ describe('AssortmentProduct', () => {
         data: { reorderAssortmentProducts },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentProducts(
-            $sortKeys: [ReorderAssortmentProductInput!]!
-          ) {
+          mutation ReorderAssortmentProducts($sortKeys: [ReorderAssortmentProductInput!]!) {
             reorderAssortmentProducts(sortKeys: $sortKeys) {
               _id
               sortKey
@@ -55,9 +49,7 @@ describe('AssortmentProduct', () => {
         data: { reorderAssortmentProducts },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentProducts(
-            $sortKeys: [ReorderAssortmentProductInput!]!
-          ) {
+          mutation ReorderAssortmentProducts($sortKeys: [ReorderAssortmentProductInput!]!) {
             reorderAssortmentProducts(sortKeys: $sortKeys) {
               _id
             }
@@ -81,9 +73,7 @@ describe('AssortmentProduct', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation ReorderAssortmentProducts(
-            $sortKeys: [ReorderAssortmentProductInput!]!
-          ) {
+          mutation ReorderAssortmentProducts($sortKeys: [ReorderAssortmentProductInput!]!) {
             reorderAssortmentProducts(sortKeys: $sortKeys) {
               _id
             }
@@ -106,16 +96,8 @@ describe('AssortmentProduct', () => {
     it('add assortment successfuly when passed valid assortment & product id', async () => {
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentProduct(
-            $assortmentId: ID!
-            $productId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentProduct(
-              assortmentId: $assortmentId
-              productId: $productId
-              tags: $tags
-            ) {
+          mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentProduct(assortmentId: $assortmentId, productId: $productId, tags: $tags) {
               _id
               sortKey
               tags
@@ -138,23 +120,15 @@ describe('AssortmentProduct', () => {
       expect(data?.addAssortmentProduct).toMatchObject({
         tags: ['assortment-product-et'],
         assortment: { _id: SimpleAssortment[1]._id },
-        product: { _id: SimpleProduct._id }
+        product: { _id: SimpleProduct._id },
       });
     });
 
     it('return not found error when passed non existing product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentProduct(
-            $assortmentId: ID!
-            $productId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentProduct(
-              assortmentId: $assortmentId
-              productId: $productId
-              tags: $tags
-            ) {
+          mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentProduct(assortmentId: $assortmentId, productId: $productId, tags: $tags) {
               _id
               sortKey
               tags
@@ -180,16 +154,8 @@ describe('AssortmentProduct', () => {
     it('return error when passed in-valid product id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentProduct(
-            $assortmentId: ID!
-            $productId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentProduct(
-              assortmentId: $assortmentId
-              productId: $productId
-              tags: $tags
-            ) {
+          mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentProduct(assortmentId: $assortmentId, productId: $productId, tags: $tags) {
               _id
               sortKey
               tags
@@ -215,16 +181,8 @@ describe('AssortmentProduct', () => {
     it('return not found error when passed non existing assortment id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentProduct(
-            $assortmentId: ID!
-            $productId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentProduct(
-              assortmentId: $assortmentId
-              productId: $productId
-              tags: $tags
-            ) {
+          mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentProduct(assortmentId: $assortmentId, productId: $productId, tags: $tags) {
               _id
             }
           }
@@ -241,16 +199,8 @@ describe('AssortmentProduct', () => {
     it('return error when passed in-valid assortment id', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentProduct(
-            $assortmentId: ID!
-            $productId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentProduct(
-              assortmentId: $assortmentId
-              productId: $productId
-              tags: $tags
-            ) {
+          mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentProduct(assortmentId: $assortmentId, productId: $productId, tags: $tags) {
               _id
             }
           }
@@ -270,16 +220,8 @@ describe('AssortmentProduct', () => {
       const graphqlAnonymousFetch = await createAnonymousGraphqlFetch();
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation AddAssortmentProduct(
-            $assortmentId: ID!
-            $productId: ID!
-            $tags: [LowerCaseString!]
-          ) {
-            addAssortmentProduct(
-              assortmentId: $assortmentId
-              productId: $productId
-              tags: $tags
-            ) {
+          mutation AddAssortmentProduct($assortmentId: ID!, $productId: ID!, $tags: [LowerCaseString!]) {
+            addAssortmentProduct(assortmentId: $assortmentId, productId: $productId, tags: $tags) {
               _id
             }
           }
@@ -345,9 +287,7 @@ describe('AssortmentProduct', () => {
         },
       });
 
-      expect(errors[0]?.extensions?.code).toEqual(
-        'AssortmentProductNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('AssortmentProductNotFoundError');
     });
 
     it('return error when passed invalid assortment product id', async () => {

@@ -15,9 +15,7 @@ describe('setup payment providers', () => {
         data: { createPaymentProvider, errors },
       } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation createPaymentProvider(
-            $paymentProvider: CreatePaymentProviderInput!
-          ) {
+          mutation createPaymentProvider($paymentProvider: CreatePaymentProviderInput!) {
             createPaymentProvider(paymentProvider: $paymentProvider) {
               _id
               created
@@ -135,9 +133,7 @@ describe('setup payment providers', () => {
           },
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'PaymentProviderNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('PaymentProviderNotFoundError');
     });
 
     it('return error when passed invalid paymentProviderId', async () => {
@@ -209,9 +205,7 @@ describe('setup payment providers', () => {
           paymentProviderId: 'non-existing-id',
         },
       });
-      expect(errors[0]?.extensions?.code).toEqual(
-        'PaymentProviderNotFoundError',
-      );
+      expect(errors[0]?.extensions?.code).toEqual('PaymentProviderNotFoundError');
     });
 
     it('return error when passed invalid paymentProviderId', async () => {

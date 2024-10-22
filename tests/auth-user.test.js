@@ -75,10 +75,7 @@ describe('Auth for logged in users', () => {
       const { data: { changePassword } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            changePassword(
-              oldPassword: "password"
-              newPassword: "password"
-            ) {
+            changePassword(oldPassword: "password", newPassword: "password") {
               success
             }
           }
@@ -151,9 +148,7 @@ describe('Auth for logged in users', () => {
       const { data: { sendVerificationEmail } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            sendVerificationEmail(
-              email: "userthatmustverifyemail@unchained.local"
-            ) {
+            sendVerificationEmail(email: "userthatmustverifyemail@unchained.local") {
               success
             }
           }
@@ -168,13 +163,13 @@ describe('Auth for logged in users', () => {
       // Reset the password with that token
       const Events = db.collection('events');
       const event = await Events.findOne({
-        "payload.userId": 'userthatmustverifyemail',
-        "payload.action": "verify-email"
+        'payload.userId': 'userthatmustverifyemail',
+        'payload.action': 'verify-email',
       });
 
       const token = event.payload.token;
 
-      const { data: { verifyEmail } = {}, ...rest } = await graphqlFetch({
+      const { data: { verifyEmail } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation verifyEmail($token: String!) {
             verifyEmail(token: $token) {
@@ -191,7 +186,7 @@ describe('Auth for logged in users', () => {
       });
       expect(verifyEmail).toMatchObject({
         user: {
-          _id: 'userthatmustverifyemail'
+          _id: 'userthatmustverifyemail',
         },
       });
     });
@@ -273,7 +268,7 @@ describe('Auth for logged in users', () => {
       } = user;
       expect(loginTokens.length).toEqual(1);
     });
-    
+
     it.skip('log out userthatlogsout without explicit token', async () => {
       const Users = db.collection('users');
       await Users.findOrInsertOne({
