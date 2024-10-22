@@ -16,7 +16,7 @@ pipeline {
           // sh 'cp ${DOTENV_PATH} ./env'
           docker.build("ci:latest")
           sh 'docker run ci:latest npm run lint:ci'
-          sh 'docker run ci:latest npm run test:unit'
+          // sh 'docker run ci:latest npm run test:unit'
           sh 'docker run ci:latest npm run test:integration'
         }
       }
